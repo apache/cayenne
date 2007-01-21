@@ -39,7 +39,7 @@
 	<modules>
 		<module>build-tools</module>
 		<module>framework</module>
-		<module>itest</module>
+		<module>itests</module>
 		<module>modeler</module>
 		<module>docs</module>
 	</modules>
