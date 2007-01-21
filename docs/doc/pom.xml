@@ -50,7 +50,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.modeler</groupId>
+			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${version}</version>
 		</dependency>
