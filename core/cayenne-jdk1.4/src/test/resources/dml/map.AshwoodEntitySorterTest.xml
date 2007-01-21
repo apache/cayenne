@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	<bean id="RH1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.RelationshipHelper</value></constructor-arg>
+		<constructor-arg><value>
+		insert into RELATIONSHIP_HELPER (RELATIONSHIP_HELPER_ID, NAME) values (1, 'rh1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="RATO1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.ReflexiveAndToOne</value></constructor-arg>
+		<constructor-arg><value>
+		insert into REFLEXIVE_AND_TO_ONE (REFLEXIVE_AND_TO_ONE_ID, PARENT_ID, RELATIONSHIP_HELPER_ID, NAME) values (1, null, 1, 'r1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="RATO2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.ReflexiveAndToOne</value></constructor-arg>
+		<constructor-arg><value>
+		insert into REFLEXIVE_AND_TO_ONE (REFLEXIVE_AND_TO_ONE_ID, PARENT_ID, RELATIONSHIP_HELPER_ID, NAME) values (2, 1, 1, 'r2')
+		</value></constructor-arg>
+	</bean>
+	<bean id="RATO3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.ReflexiveAndToOne</value></constructor-arg>
+		<constructor-arg><value>
+		insert into REFLEXIVE_AND_TO_ONE (REFLEXIVE_AND_TO_ONE_ID, PARENT_ID, RELATIONSHIP_HELPER_ID, NAME) values (3, 2, 1, 'r3')
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	<bean id="testSortObjectsForEntityDeletedWithFaults" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="RH1"/>
+				<ref bean="RATO1"/>
+				<ref bean="RATO2"/>
+				<ref bean="RATO3"/>
+			</list>
+		</constructor-arg>
+	</bean>	
+</beans>

@@ -1,0 +1,77 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Swing Applications</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Swing Applications</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a><ul>
+<li><a href="../../../../Documentation/User Guide/DataViews/Swing Applications/index.html">Swing Applications</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/DataViews/DataView Concepts/index.html">DataView Concepts</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/DVModeler GUI Tool/index.html">DVModeler GUI Tool</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/DataViews in Action/index.html">DataViews in Action</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="ConfluenceContent">
+<p>Those who have experience of Swing GUI development knows how much time it takes to work out all the minutest details of formatting, in-place input validation, handling the interactive data modification, enforcing naming, order, and formatting consistensy, etc. Whenever the domain or requirements change (e.g. new attributes are added to an ObjEntity, formats or captions of data are modified, or relationships change their meaning) developers are faced with the necessity to go through the number of Swing data models, panels, various helpers fishing out the bits of code to be corrected.</p>
+
+<p>Another problem is the need for quick and easy prototyping of data aware GUIs. Those who, at one time or another, worked with Borland VCL for C++ or Delphi or DataExpress/dbSwing for Java and similar frameworks can recall how painless it was to create a rough prototype of the GUI working with the relational database and bind it to the actual data. That was possible due to the layer of easily configured data aware classes and components. And once the working prototype had been ready, refinining it used to be a very simple task.</p>
+
+<p>Cayenne DataViews solve these problems. Data Views act as a bridge between the domain defined in terms of Cayenne DataObjects and a presentation layer built with Swing. Potentially they can be used in the Web environment as well, but Swing integration is the main direction. Conceptually, Data Views are close to the application facades described, for instance, by <span class="nobr"><a href="http://www.martinfowler.com/apsupp/appfacades.pdf" title="Visit page outside Confluence" rel="nofollow">Martin Fowler<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>. The following figure shows the area where Data Views can be applied.<br/>
+<img src="dataview-usecases.gif" align="absmiddle" border="0" /></p>
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Validation</b><br />The validation rules mentioned in the Use Cases are meant to be "lightweght", i.e. it is generally agreed the validation related code to enforce the business rules should be located in the domain area but, still, there are various checks one could prefer to perform right in the presentation layer like inclusion in a predefined range of values, correct input format, sometimes, even preliminary credit card number validity check with the well known Luhn algorithm, the other kinds of sanity checks. Presently the validation is on the list of the features to be added.</td></tr></table></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 Apache Software Foundation
+  </div>
+
+</body>
+</html>

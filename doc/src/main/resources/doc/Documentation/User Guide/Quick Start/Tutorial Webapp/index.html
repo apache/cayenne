@@ -1,0 +1,283 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Tutorial Webapp</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Tutorial Webapp</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a><ul>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Setup/index.html">Tutorial Setup</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Starting Mapping Project/index.html">Tutorial Starting Mapping Project</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Object Relational Mapping/index.html">Tutorial Object Relational Mapping</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Generate Database and Java Classes/index.html">Tutorial Generate Database and Java Classes</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial DataContext/index.html">Tutorial DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial DataObjects/index.html">Tutorial DataObjects</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Mapping Query/index.html">Tutorial Mapping Query</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial SelectQuery/index.html">Tutorial SelectQuery</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Delete/index.html">Tutorial Delete</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Webapp/index.html">Tutorial Webapp</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Now we'll convert the tutorial that we created to a web application. The web part of it is done in JSP and is intentionally primitive from the UI perspective, to concentrate on Cayenne integration aspect. There may be some specifics depending on the web framework used (JSP, Struts, JSF, Click, WebWork, Tapestry, etc.), still the procedure outlined here is quite universal as it relies on the J2EE servlet specification.</p>
+
+<p>A typical Cayenne web application works like this:</p>
+
+<ul>
+	<li>Cayenne files are loaded when an application context is started, using a special servlet filter.</li>
+	<li>User requests are intercepted by the filter, and the DataContext is bound to the request thread, so the application can access it easily from anywhere.</li>
+	<li>The same DataContext instance is reused within a single user session; different sessions use different DataContexts (and therefore different sets of objects).</li>
+</ul>
+
+
+<p>For detailed discussion of web application deployment, check <a href="../../../../Documentation/User Guide/Deployment/Web Applications/index.html" title="Web Applications">this page</a>.</p>
+
+<p>To run the web application from Eclipse, we will use <span class="nobr"><a href="http://jettylauncher.sourceforge.net/" title="Visit page outside Confluence" rel="nofollow">JettyLauncher plugin<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>. If you are using something else (e.g. a Tomcat plugin) it should probably work as well.</p>
+
+<ul>
+	<li><span class="nobr"><a href="http://jetty.mortbay.org" title="Visit page outside Confluence" rel="nofollow">Download<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> and unpack Jetty web container (tested version is 5.1.3).</li>
+	<li><span class="nobr"><a href="http://sourceforge.net/project/showfiles.php?group_id=118870" title="Visit page outside Confluence" rel="nofollow">Download<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> and unpack JettyLauncher to a local directory. Install it in Eclipse (<tt>"Help &gt; Find and Install"</tt>).</li>
+</ul>
+
+
+<ul>
+	<li>In Eclipse under "cayenne-tutorial" project folder create a new folder called "webapp" and a subfolder called "WEB-INF".</li>
+	<li>Under "WEB-INF" create a new file "web.xml". This is a standard web deployment descriptor:</li>
+</ul>
+
+
+<p><img src="webapp1.jpg" align="absmiddle" border="0" /></p>
+
+<p>The following is the contents of <tt>web.xml</tt>. All the DataContext magic described above is achieved by WebApplicationContextFilter.</p>
+
+<div class="code"><div class="codeHeader"><b>web.xml</b></div><div class="codeContent">
+<pre class="code-java">&lt;?xml version=<span class="code-quote">"1.0"</span> encoding=<span class="code-quote">"utf-8"</span>?&gt;
+ &lt;!DOCTYPE web-app
+   PUBLIC <span class="code-quote">"-<span class="code-comment">//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"</span>
+</span>   <span class="code-quote">"http:<span class="code-comment">//java.sun.com/dtd/web-app_2_3.dtd"</span>&gt;
+</span>&lt;web-app&gt;
+    &lt;display-name&gt;Cayenne Tutorial&lt;/display-name&gt;
+    &lt;filter&gt;
+        &lt;filter-name&gt;CayenneFilter&lt;/filter-name&gt;
+        &lt;filter-class&gt;org.apache.cayenne.conf.WebApplicationContextFilter&lt;/filter-class&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;CayenneFilter&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+    &lt;welcome-file-list&gt;
+        &lt;welcome-file&gt;index.jsp&lt;/welcome-file&gt;
+    &lt;/welcome-file-list&gt;
+&lt;/web-app&gt;</pre>
+</div></div>
+
+<ul>
+	<li>Create the artist browser page - <tt>webapp/index.jsp</tt> file with the following contents:</li>
+</ul>
+
+
+<div class="code"><div class="codeHeader"><b>webapp/index.jsp</b></div><div class="codeContent">
+<pre class="code-java">&lt;%@ page language=<span class="code-quote">"java"</span> contentType=<span class="code-quote">"text/html"</span> %&gt;
+&lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"cayenne.tutorial.*"</span> %&gt;
+&lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"org.apache.cayenne.*"</span> %&gt;
+&lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"org.apache.cayenne.query.*"</span> %&gt;
+&lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"org.apache.cayenne.exp.*"</span> %&gt;
+&lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"org.apache.cayenne.access.*"</span> %&gt;
+&lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"java.util.*"</span> %&gt;
+
+&lt;% 
+    SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Artist.class);
+    query.addOrdering(Artist.NAME_PROPERTY, <span class="code-keyword">true</span>);
+
+    DataContext context = DataContext.getThreadDataContext();
+    List artists = context.performQuery(query);
+%&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;Main&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h2&gt;Artists:&lt;/h2&gt;
+        
+        &lt;% <span class="code-keyword">if</span>(artists.isEmpty()) {%&gt;
+        &lt;p&gt;No artists found&lt;/p&gt;
+        &lt;% } <span class="code-keyword">else</span> { 
+            Iterator it = artists.iterator();
+            <span class="code-keyword">while</span>(it.hasNext()) {
+                Artist a = (Artist) it.next();
+        %&gt;
+        &lt;p&gt;&lt;a href=<span class="code-quote">"detail.jsp?id=&lt;%=DataObjectUtils.intPKForObject(a)%&gt;"</span>&gt; &lt;%=a.getName()%&gt; &lt;/a&gt;&lt;/p&gt;
+        &lt;%
+            }
+            } %&gt;
+        &lt;hr&gt;
+        &lt;p&gt;&lt;a href=<span class="code-quote">"detail.jsp"</span>&gt;Create <span class="code-keyword">new</span> artist...&lt;/a&gt;&lt;/p&gt;
+    &lt;/body&gt;	
+&lt;/html&gt;</pre>
+</div></div>
+
+<ul>
+	<li>Create the artist editor page <tt>webapp/detail.jsp</tt> with the following content:</li>
+</ul>
+
+
+<div class="code"><div class="codeHeader"><b>webapp/detail.jsp</b></div><div class="codeContent">
+<pre class="code-java">&lt;%@ page language=<span class="code-quote">"java"</span> contentType=<span class="code-quote">"text/html"</span> %&gt;
+&lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"cayenne.tutorial.*"</span> %&gt;
+&lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"org.apache.cayenne.*"</span> %&gt;
+&lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"org.apache.cayenne.access.*"</span> %&gt;
+&lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"java.util.*"</span> %&gt;
+&lt;%@ page <span class="code-keyword">import</span>=<span class="code-quote">"java.text.*"</span> %&gt;
+
+&lt;% 
+    DataContext context = DataContext.getThreadDataContext();
+    <span class="code-object">String</span> id = request.getParameter(<span class="code-quote">"id"</span>);
+
+    <span class="code-comment">// find artist <span class="code-keyword">for</span> id
+</span>    Artist artist = <span class="code-keyword">null</span>;
+    <span class="code-keyword">if</span>(id != <span class="code-keyword">null</span> &amp;&amp; id.trim().length() &gt; 0) {
+        artist = (Artist) DataObjectUtils.objectForPK(context, Artist.class, <span class="code-object">Integer</span>.parseInt(id));
+    }
+
+    <span class="code-keyword">if</span>(<span class="code-quote">"POST"</span>.equals(request.getMethod())) {
+        <span class="code-comment">// <span class="code-keyword">if</span> no id is saved in the hidden field, we are dealing with
+</span>        <span class="code-comment">// create <span class="code-keyword">new</span> artist request
+</span>        <span class="code-keyword">if</span>(artist == <span class="code-keyword">null</span>) {
+            artist = (Artist) context.newObject(Artist.class);
+        }
+
+        <span class="code-comment">// note that in a real application we would so dome validation ...
+</span>        <span class="code-comment">// here we just hope the input is correct
+</span>        artist.setName(request.getParameter(<span class="code-quote">"name"</span>));
+        artist.setDateOfBirthString(request.getParameter(<span class="code-quote">"dateOfBirth"</span>));
+
+        context.commitChanges();
+
+        response.sendRedirect(<span class="code-quote">"index.jsp"</span>);
+    }
+
+    <span class="code-keyword">if</span>(artist == <span class="code-keyword">null</span>) {
+        <span class="code-comment">// create <span class="code-keyword">transient</span> artist <span class="code-keyword">for</span> the form response rendering
+</span>        artist = <span class="code-keyword">new</span> Artist();
+    }
+
+    <span class="code-object">String</span> name = artist.getName() == <span class="code-keyword">null</span> ? "" : artist.getName();
+    <span class="code-object">String</span> dob = artist.getDateOfBirth() == <span class="code-keyword">null</span>
+            ? <span class="code-quote">"" : <span class="code-keyword">new</span> SimpleDateFormat("</span>yyyyMMdd").format(artist.getDateOfBirth());
+%&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;Artist Details&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h2&gt;Artists Details&lt;/h2&gt;
+        &lt;form name=<span class="code-quote">"EditArtist"</span> action=<span class="code-quote">"detail.jsp"</span> method=<span class="code-quote">"POST"</span>&gt;
+            &lt;input type=<span class="code-quote">"hidden"</span> name=<span class="code-quote">"id"</span> value=<span class="code-quote">"&lt;%= id != <span class="code-keyword">null</span> ? id : "</span><span class="code-quote">" %&gt;"</span> /&gt;
+            &lt;table border=<span class="code-quote">"0"</span>&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;Name:&lt;/td&gt;
+                    &lt;td&gt;&lt;input type=<span class="code-quote">"text"</span> name=<span class="code-quote">"name"</span> value=<span class="code-quote">"&lt;%= name %&gt;"</span>/&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;Date of Birth (yyyyMMdd):&lt;/td&gt;
+                    &lt;td&gt;&lt;input type=<span class="code-quote">"text"</span> name=<span class="code-quote">"dateOfBirth"</span> value=<span class="code-quote">"&lt;%= dob %&gt;"</span>/&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;&lt;/td&gt;
+                    &lt;td align=<span class="code-quote">"right"</span>&gt;&lt;input type=<span class="code-quote">"submit"</span> value=<span class="code-quote">"Save"</span> /&gt;&lt;/td&gt;
+                &lt;/tr&gt;  
+            &lt;/table&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;	
+&lt;/html&gt;</pre>
+</div></div>
+
+<ul>
+	<li>Run the application. Go to "Run &gt; Run..." menu, select "Jetty Web", right click and select "New"</li>
+	<li>Make sure project is "cayenne-tutorial", webapp root is "webapp" and Jetty home points to a directory where you unpacked Jetty:</li>
+</ul>
+
+
+<p><img src="jetty-run.jpg" align="absmiddle" border="0" /></p>
+
+<ul>
+	<li>Click "Apply" and "Run".</li>
+	<li>You will see some Cayenne logs, indicating that the filter was loaded and Cayenne is successfully runing in web app.</li>
+	<li>Now go to <span class="nobr"><a href="http://localhost:8080/" title="Visit page outside Confluence" rel="nofollow">http://localhost:8080/<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> URL. You should see "No artists found message" in the web browser and the following output in the Eclipse console:</li>
+</ul>
+
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>INFO  QueryLogger: --- will run 1 query.
+INFO  QueryLogger: Opening connection: jdbc:derby:/Users/andrus/Desktop/testdb;create=true
+	Login: null
+	Password: *******
+INFO  QueryLogger: +++ Connecting: SUCCESS.
+INFO  QueryLogger: --- transaction started.
+INFO  QueryLogger: Detected and installed adapter: org.apache.cayenne.dba.derby.DerbyAdapter
+INFO  QueryLogger: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0 ORDER BY t0.NAME - prepared in 32 ms.
+INFO  QueryLogger: === returned 0 rows. - took 461 ms.
+INFO  QueryLogger: +++ transaction committed.</pre>
+</div></div>
+
+<ul>
+	<li>You can click on "Create new artist" link to create artists. Existing artists can be edited by clicking on their name:</li>
+</ul>
+
+
+<p><img src="artists.jpg" align="absmiddle" border="0" /></p>
+
+<p>You are done with the tutorial!</p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 Apache Software Foundation
+  </div>
+
+</body>
+</html>

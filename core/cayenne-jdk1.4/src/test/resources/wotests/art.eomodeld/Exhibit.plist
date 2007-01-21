@@ -1,0 +1,78 @@
+{
+    attributes = (
+        {
+            columnName = "CLOSING_DATE"; 
+            externalType = datetime; 
+            name = closingDate; 
+            valueClassName = NSCalendarDate; 
+        }, 
+        {
+            columnName = "EXHIBIT_ID"; 
+            externalType = int; 
+            name = exhibitId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = "EXHIBIT_TYPE_ID"; 
+            externalType = int; 
+            name = exhibitTypeId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            columnName = "GALLERY_ID"; 
+            externalType = int; 
+            name = galleryId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            columnName = "OPENING_DATE"; 
+            externalType = datetime; 
+            name = openingDate; 
+            valueClassName = NSCalendarDate; 
+        }
+    ); 
+    attributesUsedForLocking = (exhibitId, galleryId, exhibitTypeId); 
+    className = "org.apache.art.Exhibit"; 
+    classProperties = (
+        closingDate, 
+        openingDate, 
+        toGallery, 
+        artistExhibitArray, 
+        exhibitTypeId, 
+        toExhibitType
+    ); 
+    externalName = EXHIBIT; 
+    fetchSpecificationDictionary = {}; 
+    name = Exhibit; 
+    primaryKeyAttributes = (exhibitId); 
+    relationships = (
+        {
+            deleteRule = EODeleteRuleCascade; 
+            destination = ArtistExhibit; 
+            isToMany = Y; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = exhibitId; sourceAttribute = exhibitId; }); 
+            name = artistExhibitArray; 
+            ownsDestination = Y; 
+            propagatesPrimaryKey = Y; 
+        }, 
+        {
+            destination = ExhibitType; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = exhibitTypeId; sourceAttribute = exhibitTypeId; }); 
+            name = toExhibitType; 
+        }, 
+        {
+            destination = Gallery; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = galleryId; sourceAttribute = galleryId; }); 
+            name = toGallery; 
+        }
+    ); 
+}

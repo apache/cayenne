@@ -1,0 +1,115 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - JAR Files and Dependencies</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">JAR Files and Dependencies</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a><ul>
+<li><a href="../../../../Documentation/User Guide/Installation/Upgrade/index.html">Upgrade</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/JAR Files and Dependencies/index.html">JAR Files and Dependencies</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>This sections explains where all the relevant jar files are located. It also lists Cayenne dependencies.</p>
+
+<h3><a name="JARFilesandDependencies-CayenneRuntimeFramework"></a>Cayenne Runtime Framework</h3>
+
+<p>One of two Cayenne jar files, <tt>cayenne.jar</tt> or <tt>cayenne-nodeps.jar</tt>, should be accessible in runtime (i.e. present in the application CLASSPATH). Either one or the other should be used (but not both at the same time). In most cases <tt>cayenne.jar</tt> is the best choice. It has Cayenne classes as well as a minimum set of third-party dependencies. Bundled dependencies include:</p>
+
+<ul>
+	<li><span class="nobr"><a href="http://objectstyle.org/ashwood/" title="Visit page outside Confluence" rel="nofollow">ObjectStyle Ashwood Graph Library<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.1</li>
+	<li><span class="nobr"><a href="http://jakarta.apache.org/velocity/" title="Visit page outside Confluence" rel="nofollow">Apache Velocity Template Engine<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.3 (and all its dependencies bundled with velocity-dep)</li>
+	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/lang/" title="Visit page outside Confluence" rel="nofollow">Apache Commons Lang<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 2.1</li>
+	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/collections" title="Visit page outside Confluence" rel="nofollow">Apache Commons Collections<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 3.1</li>
+	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/logging/" title="Visit page outside Confluence" rel="nofollow">Apache Commons Logging<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.0.4</li>
+</ul>
+
+
+<p>If bundled Cayenne dependencies conflict with different versions of the same library, a leaner <tt>cayenne-nodeps.jar</tt> file should be used. In this case all the dependencies above must be provided by the user.</p>
+
+<h3><a name="JARFilesandDependencies-OptionalRuntimeDependencies"></a>Optional Runtime Dependencies</h3>
+
+<p>One or more of the following libraries may be needed depending on how you use Cayenne:</p>
+
+<ul>
+	<li><span class="nobr"><a href="http://ant.apache.org/" title="Visit page outside Confluence" rel="nofollow">Apache Ant<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.6 or newer. Needed for <a href="../../../../Documentation/User Guide/Ant Tasks/index.html" title="Ant Tasks">Cayenne Ant Tasks</a>.</li>
+	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/pool/" title="Visit page outside Confluence" rel="nofollow">Apache Commons Pool<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.2 and <span class="nobr"><a href="http://jakarta.apache.org/commons/dbcp/" title="Visit page outside Confluence" rel="nofollow">Apache Commons DBCP<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.2.1. Needed if you use DBCPDataSourceFactory for one of the DataNodes.</li>
+	<li><span class="nobr"><a href="http://www.jgroups.org/" title="Visit page outside Confluence" rel="nofollow">JGroups<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 2.2.7 or newer. Needed if you plan to use remote notifications via JGroups transport.</li>
+	<li><span class="nobr"><a href="http://java.sun.com/products/jms/" title="Visit page outside Confluence" rel="nofollow">Java Messaging Service (JMS)<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>. Needed if you plan to use remote notifications via JMS transport.</li>
+	<li><span class="nobr"><a href="http://www.jdom.org/" title="Visit page outside Confluence" rel="nofollow">JDOM<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.0. Needed if you use <a href="../../../../Documentation/User Guide/DataViews/index.html" title="DataViews">DataViews</a>.</li>
+</ul>
+
+
+
+<h3><a name="JARFilesandDependencies-CayenneModelerTool"></a>CayenneModeler Tool</h3>
+
+<p>Java classes and resources used exclusively by CayenneModeler and not required by the runtime are located in [cayenne_install_dir]/lib/modeler/ directory:</p>
+
+<ul>
+	<li>cayenne-modeler.jar</li>
+	<li>scope-bin-1.0.1.jar</li>
+	<li>forms-1.0.3.jar</li>
+	<li>looks-1.3.1.jar</li>
+	<li>hsqldb-1.8.0.2.jar</li>
+	<li>ognl-2.6.7.jar</li>
+	<li>commons-dbcp-1.2.1.jar</li>
+	<li>commons-pool-1.2.jar</li>
+</ul>
+
+
+<p>cayenne-modeler.jar implicitly relies on the presence of [cayenne_install_dir]/lib/cayenne.jar. Instructions on how to start modeler can be found <a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/Running CayenneModeler/index.html" title="Running CayenneModeler">here</a>.</p>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 Apache Software Foundation
+  </div>
+
+</body>
+</html>

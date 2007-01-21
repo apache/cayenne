@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	<bean id="SI1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.SmallintTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into SMALLINT_TEST (ID, SMALLINT_COL) values (1, 9999)
+		</value></constructor-arg>
+	</bean>
+	<bean id="SI2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.SmallintTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into SMALLINT_TEST (ID, SMALLINT_COL) values (2, 3333)
+		</value></constructor-arg>
+	</bean>
+	<bean id="TI1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.TinyintTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into TINYINT_TEST (ID, TINYINT_COL) values (1, 81)
+		</value></constructor-arg>
+	</bean>
+	<bean id="TI2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.TinyintTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into TINYINT_TEST (ID, TINYINT_COL) values (2, 50)
+		</value></constructor-arg>
+	</bean>
+
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	<bean id="testShortInQualifier" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="SI1"/>
+				<ref bean="SI2"/>
+			</list>
+		</constructor-arg>
+	</bean>	
+	<bean id="testTinyintInQualifier" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="TI1"/>
+				<ref bean="TI2"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

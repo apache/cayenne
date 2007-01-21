@@ -1,0 +1,47 @@
+Apache Cayenne Upgrade Information
+==================================
+
+----------------------------------
+Release: 3.0-incubating-SNAPSHOT
+Date:
+----------------------------------
+
+UPGRADING FROM 2.0 AND OTHER APACHE RELEASES
+
+* Jar files:
+  - all jar files now include version numbers in their names.
+  - "cayenne-nodeps.jar" is renamed to "cayenne-server-x.x.x.jar" 
+  - "fat" cayenne.jar file that included dependencies is no longer distributed. 
+    All dependencies that it contained are included as separate jars under 
+    "cayenne-x.x.x/lib/third-party/". The new "cayenne-server-x.x.x.jar" plus 
+    dependencies should be used in place of cayenne.jar.
+  - A new "cayenne-agent-x.x.x.jar" is included. It is used for class enhancement 
+    with POJO's and JPA. "Classic" Cayenne users can ignore this file.
+    
+* Cross-platform Modeler Startup is now done without a batch file or a shell script. 
+  A "fat" CayenneModeler.jar is included in the "cayenne-x.x.x/bin" directory
+  and can be run either by double-clicking the jar (on platforms that support that)
+  or by running "java -jar CayenneModeler.jar".
+  
+
+UPGRADING FROM 1.2 AND OTHER OBJECTSTYLE RELEASES
+
+Since 2.0, Cayenne is an Apache project, so all "org.objectstyle.*" java packages 
+where renamed to "org.apache.*" analogues. Since 1.2.x and 2.0.x release lines maintain
+full compatibility with each other, differing only in package names, upgrading to 2.0.x
+can be a first step in a safe upgrade to the latest version of Cayenne.
+
+* Upgrading mapping files:
+
+To upgrade the mapping files, open them in the new Modeler. You should see an upgrade 
+dialog. Once you confirm the upgrade 
+
+* Upgrading the code:
+
+Replace "org.objectstyle." with "org.apache." everywhere in imports and do a clean 
+recompile.
+
+* Upgrading logging configuration
+
+If you are using custom logging configuration file, make sure that all the 
+Cayenne loggers are changed from "org.objectstyle" to "org.apache".

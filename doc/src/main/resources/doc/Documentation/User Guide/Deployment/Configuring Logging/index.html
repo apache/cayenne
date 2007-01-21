@@ -1,0 +1,135 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Configuring Logging</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Configuring Logging</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a><ul>
+<li><a href="../../../../Documentation/User Guide/Deployment/Standalone Applications/index.html">Standalone Applications</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/Web Applications/index.html">Web Applications</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/Customizing Configuration/index.html">Customizing Configuration</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/DBCPDataSourceFactory/index.html">DBCPDataSourceFactory</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/Using JNDI/index.html">Using JNDI</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/Deployment with Ant/index.html">Deployment with Ant</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/Configuring Logging/index.html">Configuring Logging</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Cayenne logging is based on Log4J package from Jakarta Apache Project. This is the most powerful and flexible logging framework available in Java. Log4J configuration is normally done using a property file. Later in this chapter we explain how Cayenne loads configuration files and how to customize this process. Format of the entries in this file is described in the Log4j documentation. Here is a sample configuration file contents:</p>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre># General Log4J stuff
+log4j.rootLogger=WARN, A1
+log4j.appender.A1=org.apache.log4j.ConsoleAppender
+log4j.appender.A1.layout=org.apache.log4j.PatternLayout
+log4j.appender.A1.layout.ConversionPattern=cayenne %-5p [%t %d{MM-dd HH:mm:ss}] %c{1}: %m%n
+
+# indiv. packages configuration - turning on the packages that we care about
+#log4j.logger.org.apache.cayenne = INFO
+
+# This is the logger that controls SQL output
+# Setting the level to INFO or DEBUG will turn the logs on
+log4j.logger.org.apache.cayenne.access.QueryLogger = INFO
+</pre>
+</div></div>
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Users of Other Logging Frameworks</b><br />If your application uses another package for its own logging purposes (like JDK 1.4 java.util.logging, or commons-logging from Jakarta), Cayenne Log4J-based logging will not interfere with your other logging configurations.</td></tr></table>
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='tipMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Log4J Users</b><br />If your application already uses Log4J, Cayenne will simply use your existing configuration.</td></tr></table>
+
+<h3><a name="ConfiguringLogging-EssentialLoggers"></a>Essential Loggers</h3>
+<p>SQL Tracing. Very important logging feature of Cayenne is tracing the execution of SQL statements. If configured appropriately, Cayenne will log opened connections, executed queries, and DDL statements. This is extremely important in understanding what is going on in the application, tracing bugs, etc. Logger that is responsible for SQL logging is "org.apache.cayenne.access.QueryLogger". Its default logging level is INFO, so the following lines in the configuration file will turn it on or off:</p>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre># Turn SQL tracing on
+log4j.logger.org.apache.cayenne.access.QueryLogger = INFO
+
+# Turn SQL tracing off, e.g. to increase performance
+log4j.logger.org.apache.cayenne.access.QueryLogger = WARN
+</pre>
+</div></div>
+
+<p>When SQL tracing is turned off, it is possible to log the execution of only certain queries or commits by manually increasing the logging level of just a specific query above the level configured for the QueryLogger. This is a very convenient feature for debugging the code, since it reduces the level of noise in the logs, focusing attention on the queries that are important. This API is discussed in the FAQ.</p>
+
+<p>Tracing Configuration Loading. Cayenne XML files may contain errors, or maybe missing or inaccessible by the application; there maybe lots of other reasons why Cayenne fails to startup, from missing JDBC drivers to misspelled database URLs. To trace configuration loading process, you will need to turn on the following loggers:</p>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>log4j.logger.org.apache.cayenne.conf = DEBUG
+log4j.logger.org.apache.cayenne.util = DEBUG
+</pre>
+</div></div>
+
+<h3><a name="ConfiguringLogging-DefaultConfiguration"></a>Default Configuration</h3>
+<p>Default behaviour of Cayenne is to look for a file called cayenne-log.properties, first in the directory $HOME/.cayenne/, then in the CLASSPATH (i.e. a file called .cayenne/cayenne-log.properties at the root of one of the locations accessible by the ClassLoader). $HOME is a system specific home directory of a user running the application. If you don't know what it is, try printing it from Java like this: System.out.println(System.getProperty("user.home")).</p>
+
+<p>If you don't explicitly create this file, Cayenne will use the one included in cayenne.jar (and therefore guaranteed to be in the CLASSPATH). This means - no special logging configuration is required, Cayenne will just work out of the box.</p>
+
+<h3><a name="ConfiguringLogging-CustomConfigurationFile"></a>Custom Configuration File</h3>
+<p>If you are not satisfied with the default location or default file name of the logging configuration, you can supply your own:</p>
+<div class="code"><div class="codeContent">
+<pre class="code-java"><span class="code-comment">// Obtain the URL of the custom configuration file
+</span>java.net.URL url = ....;
+
+<span class="code-comment">// configure cayenne logging
+</span><span class="code-comment">// note that URL can be <span class="code-keyword">null</span>, resulting in <span class="code-keyword">default</span> settings
+</span>org.apache.cayenne.conf.Configuration.configureCommonLogging(url);</pre>
+</div></div>
+<p>It is important to execute this code before any calls to Cayenne are made in the application, or otherwise it will have no effect on logging.</p>
+
+<h3><a name="ConfiguringLogging-ConfiguringLog4JoutsideofCayenne"></a>Configuring Log4J outside of Cayenne</h3>
+
+<p>Finally, if your application already uses Log4J and implements its own logic to configure logging, it would be undesirable for Cayenne to use its default behavior and override any application settings. Also it is convenient to use a single logging configuration file per application. Cayenne detects if Log4J has already been started and will stop any attempts to configure logging. This means that Log4J services must be configured prior to any calls to Cayenne. </p></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 Apache Software Foundation
+  </div>
+
+</body>
+</html>

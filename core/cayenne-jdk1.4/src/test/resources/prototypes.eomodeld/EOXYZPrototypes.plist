@@ -1,0 +1,84 @@
+{
+    attributes = (
+        {
+            allowsNull = Y; 
+            columnName = ""; 
+            externalType = BOOLEAN; 
+            name = boolPrototype; 
+            valueClassName = NSNumber; 
+            valueType = c; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = ""; 
+            externalType = DATE; 
+            name = datePrototype; 
+            valueClassName = NSCalendarDate; 
+            valueType = d; 
+        }, 
+        {
+            columnName = ""; 
+            externalType = INTEGER; 
+            name = idPrototype; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = ""; 
+            externalType = INTEGER; 
+            name = intPrototype; 
+            scale = 2; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = ""; 
+            externalType = DECIMAL; 
+            name = moneyPrototype; 
+            scale = 2; 
+            valueClassName = NSDecimalNumber; 
+            valueType = f; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = ""; 
+            externalType = DECIMAL; 
+            name = percentPrototype; 
+            scale = 2; 
+            valueClassName = NSDecimalNumber; 
+            valueType = f; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = ""; 
+            externalType = TIMESTAMP; 
+            name = timestampPrototype; 
+            valueClassName = NSCalendarDate; 
+            valueType = T; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = ""; 
+            externalType = VARCHAR; 
+            name = varcharPrototype; 
+            valueClassName = NSString; 
+            width = 1000; 
+        }
+    ); 
+    attributesUsedForLocking = (idPrototype); 
+    className = EOGenericRecord; 
+    classProperties = (
+        varcharPrototype, 
+        boolPrototype, 
+        moneyPrototype, 
+        percentPrototype, 
+        intPrototype, 
+        datePrototype, 
+        timestampPrototype
+    ); 
+    fetchSpecificationDictionary = {}; 
+    name = EOXYZPrototypes; 
+    primaryKeyAttributes = (idPrototype); 
+}

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	
+	<!-- SIMPLE_LOCKING_TEST -->
+	<bean id="SimpleLockDelete" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.locking.SimpleLockingTestEntity</value></constructor-arg>
+		<constructor-arg><value>delete from SIMPLE_LOCKING_TEST</value></constructor-arg>
+	</bean>
+	<bean id="SimpleLockInsert" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.locking.SimpleLockingTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into SIMPLE_LOCKING_TEST (LOCKING_TEST_ID, NAME, DESCRIPTION) values (1, 'LockTest1', null)
+		</value></constructor-arg>
+	</bean>
+	<bean id="SimpleLockInsertNull" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.locking.SimpleLockingTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into SIMPLE_LOCKING_TEST (LOCKING_TEST_ID, NAME, DESCRIPTION) values (1, null, null)
+		</value></constructor-arg>
+	</bean>
+	<bean id="SimpleLockInsert2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.locking.SimpleLockingTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into SIMPLE_LOCKING_TEST (LOCKING_TEST_ID, NAME, DESCRIPTION) values (2, 'LockTest2', null)
+		</value></constructor-arg>
+	</bean>
+	<bean id="SimpleLockInsert3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.locking.SimpleLockingTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into SIMPLE_LOCKING_TEST (LOCKING_TEST_ID, NAME, DESCRIPTION) values (3, 'LockTest3', 'Another Lock Test')
+		</value></constructor-arg>
+	</bean>
+	<bean id="SimpleLockUpdate" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.locking.SimpleLockingTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		update SIMPLE_LOCKING_TEST set NAME = 'LockTest1Updated' where LOCKING_TEST_ID = 1
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- REL_LOCKING_TEST -->
+	<bean id="LockHelperDelete" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.locking.LockingHelper</value></constructor-arg>
+		<constructor-arg><value>delete from LOCKING_HELPER</value></constructor-arg>
+	</bean>
+	<bean id="RelLockDelete" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.locking.RelLockingTestEntity</value></constructor-arg>
+		<constructor-arg><value>delete from REL_LOCKING_TEST</value></constructor-arg>
+	</bean>
+	<bean id="RelLockInsert" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.locking.SimpleLockingTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into REL_LOCKING_TEST (REL_LOCKING_TEST_ID, SIMPLE_LOCKING_TEST_ID, NAME) values (5, 1, 'Rel Test 1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="LockHelperInsert" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.locking.SimpleLockingTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into LOCKING_HELPER (LOCKING_HELPER_ID, REL_LOCKING_TEST_ID, NAME) values (1, 5, 'Locking Helper 1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="RelLockUpdate" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.locking.SimpleLockingTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		update REL_LOCKING_TEST set SIMPLE_LOCKING_TEST_ID = 1 where REL_LOCKING_TEST_ID = 5
+		</value></constructor-arg>
+	</bean>
+
+
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	<bean id="testSimpleLocking" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="LockHelperDelete"/>
+				<ref bean="RelLockDelete"/>
+				<ref bean="SimpleLockDelete"/>
+				<ref bean="SimpleLockInsert"/>
+			</list>
+		</constructor-arg>
+	</bean>	
+	
+	<bean id="testLockingOnNull" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="LockHelperDelete"/>
+				<ref bean="RelLockDelete"/>
+				<ref bean="SimpleLockDelete"/>
+				<ref bean="SimpleLockInsertNull"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testLockingOnMixed" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="LockHelperDelete"/>
+				<ref bean="RelLockDelete"/>
+				<ref bean="SimpleLockDelete"/>
+				<ref bean="SimpleLockInsertNull"/>
+				<ref bean="SimpleLockInsert2"/>
+				<ref bean="SimpleLockInsert3"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testLockingOnToOne" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="LockHelperDelete"/>
+				<ref bean="RelLockDelete"/>
+				<ref bean="SimpleLockDelete"/>
+				<ref bean="SimpleLockInsert"/>
+				<ref bean="RelLockInsert"/>
+				<ref bean="LockHelperInsert"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

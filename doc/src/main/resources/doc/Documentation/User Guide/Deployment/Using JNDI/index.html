@@ -1,0 +1,164 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Using JNDI</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Using JNDI</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a><ul>
+<li><a href="../../../../Documentation/User Guide/Deployment/Standalone Applications/index.html">Standalone Applications</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/Web Applications/index.html">Web Applications</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/Customizing Configuration/index.html">Customizing Configuration</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/DBCPDataSourceFactory/index.html">DBCPDataSourceFactory</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/Using JNDI/index.html">Using JNDI</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Deployment/Deployment with Ant/index.html">Deployment with Ant</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/Configuring Logging/index.html">Configuring Logging</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent">
+<p>Cayenne can be setup to obtain a DataSource via JNDI, instead of using its own connection pool. To do that Cayenne DataNodes must be configured to use <tt>JNDIDataSourceFactory</tt>. This can be done in the modeler as shown on the pictures below.</p>
+
+<p>1. Select JNDIDataSourceFactory:<br/>
+<img src="jndi-step1.jpg" align="absmiddle" border="0" /></p>
+
+
+<p>2. Enter DataSource JNDI Name:<br/>
+<img src="jndi-step2.jpg" align="absmiddle" border="0" /></p>
+
+
+<h3><a name="UsingJNDI-DevelopmentwithJNDIDataNodes"></a>Development with JNDI DataNodes</h3>
+
+<p>To be able to connect to the database from CayenneModeler when JNDIDataSourceFactory is specified (and thus no explicit connection information is associated with the DataNode), you may configure a "local DataSource" (see a corresponding <a href="../../../../Documentation/Modeler Guide/Preferences Panel/Local DataSources/index.html" title="Local DataSources">Modeler Guide chapter</a>).</p>
+
+<p>Cayenne also supports container-less runtime operation of the JNDI node. It works like this:</p>
+
+<ul>
+	<li>JNDIDataSourceFactory attempts to locate a DataSource via a default JNDI provider.</li>
+	<li>If the DataSource is not found, JNDIDataSourceFactory attempts to read local user preferences database, looking for a local DataSource matching the JNDI name.</li>
+	<li>If such DataSource is found, it is used in the application as if it was obtained via JNDI.</li>
+</ul>
+
+
+<p>This way Modeler preferences database works as a substitute of a JNDI provider, saving extra configuration steps in development mode, when an application may be run from the IDE. Requirements to use this feature:</p>
+
+<ul>
+	<li>The name of the local DataSource in the Modeler preferences must match the JNDI name of the DataNode.</li>
+	<li><tt>cayenne-modeler.jar</tt> and <tt>hsqldb-x.x.x.jar</tt> must be in the application runtime CLASSPATH.</li>
+</ul>
+
+
+
+<h3><a name="UsingJNDI-DeploymentinContainer"></a>Deployment in Container</h3>
+
+<p>Depending on how the DataSource is mapped in the container, you may optionally need to add a "resource-ref" entry to the <tt>web.xml</tt> file:</p>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>&lt;resource-ref&gt;
+   &lt;res-ref-name&gt;jdbc/myds&lt;/res-ref-name&gt;
+   &lt;res-type&gt;javax.sql.DataSource&lt;/res-type&gt;
+   &lt;res-auth&gt;Container&lt;/res-auth&gt;
+&lt;/resource-ref&gt;</pre>
+</div></div>
+
+<p>Below are sample DataSource configurations for Tomcat 5.5 and 5.0. The XML should be pasted into <tt>$CATALINA_HOME/conf/server.xml</tt> file between the <tt>&lt;Host&gt;...&lt;/Host&gt;</tt> tags. Of course the application name and database parameters should be replaced with the correct values for the target environment. </p>
+
+
+
+<h4><a name="UsingJNDI-Tomcat5.5Configuration"></a>Tomcat 5.5 Configuration</h4>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>&lt;Context path="/myapp" docBase="myapp"&gt;
+  &lt;Resource name="jdbc/myds" auth="Container"
+          type="javax.sql.DataSource" driverClassName="oracle.jdbc.driver.OracleDriver"
+          url="jdbc:oracle:thin:@127.0.0.1:1521:dbname"
+          username="userName" password="secret" maxActive="5" maxIdle="2"/&gt;
+&lt;/Context&gt;</pre>
+</div></div>
+
+<h4><a name="UsingJNDI-Tomcat5.0Configuration"></a>Tomcat 5.0 Configuration</h4>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>&lt;Context path="/myapp" docBase="myapp"&gt;
+   &lt;Resource name="jdbc/myds" auth="Container" type="javax.sql.DataSource"/&gt;
+   &lt;ResourceParams name="jdbc/myds"&gt;
+      &lt;parameter&gt;
+         &lt;name&gt;driverClassName&lt;/name&gt;
+         &lt;value&gt;oracle.jdbc.driver.OracleDriver&lt;/value&gt;
+      &lt;/parameter&gt;
+      &lt;parameter&gt;
+         &lt;name&gt;url&lt;/name&gt;
+         &lt;value&gt;jdbc:oracle:thin:@127.0.0.1:1521:dbname&lt;/value&gt;
+      &lt;/parameter&gt;
+      &lt;parameter&gt;
+         &lt;name&gt;username&lt;/name&gt;
+         &lt;value&gt;***&lt;/value&gt;
+      &lt;/parameter&gt;
+      &lt;parameter&gt;
+         &lt;name&gt;password&lt;/name&gt;
+         &lt;value&gt;****&lt;/value&gt;
+      &lt;/parameter&gt;
+      &lt;parameter&gt;
+         &lt;name&gt;maxActive&lt;/name&gt;
+         &lt;value&gt;20&lt;/value&gt;
+      &lt;/parameter&gt;
+      &lt;parameter&gt;
+         &lt;name&gt;maxIdle&lt;/name&gt;
+         &lt;value&gt;10&lt;/value&gt;
+      &lt;/parameter&gt;
+   &lt;/ResourceParams&gt;
+&lt;/Context&gt;</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 Apache Software Foundation
+  </div>
+
+</body>
+</html>

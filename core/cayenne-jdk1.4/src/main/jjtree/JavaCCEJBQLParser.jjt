@@ -1,0 +1,828 @@
+options {
+	MULTI = true;
+	NODE_DEFAULT_VOID = true;
+	STATIC = false;
+	DEBUG_PARSER = false;
+	DEBUG_LOOKAHEAD = false;
+	DEBUG_TOKEN_MANAGER = false;
+	JAVA_UNICODE_ESCAPE = true;
+	UNICODE_INPUT = true;
+	NODE_PREFIX = "EJBQL";
+	NODE_FACTORY = false;
+	VISITOR = true;
+}
+
+PARSER_BEGIN(JavaCCEJBQLParser)
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+
+package org.apache.cayenne.ejbql;
+
+import java.io.*;
+import java.util.*;
+import java.math.*;
+
+/**
+ * Parser of EJBQL syntax.  
+ *
+ * @since 3.0
+ */ 
+public class JavaCCEJBQLParser {
+    
+}
+PARSER_END(JavaCCEJBQLParser)
+
+// ======================================================
+// TOKENS
+// ======================================================
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+/* keywords */
+TOKEN :
+{
+  < ALL: "ALL" >
+| < AND: "AND" >
+| < ANY: "ANY" >
+| < AS: "AS" >
+| < ASC: "ASC" >
+| < AVG: "AVG" >
+| < BETWEEN: "BETWEEN" >
+| < BIT_LENGTH: "BIT_LENGTH" >
+| < BY: "BY" >
+| < CHARACTER_LENGTH: "CHARACTER_LENGTH" >
+| < CHAR_LENGTH: "CHAR_LENGTH" >
+| < COUNT: "COUNT" >
+| < CURRENT_DATE: "CURRENT_DATE" >
+| < CURRENT_TIME: "CURRENT_TIME" >
+| < CURRENT_TIMESTAMP: "CURRENT_TIMESTAMP" >
+| < DELETE: "DELETE" >
+| < DESC: "DESC" >
+| < DISTINCT: "DISTINCT" >
+| < EMPTY: "EMPTY" >
+| < EXISTS: "EXISTS" >
+| < FALSE: "FASLE" >
+| < FETCH: "FETCH" >
+| < FROM: "FROM" >
+| < GROUP: "GROUP" >
+| < HAVING: "HAVING" >
+| < IN: "IN" >
+| < INNER: "INNER" >
+| < IS: "IS" >
+| < JOIN: "JOIN" >
+| < LEFT: "LEFT" >
+| < LIKE: "LIKE" >
+| < LOWER: "LOWER" > 
+| < MAX: "MAX" >
+| < MEMBER: "MEMBER" >
+| < MIN: "MIN" >
+| < MOD: "MOD" >
+| < NEW: "NEW" >
+| < NOT: "NOT" >
+| < NULL: "NULL" >
+| < OBJECT: "OBJECT" >
+| < OF: "OF" >
+| < ORDER: "ORDER" >
+| < OR: "OR" >
+| < OUTER: "OUTER" > 
+| < POSITION: "POSITION" >
+| < SELECT: "SELECT" >
+| < SET: "SET" >
+| < SOME: "SOME" >
+| < SUM: "SUM" >
+| < TRIM: "TRIM" >
+| < TRUE: "TRUE" >
+| < WHERE: "WHERE" >
+| < UNKNOWN: "UNKNOWN" >
+| < UPDATE: "UPDATE" >
+| < UPPER: "UPPER" >
+}
+
+TOKEN :
+{
+  < TRIM_SPEC: "LEADING" | "TRAILING" | "BOTH" (~["\n","\r"])? >
+| < ESCAPE_SPEC: "ESCAPE" (~["\n","\r"])? >
+| < PROPERTY_PATH: <IDENTIFIER> ( "." <IDENTIFIER>) *>
+| < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+| < #LETTER: ["_","$","a"-"z","A"-"Z"] >
+| < #DIGIT: ["0"-"9"] >
+| < DECIMAL_DIGITS: (["0"-"9"])+ >
+}
+
+MORE:
+{
+    "'"  { stringBuffer = new StringBuffer(); }: WithinSingleQuoteLiteral
+}
+
+<WithinSingleQuoteLiteral> MORE:
+{
+	< ESC: "\\" ( ["n","r","t","b","f","\\","'","`","\""]
+                | (["0"-"3"])? ["0"-"7"] (["0"-"7"])?
+                )
+    >
+        { stringBuffer.append( escapeChar() ); }
+ |
+    < (~["'","\\"]) >
+        { stringBuffer.append( image.charAt(image.length()-1) ); }
+}
+
+<WithinSingleQuoteLiteral> TOKEN :
+{
+    <SINGLE_QUOTED_STRING: "'">
+        : DEFAULT
+}
+
+// ======================================================
+// GRAMMAR
+// ======================================================
+
+
+QLStatement qlStatement() : {}
+{
+    ( selectStatement() #SelectStatement
+    | updateStatement()
+    | deleteStatement()
+    ) <EOF>
+
+    { return (QLStatement) jjtree.rootNode(); }
+}
+
+void selectStatement() : {} 
+{
+   selectClause()
+   fromClause()
+   [ whereClause() ]
+   [ groupByClause() ]
+   [ havingClause() ]
+   [ orderByClause() ]
+}
+
+void updateStatement() : {} 
+{
+   updateClause()
+   [ whereClause() ]
+}
+
+void deleteStatement() : {} 
+{
+   deleteClause()
+   [ whereClause() ]
+}
+
+void fromClause() : {} 
+{
+   <FROM> 
+   identificationVariableDeclaration()
+   ( "," 
+     ( identificationVariableDeclaration()
+     | collectionMemberDeclaration()
+     ) 
+   )*
+}
+
+void identificationVariableDeclaration() : {}
+{
+   rangeVariableDeclaration()
+   ( LOOKAHEAD(3) 
+     join()
+   | fetchJoin()
+   )*
+}
+
+void rangeVariableDeclaration() : {}
+{
+   abstractSchemaName()
+   [<AS>]
+   identificationVariable()
+}
+
+void join() : {}
+{
+   joinSpec()
+   joinAssociationPathExpression()
+   [<AS>]
+   identificationVariable()
+}
+
+void fetchJoin() : {}
+{
+   joinSpec()
+   <FETCH>
+   joinAssociationPathExpression()
+}
+
+void associationPathExpression() : {}
+{
+  // **** SPEC NOTE: defined as 
+  //    collection_valued_path_expression | single_valued_association_path_expression 
+  
+  <PROPERTY_PATH>
+}
+
+void joinSpec() : {}
+{
+   [ 
+      ( <LEFT> [ <OUTER> ] )
+      | <INNER>
+   ]
+   <JOIN>
+}
+
+void joinAssociationPathExpression() : {}
+{
+   identificationVariable()
+   "."
+   <IDENTIFIER> 
+   // **** SPEC NOTE: defined as "join_collection_valued_path_expression | join_single_valued_association_path_expression"
+}
+
+void collectionMemberDeclaration() : {}
+{
+   <IN> "("
+   <PROPERTY_PATH> // **** SPEC NOTE: defined as "colection_valued_path_expression"
+   ")"
+   [ <AS> ] 
+   identificationVariable()
+}
+
+void updateClause() : {}
+{
+  <UPDATE> 
+  abstractSchemaName()
+  [ [ <AS> ]
+     identificationVariable()
+  ]
+  <SET>
+  updateItem()
+  ( ","
+     updateItem()
+  )* 
+}
+
+void updateItem() : {}
+{
+   
+   [ LOOKAHEAD(2) identificationVariable()
+     "."
+   ]
+   <IDENTIFIER> // **** SPEC NOTE: defined as "{state_field | single_valued_association_field}"
+   "="
+   newValue()
+}
+
+void newValue() : {}
+{
+     simpleArithmeticExpression()
+   | stringLiteral()
+   | functionsReturningDatetime()
+   | aggregateExpression()
+   | booleanLiteral()
+   | inputParameter()
+   | enumLiteral()
+   | <NULL>
+}
+
+void deleteClause() : {}
+{
+  <DELETE> <FROM> 
+  abstractSchemaName()
+  [ [ <AS> ]
+     identificationVariable()
+  ]
+}
+
+void selectClause() : {} 
+{
+   <SELECT>
+   [ <DISTINCT> ]
+   selectExpression()
+   ( ","
+     selectExpression()
+   )* 
+}
+
+void selectExpression() : {}
+{
+     <PROPERTY_PATH> // **** SPEC NOTE: defined as "single_valued_path_expression | identification_variable"	
+   | aggregateExpression()
+   | ( "OBJECT" "(" 
+     identificationVariable()
+     ")" 
+     )
+   | constructorExpression() 
+}
+
+void constructorExpression() : {}
+{
+  "NEW" 
+  constructorName()
+  "("
+  constructorItem()
+  ( ","
+    constructorItem()
+  )*
+  ")"
+}
+
+void constructorItem() : {}
+{
+     <PROPERTY_PATH> // **** SPEC NOTE: defined as "single_valued_path_expression"
+   | aggregateExpression()
+}
+
+void aggregateExpression() : {}
+{
+   (
+     ( "AVG"
+     | "MAX"
+     | "MIN"
+     | "SUM"
+     )
+     "("
+      [ "DISTINCT" ] 
+      <PROPERTY_PATH> // **** SPEC NOTE: defined as "state_field_path_expression"
+      ")"
+   )
+   | ( 
+     "COUNT"
+     "("
+        [ "DISTINCT" ] 
+        <PROPERTY_PATH> // **** SPEC NOTE: defined as "identificationVariable() | stateFieldPathExpression() | singleValuedAssociationPathExpression()"
+      ")"
+   ) 
+  <PROPERTY_PATH> // **** SPEC NOTE: defined as "single_valued_path_expression"	
+}
+
+void whereClause() : {} 
+{
+   <WHERE>
+   conditionalExpression() 
+}
+
+void groupByClause() : {} 
+{
+   <GROUP> <BY>
+   groupByItem()
+   ( ","
+     groupByItem()
+   )*
+}
+
+void groupByItem() : {}
+{
+   <PROPERTY_PATH> // **** SPEC NOTE: defined as "single_valued_path_expression | identification_variable"	
+}
+
+void havingClause() : {} 
+{
+   <HAVING> // conditionalExpression()
+}
+
+void orderByClause() : {} 
+{
+   <ORDER> <BY>
+   orderByItem()
+   ( ","
+     orderByItem()
+   )*
+}
+
+void orderByItem() : {}
+{
+   <PROPERTY_PATH> // **** SPEC NOTE: defined as "state_field_path_expression"	
+   ( "ASC" | "DESC" )
+}
+
+void subquery() : {}
+{
+   simpleSelectClause()
+   subqueryFromClause()
+   [ whereClause() ]
+   [ LOOKAHEAD(2) groupByClause() ]
+   [ LOOKAHEAD(2) havingClause() ]
+}
+
+void subqueryFromClause() : {}
+{
+   <FROM> 
+   subselectIdentificationVariableDeclaration()
+   ( "," subselectIdentificationVariableDeclaration() 
+   )*
+}
+
+void subselectIdentificationVariableDeclaration() : {}
+{
+     identificationVariableDeclaration()
+   | ( associationPathExpression() 
+       [ <AS> ]
+       identificationVariable()
+     )
+   | collectionMemberDeclaration()
+}
+
+void simpleSelectClause() : {}
+{
+   <SELECT> 
+   [ <DISTINCT> ]
+   simpleSelectExpression()
+}
+
+void simpleSelectExpression() : {}
+{
+     <PROPERTY_PATH> // **** SPEC NOTE: defined as "single_valued_path_expression | identification_variable"	
+   | aggregateExpression()
+}
+
+void conditionalExpression() : {}
+{
+     conditionalTerm()
+     ( LOOKAHEAD(2) <OR> 
+       conditionalTerm()
+     )*
+}
+
+void conditionalTerm() : {}
+{
+     conditionalFactor()
+     ( LOOKAHEAD(2)  <AND> 
+       conditionalFactor()
+     )*
+}
+
+void conditionalFactor() : {}
+{
+   [ <NOT> ]
+   conditionalPrimary()
+}
+
+void conditionalPrimary() : {}
+{
+     simpleCondExpression() 
+   | ( "(" 
+       conditionalExpression() 
+       ")" 
+     )
+}
+
+void simpleCondExpression() : {}
+{
+     LOOKAHEAD(3) comparisonExpression()
+   | LOOKAHEAD(3) betweenExpression()
+   | LOOKAHEAD(3) likeExpression()
+   | LOOKAHEAD(3) inExpression()
+   | nullComparisonExpression() 
+   | emptyCollectionComparisonExpression()
+   | collectionMemberExpression()
+   | existsExpression()
+}
+
+void betweenExpression() : {}
+{
+	( LOOKAHEAD(2) arithmeticPrimary()
+	| stringLiteral()
+	| functionsReturningDatetime()
+	| ( "(" subquery() ")" )
+	)
+	   
+    [ "NOT" ] "BETWEEN"
+       
+    ( LOOKAHEAD(2) arithmeticPrimary()
+	| stringLiteral()
+	| functionsReturningDatetime()
+	| ( "(" subquery() ")" )
+	)
+	
+    "AND" 
+       
+    ( LOOKAHEAD(2) arithmeticPrimary()
+	| stringLiteral()
+	| functionsReturningDatetime()
+	| ( "(" subquery() ")" )
+	)
+}
+
+void inExpression() : {}
+{
+   <PROPERTY_PATH> // **** SPEC NOTE: defined as "state_field_path_expression"	
+   [ "NOT" ]
+   "IN"
+   "("
+   ( inItem() 
+     ( "," 
+       inItem()
+     )*
+   )
+   | subquery()
+   ")"
+}
+
+void inItem() : {}
+{
+     literal()
+   | inputParameter()
+}
+
+void likeExpression() : {}
+{
+   ( stringPrimary() 
+   | ( "(" subquery() ")" )
+   )
+   
+   [ <NOT> ]
+   <LIKE>
+   patternValue()
+   [ <ESCAPE_SPEC>]
+}
+
+void nullComparisonExpression() : {}
+{
+     <PROPERTY_PATH> // **** SPEC NOTE: defined as "single_valued_path_expression"	
+   | inputParameter()
+   "IS"
+   [ "NOT" ]
+   "NULL"
+}
+
+void emptyCollectionComparisonExpression() : {}
+{
+  <PROPERTY_PATH> // **** SPEC NOTE: defined as "collection_valued_path_expression"	
+  "IS"
+  [ "NOT" ]
+  "EMPTY"
+}
+
+void collectionMemberExpression() : {}
+{
+   <PROPERTY_PATH> // **** SPEC NOTE: defined as "entity_expression"	
+   [ "NOT" ]
+   "MEMBER"
+   [ "OF" ]
+   <PROPERTY_PATH> // **** SPEC NOTE: defined as "collection_valued_path_expression"	
+}
+
+void existsExpression() : {}
+{
+   [ <NOT> ] 
+   <EXISTS>
+   subquery()
+}
+
+void allOrAnyExpression() : {}
+{
+   ( <ALL>
+   | <ANY>
+   | <SOME>
+   )
+   "("
+   subquery()
+   ")"
+}
+
+void comparisonExpression() : {}
+{
+   // must enforce comparison type rules in the code - it is impossible to do it in the parser.
+   
+   ( stringLiteral()
+   | booleanLiteral()
+   | functionsReturningDatetime()
+   | LOOKAHEAD(2) simpleArithmeticExpression()
+   | LOOKAHEAD(2) ( "(" subquery() ")" )
+   )
+   
+   comparisonOperator()
+   
+   ( stringLiteral()
+   | booleanLiteral()
+   | functionsReturningDatetime()
+   | LOOKAHEAD(2) simpleArithmeticExpression()
+   | LOOKAHEAD(2) ( "(" subquery() ")" )
+   | allOrAnyExpression()
+   )
+}
+
+void comparisonOperator() : {}
+{
+     "="
+   | ">"
+   | ">="
+   | "<"
+   | "<="
+   | "<>"
+}
+
+void simpleArithmeticExpression() : {}
+{
+      arithmeticTerm()
+      (
+        ( "+"
+        | "-"
+        )
+        arithmeticTerm()
+      )*
+}
+
+void arithmeticTerm() : {}
+{
+     arithmeticFactor() 
+   | ( 
+        ( "*"
+        | "/"
+        )
+        arithmeticFactor()
+     )*
+}
+
+void arithmeticFactor() : {}
+{
+   [ ( "+"
+     | "-"
+     )
+   ]  
+   arithmeticPrimary()
+}
+
+void arithmeticPrimary() : {}
+{
+     <PROPERTY_PATH> // **** SPEC NOTE: defined as "state_field_path_expression"	
+   | numericLiteral()
+   | ( "("
+       simpleArithmeticExpression()
+       ")"
+     )
+   | inputParameter()
+   | functionsReturningNumerics()
+   | aggregateExpression()
+}
+
+void stringPrimary() : {}
+{
+     <PROPERTY_PATH> // **** SPEC NOTE: defined as "state_field_path_expression"	
+   | stringLiteral()
+   | inputParameter()
+   | functionsReturningStrings()
+   | aggregateExpression()
+}
+
+void functionsReturningNumerics() : {}
+{
+     ( "LENGTH(" 
+       stringPrimary()
+       ")"
+     )
+   | ( "LOCATE("
+       stringPrimary()
+       ","
+       stringPrimary()
+       [ "," 
+         simpleArithmeticExpression()
+       ]
+       ")"
+     )
+   | ( "ABS("
+       simpleArithmeticExpression()
+       ")"
+     )
+   | ( "SQRT("
+       simpleArithmeticExpression()
+       ")"
+     )
+   | ( "MOD("
+       simpleArithmeticExpression()
+       ","
+       simpleArithmeticExpression()
+       ")"
+     )
+   | ( "SIZE("
+       <PROPERTY_PATH> // **** SPEC NOTE: defined as "collection_valued_path_expression"
+       ")"
+     )
+}
+
+void functionsReturningDatetime() : {}
+{
+     "CURRENT_DATE"
+   | "CURRENT_TIME"
+   | "CURRENT_TIMESTAMP"
+}
+
+void functionsReturningStrings() : {}
+{
+     ( "CONCAT("
+       stringPrimary()
+       ","
+       stringPrimary()
+       ")"
+     )
+   | ( "SUBSTRING("
+       stringPrimary()
+       ","
+       simpleArithmeticExpression()
+       ","
+       simpleArithmeticExpression()
+       ")"
+     )
+   | ( <TRIM> "("
+       [
+         [ trimSpecification() ]
+         <FROM>
+       ] 
+       stringPrimary()
+       ")"
+     )
+   | ( "LOWER("
+       stringPrimary()
+       ")"
+     )
+   | ( "UPPER("
+       stringPrimary()
+       ")"
+     )
+}
+
+void trimSpecification() : {}
+{
+   <TRIM_SPEC>
+}
+
+void abstractSchemaName() : {}
+{
+   <IDENTIFIER>
+}
+
+void identificationVariable() : {}
+{
+   <IDENTIFIER>
+}
+
+void inputParameter() : {}
+{
+     ( ":" 
+       <IDENTIFIER>
+     )
+  |  ( "?" 
+       <DECIMAL_DIGITS>
+     )
+}
+
+void literal() : {}
+{
+     stringLiteral()
+   | enumLiteral()
+   | numericLiteral()
+   | booleanLiteral()
+}
+
+void stringLiteral() : {}
+{
+   <SINGLE_QUOTED_STRING>
+}
+
+void numericLiteral() : {}
+{
+   // TODO
+   <DECIMAL_DIGITS>
+}
+
+void enumLiteral() : {}
+{
+   <PROPERTY_PATH>
+}
+
+void booleanLiteral() : {}
+{
+     <TRUE> 
+   | <FALSE>
+}
+
+void constructorName() : {}
+{
+   <IDENTIFIER>
+}
+
+void patternValue() : {}
+{
+   stringLiteral()
+}

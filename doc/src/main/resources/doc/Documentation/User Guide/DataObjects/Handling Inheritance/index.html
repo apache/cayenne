@@ -1,0 +1,159 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Handling Inheritance</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Handling Inheritance</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a><ul>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Accessing PK and FK values/index.html">Accessing PK and FK values</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Relationships/index.html">Relationships</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Flattened Relationships/index.html">Flattened Relationships</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/DataObjects Example/index.html">DataObjects Example</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/DataObjectUtils/index.html">DataObjectUtils</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/DataObject Validation/index.html">DataObject Validation</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Handling Inheritance/index.html">Handling Inheritance</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Deleting Objects/index.html">Deleting Objects</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Generic Persistent Class/index.html">Generic Persistent Class</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent">
+<p>"Inheritance" is an Object Oriented concept absent in traditional RDBMS. Cayenne however allows to map a hierarchical class tree to a single base table (so called "single table inheritance"). Such mapping is described in detail in the <a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Modeling Inheritance/index.html" title="Modeling Inheritance">Modeler Guide</a>. The idea of single table inheritance is that a "class" of a database row is determined from the values in one or more columns of the base table. These columns are called "class designator columns".</p>
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Initial Values of the Classs Designator Columns</b><br />Assigning correct values to the "class designator columns" mentioned above is one task that is not yet automated in Cayenne and requires user code in the DataObject, as discussed in the next subsection. In the future versions this will likely be handled in the mapping and completely outside of the Java classes, so the advise below will become obsolete.</td></tr></table>
+
+<h3><a name="HandlingInheritance-InheritanceandnewDataObjects"></a>Inheritance and new DataObjects</h3>
+<p>Consider the following class hierarchy (also used in the Modeler Guide example):<br/>
+<img src="inheritance-diagram.jpg" align="absmiddle" border="0" /></p>
+
+<p>If a class designator column is "PERSON_TYPE", AbstractPerson class should define an attribute (for instance called "personType") that maps to PERSON_TYPE. This attribute is redundant and meanigless in Java, since person type is defined already by the Java class of the object, however we still have to keep it around so that when the new objects are saved, correct PERSON_TYPE data is stored in the database. Currently it is a developer responsibility to set "personType" value (or values of any other attributes that map to "class designator columns") when the new object is registered with DataContext. One way to take care of this is to override "setPersistenceState(..)" method on each DataObject class in the inheritance hierarchy to catch when the object is registered with DataContext:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java"><span class="code-keyword">public</span> class Employee <span class="code-keyword">extends</span> _Employee {
+    <span class="code-keyword">public</span> void setPersistenceState(<span class="code-object">int</span> state) {
+        <span class="code-keyword">super</span>.setPersistenceState(state);
+        
+        <span class="code-comment">// <span class="code-keyword">if</span> object was just created
+</span>        <span class="code-keyword">if</span>(state == PersistenceState.NEW) {
+           setPersonType(<span class="code-quote">"EMPLOYEE"</span>);
+        }
+    }
+...
+}
+
+<span class="code-keyword">public</span> class Manager <span class="code-keyword">extends</span> _Manager {
+    <span class="code-keyword">public</span> void setPersistenceState(<span class="code-object">int</span> state) {
+        <span class="code-keyword">super</span>.setPersistenceState(state);
+        
+        <span class="code-comment">// <span class="code-keyword">if</span> object was just created
+</span>        <span class="code-keyword">if</span>(state == PersistenceState.NEW) {
+           setPersonType(<span class="code-quote">"MANAGER"</span>);
+        }
+    }
+...
+}
+
+<span class="code-keyword">public</span> class CustomerContact <span class="code-keyword">extends</span> _CustomerContact {
+    <span class="code-keyword">public</span> void setPersistenceState(<span class="code-object">int</span> state) {
+        <span class="code-keyword">super</span>.setPersistenceState(state);
+        
+        <span class="code-comment">// <span class="code-keyword">if</span> object was just created
+</span>        <span class="code-keyword">if</span>(state == PersistenceState.NEW) {
+           setPersonType(<span class="code-quote">"CUSTOMER"</span>);
+        }
+    }
+...
+}</pre>
+</div></div>
+
+<h3><a name="HandlingInheritance-InheritanceandSelectQueries"></a>Inheritance and SelectQueries</h3>
+<p>When performing SelectQuery on a table that maps to inheritance hierarchy, Cayenne will only return rows that belong to root class of the query and all its subclasses. No superclasses or objects from parallel inheritance branches will be returned. For example executing a SelectQuery with Employee class as root will potentially return a mix of Employees and Managers (who are also Employees of course), but no CustomerContact objects:</p>
+<div class="code"><div class="codeContent">
+<pre class="code-java">DataContext context;
+...
+SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Employee.class);
+List employees = context.performQuery(query);
+ 
+<span class="code-comment">// employees list will contain <span class="code-quote">"regular"</span> employees and managers
+</span>Iterator it = employees.iterator();
+<span class="code-keyword">while</span>(it.hasNext()) {
+   Employee e = (Employee) it.next();
+   <span class="code-keyword">if</span>(e <span class="code-keyword">instanceof</span> Manager) {
+   	<span class="code-comment">// <span class="code-keyword">do</span> something with manager...
+</span>   }
+}</pre>
+</div></div>
+
+<p>The need to determine the correct class for each fetched database row makes queries on entities that use inheritance less efficient than the regular queries. If an application doesn't care about the query root class subclasses, the query can be optimized by explicitly turning off inheritance resolution. If this is done, the example above will return all Managers as instances of Employee class, not Manager class:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">DataContext context;
+...
+SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Employee.class);
+ 
+<span class="code-comment">// *** explicitly turn off inheritance resolution
+</span>query.setResolvingInherited(<span class="code-keyword">false</span>);
+ 
+List employees = context.performQuery(query);
+ 
+<span class="code-comment">// employees list will contain no Manager instances...
+</span><span class="code-comment">// all Managers will be returned as regular Employees</span></pre>
+</div></div>
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Whenever an object is obtained via a relationship, it is always fully resolved to the lowest possible subclass in an entity inheritance tree.</td></tr></table>
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='warningMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Use <tt>setResolvingInherited(false)</tt> with caution, and only if you never plan to work with subclasses. The downside of it is that the DataContext may end up with two objects pointing to the same database row, thus violating uniquing principle. With the above example, this may happen if at a later time user decides to fetch Managers directly, or if a Manager object is obtained via a relationship.</td></tr></table></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 Apache Software Foundation
+  </div>
+
+</body>
+</html>

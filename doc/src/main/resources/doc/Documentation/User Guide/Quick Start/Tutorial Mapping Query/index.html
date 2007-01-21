@@ -1,0 +1,140 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Tutorial Mapping Query</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Tutorial Mapping Query</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a><ul>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Setup/index.html">Tutorial Setup</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Starting Mapping Project/index.html">Tutorial Starting Mapping Project</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Object Relational Mapping/index.html">Tutorial Object Relational Mapping</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Generate Database and Java Classes/index.html">Tutorial Generate Database and Java Classes</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial DataContext/index.html">Tutorial DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial DataObjects/index.html">Tutorial DataObjects</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Mapping Query/index.html">Tutorial Mapping Query</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial SelectQuery/index.html">Tutorial SelectQuery</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Delete/index.html">Tutorial Delete</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/Tutorial Webapp/index.html">Tutorial Webapp</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent">
+<p>Now that we've got a feel of how <a href="../../../../Documentation/User Guide/Quick Start/Tutorial DataContext/index.html" title="Tutorial DataContext">DataContext works</a> and how to <a href="../../../../Documentation/User Guide/Quick Start/Tutorial DataObjects/index.html" title="Tutorial DataObjects">create and save objects</a>, let's take a small diversion and implement a piece of code that will delete all data from the database every time the tutorial application is started. We'll learn how to map a raw SQL query with parameters using the modeler and then execute it in the code.</p>
+
+<ul>
+	<li>Open CayenneModeler, go to <tt>"File &gt; Recent Files"</tt> and choose the tutorial mapping file.</li>
+	<li>When the project opens, select the DataMap, and click on "Create Query" button (or select "<tt>Project &gt; Create Query</tt>" from the menu).</li>
+	<li>For the query type select "Raw SQL" and click "Create".</li>
+	<li>For "Query Name" enter "DeleteAll" - this will be the key used to reference query later in the code:</li>
+</ul>
+
+
+<p><img src="sql-template.jpg" align="absmiddle" border="0" /></p>
+
+<p>Ignore "Select Properties" settings as the query will not select anything. Rather it will delete all rows from the table with name specified as a parameter.  </p>
+
+<ul>
+	<li>Go to "SQL Scripts" tab and enter the following in the right panel:</li>
+</ul>
+
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>delete from $table</pre>
+</div></div>
+
+<p>Note that "$table" is a variable that will be dynamically substituted by Cayenne in runtime with the table name. (Detailed discussion of SQLTemplate scripting options is provided <a href="../../../../Documentation/User Guide/Queries/Scripting SQLTemplate/index.html" title="Scripting SQLTemplate">here</a>).</p>
+
+<ul>
+	<li>Query mapping is complete. Save the project in the Modeler and go back to Eclipse.</li>
+	<li>In Eclipse, refresh the mapping by right-clicking on cayenne-tutorial project and selecting "Refresh".</li>
+	<li>Now add the following code inserting it after the DataContext creation line and before any other code:</li>
+</ul>
+
+
+<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<pre class="code-java">QueryChain chain = <span class="code-keyword">new</span> QueryChain();
+chain.addQuery(<span class="code-keyword">new</span> NamedQuery(<span class="code-quote">"DeleteAll"</span>, Collections.singletonMap(
+                <span class="code-quote">"table"</span>,
+                <span class="code-quote">"PAINTING"</span>)));
+chain.addQuery(<span class="code-keyword">new</span> NamedQuery(<span class="code-quote">"DeleteAll"</span>, Collections.singletonMap(
+                <span class="code-quote">"table"</span>,
+                <span class="code-quote">"ARTIST"</span>)));
+chain.addQuery(<span class="code-keyword">new</span> NamedQuery(<span class="code-quote">"DeleteAll"</span>, Collections.singletonMap(
+                <span class="code-quote">"table"</span>,
+                <span class="code-quote">"GALLERY"</span>)));
+
+context.performGenericQuery(chain);</pre>
+</div></div>
+
+<p>Note that since we need to run the same query three times with different sets of parameters, first we created a <tt><a href="../../../../Documentation/User Guide/Queries/QueryChain/index.html" title="QueryChain">QueryChain</a></tt> that can hold other queries. Then we added three <tt><a href="../../../../Documentation/User Guide/Queries/NamedQuery/index.html" title="NamedQuery">NamedQueries</a></tt> (the order is important - painting has to be deleted before artist or gallery due to the foreign key constraints). NamedQuery is a query that is a reference to another query mapped via CayenneModeler (in this case - a query called "DeleteAll" that we mapped above).</p>
+
+<p>Now we can re-run the application and see the following output in the beginning of the log:</p>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>INFO  QueryLogger: delete from PAINTING
+INFO  QueryLogger: === updated 2 rows.
+INFO  QueryLogger: delete from ARTIST
+INFO  QueryLogger: === updated 1 row.
+INFO  QueryLogger: delete from GALLERY
+INFO  QueryLogger: === updated 1 row.</pre>
+</div></div>
+
+<p>Note that raw sql queries above (aka <a href="../../../../Documentation/User Guide/Queries/SQLTemplate Query/index.html" title="SQLTemplate Query">SQLTemplates</a>) are run directly against the database bypassing Cayenne object layer. If instead of bulk delete you needed to delete individual objects, you should do so using <tt>DataContext.deleteObject(..)</tt> as discussed <a href="../../../../Documentation/User Guide/Quick Start/Tutorial Delete/index.html" title="Tutorial Delete">here</a>.</p>
+
+<hr />
+<p><b>Next Step: <a href="../../../../Documentation/User Guide/Quick Start/Tutorial SelectQuery/index.html" title="Tutorial SelectQuery">Tutorial SelectQuery</a></b></p>
+<hr /></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 Apache Software Foundation
+  </div>
+
+</body>
+</html>

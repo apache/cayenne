@@ -1,0 +1,116 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - RefreshQuery</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">RefreshQuery</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a><ul>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/RefreshQuery/index.html">RefreshQuery</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="RefreshQuery-Motivation"></a>Motivation</h2>
+
+<p>There is a need for a simple to use cache management mechanism that handles both individual objects and cached query results, transparently interacting with multi-level caches that exist in Cayenne. Currently there are a number of solutions that are not unified and are hard to comprehend:</p>
+
+<ul>
+	<li><tt>DataContext.invalidateObjects(Collection)</tt> (btw, missing from the ObjectContext interface).</li>
+	<li>QueryMetadata.LOCAL_CACHE_REFRESH and SHARED_CACHE_REFRESH</li>
+	<li>3.0 adds <tt>InvalidateListCacheQuery</tt> that can invalidate list cache results recursively but doesn't deal with objects.</li>
+</ul>
+
+
+<h2><a name="RefreshQuery-UseCases"></a>Use Cases</h2>
+
+<h3><a name="RefreshQuery-Refreshacollectionofobjects"></a>Refresh a collection of objects</h3>
+
+<p>Internally Cayenne will remove those objects from caches. All object relationships should be invalidated as well. No query results are affected, but objects in those result lists should get invalidated. </p>
+
+<p><em>Limitation: shared list cache stores all results as DataRows and doesn't use uniquing ... so such refresh would fail to invalidate ids stored in the shared cache; possible solution - store ObjectIds in the shared cache instead of full DataRows and resolve them on the fly.</em></p>
+
+<h3><a name="RefreshQuery-Refreshasingleobject"></a>Refresh a single object</h3>
+
+<p>A special case of refresh collection of objects. Should probably use the same logic.</p>
+
+<h3><a name="RefreshQuery-Refreshresultsofaquery"></a>Refresh results of a query</h3>
+
+<p>Query lists are removed from caches. Since any objects matched by query need to be refreshed as well, the query is executed eagerly.</p>
+
+<h3><a name="RefreshQuery-Refreshresultsofagroupofqueriesidentifiedbyoneormorecachegroupnames."></a>Refresh results of a group of queries identified by one or more cache group names.</h3>
+
+<p>Removes or invalidates query results for the specified group keys, in hope that the objects will be refreshed the next time any query from the group is executed.</p>
+
+<p><em>Limitation: This is the only case that doesn't allow to target individual objects.</em></p>
+
+<h3><a name="RefreshQuery-RefreshAll"></a>Refresh All</h3>
+
+<p>Refreshes all objects (including reverting and refreshing dirty objects) and all query results. This can be done lazily. Not sure if we need fine-grained control (refresh a single context; refresh shared caches). </p>
+
+<h2><a name="RefreshQuery-ProposedSolution%3ARefreshQuery"></a>Proposed Solution: RefreshQuery</h2>
+
+<p>Related JIRA issue: <span class="nobr"><a href="http://issues.apache.org/cayenne/browse/CAY-632" title="Visit page outside Confluence" rel="nofollow">http://issues.apache.org/cayenne/browse/CAY-632<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span><br/>
+RefreshQuery: <span class="nobr"><a href="http://svn.apache.org/repos/asf/incubator/cayenne/main/trunk/core/cayenne-jdk1.4/src/main/java/org/apache/cayenne/query/RefreshQuery.java" title="Visit page outside Confluence" rel="nofollow">http://svn.apache.org/repos/asf/incubator/cayenne/main/trunk/core/cayenne-jdk1.4/src/main/java/org/apache/cayenne/query/RefreshQuery.java<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></p>
+
+<p>There are the following advantages to this approach:</p>
+
+<ul>
+	<li>Hiding the difference between "eager refresh" (refetch) and "lazy refresh" (invalidate), leaving it up to Cayenne to decide. For instance if Cayenne can't reliably match all objects in memory, it would do a refetch; if it can - it will do invalidate).</li>
+	<li>Invalidate query lists and objects in those queries in one shot. (In case a query result is cached and there is a way to infer the objects involved; otherwise it will do a fetch).</li>
+</ul>
+
+
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 Apache Software Foundation
+  </div>
+
+</body>
+</html>

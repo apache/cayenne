@@ -1,0 +1,266 @@
+/**
+ * Courtesy of Jeff Martin <reportmill@yahoo.com>  and Josh from Report Mill
+ * http://www.reportmill.com/
+ */
+
+
+options {
+	STATIC = false;
+}
+
+PARSER_BEGIN(Parser)
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+
+package org.apache.cayenne.wocompat.parser;
+
+import java.io.*; 
+import java.util.*;
+import org.apache.cayenne.wocompat.PlistDataStructureFactory;
+
+/**
+ * NeXT/Apple Property List format parser. 
+ *
+ * <p>Contributed by Jeff Martin <reportmill@yahoo.com> and Josh from Report Mill -
+ * <a href="http://www.reportmill.com/">http://www.reportmill.com/</a></p>
+ */
+public class Parser {
+    
+    private PlistDataStructureFactory factory = new DefaultPlistDataStructureFactory();
+    
+    public Parser() {
+        this(System.in, null);
+    }
+    
+    public Parser(PlistDataStructureFactory factory) {
+        this(System.in, factory);
+    }
+
+    public Parser(String filename, PlistDataStructureFactory factory) throws FileNotFoundException {
+        this(new FileInputStream(filename), factory);
+    }
+
+    public Parser(File f, PlistDataStructureFactory factory) throws FileNotFoundException {
+        this(new FileInputStream(f), factory);
+    }
+    
+    public Parser(InputStream in, PlistDataStructureFactory factory) {
+        this(in);
+        
+        if(factory != null) {
+            this.factory = factory;
+        }
+    }
+    
+    public Object propertyList() {
+        try {
+            return object("");
+        }
+        catch (ParseException pe) {
+           return null;
+        }
+    }
+    
+    /**
+     * @deprecated since 3.0, use 'object(String)' instead.
+     */
+    public Object object() throws ParseException {
+        return object("");
+    }
+    
+    /**
+     * @deprecated since 3.0, use 'map(String)' instead.
+     */
+    public final java.util.HashMap dictionary()
+                                   throws ParseException {
+            return (java.util.HashMap) map("");                       
+    }
+    
+    /**
+     * @deprecated since 3.0, use 'collection(String)' instead.
+     */
+    public final java.util.ArrayList array()
+                                   throws ParseException {
+            return (java.util.ArrayList) collection("");                       
+    }
+}
+PARSER_END(Parser)
+
+
+SKIP :
+{
+ 	" "
+|	"\r"
+|	"\n"
+|	"\t"
+}
+
+
+TOKEN :
+{ 
+	< INT:	("-")?(["0"-"9"])+ >
+|	< FLOAT: ("-")?((["0"-"9"])*"."(["0"-"9"])+)(["e","E"](["-","+"])?(["0"-"9"])+)? >
+}
+
+TOKEN :
+{ 
+	"="
+|	"("
+|	")"
+|	"{"
+|	"}"
+|	","
+|   ";"
+}
+
+SKIP :
+{
+  "//" : WithinComment
+}
+
+<WithinComment> SKIP :
+{
+  <["\n", "\r"]> : DEFAULT
+}
+
+<WithinComment> MORE :
+{
+  <~["\n" ,"\r"]>
+}
+
+
+TOKEN :
+{
+	< STRING:  (~[" ","\t","\r","\n","=","(",")","{","}",",",";","\""])+ >
+}
+
+SKIP :
+{
+  "\"" {}: WithinQuotedString
+}
+
+<WithinQuotedString> MORE :
+{
+ < (~["\\","\""])+ > {}
+}
+
+<WithinQuotedString> MORE :
+{
+  "\\\\" { image.setLength(image.length()-1);  }
+| "\\a" { int len = image.length(); image.setCharAt(len-2,(char)7); image.setLength(len-1); }
+| "\\b" { len = image.length(); image.setCharAt(len-2,'\b'); image.setLength(len-1); }
+| "\\t" { len = image.length(); image.setCharAt(len-2,'\t'); image.setLength(len-1); }
+| "\\n" { len = image.length(); image.setCharAt(len-2,'\n'); image.setLength(len-1); }
+| "\\v" { len = image.length(); image.setCharAt(len-2, (char)11); image.setLength(len-1); }
+| "\\f" { len = image.length(); image.setCharAt(len-2,'\f'); image.setLength(len-1); }
+| "\\\"" { len = image.length(); image.setCharAt(len-2,'"'); image.setLength(len-1); }
+| <"\\"["0"-"7"]["0"-"7"]["0"-"7"]> {
+        int oct;
+        len = image.length();
+        oct = ((int)(image.charAt(len-1)-'0')) +
+              8 * ((int)(image.charAt(len-2)-'0')) +
+              64 * ((int)(image.charAt(len-3)-'0'));
+        image.setCharAt(len-4, (char)oct);
+        image.setLength(len-3);
+        }
+| <"\\U"["0"-"9","a"-"f","A"-"F"]["0"-"9","a"-"f","A"-"F"]
+        ["0"-"9","a"-"f","A"-"F"]["0"-"9","a"-"f","A"-"F"] > {
+        int dig,c, base=1,hex=0;
+        len = image.length();
+        for(int i=0; i<4; ++i) {
+          c=(int)image.charAt(len-(i+1));
+          if (c<='9') c-='0';
+            else if (c<='F') c = (c -'A') + 10;
+              else c =(c -'a') + 10;
+          hex += c*base;
+          base*=16;
+          }
+        image.setCharAt(len-6, (char)hex);
+        image.setLength(len-5);
+        }
+
+}
+
+<WithinQuotedString> TOKEN :
+{
+  < QUOTED_STRING: "\"" > { image.setLength(image.length()-1); matchedToken.image = image.toString(); } : DEFAULT
+}
+
+Object object(String parentKeyPath) :
+{
+	Object node;
+}
+{
+		node=collection(parentKeyPath) { return node; }
+	|   
+		node=map(parentKeyPath) { return node; }
+	|   
+		node=leaf() { return node; }
+}
+
+Object leaf() :
+{}
+{ 
+  <INT> { return Integer.valueOf(token.image); }
+| <FLOAT> { return Double.valueOf(token.image); }
+| <QUOTED_STRING> { return token.image; }
+| <STRING> { return token.image; }
+}
+
+Map map(String parentKeyPath) : 
+{ 
+	Map h;
+}
+{
+	"{"  {h = factory.createMap(parentKeyPath); }
+	 (
+		keyValuePair(parentKeyPath, h)
+		(
+			LOOKAHEAD(2) ";" keyValuePair(parentKeyPath, h)
+    	)* 
+    	
+    	// last semicolon is optional
+    	( ";" )?
+    )?
+    
+	"}" { return h; }
+}
+
+void keyValuePair(String parentKeyPath, Map map) :
+{
+	Object key, val;
+}
+{
+		key = object(parentKeyPath) 
+		"=" 
+		val = object(parentKeyPath + "." + key) { map.put(key, val); }
+}
+
+Collection collection(String parentKeyPath) : 
+{ Collection v;
+  Object o;
+}
+{
+   "(" { v = factory.createCollection(parentKeyPath); } (
+      o=object(parentKeyPath) { v.add(o); }
+      ("," o=object(parentKeyPath) { v.add(o); } )*
+     )?
+   ")" {return v;}
+}

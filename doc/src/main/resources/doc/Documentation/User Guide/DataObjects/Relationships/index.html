@@ -1,0 +1,115 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Relationships</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Relationships</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a><ul>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Accessing PK and FK values/index.html">Accessing PK and FK values</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Relationships/index.html">Relationships</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Flattened Relationships/index.html">Flattened Relationships</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/DataObjects Example/index.html">DataObjects Example</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/DataObjectUtils/index.html">DataObjectUtils</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/DataObject Validation/index.html">DataObject Validation</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Handling Inheritance/index.html">Handling Inheritance</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Deleting Objects/index.html">Deleting Objects</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Generic Persistent Class/index.html">Generic Persistent Class</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Relationships are special DataObject properties that reference other "related" objects. Semantically there are two types of relationships - to-one pointing to just a single DataObjects (e.g. Painting.toArtist), and to-many pointing to a collection of DataObjects of the same base type (e.g. Artist.paintingArray).</p>
+
+<h3><a name="Relationships-ToOneRelationships"></a>To-One Relationships</h3>
+
+<p>"Get" methods for to-one relationships return the target DataObject. If the object is not in memory yet, it will be fetched on demand. Modifying to-one relationships is no different from modifying attributes - just a simple call to a "set" method:</p>
+<div class="code"><div class="codeContent">
+<pre class="code-java">Painting painting;
+
+<span class="code-comment">// obtain artist <span class="code-keyword">for</span> a given painting
+</span>Artist originalArtist = painting.getToArtist();
+
+<span class="code-comment">// replace with a <span class="code-keyword">new</span> artist
+</span>Artist newArtist = (Artist)context.createAndRegisterNewObject(Artist.class);
+painting.setToArtist(newArtist);
+
+<span class="code-comment">// or remove Artist at all...
+</span><span class="code-comment">// painting.setToArtist(<span class="code-keyword">null</span>);</span></pre>
+</div></div>
+<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>
+<p>When adding or removing an object from any kind of relationship, Cayenne will locate and modify an existing reverse relationship as appropriate.</p></td></tr></table>
+
+<h3><a name="Relationships-ToManyRelationships"></a>To-Many Relationships</h3>
+
+<p>"Get" methods for to-many relationships return Lists of DataObjects. Just like individual DataObjects, such lists are also resolved on demand (e.g. when a user tries to read an element from the list). For modification there are special "addTo..." and "removeFrom..." methods:</p>
+<div class="code"><div class="codeContent">
+<pre class="code-java">Artist artist;
+
+<span class="code-comment">// obtain a list of paintings
+</span>List paintings = artist.getPaintingArray();
+
+<span class="code-comment">// remove the first painting
+</span><span class="code-keyword">if</span>(paintings.size() &gt; 0) {
+   Painting firstPainting = (Painting)paintings.get(0);
+   artist.removeFromPaintingArray(firstPainting);
+}
+
+<span class="code-comment">// add a <span class="code-keyword">new</span> painting
+</span>Painting newPainting = (Painting)context.createAndRegisterNewObject(Painting.class);
+artist.addToPaintingArray(newPainting);</pre>
+</div></div>
+<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>
+<p>While to-many relationships in Cayenne are represented by Lists, they are really ordered Sets, as they are not allowed to contain the same object more than once.</p></td></tr></table></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 Apache Software Foundation
+  </div>
+
+</body>
+</html>

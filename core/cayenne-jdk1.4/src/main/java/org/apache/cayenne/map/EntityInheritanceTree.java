@@ -1,0 +1,184 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+package org.apache.cayenne.map;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.exp.Expression;
+
+/**
+ * A tree structure representing inheritance hierarchy 
+ * of an ObjEntity and its subentities.
+ * 
+ * @since 1.1
+ * @author Andrus Adamchik
+ */
+public class EntityInheritanceTree {
+    protected ObjEntity entity;
+    protected Collection subentities;
+    protected Expression normalizedQualifier;
+
+    public EntityInheritanceTree(ObjEntity entity) {
+        this.entity = entity;
+    }
+
+    /**
+     * Returns a qualifier Expression that matches root entity
+     * of this tree and all its subentities.
+     */
+    public Expression qualifierForEntityAndSubclasses() {
+        Expression qualifier = entity.getDeclaredQualifier();
+
+        if (qualifier == null) {
+            // match all
+            return null;
+        }
+
+        if (subentities != null) {
+            Iterator it = subentities.iterator();
+            while (it.hasNext()) {
+                EntityInheritanceTree child = (EntityInheritanceTree) it.next();
+                Expression childQualifier = child.qualifierForEntityAndSubclasses();
+
+                // if any child qualifier is null, just return null, since no filtering is possible
+                if (childQualifier == null) {
+                    return null;
+                }
+
+                qualifier = qualifier.orExp(childQualifier);
+            }
+        }
+
+        return qualifier;
+    }
+
+    /**
+     * Returns the deepest possible entity in the inheritance hierarchy 
+     * that can be used to create objects from a given DataRow.
+     */
+    public ObjEntity entityMatchingRow(DataRow row) {
+        // match depth first
+        if (subentities != null) {
+            Iterator it = subentities.iterator();
+            while (it.hasNext()) {
+                EntityInheritanceTree child = (EntityInheritanceTree) it.next();
+                ObjEntity matched = child.entityMatchingRow(row);
+
+                if (matched != null) {
+                    return matched;
+                }
+            }
+        }
+
+        Expression qualifier = entity.getDeclaredQualifier();
+        if (qualifier != null) {
+            if (normalizedQualifier == null) {
+                normalizedQualifier = entity.translateToDbPath(qualifier);
+            }
+
+            return normalizedQualifier.match(row) ? entity : null;
+        }
+
+        // no qualifier ... matches all rows
+        return entity;
+    }
+
+    public void addChildNode(EntityInheritanceTree node) {
+        if (subentities == null) {
+            subentities = new ArrayList(2);
+        }
+
+        subentities.add(node);
+    }
+
+    public int getChildrenCount() {
+        return (subentities != null) ? subentities.size() : 0;
+    }
+
+    public Collection getChildren() {
+        return (subentities != null) ? subentities : Collections.EMPTY_LIST;
+    }
+
+    public ObjEntity getEntity() {
+        return entity;
+    }
+
+    public Collection allAttributes() {
+        if (subentities == null) {
+            return entity.getAttributes();
+        }
+
+        Collection c = new ArrayList();
+        appendDeclaredAttributes(c);
+
+        // add base attributes if any
+        ObjEntity superEntity = entity.getSuperEntity();
+        if (superEntity != null) {
+            c.addAll(superEntity.getAttributes());
+        }
+
+        return c;
+    }
+
+    public Collection allRelationships() {
+        if (subentities == null) {
+            return entity.getRelationships();
+        }
+
+        Collection c = new ArrayList();
+        appendDeclaredRelationships(c);
+
+        // add base relationships if any
+        ObjEntity superEntity = entity.getSuperEntity();
+        if (superEntity != null) {
+            c.addAll(superEntity.getRelationships());
+        }
+
+        return c;
+    }
+
+    protected void appendDeclaredAttributes(Collection c) {
+        c.addAll(entity.getDeclaredAttributes());
+
+        if (subentities != null) {
+            Iterator it = subentities.iterator();
+            while (it.hasNext()) {
+                EntityInheritanceTree child = (EntityInheritanceTree) it.next();
+                child.appendDeclaredAttributes(c);
+            }
+        }
+    }
+
+    protected void appendDeclaredRelationships(Collection c) {
+        c.addAll(entity.getDeclaredRelationships());
+
+        if (subentities != null) {
+            Iterator it = subentities.iterator();
+            while (it.hasNext()) {
+                EntityInheritanceTree child = (EntityInheritanceTree) it.next();
+                child.appendDeclaredRelationships(c);
+            }
+        }
+    }
+}

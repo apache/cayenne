@@ -1,0 +1,75 @@
+{
+    attributes = (
+        {
+            allowsNull = Y; 
+            columnName = ARTIST_ID; 
+            externalType = int; 
+            name = artistId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = ESTIMATED_PRICE; 
+            externalType = money; 
+            name = estimatedPrice; 
+            valueClassName = NSDecimalNumber; 
+            valueType = d; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = GALLERY_ID; 
+            externalType = int; 
+            name = galleryId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            columnName = PAINTING_ID; 
+            externalType = int; 
+            name = paintingId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            columnName = PAINTING_TITLE; 
+            externalType = varchar; 
+            name = paintingTitle; 
+            valueClassName = NSString; 
+            width = 255; 
+        }
+    ); 
+    attributesUsedForLocking = (artistId, galleryId, paintingId); 
+    className = org.apache.art.Painting; 
+    classProperties = (estimatedPrice, toGallery, toArtist, toPaintingInfo, paintingTitle); 
+    externalName = PAINTING; 
+    fetchSpecificationDictionary = {}; 
+    name = Painting; 
+    primaryKeyAttributes = (paintingId); 
+    relationships = (
+        {
+            destination = Artist; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = artistId; sourceAttribute = artistId; }); 
+            name = toArtist; 
+        }, 
+        {
+            destination = Gallery; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = galleryId; sourceAttribute = galleryId; }); 
+            name = toGallery; 
+        }, 
+        {
+            deleteRule = EODeleteRuleCascade; 
+            destination = PaintingInfo; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = paintingId; sourceAttribute = paintingId; }); 
+            name = toPaintingInfo; 
+            ownsDestination = Y; 
+            propagatesPrimaryKey = Y; 
+        }
+    ); 
+}
