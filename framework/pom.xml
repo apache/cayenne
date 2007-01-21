@@ -37,6 +37,7 @@
     
     <modules>
       <module>cayenne-agent</module>
+      <module>cayenne-jdk1.4-unpublished</module>
       <module>cayenne-server</module>
       <module>cayenne-client</module>
     </modules>

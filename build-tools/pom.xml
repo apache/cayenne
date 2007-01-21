@@ -29,7 +29,7 @@
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.apache.cayenne.buildtools</groupId>
+	<groupId>org.apache.cayenne.build-tools</groupId>
 	<artifactId>cayenne-build-tools</artifactId>
 	<name>Cayenne Build Tools Parent</name>
 	<packaging>pom</packaging>

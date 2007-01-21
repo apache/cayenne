@@ -26,7 +26,7 @@
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.apache.cayenne.buildtools</groupId>
+	<groupId>org.apache.cayenne.build-tools</groupId>
 	<artifactId>cayenne-regression-profiler</artifactId>
 	<packaging>war</packaging>
 	<name>Cayenne Regression Profiler</name>
