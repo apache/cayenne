@@ -24,8 +24,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.cayenne.itest</groupId>
-		<artifactId>cayenne-itest-parent</artifactId>
+		<groupId>org.apache.cayenne.itests</groupId>
+		<artifactId>cayenne-itests-parent</artifactId>
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
@@ -41,7 +41,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.itest</groupId>
+			<groupId>org.apache.cayenne.itests</groupId>
 			<artifactId>itest-common</artifactId>
 			<version>${version}</version>
 		</dependency>
@@ -50,7 +50,6 @@
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jpa_3.0_spec</artifactId>
 		</dependency>
-
 	</dependencies>
 
 	<build>

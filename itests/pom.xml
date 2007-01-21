@@ -31,8 +31,8 @@
       <version>3.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.cayenne.itest</groupId>
-    <artifactId>cayenne-itest-parent</artifactId>
+    <groupId>org.apache.cayenne.itests</groupId>
+    <artifactId>cayenne-itests-parent</artifactId>
     <name>Cayenne Integration Tests Parent</name>
     <packaging>pom</packaging>
     

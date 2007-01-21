@@ -24,8 +24,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.cayenne.itest</groupId>
-		<artifactId>cayenne-itest-parent</artifactId>
+		<groupId>org.apache.cayenne.itests</groupId>
+		<artifactId>cayenne-itests-parent</artifactId>
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
@@ -42,8 +42,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.core</groupId>
-			<artifactId>cayenne-jpa</artifactId>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-jpa-unpublished</artifactId>
 			<version>${version}</version>
 		</dependency>
 
