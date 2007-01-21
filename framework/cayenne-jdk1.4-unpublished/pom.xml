@@ -25,14 +25,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.cayenne.core</groupId>
-		<artifactId>cayenne-core-parent</artifactId>
+		<groupId>org.apache.cayenne</groupId>
+		<artifactId>cayenne-parent</artifactId>
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
-	<description>Cayenne Java 1.4 Core</description>
-	<artifactId>cayenne-jdk1.4</artifactId>
-	<name>Cayenne Java 1.4 Core</name>
+	<groupId>org.apache.cayenne.unpublished</groupId>
+	<artifactId>cayenne-jdk1.4-unpublished</artifactId>
+	<name>Cayenne Java 1.4 Unpublished</name>
+	<description>Cayenne Java 1.4 Unpublished</description>
 	<packaging>jar</packaging>
 
 	<dependencies>

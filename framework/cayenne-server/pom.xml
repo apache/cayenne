@@ -32,32 +32,31 @@
 	<artifactId>cayenne-server</artifactId>
 	<packaging>jar</packaging>
 	<name>Cayenne Aggregated Server Jar</name>
-
 	<description>An aggregation of 1.4, 1.5 and JPA modules.</description>
 
 	<dependencies>
 
 		<dependency>
-			<groupId>org.apache.cayenne.core</groupId>
-			<artifactId>cayenne-jdk1.4</artifactId>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-jdk1.4-unpublished</artifactId>
 			<version>${version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.core</groupId>
-			<artifactId>cayenne-jdk1.5</artifactId>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
 			<version>${version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.core</groupId>
-			<artifactId>cayenne-jpa</artifactId>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-jpa-unpublished</artifactId>
 			<version>${version}</version>
 		</dependency>
 		
 		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-legal</artifactId>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-legal-unpublished</artifactId>
 			<version>${version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -79,23 +78,23 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>org.apache.cayenne.core</groupId>
-									<artifactId>cayenne-jdk1.4</artifactId>
+									<groupId>org.apache.cayenne.unpublished</groupId>
+									<artifactId>cayenne-jdk1.4-unpublished</artifactId>
 									<version>${version}</version>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.apache.cayenne.core</groupId>
-									<artifactId>cayenne-jdk1.5</artifactId>
+									<groupId>org.apache.cayenne.unpublished</groupId>
+									<artifactId>cayenne-jdk1.5-unpublished</artifactId>
 									<version>${version}</version>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.apache.cayenne.core</groupId>
-									<artifactId>cayenne-jpa</artifactId>
+									<groupId>org.apache.cayenne.unpublished</groupId>
+									<artifactId>cayenne-jpa-unpublished</artifactId>
 									<version>${version}</version>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.apache.cayenne</groupId>
-									<artifactId>cayenne-legal</artifactId>
+									<groupId>org.apache.cayenne.unpublished</groupId>
+									<artifactId>cayenne-legal-unpublished</artifactId>
 									<version>${version}</version>
 								</artifactItem>
 							</artifactItems>
@@ -105,5 +104,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

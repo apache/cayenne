@@ -17,7 +17,6 @@
 	specific language governing permissions and limitations
 	under the License.   
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -25,8 +24,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.cayenne.modeler</groupId>
-		<artifactId>cayenne-modeler-parent</artifactId>
+		<groupId>org.apache.cayenne</groupId>
+		<artifactId>cayenne-parent</artifactId>
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
@@ -35,7 +34,6 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -92,27 +90,27 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-legal</artifactId>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-legal-unpublished</artifactId>
 			<version>${version}</version>
 			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
-			<groupId>org.apache.cayenne.core</groupId>
-			<artifactId>cayenne-jdk1.4</artifactId>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-jdk1.4-unpublished</artifactId>
 			<version>${version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.core</groupId>
-			<artifactId>cayenne-jdk1.5</artifactId>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
 			<version>${version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.core</groupId>
-			<artifactId>cayenne-jdk1.4</artifactId>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-jdk1.4-unpublished</artifactId>
 			<version>${version}</version>
 			<classifier>tests</classifier>
 			<scope>test</scope>
@@ -132,7 +130,6 @@
 			<groupId>mockrunner</groupId>
 			<artifactId>mockrunner</artifactId>
 		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -151,7 +148,7 @@
 							</outputDirectory>
 							<resourceBundles>
 								<resourceBundle>
-									org.apache.cayenne:cayenne-legal:${version}
+									org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}
 								</resourceBundle>
 							</resourceBundles>
 						</configuration>

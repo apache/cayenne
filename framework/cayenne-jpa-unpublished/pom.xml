@@ -7,9 +7,9 @@
 	to you under the Apache License, Version 2.0 (the
 	"License"); you may not use this file except in compliance
 	with the License.  You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
 	Unless required by applicable law or agreed to in writing,
 	software distributed under the License is distributed on an
 	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,14 +24,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.cayenne.core</groupId>
-		<artifactId>cayenne-core-parent</artifactId>
+		<groupId>org.apache.cayenne</groupId>
+		<artifactId>cayenne-parent</artifactId>
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
-	<description>Cayenne JPA Implementation</description>
-	<artifactId>cayenne-jpa</artifactId>
-	<name>Cayenne JPA Implementation</name>
+	<groupId>org.apache.cayenne.unpublished</groupId>
+	<artifactId>cayenne-jpa-unpublished</artifactId>
+	<name>Cayenne JPA Unpublished</name>
+	<description>Cayenne JPA Unpublished</description>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -46,14 +47,14 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.core</groupId>
-			<artifactId>cayenne-jdk1.4</artifactId>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-jdk1.4-unpublished</artifactId>
 			<version>${version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.core</groupId>
-			<artifactId>cayenne-jdk1.5</artifactId>
+			<groupId>org.apache.cayenne.unpublished</groupId>
+			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
 			<version>${version}</version>
 		</dependency>
 	</dependencies>

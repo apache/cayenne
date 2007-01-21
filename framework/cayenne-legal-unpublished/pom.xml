@@ -29,7 +29,8 @@
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>cayenne-legal</artifactId>
+	<groupId>org.apache.cayenne.unpublished</groupId>
+	<artifactId>cayenne-legal-unpublished</artifactId>
 	<name>Cayenne License and Notice Bundle</name>
 	<description>Cayenne License and Notice Bundle</description>
 	<packaging>jar</packaging>
@@ -56,7 +57,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<artifactId>maven-remote-resources-plugin</artifactId>
 				<version>1.0-alpha-1</version>
