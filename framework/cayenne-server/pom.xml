@@ -66,7 +66,7 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.cayenne.maven.plugin</groupId>
+				<groupId>org.apache.cayenne.buildtools</groupId>
 				<artifactId>maven-cayenne-build-plugin</artifactId>
 				<executions>
 					<execution>
