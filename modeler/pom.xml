@@ -29,14 +29,9 @@
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.apache.cayenne.modeler</groupId>
 	<artifactId>cayenne-modeler-parent</artifactId>
 	<name>Cayenne Modeler Parent</name>
 	<packaging>pom</packaging>
-
-	<modules>
-		<module>cayenne-modeler</module>
-	</modules>
 
 	<profiles>
 		<profile>
@@ -57,7 +52,6 @@
 		</profile>
 		<profile>
 			<id>windows</id>
-
 			<modules>
 				<module>cayenne-modeler-win</module>
 			</modules>

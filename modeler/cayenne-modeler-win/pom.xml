@@ -7,9 +7,9 @@
 	to you under the Apache License, Version 2.0 (the
 	"License"); you may not use this file except in compliance
 	with the License.  You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
 	Unless required by applicable law or agreed to in writing,
 	software distributed under the License is distributed on an
 	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,7 +17,6 @@
 	specific language governing permissions and limitations
 	under the License.   
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -25,8 +24,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.cayenne.modeler</groupId>
-		<artifactId>cayenne-modeler-parent</artifactId>
+		<groupId>org.apache.cayenne</groupId>
+		<artifactId>cayenne-parent</artifactId>
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
@@ -37,7 +36,7 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>org.apache.cayenne.modeler</groupId>
+			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${version}</version>
 		</dependency>
@@ -64,7 +63,7 @@
 					<jvmOptions>-Xmx500m</jvmOptions>
 					<excludes>
 						<exclude>asm</exclude>
-						<exclude>cayenne-jdk1.4:${version}:tests</exclude>
+						<exclude>cayenne-jdk1.4-unpublished:${version}:tests</exclude>
 					</excludes>
 				</configuration>
 				<executions>

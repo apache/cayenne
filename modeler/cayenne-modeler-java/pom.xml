@@ -24,8 +24,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.cayenne.modeler</groupId>
-		<artifactId>cayenne-modeler-parent</artifactId>
+		<groupId>org.apache.cayenne</groupId>
+		<artifactId>cayenne-parent</artifactId>
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
@@ -36,7 +36,7 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>org.apache.cayenne.modeler</groupId>
+			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${version}</version>
 		</dependency>
@@ -60,7 +60,7 @@
 					<os>java</os>
 					<excludes>
 						<exclude>asm</exclude>
-						<exclude>cayenne-jdk1.4:${version}:tests</exclude>
+						<exclude>cayenne-jdk1.4-unpublished:${version}:tests</exclude>
 					</excludes>
 				</configuration>
 				<executions>
