@@ -16,30 +16,44 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.modeler.action;
 
-import javax.sql.DataSource;
-import junit.framework.TestCase;
-import org.apache.cayenne.access.DataNode;
-import com.mockrunner.mock.jdbc.MockDataSource;
+import java.io.InputStream;
 
-public class ModelerProjectLoaderDelegateTest extends TestCase {
+import org.apache.cayenne.conf.Configuration;
+import org.apache.cayenne.util.ResourceLocator;
+import org.apache.commons.lang.NotImplementedException;
 
-    public void testDataSource() {
+public class MockConfiguration extends Configuration {
 
-        ModelerProjectLoadDelegate loader = new ModelerProjectLoadDelegate(
-                new MockConfiguration());
+    public MockConfiguration() {
+        super();
+    }
 
-        DataNode node = loader.createDataNode("ABC");
+    public boolean canInitialize() {
+        return true;
+    }
 
-        assertNotNull(node);
-        assertEquals("ABC", node.getName());
+    public void didInitialize() {
+    }
 
-        DataSource ds1 = new MockDataSource();
-        node.setDataSource(ds1);
+    protected InputStream getDomainConfiguration() {
+        throw new NotImplementedException(
+                "this is an in-memory mockup...'getDomainConfiguration' is not implemented.");
+    }
 
-        assertSame("Project DataNode must not wrap the DataSource", ds1, node
-                .getDataSource());
+    protected InputStream getMapConfiguration(String name) {
+        return null;
+    }
+
+    protected ResourceLocator getResourceLocator() {
+        return null;
+    }
+
+    protected InputStream getViewConfiguration(String location) {
+        return null;
+    }
+
+    public void initialize() throws Exception {
     }
 }

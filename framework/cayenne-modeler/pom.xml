@@ -109,14 +109,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-jdk1.4-unpublished</artifactId>
-			<version>${version}</version>
-			<classifier>tests</classifier>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>ognl</groupId>
 			<artifactId>ognl</artifactId>
 		</dependency>
