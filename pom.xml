@@ -62,12 +62,7 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>jgroups</groupId>
-			<artifactId>jgroups-all</artifactId>
-		</dependency>
-
+		
 		<dependency>
 			<groupId>ant</groupId>
 			<artifactId>ant</artifactId>
