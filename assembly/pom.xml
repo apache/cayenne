@@ -57,13 +57,13 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.modeler</groupId>
+			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne</groupId>
+			<groupId>org.apache.cayenne.docs</groupId>
 			<artifactId>cayenne-doc</artifactId>
 			<version>${version}</version>
 		</dependency>
@@ -85,7 +85,7 @@
 							</outputDirectory>
 							<resourceBundles>
 								<resourceBundle>
-									org.apache.cayenne:cayenne-legal:${version}
+									org.apache.cayenne.unpublished:cayenne-legal-unpublished:${version}
 								</resourceBundle>
 							</resourceBundles>
 						</configuration>
@@ -124,7 +124,7 @@
 							<outputDirectory>target/docs</outputDirectory>
 							<artifactItems>
 								<artifactItem>
-									<groupId>org.apache.cayenne</groupId>
+									<groupId>org.apache.cayenne.docs</groupId>
 									<artifactId>cayenne-doc</artifactId>
 									<version>${version}</version>
 								</artifactItem>
@@ -141,7 +141,7 @@
 							<outputDirectory>target/modeler</outputDirectory>
 							<artifactItems>
 								<artifactItem>
-									<groupId>org.apache.cayenne.modeler</groupId>
+									<groupId>org.apache.cayenne</groupId>
 									<artifactId>cayenne-modeler-java</artifactId>
 									<version>${version}</version>
 								</artifactItem>
@@ -189,7 +189,7 @@
 									<outputDirectory>target/modeler-mac</outputDirectory>
 									<artifactItems>
 										<artifactItem>
-											<groupId>org.apache.cayenne.modeler</groupId>
+											<groupId>org.apache.cayenne</groupId>
 											<artifactId>cayenne-modeler-mac</artifactId>
 											<version>${version}</version>
 										</artifactItem>
@@ -215,7 +215,7 @@
 									<outputDirectory>target/modeler</outputDirectory>
 									<artifactItems>
 										<artifactItem>
-											<groupId>org.apache.cayenne.modeler</groupId>
+											<groupId>org.apache.cayenne</groupId>
 											<artifactId>cayenne-modeler-win</artifactId>
 											<version>${version}</version>
 										</artifactItem>
