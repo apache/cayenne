@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data-view>
+    <obj-entity-view name="ObjEntityView2" obj-entity-name="PaintingInfo">
+        <field name="field0" calc-type="nocalc" obj-attribute-name="textReview" editable="true" pref-index="0" data-type="String" visible="true" />
+    </obj-entity-view>
+</data-view>
+

@@ -1,0 +1,7 @@
+<model>
+    <entity name="org.apache.cayenne.xml.TestObject" xmlTag="Test">
+        <property name="name" xmlTag="Name" attribute="YES"/>
+        <property name="age" xmlTag="Age" attribute="YES"/>
+        <property name="open" xmlTag="IsOpen"/>
+    </entity>
+</model>

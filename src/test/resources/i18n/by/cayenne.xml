@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="1.1">
+<domain name="беларускi_дамен">
+	<map name="DataMap" location="DataMap.map.xml"/>
+</domain>
+</domains>

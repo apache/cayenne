@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<db-entity name="ARTIST">
+		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
+		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
+	</db-entity>
+	<obj-entity name="Artist" className="org.objectstyle.art.Artist" dbEntityName="ARTIST">
+		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
+		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
+	</obj-entity>
+</data-map>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="2.0">
+<domain name="default">
+	<map name="generic" location="generic.map.xml"/>
+	<map name="locking" location="locking.map.xml"/>
+	<map name="map-db1" location="map-db1.map.xml"/>
+	<map name="map-db2" location="map-db2.map.xml"/>
+	<map name="multi-tier" location="multi-tier.map.xml"/>
+	<map name="one-way-map" location="one-way-map.map.xml"/>
+	<map name="people" location="people.map.xml"/>
+	<map name="relationships" location="relationships.map.xml"/>
+	<map name="testmap" location="testmap.map.xml"/>
+</domain>
+<view name="dataview0" location="dataview0.view.xml"/>
+<view name="dataview1" location="dataview1.view.xml"/>
+</domains>

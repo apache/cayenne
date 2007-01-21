@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	<bean id="M1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, 'T1:a', null, 'Manager Type 1', 1, 'M1', 50000)
+		</value></constructor-arg>
+	</bean>
+   <bean id="M2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, 'T2:b', null, 'Manager Type 2', 2, 'M2', 60000)
+		</value></constructor-arg>
+	</bean>
+   <bean id="M3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, null, null, 'Regular Manager', 3, 'EM', 70000)
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->
+	<bean id="testCAY_207" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="M1"/>
+				<ref bean="M2"/>
+				<ref bean="M3"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

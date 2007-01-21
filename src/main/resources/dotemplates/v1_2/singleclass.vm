@@ -1,0 +1,103 @@
+##   Licensed to the Apache Software Foundation (ASF) under one
+##  or more contributor license agreements.  See the NOTICE file
+##  distributed with this work for additional information
+##  regarding copyright ownership.  The ASF licenses this file
+##  to you under the Apache License, Version 2.0 (the
+##  "License"); you may not use this file except in compliance
+##  with the License.  You may obtain a copy of the License at
+##
+##    http://www.apache.org/licenses/LICENSE-2.0
+##
+##  Unless required by applicable law or agreed to in writing,
+##  software distributed under the License is distributed on an
+##  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+##  KIND, either express or implied.  See the License for the
+##  specific language governing permissions and limitations
+##  under the License.
+##
+##Terminology:
+##	Base class - super superclass of entity, ie, org.apache.cayenne.CayenneDataObject or MyBaseClass
+##  Super class - superclass of entity, ie,  org.apache.cayenne.art.auto._Artist
+##	Sub class - class of entity, ie, org.apache.cayenne.art.Artist
+##
+##  Classes available in template
+##    objEntity - the ObjEntity class: See org.apache.cayenne.map.ObjectEntity
+##    stringUtils - class for string "helper" functions: See org.apache.cayenne.gen.StringUtils
+##    entityUtils - class for entity "helper" functions: See org.apache.cayenne.gen.EntityUtils
+##    importUtils - class for import statement management: See org.apache.cayenne.gen.ImportUtils
+##
+##
+${importUtils.setPackage($entityUtils.subPackageName)}##
+${importUtils.addReservedType("${entityUtils.subPackageName}.${entityUtils.subClassName}")}##
+${importUtils.addType("${entityUtils.basePackageName}.${entityUtils.baseClassName}")}##
+#foreach( $attr in ${objEntity.DeclaredAttributes} )
+$importUtils.addType(${attr.Type})##
+#end
+#foreach( $rel in ${objEntity.DeclaredRelationships} )
+$importUtils.addType(${rel.TargetEntity.ClassName})##
+#end
+#if( ${entityUtils.hasToManyRelationships()} )
+${importUtils.addType('java.util.List')}##
+#end
+${importUtils.generate()}
+
+public class ${entityUtils.subClassName} extends ${entityUtils.baseClassName} {
+
+## Create property names
+#foreach( $attr in ${objEntity.DeclaredAttributes} )
+    public static final String ${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY = "${attr.Name}";
+#end
+#foreach( $rel in ${objEntity.DeclaredRelationships} )
+    public static final String ${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY = "${rel.Name}";
+#end
+
+#if( $objEntity.DbEntity )
+#foreach( $idAttr in ${objEntity.DbEntity.PrimaryKey} )
+    public static final String ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = "${idAttr.Name}";
+#end
+#end
+
+## Create attribute set/get methods
+#foreach( $attr in ${objEntity.DeclaredAttributes} )
+#if ("true" != "${objEntity.isReadOnly()}")
+    public void set${stringUtils.capitalized($attr.Name)}($importUtils.formatJavaType(${attr.Type}) $stringUtils.formatVariableName(${attr.Name})) {
+        writeProperty("${attr.Name}", $stringUtils.formatVariableName(${attr.Name}));
+    }
+#end
+    public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
+        return ($importUtils.formatJavaType(${attr.Type}))readProperty("${attr.Name}");
+    }
+    
+    
+#end
+##
+## Create list add/remove/get methods
+#foreach( $rel in ${objEntity.DeclaredRelationships} )
+#if( $rel.ToMany )
+#if ( ! $rel.ReadOnly )    public void addTo${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClassName}) obj) {
+        addToManyTarget("${rel.name}", obj, true);
+    }
+    public void removeFrom${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClassName}) obj) {
+        removeToManyTarget("${rel.name}", obj, true);
+    }
+#end
+    public List get${stringUtils.capitalized($rel.Name)}() {
+        return (List)readProperty("${rel.name}");
+    }
+#else
+#if ( ! ${objEntity.isReadOnly()} && ! $rel.ReadOnly )
+    public void set${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClassName}) $stringUtils.formatVariableName(${rel.name})) {
+        setToOneTarget("${rel.name}", $stringUtils.formatVariableName(${rel.name}), true);
+    }
+#end
+    public $importUtils.formatJavaType(${rel.TargetEntity.ClassName}) get${stringUtils.capitalized($rel.Name)}() {
+        return ($importUtils.formatJavaType(${rel.TargetEntity.ClassName}))readProperty("${rel.name}");
+    } 
+#end
+    
+    
+#end
+}
+
+
+

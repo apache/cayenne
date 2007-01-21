@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	<bean id="E1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, null, null, 'e1', 1, 'EE', 20000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="E2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, null, null, 'e2', 2, 'EE', 25000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="E3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, null, null, 'e3', 3, 'EE', 28000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="M1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, null, null, 'm1', 4, 'EM', 30000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="M2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, null, null, 'm2', 5, 'EM', 40000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="C1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (1, null, null, 'c1', 6, 'C', null)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="AE11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.Address</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ADDRESS (ADDRESS_ID, CITY, PERSON_ID) values (1, 'New York', 1)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="AM11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.Address</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ADDRESS (ADDRESS_ID, CITY, PERSON_ID) values (1, 'New York', 4)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="Company1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.ClientCompany</value></constructor-arg>
+		<constructor-arg><value>
+		insert into CLIENT_COMPANY (CLIENT_COMPANY_ID, NAME) values (1, 'Citibank')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="Department1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.Department</value></constructor-arg>
+		<constructor-arg><value>
+		insert into DEPARTMENT (DEPARTMENT_ID, NAME) values (1, 'Accounting')
+		</value></constructor-arg>
+	</bean>
+	<bean id="E1D1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (1, 'John', 7, 'EE', 25000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="E2D1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (1, 'Susan', 8, 'EE', 50000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="M1D1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (1, 'Kelly', 9, 'EM', 100000)
+		</value></constructor-arg>
+	</bean>
+	
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->
+	<bean id="testSelect" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="E1"/>
+				<ref bean="E2"/>
+				<ref bean="E3"/>
+				<ref bean="M1"/>
+				<ref bean="M2"/>
+				<ref bean="Company1"/>
+				<ref bean="C1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="testEmployeeAddress" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="E1"/>
+				<ref bean="AE11"/>
+			</list>
+		</constructor-arg>
+	</bean>
+		<bean id="testManagerAddress" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="M1"/>
+				<ref bean="AM11"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="testRepCompany" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="Company1"/>
+				<ref bean="C1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="testDepartmentEmployees" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="Department1"/>
+				<ref bean="E1D1"/>
+				<ref bean="E2D1"/>
+				<ref bean="M1D1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>
