@@ -29,8 +29,8 @@
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.apache.cayenne.framework</groupId>
-	<artifactId>cayenne-framework-aggregator</artifactId>
+	<groupId>org.apache.cayenne.parents</groupId>
+	<artifactId>cayenne-framework-parent</artifactId>
 	<name>Cayenne Framework Aggregator Project</name>
 	<packaging>pom</packaging>
 
