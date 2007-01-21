@@ -60,7 +60,6 @@
 					<os>java</os>
 					<excludes>
 						<exclude>asm</exclude>
-						<exclude>cayenne-jdk1.4-unpublished:${version}:tests</exclude>
 					</excludes>
 				</configuration>
 				<executions>
