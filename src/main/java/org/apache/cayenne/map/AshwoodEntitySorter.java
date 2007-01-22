@@ -55,8 +55,6 @@ import org.objectstyle.ashwood.graph.StrongConnection;
  * @author Andriy Shapochka, Andrus Adamchik
  * @since 1.1
  */
-// TODO: Andrus, 1/23/2006 - there is a dependency on DataContext ... bad as the sorter is
-// in the map package, and also because we may want to use generic ObjectContext API...
 public class AshwoodEntitySorter implements EntitySorter {
 
     protected Collection dataMaps;
