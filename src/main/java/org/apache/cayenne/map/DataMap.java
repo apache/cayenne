@@ -24,12 +24,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbAttributeListener;
 import org.apache.cayenne.map.event.DbEntityListener;
@@ -45,6 +46,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Stores a collection of related mapping objects that describe database and object layers
@@ -113,6 +115,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     protected boolean clientSupported;
     protected String defaultClientPackage;
 
+    private List embeddables;
     private SortedMap objEntityMap;
     private SortedMap dbEntityMap;
     private SortedMap procedureMap;
@@ -133,6 +136,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     public DataMap(String mapName, Map properties) {
+        embeddables = new ArrayList();
         objEntityMap = new TreeMap();
         dbEntityMap = new TreeMap();
         procedureMap = new TreeMap();
@@ -261,6 +265,31 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
 
         if (!Util.isEmptyString(defaultClientPackage)) {
             encoder.printProperty(DEFAULT_CLIENT_PACKAGE_PROPERTY, defaultClientPackage);
+        }
+
+        // embeddables.... must sort explicitly.
+        if (!embeddables.isEmpty()) {
+
+            List sortedEmbeddables;
+
+            if (embeddables.size() > 1) {
+                sortedEmbeddables = new ArrayList(embeddables);
+                Comparator embeddableComparator = new Comparator() {
+
+                    public int compare(Object o1, Object o2) {
+                        Embeddable e1 = (Embeddable) o1;
+                        Embeddable e2 = (Embeddable) o2;
+                        return Util.nullSafeCompare(true, e1.getClassName(), e2
+                                .getClassName());
+                    }
+                };
+                Collections.sort(sortedEmbeddables, embeddableComparator);
+            }
+            else {
+                sortedEmbeddables = embeddables;
+            }
+
+            encoder.print(sortedEmbeddables);
         }
 
         // procedures
@@ -458,6 +487,15 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     /**
+     * Removes all stored embeddable objects from the map.
+     * 
+     * @since 3.0
+     */
+    public void clearEmbeddables() {
+        embeddables.clear();
+    }
+
+    /**
      * @since 1.1
      */
     public void clearQueries() {
@@ -499,6 +537,18 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      */
     public Collection getQueries() {
         return Collections.unmodifiableCollection(queryMap.values());
+    }
+
+    /**
+     * Adds an embeddable object to the DataMap.
+     * 
+     * @since 3.0
+     */
+    public void addEmbeddable(Embeddable embeddable) {
+        if (embeddable == null) {
+            throw new NullPointerException("Null embeddable");
+        }
+        embeddables.add(embeddable);
     }
 
     /**
@@ -556,6 +606,15 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      */
     public Collection getObjEntities() {
         return Collections.unmodifiableCollection(objEntityMap.values());
+    }
+
+    /**
+     * Returns a collection of {@link Embeddable} mappings stored in the DataMap.
+     * 
+     * @since 3.0
+     */
+    public Collection getEmbeddables() {
+        return Collections.unmodifiableCollection(embeddables);
     }
 
     /**
@@ -640,6 +699,21 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         }
 
         return result;
+    }
+
+    /**
+     * Removes all {@link Embeddable} descriptors with matching class name.
+     * 
+     * @since 3.0
+     */
+    public void removeEmbeddable(String className) {
+        Iterator it = embeddables.iterator();
+        while (it.hasNext()) {
+            Embeddable e = (Embeddable) it.next();
+            if (className.equals(e.getClassName())) {
+                it.remove();
+            }
+        }
     }
 
     /**
