@@ -50,7 +50,9 @@ public class DataMapTest extends TestCase {
 
     public void testSerializabilityWithHessian() throws Exception {
         DataMap m1 = new DataMap("abc");
-        DataMap d1 = (DataMap) HessianUtil.cloneViaClientServerSerialization(m1, new EntityResolver());
+        DataMap d1 = (DataMap) HessianUtil.cloneViaClientServerSerialization(
+                m1,
+                new EntityResolver());
         assertEquals(m1.getName(), d1.getName());
 
         ObjEntity oe1 = new ObjEntity("oe1");
@@ -239,6 +241,29 @@ public class DataMapTest extends TestCase {
 
         map.removeObjEntity(e.getName(), false);
         map.addObjEntity(e);
+    }
+
+    public void testAddEmbeddable() {
+        Embeddable e = new Embeddable("XYZ");
+
+        DataMap map = new DataMap();
+        assertEquals(0, map.getEmbeddables().size());
+        map.addEmbeddable(e);
+        assertEquals(1, map.getEmbeddables().size());
+        assertTrue(map.getEmbeddables().contains(e));
+    }
+
+    public void testRemoveEmbeddable() {
+        Embeddable e = new Embeddable("XYZ");
+
+        DataMap map = new DataMap();
+        map.addEmbeddable(e);
+        assertTrue(map.getEmbeddables().contains(e));
+
+        map.removeEmbeddable("123");
+        assertTrue(map.getEmbeddables().contains(e));
+        map.removeEmbeddable("XYZ");
+        assertFalse(map.getEmbeddables().contains(e));
     }
 
     public void testAddDbEntity() {
