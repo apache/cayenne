@@ -2,7 +2,7 @@ Apache Cayenne Release Notes
 ============================
 
 For the latest information visit project web site: 
-http://incubator.apache.org/cayenne/
+http://cayenne.apache.org/
 
 To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
@@ -25,16 +25,33 @@ CAY-623 Removing broken FireBird adapter
 CAY-625	Implement correct "scale" and "precision" for DbAttribute
 CAY-632	RefreshQuery - a common mechanism for object and object list invalidation
 CAY-645	Support for persisting java.util.Calendar
-CAY-647	Support for persisting java.math.BigIntegerCAY-648	Support for persisting java.io.SerializableCAY-650	Support for char[], java.lang.Character, java.lang.Character[], java.lang.Byte[] as "simple" persistence types
-CAY-651	Add convenience method to create missing DB_PATH expressions where there is a corresponding OBJ_PATH expressionCAY-657	Removing/Deprecating ExtendedType.validateProperty()CAY-660	JPA-like callbacks support in the main Cayenne stackCAY-666	Support for entity lifecycle callbacks in ClientServerChannelCAY-667	Support default entity lifecycle callbacksCAY-669	Support superclass entity callbacks
+CAY-647	Support for persisting java.math.BigInteger
+CAY-648	Support for persisting java.io.Serializable
+CAY-650	Support for char[], java.lang.Character, java.lang.Character[], java.lang.Byte[] as "simple" persistence types
+CAY-651	Add convenience method to create missing DB_PATH expressions where there is a corresponding OBJ_PATH expression
+CAY-657	Removing/Deprecating ExtendedType.validateProperty()
+CAY-660	JPA-like callbacks support in the main Cayenne stack
+CAY-666	Support for entity lifecycle callbacks in ClientServerChannel
+CAY-667	Support default entity lifecycle callbacks
+CAY-669	Support superclass entity callbacks
 CAY-672	Change the logic to get the Java class from ResultSetMetadata
 CAY-673 Removed DVModeler from the release. For backwards compatibility DVModeler from 2.0.x release can be used.
 CAY-674	ROP client side validation
 CAY-679	Add a new method to ObjectContext: registerNewObject(Object)
-CAY-680	Deprecate DataObject.[get|set]DataContext in favor of [get|set]ObjectContextCAY-681	Deprecate DataObject.fetchFinished() in favor of the callbacksCAY-683	Deprecate DataContext.createAndRegisterNewObject()
-CAY-685	OSQueryCache concurrency improvementsCAY-687	New method: QueryMetadata.getClassDescriptor()
-CAY-688	Change signatures of ObjectContext.deleteObject/registerNewObject/localObject to take Object instead of Persistent as an argumentCAY-689	DataObjectUtils must return "Object" instead of "DataObject" from all pk lookup methods
-CAY-692	Extra argument needed in ObjectContext.prepareForAccess - whether the property is a fault or not.CAY-693	DataContext should not return HOLLOW objects in response to ObjectIdQuery()CAY-696	true/false in expressionCAY-700	where in () with empty collectionCAY-702	Improve DBCPDataSourceFactory to use it for a JettyPlus DataSourceCAY-703	Cache EntityResolver in the ClientChannel
+CAY-680	Deprecate DataObject.[get|set]DataContext in favor of [get|set]ObjectContext
+CAY-681	Deprecate DataObject.fetchFinished() in favor of the callbacks
+CAY-683	Deprecate DataContext.createAndRegisterNewObject()
+CAY-685	OSQueryCache concurrency improvements
+CAY-687	New method: QueryMetadata.getClassDescriptor()
+CAY-688	Change signatures of ObjectContext.deleteObject/registerNewObject/localObject to take Object instead of Persistent as an argument
+CAY-689	DataObjectUtils must return "Object" instead of "DataObject" from all pk lookup methods
+CAY-692	Extra argument needed in ObjectContext.prepareForAccess - whether the property is a fault or not.
+CAY-693	DataContext should not return HOLLOW objects in response to ObjectIdQuery()
+CAY-696	true/false in expression
+CAY-700	where in () with empty collection
+CAY-702	Improve DBCPDataSourceFactory to use it for a JettyPlus DataSource
+CAY-703	Cache EntityResolver in the ClientChannel
+
 
 Bug Fixes since 1.2 final:
 
@@ -51,10 +68,14 @@ CAY-608	Prefetch validation incorrectly reports error on multi-step prefetches
 CAY-646	Class generator - incorrect java types for classes like java.lang.whatever.XYZ
 CAY-649	ExtenedTypeMap.getRegisteredType(Class) incorrectly handles array types
 CAY-652 Exception with Tomcat's session restore capability
-CAY-653 overriding setPersistentState() in unreliable in three tier environment with CayenneContextCAY-663	localObject and new objectsCAY-664	Simplify EntityResolver serializationCAY-671	custom exception class for ROP missing session
+CAY-653 overriding setPersistentState() in unreliable in three tier environment with CayenneContext
+CAY-663	localObject and new objects
+CAY-664	Simplify EntityResolver serialization
+CAY-671	custom exception class for ROP missing session
 CAY-675	compound primary key change
 CAY-690 Exception in the Modeler when changing schema on derived entities
-CAY-707	SelectQuery automatic cache key build mechanism produces wrong results when DO's are used in qualifierCAY-710	XMLDecoder decodes Dates wrong
+CAY-707	SelectQuery automatic cache key build mechanism produces wrong results when DO's are used in qualifier
+CAY-710	XMLDecoder decodes Dates wrong
 CAY-712 Allow modifying objects in validate* methods
 CAY-724 Bogus FaultFailureExceptions
 CAY-726 SQLTemplate parsing bug when macros appear at the end of line
