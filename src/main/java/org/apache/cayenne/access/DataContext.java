@@ -58,6 +58,7 @@ import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.LifecycleEventCallback;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -1385,6 +1386,9 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Sets default for posting transaction events by new DataContexts.
+     * 
+     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     *             removed in later 3.0 milestones.
      */
     public static void setTransactionEventsEnabledDefault(boolean flag) {
         transactionEventsEnabledDefault = flag;
@@ -1392,11 +1396,18 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Enables or disables posting of transaction events by this DataContext.
+     * 
+     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     *             removed in later 3.0 milestones.
      */
     public void setTransactionEventsEnabled(boolean flag) {
         this.transactionEventsEnabled = flag;
     }
 
+    /**
+     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     *             removed in later 3.0 milestones.
+     */
     public boolean isTransactionEventsEnabled() {
         return this.transactionEventsEnabled;
     }
@@ -1431,6 +1442,10 @@ public class DataContext extends BaseContext implements DataChannel {
         this.validatingObjectsOnCommit = flag;
     }
 
+    /**
+     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     *             removed in later 3.0 milestones.
+     */
     void fireWillCommit() {
         // post event: WILL_COMMIT
         if (this.transactionEventsEnabled) {
@@ -1439,6 +1454,10 @@ public class DataContext extends BaseContext implements DataChannel {
         }
     }
 
+    /**
+     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     *             removed in later 3.0 milestones.
+     */
     void fireTransactionRolledback() {
         // post event: DID_ROLLBACK
         if ((this.transactionEventsEnabled)) {
@@ -1447,6 +1466,10 @@ public class DataContext extends BaseContext implements DataChannel {
         }
     }
 
+    /**
+     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     *             removed in later 3.0 milestones.
+     */
     void fireTransactionCommitted() {
         // old-style event
         if ((this.transactionEventsEnabled)) {

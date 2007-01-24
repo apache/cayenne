@@ -16,23 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-
 package org.apache.cayenne.access.event;
 
 import java.util.EventListener;
 
+import org.apache.cayenne.map.LifecycleEventCallback;
+
 /**
- * This interface declares methods that DataObject classes can implement to be
- * notified about transactions of their DataContext.
- * Note: explicit registration with EventManager is not necessary, since the
- * events are simply forwarded by ContextCommitObserver; stricly speaking these
- * methods are just regular 'callbacks'. The event argument is passed along for
- * convenience.
+ * This interface declares methods that DataObject classes can implement to be notified
+ * about transactions of their DataContext. Note: explicit registration with EventManager
+ * is not necessary, since the events are simply forwarded by ContextCommitObserver;
+ * stricly speaking these methods are just regular 'callbacks'. The event argument is
+ * passed along for convenience.
+ * 
+ * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be removed in
+ *             later 3.0 milestones.
  */
-
 public interface DataObjectTransactionEventListener extends EventListener {
-	public void willCommit(DataContextEvent event);
-	public void didCommit(DataContextEvent event);
-}
 
+    public void willCommit(DataContextEvent event);
+
+    public void didCommit(DataContextEvent event);
+}
