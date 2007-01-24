@@ -29,12 +29,15 @@ import org.apache.cayenne.access.event.DataContextEvent;
 import org.apache.cayenne.access.event.DataContextTransactionEventListener;
 import org.apache.cayenne.access.event.DataObjectTransactionEventListener;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.map.LifecycleEventCallback;
 
 /**
  * Handles DataContext events on domain flush.
  * 
  * @since 1.2
  * @author Andrus Adamchik
+ * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be removed in
+ *             later 3.0 milestones.
  */
 class DataContextFlushEventHandler implements DataContextTransactionEventListener {
 
