@@ -88,6 +88,9 @@
 	<bean id="GenericMap" class="org.apache.cayenne.unit.DataMapFactory">
 		<constructor-arg><value>generic.map.xml</value></constructor-arg>
 	</bean>
+	<bean id="EmbeddingMap" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>embeddable.map.xml</value></constructor-arg>
+	</bean>
 	
 	<!-- ======================================= -->
 	<!-- DataSetFactory -->
@@ -108,6 +111,11 @@
 		<constructor-arg><ref bean="TestResources"/></constructor-arg>
 		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
 		<constructor-arg><list><ref bean="PeopleMap"/></list></constructor-arg>
+	</bean>
+	<bean id="EmbeddingStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="EmbeddingMap"/></list></constructor-arg>
 	</bean>
 	<bean id="LockingStack" class="org.apache.cayenne.unit.SimpleAccessStack">
 		<constructor-arg><ref bean="TestResources"/></constructor-arg>
@@ -155,6 +163,7 @@
 				<ref bean="GenericMap"/>
 				<ref bean="DB1Map"/>
 				<ref bean="DB2Map"/>
+				<ref bean="EmbeddingMap"/>
 			</list>
 		</constructor-arg>
 	</bean>
