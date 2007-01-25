@@ -24,54 +24,61 @@ import java.util.Collection;
 import org.apache.cayenne.query.Query;
 
 /**
- * Defines API of a container of DbEntities, ObjEntities, Procedures, Queries 
- * and other mapping objects.
+ * Defines API of a container of DbEntities, ObjEntities, Procedures, Queries and other
+ * mapping objects.
  * 
  * @since 1.1
  * @author Andrus Adamchik
  */
 public interface MappingNamespace {
-    /**
-     * Returns DbEntity for a given name, or null if no
-     * such DbEntity is found in the MappingNamespace.
-     */
-    public DbEntity getDbEntity(String name);
 
     /**
-     * Returns ObjEntity for a given name, or null if no
-     * such ObjEntity is found in the MappingNamespace.
+     * Returns an {@link Embeddable} matching class name or null if such Embeddable is not
+     * mapped.
      */
-    public ObjEntity getObjEntity(String name);
+    Embeddable getEmbeddable(String className);
 
     /**
-     * Returns Procedure for a given name, or null if no
-     * such Procedure is found in the MappingNamespace.
+     * Returns DbEntity for a given name, or null if no such DbEntity is found in the
+     * MappingNamespace.
      */
-    public Procedure getProcedure(String name);
+    DbEntity getDbEntity(String name);
 
     /**
-     * Returns Query for a given name, or null if no
-     * such Query is found in the MappingNamespace.
+     * Returns ObjEntity for a given name, or null if no such ObjEntity is found in the
+     * MappingNamespace.
      */
-    public Query getQuery(String name);
+    ObjEntity getObjEntity(String name);
+
+    /**
+     * Returns Procedure for a given name, or null if no such Procedure is found in the
+     * MappingNamespace.
+     */
+    Procedure getProcedure(String name);
+
+    /**
+     * Returns Query for a given name, or null if no such Query is found in the
+     * MappingNamespace.
+     */
+    Query getQuery(String name);
 
     /**
      * Returns all DbEntities in the namespace.
      */
-    public Collection getDbEntities();
+    Collection getDbEntities();
 
     /**
      * Returns all ObjEntities in the namespace.
      */
-    public Collection getObjEntities();
+    Collection getObjEntities();
 
     /**
      * Returns all Procedures in the namespace.
      */
-    public Collection getProcedures();
+    Collection getProcedures();
 
     /**
      * Returns all Queries in the namespace.
      */
-    public Collection getQueries();
+    Collection getQueries();
 }

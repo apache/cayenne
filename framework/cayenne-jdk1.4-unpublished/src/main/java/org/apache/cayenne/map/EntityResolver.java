@@ -57,6 +57,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected boolean indexedByClass;
 
     protected transient Map queryCache;
+    protected transient Map embeddableCache;
     protected transient Map dbEntityCache;
     protected transient Map objEntityCache;
     protected transient Map procedureCache;
@@ -77,6 +78,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     public EntityResolver() {
         this.indexedByClass = true;
         this.maps = new ArrayList();
+        this.embeddableCache = new HashMap();
         this.queryCache = new HashMap();
         this.dbEntityCache = new HashMap();
         this.objEntityCache = new HashMap();
@@ -241,6 +243,22 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     public Query getQuery(String name) {
         return lookupQuery(name);
+    }
+    
+    /**
+     * @since 3.0
+     */
+    public Embeddable getEmbeddable(String className) {
+        Embeddable result = (Embeddable) embeddableCache.get(className);
+
+        if (result == null) {
+            // reconstruct cache just in case some of the datamaps
+            // have changed and now contain the required information
+            constructCache();
+            result = (Embeddable) embeddableCache.get(className);
+        }
+        
+        return result;
     }
 
     /**

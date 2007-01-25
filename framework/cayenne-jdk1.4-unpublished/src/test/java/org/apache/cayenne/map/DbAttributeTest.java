@@ -22,13 +22,14 @@ package org.apache.cayenne.map;
 import java.sql.Types;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.unit.CayenneCase;
 
 /**
  * @author Andrus Adamchik
  */
-public class DbAttributeTest extends CayenneCase {
+public class DbAttributeTest extends TestCase {
 
     public void testConstructor1() throws Exception {
         DbAttribute a = new DbAttribute("abc");

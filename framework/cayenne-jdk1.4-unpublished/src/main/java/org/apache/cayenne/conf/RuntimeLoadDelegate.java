@@ -43,7 +43,7 @@ import org.xml.sax.InputSource;
  * @author Andrus Adamchik
  */
 public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
-    
+
     private static final Log logger = LogFactory.getLog(RuntimeLoadDelegate.class);
 
     // TODO: andrus, 7/17/2006 - these variables, and project upgrade logic should be
@@ -57,6 +57,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
     protected ConfigStatus status;
     protected Configuration config;
     protected long startTime;
+    protected MapLoader mapLoader;
 
     public RuntimeLoadDelegate(Configuration config, ConfigStatus status) {
 
@@ -172,6 +173,16 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         }
     }
 
+    protected MapLoader getMapLoader() {
+        // it is worth caching the map loader, as it precompiles some XML operations
+        // starting from release 3.0
+        if (mapLoader == null) {
+            mapLoader = new MapLoader();
+        }
+
+        return mapLoader;
+    }
+
     /**
      * Returns DataMap for the name and location information. If a DataMap is already
      * loaded within a given domain, such loaded map is returned, otherwise the map is
@@ -200,7 +211,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         }
 
         try {
-            DataMap map = new MapLoader().loadDataMap(new InputSource(mapIn));
+            DataMap map = getMapLoader().loadDataMap(new InputSource(mapIn));
 
             logger.info("loaded <map name='"
                     + mapName

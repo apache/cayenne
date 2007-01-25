@@ -23,6 +23,7 @@ package org.apache.cayenne.map;
 import java.io.Serializable;
 
 import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
 /**
@@ -48,6 +49,8 @@ public abstract class Attribute implements CayenneMapEntry, XMLSerializable, Ser
     public Attribute(String name) {
         this.name = name;
     }
+    
+    public abstract void encodeAsXML(XMLEncoder encoder);
 
     /**
      * Returns parent entity that holds this attribute.

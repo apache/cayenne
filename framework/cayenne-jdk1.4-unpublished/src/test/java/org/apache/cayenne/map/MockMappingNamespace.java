@@ -37,6 +37,10 @@ public class MockMappingNamespace implements MappingNamespace {
     private Map objEntities = new HashMap();
     private Map queries = new HashMap();
     private Map procedures = new HashMap();
+    
+    public Embeddable getEmbeddable(String className) {
+        return null;
+    }
 
     public void addDbEntity(DbEntity entity) {
         dbEntities.put(entity.getName(), entity);

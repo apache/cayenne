@@ -45,6 +45,7 @@ class CayenneGeneratorUtil {
 
     protected ILog logger;
     
+    protected MapLoader mapLoader;
     protected File map;
     protected File additionalMaps[];
     protected DefaultClassGenerator generator;
@@ -55,7 +56,10 @@ class CayenneGeneratorUtil {
     /** Loads and returns a DataMap by File. */
     public DataMap loadDataMap(File mapName) throws Exception {
         InputSource in = new InputSource(mapName.toURL().toString());
-        return new MapLoader().loadDataMap(in);
+        if(mapLoader == null) {
+            mapLoader = new MapLoader();
+        }
+        return mapLoader.loadDataMap(in);
     }
 
     /** Loads and returns DataMap based on <code>map</code> attribute. */

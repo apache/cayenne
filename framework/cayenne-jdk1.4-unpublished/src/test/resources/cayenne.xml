@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <domains project-version="2.0">
 <domain name="default">
+	<map name="embeddable" location="embeddable.map.xml"/>
 	<map name="generic" location="generic.map.xml"/>
 	<map name="locking" location="locking.map.xml"/>
 	<map name="map-db1" location="map-db1.map.xml"/>

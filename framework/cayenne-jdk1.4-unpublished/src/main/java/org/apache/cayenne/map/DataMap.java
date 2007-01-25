@@ -24,9 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -115,7 +113,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     protected boolean clientSupported;
     protected String defaultClientPackage;
 
-    private List embeddables;
+    private SortedMap embeddablesMap;
     private SortedMap objEntityMap;
     private SortedMap dbEntityMap;
     private SortedMap procedureMap;
@@ -136,7 +134,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     public DataMap(String mapName, Map properties) {
-        embeddables = new ArrayList();
+        embeddablesMap = new TreeMap();
         objEntityMap = new TreeMap();
         dbEntityMap = new TreeMap();
         procedureMap = new TreeMap();
@@ -267,30 +265,8 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
             encoder.printProperty(DEFAULT_CLIENT_PACKAGE_PROPERTY, defaultClientPackage);
         }
 
-        // embeddables.... must sort explicitly.
-        if (!embeddables.isEmpty()) {
-
-            List sortedEmbeddables;
-
-            if (embeddables.size() > 1) {
-                sortedEmbeddables = new ArrayList(embeddables);
-                Comparator embeddableComparator = new Comparator() {
-
-                    public int compare(Object o1, Object o2) {
-                        Embeddable e1 = (Embeddable) o1;
-                        Embeddable e2 = (Embeddable) o2;
-                        return Util.nullSafeCompare(true, e1.getClassName(), e2
-                                .getClassName());
-                    }
-                };
-                Collections.sort(sortedEmbeddables, embeddableComparator);
-            }
-            else {
-                sortedEmbeddables = embeddables;
-            }
-
-            encoder.print(sortedEmbeddables);
-        }
+        // embeddables
+        encoder.print(getEmbeddableMap());
 
         // procedures
         encoder.print(getProcedureMap());
@@ -492,7 +468,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 3.0
      */
     public void clearEmbeddables() {
-        embeddables.clear();
+        embeddablesMap.clear();
     }
 
     /**
@@ -548,7 +524,26 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         if (embeddable == null) {
             throw new NullPointerException("Null embeddable");
         }
-        embeddables.add(embeddable);
+
+        if (embeddable.getClassName() == null) {
+            throw new NullPointerException(
+                    "Attempt to add Embeddable with no class name.");
+        }
+
+        // TODO: change method signature to return replaced entity and make sure the
+        // Modeler handles it...
+        Object existing = embeddablesMap.get(embeddable.getClassName());
+        if (existing != null) {
+            if (existing == embeddable) {
+                return;
+            }
+            else {
+                throw new IllegalArgumentException("An attempt to override embeddable '"
+                        + embeddable.getClassName());
+            }
+        }
+
+        embeddablesMap.put(embeddable.getClassName(), embeddable);
     }
 
     /**
@@ -609,12 +604,31 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     /**
+     * @since 3.0
+     */
+    public Map getEmbeddableMap() {
+        return Collections.unmodifiableMap(embeddablesMap);
+    }
+
+    /**
      * Returns a collection of {@link Embeddable} mappings stored in the DataMap.
      * 
      * @since 3.0
      */
     public Collection getEmbeddables() {
-        return Collections.unmodifiableCollection(embeddables);
+        return Collections.unmodifiableCollection(embeddablesMap.values());
+    }
+
+    /**
+     * @since 3.0
+     */
+    public Embeddable getEmbeddable(String className) {
+        Embeddable e = (Embeddable) embeddablesMap.get(className);
+        if (e != null) {
+            return e;
+        }
+
+        return namespace != null ? namespace.getEmbeddable(className) : null;
     }
 
     /**
@@ -702,18 +716,13 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     /**
-     * Removes all {@link Embeddable} descriptors with matching class name.
+     * Removes an {@link Embeddable} descriptor with matching class name.
      * 
      * @since 3.0
      */
     public void removeEmbeddable(String className) {
-        Iterator it = embeddables.iterator();
-        while (it.hasNext()) {
-            Embeddable e = (Embeddable) it.next();
-            if (className.equals(e.getClassName())) {
-                it.remove();
-            }
-        }
+        // TODO: andrus, 1/25/2007 - clean up references like removeDbEntity does.
+        embeddablesMap.remove(className);
     }
 
     /**
