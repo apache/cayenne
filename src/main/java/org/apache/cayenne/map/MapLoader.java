@@ -21,6 +21,7 @@ package org.apache.cayenne.map;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -54,6 +55,27 @@ public class MapLoader extends DefaultHandler {
 
     public static final String DATA_MAP_TAG = "data-map";
     public static final String PROPERTY_TAG = "property";
+
+    /**
+     * @since 3.0
+     */
+    public static final String EMBEDDABLE_TAG = "embeddable";
+
+    /**
+     * @since 3.0
+     */
+    public static final String EMBEDDABLE_ATTRIBUTE_TAG = "embeddable-attribute";
+
+    /**
+     * @since 3.0
+     */
+    public static final String EMBEDDED_ATTRIBUTE_TAG = "embedded-attribute";
+
+    /**
+     * @since 3.0
+     */
+    public static final String EMBEDDABLE_ATTRIBUTE_OVERRIDE_TAG = "embeddable-attribute-override";
+
     public static final String DB_ENTITY_TAG = "db-entity";
     public static final String OBJ_ENTITY_TAG = "obj-entity";
     public static final String DB_ATTRIBUTE_TAG = "db-attribute";
@@ -87,6 +109,8 @@ public class MapLoader extends DefaultHandler {
     private DataMap dataMap;
     private DbEntity dbEntity;
     private ObjEntity objEntity;
+    private Embeddable embeddable;
+    private EmbeddedAttribute embeddedAttribute;
     private DbRelationship dbRelationship;
     private ObjRelationship objRelationship;
     private DbAttribute attrib;
@@ -96,9 +120,302 @@ public class MapLoader extends DefaultHandler {
     private String descending;
     private String ignoreCase;
 
+    private Map startTagOpMap;
+    private Map endTagOpMap;
     private String currentTag;
     private StringBuffer charactersBuffer;
     private Map mapProperties;
+
+    public MapLoader() {
+        // compile tag processors.
+        startTagOpMap = new HashMap(40);
+        endTagOpMap = new HashMap(40);
+
+        startTagOpMap.put(DB_ENTITY_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartDbEntity(attributes);
+            }
+        });
+
+        startTagOpMap.put(DB_ATTRIBUTE_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartDbAttribute(attributes);
+            }
+        });
+
+        startTagOpMap.put(DB_ATTRIBUTE_DERIVED_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartDerivedDbAttribute(attributes);
+            }
+        });
+
+        startTagOpMap.put(DB_ATTRIBUTE_REF_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartDbAttributeRef(attributes);
+            }
+        });
+
+        startTagOpMap.put(OBJ_ENTITY_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartObjEntity(attributes);
+            }
+        });
+
+        startTagOpMap.put(OBJ_ATTRIBUTE_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartObjAttribute(attributes);
+            }
+        });
+
+        startTagOpMap.put(EMBEDDABLE_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartEmbeddable(attributes);
+            }
+        });
+
+        startTagOpMap.put(EMBEDDABLE_ATTRIBUTE_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartEmbeddableAttribute(attributes);
+            }
+        });
+
+        startTagOpMap.put(EMBEDDABLE_ATTRIBUTE_OVERRIDE_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartEmbeddableAttributeOverride(attributes);
+            }
+        });
+
+        startTagOpMap.put(EMBEDDED_ATTRIBUTE_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartEmbeddedAttribute(attributes);
+            }
+        });
+
+        startTagOpMap.put(DB_RELATIONSHIP_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartDbRelationship(attributes);
+            }
+        });
+
+        startTagOpMap.put(DB_ATTRIBUTE_PAIR_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartDbAttributePair(attributes);
+            }
+        });
+
+        startTagOpMap.put(OBJ_RELATIONSHIP_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartObjRelationship(attributes);
+            }
+        });
+
+        startTagOpMap.put(DB_RELATIONSHIP_REF_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartDbRelationshipRef(attributes);
+            }
+        });
+
+        startTagOpMap.put(PROCEDURE_PARAMETER_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartProcedureParameter(attributes);
+            }
+        });
+
+        startTagOpMap.put(PROCEDURE_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartProcedure(attributes);
+            }
+        });
+
+        startTagOpMap.put(QUERY_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartQuery(attributes);
+            }
+        });
+
+        startTagOpMap.put(QUERY_SQL_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                charactersBuffer = new StringBuffer();
+                processStartQuerySQL(attributes);
+            }
+        });
+
+        startTagOpMap.put(QUERY_ORDERING_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                charactersBuffer = new StringBuffer();
+                processStartQueryOrdering(attributes);
+            }
+        });
+
+        startTagOpMap.put(DB_KEY_GENERATOR_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartDbKeyGenerator(attributes);
+            }
+        });
+
+        startTagOpMap.put(PROPERTY_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                // properties can belong to query or DataMap
+                if (queryBuilder != null) {
+                    processStartQueryProperty(attributes);
+                }
+                else {
+                    processStartDataMapProperty(attributes);
+                }
+            }
+        });
+
+        StartClosure resetBuffer = new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                charactersBuffer = new StringBuffer();
+            }
+        };
+
+        startTagOpMap.put(QUERY_PREFETCH_TAG, resetBuffer);
+        startTagOpMap.put(QUERY_QUALIFIER_TAG, resetBuffer);
+        startTagOpMap.put(DB_GENERATOR_TYPE_TAG, resetBuffer);
+        startTagOpMap.put(DB_GENERATOR_NAME_TAG, resetBuffer);
+        startTagOpMap.put(DB_KEY_CACHE_SIZE_TAG, resetBuffer);
+
+        endTagOpMap.put(DATA_MAP_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndDataMap();
+            }
+        });
+        endTagOpMap.put(DB_ENTITY_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndDbEntity();
+            }
+        });
+        endTagOpMap.put(OBJ_ENTITY_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndObjEntity();
+            }
+        });
+        endTagOpMap.put(EMBEDDABLE_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndEmbeddable();
+            }
+        });
+        endTagOpMap.put(EMBEDDABLE_ATTRIBUTE_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndEmbeddedAttribute();
+            }
+        });
+
+        endTagOpMap.put(DB_ATTRIBUTE_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndDbAttribute();
+            }
+        });
+
+        endTagOpMap.put(DB_ATTRIBUTE_DERIVED_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndDbAttribute();
+            }
+        });
+        endTagOpMap.put(DB_RELATIONSHIP_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndDbRelationship();
+            }
+        });
+        endTagOpMap.put(OBJ_RELATIONSHIP_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndObjRelationship();
+            }
+        });
+        endTagOpMap.put(DB_GENERATOR_TYPE_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndDbGeneratorType();
+            }
+        });
+        endTagOpMap.put(DB_GENERATOR_NAME_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndDbGeneratorName();
+            }
+        });
+        endTagOpMap.put(DB_KEY_CACHE_SIZE_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndDbKeyCacheSize();
+            }
+        });
+        endTagOpMap.put(PROCEDURE_PARAMETER_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndProcedureParameter();
+            }
+        });
+        endTagOpMap.put(PROCEDURE_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndProcedure();
+            }
+        });
+        endTagOpMap.put(QUERY_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndQuery();
+            }
+        });
+        endTagOpMap.put(QUERY_SQL_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndQuerySQL();
+            }
+        });
+        endTagOpMap.put(QUERY_QUALIFIER_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndQualifier();
+            }
+        });
+        endTagOpMap.put(QUERY_ORDERING_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndQueryOrdering();
+            }
+        });
+        endTagOpMap.put(QUERY_PREFETCH_TAG, new EndClosure() {
+
+            void execute() throws SAXException {
+                processEndQueryPrefetch();
+            }
+        });
+    }
 
     /**
      * Loads a DataMap from XML input source.
@@ -205,142 +522,55 @@ public class MapLoader extends DefaultHandler {
             Attributes attributes) throws SAXException {
 
         rememberCurrentTag(localName);
-        if (localName.equals(DATA_MAP_TAG)) {
-        }
-        else if (localName.equals(DB_ENTITY_TAG)) {
-            processStartDbEntity(attributes);
-        }
-        else if (localName.equals(DB_ATTRIBUTE_TAG)) {
-            processStartDbAttribute(attributes);
-        }
-        else if (localName.equals(DB_ATTRIBUTE_DERIVED_TAG)) {
-            processStartDerivedDbAttribute(attributes);
-        }
-        else if (localName.equals(DB_ATTRIBUTE_REF_TAG)) {
-            processStartDbAttributeRef(attributes);
-        }
-        else if (localName.equals(OBJ_ENTITY_TAG)) {
-            processStartObjEntity(attributes);
-        }
-        else if (localName.equals(OBJ_ATTRIBUTE_TAG)) {
-            processStartObjAttribute(attributes);
-        }
-        else if (localName.equals(DB_RELATIONSHIP_TAG)) {
-            processStartDbRelationship(attributes);
-        }
-        else if (localName.equals(DB_ATTRIBUTE_PAIR_TAG)) {
-            processStartDbAttributePair(attributes);
-        }
-        else if (localName.equals(OBJ_RELATIONSHIP_TAG)) {
-            processStartObjRelationship(attributes);
-        }
-        else if (localName.equals(DB_RELATIONSHIP_REF_TAG)) {
-            processStartDbRelationshipRef(attributes);
-        }
-        else if (localName.equals(PROCEDURE_PARAMETER_TAG)) {
-            processStartProcedureParameter(attributes);
-        }
-        else if (localName.equals(PROCEDURE_TAG)) {
-            processStartProcedure(attributes);
-        }
-        else if (localName.equals(QUERY_TAG)) {
-            processStartQuery(attributes);
-        }
-        else if (localName.equals(QUERY_SQL_TAG)) {
-            charactersBuffer = new StringBuffer();
-            processStartQuerySQL(attributes);
-        }
-        else if (localName.equals(QUERY_ORDERING_TAG)) {
-            charactersBuffer = new StringBuffer();
-            processStartQueryOrdering(attributes);
-        }
-        else if (localName.equals(QUERY_PREFETCH_TAG)) {
-            charactersBuffer = new StringBuffer();
-        }
-        else if (localName.equals(QUERY_QUALIFIER_TAG)) {
-            charactersBuffer = new StringBuffer();
-        }
-        else if (localName.equals(DB_KEY_GENERATOR_TAG)) {
-            processStartDbKeyGenerator(attributes);
-        }
-        else if (localName.equals(DB_GENERATOR_TYPE_TAG)) {
-            charactersBuffer = new StringBuffer();
-        }
-        else if (localName.equals(DB_GENERATOR_NAME_TAG)) {
-            charactersBuffer = new StringBuffer();
-        }
-        else if (localName.equals(DB_KEY_CACHE_SIZE_TAG)) {
-            charactersBuffer = new StringBuffer();
-        }
-        // properties can belong to query or DataMap
-        else if (localName.equals(PROPERTY_TAG)) {
-            if (queryBuilder != null) {
-                processStartQueryProperty(attributes);
-            }
-            else {
-                processStartDataMapProperty(attributes);
-            }
+
+        StartClosure op = (StartClosure) startTagOpMap.get(localName);
+        if (op != null) {
+            op.execute(attributes);
         }
     }
 
-    public void endElement(String namespaceURI, String local_name, String qName)
+    public void endElement(String namespaceURI, String localName, String qName)
             throws SAXException {
-        if (local_name.equals(DATA_MAP_TAG)) {
-            processEndDataMap();
-        }
-        else if (local_name.equals(DB_ENTITY_TAG)) {
-            processEndDbEntity();
-        }
-        else if (local_name.equals(OBJ_ENTITY_TAG)) {
-            processEndObjEntity();
-        }
-        else if (local_name.equals(DB_ATTRIBUTE_TAG)) {
-            processEndDbAttribute();
-        }
-        else if (local_name.equals(DB_ATTRIBUTE_DERIVED_TAG)) {
-            processEndDbAttribute();
-        }
-        else if (local_name.equals(DB_RELATIONSHIP_TAG)) {
-            processEndDbRelationship();
-        }
-        else if (local_name.equals(OBJ_RELATIONSHIP_TAG)) {
-            processEndObjRelationship();
-        }
-        else if (local_name.equals(DB_KEY_GENERATOR_TAG)) {
-        }
-        else if (local_name.equals(DB_GENERATOR_TYPE_TAG)) {
-            processEndDbGeneratorType();
-        }
-        else if (local_name.equals(DB_GENERATOR_NAME_TAG)) {
-            processEndDbGeneratorName();
-        }
-        else if (local_name.equals(DB_KEY_CACHE_SIZE_TAG)) {
-            processEndDbKeyCacheSize();
-        }
-        else if (local_name.equals(PROCEDURE_PARAMETER_TAG)) {
-            processEndProcedureParameter();
-        }
-        else if (local_name.equals(PROCEDURE_TAG)) {
-            processEndProcedure();
-        }
-        else if (local_name.equals(QUERY_TAG)) {
-            processEndQuery();
-        }
-        else if (local_name.equals(QUERY_SQL_TAG)) {
-            processEndQuerySQL();
-        }
-        else if (local_name.equals(QUERY_QUALIFIER_TAG)) {
-            processEndQualifier();
-        }
-        else if (local_name.equals(QUERY_ORDERING_TAG)) {
-            processEndQueryOrdering();
-        }
-        else if (local_name.equals(QUERY_PREFETCH_TAG)) {
-            processEndQueryPrefetch();
+
+        EndClosure op = (EndClosure) endTagOpMap.get(localName);
+        if (op != null) {
+            op.execute();
         }
 
         resetCurrentTag();
         charactersBuffer = null;
+    }
+
+    private void processStartEmbeddable(Attributes atts) {
+        embeddable = new Embeddable(atts.getValue("", "className"));
+        dataMap.addEmbeddable(embeddable);
+    }
+
+    private void processStartEmbeddableAttribute(Attributes atts) {
+        String name = atts.getValue("", "name");
+        String type = atts.getValue("", "type");
+        String dbName = atts.getValue("", "db-attribute-name");
+
+        EmbeddableAttribute ea = new EmbeddableAttribute(name);
+        ea.setType(type);
+        ea.setDbAttributeName(dbName);
+        embeddable.addAttribute(ea);
+    }
+
+    private void processStartEmbeddedAttribute(Attributes atts) {
+
+        String name = atts.getValue("", "name");
+        String type = atts.getValue("", "type");
+
+        embeddedAttribute = new EmbeddedAttribute(name);
+        embeddedAttribute.setType(type);
+        objEntity.addAttribute(embeddedAttribute);
+    }
+
+    private void processStartEmbeddableAttributeOverride(Attributes atts) {
+        String name = atts.getValue("", "name");
+        String dbName = atts.getValue("", "db-attribute-path");
+        embeddedAttribute.addAttributeOverride(name, dbName);
     }
 
     private void processStartDbEntity(Attributes atts) {
@@ -398,12 +628,12 @@ public class MapLoader extends DefaultHandler {
         if (pseudoPrecision != null) {
             attrib.setScale(Integer.parseInt(pseudoPrecision));
         }
-        
+
         String precision = atts.getValue("", "attributePrecision");
         if (precision != null) {
             attrib.setAttributePrecision(Integer.parseInt(precision));
         }
-        
+
         String scale = atts.getValue("", "scale");
         if (scale != null) {
             attrib.setScale(Integer.parseInt(scale));
@@ -428,23 +658,23 @@ public class MapLoader extends DefaultHandler {
         if (length != null) {
             attrib.setMaxLength(Integer.parseInt(length));
         }
-        
+
         // this is an obsolete 1.2 'precision' attribute that really meant 'scale'
         String pseudoPrecision = atts.getValue("", "precision");
         if (pseudoPrecision != null) {
             attrib.setScale(Integer.parseInt(pseudoPrecision));
         }
-        
+
         String precision = atts.getValue("", "attributePrecision");
         if (precision != null) {
             attrib.setAttributePrecision(Integer.parseInt(precision));
         }
-        
+
         String scale = atts.getValue("", "scale");
         if (scale != null) {
             attrib.setScale(Integer.parseInt(scale));
         }
-        
+
         String temp = atts.getValue("", "isPrimaryKey");
         if (temp != null && temp.equalsIgnoreCase(TRUE)) {
             attrib.setPrimaryKey(true);
@@ -852,6 +1082,14 @@ public class MapLoader extends DefaultHandler {
         objEntity = null;
     }
 
+    private void processEndEmbeddable() {
+        embeddable = null;
+    }
+
+    private void processEndEmbeddedAttribute() {
+        embeddedAttribute = null;
+    }
+
     private void processEndDbRelationship() {
         dbRelationship = null;
     }
@@ -901,5 +1139,15 @@ public class MapLoader extends DefaultHandler {
         }
 
         return name;
+    }
+
+    abstract class StartClosure {
+
+        abstract void execute(Attributes attributes) throws SAXException;
+    }
+
+    abstract class EndClosure {
+
+        abstract void execute() throws SAXException;
     }
 }

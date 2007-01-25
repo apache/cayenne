@@ -16,39 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.testdo.embeddable.auto;
 
-package org.apache.cayenne.project;
+public class _Embeddable1 {
 
-import java.io.File;
+    protected String embedded10;
+    protected String embedded20;
 
-import junit.framework.TestCase;
-
-import org.apache.cayenne.access.DataNode;
-
-/**
- * @author Andrus Adamchik
- */
-public class DataNodeFileTest extends TestCase {
-
-    protected DataNodeFile dnf;
-    protected DataNode node;
-    protected Project pr;
-
-    protected void setUp() throws Exception {
-        pr = new TstProject(new File("xyz"));
-        node = new DataNode("n1");
-        dnf = new DataNodeFile(pr, node);
+    public String getEmbedded10() {
+        return embedded10;
     }
 
-    public void testGetObject() throws Exception {
-        assertSame(node, dnf.getObject());
+    public void setEmbedded10(String embedded10) {
+        this.embedded10 = embedded10;
     }
 
-    public void testGetObjectName() throws Exception {
-        assertEquals(node.getName(), dnf.getObjectName());
+    public String getEmbedded20() {
+        return embedded20;
     }
 
-    public void testGetFileName() throws Exception {
-        assertEquals(node.getName() + ".driver.xml", dnf.getLocation());
+    public void setEmbedded20(String embedded20) {
+        this.embedded20 = embedded20;
     }
 }

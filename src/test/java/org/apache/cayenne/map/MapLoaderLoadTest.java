@@ -28,26 +28,56 @@ import org.apache.art.Gallery;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.xml.sax.InputSource;
 
 public class MapLoaderLoadTest extends TestCase {
 
-    protected MapLoader mapLoader;
-    private String testDataMap;
-
-    public void setUp() throws Exception {
-        super.setUp();
-
-        mapLoader = new MapLoader();
-        testDataMap = getClass()
-                .getClassLoader()
-                .getResource("testmap.map.xml")
-                .toExternalForm();
+    private InputSource getMapXml(String mapName) {
+        return new InputSource(getClass().getClassLoader().getResourceAsStream(mapName));
     }
 
-    public void testLoadDataMap() throws Exception {
-        InputSource in = new InputSource(testDataMap);
-        DataMap map = mapLoader.loadDataMap(in);
+    public void testLoadEmbeddableMap() throws Exception {
+        MapLoader mapLoader = new MapLoader();
+        DataMap map = mapLoader.loadDataMap(getMapXml("embeddable.map.xml"));
+        assertNotNull(map);
+
+        assertEquals(1, map.getEmbeddables().size());
+        Embeddable e = map.getEmbeddable(Embeddable1.class.getName());
+        assertNotNull(e);
+        assertEquals(Embeddable1.class.getName(), e.getClassName());
+
+        assertEquals(2, e.getAttributes().size());
+        EmbeddableAttribute ea1 = e.getAttribute("embedded10");
+        assertNotNull(ea1);
+        assertEquals("embedded10", ea1.getName());
+        assertEquals("java.lang.String", ea1.getType());
+        assertEquals("EMBEDDED10", ea1.getDbAttributeName());
+
+        EmbeddableAttribute ea2 = e.getAttribute("embedded20");
+        assertNotNull(ea2);
+        assertEquals("embedded20", ea2.getName());
+        assertEquals("java.lang.String", ea2.getType());
+        assertEquals("EMBEDDED20", ea2.getDbAttributeName());
+
+        ObjEntity oe = map.getObjEntity("EmbedEntity1");
+        assertNotNull(oe);
+        assertEquals(3, oe.getDeclaredAttributes().size());
+
+        EmbeddedAttribute oea1 = (EmbeddedAttribute) oe.getAttribute("embedded1");
+        assertNotNull(oea1);
+        assertEquals(Embeddable1.class.getName(), oea1.getType());
+        assertEquals(0, oea1.getAttributeOverrides().size());
+
+        EmbeddedAttribute oea2 = (EmbeddedAttribute) oe.getAttribute("embedded2");
+        assertNotNull(oea2);
+        assertEquals(Embeddable1.class.getName(), oea2.getType());
+        assertEquals(2, oea2.getAttributeOverrides().size());
+    }
+
+    public void testLoadTestMap() throws Exception {
+        MapLoader mapLoader = new MapLoader();
+        DataMap map = mapLoader.loadDataMap(getMapXml("testmap.map.xml"));
         assertNotNull(map);
 
         // test procedures

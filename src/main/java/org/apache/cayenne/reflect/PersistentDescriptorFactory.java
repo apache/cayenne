@@ -69,7 +69,14 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         // only include this entity attributes and skip superclasses...
         Iterator attributes = descriptor.getEntity().getDeclaredAttributes().iterator();
         while (attributes.hasNext()) {
-            createAttributeProperty(descriptor, (ObjAttribute) attributes.next());
+            Object attribute = attributes.next();
+
+            if (attribute instanceof ObjAttribute) {
+                createAttributeProperty(descriptor, (ObjAttribute) attribute);
+            }
+            else {
+                // TODO: andrus, 1/25/2007 - EmbeddedAttribute
+            }
         }
 
         // only include this entity relationships and skip superclasses...
