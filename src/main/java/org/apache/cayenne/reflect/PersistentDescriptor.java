@@ -89,7 +89,7 @@ public class PersistentDescriptor implements ClassDescriptor {
      */
     public void removeDeclaredProperty(String propertyName) {
         Object removed = declaredProperties.remove(propertyName);
-        
+
         if (declaredIdProperties != null && removed != null) {
             declaredIdProperties.remove(removed);
         }
@@ -150,6 +150,10 @@ public class PersistentDescriptor implements ClassDescriptor {
         return subclassDescriptor != null ? subclassDescriptor : this;
     }
 
+    /**
+     * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
+     *             instead.
+     */
     public Iterator getProperties() {
         Iterator declaredIt = IteratorUtils.unmodifiableIterator(declaredProperties
                 .values()
@@ -271,12 +275,10 @@ public class PersistentDescriptor implements ClassDescriptor {
         });
     }
 
-    public boolean visitProperties(PropertyVisitor visitor) {
-        if (superclassDescriptor != null
-                && !superclassDescriptor.visitProperties(visitor)) {
-            return false;
-        }
-
+    /**
+     * @since 3.0
+     */
+    public boolean visitDeclaredProperties(PropertyVisitor visitor) {
         Iterator it = declaredProperties.values().iterator();
         while (it.hasNext()) {
             Property next = (Property) it.next();
@@ -286,6 +288,36 @@ public class PersistentDescriptor implements ClassDescriptor {
         }
 
         return true;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public boolean visitAllProperties(PropertyVisitor visitor) {
+        if (!visitProperties(visitor)) {
+            return false;
+        }
+
+        if (!subclassDescriptors.isEmpty()) {
+            Iterator it = subclassDescriptors.values().iterator();
+            while (it.hasNext()) {
+                ClassDescriptor next = (ClassDescriptor) it.next();
+                if (!next.visitDeclaredProperties(visitor)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public boolean visitProperties(PropertyVisitor visitor) {
+        if (superclassDescriptor != null
+                && !superclassDescriptor.visitProperties(visitor)) {
+            return false;
+        }
+
+        return visitDeclaredProperties(visitor);
     }
 
     public void setPersistenceStateAccessor(Accessor persistenceStateAccessor) {

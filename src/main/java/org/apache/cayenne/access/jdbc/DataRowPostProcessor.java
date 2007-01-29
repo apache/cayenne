@@ -92,14 +92,7 @@ class DataRowPostProcessor {
                     .getExtendedTypes()
                     .getRegisteredType(attribute.getType());
 
-            Collection overrides = null;
-
-            if (columnOverrides == null) {
-                columnOverrides = new HashMap(2);
-            }
-            else {
-                overrides = (Collection) columnOverrides.get(entity.getName());
-            }
+            Collection overrides = (Collection) columnOverrides.get(entity.getName());
 
             if (overrides == null) {
                 overrides = new ArrayList(3);
@@ -110,8 +103,8 @@ class DataRowPostProcessor {
         }
 
         // inject null post-processor
-        return columnOverrides != null ? new DataRowPostProcessor(translator
-                .getRootInheritanceTree(), columnOverrides) : null;
+        return columnOverrides.isEmpty() ? null : new DataRowPostProcessor(translator
+                .getRootInheritanceTree(), columnOverrides);
     }
 
     private DataRowPostProcessor(EntityInheritanceTree inheritanceTree,

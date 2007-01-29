@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
+
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.unit.AccessStack;
@@ -38,11 +41,9 @@ public class EmbeddingTest extends CayenneCase {
         SelectQuery query = new SelectQuery(EmbedEntity1.class);
         query.addOrdering(EmbedEntity1.NAME_PROPERTY, true);
 
-        // TODO: andrus 1/25/2007 - this fails
+        ObjectContext context = createDataContext();
 
-        // ObjectContext context = createDataContext();
-
-        // List results = context.performQuery(query);
-        // assertEquals(2, results.size());
+        List results = context.performQuery(query);
+        assertEquals(2, results.size());
     }
 }
