@@ -38,13 +38,18 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DerivedDbEntity;
-import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.reflect.ArcProperty;
+import org.apache.cayenne.reflect.AttributeProperty;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * A builder of JDBC PreparedStatements based on Cayenne SelectQueries. Translates
@@ -334,9 +339,9 @@ public class SelectTranslator extends QueryAssembler {
      * Appends columns needed for object SelectQuery to the provided columns list.
      */
     // TODO: this whole method screams REFACTORING!!!
-    List appendQueryColumns(List columns, SelectQuery query) {
+    List appendQueryColumns(final List columns, SelectQuery query) {
 
-        Set attributes = new HashSet();
+        final Set attributes = new HashSet();
 
         // fetched attributes include attributes that are either:
         // 
@@ -346,59 +351,67 @@ public class SelectTranslator extends QueryAssembler {
         // * GROUP BY
         // * joined prefetch PK
 
-        ObjEntity oe = getRootEntity();
+        ClassDescriptor descriptor = query
+                .getMetaData(getEntityResolver())
+                .getClassDescriptor();
+        ObjEntity oe = descriptor.getEntity();
 
-        // null tree will indicate that we don't take inheritance into account
-        EntityInheritanceTree tree = null;
+        PropertyVisitor visitor = new PropertyVisitor() {
+
+            public boolean visitAttribute(AttributeProperty property) {
+                ObjAttribute oa = property.getAttribute();
+                Iterator dbPathIterator = oa.getDbPathIterator();
+                while (dbPathIterator.hasNext()) {
+                    Object pathPart = dbPathIterator.next();
+                    if (pathPart instanceof DbRelationship) {
+                        DbRelationship rel = (DbRelationship) pathPart;
+                        dbRelationshipAdded(rel);
+                    }
+                    else if (pathPart instanceof DbAttribute) {
+                        DbAttribute dbAttr = (DbAttribute) pathPart;
+                        if (dbAttr == null) {
+                            throw new CayenneRuntimeException(
+                                    "ObjAttribute has no DbAttribute: " + oa.getName());
+                        }
+
+                        appendColumn(columns, oa, dbAttr, attributes, null);
+                    }
+                }
+                return true;
+            }
+
+            public boolean visitToMany(ToManyProperty property) {
+                visitRelationship(property);
+                return true;
+            }
+
+            public boolean visitToOne(ToOneProperty property) {
+                visitRelationship(property);
+                return true;
+            }
+
+            private void visitRelationship(ArcProperty property) {
+                ObjRelationship rel = property.getRelationship();
+                DbRelationship dbRel = (DbRelationship) rel.getDbRelationships().get(0);
+
+                List joins = dbRel.getJoins();
+                int len = joins.size();
+                for (int i = 0; i < len; i++) {
+                    DbJoin join = (DbJoin) joins.get(i);
+                    DbAttribute src = join.getSource();
+                    appendColumn(columns, null, src, attributes, null);
+                }
+            }
+        };
 
         if (query.isResolvingInherited()) {
-            tree = getRootInheritanceTree();
+            descriptor.visitAllProperties(visitor);
         }
-
-        // ObjEntity attrs
-        Iterator attrs = (tree != null) ? tree.allAttributes().iterator() : oe
-                .getAttributes()
-                .iterator();
-        while (attrs.hasNext()) {
-            ObjAttribute oa = (ObjAttribute) attrs.next();
-            Iterator dbPathIterator = oa.getDbPathIterator();
-            while (dbPathIterator.hasNext()) {
-                Object pathPart = dbPathIterator.next();
-                if (pathPart instanceof DbRelationship) {
-                    DbRelationship rel = (DbRelationship) pathPart;
-                    dbRelationshipAdded(rel);
-                }
-                else if (pathPart instanceof DbAttribute) {
-                    DbAttribute dbAttr = (DbAttribute) pathPart;
-                    if (dbAttr == null) {
-                        throw new CayenneRuntimeException(
-                                "ObjAttribute has no DbAttribute: " + oa.getName());
-                    }
-
-                    appendColumn(columns, oa, dbAttr, attributes, null);
-                }
-            }
-        }
-
-        // relationship keys
-        Iterator rels = (tree != null) ? tree.allRelationships().iterator() : oe
-                .getRelationships()
-                .iterator();
-        while (rels.hasNext()) {
-            ObjRelationship rel = (ObjRelationship) rels.next();
-            DbRelationship dbRel = (DbRelationship) rel.getDbRelationships().get(0);
-
-            List joins = dbRel.getJoins();
-            int len = joins.size();
-            for (int i = 0; i < len; i++) {
-                DbJoin join = (DbJoin) joins.get(i);
-                DbAttribute src = join.getSource();
-                appendColumn(columns, null, src, attributes, null);
-            }
+        else {
+            descriptor.visitProperties(visitor);
         }
 
         // add remaining needed attrs from DbEntity
-
         DbEntity table = getRootDbEntity();
         Iterator pk = table.getPrimaryKey().iterator();
         while (pk.hasNext()) {
@@ -408,7 +421,7 @@ public class SelectTranslator extends QueryAssembler {
 
         // special handling of a disjoint query...
 
-        // TODO, Andrus 11/17/2005 - resultPath mechansim is generic and should probably
+        // TODO, Andrus 11/17/2005 - resultPath mechanism is generic and should probably
         // be moved in the superclass (SelectQuery), replacing customDbAttributes.
 
         if (query instanceof PrefetchSelectQuery) {
@@ -631,18 +644,16 @@ public class SelectTranslator extends QueryAssembler {
             for (int i = 0; i < columns.size(); i++) {
                 ColumnDescriptor column = (ColumnDescriptor) columns.get(i);
                 if (attribute.getName().equals(column.getName())) {
-
-                    if (attributeOverrides == null) {
-                        attributeOverrides = new HashMap();
-                    }
-
-                    attributeOverrides.put(objAttribute, column);
-
+                  
                     // kick out the original attribute
                     ObjAttribute original = (ObjAttribute) defaultAttributesByColumn
                             .remove(column);
 
                     if (original != null) {
+                        if (attributeOverrides == null) {
+                            attributeOverrides = new HashMap();
+                        }
+                        
                         attributeOverrides.put(original, column);
                         column.setJavaClass(Void.TYPE.getName());
                     }

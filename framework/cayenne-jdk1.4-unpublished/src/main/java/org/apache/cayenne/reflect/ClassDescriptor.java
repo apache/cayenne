@@ -79,21 +79,24 @@ public interface ClassDescriptor {
     /**
      * Returns a property descriptor matching property name, or null if no such property
      * is found. Lookup includes properties from this descriptor and all its superclass
-     * decsriptors. Returned property maybe any one of simple, value holder or collection
-     * properties.
+     * decsriptors. Returned property can be any one of {@link AttributeProperty},
+     * {@link ToManyProperty}, {@link ToOneProperty}.
      */
     Property getProperty(String propertyName);
 
     /**
      * Returns a Java Bean property descriptor matching property name or null if no such
      * property is found. Lookup DOES NOT including properties from the superclass
-     * decsriptors. Returned property maybe any one of simple, value holder or collection
-     * properties.
+     * descriptors. Returned property can be any one of {@link AttributeProperty},
+     * {@link ToManyProperty}, {@link ToOneProperty}.
      */
     Property getDeclaredProperty(String propertyName);
 
     /**
      * Returns an Iterator over descriptor properties.
+     * 
+     * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
+     *             instead.
      */
     Iterator getProperties();
 
@@ -105,11 +108,31 @@ public interface ClassDescriptor {
     Iterator getIdProperties();
 
     /**
-     * Passes the visitor to all properties "visit" method, terminating properties walk
-     * through in case one of the properties returns false. Returns true if all visited
-     * properties returned true, false - if one property returned false.
+     * Passes the visitor to all properties "visit" method, terminating properties
+     * walkthrough in case one of the properties returns false. Returns true if all
+     * visited properties returned true, false - if one property returned false.
      */
     boolean visitProperties(PropertyVisitor visitor);
+
+    /**
+     * Passes the visitor to the properties "visit" method for all properties declared in
+     * this descriptor, terminating properties walkthrough in case one of the properties
+     * returns false. Returns true if all visited properties returned true, false - if one
+     * property returned false.
+     * 
+     * @since 3.0
+     */
+    boolean visitDeclaredProperties(PropertyVisitor visitor);
+
+    /**
+     * Passes the visitor to the properties "visit" method for all properties declared in
+     * this descriptor, its super and subdescriptors, terminating properties walkthrough
+     * in case one of the properties returns false. Returns true if all visited properties
+     * returned true, false - if one property returned false.
+     * 
+     * @since 3.0
+     */
+    boolean visitAllProperties(PropertyVisitor visitor);
 
     /**
      * Returns true if an object is not fully resolved.

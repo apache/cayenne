@@ -42,10 +42,14 @@ public class MockClassDescriptor implements ClassDescriptor {
         return false;
     }
 
+    /**
+     * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
+     *             instead.
+     */
     public Iterator getProperties() {
         return null;
     }
-    
+
     public Iterator getIdProperties() {
         return null;
     }
@@ -89,6 +93,14 @@ public class MockClassDescriptor implements ClassDescriptor {
     }
 
     public boolean visitProperties(PropertyVisitor visitor) {
+        return true;
+    }
+
+    public boolean visitAllProperties(PropertyVisitor visitor) {
+        return true;
+    }
+
+    public boolean visitDeclaredProperties(PropertyVisitor visitor) {
         return true;
     }
 }

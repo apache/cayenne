@@ -79,11 +79,15 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         return descriptor.getObjectClass();
     }
 
+    /**
+     * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
+     *             instead.
+     */
     public Iterator getProperties() {
         checkDescriptorInitialized();
         return descriptor.getProperties();
     }
-    
+
     public Iterator getIdProperties() {
         checkDescriptorInitialized();
         return descriptor.getIdProperties();
@@ -119,8 +123,18 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         descriptor.shallowMerge(from, to);
     }
 
+    public boolean visitDeclaredProperties(PropertyVisitor visitor) {
+        checkDescriptorInitialized();
+        return descriptor.visitDeclaredProperties(visitor);
+    }
+
     public boolean visitProperties(PropertyVisitor visitor) {
         checkDescriptorInitialized();
         return descriptor.visitProperties(visitor);
+    }
+
+    public boolean visitAllProperties(PropertyVisitor visitor) {
+        checkDescriptorInitialized();
+        return descriptor.visitAllProperties(visitor);
     }
 }

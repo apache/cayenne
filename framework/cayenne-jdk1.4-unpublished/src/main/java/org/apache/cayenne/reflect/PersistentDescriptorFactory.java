@@ -21,6 +21,7 @@ package org.apache.cayenne.reflect;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -74,8 +75,13 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             if (attribute instanceof ObjAttribute) {
                 createAttributeProperty(descriptor, (ObjAttribute) attribute);
             }
-            else {
-                // TODO: andrus, 1/25/2007 - EmbeddedAttribute
+            else if (attribute instanceof EmbeddedAttribute) {
+                EmbeddedAttribute embedded = (EmbeddedAttribute) attribute;
+                Iterator embeddedAttributes = embedded.getAttributes().iterator();
+                while (embeddedAttributes.hasNext()) {
+                    createAttributeProperty(descriptor, (ObjAttribute) embeddedAttributes
+                            .next());
+                }
             }
         }
 
