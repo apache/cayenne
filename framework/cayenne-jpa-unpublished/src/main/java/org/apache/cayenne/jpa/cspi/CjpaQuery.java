@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
@@ -162,6 +163,10 @@ public class CjpaQuery implements Query {
         }
 
         throw new IllegalArgumentException("query does not support maxResult");
+    }
+    
+    public Query setFlushMode(FlushModeType flushModeType) {
+        return this;
     }
 
     /**
