@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.conf;
 
 import java.io.IOException;
@@ -69,21 +68,19 @@ public class UnitDescriptorParser {
     static final String PROPERTY = "property";
     static final String VALUE = "value";
 
-    protected SAXParser parser;
+    protected SAXParserFactory parserFactory;
     protected JpaUnitFactory unitFactory;
 
-    public UnitDescriptorParser() throws SAXException,
-            ParserConfigurationException {
+    public UnitDescriptorParser() throws SAXException, ParserConfigurationException {
         this(null, false);
     }
 
-    public UnitDescriptorParser(JpaUnitFactory unitFactory,
-            boolean validatesAgainstSchema) throws SAXException,
-            ParserConfigurationException {
+    public UnitDescriptorParser(JpaUnitFactory unitFactory, boolean validatesAgainstSchema)
+            throws SAXException {
 
         this.unitFactory = unitFactory;
 
-        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+        parserFactory = SAXParserFactory.newInstance();
         parserFactory.setNamespaceAware(true);
 
         // note that validation requires that persistence.xml declares a schema like this:
@@ -102,8 +99,6 @@ public class UnitDescriptorParser {
             Schema schema = factory.newSchema(ss);
             parserFactory.setSchema(schema);
         }
-
-        this.parser = parserFactory.newSAXParser();
     }
 
     /**
@@ -111,12 +106,12 @@ public class UnitDescriptorParser {
      */
     public synchronized Collection<JpaUnit> getPersistenceUnits(
             InputSource in,
-            final URL persistenceUnitRootUrl) throws SAXException, IOException {
+            final URL persistenceUnitRootUrl) throws SAXException, IOException,
+            ParserConfigurationException {
 
-        final Collection<JpaUnit> unitInfos = new ArrayList<JpaUnit>(
-                2);
+        final Collection<JpaUnit> unitInfos = new ArrayList<JpaUnit>(2);
 
-        parser.reset();
+        SAXParser parser = parserFactory.newSAXParser();
         parser.parse(in, new DefaultHandler() {
 
             JpaUnit unit;
@@ -139,9 +134,7 @@ public class UnitDescriptorParser {
                     String name = attributes.getValue("", NAME);
                     String transactionType = attributes.getValue("", TRANSACTION_TYPE);
 
-                    unit = unitFactory != null
-                            ? unitFactory.newUnit()
-                            : new JpaUnit();
+                    unit = unitFactory != null ? unitFactory.newUnit() : new JpaUnit();
                     unit.setPersistenceUnitName(name);
                     unit.setPersistenceUnitRootUrl(persistenceUnitRootUrl);
 
