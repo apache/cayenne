@@ -87,14 +87,6 @@ public class _3_1_1_EntityManagerTest extends EntityManagerCase {
         fail("Must have thrown on EntityExists condition.");
     }
 
-    // TODO: andrus, 1/3/2007 - implement - need to emulate the container environment
-    public void _testPersistTransactionRequiredException() {
-        // throws TransactionRequiredException if invoked on a
-        // container-managed entity manager of type
-        // PersistenceContextType.TRANSACTION and there is
-        // no transaction.
-    }
-
     // TODO: andrus, 1/3/2007 - this fails with Null ObjectId exception
     public void _testMerge() throws Exception {
         getDbHelper().deleteAll("SimpleEntity");
