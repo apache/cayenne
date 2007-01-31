@@ -104,13 +104,15 @@ public class UnitDescriptorParser {
     /**
      * Loads and returns a Collection of PersistenceUnitInfos from the XML descriptor.
      */
-    public synchronized Collection<JpaUnit> getPersistenceUnits(
+    public Collection<JpaUnit> getPersistenceUnits(
             InputSource in,
             final URL persistenceUnitRootUrl) throws SAXException, IOException,
             ParserConfigurationException {
 
         final Collection<JpaUnit> unitInfos = new ArrayList<JpaUnit>(2);
 
+        // note that parser is not reused - some parser implementations blow on
+        // parser.reset() call
         SAXParser parser = parserFactory.newSAXParser();
         parser.parse(in, new DefaultHandler() {
 
