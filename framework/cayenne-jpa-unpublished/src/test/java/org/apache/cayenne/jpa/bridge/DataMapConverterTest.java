@@ -24,6 +24,7 @@ import java.sql.Types;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.jpa.MockPersistenceUnitInfo;
 import org.apache.cayenne.jpa.conf.EntityMapAnnotationLoader;
 import org.apache.cayenne.jpa.conf.EntityMapDefaultsProcessor;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
@@ -36,7 +37,6 @@ import org.apache.cayenne.jpa.entity.cayenne.MockCayenneEntityMap1;
 import org.apache.cayenne.jpa.entity.cayenne.MockCayenneTargetEntity1;
 import org.apache.cayenne.jpa.entity.cayenne.MockCayenneTargetEntity2;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
-import org.apache.cayenne.jpa.spi.MockPersistenceUnitInfo;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;

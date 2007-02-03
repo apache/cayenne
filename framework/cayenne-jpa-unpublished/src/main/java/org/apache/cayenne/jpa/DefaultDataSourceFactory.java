@@ -17,18 +17,16 @@
  *  under the License.
  ****************************************************************/
 
-
-package org.apache.cayenne.jpa.cspi;
+package org.apache.cayenne.jpa;
 
 import java.sql.SQLException;
 import java.util.Properties;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.sql.DataSource;
 
-import org.apache.cayenne.jpa.JpaProviderException;
-import org.apache.cayenne.jpa.spi.JndiJpaDataSourceFactory;
-import org.apache.cayenne.jpa.spi.JpaDataSourceFactory;
 import org.apache.cayenne.access.ConnectionLogger;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.conf.ConnectionProperties;
@@ -50,21 +48,18 @@ import org.apache.cayenne.util.Util;
  * <li>cayenne.ds.[datasource name].jdbc.url - (required) Database URL</li>
  * <li>cayenne.ds.[datasource name].jdbc.username - Database login id</li>
  * <li>cayenne.ds.[datasource name].jdbc.password - Database password</li>
- * <li>cayenne.ds.[datasource name].jdbc.minConnections - (optional) Minimal pool
- * size</li>
- * <li>cayenne.ds.[datasource name].jdbc.maxConnections - (optional) Maximum pool
- * size</li>
+ * <li>cayenne.ds.[datasource name].jdbc.minConnections - (optional) Minimal pool size</li>
+ * <li>cayenne.ds.[datasource name].jdbc.maxConnections - (optional) Maximum pool size</li>
  * </ul>
  * <p>
- * Another optional property is
- * <em>cayenne.ds.[datasource name].cayenne.adapter</em>. It is not strictly
- * related to the DataSource configuration, but Cayenne provider will use to configure the
- * same {@link org.apache.cayenne.access.DataNode} that will use the DataSource. If
- * not set, an AutoAdapter is used.
+ * Another optional property is <em>cayenne.ds.[datasource name].cayenne.adapter</em>.
+ * It is not strictly related to the DataSource configuration, but Cayenne provider will
+ * use to configure the same {@link org.apache.cayenne.access.DataNode} that will use the
+ * DataSource. If not set, an AutoAdapter is used.
  * 
  * @author Andrus Adamchik
  */
-public class CjpaDataSourceFactory extends JndiJpaDataSourceFactory {
+public class DefaultDataSourceFactory implements JpaDataSourceFactory {
 
     public static final String DATA_SOURCE_PREFIX = "cayenne.ds.";
     public static final String MIN_CONNECTIONS_SUFFIX = "jdbc.minConnections";
@@ -74,13 +69,34 @@ public class CjpaDataSourceFactory extends JndiJpaDataSourceFactory {
         return DATA_SOURCE_PREFIX + dataSourceName + "." + suffix;
     }
 
+    public DataSource getJtaDataSource(String name, PersistenceUnitInfo info) {
+        return getDataSource(name, info);
+    }
+
+    public DataSource getNonJtaDataSource(String name, PersistenceUnitInfo info) {
+        return getDataSource(name, info);
+    }
+
+    protected DataSource getJndiDataSource(String name, PersistenceUnitInfo info) {
+        if (name == null) {
+            return null;
+        }
+
+        try {
+            return (DataSource) new InitialContext().lookup(name);
+        }
+        catch (NamingException namingEx) {
+            return null;
+        }
+    }
+
     protected DataSource getDataSource(String name, PersistenceUnitInfo info) {
         if (name == null) {
             return null;
         }
 
         DataSource ds = getCayenneDataSource(name, info.getProperties());
-        return ds != null ? ds : super.getDataSource(name, info);
+        return ds != null ? ds : getJndiDataSource(name, info);
     }
 
     protected DataSource getCayenneDataSource(String name, Properties properties) {
@@ -153,5 +169,4 @@ public class CjpaDataSourceFactory extends JndiJpaDataSourceFactory {
     protected String getMaxConnectionsKey(String dataSourceName) {
         return getPropertyName(dataSourceName, MAX_CONNECTIONS_SUFFIX);
     }
-
 }

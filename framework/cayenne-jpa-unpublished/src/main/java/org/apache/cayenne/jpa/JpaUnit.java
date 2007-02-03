@@ -18,7 +18,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.jpa.spi;
+package org.apache.cayenne.jpa;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,7 +33,6 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
-import org.apache.cayenne.jpa.JpaProviderException;
 
 /**
  * A <code>javax.persistence.spi.PersistenceUnitInfo</code> implementor used by Cayenne

@@ -18,7 +18,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.jpa.spi;
+package org.apache.cayenne.jpa;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.sql.DataSource;

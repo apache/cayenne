@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jpa.spi;
+package org.apache.cayenne.jpa;
 
 import java.util.Map;
 import java.util.Properties;
@@ -28,7 +28,6 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.apache.cayenne.instrument.InstrumentUtil;
-import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.conf.UnitLoader;
 import org.apache.cayenne.jpa.instrument.InstrumentingUnitFactory;
 
@@ -110,7 +109,7 @@ public abstract class JpaPersistenceProvider implements PersistenceProvider {
         if (!defaultProperties.containsKey(DATA_SOURCE_FACTORY_PROPERTY)) {
             defaultProperties.put(
                     DATA_SOURCE_FACTORY_PROPERTY,
-                    JndiJpaDataSourceFactory.class.getName());
+                    DefaultDataSourceFactory.class.getName());
         }
 
         if (!defaultProperties.containsKey(TRANSACTION_TYPE_PROPERTY)) {

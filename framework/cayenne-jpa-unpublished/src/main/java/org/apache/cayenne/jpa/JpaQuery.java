@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.jpa.cspi;
+package org.apache.cayenne.jpa;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -41,20 +41,20 @@ import org.apache.cayenne.query.SelectQuery;
 /**
  * A JPA Query that wraps a Cayenne Query.
  */
-public class CjpaQuery implements Query {
+class JpaQuery implements Query {
 
     protected Map<String, Object> parameters = new HashMap<String, Object>();
     protected org.apache.cayenne.query.Query cayenneQuery;
     protected ObjectContext context;
 
-    public CjpaQuery(ObjectContext ctxt) {
+    JpaQuery(ObjectContext ctxt) {
         this.context = ctxt;
     }
 
     /**
      * Construct a named query.
      */
-    public CjpaQuery(ObjectContext context, String name) {
+    JpaQuery(ObjectContext context, String name) {
         this(context);
 
         org.apache.cayenne.query.Query q = context.getEntityResolver().lookupQuery(name);
@@ -164,7 +164,7 @@ public class CjpaQuery implements Query {
 
         throw new IllegalArgumentException("query does not support maxResult");
     }
-    
+
     public Query setFlushMode(FlushModeType flushModeType) {
         return this;
     }

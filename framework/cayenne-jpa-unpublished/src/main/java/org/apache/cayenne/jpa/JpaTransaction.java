@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.jpa.cspi;
+package org.apache.cayenne.jpa;
 
 import java.sql.SQLException;
 
@@ -29,15 +29,15 @@ import org.apache.cayenne.access.Transaction;
 
 /**
  * A JPA wrapper around a Cayenne Transaction. For more info see <a
- * href="http://cwiki.apache.org/CAYDOC/understanding-transactions.html">Cayenne Wiki</a>.
+ * href="http://cayenne.apache.org/doc/understanding-transactions.html">this page</a>.
  */
-public class CjpaEntityTransaction implements EntityTransaction {
+class JpaTransaction implements EntityTransaction {
 
     protected EntityManager entityManager;
     protected Transaction transaction;
     protected boolean rollbackOnly;
 
-    public CjpaEntityTransaction(Transaction transaction, EntityManager entityManager) {
+    public JpaTransaction(Transaction transaction, EntityManager entityManager) {
         this.entityManager = entityManager;
         this.transaction = transaction;
     }

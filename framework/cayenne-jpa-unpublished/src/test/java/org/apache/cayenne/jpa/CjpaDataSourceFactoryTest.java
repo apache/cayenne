@@ -18,13 +18,16 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.jpa.spi;
+package org.apache.cayenne.jpa;
 
-public class TestPersistenceProvider1 extends MockPersistenceProvider {
+import org.apache.cayenne.jpa.DefaultDataSourceFactory;
 
-    public static final String UNIT_NAME = "u1";
+import junit.framework.TestCase;
 
-    public TestPersistenceProvider1() {
-        super(UNIT_NAME);
+public class CjpaDataSourceFactoryTest extends TestCase {
+
+    public void testGetDriverKey() {
+        DefaultDataSourceFactory factory = new DefaultDataSourceFactory();
+        assertEquals("cayenne.ds.xyz.jdbc.driver", factory.getDriverKey("xyz"));
     }
 }

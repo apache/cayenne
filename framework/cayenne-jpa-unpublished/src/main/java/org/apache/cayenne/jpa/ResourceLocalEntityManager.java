@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jpa.cspi;
+package org.apache.cayenne.jpa;
 
 import java.util.Map;
 
@@ -32,14 +32,12 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.Transaction;
-import org.apache.cayenne.jpa.JpaEntityManager;
-import org.apache.cayenne.jpa.JpaEntityManagerFactory;
 
-public class CjpaEntityManager extends JpaEntityManager {
+public class ResourceLocalEntityManager extends JpaEntityManager {
 
     private ObjectContext context;
 
-    public CjpaEntityManager(ObjectContext context, JpaEntityManagerFactory factory,
+    public ResourceLocalEntityManager(ObjectContext context, JpaEntityManagerFactory factory,
             Map parameters) {
         super(factory);
         this.context = context;
@@ -47,7 +45,7 @@ public class CjpaEntityManager extends JpaEntityManager {
 
     @Override
     protected EntityTransaction createResourceLocalTransaction() {
-        return new CjpaEntityTransaction(Transaction.internalTransaction(null), this);
+        return new JpaTransaction(Transaction.internalTransaction(null), this);
     }
 
     @Override
@@ -106,7 +104,7 @@ public class CjpaEntityManager extends JpaEntityManager {
     public Query createNamedQuery(String name) {
         checkClosed();
 
-        return new CjpaQuery(context, name);
+        return new JpaQuery(context, name);
     }
 
     @Override
@@ -114,14 +112,14 @@ public class CjpaEntityManager extends JpaEntityManager {
         checkClosed();
         checkEntityType(resultClass);
 
-        return new CjpaNativeQuery(context, sqlString, resultClass);
+        return new JpaNativeQuery(context, sqlString, resultClass);
     }
 
     @Override
     public Query createNativeQuery(String sqlString) {
         checkClosed();
 
-        return new CjpaNativeQuery(context, sqlString, getPersistenceUnitInfo()
+        return new JpaNativeQuery(context, sqlString, getPersistenceUnitInfo()
                 .getPersistenceUnitName());
     }
 

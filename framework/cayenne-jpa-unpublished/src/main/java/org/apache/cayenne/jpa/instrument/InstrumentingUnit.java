@@ -26,7 +26,7 @@ import java.security.ProtectionDomain;
 import javax.persistence.spi.ClassTransformer;
 
 import org.apache.cayenne.instrument.InstrumentUtil;
-import org.apache.cayenne.jpa.spi.JpaUnit;
+import org.apache.cayenne.jpa.JpaUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

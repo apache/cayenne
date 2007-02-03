@@ -18,14 +18,40 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.jpa.cspi;
+package org.apache.cayenne.jpa;
 
-import junit.framework.TestCase;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+import java.util.ArrayList;
+import java.util.Collection;
 
-public class CjpaDataSourceFactoryTest extends TestCase {
+import javax.persistence.spi.ClassTransformer;
 
-    public void testGetDriverKey() {
-        CjpaDataSourceFactory factory = new CjpaDataSourceFactory();
-        assertEquals("cayenne.ds.xyz.jdbc.driver", factory.getDriverKey("xyz"));
+/**
+ * A noop ClassTransformer that logs all classes that were passed through it.
+ * 
+ * @author Andrus Adamchik
+ */
+public class MockClassTransformer implements ClassTransformer {
+
+    protected Collection<String> transformed;
+
+    public MockClassTransformer() {
+        this.transformed = new ArrayList<String>();
+    }
+
+    public Collection getTransformed() {
+        return transformed;
+    }
+
+    public byte[] transform(
+            ClassLoader loader,
+            String className,
+            Class<?> classBeingRedefined,
+            ProtectionDomain protectionDomain,
+            byte[] classfileBuffer) throws IllegalClassFormatException {
+
+        transformed.add(className);
+        return null;
     }
 }

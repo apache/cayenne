@@ -18,8 +18,22 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.jpa.spi;
+package org.apache.cayenne.jpa;
 
-public class TestManagedClass {
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.sql.DataSource;
+
+import org.apache.cayenne.jpa.JpaDataSourceFactory;
+
+
+public class MockJpaDataSourceFactory implements JpaDataSourceFactory {
+
+    public DataSource getJtaDataSource(String name, PersistenceUnitInfo info) {
+        return null;
+    }
+
+    public DataSource getNonJtaDataSource(String name, PersistenceUnitInfo info) {
+        return null;
+    }
 
 }

@@ -24,8 +24,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
 
-import org.apache.cayenne.jpa.spi.JpaUnit;
-import org.apache.cayenne.jpa.spi.JpaUnitFactory;
+import org.apache.cayenne.jpa.JpaUnit;
+import org.apache.cayenne.jpa.JpaUnitFactory;
 import org.xml.sax.InputSource;
 
 /**

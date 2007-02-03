@@ -18,38 +18,8 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.jpa.spi;
+package org.apache.cayenne.jpa;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.sql.DataSource;
+public class TestManagedClass {
 
-/**
- * A JNDI-based implementation of the JPADataSourceFactory.
- * 
- * @author Andrus Adamchik
- */
-public class JndiJpaDataSourceFactory implements JpaDataSourceFactory {
-
-    public DataSource getJtaDataSource(String name, PersistenceUnitInfo info) {
-        return getDataSource(name, info);
-    }
-
-    public DataSource getNonJtaDataSource(String name, PersistenceUnitInfo info) {
-        return getDataSource(name, info);
-    }
-
-    protected DataSource getDataSource(String name, PersistenceUnitInfo info) {
-        if (name == null) {
-            return null;
-        }
-
-        try {
-            return (DataSource) new InitialContext().lookup(name);
-        }
-        catch (NamingException namingEx) {
-            return null;
-        }
-    }
 }

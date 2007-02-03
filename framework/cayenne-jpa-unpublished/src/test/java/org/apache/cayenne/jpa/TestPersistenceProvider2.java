@@ -18,40 +18,13 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.jpa.spi;
+package org.apache.cayenne.jpa;
 
-import java.lang.instrument.IllegalClassFormatException;
-import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.Collection;
+public class TestPersistenceProvider2 extends MockPersistenceProvider {
 
-import javax.persistence.spi.ClassTransformer;
+    public static final String UNIT_NAME = "u2";
 
-/**
- * A noop ClassTransformer that logs all classes that were passed through it.
- * 
- * @author Andrus Adamchik
- */
-public class MockClassTransformer implements ClassTransformer {
-
-    protected Collection<String> transformed;
-
-    public MockClassTransformer() {
-        this.transformed = new ArrayList<String>();
-    }
-
-    public Collection getTransformed() {
-        return transformed;
-    }
-
-    public byte[] transform(
-            ClassLoader loader,
-            String className,
-            Class<?> classBeingRedefined,
-            ProtectionDomain protectionDomain,
-            byte[] classfileBuffer) throws IllegalClassFormatException {
-
-        transformed.add(className);
-        return null;
+    public TestPersistenceProvider2() {
+        super(UNIT_NAME);
     }
 }

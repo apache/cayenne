@@ -25,13 +25,13 @@ import javax.persistence.TemporalType;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.jpa.MockPersistenceUnitInfo;
 import org.apache.cayenne.jpa.map.JpaBasic;
 import org.apache.cayenne.jpa.map.JpaEntity;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
 import org.apache.cayenne.jpa.map.JpaId;
 import org.apache.cayenne.jpa.map.JpaManyToOne;
 import org.apache.cayenne.jpa.map.JpaOneToMany;
-import org.apache.cayenne.jpa.spi.MockPersistenceUnitInfo;
 
 public class EntityMapDefaultsProcessorTest extends TestCase {
 

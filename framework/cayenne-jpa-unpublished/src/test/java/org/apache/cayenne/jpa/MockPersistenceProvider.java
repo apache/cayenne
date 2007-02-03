@@ -21,23 +21,34 @@ package org.apache.cayenne.jpa;
 
 import java.util.Map;
 
-import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 
-import org.apache.cayenne.jpa.spi.MockPersistenceUnitInfo;
 
-public class MockJpaEntityManagerFactory extends JpaEntityManagerFactory {
+public class MockPersistenceProvider implements PersistenceProvider {
 
-    public MockJpaEntityManagerFactory() {
-        this(new MockPersistenceUnitInfo());
+    protected String unitName;
+
+    public MockPersistenceProvider() {
+
     }
 
-    public MockJpaEntityManagerFactory(PersistenceUnitInfo unitInfo) {
-        super(unitInfo);
+    protected MockPersistenceProvider(String unitName) {
+        this.unitName = unitName;
     }
 
-    @Override
-    protected EntityManager createEntityManagerInternal(Map parameters) {
-        return null;
+    public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
+        return unitName != null && unitName.equals(emName)
+                ? new MockEntityManagerFactory(emName, map)
+                : null;
+    }
+
+    public EntityManagerFactory createContainerEntityManagerFactory(
+            PersistenceUnitInfo info,
+            Map map) {
+        return unitName != null && unitName.equals(info.getPersistenceUnitName())
+                ? new MockEntityManagerFactory(info.getPersistenceUnitName(), info)
+                : null;
     }
 }

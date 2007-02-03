@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.jpa.cspi;
+package org.apache.cayenne.jpa.enhancer;
 
 import java.util.Map;
 
@@ -31,11 +31,11 @@ import org.objectweb.asm.commons.SerialVersionUIDAdder;
  * 
  * @author Andrus Adamchik
  */
-class CjpaEnhancerVisitorFactory implements EnhancerVisitorFactory {
+public class JpaEnhancerVisitorFactory implements EnhancerVisitorFactory {
 
-    Map<String, JpaClassDescriptor> managedClasses;
+    private Map<String, JpaClassDescriptor> managedClasses;
 
-    public CjpaEnhancerVisitorFactory(Map<String, JpaClassDescriptor> managedClasses) {
+    public JpaEnhancerVisitorFactory(Map<String, JpaClassDescriptor> managedClasses) {
         this.managedClasses = managedClasses;
     }
 
@@ -50,7 +50,7 @@ class CjpaEnhancerVisitorFactory implements EnhancerVisitorFactory {
 
         // create enhancer chain
         PersistentInterfaceVisitor e1 = new PersistentInterfaceVisitor(out);
-        CjpaAccessorVisitor e2 = new CjpaAccessorVisitor(e1, descriptor);
+        JpaAccessorVisitor e2 = new JpaAccessorVisitor(e1, descriptor);
 
         // this ensures that both enhanced and original classes have compatible serialized
         // format even if no serialVersionUID is defined by the user

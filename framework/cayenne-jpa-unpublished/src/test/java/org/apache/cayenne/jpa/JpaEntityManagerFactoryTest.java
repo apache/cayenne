@@ -17,19 +17,17 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa;
 
 import java.util.HashMap;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.jpa.spi.MockPersistenceUnitInfo;
-
 public class JpaEntityManagerFactoryTest extends TestCase {
 
     public void testOpenClose() {
-        JpaEntityManagerFactory f = new MockJpaEntityManagerFactory(
+        JpaEntityManagerFactory f = new JpaEntityManagerFactory(
+                null,
                 new MockPersistenceUnitInfo());
         assertTrue(f.isOpen());
 

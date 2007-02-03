@@ -18,13 +18,16 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.jpa.spi;
+package org.apache.cayenne.jpa;
 
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
 
 import javax.persistence.spi.PersistenceUnitTransactionType;
+
+import org.apache.cayenne.jpa.JpaPersistenceProvider;
+import org.apache.cayenne.jpa.JpaUnit;
 
 import junit.framework.TestCase;
 

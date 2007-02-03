@@ -20,10 +20,10 @@ package org.apache.cayenne.jpa.conf;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.jpa.MockPersistenceUnitInfo;
 import org.apache.cayenne.jpa.map.JpaEntity;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
 import org.apache.cayenne.jpa.map.JpaVersion;
-import org.apache.cayenne.jpa.spi.MockPersistenceUnitInfo;
 
 public class EntityMapDefaultsProcessor1Test extends TestCase {
 

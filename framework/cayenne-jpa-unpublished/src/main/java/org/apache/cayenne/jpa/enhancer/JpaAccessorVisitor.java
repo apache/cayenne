@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.jpa.cspi;
+package org.apache.cayenne.jpa.enhancer;
 
 import org.apache.cayenne.enhancer.AccessorVisitor;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
@@ -26,11 +26,11 @@ import org.objectweb.asm.ClassVisitor;
 /**
  * @author Andrus Adamchik
  */
-class CjpaAccessorVisitor extends AccessorVisitor {
+class JpaAccessorVisitor extends AccessorVisitor {
 
     private JpaClassDescriptor descriptor;
 
-    public CjpaAccessorVisitor(ClassVisitor visitor, JpaClassDescriptor descriptor) {
+    public JpaAccessorVisitor(ClassVisitor visitor, JpaClassDescriptor descriptor) {
         super(visitor);
         this.descriptor = descriptor;
     }

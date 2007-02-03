@@ -18,20 +18,13 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.jpa.spi;
+package org.apache.cayenne.jpa;
 
-/**
- * A factory of {@link org.apache.cayenne.jpa.spi.JpaUnit} instances. Custom factory can
- * be configured by setting a
- * {@link org.apache.cayenne.jpa.spi.JpaPersistenceProvider#UNIT_FACTORY_PROPERTY}
- * property.
- * 
- * @author Andrus Adamchik
- */
-public interface JpaUnitFactory {
+public class TestPersistenceProvider1 extends MockPersistenceProvider {
 
-    /**
-     * Creates a new instance of JpaPersistenceUnitInfo.
-     */
-    JpaUnit newUnit();
+    public static final String UNIT_NAME = "u1";
+
+    public TestPersistenceProvider1() {
+        super(UNIT_NAME);
+    }
 }

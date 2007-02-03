@@ -28,6 +28,7 @@ import javax.persistence.NamedQuery;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.jpa.MockPersistenceUnitInfo;
 import org.apache.cayenne.jpa.entity.MockEmbed1;
 import org.apache.cayenne.jpa.entity.MockEmbed2;
 import org.apache.cayenne.jpa.entity.MockEntity1;
@@ -44,7 +45,6 @@ import org.apache.cayenne.jpa.map.JpaAttributeOverride;
 import org.apache.cayenne.jpa.map.JpaBasic;
 import org.apache.cayenne.jpa.map.JpaEntity;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
-import org.apache.cayenne.jpa.spi.MockPersistenceUnitInfo;
 
 public class EntityMapAnnotationLoaderTest extends TestCase {
 

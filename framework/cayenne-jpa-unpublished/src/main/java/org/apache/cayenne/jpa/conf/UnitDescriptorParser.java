@@ -33,9 +33,9 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.apache.cayenne.jpa.spi.JpaPersistenceProvider;
-import org.apache.cayenne.jpa.spi.JpaUnit;
-import org.apache.cayenne.jpa.spi.JpaUnitFactory;
+import org.apache.cayenne.jpa.JpaPersistenceProvider;
+import org.apache.cayenne.jpa.JpaUnit;
+import org.apache.cayenne.jpa.JpaUnitFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

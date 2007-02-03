@@ -24,12 +24,12 @@ import javax.persistence.FlushModeType;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.jpa.spi.MockPersistenceUnitInfo;
-
 public class JpaEntityManagerTest extends TestCase {
 
     public void testOpenClose() throws Exception {
-        JpaEntityManagerFactory factory = new MockJpaEntityManagerFactory() {
+        JpaEntityManagerFactory factory = new JpaEntityManagerFactory(
+                null,
+                new MockPersistenceUnitInfo()) {
 
             @Override
             public boolean isOpen() {
@@ -99,7 +99,9 @@ public class JpaEntityManagerTest extends TestCase {
     }
 
     public void testCloseActiveTransactionInProgress() {
-        JpaEntityManagerFactory factory = new MockJpaEntityManagerFactory() {
+        JpaEntityManagerFactory factory = new JpaEntityManagerFactory(
+                null,
+                new MockPersistenceUnitInfo()) {
 
             @Override
             public boolean isOpen() {
@@ -122,7 +124,7 @@ public class JpaEntityManagerTest extends TestCase {
         };
 
         assertTrue(m.isOpen());
-        
+
         // make sure we trigger transaction creation
         assertNotNull(m.getTransaction());
 
@@ -138,7 +140,8 @@ public class JpaEntityManagerTest extends TestCase {
     public void testCloseFactoryClosed() {
         final boolean[] factoryCloseState = new boolean[1];
 
-        JpaEntityManagerFactory factory = new MockJpaEntityManagerFactory(
+        JpaEntityManagerFactory factory = new JpaEntityManagerFactory(
+                null,
                 new MockPersistenceUnitInfo()) {
 
             @Override

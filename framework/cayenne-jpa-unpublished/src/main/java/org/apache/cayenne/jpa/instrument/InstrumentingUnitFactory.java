@@ -20,8 +20,8 @@
 
 package org.apache.cayenne.jpa.instrument;
 
-import org.apache.cayenne.jpa.spi.JpaUnit;
-import org.apache.cayenne.jpa.spi.JpaUnitFactory;
+import org.apache.cayenne.jpa.JpaUnit;
+import org.apache.cayenne.jpa.JpaUnitFactory;
 
 public class InstrumentingUnitFactory implements JpaUnitFactory {
 

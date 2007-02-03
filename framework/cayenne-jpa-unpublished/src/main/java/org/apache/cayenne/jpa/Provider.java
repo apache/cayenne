@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jpa.cspi;
+package org.apache.cayenne.jpa;
 
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -43,10 +43,10 @@ import org.apache.cayenne.enhancer.Enhancer;
 import org.apache.cayenne.jpa.bridge.DataMapConverter;
 import org.apache.cayenne.jpa.conf.EntityMapLoader;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
+import org.apache.cayenne.jpa.enhancer.JpaEnhancerVisitorFactory;
 import org.apache.cayenne.jpa.instrument.UnitClassTranformer;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
 import org.apache.cayenne.jpa.reflect.CjpaClassDescriptorFactory;
-import org.apache.cayenne.jpa.spi.JpaPersistenceProvider;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
@@ -63,7 +63,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Andrus Adamchik
  */
-public class CjpaPersistenceProvider extends JpaPersistenceProvider {
+public class Provider extends JpaPersistenceProvider {
 
     public static final String CREATE_SCHEMA_PROPERTY = "cayenne.schema.create";
 
@@ -74,11 +74,11 @@ public class CjpaPersistenceProvider extends JpaPersistenceProvider {
      * Creates a new PersistenceProvider with properties configured to run in a standalone
      * mode with Cayenne stack.
      */
-    public CjpaPersistenceProvider() {
+    public Provider() {
         this(false);
     }
 
-    public CjpaPersistenceProvider(boolean validateDescriptors) {
+    public Provider(boolean validateDescriptors) {
         super(validateDescriptors);
 
         this.logger = LogFactory.getLog(getClass());
@@ -92,7 +92,7 @@ public class CjpaPersistenceProvider extends JpaPersistenceProvider {
         if (!defaultProperties.containsKey(DATA_SOURCE_FACTORY_PROPERTY)) {
             defaultProperties.put(
                     DATA_SOURCE_FACTORY_PROPERTY,
-                    CjpaDataSourceFactory.class.getName());
+                    DefaultDataSourceFactory.class.getName());
         }
 
         if (!defaultProperties.containsKey(TRANSACTION_TYPE_PROPERTY)) {
@@ -138,7 +138,7 @@ public class CjpaPersistenceProvider extends JpaPersistenceProvider {
                     .getMangedClasses();
 
             info.addTransformer(new UnitClassTranformer(managedClasses, new Enhancer(
-                    new CjpaEnhancerVisitorFactory(managedClasses))));
+                    new JpaEnhancerVisitorFactory(managedClasses))));
 
             DataMapConverter converter = new DataMapConverter();
             DataMap cayenneMap = converter.toDataMap(name, loader.getContext());
@@ -186,7 +186,7 @@ public class CjpaPersistenceProvider extends JpaPersistenceProvider {
             }
         }
 
-        CjpaEntityManagerFactory factory = new CjpaEntityManagerFactory(domain, info);
+        JpaEntityManagerFactory factory = new JpaEntityManagerFactory(domain, info);
         factory.setDelegate(this);
         return factory;
     }
@@ -263,7 +263,7 @@ public class CjpaPersistenceProvider extends JpaPersistenceProvider {
             EntityMapLoaderContext context,
             PersistenceUnitInfo info) {
 
-        String adapterKey = CjpaDataSourceFactory.getPropertyName(info
+        String adapterKey = DefaultDataSourceFactory.getPropertyName(info
                 .getPersistenceUnitName(), ConnectionProperties.ADAPTER_KEY);
         String adapterClass = info.getProperties().getProperty(adapterKey);
 

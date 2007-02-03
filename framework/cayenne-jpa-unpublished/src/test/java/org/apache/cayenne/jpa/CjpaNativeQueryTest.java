@@ -18,16 +18,17 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.jpa.cspi;
+package org.apache.cayenne.jpa;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.jpa.JpaNativeQuery;
 
 import junit.framework.TestCase;
 
 public class CjpaNativeQueryTest extends TestCase {
 
     public void testSetParameter1() {
-        CjpaNativeQuery q = new CjpaNativeQuery(
+        JpaNativeQuery q = new JpaNativeQuery(
                 new DataContext(),
                 "select a from person where name = $name and id = $id ",
                 Object.class);
@@ -45,7 +46,7 @@ public class CjpaNativeQueryTest extends TestCase {
     }
 
     public void testSetParameter2() {
-        CjpaNativeQuery q = new CjpaNativeQuery(
+        JpaNativeQuery q = new JpaNativeQuery(
                 new DataContext(),
                 "select a from person where name = ?1 and id = ?2 and addr = ?123 ",
                 Object.class);

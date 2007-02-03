@@ -29,8 +29,8 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.jpa.spi.JpaPersistenceProvider;
-import org.apache.cayenne.jpa.spi.JpaUnit;
+import org.apache.cayenne.jpa.JpaPersistenceProvider;
+import org.apache.cayenne.jpa.JpaUnit;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 

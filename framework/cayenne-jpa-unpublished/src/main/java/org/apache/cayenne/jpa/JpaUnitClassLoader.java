@@ -18,7 +18,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.jpa.spi;
+package org.apache.cayenne.jpa;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

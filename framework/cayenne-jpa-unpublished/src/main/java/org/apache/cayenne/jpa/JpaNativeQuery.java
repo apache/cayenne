@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jpa.cspi;
+package org.apache.cayenne.jpa;
 
 import javax.persistence.Query;
 
@@ -25,16 +25,16 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLTemplate;
 
-public class CjpaNativeQuery extends CjpaQuery {
+class JpaNativeQuery extends JpaQuery {
 
     private static final String POSITIONAL_PARAM_PREFIX = "positional_";
 
-    public CjpaNativeQuery(ObjectContext context, String sqlString, Class resultClass) {
+    JpaNativeQuery(ObjectContext context, String sqlString, Class resultClass) {
         super(context);
         setQuery(new SQLTemplate(resultClass, processSQLString(sqlString)));
     }
 
-    public CjpaNativeQuery(ObjectContext context, String sqlString, String dataMapName) {
+    JpaNativeQuery(ObjectContext context, String sqlString, String dataMapName) {
         super(context);
         DataMap map = context.getEntityResolver().getDataMap(dataMapName);
         setQuery(new SQLTemplate(map, processSQLString(sqlString)));

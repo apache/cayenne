@@ -26,22 +26,26 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.apache.cayenne.access.DataDomain;
+
 /**
- * A base implementation of a non-JTA EntityManagerFactory.
+ * A base implementation of a Cyenne EntityManagerFactory.
  * 
  * @author Andrus Adamchik
  */
-public abstract class JpaEntityManagerFactory implements EntityManagerFactory {
+class JpaEntityManagerFactory implements EntityManagerFactory {
 
+    protected DataDomain domain;
     protected boolean open;
     protected PersistenceUnitInfo unitInfo;
     protected Object delegate;
 
-    public JpaEntityManagerFactory(PersistenceUnitInfo unitInfo) {
+    JpaEntityManagerFactory(DataDomain domain, PersistenceUnitInfo unitInfo) {
         this.unitInfo = unitInfo;
         this.open = true;
+        this.domain = domain;
     }
-    
+
     protected PersistenceUnitInfo getPersistenceUnitInfo() {
         return unitInfo;
     }
@@ -87,7 +91,12 @@ public abstract class JpaEntityManagerFactory implements EntityManagerFactory {
         return createEntityManagerInternal(parameters);
     }
 
-    protected abstract EntityManager createEntityManagerInternal(Map parameters);
+    protected EntityManager createEntityManagerInternal(Map parameters) {
+        ResourceLocalEntityManager manager = new ResourceLocalEntityManager(domain
+                .createDataContext(), this, parameters);
+        manager.setDelegate(getDelegate());
+        return manager;
+    }
 
     /**
      * A convenience method that throws an exception if called on closed factory.
