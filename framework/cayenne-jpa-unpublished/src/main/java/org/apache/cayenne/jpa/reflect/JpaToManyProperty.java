@@ -19,33 +19,23 @@
 
 package org.apache.cayenne.jpa.reflect;
 
-import org.apache.cayenne.Fault;
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.reflect.FieldAccessor;
+import org.apache.cayenne.reflect.Accessor;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.ListProperty;
 import org.apache.cayenne.reflect.PropertyException;
 
-class CjpaCollectionFieldAccessor extends FieldAccessor {
+// TODO: andrus 11/25/2006 - this should be modeled after EnhancedPojo instead of
+// DataObject to-many property.
+class JpaToManyProperty extends ListProperty {
 
-    public CjpaCollectionFieldAccessor(Class objectClass, String propertyName,
-            Class propertyType) {
-        super(objectClass, propertyName, propertyType);
-
-        if (!Persistent.class.isAssignableFrom(objectClass)) {
-            throw new IllegalArgumentException("Only supports persistent classes. Got: "
-                    + objectClass);
-        }
+    public JpaToManyProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
+            Accessor accessor, String reverseName) {
+        super(owner, targetDescriptor, accessor, reverseName);
     }
 
-    /**
-     * Resolves a fault before setting the field.
-     */
     @Override
-    public void setValue(Object object, Object newValue) throws PropertyException {
-
-        if (newValue instanceof Fault) {
-            newValue = ((Fault) newValue).resolveFault((Persistent) object, getName());
-        }
-
-        super.setValue(object, newValue);
+    public void writePropertyDirectly(Object object, Object oldValue, Object newValue)
+            throws PropertyException {
+        accessor.setValue(object, newValue);
     }
 }

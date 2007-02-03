@@ -32,7 +32,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
 /**
- * Base implementation of a non-JTA EntityManager.
+ * Base implementation of EntityManager.
  * 
  * @author Andrus Adamchik
  */

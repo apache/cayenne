@@ -26,9 +26,9 @@ import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.reflect.pojo.EnhancedPojoDescriptorFactory;
 
-public class CjpaClassDescriptorFactory extends EnhancedPojoDescriptorFactory {
+public class JpaClassDescriptorFactory extends EnhancedPojoDescriptorFactory {
 
-    public CjpaClassDescriptorFactory(ClassDescriptorMap descriptorMap) {
+    public JpaClassDescriptorFactory(ClassDescriptorMap descriptorMap) {
         super(descriptorMap);
     }
 
@@ -40,11 +40,11 @@ public class CjpaClassDescriptorFactory extends EnhancedPojoDescriptorFactory {
                 .getTargetEntityName());
         String reverseName = relationship.getReverseRelationshipName();
 
-        Accessor accessor = new CjpaCollectionFieldAccessor(
+        Accessor accessor = new JpaCollectionFieldAccessor(
                 descriptor.getObjectClass(),
                 relationship.getName(),
                 null);
-        descriptor.addDeclaredProperty(new CjpaToManyProperty(
+        descriptor.addDeclaredProperty(new JpaToManyProperty(
                 descriptor,
                 targetDescriptor,
                 accessor,

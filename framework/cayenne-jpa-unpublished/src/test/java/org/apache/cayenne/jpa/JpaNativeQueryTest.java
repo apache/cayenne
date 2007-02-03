@@ -25,7 +25,7 @@ import org.apache.cayenne.jpa.JpaNativeQuery;
 
 import junit.framework.TestCase;
 
-public class CjpaNativeQueryTest extends TestCase {
+public class JpaNativeQueryTest extends TestCase {
 
     public void testSetParameter1() {
         JpaNativeQuery q = new JpaNativeQuery(

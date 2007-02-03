@@ -17,25 +17,17 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jpa.reflect;
 
-import org.apache.cayenne.reflect.Accessor;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.ListProperty;
-import org.apache.cayenne.reflect.PropertyException;
+package org.apache.cayenne.jpa;
 
-// TODO: andrus 11/25/2006 - this should be modeled after EnhancedPojo instead of
-// DataObject to-many property.
-class CjpaToManyProperty extends ListProperty {
+import org.apache.cayenne.jpa.DefaultDataSourceFactory;
 
-    public CjpaToManyProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
-            Accessor accessor, String reverseName) {
-        super(owner, targetDescriptor, accessor, reverseName);
-    }
+import junit.framework.TestCase;
 
-    @Override
-    public void writePropertyDirectly(Object object, Object oldValue, Object newValue)
-            throws PropertyException {
-        accessor.setValue(object, newValue);
+public class DefaultDataSourceFactoryTest extends TestCase {
+
+    public void testGetDriverKey() {
+        DefaultDataSourceFactory factory = new DefaultDataSourceFactory();
+        assertEquals("cayenne.ds.xyz.jdbc.driver", factory.getDriverKey("xyz"));
     }
 }

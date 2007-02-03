@@ -46,7 +46,7 @@ import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
 import org.apache.cayenne.jpa.enhancer.JpaEnhancerVisitorFactory;
 import org.apache.cayenne.jpa.instrument.UnitClassTranformer;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
-import org.apache.cayenne.jpa.reflect.CjpaClassDescriptorFactory;
+import org.apache.cayenne.jpa.reflect.JpaClassDescriptorFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
@@ -125,7 +125,7 @@ public class Provider extends JpaPersistenceProvider {
                     .getEntityResolver()
                     .getClassDescriptorMap();
 
-            descriptors.addFactory(new CjpaClassDescriptorFactory(descriptors));
+            descriptors.addFactory(new JpaClassDescriptorFactory(descriptors));
             configuration.addDomain(domain);
 
             EntityMapLoader loader = new EntityMapLoader(info);
