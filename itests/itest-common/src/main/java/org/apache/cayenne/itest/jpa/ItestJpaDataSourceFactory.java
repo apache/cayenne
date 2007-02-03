@@ -21,7 +21,7 @@ package org.apache.cayenne.itest.jpa;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.sql.DataSource;
 
-import org.apache.cayenne.jpa.spi.JpaDataSourceFactory;
+import org.apache.cayenne.jpa.JpaDataSourceFactory;
 
 /**
  * A factory that integrates the test environment with Cayenne JPA provider.
