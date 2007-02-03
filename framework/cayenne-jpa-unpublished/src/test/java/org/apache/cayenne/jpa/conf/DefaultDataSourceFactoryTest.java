@@ -17,10 +17,9 @@
  *  under the License.
  ****************************************************************/
 
+package org.apache.cayenne.jpa.conf;
 
-package org.apache.cayenne.jpa;
-
-import org.apache.cayenne.jpa.DefaultDataSourceFactory;
+import org.apache.cayenne.jpa.conf.DefaultDataSourceFactory;
 
 import junit.framework.TestCase;
 

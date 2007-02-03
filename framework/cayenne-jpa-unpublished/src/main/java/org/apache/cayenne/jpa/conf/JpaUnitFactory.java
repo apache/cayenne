@@ -17,20 +17,19 @@
  *  under the License.
  ****************************************************************/
 
-
-package org.apache.cayenne.jpa;
-
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.sql.DataSource;
+package org.apache.cayenne.jpa.conf;
 
 /**
- * A factory that provides DataSources to PersistenceUnitInfo instances.
+ * A factory of {@link org.apache.cayenne.jpa.conf.JpaUnit} instances. Custom factory can
+ * be configured by setting a
+ * {@link org.apache.cayenne.jpa.Provider#UNIT_FACTORY_PROPERTY} property.
  * 
  * @author Andrus Adamchik
  */
-public interface JpaDataSourceFactory {
+public interface JpaUnitFactory {
 
-    DataSource getJtaDataSource(String name, PersistenceUnitInfo info);
-
-    DataSource getNonJtaDataSource(String name, PersistenceUnitInfo info);
+    /**
+     * Creates a new instance of JpaPersistenceUnitInfo.
+     */
+    JpaUnit newUnit();
 }

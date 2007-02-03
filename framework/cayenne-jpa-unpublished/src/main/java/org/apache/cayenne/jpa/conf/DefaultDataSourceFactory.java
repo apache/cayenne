@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jpa;
+package org.apache.cayenne.jpa.conf;
 
 import java.sql.SQLException;
 import java.util.Properties;
@@ -31,6 +31,7 @@ import org.apache.cayenne.access.ConnectionLogger;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.conf.ConnectionProperties;
 import org.apache.cayenne.conn.PoolManager;
+import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -64,10 +65,6 @@ public class DefaultDataSourceFactory implements JpaDataSourceFactory {
     public static final String DATA_SOURCE_PREFIX = "cayenne.ds.";
     public static final String MIN_CONNECTIONS_SUFFIX = "jdbc.minConnections";
     public static final String MAX_CONNECTIONS_SUFFIX = "jdbc.maxConnections";
-
-    static String getPropertyName(String dataSourceName, String suffix) {
-        return DATA_SOURCE_PREFIX + dataSourceName + "." + suffix;
-    }
 
     public DataSource getJtaDataSource(String name, PersistenceUnitInfo info) {
         return getDataSource(name, info);
@@ -147,26 +144,26 @@ public class DefaultDataSourceFactory implements JpaDataSourceFactory {
     }
 
     protected String getDriverKey(String dataSourceName) {
-        return getPropertyName(dataSourceName, ConnectionProperties.DRIVER_KEY);
+        return JpaUnit.getDataSourcePropertyName(dataSourceName, ConnectionProperties.DRIVER_KEY);
     }
 
     protected String getUrlKey(String dataSourceName) {
-        return getPropertyName(dataSourceName, ConnectionProperties.URL_KEY);
+        return JpaUnit.getDataSourcePropertyName(dataSourceName, ConnectionProperties.URL_KEY);
     }
 
     protected String getUserKey(String dataSourceName) {
-        return getPropertyName(dataSourceName, ConnectionProperties.USER_NAME_KEY);
+        return JpaUnit.getDataSourcePropertyName(dataSourceName, ConnectionProperties.USER_NAME_KEY);
     }
 
     protected String getPasswordKey(String dataSourceName) {
-        return getPropertyName(dataSourceName, ConnectionProperties.PASSWORD_KEY);
+        return JpaUnit.getDataSourcePropertyName(dataSourceName, ConnectionProperties.PASSWORD_KEY);
     }
 
     protected String getMinConnectionsKey(String dataSourceName) {
-        return getPropertyName(dataSourceName, MIN_CONNECTIONS_SUFFIX);
+        return JpaUnit.getDataSourcePropertyName(dataSourceName, MIN_CONNECTIONS_SUFFIX);
     }
 
     protected String getMaxConnectionsKey(String dataSourceName) {
-        return getPropertyName(dataSourceName, MAX_CONNECTIONS_SUFFIX);
+        return JpaUnit.getDataSourcePropertyName(dataSourceName, MAX_CONNECTIONS_SUFFIX);
     }
 }

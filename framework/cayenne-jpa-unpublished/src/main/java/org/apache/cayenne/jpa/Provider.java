@@ -44,8 +44,11 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.enhancer.Enhancer;
 import org.apache.cayenne.instrument.InstrumentUtil;
 import org.apache.cayenne.jpa.bridge.DataMapConverter;
+import org.apache.cayenne.jpa.conf.DefaultDataSourceFactory;
 import org.apache.cayenne.jpa.conf.EntityMapLoader;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
+import org.apache.cayenne.jpa.conf.JpaUnit;
+import org.apache.cayenne.jpa.conf.JpaUnitFactory;
 import org.apache.cayenne.jpa.conf.UnitLoader;
 import org.apache.cayenne.jpa.enhancer.JpaEnhancerVisitorFactory;
 import org.apache.cayenne.jpa.instrument.InstrumentingUnitFactory;
@@ -342,7 +345,7 @@ public class Provider implements PersistenceProvider {
             EntityMapLoaderContext context,
             PersistenceUnitInfo info) {
 
-        String adapterKey = DefaultDataSourceFactory.getPropertyName(info
+        String adapterKey = JpaUnit.getDataSourcePropertyName(info
                 .getPersistenceUnitName(), ConnectionProperties.ADAPTER_KEY);
         String adapterClass = info.getProperties().getProperty(adapterKey);
 

@@ -23,7 +23,7 @@ package org.apache.cayenne.jpa;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.sql.DataSource;
 
-import org.apache.cayenne.jpa.JpaDataSourceFactory;
+import org.apache.cayenne.jpa.conf.JpaDataSourceFactory;
 
 
 public class MockJpaDataSourceFactory implements JpaDataSourceFactory {

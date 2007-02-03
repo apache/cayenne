@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jpa;
+package org.apache.cayenne.jpa.conf;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,6 +31,9 @@ import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
+
+import org.apache.cayenne.jpa.JpaProviderException;
+import org.apache.cayenne.jpa.Provider;
 
 /**
  * A <code>javax.persistence.spi.PersistenceUnitInfo</code> implementor used by Cayenne
@@ -54,6 +57,16 @@ public class JpaUnit implements PersistenceUnitInfo {
 
     // properties not exposed directly
     protected ClassLoader classLoader;
+
+    /**
+     * Builds a DataSource-specific property name for a generic property name.
+     */
+    public static String getDataSourcePropertyName(String dataSourceName, String suffix) {
+        return DefaultDataSourceFactory.DATA_SOURCE_PREFIX
+                + dataSourceName
+                + "."
+                + suffix;
+    }
 
     public JpaUnit() {
 
@@ -242,4 +255,5 @@ public class JpaUnit implements PersistenceUnitInfo {
     public void setDescription(String description) {
         this.description = description;
     }
+
 }
