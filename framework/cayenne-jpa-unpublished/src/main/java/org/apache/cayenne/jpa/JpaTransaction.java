@@ -31,7 +31,7 @@ import org.apache.cayenne.access.Transaction;
  * A JPA wrapper around a Cayenne Transaction. For more info see <a
  * href="http://cayenne.apache.org/doc/understanding-transactions.html">this page</a>.
  */
-class JpaTransaction implements EntityTransaction {
+public class JpaTransaction implements EntityTransaction {
 
     protected EntityManager entityManager;
     protected Transaction transaction;

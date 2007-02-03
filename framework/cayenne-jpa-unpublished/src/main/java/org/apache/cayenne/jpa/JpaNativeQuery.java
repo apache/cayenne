@@ -25,16 +25,16 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLTemplate;
 
-class JpaNativeQuery extends JpaQuery {
+public class JpaNativeQuery extends JpaQuery {
 
     private static final String POSITIONAL_PARAM_PREFIX = "positional_";
 
-    JpaNativeQuery(ObjectContext context, String sqlString, Class resultClass) {
+    public JpaNativeQuery(ObjectContext context, String sqlString, Class resultClass) {
         super(context);
         setQuery(new SQLTemplate(resultClass, processSQLString(sqlString)));
     }
 
-    JpaNativeQuery(ObjectContext context, String sqlString, String dataMapName) {
+    public JpaNativeQuery(ObjectContext context, String sqlString, String dataMapName) {
         super(context);
         DataMap map = context.getEntityResolver().getDataMap(dataMapName);
         setQuery(new SQLTemplate(map, processSQLString(sqlString)));

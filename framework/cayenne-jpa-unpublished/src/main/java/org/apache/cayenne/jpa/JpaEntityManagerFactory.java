@@ -33,14 +33,14 @@ import org.apache.cayenne.access.DataDomain;
  * 
  * @author Andrus Adamchik
  */
-class JpaEntityManagerFactory implements EntityManagerFactory {
+public class JpaEntityManagerFactory implements EntityManagerFactory {
 
     protected DataDomain domain;
     protected boolean open;
     protected PersistenceUnitInfo unitInfo;
     protected Object delegate;
 
-    JpaEntityManagerFactory(DataDomain domain, PersistenceUnitInfo unitInfo) {
+    public JpaEntityManagerFactory(DataDomain domain, PersistenceUnitInfo unitInfo) {
         this.unitInfo = unitInfo;
         this.open = true;
         this.domain = domain;

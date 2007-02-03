@@ -41,20 +41,20 @@ import org.apache.cayenne.query.SelectQuery;
 /**
  * A JPA Query that wraps a Cayenne Query.
  */
-class JpaQuery implements Query {
+public class JpaQuery implements Query {
 
     protected Map<String, Object> parameters = new HashMap<String, Object>();
     protected org.apache.cayenne.query.Query cayenneQuery;
     protected ObjectContext context;
 
-    JpaQuery(ObjectContext ctxt) {
+    public JpaQuery(ObjectContext ctxt) {
         this.context = ctxt;
     }
 
     /**
      * Construct a named query.
      */
-    JpaQuery(ObjectContext context, String name) {
+    public JpaQuery(ObjectContext context, String name) {
         this(context);
 
         org.apache.cayenne.query.Query q = context.getEntityResolver().lookupQuery(name);
