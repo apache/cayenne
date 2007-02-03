@@ -26,8 +26,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
@@ -40,10 +42,13 @@ import org.apache.cayenne.conf.ConnectionProperties;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.enhancer.Enhancer;
+import org.apache.cayenne.instrument.InstrumentUtil;
 import org.apache.cayenne.jpa.bridge.DataMapConverter;
 import org.apache.cayenne.jpa.conf.EntityMapLoader;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
+import org.apache.cayenne.jpa.conf.UnitLoader;
 import org.apache.cayenne.jpa.enhancer.JpaEnhancerVisitorFactory;
+import org.apache.cayenne.jpa.instrument.InstrumentingUnitFactory;
 import org.apache.cayenne.jpa.instrument.UnitClassTranformer;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
 import org.apache.cayenne.jpa.reflect.JpaClassDescriptorFactory;
@@ -63,10 +68,25 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Andrus Adamchik
  */
-public class Provider extends JpaPersistenceProvider {
+public class Provider implements PersistenceProvider {
 
+    // common properties
+    public static final String PROVIDER_PROPERTY = "javax.persistence.provider";
+    public static final String TRANSACTION_TYPE_PROPERTY = "javax.persistence.transactionType";
+    public static final String JTA_DATA_SOURCE_PROPERTY = "javax.persistence.jtaDataSource";
+    public static final String NON_JTA_DATA_SOURCE_PROPERTY = "javax.persistence.nonJtaDataSource";
+
+    // provider-specific properties
+    public static final String DATA_SOURCE_FACTORY_PROPERTY = "org.apache.cayenne.jpa.jpaDataSourceFactory";
+    public static final String UNIT_FACTORY_PROPERTY = "org.apache.cayenne.jpa.jpaUnitFactory";
+
+    public static final String INSTRUMENTING_FACTORY_CLASS = InstrumentingUnitFactory.class
+            .getName();
     public static final String CREATE_SCHEMA_PROPERTY = "cayenne.schema.create";
 
+    protected boolean validateDescriptors;
+    protected UnitLoader unitLoader;
+    protected Properties defaultProperties;
     protected Configuration configuration;
     protected Log logger;
 
@@ -79,13 +99,41 @@ public class Provider extends JpaPersistenceProvider {
     }
 
     public Provider(boolean validateDescriptors) {
-        super(validateDescriptors);
+        this.validateDescriptors = validateDescriptors;
+        this.defaultProperties = new Properties();
+
+        configureEnvironmentProperties();
+        configureDefaultProperties();
 
         this.logger = LogFactory.getLog(getClass());
         this.configuration = new LazyConfiguration();
 
         // set a singleton that may be used by Cayenne
         Configuration.initializeSharedConfiguration(configuration);
+    }
+
+    /**
+     * Loads default properties from the Java environment.
+     */
+    protected void configureEnvironmentProperties() {
+        String dsFactory = System.getProperty(DATA_SOURCE_FACTORY_PROPERTY);
+        if (dsFactory != null) {
+            defaultProperties.put(DATA_SOURCE_FACTORY_PROPERTY, dsFactory);
+        }
+
+        String transactionType = System.getProperty(TRANSACTION_TYPE_PROPERTY);
+        if (transactionType != null) {
+            defaultProperties.put(TRANSACTION_TYPE_PROPERTY, transactionType);
+        }
+
+        String unitFactory = System.getProperty(UNIT_FACTORY_PROPERTY);
+        if (unitFactory == null && InstrumentUtil.isAgentLoaded()) {
+            unitFactory = INSTRUMENTING_FACTORY_CLASS;
+        }
+
+        if (unitFactory != null) {
+            defaultProperties.put(UNIT_FACTORY_PROPERTY, unitFactory);
+        }
     }
 
     protected void configureDefaultProperties() {
@@ -102,11 +150,42 @@ public class Provider extends JpaPersistenceProvider {
         }
     }
 
+    public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
+
+        // TODO: Andrus, 2/11/2006 - cache loaded units (or factories)...
+
+        JpaUnit ui = getUnitLoader().loadUnit(emName);
+
+        if (ui == null) {
+            return null;
+        }
+
+        // override properties
+        if (map != null) {
+            ui.addProperties(map);
+        }
+
+        // set default properties if they are not set explicitly
+        Properties properties = ui.getProperties();
+        for (Map.Entry property : defaultProperties.entrySet()) {
+            if (!properties.containsKey(property.getKey())) {
+                properties.put(property.getKey(), property.getValue());
+            }
+        }
+
+        // check if we are allowed to handle this unit (JPA Spec, 7.2)
+        String provider = ui.getPersistenceProviderClassName();
+        if (provider != null && !provider.equals(this.getClass().getName())) {
+            return null;
+        }
+
+        return createContainerEntityManagerFactory(ui, map);
+    }
+
     /**
      * Maps PersistenceUnitInfo to Cayenne DataDomain and returns a
-     * {@link CjpaEntityManagerFactory} which is a DataDomain wrapper.
+     * {@link EntityManagerFactory} which is a DataDomain wrapper.
      */
-    @Override
     // TODO: andrus, 07/24/2006 - extract properties from the second map parameter as well
     // as PUI.
     public synchronized EntityManagerFactory createContainerEntityManagerFactory(
@@ -293,6 +372,37 @@ public class Provider extends JpaPersistenceProvider {
         return configuration;
     }
 
+    /**
+     * Returns unit loader, lazily creating it on first invocation.
+     */
+    protected UnitLoader getUnitLoader() {
+        if (unitLoader == null) {
+
+            JpaUnitFactory factory = null;
+
+            String unitFactoryName = getDefaultProperty(UNIT_FACTORY_PROPERTY);
+            if (unitFactoryName != null) {
+
+                try {
+                    Class factoryClass = Class.forName(unitFactoryName, true, Thread
+                            .currentThread()
+                            .getContextClassLoader());
+
+                    factory = (JpaUnitFactory) factoryClass.newInstance();
+                }
+                catch (Exception e) {
+                    throw new JpaProviderException("Error loading unit infor factory '"
+                            + unitFactoryName
+                            + "'", e);
+                }
+            }
+
+            this.unitLoader = new UnitLoader(factory, validateDescriptors);
+        }
+
+        return unitLoader;
+    }
+
     // TODO: andrus, 4/29/2006 - this is copied from non-public conf.NodeDataSource. In
     // Cayenne > 1.2 make it public.
     class NodeDataSource implements DataSource {
@@ -327,6 +437,10 @@ public class Provider extends JpaPersistenceProvider {
         public int getLoginTimeout() throws SQLException {
             return node.getDataSource().getLoginTimeout();
         }
+    }
+
+    protected String getDefaultProperty(String key) {
+        return defaultProperties.getProperty(key);
     }
 
     class LazyConfiguration extends Configuration {

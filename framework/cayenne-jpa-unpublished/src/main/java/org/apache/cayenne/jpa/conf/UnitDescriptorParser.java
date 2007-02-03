@@ -33,9 +33,9 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.apache.cayenne.jpa.JpaPersistenceProvider;
 import org.apache.cayenne.jpa.JpaUnit;
 import org.apache.cayenne.jpa.JpaUnitFactory;
+import org.apache.cayenne.jpa.Provider;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -142,7 +142,7 @@ public class UnitDescriptorParser {
 
                     if (transactionType != null) {
                         unit.putProperty(
-                                JpaPersistenceProvider.TRANSACTION_TYPE_PROPERTY,
+                                Provider.TRANSACTION_TYPE_PROPERTY,
                                 transactionType);
                     }
                 }
@@ -177,9 +177,7 @@ public class UnitDescriptorParser {
                             unit.addManagedClassName(string);
                         }
                         else if (PROVIDER.equals(qName)) {
-                            unit.putProperty(
-                                    JpaPersistenceProvider.PROVIDER_PROPERTY,
-                                    string);
+                            unit.putProperty(Provider.PROVIDER_PROPERTY, string);
                         }
                         else if (JAR_FILE.equals(qName)) {
                             unit.addJarFileUrl(string);
@@ -188,13 +186,11 @@ public class UnitDescriptorParser {
                             unit.addMappingFileName(string);
                         }
                         else if (JTA_DATASOURCE.equals(qName)) {
-                            unit.putProperty(
-                                    JpaPersistenceProvider.JTA_DATA_SOURCE_PROPERTY,
-                                    string);
+                            unit.putProperty(Provider.JTA_DATA_SOURCE_PROPERTY, string);
                         }
                         else if (NON_JTA_DATASOURCE.equals(qName)) {
                             unit.putProperty(
-                                    JpaPersistenceProvider.NON_JTA_DATA_SOURCE_PROPERTY,
+                                    Provider.NON_JTA_DATA_SOURCE_PROPERTY,
                                     string);
                         }
                         else if (DESCRIPTION.equals(qName)) {

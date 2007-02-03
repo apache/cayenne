@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa;
 
 import java.net.MalformedURLException;
@@ -32,7 +31,6 @@ import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
-
 
 /**
  * A <code>javax.persistence.spi.PersistenceUnitInfo</code> implementor used by Cayenne
@@ -72,7 +70,7 @@ public class JpaUnit implements PersistenceUnitInfo {
     }
 
     public String getPersistenceProviderClassName() {
-        return getProperty(JpaPersistenceProvider.PROVIDER_PROPERTY);
+        return getProperty(Provider.PROVIDER_PROPERTY);
     }
 
     /**
@@ -95,7 +93,7 @@ public class JpaUnit implements PersistenceUnitInfo {
     }
 
     public PersistenceUnitTransactionType getTransactionType() {
-        String type = getProperty(JpaPersistenceProvider.TRANSACTION_TYPE_PROPERTY);
+        String type = getProperty(Provider.TRANSACTION_TYPE_PROPERTY);
         return type != null
                 ? PersistenceUnitTransactionType.valueOf(type)
                 : DEFAULT_TRANSACTION_TYPE;
@@ -106,11 +104,11 @@ public class JpaUnit implements PersistenceUnitInfo {
     }
 
     JpaDataSourceFactory getJpaDataSourceFactory() {
-        String factory = getProperty(JpaPersistenceProvider.DATA_SOURCE_FACTORY_PROPERTY);
+        String factory = getProperty(Provider.DATA_SOURCE_FACTORY_PROPERTY);
 
         if (factory == null) {
             throw new JpaProviderException("No value for '"
-                    + JpaPersistenceProvider.DATA_SOURCE_FACTORY_PROPERTY
+                    + Provider.DATA_SOURCE_FACTORY_PROPERTY
                     + "' property - can't build DataSource factory.");
         }
 
@@ -128,12 +126,12 @@ public class JpaUnit implements PersistenceUnitInfo {
     }
 
     public DataSource getJtaDataSource() {
-        String name = getProperty(JpaPersistenceProvider.JTA_DATA_SOURCE_PROPERTY);
+        String name = getProperty(Provider.JTA_DATA_SOURCE_PROPERTY);
         return getJpaDataSourceFactory().getJtaDataSource(name, this);
     }
 
     public DataSource getNonJtaDataSource() {
-        String name = getProperty(JpaPersistenceProvider.NON_JTA_DATA_SOURCE_PROPERTY);
+        String name = getProperty(Provider.NON_JTA_DATA_SOURCE_PROPERTY);
         return getJpaDataSourceFactory().getNonJtaDataSource(name, this);
     }
 

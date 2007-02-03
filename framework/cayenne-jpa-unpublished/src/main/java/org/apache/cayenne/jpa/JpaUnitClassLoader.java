@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa;
 
 import java.io.ByteArrayOutputStream;
@@ -31,9 +30,9 @@ import java.security.SecureClassLoader;
  * 
  * @author Andrus Adamchik
  */
-public class JpaUnitClassLoader extends SecureClassLoader {
+class JpaUnitClassLoader extends SecureClassLoader {
 
-    public JpaUnitClassLoader(ClassLoader parent) {
+    JpaUnitClassLoader(ClassLoader parent) {
         super(parent);
     }
 

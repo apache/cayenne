@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.conf;
 
 import java.io.InputStream;
@@ -29,8 +28,8 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.jpa.JpaPersistenceProvider;
 import org.apache.cayenne.jpa.JpaUnit;
+import org.apache.cayenne.jpa.Provider;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 
@@ -57,7 +56,7 @@ public class UnitDescriptorParserTest extends TestCase {
         assertEquals(root, info.getPersistenceUnitRootUrl());
         assertTrue(info.getDescription().startsWith("This unit manages orders"));
         assertEquals("jdbc/MyOrderDB", info.getProperties().getProperty(
-                JpaPersistenceProvider.JTA_DATA_SOURCE_PROPERTY));
+                Provider.JTA_DATA_SOURCE_PROPERTY));
 
         assertEquals(1, info.getMappingFileNames().size());
         assertTrue(info.getMappingFileNames().contains("ormap.xml"));
@@ -88,7 +87,7 @@ public class UnitDescriptorParserTest extends TestCase {
         assertEquals(root, info.getPersistenceUnitRootUrl());
         assertTrue(info.getDescription().startsWith("This unit manages orders"));
         assertEquals("jdbc/MyOrderDB", info.getProperties().getProperty(
-                JpaPersistenceProvider.JTA_DATA_SOURCE_PROPERTY));
+                Provider.JTA_DATA_SOURCE_PROPERTY));
 
         assertEquals(1, info.getMappingFileNames().size());
         assertTrue(info.getMappingFileNames().contains("ormap.xml"));
@@ -143,7 +142,7 @@ public class UnitDescriptorParserTest extends TestCase {
                 .getTransactionType());
         assertEquals(root, info.getPersistenceUnitRootUrl());
         assertEquals("jdbc/MyDB", info.getProperties().getProperty(
-                JpaPersistenceProvider.NON_JTA_DATA_SOURCE_PROPERTY));
+                Provider.NON_JTA_DATA_SOURCE_PROPERTY));
 
         assertEquals(1, info.getMappingFileNames().size());
         assertTrue(info.getMappingFileNames().contains("order-mappings.xml"));
@@ -177,7 +176,7 @@ public class UnitDescriptorParserTest extends TestCase {
         assertEquals(root, info.getPersistenceUnitRootUrl());
         assertTrue(info.getDescription().startsWith("This unit manages orders"));
         assertEquals("jdbc/MyOrderDB", info.getProperties().getProperty(
-                JpaPersistenceProvider.JTA_DATA_SOURCE_PROPERTY));
+                Provider.JTA_DATA_SOURCE_PROPERTY));
 
         assertEquals(1, info.getMappingFileNames().size());
         assertTrue(info.getMappingFileNames().contains("ormap.xml"));

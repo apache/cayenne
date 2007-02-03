@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa;
 
 import java.net.URL;
@@ -25,9 +24,6 @@ import java.net.URLClassLoader;
 import java.util.Collections;
 
 import javax.persistence.spi.PersistenceUnitTransactionType;
-
-import org.apache.cayenne.jpa.JpaPersistenceProvider;
-import org.apache.cayenne.jpa.JpaUnit;
 
 import junit.framework.TestCase;
 
@@ -37,12 +33,12 @@ public class JpaUnitTest extends TestCase {
 
         JpaUnit info = new JpaUnit();
         info.addProperties(Collections.singletonMap(
-                JpaPersistenceProvider.TRANSACTION_TYPE_PROPERTY,
+                Provider.TRANSACTION_TYPE_PROPERTY,
                 PersistenceUnitTransactionType.JTA.name()));
         assertSame(PersistenceUnitTransactionType.JTA, info.getTransactionType());
 
         info.addProperties(Collections.singletonMap(
-                JpaPersistenceProvider.TRANSACTION_TYPE_PROPERTY,
+                Provider.TRANSACTION_TYPE_PROPERTY,
                 PersistenceUnitTransactionType.RESOURCE_LOCAL.name()));
         assertSame(PersistenceUnitTransactionType.RESOURCE_LOCAL, info
                 .getTransactionType());
