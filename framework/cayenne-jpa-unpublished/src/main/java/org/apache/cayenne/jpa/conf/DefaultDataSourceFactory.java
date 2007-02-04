@@ -39,7 +39,7 @@ import org.apache.cayenne.util.Util;
  * provider-specific properties. If such properties are not present, a DataSource is
  * obtained via JNDI.
  * <p>
- * Properties are specified in the correspondign section of the <em>persistence.xml</em>
+ * Properties are specified in the corresponding section of the <em>persistence.xml</em>
  * file. All property names related to a given named DataSource must be prefixed with
  * <em>"CayenneDataSource.[datasource name]."</em>. The following properties are
  * supported:

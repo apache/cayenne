@@ -29,23 +29,38 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import org.apache.cayenne.access.DataDomain;
 
 /**
- * A base implementation of a Cyenne EntityManagerFactory.
+ * A Cayenne EntityManagerFactory that supports resource-local transactions.
  * 
  * @author Andrus Adamchik
  */
-public class JpaEntityManagerFactory implements EntityManagerFactory {
+public class ResourceLocalEntityManagerFactory implements EntityManagerFactory {
 
     protected DataDomain domain;
     protected boolean open;
     protected PersistenceUnitInfo unitInfo;
-    protected Object delegate;
+    protected Provider provider;
 
-    public JpaEntityManagerFactory(DataDomain domain, PersistenceUnitInfo unitInfo) {
+    /**
+     * Non-public constructor used mostly for unit testing.
+     */
+    ResourceLocalEntityManagerFactory(PersistenceUnitInfo unitInfo) {
+        this(null, null, unitInfo);
+    }
+
+    /**
+     * Creates a new JpaEntityManagerFactory.
+     */
+    public ResourceLocalEntityManagerFactory(Provider provider, DataDomain domain,
+            PersistenceUnitInfo unitInfo) {
         this.unitInfo = unitInfo;
         this.open = true;
         this.domain = domain;
+        this.provider = provider;
     }
 
+    /**
+     * Returns wrapped unit.
+     */
     protected PersistenceUnitInfo getPersistenceUnitInfo() {
         return unitInfo;
     }
@@ -86,16 +101,17 @@ public class JpaEntityManagerFactory implements EntityManagerFactory {
      * 
      * @return a new EntityManager instance.
      */
-    public EntityManager createEntityManager(Map parameters) {
+    public EntityManager createEntityManager(Map map) {
         checkClosed();
-        return createEntityManagerInternal(parameters);
+        return createEntityManagerInternal(map);
     }
 
-    protected EntityManager createEntityManagerInternal(Map parameters) {
-        ResourceLocalEntityManager manager = new ResourceLocalEntityManager(domain
-                .createDataContext(), this, parameters);
-        manager.setDelegate(getDelegate());
-        return manager;
+    /**
+     * Creates a new resource-local EntityManager. Parameter map is ignored as Cayenne
+     * provider defines no properties for EntityManager as of now.
+     */
+    protected EntityManager createEntityManagerInternal(Map map) {
+        return new ResourceLocalEntityManager(domain.createDataContext(), this);
     }
 
     /**
@@ -109,17 +125,10 @@ public class JpaEntityManagerFactory implements EntityManagerFactory {
     }
 
     /**
-     * Returns a "delegate" object which is usually a parent persistence provider.
+     * Returns a parent persistence provider.
      */
-    public Object getDelegate() {
-        return delegate;
-    }
-
-    /**
-     * Sets a "delegate" object which is usually a parent persistence provider.
-     */
-    public void setDelegate(Object delegate) {
-        this.delegate = delegate;
+    public Provider getProvider() {
+        return provider;
     }
 
     /**

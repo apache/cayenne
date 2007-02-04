@@ -43,9 +43,6 @@ import org.apache.cayenne.jpa.Provider;
  */
 public class JpaUnit implements PersistenceUnitInfo {
 
-    // spec defaults
-    static final PersistenceUnitTransactionType DEFAULT_TRANSACTION_TYPE = PersistenceUnitTransactionType.JTA;
-
     protected String persistenceUnitName;
     protected List<String> mappingFileNames;
     protected List<URL> jarFileUrls;
@@ -107,9 +104,13 @@ public class JpaUnit implements PersistenceUnitInfo {
 
     public PersistenceUnitTransactionType getTransactionType() {
         String type = getProperty(Provider.TRANSACTION_TYPE_PROPERTY);
+
+        // default JTA type is somewhat arbitrary as application-managed EntityManagers
+        // will use resource-local, while container-managed will use JTA. Normally whoever
+        // created this unit will set the right value.
         return type != null
                 ? PersistenceUnitTransactionType.valueOf(type)
-                : DEFAULT_TRANSACTION_TYPE;
+                : PersistenceUnitTransactionType.JTA;
     }
 
     String getProperty(String key) {

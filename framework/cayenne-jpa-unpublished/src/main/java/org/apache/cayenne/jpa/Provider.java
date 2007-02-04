@@ -73,19 +73,19 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Provider implements PersistenceProvider {
 
-    // common properties
+    // spec-defined properties per ch. 7.1.3.1.
     public static final String PROVIDER_PROPERTY = "javax.persistence.provider";
     public static final String TRANSACTION_TYPE_PROPERTY = "javax.persistence.transactionType";
     public static final String JTA_DATA_SOURCE_PROPERTY = "javax.persistence.jtaDataSource";
     public static final String NON_JTA_DATA_SOURCE_PROPERTY = "javax.persistence.nonJtaDataSource";
 
-    // provider-specific properties
+    // provider-specific properties. Must use provider namespace per ch. 7.1.3.1.
     public static final String DATA_SOURCE_FACTORY_PROPERTY = "org.apache.cayenne.jpa.jpaDataSourceFactory";
     public static final String UNIT_FACTORY_PROPERTY = "org.apache.cayenne.jpa.jpaUnitFactory";
+    public static final String CREATE_SCHEMA_PROPERTY = "cayenne.schema.create";
 
     public static final String INSTRUMENTING_FACTORY_CLASS = InstrumentingUnitFactory.class
             .getName();
-    public static final String CREATE_SCHEMA_PROPERTY = "cayenne.schema.create";
 
     protected boolean validateDescriptors;
     protected UnitLoader unitLoader;
@@ -153,6 +153,11 @@ public class Provider implements PersistenceProvider {
         }
     }
 
+    /**
+     * Called by Persistence class when an EntityManagerFactory is to be created. Creates
+     * a {@link JpaUnit} and calls
+     * {@link #createContainerEntityManagerFactory(PersistenceUnitInfo, Map)}.
+     */
     public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
 
         // TODO: Andrus, 2/11/2006 - cache loaded units (or factories)...
@@ -182,24 +187,32 @@ public class Provider implements PersistenceProvider {
             return null;
         }
 
-        return createContainerEntityManagerFactory(ui, map);
+        // do not pass properties further down, they are already acounted for in the
+        // PersistenceUnitInfo.
+        return createContainerEntityManagerFactory(ui, null);
     }
 
     /**
-     * Maps PersistenceUnitInfo to Cayenne DataDomain and returns a
-     * {@link EntityManagerFactory} which is a DataDomain wrapper.
+     * Called by the container when an EntityManagerFactory is to be created. Returns a
+     * {@link EntityManagerFactory} which is a DataDomain wrapper. Note that Cayenne
+     * provider will ignore all but 'javax.persistence.transactionType' property in the
+     * passed property map.
      */
-    // TODO: andrus, 07/24/2006 - extract properties from the second map parameter as well
-    // as PUI.
     public synchronized EntityManagerFactory createContainerEntityManagerFactory(
-            PersistenceUnitInfo info,
+            PersistenceUnitInfo unit,
             Map map) {
-        String name = info.getPersistenceUnitName();
+
+        String name = unit.getPersistenceUnitName();
         DataDomain domain = configuration.getDomain(name);
 
+        // TODO: andrus, 2/3/2007 - considering property overrides, it may be a bad idea
+        // to cache domains. Essentially we are caching a PersistenceUnitInfo with a given
+        // name, without a possibility to refresh it. But maybe this is ok...?
         if (domain == null) {
 
             long t0 = System.currentTimeMillis();
+
+            boolean isJTA = isJta(unit, map);
 
             // configure Cayenne domain
             domain = new DataDomain(name);
@@ -210,7 +223,7 @@ public class Provider implements PersistenceProvider {
             descriptors.addFactory(new JpaClassDescriptorFactory(descriptors));
             configuration.addDomain(domain);
 
-            EntityMapLoader loader = new EntityMapLoader(info);
+            EntityMapLoader loader = new EntityMapLoader(unit);
 
             // we must set enhancer in this exact place, between JPA and Cayenne mapping
             // loading. By now all the JpaEntities are loaded (using separate unit class
@@ -219,32 +232,31 @@ public class Provider implements PersistenceProvider {
                     .getEntityMap()
                     .getMangedClasses();
 
-            info.addTransformer(new UnitClassTranformer(managedClasses, new Enhancer(
+            unit.addTransformer(new UnitClassTranformer(managedClasses, new Enhancer(
                     new JpaEnhancerVisitorFactory(managedClasses))));
 
             DataMapConverter converter = new DataMapConverter();
             DataMap cayenneMap = converter.toDataMap(name, loader.getContext());
 
-            DataSource dataSource = info.getTransactionType() == PersistenceUnitTransactionType.JTA
-                    ? info.getJtaDataSource()
-                    : info.getNonJtaDataSource();
+            // TODO: andrus, 2/3/2007 - clarify this logic.... JTA EM may not always mean
+            // JTA DS?
+            DataSource dataSource = isJTA ? unit.getJtaDataSource() : unit
+                    .getNonJtaDataSource();
 
-            DbAdapter adapter = createCustomAdapter(loader.getContext(), info);
-
+            DbAdapter adapter = createCustomAdapter(loader.getContext(), unit);
             DataNode node = new DataNode(name);
-
             if (adapter == null) {
                 adapter = new AutoAdapter(new NodeDataSource(node));
             }
 
             node.setAdapter(adapter);
-
             node.setDataSource(dataSource);
             node.addDataMap(cayenneMap);
 
             domain.addNode(node);
+            domain.setUsingExternalTransactions(isJTA);
 
-            if ("true".equalsIgnoreCase(info.getProperties().getProperty(
+            if ("true".equalsIgnoreCase(unit.getProperties().getProperty(
                     CREATE_SCHEMA_PROPERTY))) {
                 loadSchema(dataSource, adapter, cayenneMap);
             }
@@ -268,9 +280,30 @@ public class Provider implements PersistenceProvider {
             }
         }
 
-        JpaEntityManagerFactory factory = new JpaEntityManagerFactory(domain, info);
-        factory.setDelegate(this);
-        return factory;
+        // see TODO above - JTA vs RESOURCE_LOCAL is cached per domain... maybe need to
+        // change that
+        return domain.isUsingExternalTransactions() ? new JtaEntityManagerFactory(
+                this,
+                domain,
+                unit) : new ResourceLocalEntityManagerFactory(this, domain, unit);
+    }
+
+    /**
+     * Returns whether provided configuration specifies a JTA or RESOURCE_LOCAL
+     * EntityManager.
+     */
+    private boolean isJta(PersistenceUnitInfo unit, Map overrides) {
+        PersistenceUnitTransactionType txType;
+        String txTypeOverride = (overrides != null) ? (String) overrides
+                .get(TRANSACTION_TYPE_PROPERTY) : null;
+        if (txTypeOverride != null) {
+            txType = PersistenceUnitTransactionType.valueOf(txTypeOverride);
+        }
+        else {
+            txType = unit.getTransactionType();
+        }
+
+        return txType == PersistenceUnitTransactionType.JTA;
     }
 
     /**

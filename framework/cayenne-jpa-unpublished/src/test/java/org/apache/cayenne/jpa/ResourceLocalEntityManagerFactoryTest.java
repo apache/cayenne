@@ -23,11 +23,10 @@ import java.util.HashMap;
 
 import junit.framework.TestCase;
 
-public class JpaEntityManagerFactoryTest extends TestCase {
+public class ResourceLocalEntityManagerFactoryTest extends TestCase {
 
     public void testOpenClose() {
-        JpaEntityManagerFactory f = new JpaEntityManagerFactory(
-                null,
+        ResourceLocalEntityManagerFactory f = new ResourceLocalEntityManagerFactory(
                 new MockPersistenceUnitInfo());
         assertTrue(f.isOpen());
 

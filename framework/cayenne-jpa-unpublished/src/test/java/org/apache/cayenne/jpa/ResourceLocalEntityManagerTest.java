@@ -24,11 +24,10 @@ import javax.persistence.FlushModeType;
 
 import junit.framework.TestCase;
 
-public class JpaEntityManagerTest extends TestCase {
+public class ResourceLocalEntityManagerTest extends TestCase {
 
     public void testOpenClose() throws Exception {
-        JpaEntityManagerFactory factory = new JpaEntityManagerFactory(
-                null,
+        ResourceLocalEntityManagerFactory factory = new ResourceLocalEntityManagerFactory(
                 new MockPersistenceUnitInfo()) {
 
             @Override
@@ -36,24 +35,28 @@ public class JpaEntityManagerTest extends TestCase {
                 return true;
             }
         };
-        JpaEntityManager m = new MockJpaEntityManager(factory) {
+
+        final EntityTransaction tx = new MockEntityTransaction() {
 
             @Override
-            protected EntityTransaction createResourceLocalTransaction() {
-                return new MockEntityTransaction() {
+            public boolean isActive() {
+                return true;
+            }
+        };
 
-                    @Override
-                    public boolean isActive() {
-                        return true;
-                    }
-                };
+        ResourceLocalEntityManager m = new ResourceLocalEntityManager(
+                new MockObjectContext(),
+                factory) {
+
+            @Override
+            public EntityTransaction getTransaction() {
+                this.transaction = tx;
+                return tx;
             }
         };
 
         assertTrue(m.isOpen());
-
         m.close();
-
         assertFalse(m.isOpen());
 
         // check that all methods throw ... or at least some :-)
@@ -99,8 +102,7 @@ public class JpaEntityManagerTest extends TestCase {
     }
 
     public void testCloseActiveTransactionInProgress() {
-        JpaEntityManagerFactory factory = new JpaEntityManagerFactory(
-                null,
+        ResourceLocalEntityManagerFactory factory = new ResourceLocalEntityManagerFactory(
                 new MockPersistenceUnitInfo()) {
 
             @Override
@@ -109,17 +111,22 @@ public class JpaEntityManagerTest extends TestCase {
             }
         };
 
-        JpaEntityManager m = new MockJpaEntityManager(factory) {
+        final EntityTransaction tx = new MockEntityTransaction() {
 
             @Override
-            protected EntityTransaction createResourceLocalTransaction() {
-                return new MockEntityTransaction() {
+            public boolean isActive() {
+                return true;
+            }
+        };
 
-                    @Override
-                    public boolean isActive() {
-                        return true;
-                    }
-                };
+        ResourceLocalEntityManager m = new ResourceLocalEntityManager(
+                new MockObjectContext(),
+                factory) {
+
+            @Override
+            public EntityTransaction getTransaction() {
+                this.transaction = tx;
+                return tx;
             }
         };
 
@@ -140,8 +147,7 @@ public class JpaEntityManagerTest extends TestCase {
     public void testCloseFactoryClosed() {
         final boolean[] factoryCloseState = new boolean[1];
 
-        JpaEntityManagerFactory factory = new JpaEntityManagerFactory(
-                null,
+        ResourceLocalEntityManagerFactory factory = new ResourceLocalEntityManagerFactory(
                 new MockPersistenceUnitInfo()) {
 
             @Override
@@ -150,7 +156,9 @@ public class JpaEntityManagerTest extends TestCase {
             }
         };
 
-        JpaEntityManager m = new MockJpaEntityManager(factory);
+        ResourceLocalEntityManager m = new ResourceLocalEntityManager(
+                new MockObjectContext(),
+                factory);
 
         assertTrue(m.isOpen());
         factoryCloseState[0] = true;
