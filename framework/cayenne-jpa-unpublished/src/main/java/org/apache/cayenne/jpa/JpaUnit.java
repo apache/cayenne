@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jpa.conf;
+package org.apache.cayenne.jpa;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,8 +32,9 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
-import org.apache.cayenne.jpa.JpaProviderException;
-import org.apache.cayenne.jpa.Provider;
+import org.apache.cayenne.jpa.conf.DefaultDataSourceFactory;
+import org.apache.cayenne.jpa.conf.JpaDataSourceFactory;
+import org.apache.cayenne.jpa.conf.JpaUnitFactory;
 
 /**
  * A <code>javax.persistence.spi.PersistenceUnitInfo</code> implementor used by Cayenne

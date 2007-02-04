@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jpa.conf;
+package org.apache.cayenne.jpa;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

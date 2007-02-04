@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jpa.conf;
+package org.apache.cayenne.jpa;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,6 +27,7 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.jpa.JpaUnit;
 import org.apache.cayenne.jpa.Provider;
 
 public class JpaUnitTest extends TestCase {

@@ -33,6 +33,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.cayenne.jpa.JpaUnit;
 import org.apache.cayenne.jpa.Provider;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;

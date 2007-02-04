@@ -47,7 +47,6 @@ import org.apache.cayenne.jpa.bridge.DataMapConverter;
 import org.apache.cayenne.jpa.conf.DefaultDataSourceFactory;
 import org.apache.cayenne.jpa.conf.EntityMapLoader;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
-import org.apache.cayenne.jpa.conf.JpaUnit;
 import org.apache.cayenne.jpa.conf.JpaUnitFactory;
 import org.apache.cayenne.jpa.conf.UnitLoader;
 import org.apache.cayenne.jpa.enhancer.JpaEnhancerVisitorFactory;

@@ -19,8 +19,10 @@
 
 package org.apache.cayenne.jpa.conf;
 
+import org.apache.cayenne.jpa.JpaUnit;
+
 /**
- * A factory of {@link org.apache.cayenne.jpa.conf.JpaUnit} instances. Custom factory can
+ * A factory of {@link org.apache.cayenne.jpa.JpaUnit} instances. Custom factory can
  * be configured by setting a
  * {@link org.apache.cayenne.jpa.Provider#UNIT_FACTORY_PROPERTY} property.
  * 

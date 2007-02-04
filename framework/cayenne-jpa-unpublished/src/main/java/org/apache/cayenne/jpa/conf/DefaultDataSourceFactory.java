@@ -32,6 +32,7 @@ import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.conf.ConnectionProperties;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.jpa.JpaProviderException;
+import org.apache.cayenne.jpa.JpaUnit;
 import org.apache.cayenne.util.Util;
 
 /**

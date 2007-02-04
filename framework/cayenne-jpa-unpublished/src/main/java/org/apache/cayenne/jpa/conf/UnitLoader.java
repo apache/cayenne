@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
 
+import org.apache.cayenne.jpa.JpaUnit;
 import org.xml.sax.InputSource;
 
 /**
