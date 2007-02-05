@@ -26,10 +26,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.sql.DataSource;
-
-import org.apache.cayenne.itest.ItestDBUtils;
+import javax.transaction.TransactionSynchronizationRegistry;
 
 import junit.framework.Assert;
+
+import org.apache.cayenne.itest.ItestDBUtils;
+import org.apache.cayenne.itest.OpenEJBContainer;
+import org.apache.openejb.persistence.JtaEntityManager;
+import org.apache.openejb.persistence.JtaEntityManagerRegistry;
 
 public class ItestSetup {
 
@@ -45,6 +49,7 @@ public class ItestSetup {
     protected ItestDataSourceManager dataSourceManager;
     protected String jpaUnit;
     protected ItestDBUtils dbHelper;
+    protected JtaEntityManagerRegistry openEJBEMRegistry;
 
     public static void initInstance(Properties properties) {
         String schemaScript = properties.getProperty(SCHEMA_SCRIPT_URL);
@@ -74,16 +79,39 @@ public class ItestSetup {
         this.dbHelper = new ItestDBUtils(dataSourceManager.getDataSource());
     }
 
+    protected JtaEntityManagerRegistry getOpenEJBEMRegistry() {
+        if (openEJBEMRegistry == null) {
+            TransactionSynchronizationRegistry txRegistry = OpenEJBContainer
+                    .getContainer()
+                    .getTxSyncRegistry();
+            openEJBEMRegistry = new JtaEntityManagerRegistry(txRegistry);
+        }
+
+        return openEJBEMRegistry;
+    }
+
+    protected EntityManagerFactory getSharedFactory() {
+        if (sharedFactory == null) {
+            sharedFactory = createEntityManagerFactory();
+        }
+
+        return sharedFactory;
+    }
+
     public DataSource getDataSource() {
         return dataSourceManager.getDataSource();
     }
 
     public EntityManager createEntityManager() {
-        if (sharedFactory == null) {
-            sharedFactory = createEntityManagerFactory();
-        }
+        return getSharedFactory().createEntityManager();
+    }
 
-        return sharedFactory.createEntityManager();
+    public EntityManager createContainerManagedEntityManager() {
+        return new JtaEntityManager(
+                getOpenEJBEMRegistry(),
+                getSharedFactory(),
+                new Properties(),
+                false);
     }
 
     public EntityManagerFactory createEntityManagerFactory() {
