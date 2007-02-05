@@ -18,49 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.jpa.itest.ch5;
 
-import java.util.Properties;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import javax.transaction.TransactionManager;
 
+import org.apache.cayenne.itest.OpenEJBContainer;
 import org.apache.cayenne.itest.jpa.ItestSetup;
 import org.apache.cayenne.itest.jpa.JpaTestCase;
 import org.apache.cayenne.jpa.itest.ch5.entity.SimpleEntity;
-import org.apache.geronimo.transaction.jta11.GeronimoTransactionManagerJTA11;
-import org.apache.openejb.client.LocalInitialContextFactory;
-import org.apache.openejb.persistence.JtaEntityManager;
-import org.apache.openejb.persistence.JtaEntityManagerRegistry;
 
 public class _5_5_1_JtaEntityManagerTest extends JpaTestCase {
 
     public void testPersist() throws Exception {
 
-        getDbHelper().deleteAll("SimpleEntity");
-
-        GeronimoTransactionManagerJTA11 tm = new GeronimoTransactionManagerJTA11();
-        System.setProperty(
-                Context.INITIAL_CONTEXT_FACTORY,
-                LocalInitialContextFactory.class.getName());
-
-        // somehow OpenEJB LocalInitialContextFactory requires 2 IC's to be initilaized to
-        // fully bootstrap the environment
-        new InitialContext();
-        new InitialContext().bind("java:comp/TransactionSynchronizationRegistry", tm);
-
-        EntityManagerFactory factory = ItestSetup
-                .getInstance()
-                .createEntityManagerFactory();
-        JtaEntityManagerRegistry registry = new JtaEntityManagerRegistry(tm);
-
+        TransactionManager tm = OpenEJBContainer.getContainer().getTxManager();
         tm.begin();
 
-        EntityManager entityManager = new JtaEntityManager(
-                registry,
-                factory,
-                new Properties(),
-                false);
+        EntityManager entityManager = ItestSetup
+                .getInstance()
+                .createContainerManagedEntityManager();
 
         SimpleEntity e = new SimpleEntity();
         e.setProperty1("XXX");
@@ -69,7 +44,6 @@ public class _5_5_1_JtaEntityManagerTest extends JpaTestCase {
 
         assertEquals(1, getDbHelper().getRowCount("SimpleEntity"));
     }
-
     // TODO: andrus, 1/3/2007 - implement - need to emulate the container environment
     // public void testPersistTransactionRequiredException() throws Exception {
     // // throws TransactionRequiredException if invoked on a
