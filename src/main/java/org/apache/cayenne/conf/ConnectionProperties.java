@@ -35,15 +35,13 @@ import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.commons.collections.ExtendedProperties;
 
 /**
- * ConnectionProperties handles a set of DataSourceInfo objects 
- * using information stored in $HOME/.cayenne/connection.properties. 
- * As of now this is purely a utility class. Its features are not used
- * in deployment.
+ * ConnectionProperties handles a set of DataSourceInfo objects using information stored
+ * in $HOME/.cayenne/connection.properties. As of now this is purely a utility class. Its
+ * features are not used in deployment.
  * 
  * @author Andrus Adamchik
  */
 public class ConnectionProperties {
-    
 
     public static final String EMBEDDED_DATASOURCE = "internal_embedded_datasource";
     public static final String EMBEDDED_DATASOURCE_DBADAPTER = "org.apache.cayenne.dba.hsqldb.HSQLDBAdapter";
@@ -53,7 +51,8 @@ public class ConnectionProperties {
     public static final String EMBEDDED_DATASOURCE_JDBC_DRIVER = "org.hsqldb.jdbcDriver";
 
     public static final String PROPERTIES_FILE = "connection.properties";
-    public static final String ADAPTER_KEY = "cayenne.adapter";
+    public static final String ADAPTER_KEY = "adapter";
+    static final String ADAPTER20_KEY = "cayenne.adapter";
     public static final String USER_NAME_KEY = "jdbc.username";
     public static final String PASSWORD_KEY = "jdbc.password";
     public static final String URL_KEY = "jdbc.url";
@@ -81,13 +80,15 @@ public class ConnectionProperties {
 
         try {
             if (f.exists()) {
-                return new ConnectionProperties(
-                    new ExtendedProperties(f.getAbsolutePath()));
-            } else {
+                return new ConnectionProperties(new ExtendedProperties(f
+                        .getAbsolutePath()));
+            }
+            else {
                 // lets touch this file so that users would get a clue of what it is
                 createSamplePropertiesFile(f);
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             // ignoring
         }
 
@@ -108,8 +109,7 @@ public class ConnectionProperties {
 
             out.write("#");
             out.newLine();
-            out.write(
-                "# example1."
+            out.write("# example1."
                     + ADAPTER_KEY
                     + " = org.apache.cayenne.dba.mysql.MySQLAdapter");
             out.newLine();
@@ -125,8 +125,7 @@ public class ConnectionProperties {
             // example 2
             out.write("#");
             out.newLine();
-            out.write(
-                "# example2."
+            out.write("# example2."
                     + ADAPTER_KEY
                     + " = org.apache.cayenne.dba.mysql.MySQLAdapter");
             out.newLine();
@@ -138,7 +137,8 @@ public class ConnectionProperties {
             out.newLine();
             out.write("# example2." + DRIVER_KEY + " = org.gjt.mm.mysql.Driver");
             out.newLine();
-        } finally {
+        }
+        finally {
             out.close();
         }
     }
@@ -156,11 +156,11 @@ public class ConnectionProperties {
     }
 
     /**
-     * Returns DataSourceInfo object for a symbolic name.
-     * If name does not match an existing object, returns null.
+     * Returns DataSourceInfo object for a symbolic name. If name does not match an
+     * existing object, returns null.
      */
     public DataSourceInfo getConnectionInfo(String name) {
-        
+
         if (EMBEDDED_DATASOURCE.equals(name)) {
             // Create embedded data source instead
             DataSourceInfo connectionInfo = new DataSourceInfo();
@@ -178,12 +178,19 @@ public class ConnectionProperties {
     }
 
     /**
-    * Creates a DataSourceInfo object from a set of properties.
-    */
+     * Creates a DataSourceInfo object from a set of properties.
+     */
     protected DataSourceInfo buildDataSourceInfo(ExtendedProperties props) {
         DataSourceInfo dsi = new DataSourceInfo();
 
-        dsi.setAdapterClassName(props.getString(ADAPTER_KEY));
+        String adapter = props.getString(ADAPTER_KEY);
+        
+        // try legacy adapter key
+        if(adapter == null) {
+            adapter = props.getString(ADAPTER20_KEY);
+        }
+        
+        dsi.setAdapterClassName(adapter);
         dsi.setUserName(props.getString(USER_NAME_KEY));
         dsi.setPassword(props.getString(PASSWORD_KEY));
         dsi.setDataSourceUrl(props.getString(URL_KEY));
@@ -193,8 +200,7 @@ public class ConnectionProperties {
     }
 
     /**
-     * Returns a list of connection names configured
-     * in the properties object.
+     * Returns a list of connection names configured in the properties object.
      */
     protected List extractNames(ExtendedProperties props) {
         Iterator it = props.getKeys();
