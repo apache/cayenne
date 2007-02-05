@@ -159,9 +159,7 @@ public class Provider implements PersistenceProvider {
      */
     public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
 
-        // TODO: Andrus, 2/11/2006 - cache loaded units (or factories)...
-
-        JpaUnit ui = getUnitLoader().loadUnit(emName);
+        JpaUnit ui = loadUnit(emName);
 
         if (ui == null) {
             return null;
@@ -405,6 +403,14 @@ public class Provider implements PersistenceProvider {
 
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+    /**
+     * Loads a named JpaUnit using internal UnitLoader.
+     */
+    protected JpaUnit loadUnit(String emName) {
+        // TODO: Andrus, 2/11/2006 - cache loaded units (or factories)...?
+        return getUnitLoader().loadUnit(emName);
     }
 
     /**
