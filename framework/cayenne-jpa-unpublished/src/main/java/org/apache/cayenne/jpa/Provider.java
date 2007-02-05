@@ -79,11 +79,25 @@ public class Provider implements PersistenceProvider {
     public static final String NON_JTA_DATA_SOURCE_PROPERTY = "javax.persistence.nonJtaDataSource";
 
     // provider-specific properties. Must use provider namespace per ch. 7.1.3.1.
+    public static final String CREATE_SCHEMA_PROPERTY = "org.apache.cayenne.schema.create";
     public static final String DATA_SOURCE_FACTORY_PROPERTY = "org.apache.cayenne.jpa.jpaDataSourceFactory";
     public static final String UNIT_FACTORY_PROPERTY = "org.apache.cayenne.jpa.jpaUnitFactory";
-    public static final String CREATE_SCHEMA_PROPERTY = "cayenne.schema.create";
 
-    public static final String INSTRUMENTING_FACTORY_CLASS = InstrumentingUnitFactory.class
+    // ... DataSource
+    public static final String ADAPTER_PROPERTY = "org.apache.cayenne."
+            + ConnectionProperties.ADAPTER_KEY;
+    public static final String DATA_SOURCE_DRIVER_PROPERTY = "org.apache.cayenne.datasource."
+            + ConnectionProperties.DRIVER_KEY;
+    public static final String DATA_SOURCE_URL_PROPERTY = "org.apache.cayenne.datasource."
+            + ConnectionProperties.URL_KEY;
+    public static final String DATA_SOURCE_USER_NAME_PROPERTY = "org.apache.cayenne.datasource."
+            + ConnectionProperties.USER_NAME_KEY;
+    public static final String DATA_SOURCE_PASSWORD_PROPERTY = "org.apache.cayenne.datasource."
+            + ConnectionProperties.PASSWORD_KEY;
+    public static final String DATA_SOURCE_MIN_CONNECTIONS_PROPERTY = "org.apache.cayenne.datasource.jdbc.minConnections";
+    public static final String DATA_SOURCE_MAX_CONNECTIONS_PROPERTY = "org.apache.cayenne.datasource.jdbc.maxConnections";
+
+    static final String INSTRUMENTING_FACTORY_CLASS = InstrumentingUnitFactory.class
             .getName();
 
     protected boolean validateDescriptors;
@@ -375,9 +389,7 @@ public class Provider implements PersistenceProvider {
             EntityMapLoaderContext context,
             PersistenceUnitInfo info) {
 
-        String adapterKey = JpaUnit.getDataSourcePropertyName(info
-                .getPersistenceUnitName(), ConnectionProperties.ADAPTER_KEY);
-        String adapterClass = info.getProperties().getProperty(adapterKey);
+        String adapterClass = info.getProperties().getProperty(ADAPTER_PROPERTY);
 
         if (Util.isEmptyString(adapterClass)) {
             return null;

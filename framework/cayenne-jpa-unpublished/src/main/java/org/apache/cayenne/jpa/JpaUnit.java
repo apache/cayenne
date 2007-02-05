@@ -32,7 +32,6 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
-import org.apache.cayenne.jpa.conf.DefaultDataSourceFactory;
 import org.apache.cayenne.jpa.conf.JpaDataSourceFactory;
 import org.apache.cayenne.jpa.conf.JpaUnitFactory;
 
@@ -55,16 +54,6 @@ public class JpaUnit implements PersistenceUnitInfo {
 
     // properties not exposed directly
     protected ClassLoader classLoader;
-
-    /**
-     * Builds a DataSource-specific property name for a generic property name.
-     */
-    public static String getDataSourcePropertyName(String dataSourceName, String suffix) {
-        return DefaultDataSourceFactory.DATA_SOURCE_PREFIX
-                + dataSourceName
-                + "."
-                + suffix;
-    }
 
     public JpaUnit() {
 

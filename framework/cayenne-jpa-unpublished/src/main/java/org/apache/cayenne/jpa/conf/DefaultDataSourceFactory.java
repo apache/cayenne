@@ -29,10 +29,9 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.access.ConnectionLogger;
 import org.apache.cayenne.access.QueryLogger;
-import org.apache.cayenne.conf.ConnectionProperties;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.jpa.JpaProviderException;
-import org.apache.cayenne.jpa.JpaUnit;
+import org.apache.cayenne.jpa.Provider;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -41,31 +40,20 @@ import org.apache.cayenne.util.Util;
  * obtained via JNDI.
  * <p>
  * Properties are specified in the corresponding section of the <em>persistence.xml</em>
- * file. All property names related to a given named DataSource must be prefixed with
- * <em>"CayenneDataSource.[datasource name]."</em>. The following properties are
- * supported:
+ * file. The following properties are supported:
  * </p>
  * <ul>
- * <li>cayenne.ds.[datasource name].jdbc.driver - (required) JDBC driver class</li>
- * <li>cayenne.ds.[datasource name].jdbc.url - (required) Database URL</li>
- * <li>cayenne.ds.[datasource name].jdbc.username - Database login id</li>
- * <li>cayenne.ds.[datasource name].jdbc.password - Database password</li>
- * <li>cayenne.ds.[datasource name].jdbc.minConnections - (optional) Minimal pool size</li>
- * <li>cayenne.ds.[datasource name].jdbc.maxConnections - (optional) Maximum pool size</li>
+ * <li>org.apache.cayenne.datasource.jdbc.driver - (required) JDBC driver class</li>
+ * <li>org.apache.cayenne.datasource.jdbc.url - (required) Database URL</li>
+ * <li>org.apache.cayenne.datasource.jdbc.username - Database login id</li>
+ * <li>org.apache.cayenne.datasource.jdbc.password - Database password</li>
+ * <li>org.apache.cayenne.datasource.jdbc.minConnections - (optional) Minimal pool size</li>
+ * <li>org.apache.cayenne.datasource..jdbc.maxConnections - (optional) Maximum pool size</li>
  * </ul>
- * <p>
- * Another optional property is <em>cayenne.ds.[datasource name].cayenne.adapter</em>.
- * It is not strictly related to the DataSource configuration, but Cayenne provider will
- * use to configure the same {@link org.apache.cayenne.access.DataNode} that will use the
- * DataSource. If not set, an AutoAdapter is used.
  * 
  * @author Andrus Adamchik
  */
 public class DefaultDataSourceFactory implements JpaDataSourceFactory {
-
-    public static final String DATA_SOURCE_PREFIX = "cayenne.ds.";
-    public static final String MIN_CONNECTIONS_SUFFIX = "jdbc.minConnections";
-    public static final String MAX_CONNECTIONS_SUFFIX = "jdbc.maxConnections";
 
     public DataSource getJtaDataSource(String name, PersistenceUnitInfo info) {
         return getDataSource(name, info);
@@ -99,12 +87,12 @@ public class DefaultDataSourceFactory implements JpaDataSourceFactory {
 
     protected DataSource getCayenneDataSource(String name, Properties properties) {
 
-        String driverName = properties.getProperty(getDriverKey(name));
+        String driverName = properties.getProperty(Provider.DATA_SOURCE_DRIVER_PROPERTY);
         if (Util.isEmptyString(driverName)) {
             return null;
         }
 
-        String url = properties.getProperty(getUrlKey(name));
+        String url = properties.getProperty(Provider.DATA_SOURCE_URL_PROPERTY);
         if (Util.isEmptyString(url)) {
             return null;
         }
@@ -112,7 +100,7 @@ public class DefaultDataSourceFactory implements JpaDataSourceFactory {
         int minConnection;
         try {
             minConnection = Integer.parseInt(properties
-                    .getProperty(getMinConnectionsKey(name)));
+                    .getProperty(Provider.DATA_SOURCE_MIN_CONNECTIONS_PROPERTY));
         }
         catch (Exception e) {
             minConnection = 1;
@@ -121,7 +109,7 @@ public class DefaultDataSourceFactory implements JpaDataSourceFactory {
         int maxConnection;
         try {
             maxConnection = Integer.parseInt(properties
-                    .getProperty(getMaxConnectionsKey(name)));
+                    .getProperty(Provider.DATA_SOURCE_MAX_CONNECTIONS_PROPERTY));
         }
         catch (Exception e) {
             maxConnection = 1;
@@ -134,37 +122,13 @@ public class DefaultDataSourceFactory implements JpaDataSourceFactory {
                     url,
                     minConnection,
                     maxConnection,
-                    properties.getProperty(getUserKey(name)),
-                    properties.getProperty(getPasswordKey(name)),
+                    properties.getProperty(Provider.DATA_SOURCE_USER_NAME_PROPERTY),
+                    properties.getProperty(Provider.DATA_SOURCE_PASSWORD_PROPERTY),
                     new ConnectionLogger());
         }
         catch (SQLException e) {
             QueryLogger.logConnectFailure(e);
             throw new JpaProviderException("Error creating connection pool", e);
         }
-    }
-
-    protected String getDriverKey(String dataSourceName) {
-        return JpaUnit.getDataSourcePropertyName(dataSourceName, ConnectionProperties.DRIVER_KEY);
-    }
-
-    protected String getUrlKey(String dataSourceName) {
-        return JpaUnit.getDataSourcePropertyName(dataSourceName, ConnectionProperties.URL_KEY);
-    }
-
-    protected String getUserKey(String dataSourceName) {
-        return JpaUnit.getDataSourcePropertyName(dataSourceName, ConnectionProperties.USER_NAME_KEY);
-    }
-
-    protected String getPasswordKey(String dataSourceName) {
-        return JpaUnit.getDataSourcePropertyName(dataSourceName, ConnectionProperties.PASSWORD_KEY);
-    }
-
-    protected String getMinConnectionsKey(String dataSourceName) {
-        return JpaUnit.getDataSourcePropertyName(dataSourceName, MIN_CONNECTIONS_SUFFIX);
-    }
-
-    protected String getMaxConnectionsKey(String dataSourceName) {
-        return JpaUnit.getDataSourcePropertyName(dataSourceName, MAX_CONNECTIONS_SUFFIX);
     }
 }
