@@ -41,6 +41,7 @@
       <module>pojo</module>
       <module>jpa-chapter2</module>
       <module>jpa-chapter3</module>
+      <module>jpa-chapter5</module>
       <module>jpa-chapter9</module>
     </modules>
 </project>
