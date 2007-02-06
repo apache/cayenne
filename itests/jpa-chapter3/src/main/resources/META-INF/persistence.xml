@@ -22,5 +22,6 @@
 	<persistence-unit name="itest">
 		<description>Integration test peristence unit #1.</description>
 		<class>org.apache.cayenne.jpa.itest.ch3.entity.SimpleEntity</class>
+		<class>org.apache.cayenne.jpa.itest.ch3.entity.CallbackEntity</class>
 	</persistence-unit>
 </persistence>
