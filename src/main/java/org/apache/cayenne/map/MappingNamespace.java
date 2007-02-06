@@ -35,8 +35,18 @@ public interface MappingNamespace {
     /**
      * Returns an {@link Embeddable} matching class name or null if such Embeddable is not
      * mapped.
+     * 
+     * @since 3.0
      */
     Embeddable getEmbeddable(String className);
+
+    /**
+     * Returns an {@link EntityListener} matching class name or null if such
+     * EntityListener is not mapped.
+     * 
+     * @since 3.0
+     */
+    EntityListener getEntityListener(String className);
 
     /**
      * Returns DbEntity for a given name, or null if no such DbEntity is found in the

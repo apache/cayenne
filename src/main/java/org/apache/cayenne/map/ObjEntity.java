@@ -19,8 +19,10 @@
 
 package org.apache.cayenne.map;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +81,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
     protected String clientClassName;
     protected String clientSuperClassName;
 
+    protected List listeners;
+    protected SortedMap callbackMethods;
     protected boolean excludingDefaultListeners;
     protected boolean excludingSuperclassListeners;
 
@@ -88,7 +92,9 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
 
     public ObjEntity(String name) {
         setName(name);
-        lockType = LOCK_TYPE_NONE;
+        this.lockType = LOCK_TYPE_NONE;
+        this.callbackMethods = new TreeMap();
+        this.listeners = new ArrayList(2);
     }
 
     /**
@@ -189,6 +195,9 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
             entity.addRelationship(relationship.getClientRelationship());
         }
 
+        // TODO: andrus 2/5/2007 - copy embeddables
+        // TODO: andrus 2/5/2007 - copy listeners and callback methods
+
         return entity;
     }
 
@@ -220,6 +229,116 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
                     + ": "
                     + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Returns an unmodifiable list of registered {@link EntityListener} objects. Note
+     * that since the order of listeners is significant a list, not just a generic
+     * Collection is returned.
+     * 
+     * @since 3.0
+     */
+    public List getListeners() {
+        return Collections.unmodifiableList(listeners);
+    }
+
+    /**
+     * Adds a new EntityListener.
+     * 
+     * @since 3.0
+     * @throws IllegalArgumentException if a listener for the same class name is already
+     *             registered.
+     */
+    public void addListener(EntityListener listener) {
+        Iterator it = listeners.iterator();
+        while (it.hasNext()) {
+            EntityListener next = (EntityListener) it.next();
+            if (listener.getClassName().equals(next.getClassName())) {
+                throw new IllegalArgumentException("Duplicate listener for "
+                        + next.getClassName());
+            }
+        }
+
+        listeners.add(listener);
+    }
+
+    /**
+     * Removes a listener matching class name.
+     * 
+     * @since 3.0
+     */
+    public void removeListener(String className) {
+        Iterator it = listeners.iterator();
+        while (it.hasNext()) {
+            EntityListener next = (EntityListener) it.next();
+            if (className.equals(next.getClassName())) {
+                it.remove();
+                break;
+            }
+        }
+    }
+
+    /**
+     * Returns an unmodifiable sorted map of listener methods.
+     * 
+     * @since 3.0
+     */
+    public SortedMap getCallbackMethodsMap() {
+        // create a new instance ... Caching unmodifiable map causes
+        // serialization issues (esp. with Hessian).
+        return Collections.unmodifiableSortedMap(callbackMethods);
+    }
+
+    /**
+     * Returns an unmodifiable collection of listener methods.
+     * 
+     * @since 3.0
+     */
+    public Collection getCallbackMethods() {
+        // create a new instance. Caching unmodifiable collection causes
+        // serialization issues (esp. with Hessian).
+        return Collections.unmodifiableCollection(callbackMethods.values());
+    }
+
+    /**
+     * Adds new listener method. If a method has no name, IllegalArgumentException is
+     * thrown.
+     * 
+     * @since 3.0
+     */
+    public void addCallbackMethod(CallbackMethod method) {
+
+        if (method.getName() == null) {
+            throw new IllegalArgumentException("Attempt to insert unnamed method.");
+        }
+
+        Object existingMethod = callbackMethods.get(method.getName());
+        if (existingMethod != null) {
+            if (existingMethod == method) {
+                return;
+            }
+            else {
+                throw new IllegalArgumentException("An attempt to override method '"
+                        + method.getName()
+                        + "'");
+            }
+        }
+
+        callbackMethods.put(method.getName(), method);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public CallbackMethod getCallbackMethod(String name) {
+        return (CallbackMethod) callbackMethods.get(name);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void removeCallbackMethod(String name) {
+        callbackMethods.remove(name);
     }
 
     /**
