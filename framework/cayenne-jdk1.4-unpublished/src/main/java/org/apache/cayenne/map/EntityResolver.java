@@ -37,6 +37,7 @@ import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.generic.DataObjectDescriptorFactory;
 import org.apache.cayenne.reflect.pojo.EnhancedPojoDescriptorFactory;
 import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
+import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.collection.CompositeCollection;
 
 /**
@@ -58,6 +59,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     protected transient Map queryCache;
     protected transient Map embeddableCache;
+    protected transient Map entityListenerCache;
     protected transient Map dbEntityCache;
     protected transient Map objEntityCache;
     protected transient Map procedureCache;
@@ -79,6 +81,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
         this.indexedByClass = true;
         this.maps = new ArrayList();
         this.embeddableCache = new HashMap();
+        this.entityListenerCache = new HashMap();
         this.queryCache = new HashMap();
         this.dbEntityCache = new HashMap();
         this.objEntityCache = new HashMap();
@@ -112,7 +115,91 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 };
             }
 
+            // load default callbacks
+            Iterator listeners = entityListenerCache.values().iterator();
+            while (listeners.hasNext()) {
+                EntityListener listener = (EntityListener) listeners.next();
+
+                Object listenerInstance = createListener(listener);
+
+                Iterator callbacks = listener.getCallbackMethods().iterator();
+                while (callbacks.hasNext()) {
+                    CallbackMethod method = (CallbackMethod) callbacks.next();
+                    Iterator callbackEvents = method.getCallbackEvents().iterator();
+                    while (callbackEvents.hasNext()) {
+                        Integer event = (Integer) callbackEvents.next();
+                        lifecycleEventCallbacks[event.intValue()].addDefaultListener(
+                                listenerInstance,
+                                method.getName());
+                    }
+                }
+            }
+
+            // load entity callbacks
+            Iterator entities = getObjEntities().iterator();
+            while (entities.hasNext()) {
+                ObjEntity entity = (ObjEntity) entities.next();
+                Class entityClass = entity.getJavaClass();
+
+                // external listeners go first, entity's own callbacks go next
+                Iterator entityListeners = entity.getListeners().iterator();
+                while (entityListeners.hasNext()) {
+                    EntityListener listener = (EntityListener) entityListeners.next();
+
+                    Object listenerInstance = createListener(listener);
+
+                    Iterator callbacks = listener.getCallbackMethods().iterator();
+                    while (callbacks.hasNext()) {
+                        CallbackMethod method = (CallbackMethod) callbacks.next();
+                        Iterator callbackEvents = method.getCallbackEvents().iterator();
+                        while (callbackEvents.hasNext()) {
+                            Integer event = (Integer) callbackEvents.next();
+                            lifecycleEventCallbacks[event.intValue()].addListener(
+                                    entityClass,
+                                    listenerInstance,
+                                    method.getName());
+                        }
+                    }
+                }
+
+                Iterator callbacks = entity.getCallbackMethods().iterator();
+                while (callbacks.hasNext()) {
+                    CallbackMethod method = (CallbackMethod) callbacks.next();
+                    Iterator callbackEvents = method.getCallbackEvents().iterator();
+                    while (callbackEvents.hasNext()) {
+                        Integer event = (Integer) callbackEvents.next();
+                        lifecycleEventCallbacks[event.intValue()].addListener(
+                                entityClass,
+                                method.getName());
+                    }
+                }
+            }
+
             this.lifecycleEventCallbacks = lifecycleEventCallbacks;
+        }
+    }
+
+    /**
+     * Creates a listener instance.
+     */
+    private Object createListener(EntityListener listener) {
+        Class listenerClass;
+
+        try {
+            listenerClass = Util.getJavaClass(listener.getClassName());
+        }
+        catch (ClassNotFoundException e) {
+            throw new CayenneRuntimeException("Invalid listener class: "
+                    + listener.getClassName(), e);
+        }
+
+        try {
+            return listenerClass.newInstance();
+        }
+        catch (Exception e) {
+            throw new CayenneRuntimeException("Listener class "
+                    + listener.getClassName()
+                    + " default constructor call failed", e);
         }
     }
 
@@ -244,7 +331,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     public Query getQuery(String name) {
         return lookupQuery(name);
     }
-    
+
     /**
      * @since 3.0
      */
@@ -257,7 +344,23 @@ public class EntityResolver implements MappingNamespace, Serializable {
             constructCache();
             result = (Embeddable) embeddableCache.get(className);
         }
-        
+
+        return result;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public EntityListener getEntityListener(String className) {
+        EntityListener result = (EntityListener) entityListenerCache.get(className);
+
+        if (result == null) {
+            // reconstruct cache just in case some of the datamaps
+            // have changed and now contain the required information
+            constructCache();
+            result = (EntityListener) entityListenerCache.get(className);
+        }
+
         return result;
     }
 
@@ -294,6 +397,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
         objEntityCache.clear();
         procedureCache.clear();
         entityInheritanceCache.clear();
+        entityListenerCache.clear();
         clientEntityResolver = null;
     }
 
@@ -389,6 +493,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
                             + name);
                 }
             }
+
+            // index listeners
+            entityListenerCache.putAll(map.getEntityListenersMap());
         }
 
         // restart the map iterator to index inheritance

@@ -41,6 +41,10 @@ public class MockMappingNamespace implements MappingNamespace {
     public Embeddable getEmbeddable(String className) {
         return null;
     }
+    
+    public EntityListener getEntityListener(String className) {
+        return null;
+    }
 
     public void addDbEntity(DbEntity entity) {
         dbEntities.put(entity.getName(), entity);
