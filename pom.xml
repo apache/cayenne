@@ -30,8 +30,10 @@
 	<name>Cayenne</name>
 
 	<description>
-		Apache Cayenne is a powerful, full-featured Java Object Relational Mapping
-		framework currently in incubation.
+		Apache Cayenne is a powerful, full-featured, and open source
+		Java framework, plus developer tools, that provides Object
+		Relational Mapping (ORM) and remoting services for persistence.
+		The software is licensed under the Apache License.
 	</description>
 
 	<url>http://cayenne.apache.org/</url>
@@ -160,7 +162,7 @@
 		<developerConnection>
 			scm:svn:https://@svn.apache.org/repos/asf/cayenne/main/trunk/cayenne
 		</developerConnection>
-		<url>http://svn.apache.org/viewvc/incubator/cayenne/main/trunk</url>
+		<url>http://svn.apache.org/repos/asf/cayenne/main/trunk/</url>
 	</scm>
 
 	<organization>
