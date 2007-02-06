@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 public class JpaEntityListener {
@@ -94,7 +93,7 @@ public class JpaEntityListener {
     public void setClassName(String className) {
         this.className = className;
     }
-    
+
     @Override
     public String toString() {
         return "JpaEntityListener:" + className;
