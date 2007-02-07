@@ -29,37 +29,19 @@ import javax.persistence.PreUpdate;
 public class EntityListener2 {
 
     @PrePersist
-    public void prePersistMethod(Object entity) {
-        EntityListenerState.addPrePersistListener(this);
-    }
-
     @PostPersist
-    public void postPersistMethod(Object entity) {
-        EntityListenerState.addPostPersistListener(this);
-    }
-
     @PreRemove
-    public void preRemoveMethod(Object entity) {
-        EntityListenerState.addPreRemoveListener(this);
-    }
-
     @PostRemove
-    public void postRemoveMethod(Object entity) {
-        EntityListenerState.addPostRemoveListener(this);
-    }
-
     @PreUpdate
-    public void preUpdateMethod(Object entity) {
-        EntityListenerState.addPreUpdateListener(this);
-    }
-
     @PostUpdate
-    public void postUpdateMethod(Object entity) {
-        EntityListenerState.addPostUpdateListener(this);
-    }
-
     @PostLoad
-    public void postLoadMethod(Object entity) {
+    public void universalCallback(Object entity) {
+        EntityListenerState.addPrePersistListener(this);
+        EntityListenerState.addPostPersistListener(this);
+        EntityListenerState.addPreRemoveListener(this);
+        EntityListenerState.addPostRemoveListener(this);
+        EntityListenerState.addPreUpdateListener(this);
+        EntityListenerState.addPostUpdateListener(this);
         EntityListenerState.addPostLoadListener(this);
     }
 }
