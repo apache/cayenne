@@ -26,7 +26,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.ObjectStore;
+import org.apache.cayenne.intercept.DataChannelCallbackInterceptor;
+import org.apache.cayenne.intercept.ObjectContextCallbackInterceptor;
 
 /**
  * A Cayenne EntityManagerFactory that supports resource-local transactions.
@@ -95,23 +100,33 @@ public class ResourceLocalEntityManagerFactory implements EntityManagerFactory {
     }
 
     /**
-     * Create a new EntityManager with the specified map of properties. Returns a new
-     * EntityManager instance every time it is invoked. The {@link EntityManager#isOpen()}
-     * method will return true of the returned instance.
+     * Creates a new resource-local EntityManager with the specified map of properties.
+     * Returns a new EntityManager instance every time it is invoked. The
+     * {@link EntityManager#isOpen()} method will return true of the returned instance.
+     * Parameter map is ignored as Cayenne provider defines no properties for
+     * EntityManager as of now.
      * 
      * @return a new EntityManager instance.
      */
     public EntityManager createEntityManager(Map map) {
         checkClosed();
-        return createEntityManagerInternal(map);
+        return new ResourceLocalEntityManager(createObjectContext(), this);
     }
 
     /**
-     * Creates a new resource-local EntityManager. Parameter map is ignored as Cayenne
-     * provider defines no properties for EntityManager as of now.
+     * Creates a new Cayenne {@link ObjectContext} based on this factory DataDomain.
+     * Returned context has lifecycle callbacks enabled, as expected in the JPA
+     * environment.
      */
-    protected EntityManager createEntityManagerInternal(Map map) {
-        return new ResourceLocalEntityManager(domain.createDataContext(), this);
+    protected ObjectContext createObjectContext() {
+        DataChannelCallbackInterceptor postInterceptor = new DataChannelCallbackInterceptor();
+        postInterceptor.setChannel(domain);
+        ObjectStore objectStore = new ObjectStore(domain.getSharedSnapshotCache());
+
+        ObjectContextCallbackInterceptor preInterceptor = new ObjectContextCallbackInterceptor();
+        preInterceptor.setContext(new DataContext(postInterceptor, objectStore));
+
+        return preInterceptor;
     }
 
     /**

@@ -91,8 +91,9 @@ public class JtaEntityManagerFactory extends ResourceLocalEntityManagerFactory {
     }
 
     @Override
-    protected EntityManager createEntityManagerInternal(Map map) {
-        EntityManager em = new JtaEntityManager(domain.createDataContext(), this);
+    public EntityManager createEntityManager(Map map) {
+        checkClosed();
+        EntityManager em = new JtaEntityManager(createObjectContext(), this);
 
         if (isActiveTransaction()) {
             em.joinTransaction();
