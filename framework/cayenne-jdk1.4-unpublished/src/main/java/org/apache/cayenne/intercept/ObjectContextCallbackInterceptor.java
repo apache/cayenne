@@ -77,6 +77,14 @@ public class ObjectContextCallbackInterceptor extends ObjectContextDecorator {
     }
 
     /**
+     * Registers a new object and performs a "PrePersist" callback on it.
+     */
+    public void registerNewObject(Object object) {
+        super.registerNewObject(object);
+        prePersist.performCallbacks(object);
+    }
+
+    /**
      * Deletes an object, applying "PreRemove" callbacks to it and all its cascaded
      * dependencies.
      */
