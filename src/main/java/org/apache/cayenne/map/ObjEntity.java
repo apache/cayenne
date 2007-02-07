@@ -81,7 +81,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
     protected String clientClassName;
     protected String clientSuperClassName;
 
-    protected List listeners;
+    protected List entityListeners;
     protected SortedMap callbackMethods;
     protected boolean excludingDefaultListeners;
     protected boolean excludingSuperclassListeners;
@@ -94,7 +94,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         setName(name);
         this.lockType = LOCK_TYPE_NONE;
         this.callbackMethods = new TreeMap();
-        this.listeners = new ArrayList(2);
+        this.entityListeners = new ArrayList(2);
     }
 
     /**
@@ -238,8 +238,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * 
      * @since 3.0
      */
-    public List getListeners() {
-        return Collections.unmodifiableList(listeners);
+    public List getEntityListeners() {
+        return Collections.unmodifiableList(entityListeners);
     }
 
     /**
@@ -249,8 +249,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * @throws IllegalArgumentException if a listener for the same class name is already
      *             registered.
      */
-    public void addListener(EntityListener listener) {
-        Iterator it = listeners.iterator();
+    public void addEntityListener(EntityListener listener) {
+        Iterator it = entityListeners.iterator();
         while (it.hasNext()) {
             EntityListener next = (EntityListener) it.next();
             if (listener.getClassName().equals(next.getClassName())) {
@@ -259,7 +259,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
             }
         }
 
-        listeners.add(listener);
+        entityListeners.add(listener);
     }
 
     /**
@@ -267,8 +267,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * 
      * @since 3.0
      */
-    public void removeListener(String className) {
-        Iterator it = listeners.iterator();
+    public void removeEntityListener(String className) {
+        Iterator it = entityListeners.iterator();
         while (it.hasNext()) {
             EntityListener next = (EntityListener) it.next();
             if (className.equals(next.getClassName())) {
@@ -276,6 +276,21 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
                 break;
             }
         }
+    }
+    
+    /**
+     * @since 3.0
+     */
+    public EntityListener getEntityListener(String className) {
+        Iterator it = entityListeners.iterator();
+        while (it.hasNext()) {
+            EntityListener next = (EntityListener) it.next();
+            if (className.equals(next.getClassName())) {
+                return next;
+            }
+        }
+        
+        return null;
     }
 
     /**

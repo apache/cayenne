@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -120,6 +121,8 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     private SortedMap procedureMap;
     private SortedMap queryMap;
 
+    private List defaultEntityListeners;
+
     /**
      * Creates a new unnamed DataMap.
      */
@@ -141,6 +144,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         dbEntityMap = new TreeMap();
         procedureMap = new TreeMap();
         queryMap = new TreeMap();
+        defaultEntityListeners = new ArrayList(3);
 
         setName(mapName);
         initWithProperties(properties);
@@ -557,6 +561,18 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     /**
+     * Removes an {@link EntityListener} descriptor with matching class name from entity
+     * listeners and default entity listeners.
+     * 
+     * @since 3.0
+     */
+    public void removeEntityListener(String className) {
+        if (entityListenersMap.remove(className) != null) {
+            removeDefaultEntityListener(className);
+        }
+    }
+
+    /**
      * Adds an embeddable object to the DataMap.
      * 
      * @since 3.0
@@ -698,6 +714,68 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         }
 
         return namespace != null ? namespace.getEntityListener(className) : null;
+    }
+
+    /**
+     * Returns an unmodifiable list of default {@link EntityListener} objects. Note that
+     * since the order of listeners is significant a list, not just a generic Collection
+     * is returned.
+     * 
+     * @since 3.0
+     */
+    public List getDefaultEntityListeners() {
+        return Collections.unmodifiableList(defaultEntityListeners);
+    }
+
+    /**
+     * Adds a new EntityListener.
+     * 
+     * @since 3.0
+     * @throws IllegalArgumentException if a listener for the same class name is already
+     *             registered.
+     */
+    public void addDefaultEntityListener(EntityListener listener) {
+        Iterator it = defaultEntityListeners.iterator();
+        while (it.hasNext()) {
+            EntityListener next = (EntityListener) it.next();
+            if (listener.getClassName().equals(next.getClassName())) {
+                throw new IllegalArgumentException("Duplicate default listener for "
+                        + next.getClassName());
+            }
+        }
+
+        defaultEntityListeners.add(listener);
+    }
+
+    /**
+     * Removes a listener matching class name.
+     * 
+     * @since 3.0
+     */
+    public void removeDefaultEntityListener(String className) {
+        Iterator it = defaultEntityListeners.iterator();
+        while (it.hasNext()) {
+            EntityListener next = (EntityListener) it.next();
+            if (className.equals(next.getClassName())) {
+                it.remove();
+                break;
+            }
+        }
+    }
+
+    /**
+     * @since 3.0
+     */
+    public EntityListener getDefaultEntityListener(String className) {
+        Iterator it = defaultEntityListeners.iterator();
+        while (it.hasNext()) {
+            EntityListener next = (EntityListener) it.next();
+            if (className.equals(next.getClassName())) {
+                return next;
+            }
+        }
+
+        return null;
     }
 
     /**
