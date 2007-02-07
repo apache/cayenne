@@ -33,6 +33,7 @@ CAY-657	Removing/Deprecating ExtendedType.validateProperty()
 CAY-660	JPA-like callbacks support in the main Cayenne stack
 CAY-666	Support for entity lifecycle callbacks in ClientServerChannel
 CAY-667	Support default entity lifecycle callbacks
+CAY-668 Link Cayenne callback API with JPA provider
 CAY-669	Support superclass entity callbacks
 CAY-672	Change the logic to get the Java class from ResultSetMetadata
 CAY-673 Removed DVModeler from the release. For backwards compatibility DVModeler from 2.0.x release can be used.
