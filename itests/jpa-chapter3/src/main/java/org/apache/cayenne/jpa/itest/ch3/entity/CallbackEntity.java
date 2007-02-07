@@ -37,10 +37,7 @@ public class CallbackEntity {
     protected String property1;
 
     @Transient
-    protected transient boolean prePersistCalled1;
-
-    @Transient
-    protected transient boolean prePersistCalled2;
+    protected transient boolean prePersistCalled;
 
     @Transient
     protected transient boolean postPersistCalled;
@@ -77,13 +74,8 @@ public class CallbackEntity {
     }
 
     @PrePersist
-    public void prePersistMethod1() {
-        prePersistCalled1 = true;
-    }
-
-    @PrePersist
-    public void prePersistMethod2() {
-        prePersistCalled2 = true;
+    public void prePersistMethod() {
+        prePersistCalled = true;
     }
 
     @PostPersist
@@ -136,12 +128,8 @@ public class CallbackEntity {
         return postUpdateCalled;
     }
 
-    public boolean isPrePersistCalled1() {
-        return prePersistCalled1;
-    }
-
-    public boolean isPrePersistCalled2() {
-        return prePersistCalled2;
+    public boolean isPrePersistCalled() {
+        return prePersistCalled;
     }
 
     public boolean isPreRemoveCalled() {
