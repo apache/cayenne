@@ -116,21 +116,25 @@ public class EntityResolver implements MappingNamespace, Serializable {
             }
 
             // load default callbacks
-            Iterator listeners = entityListenerCache.values().iterator();
-            while (listeners.hasNext()) {
-                EntityListener listener = (EntityListener) listeners.next();
+            Iterator maps = this.maps.iterator();
+            while (maps.hasNext()) {
+                DataMap map = (DataMap) maps.next();
+                Iterator listeners = map.getDefaultEntityListeners().iterator();
+                while (listeners.hasNext()) {
+                    EntityListener listener = (EntityListener) listeners.next();
 
-                Object listenerInstance = createListener(listener);
+                    Object listenerInstance = createListener(listener);
 
-                Iterator callbacks = listener.getCallbackMethods().iterator();
-                while (callbacks.hasNext()) {
-                    CallbackMethod method = (CallbackMethod) callbacks.next();
-                    Iterator callbackEvents = method.getCallbackEvents().iterator();
-                    while (callbackEvents.hasNext()) {
-                        Integer event = (Integer) callbackEvents.next();
-                        lifecycleEventCallbacks[event.intValue()].addDefaultListener(
-                                listenerInstance,
-                                method.getName());
+                    Iterator callbacks = listener.getCallbackMethods().iterator();
+                    while (callbacks.hasNext()) {
+                        CallbackMethod method = (CallbackMethod) callbacks.next();
+                        Iterator callbackEvents = method.getCallbackEvents().iterator();
+                        while (callbackEvents.hasNext()) {
+                            Integer event = (Integer) callbackEvents.next();
+                            lifecycleEventCallbacks[event.intValue()].addDefaultListener(
+                                    listenerInstance,
+                                    method.getName());
+                        }
                     }
                 }
             }
@@ -142,7 +146,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 Class entityClass = entity.getJavaClass();
 
                 // external listeners go first, entity's own callbacks go next
-                Iterator entityListeners = entity.getListeners().iterator();
+                Iterator entityListeners = entity.getEntityListeners().iterator();
                 while (entityListeners.hasNext()) {
                     EntityListener listener = (EntityListener) entityListeners.next();
 
@@ -495,7 +499,11 @@ public class EntityResolver implements MappingNamespace, Serializable {
             }
 
             // index listeners
-            entityListenerCache.putAll(map.getEntityListenersMap());
+            Iterator listeners = map.getEntityListeners().iterator();
+            while (listeners.hasNext()) {
+                EntityListener listener = (EntityListener) listeners.next();
+                entityListenerCache.put(listener.getClassName(), listener);
+            }
         }
 
         // restart the map iterator to index inheritance
