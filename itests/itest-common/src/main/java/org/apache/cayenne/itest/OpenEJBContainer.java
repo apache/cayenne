@@ -22,6 +22,7 @@ import java.io.File;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.transaction.Status;
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 
@@ -69,6 +70,11 @@ public class OpenEJBContainer {
 
     public TransactionManager getTxManager() {
         return txManager;
+    }
+
+    public boolean isActiveTransaction() {
+        int status = txManager.getTransactionStatus();
+        return status == Status.STATUS_ACTIVE || status == Status.STATUS_MARKED_ROLLBACK;
     }
 
     private void setupOpenEJBHome() {
