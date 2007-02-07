@@ -19,6 +19,7 @@
 package org.apache.cayenne.jpa.itest.ch5;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TransactionRequiredException;
 import javax.transaction.TransactionManager;
 
 import org.apache.cayenne.itest.OpenEJBContainer;
@@ -29,6 +30,8 @@ import org.apache.cayenne.jpa.itest.ch5.entity.SimpleEntity;
 public class _5_5_1_JtaEntityManagerTest extends JpaTestCase {
 
     public void testPersist() throws Exception {
+
+        getDbHelper().deleteAll("SimpleEntity");
 
         TransactionManager tm = OpenEJBContainer.getContainer().getTxManager();
         tm.begin();
@@ -44,26 +47,29 @@ public class _5_5_1_JtaEntityManagerTest extends JpaTestCase {
 
         assertEquals(1, getDbHelper().getRowCount("SimpleEntity"));
     }
-    // TODO: andrus, 1/3/2007 - implement - need to emulate the container environment
-    // public void testPersistTransactionRequiredException() throws Exception {
-    // // throws TransactionRequiredException if invoked on a
-    // // container-managed entity manager of type
-    // // PersistenceContextType.TRANSACTION and there is
-    // // no transaction.
-    //
-    // EntityManager em = getEntityManager();
-    //
-    // SimpleEntity e = new SimpleEntity();
-    // e.setProperty1("XXX");
-    //
-    // try {
-    // em.persist(e);
-    // em.getTransaction().commit();
-    // fail("Must have thrown TransactionRequiredException");
-    // }
-    // catch (TransactionRequiredException ex) {
-    // // expected
-    // }
-    // }
 
+    public void testPersistTransactionRequiredException() throws Exception {
+
+        EntityManager entityManager = ItestSetup
+                .getInstance()
+                .createContainerManagedEntityManager();
+
+        SimpleEntity e = new SimpleEntity();
+        e.setProperty1("XXX");
+
+        assertFalse(OpenEJBContainer.getContainer().isActiveTransaction());
+
+        // throws TransactionRequiredException if invoked on a
+        // container-managed entity manager of type
+        // PersistenceContextType.TRANSACTION and there is
+        // no transaction.
+
+        try {
+            entityManager.persist(e);
+            fail("TransactionRequiredException wasn't thrown");
+        }
+        catch (TransactionRequiredException ex) {
+            // expected
+        }
+    }
 }
