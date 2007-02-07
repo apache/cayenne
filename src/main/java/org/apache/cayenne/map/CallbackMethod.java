@@ -37,10 +37,11 @@ public class CallbackMethod {
     protected Set callbackEvents;
 
     public CallbackMethod() {
-        callbackEvents = new HashSet(3);
+       this(null);
     }
 
     public CallbackMethod(String name) {
+        this.callbackEvents = new HashSet(3);
         this.name = name;
     }
 
