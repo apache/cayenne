@@ -234,6 +234,7 @@ public class JpaEntityMap {
         this.version = version;
     }
 
+    @TreeNodeChild
     public JpaPersistenceUnitMetadata getPersistenceUnitMetadata() {
         return persistenceUnitMetadata;
     }

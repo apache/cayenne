@@ -20,6 +20,7 @@
 package org.apache.cayenne.jpa.bridge;
 
 import java.sql.Types;
+import java.util.Collection;
 
 import junit.framework.TestCase;
 
@@ -36,12 +37,118 @@ import org.apache.cayenne.jpa.entity.cayenne.MockCayenneEntity2;
 import org.apache.cayenne.jpa.entity.cayenne.MockCayenneEntityMap1;
 import org.apache.cayenne.jpa.entity.cayenne.MockCayenneTargetEntity1;
 import org.apache.cayenne.jpa.entity.cayenne.MockCayenneTargetEntity2;
+import org.apache.cayenne.jpa.map.JpaEntity;
+import org.apache.cayenne.jpa.map.JpaEntityListener;
+import org.apache.cayenne.jpa.map.JpaEntityListeners;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
+import org.apache.cayenne.jpa.map.JpaLifecycleCallback;
+import org.apache.cayenne.jpa.map.JpaPersistenceUnitDefaults;
+import org.apache.cayenne.jpa.map.JpaPersistenceUnitMetadata;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityListener;
+import org.apache.cayenne.map.ObjEntity;
 
 public class DataMapConverterTest extends TestCase {
+
+    public void testDefaultEntityListeners() {
+        EntityMapLoaderContext context = new EntityMapLoaderContext(
+                new MockPersistenceUnitInfo());
+        JpaEntityMap jpaMap = context.getEntityMap();
+
+        JpaPersistenceUnitMetadata metadata = new JpaPersistenceUnitMetadata();
+        jpaMap.setPersistenceUnitMetadata(metadata);
+
+        JpaPersistenceUnitDefaults defaults = new JpaPersistenceUnitDefaults();
+        metadata.setPersistenceUnitDefaults(defaults);
+
+        JpaEntityListeners listeners = new JpaEntityListeners();
+        defaults.setEntityListeners(listeners);
+
+        JpaEntityListener l1 = new JpaEntityListener();
+        l1.setClassName("abc.C1");
+        l1.setPostLoad(new JpaLifecycleCallback("xpl1"));
+        l1.setPreRemove(new JpaLifecycleCallback("xpr1"));
+        listeners.getEntityListeners().add(l1);
+
+        JpaEntityListener l2 = new JpaEntityListener();
+        l2.setClassName("abc.C2");
+        l2.setPostLoad(new JpaLifecycleCallback("xpl2"));
+        l2.setPreRemove(new JpaLifecycleCallback("xpr2"));
+        listeners.getEntityListeners().add(l2);
+
+        DataMap cayenneMap = new DataMapConverter().toDataMap("n1", context);
+        Collection entityListeners = cayenneMap.getEntityListeners();
+        assertEquals(2, entityListeners.size());
+        Collection defaultListeners = cayenneMap.getDefaultEntityListeners();
+        assertEquals(2, defaultListeners.size());
+
+        EntityListener cl1 = cayenneMap.getEntityListener("abc.C1");
+        assertNotNull(cl1);
+        assertEquals(l1.getClassName(), cl1.getClassName());
+        assertEquals(2, cl1.getCallbackMethods().size());
+    }
+
+    public void testEntityCallbackMethods() {
+        EntityMapLoaderContext context = new EntityMapLoaderContext(
+                new MockPersistenceUnitInfo());
+        JpaEntityMap jpaMap = context.getEntityMap();
+
+        JpaEntity jpaEntity = new JpaEntity();
+        jpaEntity.setName("E1");
+        jpaEntity.setClassName("abc.C2");
+        jpaEntity.setPostLoad(new JpaLifecycleCallback("xpl2"));
+        jpaEntity.setPreRemove(new JpaLifecycleCallback("xpr2"));
+        jpaMap.getEntities().add(jpaEntity);
+
+        DataMap cayenneMap = new DataMapConverter().toDataMap("n1", context);
+
+        ObjEntity entity = cayenneMap.getObjEntity("E1");
+        assertNotNull(entity);
+        assertEquals(2, entity.getCallbackMethods().size());
+    }
+
+    public void testEntityListeners() {
+        EntityMapLoaderContext context = new EntityMapLoaderContext(
+                new MockPersistenceUnitInfo());
+        JpaEntityMap jpaMap = context.getEntityMap();
+
+        JpaEntity jpaEntity = new JpaEntity();
+        jpaEntity.setName("E1");
+        jpaEntity.setClassName("abc.C2");
+        jpaEntity.setPostLoad(new JpaLifecycleCallback("xpl2"));
+        jpaEntity.setPreRemove(new JpaLifecycleCallback("xpr2"));
+        jpaMap.getEntities().add(jpaEntity);
+
+        JpaEntityListeners listeners = new JpaEntityListeners();
+        jpaEntity.setEntityListeners(listeners);
+
+        JpaEntityListener l1 = new JpaEntityListener();
+        l1.setClassName("abc.C1");
+        l1.setPostLoad(new JpaLifecycleCallback("xpl1"));
+        l1.setPreRemove(new JpaLifecycleCallback("xpr1"));
+        listeners.getEntityListeners().add(l1);
+
+        JpaEntityListener l2 = new JpaEntityListener();
+        l2.setClassName("abc.C2");
+        l2.setPostLoad(new JpaLifecycleCallback("xpl2"));
+        l2.setPreRemove(new JpaLifecycleCallback("xpr2"));
+        listeners.getEntityListeners().add(l2);
+
+        DataMap cayenneMap = new DataMapConverter().toDataMap("n1", context);
+        
+        ObjEntity entity = cayenneMap.getObjEntity("E1");
+        assertNotNull(entity);
+        
+        Collection entityListeners = entity.getEntityListeners();
+        assertEquals(2, entityListeners.size());
+
+        EntityListener cl1 = entity.getEntityListener("abc.C1");
+        assertNotNull(cl1);
+        assertEquals(l1.getClassName(), cl1.getClassName());
+        assertEquals(2, cl1.getCallbackMethods().size());
+    }
 
     public void testDataMapDefaults() {
         EntityMapLoaderContext context = new EntityMapLoaderContext(
@@ -202,7 +309,7 @@ public class DataMapConverterTest extends TestCase {
         DbAttribute optional = (DbAttribute) table.getAttribute("optionalBasic");
         assertNotNull(optional);
         assertFalse(optional.isMandatory());
-        
+
         DbAttribute required = (DbAttribute) table.getAttribute("requiredBasic");
         assertNotNull(required);
         assertTrue(required.isMandatory());

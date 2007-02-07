@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.jpa.map;
 
+import org.apache.cayenne.util.TreeNodeChild;
+
 /**
  * @author Andrus Adamchik
  */
@@ -34,6 +36,7 @@ public class JpaPersistenceUnitMetadata {
         this.xmlMappingMetadataComplete = xmlMappingMetadataComplete;
     }
 
+    @TreeNodeChild
     public JpaPersistenceUnitDefaults getPersistenceUnitDefaults() {
         return persistenceUnitDefaults;
     }

@@ -30,6 +30,8 @@ import org.apache.cayenne.jpa.map.JpaAttributes;
 import org.apache.cayenne.jpa.map.JpaBasic;
 import org.apache.cayenne.jpa.map.JpaColumn;
 import org.apache.cayenne.jpa.map.JpaEntity;
+import org.apache.cayenne.jpa.map.JpaEntityListener;
+import org.apache.cayenne.jpa.map.JpaEntityListeners;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
 import org.apache.cayenne.jpa.map.JpaId;
 import org.apache.cayenne.jpa.map.JpaJoinColumn;
@@ -39,15 +41,20 @@ import org.apache.cayenne.jpa.map.JpaManyToOne;
 import org.apache.cayenne.jpa.map.JpaNamedQuery;
 import org.apache.cayenne.jpa.map.JpaOneToMany;
 import org.apache.cayenne.jpa.map.JpaOneToOne;
+import org.apache.cayenne.jpa.map.JpaPersistenceUnitDefaults;
+import org.apache.cayenne.jpa.map.JpaPersistenceUnitMetadata;
 import org.apache.cayenne.jpa.map.JpaQueryHint;
 import org.apache.cayenne.jpa.map.JpaRelationship;
 import org.apache.cayenne.jpa.map.JpaTable;
 import org.apache.cayenne.jpa.map.JpaVersion;
+import org.apache.cayenne.map.CallbackMethod;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityListener;
+import org.apache.cayenne.map.LifecycleEventCallback;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -98,13 +105,139 @@ public class DataMapConverter {
      * lazily invoked and cached by this object.
      */
     protected HierarchicalTreeVisitor createVisitor() {
+        BaseTreeVisitor listenersVisitor = new BaseTreeVisitor();
+        listenersVisitor.addChildVisitor(
+                JpaEntityListener.class,
+                new JpaDefaultEntityListenerVisitor());
+
+        BaseTreeVisitor defaultsVisitor = new BaseTreeVisitor();
+        defaultsVisitor.addChildVisitor(JpaEntityListeners.class, listenersVisitor);
+        BaseTreeVisitor metadataVisitor = new BaseTreeVisitor();
+        metadataVisitor
+                .addChildVisitor(JpaPersistenceUnitDefaults.class, defaultsVisitor);
+
         BaseTreeVisitor visitor = new BaseTreeVisitor();
         visitor.addChildVisitor(JpaEntity.class, new JpaEntityVisitor());
         visitor.addChildVisitor(JpaNamedQuery.class, new JpaNamedQueryVisitor());
+        visitor.addChildVisitor(JpaPersistenceUnitMetadata.class, metadataVisitor);
         return visitor;
     }
 
-    // class JpaMany
+    private EntityListener makeEntityListener(JpaEntityListener jpaListener) {
+        EntityListener listener = new EntityListener(jpaListener.getClassName());
+
+        if (jpaListener.getPostLoad() != null) {
+            CallbackMethod method = makeCallback(listener, jpaListener
+                    .getPostLoad()
+                    .getMethodName());
+            if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_LOAD)) {
+                method.addCallbackEvent(LifecycleEventCallback.POST_LOAD);
+            }
+        }
+
+        if (jpaListener.getPostPersist() != null) {
+            CallbackMethod method = makeCallback(listener, jpaListener
+                    .getPostPersist()
+                    .getMethodName());
+            if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_PERSIST)) {
+                method.addCallbackEvent(LifecycleEventCallback.POST_PERSIST);
+            }
+        }
+
+        if (jpaListener.getPostRemove() != null) {
+            CallbackMethod method = makeCallback(listener, jpaListener
+                    .getPostRemove()
+                    .getMethodName());
+            if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_REMOVE)) {
+                method.addCallbackEvent(LifecycleEventCallback.POST_REMOVE);
+            }
+        }
+
+        if (jpaListener.getPostUpdate() != null) {
+            CallbackMethod method = makeCallback(listener, jpaListener
+                    .getPostUpdate()
+                    .getMethodName());
+            if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_UPDATE)) {
+                method.addCallbackEvent(LifecycleEventCallback.POST_UPDATE);
+            }
+        }
+
+        if (jpaListener.getPrePersist() != null) {
+            CallbackMethod method = makeCallback(listener, jpaListener
+                    .getPrePersist()
+                    .getMethodName());
+            if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_PERSIST)) {
+                method.addCallbackEvent(LifecycleEventCallback.PRE_PERSIST);
+            }
+        }
+
+        if (jpaListener.getPreRemove() != null) {
+            CallbackMethod method = makeCallback(listener, jpaListener
+                    .getPreRemove()
+                    .getMethodName());
+            if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_REMOVE)) {
+                method.addCallbackEvent(LifecycleEventCallback.PRE_REMOVE);
+            }
+        }
+
+        if (jpaListener.getPreUpdate() != null) {
+            CallbackMethod method = makeCallback(listener, jpaListener
+                    .getPreUpdate()
+                    .getMethodName());
+            if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_UPDATE)) {
+                method.addCallbackEvent(LifecycleEventCallback.PRE_UPDATE);
+            }
+        }
+        return listener;
+    }
+
+    private CallbackMethod makeCallback(EntityListener listener, String name) {
+        CallbackMethod callback = listener.getCallbackMethod(name);
+        if (callback == null) {
+            callback = new CallbackMethod(name);
+            listener.addCallbackMethod(callback);
+        }
+
+        return callback;
+    }
+
+    class JpaDefaultEntityListenerVisitor extends BaseTreeVisitor {
+
+        @Override
+        public boolean onStartNode(ProjectPath path) {
+            JpaEntityListener jpaListener = (JpaEntityListener) path.getObject();
+
+            DataMap map = (DataMap) targetPath.firstInstanceOf(DataMap.class);
+            EntityListener listener = map.getEntityListener(jpaListener.getClassName());
+            if (listener == null) {
+                listener = makeEntityListener(jpaListener);
+                map.addEntityListener(listener);
+            }
+
+            map.addDefaultEntityListener(listener);
+            return false;
+        }
+    }
+
+    class JpaEntityListenerVisitor extends BaseTreeVisitor {
+
+        @Override
+        public boolean onStartNode(ProjectPath path) {
+            JpaEntityListener jpaListener = (JpaEntityListener) path.getObject();
+
+            DataMap map = (DataMap) targetPath.firstInstanceOf(DataMap.class);
+            EntityListener listener = map.getEntityListener(jpaListener.getClassName());
+            if (listener == null) {
+                listener = makeEntityListener(jpaListener);
+                map.addEntityListener(listener);
+            }
+
+            ObjEntity entity = (ObjEntity) targetPath.firstInstanceOf(ObjEntity.class);
+            entity.addEntityListener(listener);
+
+            return false;
+        }
+    }
 
     class JpaBasicVisitor extends NestedVisitor {
 
@@ -362,6 +495,12 @@ public class DataMapConverter {
     class JpaEntityVisitor extends NestedVisitor {
 
         JpaEntityVisitor() {
+
+            BaseTreeVisitor listenersVisitor = new BaseTreeVisitor();
+            listenersVisitor.addChildVisitor(
+                    JpaEntityListener.class,
+                    new JpaEntityListenerVisitor());
+
             BaseTreeVisitor attributeVisitor = new BaseTreeVisitor();
             attributeVisitor.addChildVisitor(
                     JpaManyToOne.class,
@@ -393,6 +532,7 @@ public class DataMapConverter {
             addChildVisitor(JpaAttributes.class, attributeVisitor);
             addChildVisitor(JpaTable.class, new JpaTableVisitor());
             addChildVisitor(JpaNamedQuery.class, new JpaNamedQueryVisitor());
+            addChildVisitor(JpaEntityListeners.class, listenersVisitor);
         }
 
         @Override
@@ -400,10 +540,86 @@ public class DataMapConverter {
             JpaEntity jpaEntity = (JpaEntity) path.getObject();
             ObjEntity cayenneEntity = new ObjEntity(jpaEntity.getName());
             cayenneEntity.setClassName(jpaEntity.getClassName());
+            initCallbacks(jpaEntity, cayenneEntity);
 
             ((DataMap) targetPath.getObject()).addObjEntity(cayenneEntity);
 
             return cayenneEntity;
+        }
+
+        private void initCallbacks(JpaEntity jpaEntity, ObjEntity cayenneEntity) {
+            if (jpaEntity.getPostLoad() != null) {
+                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
+                        .getPostLoad()
+                        .getMethodName());
+                if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_LOAD)) {
+                    method.addCallbackEvent(LifecycleEventCallback.POST_LOAD);
+                }
+            }
+
+            if (jpaEntity.getPostPersist() != null) {
+                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
+                        .getPostPersist()
+                        .getMethodName());
+                if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_PERSIST)) {
+                    method.addCallbackEvent(LifecycleEventCallback.POST_PERSIST);
+                }
+            }
+
+            if (jpaEntity.getPostRemove() != null) {
+                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
+                        .getPostRemove()
+                        .getMethodName());
+                if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_REMOVE)) {
+                    method.addCallbackEvent(LifecycleEventCallback.POST_REMOVE);
+                }
+            }
+
+            if (jpaEntity.getPostUpdate() != null) {
+                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
+                        .getPostUpdate()
+                        .getMethodName());
+                if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_UPDATE)) {
+                    method.addCallbackEvent(LifecycleEventCallback.POST_UPDATE);
+                }
+            }
+
+            if (jpaEntity.getPrePersist() != null) {
+                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
+                        .getPrePersist()
+                        .getMethodName());
+                if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_PERSIST)) {
+                    method.addCallbackEvent(LifecycleEventCallback.PRE_PERSIST);
+                }
+            }
+
+            if (jpaEntity.getPreRemove() != null) {
+                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
+                        .getPreRemove()
+                        .getMethodName());
+                if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_REMOVE)) {
+                    method.addCallbackEvent(LifecycleEventCallback.PRE_REMOVE);
+                }
+            }
+
+            if (jpaEntity.getPreUpdate() != null) {
+                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
+                        .getPreUpdate()
+                        .getMethodName());
+                if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_UPDATE)) {
+                    method.addCallbackEvent(LifecycleEventCallback.PRE_UPDATE);
+                }
+            }
+        }
+
+        private CallbackMethod makeCallback(ObjEntity entity, String name) {
+            CallbackMethod callback = entity.getCallbackMethod(name);
+            if (callback == null) {
+                callback = new CallbackMethod(name);
+                entity.addCallbackMethod(callback);
+            }
+
+            return callback;
         }
     }
 
