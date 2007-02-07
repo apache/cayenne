@@ -34,7 +34,6 @@ public class CallbackEntity {
 
     @Id
     protected int id;
-    protected String property1;
 
     @Transient
     protected transient boolean prePersistCalled;
@@ -56,22 +55,6 @@ public class CallbackEntity {
 
     @Transient
     protected transient boolean postLoadCalled;
-
-    public int idField() {
-        return id;
-    }
-
-    public void updateIdField(int id) {
-        this.id = id;
-    }
-
-    public String getProperty1() {
-        return property1;
-    }
-
-    public void setProperty1(String property1) {
-        this.property1 = property1;
-    }
 
     @PrePersist
     public void prePersistMethod() {

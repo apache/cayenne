@@ -24,5 +24,7 @@
 		<class>org.apache.cayenne.jpa.itest.ch3.entity.SimpleEntity</class>
 		<class>org.apache.cayenne.jpa.itest.ch3.entity.CallbackEntity</class>
 		<class>org.apache.cayenne.jpa.itest.ch3.entity.CallbackEntity2</class>
+		<class>org.apache.cayenne.jpa.itest.ch3.entity.ListenerEntity1</class>
+		<class>org.apache.cayenne.jpa.itest.ch3.entity.ListenerEntity2</class>
 	</persistence-unit>
 </persistence>

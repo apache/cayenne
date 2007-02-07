@@ -23,10 +23,17 @@ import javax.persistence.EntityManager;
 import org.apache.cayenne.itest.jpa.EntityManagerCase;
 import org.apache.cayenne.jpa.itest.ch3.entity.CallbackEntity;
 import org.apache.cayenne.jpa.itest.ch3.entity.CallbackEntity2;
+import org.apache.cayenne.jpa.itest.ch3.entity.EntityListener1;
+import org.apache.cayenne.jpa.itest.ch3.entity.EntityListener2;
+import org.apache.cayenne.jpa.itest.ch3.entity.EntityListenerState;
+import org.apache.cayenne.jpa.itest.ch3.entity.ListenerEntity1;
+import org.apache.cayenne.jpa.itest.ch3.entity.ListenerEntity2;
 
 public class _3_5_1_LifecycleCallbackMethodsTest extends EntityManagerCase {
 
     public void testPrePersist() {
+
+        // regular entity
         CallbackEntity e = new CallbackEntity();
         assertFalse(e.isPrePersistCalled());
 
@@ -37,9 +44,32 @@ public class _3_5_1_LifecycleCallbackMethodsTest extends EntityManagerCase {
         em.persist(e);
         assertTrue(e.isPrePersistCalled());
 
+        // entity with same callback method handling multiple callbacks
         CallbackEntity2 e2 = new CallbackEntity2();
         assertFalse(e2.isMixedCallbackCalled());
         em.persist(e2);
         assertTrue(e2.isMixedCallbackCalled());
+
+        // external listeners
+        EntityListenerState.reset();
+        assertEquals("", EntityListenerState.getPrePersistCalled());
+        ListenerEntity1 e3 = new ListenerEntity1();
+        em.persist(e3);
+        assertEquals(":"
+                + EntityListener1.class.getName()
+                + ":"
+                + EntityListener2.class.getName(), EntityListenerState
+                .getPrePersistCalled());
+
+        EntityListenerState.reset();
+        assertEquals("", EntityListenerState.getPrePersistCalled());
+        ListenerEntity2 e4 = new ListenerEntity2();
+        em.persist(e4);
+        // here annotations must be called in a different order from e3.
+        assertEquals(":"
+                + EntityListener2.class.getName()
+                + ":"
+                + EntityListener1.class.getName(), EntityListenerState
+                .getPrePersistCalled());
     }
 }
