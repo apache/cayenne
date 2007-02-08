@@ -79,6 +79,7 @@ public class OracleStackAdapter extends AccessStackAdapter {
             executeDDL(con, "oracle", "create-types-pkg.sql");
             executeDDL(con, "oracle", "create-select-sp.sql");
             executeDDL(con, "oracle", "create-update-sp.sql");
+            executeDDL(con, "oracle", "create-update-sp2.sql");
             executeDDL(con, "oracle", "create-out-sp.sql");
         }
     }
