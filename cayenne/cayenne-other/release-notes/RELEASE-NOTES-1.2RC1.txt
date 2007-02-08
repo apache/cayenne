@@ -1,0 +1,21 @@
+Cayenne Release Notes 1.2 RC1 (release candidate)
+Date: 05/31/2006
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://issues.apache.org/cayenne/
+
+Bug Fixes:
+
+CAY-524	Stress Testing Cayenne
+CAY-525	1.2 Release Profiling and Optimization
+CAY-336	EO FetchSpecs don't import correctly
+CAY-415	CayenneModeler ClassCastException on save
+CAY-326	Modeler not descriptive in many-to-many issues
+CAY-557	Rollback not processed correctly on optimistic locking exceptions
+CAY-469	An issue with EOFetchSpecification import
+CAY-363	Global optimistic locking update does not update attributes/relationships
+CAY-559	JDBC Boolean mapping to DB2 problem

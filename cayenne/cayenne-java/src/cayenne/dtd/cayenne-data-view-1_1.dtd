@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!ELEMENT caption ( #PCDATA ) >
+
+<!ELEMENT data-view ( obj-entity-view+ ) >
+
+<!ELEMENT default-value ( #PCDATA ) >
+
+<!ELEMENT pattern ( #PCDATA ) >
+
+<!ELEMENT edit-format ( pattern? ) >
+<!ATTLIST edit-format class NMTOKEN #REQUIRED >
+
+
+<!ELEMENT display-format ( pattern? ) >
+<!ATTLIST display-format class NMTOKEN #REQUIRED >
+
+<!ELEMENT lookup EMPTY >
+<!ATTLIST lookup obj-entity-view-name NMTOKEN #REQUIRED >
+<!ATTLIST lookup field-name NMTOKEN #REQUIRED >
+
+<!ELEMENT field ( caption?, lookup?, edit-format?, 
+                  display-format?, default-value? ) >
+<!ATTLIST field obj-relationship-name NMTOKEN #IMPLIED >
+<!ATTLIST field pref-index NMTOKEN #IMPLIED >
+<!ATTLIST field name NMTOKEN #REQUIRED >
+<!ATTLIST field editable ( false | true ) #REQUIRED >
+<!ATTLIST field obj-attribute-name NMTOKEN #IMPLIED >
+<!ATTLIST field calc-type ( nocalc | lookup ) #REQUIRED >
+<!ATTLIST field data-type ( Object | String | Money | 
+                            Integer | Double | Percent | 
+                            Date | Datetime | Boolean ) #REQUIRED >
+<!ATTLIST field visible ( false | true ) #REQUIRED >
+
+<!ELEMENT obj-entity-view ( field+ ) >
+<!ATTLIST obj-entity-view name NMTOKEN #REQUIRED >
+<!ATTLIST obj-entity-view obj-entity-name NMTOKEN #IMPLIED >
+
+

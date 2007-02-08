@@ -1,0 +1,14 @@
+#if( ${classGen.isUsingPackage()} )
+package ${classGen.packageName};
+#end
+
+#if( ${classGen.isUsingSuperPackage()} )
+import ${classGen.superPackageName}.${classGen.superPrefix}${classGen.className};
+#end
+
+public class ${classGen.className} extends ${classGen.superPrefix}${classGen.className} {
+
+}
+
+
+

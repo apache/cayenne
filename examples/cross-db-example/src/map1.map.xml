@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<property name="defaultPackage" value="test.db1"/>
+	<db-entity name="department">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="name" type="VARCHAR" length="200"/>
+	</db-entity>
+	<obj-entity name="Department" className="test.db1.Department" dbEntityName="department">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<db-relationship name="people" source="department" target="person" toMany="true">
+		<db-attribute-pair source="id" target="department_id"/>
+	</db-relationship>
+	<obj-relationship name="people" source="Department" target="Person" deleteRule="Nullify" db-relationship-path="people"/>
+</data-map>

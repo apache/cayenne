@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence>
+	<persistence-unit name="HRPersistenceUnit">
+		<description>An HR example persistence unit</description>
+		<non-jta-data-source>ds1</non-jta-data-source>
+		<class>org.apache.cayenne.jpa.example.entity.Department</class>
+		<class>org.apache.cayenne.jpa.example.entity.Person</class>
+		<class>org.apache.cayenne.jpa.example.entity.Project</class>
+		
+		<!-- 
+			a class that stores named query annotations that 
+			are not bound to entities 
+		-->
+		<class>org.apache.cayenne.jpa.example.entity.Queries</class>
+		
+		<properties>
+			<property name="CayenneDataSource.ds1.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+			<property name="CayenneDataSource.ds1.jdbc.url" value="jdbc:derby:cayenne/cayenne-jpa-annotations-db;create=true"/>
+		
+		<!-- uncomment this to use login id and password for DB connection. -->
+		<!--
+			<property name="CayenneDataSource.ds1.jdbc.username" value="andrus"/>
+			<property name="CayenneDataSource.ds1.jdbc.password" value="andrus"/>
+		-->
+		
+			<property name="CayenneDataSource.ds1.jdbc.minConnections" value="1"/>
+			<property name="CayenneDataSource.ds1.jdbc.maxConnections" value="2"/>
+		</properties>
+	</persistence-unit>
+</persistence>

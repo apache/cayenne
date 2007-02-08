@@ -1,0 +1,55 @@
+Cayenne Release Notes 1.2 M5 milestone
+Date: July 22, 2005
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+
+Changes/New Features:
+
+* CAY-79	Improvements to Ant cgen task; new ClassGenerator functions
+
+* CAY-264 An early preview of distributed data contexts.
+
+* CAY-261 XML Encoder/Decoder - this feature is usable now, though still should be considered unstable.
+
+* DataPort Ant task is moved from examples to the main tree and is included with Antlib.
+
+* SQLTemplateExecutionPlan and SQLTemplateSelectExecutionPlan classes are removed from 
+  Cayenne. Keeping it in deprecated state is no longer possible due to SQLAction method 
+  signature changes.
+  
+* A change in the order of loading resources via ResourceLocator (this includes cayenne.xml loading). 
+  Now custom classpath locations take precedence over the default one.
+  
+* Changing default MySQL mapping of JDBC TIMESTAMP to be "DATETIME". This is a more sensible default as TIMESTAMP
+  is autoinitialized by MySQL on insert.
+  
+* SelectQuery resolves its prefetches during the routing phase. Users who did prefetch query filtering via
+  DataContextDelegate must be aware of this change.
+
+
+Bugs Fixed:
+
+* Doing extra checks to prevent double regsitration of new objects - 
+  http://objectstyle.org/cayenne/lists/cayenne-devel/2005/07/0006.html
+* CAY-322	cgen task cannot generate classes for cross-DataMap relationships
+* CAY-339	PropertyListSerialization doesn't handle a plus (+) sign in a string and escape it.
+* CAY-320	Boolean properties do not return Boolean.FALSE & Boolean.TRUE
+* CAY-325	Clicking Project Validation errors no longer brings up the offending object
+* CAY-335	HSQLDB Upgrade Breaks Preferences Handling in 1.2M4
+* CAY-341	Failing to insert into two different tables with identity primary keys on mssql within a single transaction
+* CAY-148	Procedure Queries need result set descriptors
+* CAY-141	ProcedureQuery must support all GenericSelectQuery features.
+* CAY-343	ObjectStore.unregisterNewObjects() should not throw null pointer exception
+* CAY-303	"Query has No Root" warning is shown incorrectly
+* CAY-345	Modeler recreates deleted directories
+* CAY-327	Cgen2 makepair=false doesn't properly set superclass/pkg
+* CAY-62		Validation error dialog stays in front all the time
+* CAY-315	classloader problem in dataport
+* CAY-334	Compile error with JDK1.5
+

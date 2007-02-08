@@ -1,0 +1,82 @@
+Cayenne Release Notes 1.2 M11 milestone
+Date: 
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+
+Changes/New Features:
+
+* CAY-439 Ensure the same connection is (re)used within a thread transaction for a given DataNode. 
+  Among other things this improvement makes it possible to execute arbitrary queries/updates inside 
+  TransactionDelegate, with a guarantee that they are a part of the the same transaction as the one
+  used by Cayenne to commit objects.
+
+* CAY-442 Supporting list parameters in SQLTemplate #bind directive
+
+* CAY-380 DataContext.localObjects() is deprecated and replaced with a new method 
+  DataContext.localObject(ObjectId, Persistent) that supports objects in MODIFIED and DELETED 
+  state.
+
+* An initial PARTIAL implementation of the nested DataContexts feature - nested DataContext can 
+  be created and objects can be selected through a chain of contexts. However commit is still not
+  implemented.
+
+* GenericSelectQuery is deprecated. All constants it declares are moved to a new interface QueryMetadata.
+
+* To force refresh of cached query results, one of the two new cache policies should be used 
+  instead of "setRefreshingObjects(..)" ("setRefreshingObjects" should only be used for its
+  original purpose - refreshing individual objects, not list contents). 
+  
+  Also check out the new caching page in documentation:
+  
+  http://objectstyle.org/confluence/display/CAYDOC/Caching+Query+Results
+
+* Addressing concurrency issues in Derby PK generator.
+
+* Speeding up very slow Modeler attribute and relationship operations.
+
+* "org.objectstyle.cayenne.opp.OPPChannel" is replaced by a different interface - 
+  "org.objectstyle.cayenne.DataChannel". Previous OPPChannel messaging-based
+  API made little sense in the local application context. Note that this does NOT 
+  affect 99.99% of the users.
+
+* DataContextDelegate changes: "willPerformSelect" method is deprecated, instead two methods
+  added: "willPerformQuery" (for selecting queries) and "willPerformGenericQuery" 
+  (for all other queries).
+  
+* Implementation of QueryEngine by DataContext is deprecated. But now DataContext implements DataChannel
+  and ObjectContext interfaces instead.
+  
+* Removed 'performNonSelectingQuery' method from ObjectContext and CayenneContext. It is redundant. 
+  Use 'performGenericQuery(query).getFirstUpdateCounts(query)' instead.
+  
+* CAY-440 Partial support for one-to-many relationship with a source column that is not a PK.
+
+* A number of changes to Cayenne stack that should not affect 99% of the users:
+  - QueryMetadata interface that decouples query object from its runtime execution parameters
+  - wider use of ClassDescriptors, not only in remote contexts, but in the DataContext as well
+  - cleaner decoupled access stack chain, with fewer cross-layer dependencies. Communication 
+    between layers is done using specialized Queries.
+
+Bugs Fixed:
+
+CAY-433 support for JDK 1.5 enums that are inner classes.
+CAY-418	CayenneDataObject.readNestedProperty stumbles on POJO paths
+CAY-430	Cayenne expression evaluation stumbles on java.util.Maps.
+CAY-422	Deferred propagated key error on M10
+CAY-417	Prefetching one-to-one throws an exception
+CAY-420	TypesMapping.getSqlTypeByJava(byte[]) doesn't work
+CAY-416	batch updated -1 rows
+CAY-427	DataDomainView.java--label truncation (Container-Managed Transactions)
+CAY-428	AdapterView -- label truncation; requires changing FormLayout setting
+CAY-426	Label truncation in DBEntityTab; change FormLayout column values
+CAY-409	XMLEncoder drops synthetic root for singleton collections
+CAY-425	ObjEntityTab.java--add tooltip to "Sync" button; correct button size in layout
+CAY-424	Tooltips for all toolbar buttons in Modeler
+CAY-423	ShortDescription misspelled in cayennemodeler-string.properties
+

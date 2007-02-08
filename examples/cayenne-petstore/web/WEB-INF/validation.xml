@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE form-validation PUBLIC
+    "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1.3//EN"
+    "http://jakarta.apache.org/commons/dtds/validator_1_1_3.dtd">
+
+<form-validation>
+
+  <formset>
+
+    <form name="/shop/newAccount">
+      <field
+          property="username"
+          depends="required">
+        <arg key="account.username.label"/>
+      </field>
+      <field
+          property="password"
+          depends="required">
+        <arg key="account.password.label"/>
+      </field>
+      <field
+          property="repeatedPassword"
+          depends="required">
+        <arg key="account.repeatPassword.label"/>
+      </field>
+      <field
+          property="account.firstName"
+          depends="required">
+        <arg key="account.firstName.label"/>
+      </field>
+      <field
+          property="account.lastName"
+          depends="required">
+        <arg key="account.lastName.label"/>
+      </field>
+      <field
+          property="account.email"
+          depends="required">
+        <arg key="account.email.label"/>
+      </field>
+      <field
+          property="account.phone"
+          depends="required">
+        <arg key="account.phone.label"/>
+      </field>
+      <field
+          property="account.address1"
+          depends="required">
+        <arg key="account.address1.label"/>
+      </field>
+      <field
+          property="account.city"
+          depends="required">
+        <arg key="account.city.label"/>
+      </field>
+      <field
+          property="account.state"
+          depends="required">
+        <arg key="account.state.label"/>
+      </field>
+      <field
+          property="account.zip"
+          depends="required">
+        <arg key="account.zip.label"/>
+      </field>
+      <field
+          property="account.country"
+          depends="required">
+        <arg key="account.country.label"/>
+      </field>
+    </form>
+
+    <form name="/shop/editAccount">
+      <field
+          property="account.firstName"
+          depends="required">
+        <arg key="account.firstName.label"/>
+      </field>
+      <field
+          property="account.lastName"
+          depends="required">
+        <arg key="account.lastName.label"/>
+      </field>
+      <field
+          property="account.email"
+          depends="required">
+        <arg key="account.email.label"/>
+      </field>
+      <field
+          property="account.phone"
+          depends="required">
+        <arg key="account.phone.label"/>
+      </field>
+      <field
+          property="account.address1"
+          depends="required">
+        <arg key="account.address1.label"/>
+      </field>
+      <field
+          property="account.city"
+          depends="required">
+        <arg key="account.city.label"/>
+      </field>
+      <field
+          property="account.state"
+          depends="required">
+        <arg key="account.state.label"/>
+      </field>
+      <field
+          property="account.zip"
+          depends="required">
+        <arg key="account.zip.label"/>
+      </field>
+      <field
+          property="account.country"
+          depends="required">
+        <arg key="account.country.label"/>
+      </field>
+    </form>
+
+    <form name="/shop/newOrder">
+      <field
+          property="order.creditCard"
+          depends="required">
+        <arg key="order.creditCard.label"/>
+      </field>
+      <field
+          property="order.expiryDate"
+          depends="required">
+        <arg key="order.expiryDate.label"/>
+      </field>
+      <field
+          property="order.cardType"
+          depends="required">
+        <arg key="order.cardType.label"/>
+      </field>
+      <field
+          property="order.shipToFirstName"
+          depends="required">
+        <arg key="account.shipToFirstName.label"/>
+      </field>
+      <field
+          property="order.shipToLastName"
+          depends="required">
+        <arg key="account.shipToLastName.label"/>
+      </field>
+      <field
+          property="order.shipAddress1"
+          depends="required">
+        <arg key="account.shipAddress1.label"/>
+      </field>
+      <field
+          property="order.shipCity"
+          depends="required">
+        <arg key="account.shipCity.label"/>
+      </field>
+      <field
+          property="order.shipState"
+          depends="required">
+        <arg key="account.shipState.label"/>
+      </field>
+      <field
+          property="order.shipZip"
+          depends="required">
+        <arg key="account.shipZip.label"/>
+      </field>
+      <field
+          property="order.shipCountry"
+          depends="required">
+        <arg key="account.shipCountry.label"/>
+      </field>
+      <field
+          property="order.billToFirstName"
+          depends="required">
+        <arg key="account.billToFirstName.label"/>
+      </field>
+      <field
+          property="order.billToLastName"
+          depends="required">
+        <arg key="account.billToLastName.label"/>
+      </field>
+      <field
+          property="order.billAddress1"
+          depends="required">
+        <arg key="account.billAddress1.label"/>
+      </field>
+      <field
+          property="order.billCity"
+          depends="required">
+        <arg key="account.billCity.label"/>
+      </field>
+      <field
+          property="order.billState"
+          depends="required">
+        <arg key="account.billState.label"/>
+      </field>
+      <field
+          property="order.billZip"
+          depends="required">
+        <arg key="account.billZip.label"/>
+      </field>
+      <field
+          property="order.billCountry"
+          depends="required">
+        <arg key="account.billCountry.label"/>
+      </field>
+
+    </form>
+
+  </formset>
+
+</form-validation>

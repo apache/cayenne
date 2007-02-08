@@ -1,0 +1,25 @@
+<launch4jConfig>
+	<!-- Header types: 0-GUI, 1-console -->
+	<headerType>0</headerType>
+	<jar>@JAR@</jar>
+	<outfile>@EXE@</outfile>
+	<errTitle>CayenneModeler</errTitle>
+	<customProcName>true</customProcName>
+	<icon>@ICON@</icon>
+	<jre>
+		<minVersion>1.4.0</minVersion>
+		<maxHeapSize>512</maxHeapSize>
+	</jre>
+	<versionInfo>
+		<fileVersion>0.0.0.0</fileVersion>
+		<txtFileVersion>@PROJECT-VERSION@</txtFileVersion>
+		<fileDescription>Cayenne Modeler GUI</fileDescription>
+		<copyright>ObjectStyle Group and individual authors</copyright>
+		<productVersion>0.0.0.0</productVersion>
+		<txtProductVersion>@PROJECT-VERSION@</txtProductVersion>
+		<productName>Cayenne</productName>
+		<companyName>ObjectStyle</companyName>
+		<internalName>CayenneModeler</internalName>
+		<originalFilename>CayenneModeler.exe</originalFilename>
+	</versionInfo>
+</launch4jConfig>

@@ -1,0 +1,25 @@
+Cayenne Release Notes 1.2 final
+Date: July 16, 2006
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://issues.apache.org/cayenne/
+
+Changes since RC2:
+
+* New Remote Object Persistence Tutorial
+
+Bug Fixes since RC2:
+
+CAY-592	Modifying an object that has a to one relationship to an object that uses inheritance, breaks the relationship.
+CAY-551	Unregistering objects is not cleaning up the context correctly
+CAY-585	Cayenne uses incorrect ObjectID in some situations, resulting in inability to resolve hollow object
+CAY-588	Sybase PK generation problem
+CAY-595	Cayenne can fail (optimistic locking exception) when deleting a record that was just inserted/commited to the DB
+CAY-582	org.objectstyle.cayenne.property.FieldAccessor accesses private class fields with same name as relationship
+CAY-567	Synchronizing pattern compilation block in PatternMatchNode
+CAY-579	Incorrect permissions on modeler.sh on Mac
+CAY-587	Plist serialization of empty strings is incorrect

@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <title>Cayenne Documentation - Ant Tasks</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://objectstyle.org/cayenne/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Ant Tasks</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a><ul>
+<li><a href="../../../Documentation/User Guide/Ant Tasks/cgen/index.html">cgen</a></li>
+<li><a href="../../../Documentation/User Guide/Ant Tasks/cdbgen/index.html">cdbgen</a></li>
+<li><a href="../../../Documentation/User Guide/Ant Tasks/cdeploy/index.html">cdeploy</a></li>
+<li><a href="../../../Documentation/User Guide/Ant Tasks/cdataport/index.html">cdataport</a></li>
+</ul>
+</li>
+<li><a href="../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Cayenne ships with Ant tasks that provide Ant frontend to a number of useful operations in Cayenne. The following tasks are included:</p>
+
+<ul>
+	<li><b><a href="../../../Documentation/User Guide/Ant Tasks/cgen/index.html" title="cgen">cgen</a></b> - Java class generator</li>
+	<li><b><a href="../../../Documentation/User Guide/Ant Tasks/cdbgen/index.html" title="cdbgen">cdbgen</a></b> - Database schema generator</li>
+	<li><b><a href="../../../Documentation/User Guide/Ant Tasks/cdeploy/index.html" title="cdeploy">cdeploy</a></b> - Deployment configurator</li>
+	<li><b><a href="../../../Documentation/User Guide/Ant Tasks/cdataport/index.html" title="cdataport">cdataport</a></b> - Data porting tool.</li>
+</ul>
+
+
+<h3><a name="AntTasks-ImportingCayenneTasksinbuild.xml"></a>Importing Cayenne Tasks in build.xml</h3>
+<p>Cayenne tasks above can be imported individually using Ant taskdef, as described in each task documentation page. However the users of Ant 1.6 and newer can take advantage of Antlib Ant feature. <span class="nobr"><a href="http://ant.apache.org/manual/CoreTypes/antlib.html" title="Visit page outside Confluence" rel="nofollow">Antlib<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> allows 3rd party tasks and types to be defined easily. Cayenne has an embedded antlib.xml descriptor file in the package <tt>org.objectstyle.cayenne.tools</tt>. All of Cayenne's Ant tasks can be defined at once using the following definition in your Ant build file:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-xml"><span class="code-tag">&lt;typedef resource=<span class="code-quote">"org/objectstyle/cayenne/tools/antlib.xml"</span>&gt;</span> 
+   <span class="code-tag">&lt;classpath refid=<span class="code-quote">"classpath"</span>/&gt;</span> 
+<span class="code-tag">&lt;/typedef&gt;</span></pre>
+</div></div>
+
+<p>When using the Antlib construct, omit the <tt>&lt;taskdef&gt;</tt> elements shown in the examples of each task, as the antlib.xml file defines all of the Cayenne Ant tasks. </p>
+
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 ObjectStyle Group and content authors
+  </div>
+
+</body>
+</html>

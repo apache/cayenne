@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="1.1">
+<domain name="HRDomain">
+	<property name="cayenne.DataRowStore.snapshot.size" value="5000"/>
+	<property name="cayenne.DataDomain.sharedCache" value="false"/>
+	<property name="cayenne.JavaGroupsBridge.mcast.address" value="228.0.0.4"/>
+	<property name="cayenne.DataRowStore.EventBridge.factory" value="org.objectstyle.cayenne.event.JavaGroupsBridgeFactory"/>
+
+	<map name="hr" location="hr.map.xml"/>
+
+	<node name="hr-db"
+		 datasource="hr-db.driver.xml"
+		 factory="org.objectstyle.cayenne.conf.DriverDataSourceFactory">
+			<map-ref name="hr"/>
+	 </node>
+</domain>
+</domains>

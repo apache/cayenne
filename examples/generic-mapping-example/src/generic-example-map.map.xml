@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<db-entity name="message">
+		<db-attribute name="author_id" type="INTEGER"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="subject" type="VARCHAR" length="200"/>
+		<db-attribute name="text" type="VARCHAR" length="1000"/>
+	</db-entity>
+	<db-entity name="person">
+		<db-attribute name="first_name" type="VARCHAR" length="200"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="last_name" type="VARCHAR" length="200"/>
+	</db-entity>
+	<obj-entity name="Message" dbEntityName="message">
+		<obj-attribute name="subject" type="java.lang.String" db-attribute-path="subject"/>
+		<obj-attribute name="text" type="java.lang.String" db-attribute-path="text"/>
+	</obj-entity>
+	<obj-entity name="Person" dbEntityName="person">
+		<obj-attribute name="firstName" type="java.lang.String" db-attribute-path="first_name"/>
+		<obj-attribute name="lastName" type="java.lang.String" db-attribute-path="last_name"/>
+	</obj-entity>
+	<db-relationship name="author" source="message" target="person" toMany="false">
+		<db-attribute-pair source="author_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="posts" source="person" target="message" toMany="true">
+		<db-attribute-pair source="id" target="author_id"/>
+	</db-relationship>
+	<obj-relationship name="author" source="Message" target="Person" deleteRule="Nullify" db-relationship-path="author"/>
+	<obj-relationship name="posts" source="Person" target="Message" deleteRule="Cascade" db-relationship-path="posts"/>
+</data-map>

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE struts-config PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+    "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+
+<struts-config>
+
+  <form-beans>
+    <form-bean name="accountBean" type="org.objectstyle.petstore.presentation.AccountBean"/>
+    <form-bean name="catalogBean" type="org.objectstyle.petstore.presentation.CatalogBean"/>
+    <form-bean name="cartBean" type="org.objectstyle.petstore.presentation.CartBean"/>
+    <form-bean name="orderBean" type="org.objectstyle.petstore.presentation.OrderBean"/>
+  </form-beans>
+
+  <global-exceptions>
+    <exception key="errors.general" type="java.lang.Exception" path="/common/Error.jsp"/>
+  </global-exceptions>
+
+  <global-forwards>
+    <forward name="failure" path="/common/Error.jsp"/>
+    <forward name="error" path="/common/Error.jsp"/>
+    <forward name="signon" path="/account/SignonForm.jsp"/>
+    <forward name="newOrderForm" path="/shop/newOrderForm.shtml"/>
+  </global-forwards>
+
+  <action-mappings>
+
+    <action path="/shop/index" type="org.apache.struts.beanaction.BeanAction"
+            name="catalogBean" parameter="*" validate="false">
+      <forward name="success" path="/catalog/Main.jsp"/>
+    </action>
+
+    <!-- CATALOG ACTIONS -->
+
+    <action path="/shop/searchProducts" type="org.apache.struts.beanaction.BeanAction"
+            name="catalogBean" scope="session"
+            validate="false">
+      <forward name="success" path="/catalog/SearchProducts.jsp"/>
+    </action>
+
+    <action path="/shop/switchSearchListPage" type="org.apache.struts.beanaction.BeanAction"
+            name="catalogBean" scope="session" parameter="switchProductListPage"
+            validate="false">
+      <forward name="success" path="/catalog/SearchProducts.jsp"/>
+    </action>
+
+    <action path="/shop/viewCategory" type="org.apache.struts.beanaction.BeanAction"
+            name="catalogBean" scope="session"
+            validate="false">
+      <forward name="success" path="/catalog/Category.jsp"/>
+    </action>
+
+    <action path="/shop/switchProductListPage" type="org.apache.struts.beanaction.BeanAction"
+            name="catalogBean" scope="session"
+            validate="false">
+      <forward name="success" path="/catalog/Category.jsp"/>
+    </action>
+
+    <action path="/shop/viewProduct" type="org.apache.struts.beanaction.BeanAction"
+            name="catalogBean" scope="session"
+            validate="false">
+      <forward name="success" path="/catalog/Product.jsp"/>
+    </action>
+
+    <action path="/shop/switchItemListPage" type="org.apache.struts.beanaction.BeanAction"
+            name="catalogBean" scope="session"
+            validate="false">
+      <forward name="success" path="/catalog/Product.jsp"/>
+    </action>
+
+    <action path="/shop/viewItem" type="org.apache.struts.beanaction.BeanAction"
+            name="catalogBean" scope="session"
+            validate="false" input="/catalog/Product.jsp">
+      <forward name="success" path="/catalog/Item.jsp"/>
+    </action>
+
+    <!-- CART ACTIONS -->
+
+    <action path="/shop/addItemToCart" type="org.apache.struts.beanaction.BeanAction"
+            name="cartBean" scope="session"
+            validate="false">
+      <forward name="success" path="/cart/Cart.jsp"/>
+    </action>
+
+    <action path="/shop/removeItemFromCart" type="org.apache.struts.beanaction.BeanAction"
+            name="cartBean" scope="session"
+            validate="false">
+      <forward name="success" path="/cart/Cart.jsp"/>
+    </action>
+
+    <action path="/shop/updateCartQuantities" type="org.apache.struts.beanaction.BeanAction"
+            name="cartBean" scope="session"
+            validate="false">
+      <forward name="success" path="/cart/Cart.jsp"/>
+    </action>
+
+    <action path="/shop/checkout" type="org.apache.struts.beanaction.BeanAction"
+            name="orderBean" scope="session" parameter="newOrderForm"
+            validate="false" >
+      <forward name="success" path="/cart/Checkout.jsp"/>
+    </action>
+
+    <action path="/shop/viewCart" type="org.apache.struts.beanaction.BeanAction"
+            name="cartBean" scope="session"
+            validate="false">
+      <forward name="success" path="/cart/Cart.jsp"/>
+    </action>
+
+    <action path="/shop/switchCartPage" type="org.apache.struts.beanaction.BeanAction"
+            name="cartBean" scope="session"
+            validate="false">
+      <forward name="success" path="/cart/Cart.jsp"/>
+    </action>
+
+    <action path="/shop/switchMyListPage" type="org.apache.struts.beanaction.BeanAction"
+            name="accountBean" scope="session"
+            validate="false">
+      <forward name="success" path="/cart/Cart.jsp"/>
+    </action>
+
+    <!-- ACCOUNT ACTIONS -->
+
+    <action path="/shop/newAccountForm" type="org.apache.struts.beanaction.BeanAction"
+            name="accountBean" scope="session" parameter="*"
+            validate="false">
+      <forward name="success" path="/account/NewAccountForm.jsp"/>
+    </action>
+
+    <action path="/shop/newAccount" type="org.apache.struts.beanaction.BeanAction"
+            name="accountBean" scope="session"
+            validate="true" input="/account/NewAccountForm.jsp">
+      <forward name="success" path="/shop/index.shtml"/>
+    </action>
+
+    <action path="/shop/editAccountForm" type="org.apache.struts.beanaction.BeanAction"
+            name="accountBean" scope="session"
+            validate="false">
+      <forward name="success" path="/account/EditAccountForm.jsp"/>
+    </action>
+
+    <action path="/shop/editAccount" type="org.apache.struts.beanaction.BeanAction"
+            name="accountBean" scope="session"
+            validate="true" input="/account/EditAccountForm.jsp">
+      <forward name="success" path="/shop/index.shtml"/>
+    </action>
+
+    <action path="/shop/signonForm" type="org.apache.struts.beanaction.BeanAction"
+            name="accountBean" scope="session" parameter="*"
+            validate="false">
+      <forward name="success" path="/account/SignonForm.jsp"/>
+    </action>
+
+    <action path="/shop/signon" type="org.apache.struts.beanaction.BeanAction"
+            name="accountBean" scope="session"
+            validate="false">
+      <forward name="success" path="/shop/index.shtml"/>
+    </action>
+
+    <action path="/shop/signoff" type="org.apache.struts.beanaction.BeanAction"
+            name="accountBean" scope="session"
+            validate="false">
+      <forward name="success" path="/shop/index.shtml"/>
+    </action>
+
+    <!-- ORDER ACTIONS -->
+
+    <action path="/shop/newOrderForm" type="org.apache.struts.beanaction.BeanAction"
+            name="orderBean" scope="session"
+            validate="false">
+      <forward name="success" path="/order/NewOrderForm.jsp"/>
+    </action>
+
+    <action path="/shop/newOrder" type="org.apache.struts.beanaction.BeanAction"
+            name="orderBean" scope="session"
+            validate="true" input="/order/NewOrderForm.jsp">
+      <forward name="confirm" path="/order/ConfirmOrder.jsp"/>
+      <forward name="shipping" path="/order/ShippingForm.jsp"/>
+      <forward name="success" path="/order/ViewOrder.jsp"/>
+    </action>
+
+    <action path="/shop/listOrders" type="org.apache.struts.beanaction.BeanAction"
+            name="orderBean" scope="session"
+            validate="false">
+      <forward name="success" path="/order/ListOrders.jsp"/>
+    </action>
+
+    <action path="/shop/switchOrderPage" type="org.apache.struts.beanaction.BeanAction"
+            name="orderBean" scope="session"
+            validate="false">
+      <forward name="success" path="/order/ListOrders.jsp"/>
+    </action>
+
+    <action path="/shop/viewOrder" type="org.apache.struts.beanaction.BeanAction"
+            name="orderBean" scope="session"
+            validate="false">
+      <forward name="success" path="/order/ViewOrder.jsp"/>
+    </action>
+
+  </action-mappings>
+
+  <message-resources parameter="properties.messages"/>
+
+  <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    <set-property
+        property="pathnames"
+        value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml"/>
+  </plug-in>
+
+</struts-config>

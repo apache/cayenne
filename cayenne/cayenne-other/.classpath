@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/pdf/java"/>
+	<classpathentry kind="src" path="src/tools/java"/>
+	<classpathentry kind="src" path="platform-macosx/src/java"/>
+	<classpathentry kind="src" path="src/tools/resources"/>
+	<classpathentry kind="lib" path="lib/itext-1.2.jar"/>
+	<classpathentry kind="var" path="JRE_LIB_15"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cayenne-java"/>
+	<classpathentry kind="lib" path="lib/confluence-soap.jar"/>
+	<classpathentry kind="lib" path="lib/axis.jar"/>
+	<classpathentry kind="lib" path="lib/axis-ant.jar"/>
+	<classpathentry kind="lib" path="lib/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="lib/saaj.jar"/>
+	<classpathentry kind="lib" path="lib/wsdl4j-1.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-discovery-0.2.jar"/>
+	<classpathentry kind="output" path="build/eclipse"/>
+</classpath>

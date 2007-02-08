@@ -1,0 +1,279 @@
+<?xml version="1.0"?>
+
+<!-- ========================================== -->
+<!-- Core Cayenne subproject buildfile.         -->
+<!-- ========================================== -->
+<project>
+	<property name="core.dist.src" value="${dist}/src/cayenne"/>
+	<property name="core.build" value="${build}/cayenne-1_4/classes"/>
+	<property name="core.build.1_5" value="${build}/cayenne-1_5/classes"/>
+	<property name="core.build.deps" value="${build}/cayenne-1_4/deps"/>
+	<property name="core.build.tools" value="${build}/tools/classes"/>
+	<property name="core.src" value="${cayenne.java}/src/cayenne/java"/>
+	<property name="core.src.1_5" value="${cayenne.java.1_5}/src/cayenne/java"/>
+	<property name="core.bin" value="${cayenne.java}/src/cayenne/bin"/>
+	
+	<property name="parser.dir.plist"
+		value="${core.src}/org/objectstyle/cayenne/wocompat/parser"/>
+	<property name="parser.base.plist" value="Parser"/>
+	
+	<property name="parser.dir.exp"
+		value="${core.src}/org/objectstyle/cayenne/exp/parser"/>
+	<property name="parser.base.exp" value="ExpressionParser"/>
+	
+	<!-- ========================================== -->
+	<!-- Build targets.                             -->
+	<!-- ========================================== -->
+	<target name="api">
+		<api destdir="${dist}/doc/api/cayenne" srcref="srcpath-cayenne-all"
+			classpathref="classpath-lib"/>
+	</target>
+	
+	<target name="javacc">
+		<ant antfile="${basedir}/ant/parser.xml" target="javacc" inheritrefs="true"
+			dir="${cayenne.java}">
+			<property name="parser.dir" value="${parser.dir.plist}"/>
+			<property name="parser.base" value="${parser.base.plist}"/>
+		</ant>
+	</target>
+	
+	<target name="jjtree">
+		<ant antfile="${basedir}/ant/parser.xml" target="jjtree" inheritrefs="true"
+			dir="${cayenne.java}">
+			<property name="parser.dir" value="${parser.dir.exp}"/>
+			<property name="parser.base" value="${parser.base.exp}"/>
+		</ant>
+	</target>
+	
+	<!-- ============================================= -->
+	<!-- Compiles 1.4 and 1.5 sources.                 -->
+	<!-- ============================================= -->
+	<target name="compile" depends="prepare-deps,compile-1_4">
+		<!-- compile 1.5 sources -->
+		<compile-1_5 destdir="${core.build.1_5}" srcref="srcpath-cayenne-1_5"
+			classpathref="classpath-cayenne-1_4"/>
+	</target>
+	
+	<target name="compile-1_4" depends="prepare-deps">
+		<!-- compile 1.4 sources -->
+		<compile-1_4 destdir="${core.build}" srcref="srcpath-cayenne-1_4"
+			classpathref="classpath-lib"/>
+		
+		<!-- copy resources; copy property files with token substitution -->
+		<copy-properties destdir="${core.build}" srcdir="${core.src}"/>
+		
+		<copy todir="${core.build}">
+			<fileset dir="${core.src}">
+				<include name="**/*.xml"/>
+				<include name="**/*.gif"/>
+				<include name="**/*.jpg"/>
+			</fileset>
+			<fileset dir="${cayenne.java}/src/cayenne/resources">
+				<include name=".cayenne/**"/>
+				<include name="dotemplates/**"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="dist-src" depends="jar,api">
+		<copy todir="${core.dist.src}">
+			<fileset dir="${core.src}"/>
+			<fileset dir="${core.src.1_5}"/>
+			<fileset dir="${cayenne.java}/src/cayenne/resources">
+				<include name=".cayenne/**"/>
+				<include name="dotemplates/**"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- ========================================== -->
+	<!-- Create jars and test their validity.       -->
+	<!-- ========================================== -->
+	<target name="jar" depends="build-jar">
+		<compile-1_5 destdir="${core.build.tools}" srcref="srcpath-tools"
+			classpathref="classpath-tools"/>
+		
+		<java classname="org.objectstyle.cayenne.tools.ant.JarChecker" fork="true" failonerror="true">
+			<arg value="${dist}/lib/cayenne-client-nodeps.jar"/>
+			
+			<classpath>
+				<pathelement path="${core.build.tools}"/>
+				<pathelement path="${dist}/lib/cayenne-client-nodeps.jar"/>
+				
+				<!-- required dependencies -->
+				<pathelement path="${cayenne.java}/lib/${commons.collections.jar}"/>
+				<pathelement path="${cayenne.java}/lib/${commons.logging.jar}"/>
+				<pathelement path="${cayenne.java}/lib/${commons.lang.jar}"/>
+				<pathelement path="${cayenne.java}/lib/${hessian.jar}"/>
+				
+				<!-- optional dependencies -->
+				<pathelement path="${cayenne.java}/lib/${jms.jar}"/>
+				<pathelement path="${cayenne.java}/lib/${smack.jar}"/>
+				<pathelement path="${cayenne.java}/lib/${jgroups.jar}"/>
+			</classpath>
+		</java>
+	</target>
+	
+	<!-- ========================================== -->
+	<!-- Create Cayenne Jar files.                   -->
+	<!-- ========================================== -->
+	<target name="build-jar" depends="compile,prepare-deps">
+		<mkdir dir="${dist}/lib"/>
+		
+		<!-- server nodeps jar -->
+		<jar jarfile="${dist}/lib/cayenne-nodeps.jar">
+			<fileset dir="${core.build}"/>
+			<fileset dir="${core.build.1_5}"/>
+			
+			<metainf dir="${license.dir}" includes="LICENSE.txt"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Extension-Name" value="org.objectstyle.cayenne"/>
+				<attribute name="Specification-Version" value="${project.name}"/>
+				<attribute name="Specification-Vendor" value="ObjectStyle.org"/>
+				<attribute name="Implementation-Vendor-Id"
+					value="org.objectstyle"/>
+				<attribute name="Implementation-Version"
+					value="${project.version}"/>
+				<attribute name="Implementation-Vendor" value="ObjectStyle.org"/>
+			</manifest>
+		</jar>
+		
+		<!-- client nodeps jar -->
+		<jar jarfile="${dist}/lib/cayenne-client-nodeps.jar">
+			<!-- 
+			exclude server-side packages and classes
+			-->
+			<fileset dir="${core.build}">
+				<!-- EntityResolver relies on DataObject
+				<exclude name="org/objectstyle/cayenne/DataObject.class"/>
+				-->
+				<exclude name="org/objectstyle/cayenne/access/**"/>
+				<exclude name="org/objectstyle/cayenne/conf/**"/>
+				<exclude name="org/objectstyle/cayenne/conn/**"/>
+				<exclude name="org/objectstyle/cayenne/dataview/**"/>
+				<exclude name="org/objectstyle/cayenne/dba/**"/>
+				<exclude name="org/objectstyle/cayenne/gen/**"/>
+				<exclude name="org/objectstyle/cayenne/project/**"/>
+				<exclude name="org/objectstyle/cayenne/service/**"/>
+				<exclude name="org/objectstyle/cayenne/tools/**"/>
+				<exclude name="org/objectstyle/cayenne/wocompat/**"/>
+				<exclude name="org/objectstyle/cayenne/CayenneDataObject.class"/>
+				<exclude
+					name="org/objectstyle/cayenne/util/ResourceLocator.class"/>
+				<exclude
+					name="org/objectstyle/cayenne/util/WebApplicationResourceLocator.class"/>
+				<exclude name="org/objectstyle/cayenne/util/ZipUtil.class"/>
+				<exclude
+					name="org/objectstyle/cayenne/map/AshwoodEntitySorter.class"/>
+				<exclude name="org/objectstyle/cayenne/map/MapLoader.class"/>
+				<exclude name="org/objectstyle/cayenne/map/*Builder.class"/>
+				<exclude name="org/objectstyle/cayenne/remote/hessian/service/**"/>
+				<exclude name="org/objectstyle/cayenne/remote/service/**"/>
+				<exclude
+					name="org/objectstyle/cayenne/util/ResourceLocator*"/>
+				<exclude name=".cayenne/**"/>
+				<exclude name="dotemplates/**"/>
+				
+				<!-- exclude unused (always also deprecated) -->
+				<exclude name="org/objectstyle/cayenne/exp/AST*.class"/>
+				<exclude name="org/objectstyle/cayenne/exp/BinaryExpression.class"/>
+				<exclude name="org/objectstyle/cayenne/exp/ListExpression.class"/>
+				<exclude name="org/objectstyle/cayenne/exp/TernaryExpression.class"/>
+				<exclude name="org/objectstyle/cayenne/exp/UnaryExpression.class"/>
+				<exclude name="org/objectstyle/cayenne/TempObjectId.class"/>
+				<exclude name="org/objectstyle/cayenne/map/DataMapException.class"/>
+				<exclude name="org/objectstyle/cayenne/map/MapObject.class"/>
+				<exclude name="org/objectstyle/cayenne/query/InsertQuery.class"/>
+				<exclude name="org/objectstyle/cayenne/util/AbstractHandler.class"/>
+				<exclude name="org/objectstyle/cayenne/util/PropertyComparator.class"/>
+			</fileset>
+			
+			<fileset dir="${core.build.1_5}">
+				<exclude name="org/objectstyle/cayenne/access/**"/>
+			</fileset>
+			
+			<metainf dir="${license.dir}" includes="LICENSE.txt"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Extension-Name" value="org.objectstyle.cayenne"/>
+				<attribute name="Specification-Version" value="${project.name}"/>
+				<attribute name="Specification-Vendor" value="ObjectStyle.org"/>
+				<attribute name="Implementation-Vendor-Id"
+					value="org.objectstyle"/>
+				<attribute name="Implementation-Version"
+					value="${project.version}"/>
+				<attribute name="Implementation-Vendor" value="ObjectStyle.org"/>
+			</manifest>
+		</jar>
+		
+		<!-- Server JAR with dependencies -->
+		<jar jarfile="${dist}/lib/cayenne.jar">
+			<fileset dir="${core.build}"/>
+			<fileset dir="${core.build.1_5}"/>
+			
+			<fileset dir="${core.build.deps}"/>
+			
+			<metainf dir="${license.dir}" includes="**"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Extension-Name" value="org.objectstyle.cayenne"/>
+				<attribute name="Specification-Version" value="${project.name}"/>
+				<attribute name="Specification-Vendor" value="ObjectStyle.org"/>
+				<attribute name="Implementation-Vendor-Id"
+					value="org.objectstyle"/>
+				<attribute name="Implementation-Version"
+					value="${project.version}"/>
+				<attribute name="Implementation-Vendor" value="ObjectStyle.org"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<!-- ========================================== -->
+	<!-- Handles dependent JARs.                    -->
+	<!-- ========================================== -->
+	<target name="prepare-deps" depends="check-deps" unless="core.deps.exist">
+		
+		<mkdir dir="${core.build.deps}"/>
+		<unjar src="${cayenne.java}/lib/${velocity.jar}"
+			dest="${core.build.deps}"/>
+		<unjar src="${cayenne.java}/lib/${log4j.jar}" dest="${core.build.deps}"/>
+		<unjar src="${cayenne.java}/lib/${commons.logging.jar}"
+			dest="${core.build.deps}"/>
+		<unjar src="${cayenne.java}/lib/${commons.collections.jar}"
+			dest="${core.build.deps}"/>
+		<unjar src="${cayenne.java}/lib/${commons.lang.jar}"
+			dest="${core.build.deps}"/>
+		<unjar src="${cayenne.java}/lib/${ashwood.jar}"
+			dest="${core.build.deps}"/>
+		
+		<!-- clean up unused classes -->
+		<delete includeEmptyDirs="true">
+			<fileset dir="${core.build.deps}">
+				<include name="**/META-INF/**"/>
+			</fileset>
+			
+			<fileset dir="${core.build.deps}">
+				<include name="**/*.html"/>
+			</fileset>
+			
+			<fileset dir="${core.build.deps}/org/apache/velocity">
+				<include name="texen/**"/>
+				<include name="test/**"/>
+				<include name="servlet/**"/>
+			</fileset>
+			
+			<fileset dir="${core.build.deps}/org/apache/log4j">
+				<include name="chainsaw/**"/>
+				<include name="jdbc/**"/>
+				<include name="jmx/**"/>
+				<include name="lf5/**"/>
+			</fileset>
+		</delete>
+	</target>
+	
+	<target name="check-deps">
+		<available file="${core.build.deps}/org" type="dir"
+			property="core.deps.exist"/>
+	</target>
+</project>

@@ -1,0 +1,15 @@
+{
+    EOModelVersion = "2.1"; 
+    adaptorName = JNDI; 
+    connectionDictionary = {
+        authenticationMethod = Simple; 
+        initialContextFactory = "com.sun.jndi.ldap.LdapCtxFactory"; 
+        password = password; 
+        plugInClassName = "com.webobjects.jndiadaptor.LDAPPlugIn"; 
+        scope = Subtree; 
+        serverUrl = somurl; 
+        timeout = 3600; 
+        username = username; 
+    }; 
+    entities = ({className = EOGenericRecord; name = E2; }); 
+}

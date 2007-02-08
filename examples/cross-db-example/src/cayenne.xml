@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="1.1">
+<domain name="cross-db">
+	<map name="map1" location="map1.map.xml"/>
+	<map name="map2" location="map2.map.xml"/>
+
+	<node name="db1"
+		 datasource="db1.driver.xml"
+		 factory="org.objectstyle.cayenne.conf.DriverDataSourceFactory">
+			<map-ref name="map1"/>
+	 </node>
+	<node name="db2"
+		 datasource="db2.driver.xml"
+		 factory="org.objectstyle.cayenne.conf.DriverDataSourceFactory">
+			<map-ref name="map2"/>
+	 </node>
+</domain>
+</domains>

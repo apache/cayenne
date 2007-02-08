@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<property name="defaultPackage" value="org.objectstyle.petstore.domain"/>
+	<db-entity name="account">
+		<db-attribute name="addr1" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="addr2" type="VARCHAR" length="40"/>
+		<db-attribute name="city" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="country" type="VARCHAR" isMandatory="true" length="20"/>
+		<db-attribute name="email" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="firstname" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="lastname" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="phone" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="state" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="status" type="VARCHAR" length="2"/>
+		<db-attribute name="userid" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="80"/>
+		<db-attribute name="zip" type="VARCHAR" isMandatory="true" length="20"/>
+	</db-entity>
+	<db-entity name="bannerdata">
+		<db-attribute name="bannername" type="VARCHAR" length="255"/>
+		<db-attribute name="favcategory" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="80"/>
+	</db-entity>
+	<db-entity name="category">
+		<db-attribute name="catid" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="10"/>
+		<db-attribute name="descn" type="VARCHAR" length="255"/>
+		<db-attribute name="name" type="VARCHAR" length="80"/>
+	</db-entity>
+	<db-entity name="inventory">
+		<db-attribute name="itemid" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="10"/>
+		<db-attribute name="qty" type="INTEGER" isMandatory="true" length="4"/>
+	</db-entity>
+	<db-entity name="item">
+		<db-attribute name="attr1" type="VARCHAR" length="80"/>
+		<db-attribute name="attr2" type="VARCHAR" length="80"/>
+		<db-attribute name="attr3" type="VARCHAR" length="80"/>
+		<db-attribute name="attr4" type="VARCHAR" length="80"/>
+		<db-attribute name="attr5" type="VARCHAR" length="80"/>
+		<db-attribute name="itemid" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="10"/>
+		<db-attribute name="listprice" type="NUMERIC" length="10" precision="2"/>
+		<db-attribute name="productid" type="VARCHAR" isMandatory="true" length="10"/>
+		<db-attribute name="status" type="VARCHAR" length="2"/>
+		<db-attribute name="supplier" type="INTEGER" length="4"/>
+		<db-attribute name="unitcost" type="NUMERIC" length="10" precision="2"/>
+	</db-entity>
+	<db-entity name="lineitem">
+		<db-attribute name="itemid" type="VARCHAR" isMandatory="true" length="10"/>
+		<db-attribute name="linenum" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="4"/>
+		<db-attribute name="orderid" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="4"/>
+		<db-attribute name="quantity" type="INTEGER" isMandatory="true" length="4"/>
+		<db-attribute name="unitprice" type="NUMERIC" isMandatory="true" length="10" precision="2"/>
+	</db-entity>
+	<db-entity name="orders">
+		<db-attribute name="billaddr1" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="billaddr2" type="VARCHAR" length="80"/>
+		<db-attribute name="billcity" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="billcountry" type="VARCHAR" isMandatory="true" length="20"/>
+		<db-attribute name="billstate" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="billtofirstname" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="billtolastname" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="billzip" type="VARCHAR" isMandatory="true" length="20"/>
+		<db-attribute name="cardtype" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="courier" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="creditcard" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="exprdate" type="VARCHAR" isMandatory="true" length="7"/>
+		<db-attribute name="locale" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="orderdate" type="DATE" isMandatory="true" length="4"/>
+		<db-attribute name="orderid" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="4"/>
+		<db-attribute name="shipaddr1" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="shipaddr2" type="VARCHAR" length="80"/>
+		<db-attribute name="shipcity" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="shipcountry" type="VARCHAR" isMandatory="true" length="20"/>
+		<db-attribute name="shipstate" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="shiptofirstname" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="shiptolastname" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="shipzip" type="VARCHAR" isMandatory="true" length="20"/>
+		<db-attribute name="totalprice" type="NUMERIC" isMandatory="true" length="10" precision="2"/>
+		<db-attribute name="userid" type="VARCHAR" isMandatory="true" length="80"/>
+	</db-entity>
+	<db-entity name="orderstatus">
+		<db-attribute name="linenum" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="4"/>
+		<db-attribute name="orderid" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="4"/>
+		<db-attribute name="status" type="VARCHAR" isMandatory="true" length="2"/>
+		<db-attribute name="timestamp" type="DATE" isMandatory="true" length="4"/>
+	</db-entity>
+	<db-entity name="product">
+		<db-attribute name="category" type="VARCHAR" isMandatory="true" length="10"/>
+		<db-attribute name="descn" type="VARCHAR" length="255"/>
+		<db-attribute name="name" type="VARCHAR" length="80"/>
+		<db-attribute name="productid" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="10"/>
+	</db-entity>
+	<db-entity name="profile">
+		<db-attribute name="banneropt" type="BIT" length="1"/>
+		<db-attribute name="favcategory" type="VARCHAR" length="30"/>
+		<db-attribute name="langpref" type="VARCHAR" isMandatory="true" length="80"/>
+		<db-attribute name="mylistopt" type="BIT" length="1"/>
+		<db-attribute name="userid" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="80"/>
+	</db-entity>
+	<db-entity name="signon">
+		<db-attribute name="password" type="VARCHAR" isMandatory="true" length="25"/>
+		<db-attribute name="username" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="25"/>
+	</db-entity>
+	<db-entity name="supplier">
+		<db-attribute name="addr1" type="VARCHAR" length="80"/>
+		<db-attribute name="addr2" type="VARCHAR" length="80"/>
+		<db-attribute name="city" type="VARCHAR" length="80"/>
+		<db-attribute name="name" type="VARCHAR" length="80"/>
+		<db-attribute name="phone" type="VARCHAR" length="80"/>
+		<db-attribute name="state" type="VARCHAR" length="80"/>
+		<db-attribute name="status" type="VARCHAR" isMandatory="true" length="2"/>
+		<db-attribute name="suppid" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="4"/>
+		<db-attribute name="zip" type="VARCHAR" length="5"/>
+	</db-entity>
+	<obj-entity name="Account" className="org.objectstyle.petstore.domain.Account" dbEntityName="account">
+		<obj-attribute name="address1" type="java.lang.String" db-attribute-path="addr1"/>
+		<obj-attribute name="address2" type="java.lang.String" db-attribute-path="addr2"/>
+		<obj-attribute name="city" type="java.lang.String" db-attribute-path="city"/>
+		<obj-attribute name="country" type="java.lang.String" db-attribute-path="country"/>
+		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
+		<obj-attribute name="firstName" type="java.lang.String" db-attribute-path="firstname"/>
+		<obj-attribute name="lastName" type="java.lang.String" db-attribute-path="lastname"/>
+		<obj-attribute name="phone" type="java.lang.String" db-attribute-path="phone"/>
+		<obj-attribute name="state" type="java.lang.String" db-attribute-path="state"/>
+		<obj-attribute name="status" type="java.lang.String" db-attribute-path="status"/>
+		<obj-attribute name="userName" type="java.lang.String" db-attribute-path="userid"/>
+		<obj-attribute name="zip" type="java.lang.String" db-attribute-path="zip"/>
+	</obj-entity>
+	<obj-entity name="BannerData" className="org.objectstyle.petstore.domain.BannerData" dbEntityName="bannerdata">
+		<obj-attribute name="bannerName" type="java.lang.String" db-attribute-path="bannername"/>
+	</obj-entity>
+	<obj-entity name="Category" className="org.objectstyle.petstore.domain.Category" dbEntityName="category">
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="descn"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="Inventory" className="org.objectstyle.petstore.domain.Inventory" dbEntityName="inventory">
+		<obj-attribute name="quantity" type="java.lang.Integer" db-attribute-path="qty"/>
+	</obj-entity>
+	<obj-entity name="Item" className="org.objectstyle.petstore.domain.Item" dbEntityName="item">
+		<obj-attribute name="attribute1" type="java.lang.String" db-attribute-path="attr1"/>
+		<obj-attribute name="attribute2" type="java.lang.String" db-attribute-path="attr2"/>
+		<obj-attribute name="attribute3" type="java.lang.String" db-attribute-path="attr3"/>
+		<obj-attribute name="attribute4" type="java.lang.String" db-attribute-path="attr4"/>
+		<obj-attribute name="attribute5" type="java.lang.String" db-attribute-path="attr5"/>
+		<obj-attribute name="listPrice" type="java.math.BigDecimal" db-attribute-path="listprice"/>
+		<obj-attribute name="status" type="java.lang.String" db-attribute-path="status"/>
+		<obj-attribute name="unitCost" type="java.math.BigDecimal" db-attribute-path="unitcost"/>
+	</obj-entity>
+	<obj-entity name="LineItem" className="org.objectstyle.petstore.domain.LineItem" dbEntityName="lineitem">
+		<obj-attribute name="quantity" type="java.lang.Integer" db-attribute-path="quantity"/>
+		<obj-attribute name="unitPrice" type="java.math.BigDecimal" db-attribute-path="unitprice"/>
+	</obj-entity>
+	<obj-entity name="Order" className="org.objectstyle.petstore.domain.Order" dbEntityName="orders">
+		<obj-attribute name="billAddress1" type="java.lang.String" db-attribute-path="billaddr1"/>
+		<obj-attribute name="billAddress2" type="java.lang.String" db-attribute-path="billaddr2"/>
+		<obj-attribute name="billCity" type="java.lang.String" db-attribute-path="billcity"/>
+		<obj-attribute name="billCountry" type="java.lang.String" db-attribute-path="billcountry"/>
+		<obj-attribute name="billState" type="java.lang.String" db-attribute-path="billstate"/>
+		<obj-attribute name="billToFirstName" type="java.lang.String" db-attribute-path="billtofirstname"/>
+		<obj-attribute name="billToLastName" type="java.lang.String" db-attribute-path="billtolastname"/>
+		<obj-attribute name="billZip" type="java.lang.String" db-attribute-path="billzip"/>
+		<obj-attribute name="cardType" type="java.lang.String" db-attribute-path="cardtype"/>
+		<obj-attribute name="courier" type="java.lang.String" db-attribute-path="courier"/>
+		<obj-attribute name="creditCard" type="java.lang.String" db-attribute-path="creditcard"/>
+		<obj-attribute name="expiryDate" type="java.lang.String" db-attribute-path="exprdate"/>
+		<obj-attribute name="locale" type="java.lang.String" db-attribute-path="locale"/>
+		<obj-attribute name="orderDate" type="java.util.Date" db-attribute-path="orderdate"/>
+		<obj-attribute name="shipAddress1" type="java.lang.String" db-attribute-path="shipaddr1"/>
+		<obj-attribute name="shipAddress2" type="java.lang.String" db-attribute-path="shipaddr2"/>
+		<obj-attribute name="shipCity" type="java.lang.String" db-attribute-path="shipcity"/>
+		<obj-attribute name="shipCountry" type="java.lang.String" db-attribute-path="shipcountry"/>
+		<obj-attribute name="shipState" type="java.lang.String" db-attribute-path="shipstate"/>
+		<obj-attribute name="shipToFirstName" type="java.lang.String" db-attribute-path="shiptofirstname"/>
+		<obj-attribute name="shipToLastName" type="java.lang.String" db-attribute-path="shiptolastname"/>
+		<obj-attribute name="shipZip" type="java.lang.String" db-attribute-path="shipzip"/>
+		<obj-attribute name="totalPrice" type="java.math.BigDecimal" db-attribute-path="totalprice"/>
+	</obj-entity>
+	<obj-entity name="OrderStatus" className="org.objectstyle.petstore.domain.OrderStatus" dbEntityName="orderstatus">
+		<obj-attribute name="status" type="java.lang.String" db-attribute-path="status"/>
+		<obj-attribute name="timestamp" type="java.util.Date" db-attribute-path="timestamp"/>
+	</obj-entity>
+	<obj-entity name="Product" className="org.objectstyle.petstore.domain.Product" dbEntityName="product">
+		<obj-attribute name="categoryName" type="java.lang.String" db-attribute-path="category"/>
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="descn"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="Profile" className="org.objectstyle.petstore.domain.Profile" dbEntityName="profile">
+		<obj-attribute name="bannerOption" type="java.lang.Boolean" db-attribute-path="banneropt"/>
+		<obj-attribute name="languagePreference" type="java.lang.String" db-attribute-path="langpref"/>
+		<obj-attribute name="listOption" type="java.lang.Boolean" db-attribute-path="mylistopt"/>
+	</obj-entity>
+	<obj-entity name="Supplier" className="org.objectstyle.petstore.domain.Supplier" dbEntityName="supplier">
+		<obj-attribute name="address1" type="java.lang.String" db-attribute-path="addr1"/>
+		<obj-attribute name="address2" type="java.lang.String" db-attribute-path="addr2"/>
+		<obj-attribute name="city" type="java.lang.String" db-attribute-path="city"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+		<obj-attribute name="phone" type="java.lang.String" db-attribute-path="phone"/>
+		<obj-attribute name="state" type="java.lang.String" db-attribute-path="state"/>
+		<obj-attribute name="status" type="java.lang.String" db-attribute-path="status"/>
+		<obj-attribute name="zip" type="java.lang.String" db-attribute-path="zip"/>
+	</obj-entity>
+	<obj-entity name="User" className="org.objectstyle.petstore.domain.User" dbEntityName="signon">
+		<obj-attribute name="password" type="java.lang.String" db-attribute-path="password"/>
+	</obj-entity>
+	<db-relationship name="orders" source="account" target="orders" toMany="true">
+		<db-attribute-pair source="userid" target="userid"/>
+	</db-relationship>
+	<db-relationship name="profile" source="account" target="profile" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="userid" target="userid"/>
+	</db-relationship>
+	<db-relationship name="user" source="account" target="signon" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="userid" target="username"/>
+	</db-relationship>
+	<db-relationship name="category" source="bannerdata" target="category" toMany="false">
+		<db-attribute-pair source="favcategory" target="catid"/>
+	</db-relationship>
+	<db-relationship name="banner" source="category" target="bannerdata" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="catid" target="favcategory"/>
+	</db-relationship>
+	<db-relationship name="products" source="category" target="product" toMany="true">
+		<db-attribute-pair source="catid" target="category"/>
+	</db-relationship>
+	<db-relationship name="profiles" source="category" target="profile" toMany="true">
+		<db-attribute-pair source="catid" target="favcategory"/>
+	</db-relationship>
+	<db-relationship name="item" source="inventory" target="item" toMany="false">
+		<db-attribute-pair source="itemid" target="itemid"/>
+	</db-relationship>
+	<db-relationship name="inventory" source="item" target="inventory" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="itemid" target="itemid"/>
+	</db-relationship>
+	<db-relationship name="lineItems" source="item" target="lineitem" toMany="true">
+		<db-attribute-pair source="itemid" target="itemid"/>
+	</db-relationship>
+	<db-relationship name="product" source="item" target="product" toMany="false">
+		<db-attribute-pair source="productid" target="productid"/>
+	</db-relationship>
+	<db-relationship name="toSupplier" source="item" target="supplier" toMany="false">
+		<db-attribute-pair source="supplier" target="suppid"/>
+	</db-relationship>
+	<db-relationship name="item" source="lineitem" target="item" toMany="false">
+		<db-attribute-pair source="itemid" target="itemid"/>
+	</db-relationship>
+	<db-relationship name="order" source="lineitem" target="orders" toMany="false">
+		<db-attribute-pair source="orderid" target="orderid"/>
+	</db-relationship>
+	<db-relationship name="status" source="lineitem" target="orderstatus" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="linenum" target="linenum"/>
+		<db-attribute-pair source="orderid" target="orderid"/>
+	</db-relationship>
+	<db-relationship name="account" source="orders" target="account" toMany="false">
+		<db-attribute-pair source="userid" target="userid"/>
+	</db-relationship>
+	<db-relationship name="lineItems" source="orders" target="lineitem" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="orderid" target="orderid"/>
+	</db-relationship>
+	<db-relationship name="lineItem" source="orderstatus" target="lineitem" toMany="false">
+		<db-attribute-pair source="linenum" target="linenum"/>
+		<db-attribute-pair source="orderid" target="orderid"/>
+	</db-relationship>
+	<db-relationship name="items" source="product" target="item" toMany="true">
+		<db-attribute-pair source="productid" target="productid"/>
+	</db-relationship>
+	<db-relationship name="toCategory" source="product" target="category" toMany="false">
+		<db-attribute-pair source="category" target="catid"/>
+	</db-relationship>
+	<db-relationship name="account" source="profile" target="account" toMany="false">
+		<db-attribute-pair source="userid" target="userid"/>
+	</db-relationship>
+	<db-relationship name="category" source="profile" target="category" toMany="false">
+		<db-attribute-pair source="favcategory" target="catid"/>
+	</db-relationship>
+	<db-relationship name="account" source="signon" target="account" toMany="false">
+		<db-attribute-pair source="username" target="userid"/>
+	</db-relationship>
+	<db-relationship name="items" source="supplier" target="item" toMany="true">
+		<db-attribute-pair source="suppid" target="supplier"/>
+	</db-relationship>
+	<obj-relationship name="orders" source="Account" target="Order" db-relationship-path="orders"/>
+	<obj-relationship name="profile" source="Account" target="Profile" db-relationship-path="profile"/>
+	<obj-relationship name="user" source="Account" target="User" db-relationship-path="user"/>
+	<obj-relationship name="category" source="BannerData" target="Category" db-relationship-path="category"/>
+	<obj-relationship name="banner" source="Category" target="BannerData" db-relationship-path="banner"/>
+	<obj-relationship name="products" source="Category" target="Product" db-relationship-path="products"/>
+	<obj-relationship name="profiles" source="Category" target="Profile" db-relationship-path="profiles"/>
+	<obj-relationship name="item" source="Inventory" target="Item" db-relationship-path="item"/>
+	<obj-relationship name="inventory" source="Item" target="Inventory" db-relationship-path="inventory"/>
+	<obj-relationship name="lineItems" source="Item" target="LineItem" db-relationship-path="lineItems"/>
+	<obj-relationship name="product" source="Item" target="Product" db-relationship-path="product"/>
+	<obj-relationship name="supplier" source="Item" target="Supplier" db-relationship-path="toSupplier"/>
+	<obj-relationship name="item" source="LineItem" target="Item" db-relationship-path="item"/>
+	<obj-relationship name="order" source="LineItem" target="Order" db-relationship-path="order"/>
+	<obj-relationship name="status" source="LineItem" target="OrderStatus" db-relationship-path="status"/>
+	<obj-relationship name="account" source="Order" target="Account" db-relationship-path="account"/>
+	<obj-relationship name="lineItems" source="Order" target="LineItem" db-relationship-path="lineItems"/>
+	<obj-relationship name="lineItem" source="OrderStatus" target="LineItem" db-relationship-path="lineItem"/>
+	<obj-relationship name="category" source="Product" target="Category" db-relationship-path="toCategory"/>
+	<obj-relationship name="items" source="Product" target="Item" db-relationship-path="items"/>
+	<obj-relationship name="account" source="Profile" target="Account" db-relationship-path="account"/>
+	<obj-relationship name="category" source="Profile" target="Category" db-relationship-path="category"/>
+	<obj-relationship name="items" source="Supplier" target="Item" db-relationship-path="items"/>
+	<obj-relationship name="account" source="User" target="Account" db-relationship-path="account"/>
+	<query name="getAccount" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Account">
+		<qualifier><![CDATA[(userName = $userName) and (user.password = $password)]]></qualifier>
+	</query>
+	<query name="getCategories" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Category">
+		<property name="cayenne.GenericSelectQuery.refreshingObjects" value="false"/>
+		<property name="cayenne.GenericSelectQuery.cachePolicy" value="sharedcache"/>
+		<ordering><![CDATA[name]]></ordering>
+	</query>
+	<query name="getInventoryQuantity" factory="org.objectstyle.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="petstore">
+		<property name="cayenne.GenericSelectQuery.refreshingObjects" value="false"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<property name="cayenne.GenericSelectQuery.fetchLimit" value="1"/>
+		<sql><![CDATA[select qty as quantity from inventory where itemid = #bind($itemId)]]></sql>
+	</query>
+	<query name="schemaCheck" factory="org.objectstyle.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="petstore">
+		<property name="cayenne.GenericSelectQuery.refreshingObjects" value="false"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<property name="cayenne.GenericSelectQuery.fetchLimit" value="1"/>
+		<sql><![CDATA[select count(*) from account]]></sql>
+	</query>
+</data-map>

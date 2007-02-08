@@ -1,0 +1,13 @@
+Cayenne Release Notes 1.2.3
+Date: 
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://issues.apache.org/cayenne/
+
+Bug Fixes:
+
+CAY-750 Stored procedures without parameters fail on Postgres 8

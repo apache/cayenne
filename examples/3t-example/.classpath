@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="webroot/WEB-INF/src"/>
+	<classpathentry kind="lib" path="webroot/WEB-INF/lib/postgresql-8.0-310.jdbc3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/3t-example-client"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cayenne-java"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cayenne-java-1.5"/>
+	<classpathentry kind="output" path="webroot/WEB-INF/classes"/>
+</classpath>

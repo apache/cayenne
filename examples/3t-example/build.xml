@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<!-- ================================================= -->
+<!--    Provides a class generator for the client classes.     -->
+<!-- ================================================= -->
+<project name="3t-example" default="class-generator">
+	
+	<property file="build.properties"/>
+	<property name="datamap" value="webroot/WEB-INF/src/hr.map.xml"/>
+	
+	<path id="gen-classpath">
+		<pathelement path="${cayenne.jar}"/>
+	</path>
+	
+	<target name="prepare">
+		<!-- load Cayenne Ant tasks -->
+		<taskdef name="cgen"
+			classname="org.objectstyle.cayenne.tools.CayenneGenerator">
+			<classpath refid="gen-classpath"/>
+		</taskdef>
+	</target>
+	
+	<target name="class-generator"
+		depends="prepare,server-generator,client-generator"/>
+	
+	<target name="server-generator">
+		<cgen map="${datamap}" destDir="${server.src}"
+			superpkg="cayenne3t.example.hr.auto"/>
+	</target>
+	
+	<target name="client-generator" if="client.src">
+		<cgen map="${datamap}" destDir="${client.src}"
+			superpkg="cayenne3t.example.hr.auto" client="true"/>
+	</target>
+</project>

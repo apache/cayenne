@@ -1,0 +1,47 @@
+Cayenne Release Notes 1.2 M12 milestone
+Date: 
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+
+Changes/New Features:
+
+* Nested DataContext commits.
+
+* Modeler features platform-native keyboard shortcuts. I.e. Mac users will no longer have 
+  to figure out where the "Ctrl" key is located. Command-S will save the project.
+
+* Added FK constraints support to MySQLAdapter. It is enabled automatically if the AutoAdapter
+  detects that InnoDB table type is default. I.e. if you want it to operate in a DB-independent fashion,
+  do not expicitly set MySQLAdapter in the Modeler and let Cayenne guess it.
+
+* Support for custom cgen templates located in jar files. Prior to M12 custom templates were only
+  accessible if as files in the local filesystem.
+
+* SingleObjectQuery is renamed to ObjectIdQuery to reflect the fact that it supports data rows as well. 
+  For documentation see http://objectstyle.org/confluence/display/CAY/ObjectIdQuery
+
+* First cut of the new IngresAdapter. 
+
+Bugs Fixed:
+
+CAY-470	Algorithm for flushing changes from child nested DataContext to parent
+CAY-482	there can be only 254 ids created *within the same millisecond
+CAY-446	Commit operation should respect existing thread-bound transactions
+CAY-448	NPE when shutting down DataDomain
+CAY-465	DataDomain deletion results in menus in inconsistent state
+CAY-461	Package name not prepended on import
+CAY-347	Entity Tabs and Delete button inconsistencies
+CAY-464	Hanging/infinite-loop problem when issuing a non-selecting SQL command against Oracle 8.1.6
+CAY-449	SingleObjectQuery glitches
+CAY-170	Class Generation Bug
+CAY-450	Oracle fetch limit syntax conflicts with ordering
+CAY-407	JOINT_PREFETCH_SEMANTICS + in-memory DISTINCT = incorrect results
+CAY-284	Allow for mix of null and non null attributes for compound FK relationships
+CAY-462	Incorrect tool tip on "Create Derived DbEntity"
+CAY-463	Improved DbEntity icons

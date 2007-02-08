@@ -1,0 +1,43 @@
+Cayenne Release Notes 1.2 B3 (beta)
+Date: 05/17/2006
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+
+Modeler Improvements:
+
+* More options added to the "Advanced" mode panel of the class generator
+* Fixed early project closing when a new project is opened - now if 
+  the new project selection is canceled, currently opened project stays opened.
+* Fixed refreshing of the "Recent Files" menu.
+
+Bug Fixes:
+
+CAY-515	XMLDecoder doesn't work with collections of leaf objects when mapping descriptor is used
+CAY-516	XMLDecoder + Mapping Descriptor - ignores property 'attribute' settings
+CAY-519	XMLDecoder + Mapping File: exception on decoding a collection of non-entities
+CAY-518	"attribute.type" contains invalid character: [
+CAY-521	Instantiation of wrong Classes if more the 1 class has the same name (within different packages)
+CAY-531	ObjectDetachOperation not resolving faults, resulting in invalid client-side objects.
+CAY-532	Modeler Client Class Generator fails to open with an exception
+CAY-544	validateForSave is called on phantoms with to-one relationships
+CAY-207	ExtendedTypes don't work properly with entity subclasses
+CAY-542	Re-registered objects lose their relationships
+CAY-545	Paginated list - connection is committed before the result set is read
+CAY-546	derby and blob/clob larger than 1MB
+CAY-548	remove uncomitted flattened many-to-many
+CAY-517	Omission in PropertyUtils - no support for converting String to JDK 1.5 Enum
+CAY-502	Select/deselect all tables on Generate Schema panel
+CAY-191	Datatypes of 'Source' and 'Target' of joins should match
+CAY-513	Code Generation - UI table header not displaying property
+CAY-235	support for Ingres database
+CAY-547	Deleting new objects leaves null object in context.
+CAY-533	"Create Derived DbEntity"-button has wrong tooltip
+CAY-537	TypesMapping.getSqlTypeByJava ignores primitives
+CAY-528	NullPointer Execption by deleting a Class
+

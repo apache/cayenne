@@ -1,0 +1,43 @@
+Cayenne Release Notes 1.2 Milesone (M2)
+Date: February 07, 2005
+============================================
+
+For the latest information go to the project web site at 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+Changes:
+
+- Removed almost all classes and methods deprecated in 1.1.
+- Changed ObjectId.replacementId API. If your code relies on replacementId 
+  (e.g. if you create custom ObjectIds), it is strongly advised that you switch 
+  to the new API (which It is actually simpler....)
+- Upgraded JDOM library to v. 1.0
+- [CAY-82] Ant frontend for DbGenerator
+- Removed system CLASSPATH from Modeler startup scripts.
+- Thread-local static ClassLoader in Configuration.
+- Persistence by reachability (CAY-249, part 1)
+- Updated Expression BNF, replacing "scalarCharExpression" with "scalarExpression"
+- Unconditionally applying entity sorting on commit, even if DB does not support constraints.
+- BasicServletConfiguration is deprecated as it is redundant. Superclass has all the functionality needed.
+  All its static methods are extracted into ServetUtil
+- Expanded deployment chapter of the user guide with extrav options 
+  (some existed before but were not documented).
+- Other documentation updates
+- [CAY-261 - Experimental] XML encoder/decoder (still very raw and virtually untested)
+- Full support for jTDS adapter.
+
+Bugs Fixed:
+
+CAY-246 ClassCastException on EOModel import with numeric password
+CAY-251 NPE on calling stored proc for SQL Server.
+CAY-259	Error with national characters in DVModeler
+CAY-255	ORA-01000: maximum open cursors exceeded
+CAY-33	Add factory for Commons DBCP to be used as connection pool
+CAY-266	deleteObject should be changed to deleteObjects
+CAY-252	validateForSave NPE when data object has no DataNode maped
+CAY-206	Thread Bound DataContext Retrieval in Servlet Spec 2.3
+CAY-195	Add method to CayenneDataObject to return it's ObjEntity
+CAY-268 EOModel import problem for entities with abstract superclasses and flattened relationships

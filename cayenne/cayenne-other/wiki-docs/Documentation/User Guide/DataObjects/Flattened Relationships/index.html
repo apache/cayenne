@@ -1,0 +1,54 @@
+<html>
+  <head>
+    <title>Cayenne Documentation - Flattened Relationships</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://objectstyle.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Flattened Relationships</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a><ul>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Accessing PK and FK values/index.html">Accessing PK and FK values</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Relationships/index.html">Relationships</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Flattened Relationships/index.html">Flattened Relationships</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/DataObjects Example/index.html">DataObjects Example</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/DataObjectUtils/index.html">DataObjectUtils</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/DataObject Validation/index.html">DataObject Validation</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Handling Inheritance/index.html">Handling Inheritance</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Deleting Objects/index.html">Deleting Objects</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/Generic Persistent Class/index.html">Generic Persistent Class</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Flattened relationships represent relationship between two types of DataObjects that is not direct in the underlying relational storage. Instead it is mapped across one or more "join" tables. Still from the application point of view there is no diffrence in working with flattened relationships compared to the "normal" ones. Cayenne internally figures out how to build the needed query joins to retrieve related objects. On adding or removing an object to/from a flattened relationship via a corresponding "addTo..." / "removeFrom..." method an appropriate join record is created or removed.</p>
+<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Flattened Relationships Limitations</b><br />Currently only many-to-many flattened relatationships with a single join table can be modified. All other types of flattened relationships can be used as "read-only". This is reflected in the DataObject code generated for such relationships - no set/addTo/RemoveFrom methods are created for read-only relationships.</td></tr></table></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 ObjectStyle Group and content authors
+  </div>
+
+</body>
+</html>

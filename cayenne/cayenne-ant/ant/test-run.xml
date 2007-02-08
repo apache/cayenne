@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+
+<!-- ========================================== -->
+<!-- Runs precompiled unit tests. -->
+<!-- ========================================== -->
+<project>
+	
+	<property name="test.output"
+		value="${build}/tests-xml-${cayenne.test.connection}"/>
+	<property name="test.report"
+		value="${build}/tests-report-${cayenne.test.connection}"/>
+	
+	<!-- ============================================= -->
+	<!-- Defines testing sequence                      -->
+	<!-- ============================================= -->
+	<target name="test-run" depends="clean,test,test-report">
+		<fail
+			message="Cayenne tests failed, see files in ${test.output} for details."
+			if="cayenne.test.failure"/>
+	</target>
+	
+	<target name="test-run-1_4" depends="clean,test-1_4,test-report">
+		<fail
+			message="Cayenne tests failed, see files in ${test.output} for details."
+			if="cayenne.test.failure"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${test.output}"/>
+		<delete dir="${test.report}"/>
+	</target>
+	
+	<!-- ============================================= -->
+	<!-- Runs Unit tests.                              -->
+	<!-- ============================================= -->
+	<target name="test">
+		
+		<mkdir dir="${test.output}"/>
+		
+		<junit fork="false" haltonfailure="no" errorProperty="cayenne.test.failure"
+			failureProperty="cayenne.test.failure">
+			
+			<formatter type="xml" usefile="true"/>
+			<batchtest todir="${test.output}">
+				<fileset dir="${build}/tests-1_4/classes"
+					includes="${test.filter}" excludes="${test.exclude}"/>
+				<fileset dir="${build}/tests-1_5/classes"
+					includes="${test.filter}" excludes="${test.exclude}"/>
+			</batchtest>
+		</junit>
+		
+	</target>
+	
+	<target name="test-1_4">
+		
+		<mkdir dir="${test.output}"/>
+		
+		<junit fork="false" haltonfailure="no" errorProperty="cayenne.test.failure"
+			failureProperty="cayenne.test.failure">
+			
+			<formatter type="xml" usefile="true"/>
+			<batchtest todir="${test.output}">
+				<fileset dir="${build}/tests-1_4/classes"
+					includes="${test.filter}" excludes="${test.exclude}"/>
+			</batchtest>
+		</junit>
+		
+	</target>
+	
+	<!-- ============================================= -->
+	<!-- Reports failures.                             -->
+	<!-- ============================================= -->
+	<target name="test-report" depends="test-report-needed"
+		if="cayenne.test.report.needed">
+		
+		<mkdir dir="${test.report}"/>
+		
+		<junitreport todir="${test.report}">
+			<fileset dir="${test.output}" includes="TEST-*.xml"/>
+			<report format="frames" todir="${test.report}"/>
+		</junitreport>
+	</target>
+	
+	<target name="test-report-needed">
+		<!-- In case of failures, always run report,  -->
+		<!-- in case of success, only when asked.     -->
+		<condition property="cayenne.test.report.needed">
+			<or>
+				<isset property="cayenne.test.failure"/>
+				<istrue value="${cayenne.test.report}"/>
+			</or>
+		</condition>
+	</target>
+</project>
+

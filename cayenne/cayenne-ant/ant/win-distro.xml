@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+
+<!-- ========================================== -->
+<!-- Creates Windows-friendly distribution.    -->
+<!-- ========================================== -->
+<project name="WinDistro">
+	
+	<property name="dist.win" value="${dist.base}/win"/>
+	<property name="build.win" value="${build}/win"/>
+	
+	<target name="prepare">
+		<condition property="win-path-ref" value="classpath-win-onlinux">
+			<and>
+				<os family="unix"/>
+				<not>
+					<os family="mac"/>
+				</not>
+			</and>
+		</condition>
+		
+		<condition property="win-path-ref" value="classpath-win-onmac">
+			<os family="mac"/>
+		</condition>
+		
+		<condition property="win-path-ref" value="classpath-win-onwindows">
+			<os family="windows"/>
+		</condition>
+		
+		<taskdef name="launch4j" classpathref="${win-path-ref}"
+			classname="net.sf.launch4j.ant.Launch4jTask"/>
+		
+		<mkdir dir="${dist.win}"/>
+	</target>
+	
+	<target name="zip" depends="prepare,exe">		
+		
+		<!-- unzip platform-neutral distro to make sure win version is identical -->
+		<untar dest="${dist.win}"
+			src="${dist.base}/${project.name}-${project.version}.tar.gz"
+			overwrite="false" compression="gzip">
+			
+			<!-- 
+				exclude UNIX scripts, but keep modeler.jar and its deps, as it is needed 
+				for local JNDI work
+			-->
+			<patternset excludes="**/bin/*.sh"/>
+		</untar>
+		
+		<copy todir="${dist.win}/${project.name}-${project.version}/bin"
+			file="${build.win}/CayenneModeler.exe"/>
+		
+		<zip destfile="${dist.base}/${project.name}-${project.version}-win.zip">
+			<fileset dir="${dist.win}"
+				includes="${project.name}-${project.version}/**"/>
+		</zip>
+	</target>
+	
+	<target name="exe" depends="prepare">
+		
+		<delete file="${build.win}/CayenneModeler.exe"/>
+		
+		<!-- assemble a single jar -->
+		<mkdir dir="${build.win}/classes"/>
+		<unjar dest="${build.win}/classes">
+			<fileset dir="${dist}/lib" includes="cayenne.jar,modeler/*.jar"/>
+		</unjar>
+		<delete dir="${build.win}/classes/META-INF"/>
+		
+		<jar destfile="${build.win}/cayenne-modeler-all.jar"
+			basedir="${build.win}/classes">
+			<manifest>
+				<attribute name="Main-Class"
+					value="org.objectstyle.cayenne.modeler.Main"/>
+			</manifest>
+		</jar>
+		
+		<copy todir="${build.win}"
+			file="${cayenne.other}/platform-win32/launch4j-config.xml">
+			<filterset>
+				<filter token="ICON"
+					value="${basedir}/${cayenne.other}/platform-win32/CayenneModeler.ico"/>
+				<filter token="JAR" value="${build.win}/cayenne-modeler-all.jar"/>
+				<filter token="EXE" value="${build.win}/CayenneModeler.exe"/>
+				<filter token="PROJECT-VERSION" value="${project.version}"/>
+			</filterset>
+		</copy>
+		
+		<launch4j configFile="${build.win}/launch4j-config.xml"/>
+	</target>
+
+</project>

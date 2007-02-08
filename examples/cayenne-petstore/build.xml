@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+ 
+<!-- ================================================= -->
+<!--            Cayenne Petstore build file.           -->
+<!-- ================================================= -->
+<project name="cayenne-petstore" default="war">
+	
+	<property name="dist" value="dist"/>
+	<property name="build" value="bin/ant"/>
+	
+	<path id="classpath">
+		<fileset dir="lib" includes="*.jar"/>
+		<fileset dir="devlib" includes="*.jar"/>
+	</path>
+	
+	<target name="war" depends="compile">
+		<mkdir dir="${dist}"/>
+		<war destfile="${dist}/cayenne-petstore.war" webxml="web/WEB-INF/web.xml">
+			<fileset dir="web" excludes="WEB-INF/web.xml"/>
+			<lib dir="lib"/>
+			
+			<classes dir="src" excludes="**/*.java"/>
+			<classes dir="${build}"/>
+		</war>
+	</target>
+	
+	<target name="compile">
+		<mkdir dir="${build}"/>
+		
+		<javac srcdir="src" destdir="${build}" classpathref="classpath"
+			source="1.4"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+	</target>
+</project>

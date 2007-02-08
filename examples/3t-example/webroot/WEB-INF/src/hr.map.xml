@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<property name="defaultPackage" value="cayenne3t.example.hr"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="cayenne3t.example.hr"/>
+	<db-entity name="department">
+		<db-attribute name="department_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="description" type="VARCHAR" length="100"/>
+		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="50"/>
+	</db-entity>
+	<db-entity name="person">
+		<db-attribute name="base_salary" type="DOUBLE" isMandatory="true"/>
+		<db-attribute name="date_hired" type="DATE" isMandatory="true"/>
+		<db-attribute name="department_id" type="INTEGER"/>
+		<db-attribute name="full_name" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="person_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="project">
+		<db-attribute name="department_id" type="INTEGER"/>
+		<db-attribute name="manager_id" type="INTEGER"/>
+		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="project_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="project_member">
+		<db-attribute name="person_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="project_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="Department" className="cayenne3t.example.hr.Department" clientClassName="cayenne3t.example.hr.CDepartment" dbEntityName="department">
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="Person" className="cayenne3t.example.hr.Person" clientClassName="cayenne3t.example.hr.CPerson" dbEntityName="person" clientSuperClassName="cayenne3t.example.hr.CustomClientObject">
+		<obj-attribute name="baseSalary" type="java.lang.Double" db-attribute-path="base_salary"/>
+		<obj-attribute name="dateHired" type="java.util.Date" db-attribute-path="date_hired"/>
+		<obj-attribute name="fullName" type="java.lang.String" db-attribute-path="full_name"/>
+	</obj-entity>
+	<obj-entity name="Project" className="cayenne3t.example.hr.Project" clientClassName="cayenne3t.example.hr.CProject" dbEntityName="project">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<db-relationship name="employees" source="department" target="person" toMany="true">
+		<db-attribute-pair source="department_id" target="department_id"/>
+	</db-relationship>
+	<db-relationship name="projects" source="department" target="project" toMany="true">
+		<db-attribute-pair source="department_id" target="department_id"/>
+	</db-relationship>
+	<db-relationship name="department" source="person" target="department" toMany="false">
+		<db-attribute-pair source="department_id" target="department_id"/>
+	</db-relationship>
+	<db-relationship name="managedProjects" source="person" target="project" toMany="true">
+		<db-attribute-pair source="person_id" target="manager_id"/>
+	</db-relationship>
+	<db-relationship name="projects" source="person" target="project_member" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="person_id" target="person_id"/>
+	</db-relationship>
+	<db-relationship name="department" source="project" target="department" toMany="false">
+		<db-attribute-pair source="department_id" target="department_id"/>
+	</db-relationship>
+	<db-relationship name="manager" source="project" target="person" toMany="false">
+		<db-attribute-pair source="manager_id" target="person_id"/>
+	</db-relationship>
+	<db-relationship name="members" source="project" target="project_member" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="project_id" target="project_id"/>
+	</db-relationship>
+	<db-relationship name="person" source="project_member" target="person" toMany="false">
+		<db-attribute-pair source="person_id" target="person_id"/>
+	</db-relationship>
+	<db-relationship name="project" source="project_member" target="project" toMany="false">
+		<db-attribute-pair source="project_id" target="project_id"/>
+	</db-relationship>
+	<obj-relationship name="employees" source="Department" target="Person" deleteRule="Cascade" db-relationship-path="employees"/>
+	<obj-relationship name="projects" source="Department" target="Project" deleteRule="Cascade" db-relationship-path="projects"/>
+	<obj-relationship name="department" source="Person" target="Department" deleteRule="Nullify" db-relationship-path="department"/>
+	<obj-relationship name="managedProjects" source="Person" target="Project" deleteRule="Nullify" db-relationship-path="managedProjects"/>
+	<obj-relationship name="projects" source="Person" target="Project" db-relationship-path="projects.project"/>
+	<obj-relationship name="department" source="Project" target="Department" db-relationship-path="department"/>
+	<obj-relationship name="manager" source="Project" target="Person" db-relationship-path="manager"/>
+	<obj-relationship name="members" source="Project" target="Person" db-relationship-path="members.person"/>
+	<query name="CreateData" factory="org.objectstyle.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="hr">
+		<sql><![CDATA[insert into department (department_id, name, description) 
+values (1, 'IT', 'Information Technology Department')]]></sql>
+	</query>
+	<query name="DeleteDepartment" factory="org.objectstyle.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="hr">
+		<sql><![CDATA[delete from department]]></sql>
+	</query>
+	<query name="DeletePerson" factory="org.objectstyle.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="hr">
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<sql><![CDATA[delete from person]]></sql>
+	</query>
+	<query name="DepartmentWithName" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Department">
+		<qualifier><![CDATA[name likeIgnoreCase $name]]></qualifier>
+		<ordering><![CDATA[name]]></ordering>
+	</query>
+</data-map>
