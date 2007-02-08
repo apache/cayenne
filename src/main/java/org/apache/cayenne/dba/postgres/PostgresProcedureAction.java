@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.dba.postgres;
 
+import java.sql.Connection;
+
+import org.apache.cayenne.access.trans.ProcedureTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerProcedureAction;
 import org.apache.cayenne.map.EntityResolver;
@@ -38,5 +41,33 @@ class PostgresProcedureAction extends SQLServerProcedureAction {
     PostgresProcedureAction(ProcedureQuery query, DbAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
+    }
+
+    /**
+     * Creates a translator that adds parenthesis to no-param queries.
+     */
+    // see CAY-750 for the problem description
+    protected ProcedureTranslator createTranslator(Connection connection) {
+        ProcedureTranslator translator = new PostgresProcedureTranslator();
+        translator.setAdapter(getAdapter());
+        translator.setQuery(query);
+        translator.setEntityResolver(getEntityResolver());
+        translator.setConnection(connection);
+        return translator;
+    }
+
+    static class PostgresProcedureTranslator extends ProcedureTranslator {
+
+        protected String createSqlString() {
+
+            String sql = super.createSqlString();
+
+            // add empty parameter parenthesis
+            if (sql.endsWith("}") && !sql.endsWith(")}")) {
+                sql = sql.substring(0, sql.length() - 1) + "()}";
+            }
+
+            return sql;
+        }
     }
 }

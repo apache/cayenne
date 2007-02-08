@@ -125,12 +125,12 @@ public class ProcedureAction extends BaseSQLAction {
      * @param connection JDBC connection
      */
     protected ProcedureTranslator createTranslator(Connection connection) {
-        ProcedureTranslator transl = new ProcedureTranslator();
-        transl.setAdapter(getAdapter());
-        transl.setQuery(query);
-        transl.setEntityResolver(getEntityResolver());
-        transl.setConnection(connection);
-        return transl;
+        ProcedureTranslator translator = new ProcedureTranslator();
+        translator.setAdapter(getAdapter());
+        translator.setQuery(query);
+        translator.setEntityResolver(getEntityResolver());
+        translator.setConnection(connection);
+        return translator;
     }
 
     /**
