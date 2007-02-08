@@ -53,6 +53,7 @@ public class SybaseStackAdapter extends AccessStackAdapter {
         if (proc != null && proc.getDataMap() == map) {
             executeDDL(con, "sybase", "create-select-sp.sql");
             executeDDL(con, "sybase", "create-update-sp.sql");
+            executeDDL(con, "sybase", "create-update-sp2.sql");
             executeDDL(con, "sybase", "create-out-sp.sql");
         }
     }
@@ -65,6 +66,7 @@ public class SybaseStackAdapter extends AccessStackAdapter {
         if (proc != null && proc.getDataMap() == map) {
             executeDDL(con, "sybase", "drop-select-sp.sql");
             executeDDL(con, "sybase", "drop-update-sp.sql");
+            executeDDL(con, "sybase", "drop-update-sp2.sql");
             executeDDL(con, "sybase", "drop-out-sp.sql");
         }
     }
