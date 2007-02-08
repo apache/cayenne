@@ -60,6 +60,7 @@ public class PostgresStackAdapter extends AccessStackAdapter {
         if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
             executeDDL(con, "postgresql", "create-select-sp.sql");
             executeDDL(con, "postgresql", "create-update-sp.sql");
+            executeDDL(con, "postgresql", "create-update-sp2.sql");
             executeDDL(con, "postgresql", "create-out-sp.sql");
         }
     }

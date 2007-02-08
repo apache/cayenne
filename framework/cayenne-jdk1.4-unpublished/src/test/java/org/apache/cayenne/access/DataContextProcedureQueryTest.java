@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
@@ -43,6 +42,7 @@ import org.apache.cayenne.unit.CayenneCase;
 public class DataContextProcedureQueryTest extends CayenneCase {
 
     public static final String UPDATE_STORED_PROCEDURE = "cayenne_tst_upd_proc";
+    public static final String UPDATE_STORED_PROCEDURE_NOPARAM = "cayenne_tst_upd_proc2";
     public static final String SELECT_STORED_PROCEDURE = "cayenne_tst_select_proc";
     public static final String OUT_STORED_PROCEDURE = "cayenne_tst_out_proc";
 
@@ -71,6 +71,43 @@ public class DataContextProcedureQueryTest extends CayenneCase {
 
         ProcedureQuery q = new ProcedureQuery(UPDATE_STORED_PROCEDURE);
         q.addParameter("paintingPrice", new Integer(3000));
+
+        // since stored procedure commits its stuff, we must use an explicit
+        // non-committing transaction
+
+        Transaction t = Transaction.externalTransaction(null);
+        Transaction.bindThreadTransaction(t);
+
+        try {
+            ctxt.performGenericQuery(q);
+        }
+        finally {
+            Transaction.bindThreadTransaction(null);
+            t.commit();
+        }
+
+        // check that price have doubled
+        SelectQuery select = new SelectQuery(Artist.class);
+        select.addPrefetch("paintingArray");
+
+        List artists = ctxt.performQuery(select);
+        assertEquals(1, artists.size());
+
+        Artist a = (Artist) artists.get(0);
+        Painting p = (Painting) a.getPaintingArray().get(0);
+        assertEquals(2000, p.getEstimatedPrice().intValue());
+    }
+
+    public void testUpdateNoParam() throws Exception {
+        // Don't run this on MySQL
+        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+            return;
+        }
+
+        // create an artist with painting in the database
+        createArtist(1000.0);
+
+        ProcedureQuery q = new ProcedureQuery(UPDATE_STORED_PROCEDURE_NOPARAM);
 
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
