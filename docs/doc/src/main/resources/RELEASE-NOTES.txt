@@ -54,6 +54,7 @@ CAY-702	Improve DBCPDataSourceFactory to use it for a JettyPlus DataSource
 CAY-703	Cache EntityResolver in the ClientChannel
 CAY-737 Deprecate DataContextTransactionEventListener, DataObjectTransactionEventListener, DataContextEvent
 CAY-740 MapLoader algorithm improvement
+CAY-750 Stored procedures without parameters fail on Postgres 8
 
 Bug Fixes since 1.2 final:
 
