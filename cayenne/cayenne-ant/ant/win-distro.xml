@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+
+<!-- ========================================== -->
+<!-- Creates Windows-friendly distribution.    -->
+<!-- ========================================== -->
+<project name="WinDistro">
+	
+	<property name="dist.win" value="${dist.base}/win"/>
+	<property name="build.win" value="${build}/win"/>
+	
+	<target name="prepare">
+		<mkdir dir="${dist.win}"/>
+		
+		<taskdef name="japplication" classpathref="classpath-macosx"
+			classname="org.objectstyle.woproject.ant.JApplication"/>
+	</target>
+	
+	<target name="zip" depends="prepare,exe">		
+		
+		<!-- unzip platform-neutral distro to make sure win version is identical -->
+		<untar dest="${dist.win}"
+			src="${dist.base}/${project.name}-${project.version}.tar.gz"
+			overwrite="false" compression="gzip">
+			
+			<!-- 
+			exclude UNIX scripts and Modeler jars, as master modeler jar will be placed to bin
+			-->
+			<patternset excludes="**/bin/*.sh,**/bin/*.bat,**/lib/modeler/**,**/lib/modeler,**/lib/dvmodeler/**,**/lib/dvmodeler"/>
+		</untar>
+		
+		<!-- move both runnable jar and exe -->
+		<move todir="${dist.win}/${project.name}-${project.version}/bin">
+			<fileset dir="${build.win}" includes="*.jar,*.exe"/>
+		</move>
+		
+		<zip destfile="${dist.base}/${project.name}-${project.version}-win.zip">
+			<fileset dir="${dist.win}"
+				includes="${project.name}-${project.version}/**"/>
+		</zip>
+		
+		<sign releaseFile="${dist.base}/${project.name}-${project.version}-win.zip"/>
+	</target>
+	
+	<target name="exe" depends="prepare">
+		
+		<delete file="${build.win}/CayenneModeler.exe"/>
+		
+		<japplication destDir="${build.win}" name="CayenneModeler"
+			mainClass="org.apache.cayenne.modeler.Main"
+			icon="${cayenne.other}/platform-win32/CayenneModeler.ico"
+			version="${project.version}"
+			longName="CayenneModeler ${project.version}"
+			jvm="1.4+"
+			jvmOptions="-Xmx500m" os="windows">
+			
+			<lib dir="${dist}/lib" includes="cayenne.jar"/>
+			<lib dir="${dist}/lib/modeler" includes="*.jar"/>
+		</japplication>
+		
+		<japplication destDir="${build.win}" name="DVModeler"
+			mainClass="org.apache.cayenne.dataview.dvmodeler.Main"
+			icon="${cayenne.other}/platform-win32/CayenneModeler.ico"
+			version="${project.version}"
+			longName="DVModeler ${project.version}"
+			jvm="1.4+"
+			jvmOptions="-Xmx500m" os="windows">
+			
+			<lib dir="${dist}/lib" includes="cayenne.jar"/>
+			<lib dir="${dist}/lib/dvmodeler" includes="*.jar"/>
+		</japplication>
+	</target>
+
+</project>

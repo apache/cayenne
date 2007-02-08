@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+ 
+<!-- ================================================= -->
+<!--            Maven Bundle Buildfile                 -->
+<!-- ================================================= -->
+<project name="cayenne-maven" default="bundle-all" basedir="..">
+	
+	<property file="${basedir}/default.properties"/>
+	<import file="${basedir}/ant/import/paths.xml"/>
+	
+	<property name="m2.repo" value="${user.home}/.m2/repository"/>
+	<property name="build" value="${build.base}/maven"/>
+	<property name="dist"
+		value="${dist.base}/${project.name}-${project.version}"/>
+	
+	<target name="install-all" depends="build-cayenne">
+		
+		<antcall target="install">
+			<param name="stage-target" value="stage"/>
+			<param name="m2.groupDir" value="${m2.repo}/org/apache/cayenne"/>
+			<param name="m2.artifactId" value="${project.name}"/>
+		</antcall>
+		
+		<antcall target="install">
+			<param name="stage-target" value="stage"/>
+			<param name="m2.groupDir" value="${m2.repo}/org/apache/cayenne"/>
+			<param name="m2.artifactId" value="${project.name}-nodeps"/>
+		</antcall>
+		
+		<antcall target="install">
+			<param name="stage-target" value="stage"/>
+			<param name="m2.groupDir" value="${m2.repo}/org/apache/cayenne"/>
+			<param name="m2.artifactId" value="${project.name}-client-nodeps"/>
+		</antcall>
+		
+		<antcall target="install">
+			<param name="stage-target" value="stage-modeler"/>
+			<param name="m2.groupDir" value="${m2.repo}/org/apache/cayenne"/>
+			<param name="m2.artifactId" value="${project.name}-modeler"/>
+		</antcall>
+		
+	</target>
+	
+	<target name="bundle-all" depends="build-cayenne">
+		
+		<antcall target="bundle">
+			<param name="stage-target" value="stage"/>
+			<param name="m2.artifactId" value="${project.name}"/>
+		</antcall>
+		
+		<antcall target="bundle">
+			<param name="stage-target" value="stage"/>
+			<param name="m2.artifactId" value="${project.name}-nodeps"/>
+		</antcall>
+		
+		<antcall target="bundle">
+			<param name="stage-target" value="stage"/>
+			<param name="m2.artifactId" value="${project.name}-client-nodeps"/>
+		</antcall>
+		
+		<antcall target="bundle">
+			<param name="stage-target" value="stage-modeler"/>
+			<param name="m2.artifactId" value="${project.name}-modeler"/>
+		</antcall>
+		
+	</target>
+	
+	<!-- 
+		Removes staging dir.
+	-->
+	<target name="clean">
+		<delete dir="${build}"/>
+		
+		<delete>
+			<fileset dir="${dist.base}" includes="*-bundle.jar"/>
+		</delete>
+	</target>
+	
+	<!-- 
+		Installs artifact to the local repo specified.
+	-->
+	<target name="install">
+		<antcall target="${stage-target}"/>
+		
+		<property name="install.dir"
+			value="${m2.groupDir}/${m2.artifactId}/${project.version}"/>
+		<property name="install.name"
+			value="${m2.artifactId}-${project.version}"/>
+		<property name="stage" value="${build}/${m2.artifactId}"/>
+		
+		<mkdir dir="${install.dir}"/>
+		<copy file="maven/${m2.artifactId}-pom.xml"
+			tofile="${install.dir}/${install.name}.pom">
+			<filterset>
+				<filter token="PROJECT-VERSION" value="${project.version}"/>
+			</filterset>
+		</copy>
+		
+		<move file="${stage}/${install.name}.jar"
+			tofile="${install.dir}/${install.name}.jar"/>
+		<move file="${stage}/${install.name}-sources.jar"
+			tofile="${install.dir}/${install.name}-sources.jar"/>
+		
+		<checksum algorithm="SHA1" fileext=".sha1">
+			<fileset dir="${install.dir}" excludes="*.sha1,*.md5,*.tmp"/>
+		</checksum>
+		
+		<checksum algorithm="MD5" fileext=".md5">
+			<fileset dir="${install.dir}" excludes="*.sha1,*.md5,*.tmp"/>
+		</checksum>
+	</target>
+	
+	<!-- 
+		Bundles staged artifact to release to ibiblio
+	-->
+	<target name="bundle">
+		<antcall target="${stage-target}"/>
+		
+		<property name="stage" value="${build}/${m2.artifactId}"/>
+		
+		<jar
+			jarfile="${dist.base}/${m2.artifactId}-${project.version}-bundle.jar">
+			<fileset dir="${stage}"/>
+		</jar>
+	</target>
+	
+	<!-- 
+		Performs Maven build staging
+	-->
+	<target name="stage" depends="validate-pom">
+		<property name="stage" value="${build}/${m2.artifactId}"/>
+		<mkdir dir="${stage}"/>
+		
+		<copy file="maven/${m2.artifactId}-pom.xml" tofile="${stage}/pom.xml">
+			<filterset>
+				<filter token="PROJECT-VERSION" value="${project.version}"/>
+			</filterset>
+		</copy>
+		
+		<copy todir="${stage}">
+			<fileset dir="${cayenne.other}/licenses/top/"/>
+		</copy>
+		
+		<copy
+			file="${dist.base}/${project.name}-${project.version}/lib/${m2.artifactId}.jar"
+			tofile="${stage}/${m2.artifactId}-${project.version}.jar"/>
+		
+		<jar jarfile="${stage}/${m2.artifactId}-${project.version}-sources.jar">
+			<fileset dir="${cayenne.java}/src/cayenne/java" includes="**/*.java"/>
+			<fileset dir="${cayenne.java.1_5}/src/cayenne/java"
+				includes="**/*.java"/>
+		</jar>
+	</target>
+	
+	<target name="stage-modeler" depends="validate-pom">
+		<property name="stage" value="${build}/${m2.artifactId}"/>
+		<mkdir dir="${stage}"/>
+		
+		<copy file="maven/${m2.artifactId}-pom.xml" tofile="${stage}/pom.xml">
+			<filterset>
+				<filter token="PROJECT-VERSION" value="${project.version}"/>
+			</filterset>
+		</copy>
+		
+		<copy todir="${stage}">
+			<fileset dir="${cayenne.other}/licenses/top/"/>
+		</copy>
+		
+		<copy
+			file="${dist.base}/${project.name}-${project.version}/lib/modeler/${m2.artifactId}.jar"
+			tofile="${stage}/${m2.artifactId}-${project.version}.jar"/>
+		
+		<jar jarfile="${stage}/${m2.artifactId}-${project.version}-sources.jar">
+			<fileset dir="${cayenne.java}/src/modeler/java" includes="**/*.java"/>
+		</jar>
+	</target>
+	
+<!-- related to ashwood
+	<target name="stage-lib" depends="validate-pom">
+		<property name="stage" value="${build}/${m2.artifactId}"/>
+		<mkdir dir="${stage}"/>
+		
+		<copy file="maven/${m2.artifactId}-pom.xml" tofile="${stage}/pom.xml"/>
+		
+		<copy file="${cayenne.other}/licenses/LICENSE.${m2.artifactId}.txt"
+			tofile="${stage}/LICENSE.txt"/>
+		
+		<copy
+			file="${cayenne.java}/lib/${m2.artifactId}-${project.version}.jar"
+			todir="${stage}"/>
+		<copy
+			file="${cayenne.java}/lib-src/${m2.artifactId}-${project.version}-src.jar"
+			tofile="${stage}/${m2.artifactId}-${project.version}-sources.jar"/>
+	</target>
+-->
+	
+	<!-- 
+		Performs POM Schema validation.
+	-->
+	<target name="validate-pom">
+		<xmlvalidate failonerror="true" file="maven/${m2.artifactId}-pom.xml">
+			<attribute name="http://xml.org/sax/features/validation"
+				value="true"/>
+			<attribute name="http://apache.org/xml/features/validation/schema"
+				value="true"/>
+			<attribute name="http://xml.org/sax/features/namespaces"
+				value="true"/>
+			<property
+				name="http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation"
+				value="maven/maven-v4_0_0.xsd"/>
+		</xmlvalidate>
+	</target>
+	
+	<target name="build-cayenne">
+		<ant antfile="build.xml" target="dist-bin"/>
+	</target>
+</project>

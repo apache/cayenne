@@ -1,0 +1,52 @@
+Apache Cayenne Release Notes
+==================================
+
+For the latest information visit project web site: 
+http://incubator.apache.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://issues.apache.org/cayenne/
+
+----------------------------------
+Release: 2.0.3
+Date: 
+----------------------------------
+
+Bug Fixes:
+
+CAY-750 Stored procedures without parameters fail on Postgres 8
+
+----------------------------------
+Release: 2.0.2
+Date: 1/22/2007
+----------------------------------
+
+Bug Fixes:
+
+CAY-565 LRUMap NPE
+CAY-652 Exception with Tomcat's session restore capability
+CAY-653 overriding setPersistentState() in unreliable in three tier environment with CayenneContext
+CAY-690 Exception in the Modeler when changing schema on derived entities
+CAY-712 Allow modifying objects in validate* methods
+CAY-724 - applying 3.0 fix to 1.2 branch
+CAY-726 SQLTemplate parsing bug when macros appear at the end of line
+
+
+----------------------------------
+Release: 2.0.1-incubating
+Date: 10/7/2006
+----------------------------------
+
+Bug Fixes:
+
+ CAY-601  	 Problem resolving relationships in nested DataContext
+ CAY-603  	 QueryChain.isFetchingDataRows() incorrectly returns "false" - must be "true" all the time
+ CAY-607	Long query name or qualifier expand query text field off screen
+ CAY-608	Prefetch validation incorrectly reports error on multi-step prefetches
+ CAY-639	JDBC datatype of MySQL INT UNSIGNED is mapped as java.lang.Integer should be java.lang.Long
+ CAY-617	ROP: shared session functionality over XMPP is broken
+ CAY-614	ToManyList contains references to transient objects
+ CAY-609	Modeler prevents intermediate prefetch creation
+ 
+Changes: 
+ CAY-623  Removing broken FireBird adapter

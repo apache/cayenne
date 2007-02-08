@@ -1,0 +1,25 @@
+<Test type="org.apache.cayenne.xml.TestObject">
+<name type="java.lang.String">George</name>
+<age type="java.lang.Integer">0</age>
+<open type="java.lang.Boolean">false</open>
+<children type="org.apache.cayenne.xml.TestObject">
+<name type="java.lang.String">Bill</name>
+<age type="java.lang.Integer">62</age>
+<open type="java.lang.Boolean">true</open>
+</children>
+<children type="org.apache.cayenne.xml.TestObject">
+<name type="java.lang.String">Sue</name>
+<age type="java.lang.Integer">8</age>
+<open type="java.lang.Boolean">true</open>
+</children>
+<children type="org.apache.cayenne.xml.TestObject">
+<name type="java.lang.String">Joe</name>
+<age type="java.lang.Integer">31</age>
+<open type="java.lang.Boolean">false</open>
+<children type="org.apache.cayenne.xml.TestObject" forceList="YES">
+<name type="java.lang.String">Harry</name>
+<age type="java.lang.Integer">23</age>
+<open type="java.lang.Boolean">false</open>
+</children>
+</children>
+</Test>

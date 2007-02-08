@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	<bean id="FT11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedTest1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_TEST_1 (FT1_ID, NAME) values (1, 'ft1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="FT12" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedTest1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_TEST_1 (FT1_ID, NAME) values (2, 'ft12')
+		</value></constructor-arg>
+	</bean>
+	<bean id="FT2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedTest2</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_TEST_2 (FT2_ID, FT1_ID, NAME) values (1, 1, 'ft2')
+		</value></constructor-arg>
+	</bean>
+	<bean id="FT31" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedTest3</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_TEST_3 (FT3_ID, FT2_ID, NAME) values (1, 1, 'ft3')
+		</value></constructor-arg>
+	</bean>
+	<bean id="FT32" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedTest3</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_TEST_3 (FT3_ID, NAME) values (2, 'ft3-a')
+		</value></constructor-arg>
+	</bean>
+	<bean id="FT33" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedTest3</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_TEST_3 (FT3_ID, NAME) values (3, 'ft3-b')
+		</value></constructor-arg>
+	</bean>
+	<bean id="CJ1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedTest1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPLEX_JOIN (PK, FT1_FK, FT3_FK, EXTRA_COLUMN) values (2000, 2, 2, 'A')
+		</value></constructor-arg>
+	</bean>
+	<bean id="CJ2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedTest1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPLEX_JOIN (PK, FT1_FK, FT3_FK, EXTRA_COLUMN) values (2001, 2, 3, 'B')
+		</value></constructor-arg>
+	</bean>
+	<bean id="CJ3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedTest1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPLEX_JOIN (PK, FT1_FK, FT3_FK, EXTRA_COLUMN) values (2002, 2, 3, 'C')
+		</value></constructor-arg>
+	</bean>
+
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	<bean id="test" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="FT11"/>
+				<ref bean="FT12"/>
+				<ref bean="FT2"/>
+				<ref bean="FT31"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="testUnsetJoinWithPK" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="FT12"/>
+				<ref bean="FT32"/>
+				<ref bean="FT33"/>
+				<ref bean="CJ1"/>
+				<ref bean="CJ2"/>
+				<ref bean="CJ3"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.apache.cayenne</groupId>
+	<artifactId>cayenne</artifactId>
+	<name>Cayenne</name>
+	<packaging>jar</packaging>
+	<version>@PROJECT-VERSION@</version>
+	
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+	
+	<scm>
+		<connection>
+			scm:cvs:http://svn.apache.org/repos/asf/incubator/cayenne/main/cayenne</connection>
+		<developerConnection>
+			scm:cvs:https://svn.apache.org/repos/asf/incubator/cayenne/main/cayenne</developerConnection>
+		<url>http://svn.apache.org/viewvc/incubator/cayenne/main/trunk/cayenne</url>
+	</scm>
+	
+	<organization>
+		<name>Apache Software Foundation</name>
+		<url>http://www.apache.org/</url>
+	</organization>
+	
+	<inceptionYear>2001</inceptionYear>
+	<description>Cayenne Object Persistence Framework</description>
+	<url>http://incubator.apache.org/cayenne/</url>
+	<issueManagement>
+		<system>JIRA</system>
+		<url>http://issues.apache.org/cayenne/</url>
+	</issueManagement>
+	
+	<mailingLists>
+		<mailingList>
+			<name>Cayenne Users and Developers</name>
+			<subscribe>http://incubator.apache.org/cayenne/lists.html</subscribe>
+			<unsubscribe>http://incubator.apache.org/cayenne/lists.html</unsubscribe>
+			<archive>http://incubator.apache.org/cayenne/lists.html</archive>
+		</mailingList>
+	</mailingLists>
+</project>

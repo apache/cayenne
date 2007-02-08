@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+
+<!-- ================================================= -->
+<!--  Parser Build Tasks                               -->
+<!-- ================================================= -->
+<project>
+	
+	<target name="javacc" depends="javacc-nodir,javacc-nogrammar">
+		<java fork="true" classname="javacc" failonerror="true">
+			<classpath refid="classpath-javacc"/>
+			<arg value="-OUTPUT_DIRECTORY:${parser.dir}"/>
+			<arg value="${parser.dir}/${parser.base}.jj"/>
+		</java>
+	</target>
+	
+	<target name="jjtree" depends="javacc-nodir,javacc-nogrammar,jjtree-uptodate"
+		unless="jj.uptodate">
+		<java fork="true" classname="jjtree" failonerror="true">
+			<classpath refid="classpath-javacc"/>
+			<arg value="-OUTPUT_DIRECTORY:${parser.dir}"/>
+			<arg value="${parser.dir}/${parser.base}.jjt"/>
+		</java>
+		
+		<java fork="true" classname="javacc" failonerror="true">
+			<classpath refid="classpath-javacc"/>
+			<arg value="-OUTPUT_DIRECTORY:${parser.dir}"/>
+			<arg value="${parser.dir}/${parser.base}.jj"/>
+		</java>
+	</target>
+	
+	<target name="jjdoc"
+		depends="jjtree,javacc-nodir,javacc-nogrammar,jjdoc-uptodate"
+		unless="jjdoc.uptodate">
+		<!-- this property may be reset by the caller. -->
+		<property name="parser.doc.dir" value="${parser.dir}"/>
+		<java fork="true" classname="jjdoc" failonerror="true">
+			<classpath refid="classpath-javacc"/>
+			<arg value="-OUTPUT_FILE:${parser.doc.dir}/${parser.base}.html"/>
+			<arg value="${parser.dir}/${parser.base}.jj"/>
+		</java>
+	</target>
+	
+	<target name="jjtree-uptodate" depends="javacc-nodir,javacc-nogrammar">
+		<uptodate property="jj.uptodate"
+			targetfile="${parser.dir}/${parser.base}.jj"
+			srcfile="${parser.dir}/${parser.base}.jjt"/>
+	</target>
+	
+	<target name="jjdoc-uptodate" depends="javacc-nodir,javacc-nogrammar">
+		<uptodate property="jjdoc.uptodate"
+			targetfile="${parser.doc.dir}/${parser.base}.html"
+			srcfile="${parser.dir}/${parser.base}.jj"/>
+	</target>
+	
+	<target name="javacc-nodir" unless="parser.dir">
+		<fail>"parser.dir" is undefined.</fail>
+	</target>
+	
+	<target name="javacc-nogrammar" unless="parser.base">
+		<fail>"parser.base" is undefined.</fail>
+	</target>
+	
+</project>
