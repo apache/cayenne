@@ -12,6 +12,8 @@
 	<procedure name="cayenne_tst_upd_proc">
 		<procedure-parameter name="paintingPrice" type="INTEGER" direction="in"/>
 	</procedure>
+	<procedure name="cayenne_tst_upd_proc2">
+	</procedure>
 	<db-entity name="ARRAYS_ENTITY">
 		<db-attribute name="BYTE_ARRAY" type="VARBINARY" length="200"/>
 		<db-attribute name="BYTE_WRAPPER_ARRAY" type="VARBINARY" length="200"/>
