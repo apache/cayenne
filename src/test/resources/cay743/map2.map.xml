@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="2.0">
+	<obj-entity name="Entity21" superEntityName="Entity11">
+		<qualifier><![CDATA[b != 3]]></qualifier>
+	</obj-entity>
+	<obj-entity name="Entity22">
+	</obj-entity>
+</data-map>
