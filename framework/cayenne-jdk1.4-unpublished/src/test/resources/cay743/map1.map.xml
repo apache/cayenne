@@ -3,6 +3,5 @@
 	<obj-entity name="Entity11">
 	</obj-entity>
 	<obj-entity name="Entity12" superEntityName="Entity22">
-		<qualifier><![CDATA[a != 3]]></qualifier>
 	</obj-entity>
 </data-map>
