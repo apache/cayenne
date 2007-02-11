@@ -119,9 +119,18 @@ abstract class DataDomainSyncBucket {
             // databases...
             Iterator j = descriptor.getEntity().getAttributeMap().values().iterator();
             while (j.hasNext()) {
-                ObjAttribute objAttribute = (ObjAttribute) j.next();
-                if (!objAttribute.isCompound())
+                Object next = j.next();
+
+                // TODO: andrus, 2/10/2007 - handle embedded
+                if (!(next instanceof ObjAttribute)) {
                     continue;
+                }
+
+                ObjAttribute objAttribute = (ObjAttribute) next;
+                if (!objAttribute.isCompound()) {
+                    continue;
+                }
+
                 dbEntity = (DbEntity) objAttribute.getDbAttribute().getEntity();
                 objEntitiesForDbEntity = (List) descriptorsByDbEntity.get(dbEntity);
 

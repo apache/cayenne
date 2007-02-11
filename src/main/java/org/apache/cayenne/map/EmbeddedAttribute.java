@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -97,6 +98,79 @@ public class EmbeddedAttribute extends Attribute {
         return getNonNullNamespace().getEmbeddable(type);
     }
 
+    private ObjAttribute makeObjAttribute(EmbeddableAttribute embeddableAttribute) {
+        String dbPath = (String) attributeOverrides.get(embeddableAttribute.getName());
+        if (dbPath == null) {
+            dbPath = embeddableAttribute.getDbAttributeName();
+        }
+
+        return makeObjAttribute(embeddableAttribute, dbPath);
+    }
+
+    private ObjAttribute makeObjAttribute(
+            EmbeddableAttribute embeddableAttribute,
+            String dbPath) {
+        String fullName = getName() + "." + embeddableAttribute.getName();
+
+        ObjAttribute oa = new ObjAttribute(
+                fullName,
+                embeddableAttribute.getType(),
+                (ObjEntity) getEntity());
+        oa.setDbAttributeName(dbPath);
+        return oa;
+    }
+
+    /**
+     * Returns an ObjAttribute that maps to a given {@link DbAttribute}, or returns null
+     * if no such attribute exists.
+     */
+    public ObjAttribute getAttributeForDbPath(String dbPath) {
+
+        Embeddable e = getEmbeddable();
+        if (e == null) {
+            return null;
+        }
+
+        EmbeddableAttribute ea = null;
+
+        Iterator overrides = attributeOverrides.entrySet().iterator();
+        while (overrides.hasNext()) {
+            Map.Entry override = (Map.Entry) overrides.next();
+            if (dbPath.equals(override.getValue())) {
+                ea = e.getAttribute(override.getKey().toString());
+                break;
+            }
+        }
+
+        if (ea == null) {
+            ea = e.getAttributeForDbPath(dbPath);
+        }
+
+        if (ea != null) {
+            return makeObjAttribute(ea, dbPath);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns an ObjAttribute for a given name, taking into account column name
+     * overrides.
+     */
+    public ObjAttribute getAttribute(String name) {
+        Embeddable e = getEmbeddable();
+        if (e == null) {
+            return null;
+        }
+
+        EmbeddableAttribute ea = e.getAttribute(name);
+        if (ea == null) {
+            return null;
+        }
+
+        return makeObjAttribute(ea);
+    }
+
     /**
      * Returns a Collection of ObjAttributes of an embedded object taking into account
      * column name overrides.
@@ -112,15 +186,7 @@ public class EmbeddedAttribute extends Attribute {
         Iterator it = embeddableAttributes.iterator();
         while (it.hasNext()) {
             EmbeddableAttribute ea = (EmbeddableAttribute) it.next();
-            String path = getName() + "." + ea.getName();
-            String dbPath = (String) attributeOverrides.get(ea.getName());
-            if (dbPath == null) {
-                dbPath = ea.getDbAttributeName();
-            }
-
-            ObjAttribute oa = new ObjAttribute(path, getType(), (ObjEntity) getEntity());
-            oa.setDbAttributeName(dbPath);
-            objectAttributes.add(oa);
+            objectAttributes.add(makeObjAttribute(ea));
         }
 
         return objectAttributes;
@@ -139,6 +205,26 @@ public class EmbeddedAttribute extends Attribute {
      */
     public String getType() {
         return type;
+    }
+
+    /**
+     * Returns Java class of an object property described by this attribute. Wraps any
+     * thrown exceptions into CayenneRuntimeException.
+     */
+    public Class getJavaClass() {
+        if (this.getType() == null) {
+            return null;
+        }
+
+        try {
+            return Util.getJavaClass(getType());
+        }
+        catch (ClassNotFoundException e) {
+            throw new CayenneRuntimeException("Failed to load class for name '"
+                    + this.getType()
+                    + "': "
+                    + e.getMessage(), e);
+        }
     }
 
     /**

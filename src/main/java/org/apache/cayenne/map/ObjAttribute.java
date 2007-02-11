@@ -62,7 +62,6 @@ public class ObjAttribute extends Attribute {
         }
 
         try {
-            // tolerate null class loader
             return Util.getJavaClass(getType());
         }
         catch (ClassNotFoundException e) {
