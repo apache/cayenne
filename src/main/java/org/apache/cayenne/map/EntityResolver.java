@@ -413,6 +413,20 @@ public class EntityResolver implements MappingNamespace, Serializable {
         clearCache();
 
         // rebuild index
+
+        // index DbEntities separatly and before ObjEntities to avoid infinite loops when
+        // looking up DbEntities during ObjEntity index op
+        Iterator mapIterator0 = maps.iterator();
+        while (mapIterator0.hasNext()) {
+            DataMap map = (DataMap) mapIterator0.next();
+
+            Iterator dbEntities = map.getDbEntities().iterator();
+            while (dbEntities.hasNext()) {
+                DbEntity de = (DbEntity) dbEntities.next();
+                dbEntityCache.put(de.getName(), de);
+            }
+        }
+
         Iterator mapIterator1 = maps.iterator();
         while (mapIterator1.hasNext()) {
             DataMap map = (DataMap) mapIterator1.next();
@@ -452,11 +466,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
                         objEntityCache.put(entityClass, oe);
                     }
 
-                    // TODO: Andrus, 12/13/2005 - An invalid DbEntity name will cause
-                    // 'getDbEntity' to go into an
-                    // infinite loop as "getDbEntity" will try to resolve DbEntity via a
-                    // parent namespace (which will be this resolver).
-                    if (oe.getDbEntity() != null) {
+                    // lookup DbEntity in EntityResolver cache to take into account all
+                    // DataMaps in the namespace
+                    Object dbEntity = dbEntityCache.get(oe.getDbEntityName());
+                    if (dbEntity != null) {
                         Object existingDB = dbEntityCache.get(entityClass);
                         if (existingDB != null) {
 
@@ -465,17 +478,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
                             }
                         }
                         else {
-                            dbEntityCache.put(entityClass, oe.getDbEntity());
+                            dbEntityCache.put(entityClass, dbEntity);
                         }
                     }
                 }
-            }
-
-            // index DbEntities
-            Iterator dbEntities = map.getDbEntities().iterator();
-            while (dbEntities.hasNext()) {
-                DbEntity de = (DbEntity) dbEntities.next();
-                dbEntityCache.put(de.getName(), de);
             }
 
             // index stored procedures
