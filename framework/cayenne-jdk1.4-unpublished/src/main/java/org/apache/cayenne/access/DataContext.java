@@ -540,7 +540,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.1
      */
-    public DataRow currentSnapshot(Persistent object) {
+    public DataRow currentSnapshot(final Persistent object) {
 
         // for a HOLLOW object return snapshot from cache
         if (object.getPersistenceState() == PersistenceState.HOLLOW
@@ -549,81 +549,82 @@ public class DataContext extends BaseContext implements DataChannel {
             return getObjectStore().getSnapshot(object.getObjectId());
         }
 
-        // TODO: andrus, 10/10/2006 - use descriptor visitor instead of entity attribute
-        // iterator
-
         ObjEntity entity = getEntityResolver().lookupObjEntity(object);
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
+        final ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
                 entity.getName());
-        DataRow snapshot = new DataRow(10);
+        final DataRow snapshot = new DataRow(10);
 
-        Iterator attributes = entity.getAttributeMap().entrySet().iterator();
-        while (attributes.hasNext()) {
-            Map.Entry entry = (Map.Entry) attributes.next();
-            String attrName = (String) entry.getKey();
-            ObjAttribute objAttr = (ObjAttribute) entry.getValue();
+        descriptor.visitProperties(new PropertyVisitor() {
 
-            // processing compound attributes correctly
-            snapshot.put(objAttr.getDbAttributePath(), descriptor
-                    .getProperty(attrName)
-                    .readPropertyDirectly(object));
-        }
+            public boolean visitAttribute(AttributeProperty property) {
+                ObjAttribute objAttr = property.getAttribute();
 
-        Iterator relationships = entity.getRelationshipMap().entrySet().iterator();
-        while (relationships.hasNext()) {
-            Map.Entry entry = (Map.Entry) relationships.next();
-            ObjRelationship rel = (ObjRelationship) entry.getValue();
-
-            // if target doesn't propagates its key value, skip it
-            if (rel.isSourceIndependentFromTargetChange()) {
-                continue;
+                // processing compound attributes correctly
+                snapshot.put(objAttr.getDbAttributePath(), property
+                        .readPropertyDirectly(object));
+                return true;
             }
 
-            Object targetObject = descriptor
-                    .getProperty(rel.getName())
-                    .readPropertyDirectly(object);
-            if (targetObject == null) {
-                continue;
+            public boolean visitToMany(ToManyProperty property) {
+                // do nothing
+                return true;
             }
 
-            // if target is Fault, get id attributes from stored snapshot
-            // to avoid unneeded fault triggering
-            if (targetObject instanceof Fault) {
-                DataRow storedSnapshot = getObjectStore().getSnapshot(
-                        object.getObjectId());
-                if (storedSnapshot == null) {
-                    throw new CayenneRuntimeException(
-                            "No matching objects found for ObjectId "
-                                    + object.getObjectId()
-                                    + ". Object may have been deleted externally.");
+            public boolean visitToOne(ToOneProperty property) {
+                ObjRelationship rel = property.getRelationship();
+
+                // if target doesn't propagates its key value, skip it
+                if (rel.isSourceIndependentFromTargetChange()) {
+                    return true;
+                }
+
+                Object targetObject = property.readPropertyDirectly(object);
+                if (targetObject == null) {
+                    return true;
+                }
+
+                // if target is Fault, get id attributes from stored snapshot
+                // to avoid unneeded fault triggering
+                if (targetObject instanceof Fault) {
+                    DataRow storedSnapshot = getObjectStore().getSnapshot(
+                            object.getObjectId());
+                    if (storedSnapshot == null) {
+                        throw new CayenneRuntimeException(
+                                "No matching objects found for ObjectId "
+                                        + object.getObjectId()
+                                        + ". Object may have been deleted externally.");
+                    }
+
+                    DbRelationship dbRel = (DbRelationship) rel.getDbRelationships().get(
+                            0);
+                    Iterator joins = dbRel.getJoins().iterator();
+                    while (joins.hasNext()) {
+                        DbJoin join = (DbJoin) joins.next();
+                        String key = join.getSourceName();
+                        snapshot.put(key, storedSnapshot.get(key));
+                    }
+
+                    return true;
+                }
+
+                // target is resolved and we have an FK->PK to it,
+                // so extract it from target...
+                Persistent target = (Persistent) targetObject;
+                Map idParts = target.getObjectId().getIdSnapshot();
+
+                // this may happen in uncommitted objects - see the warning in the JavaDoc
+                // of
+                // this method.
+                if (idParts.isEmpty()) {
+                    return true;
                 }
 
                 DbRelationship dbRel = (DbRelationship) rel.getDbRelationships().get(0);
-                Iterator joins = dbRel.getJoins().iterator();
-                while (joins.hasNext()) {
-                    DbJoin join = (DbJoin) joins.next();
-                    String key = join.getSourceName();
-                    snapshot.put(key, storedSnapshot.get(key));
-                }
-
-                continue;
+                Map fk = dbRel.srcFkSnapshotWithTargetSnapshot(idParts);
+                snapshot.putAll(fk);
+                return true;
             }
-
-            // target is resolved and we have an FK->PK to it,
-            // so extract it from target...
-            Persistent target = (Persistent) targetObject;
-            Map idParts = target.getObjectId().getIdSnapshot();
-
-            // this may happen in uncommitted objects - see the warning in the JavaDoc of
-            // this method.
-            if (idParts.isEmpty()) {
-                continue;
-            }
-
-            DbRelationship dbRel = (DbRelationship) rel.getDbRelationships().get(0);
-            Map fk = dbRel.srcFkSnapshotWithTargetSnapshot(idParts);
-            snapshot.putAll(fk);
-        }
+        });
 
         // process object id map
         // we should ignore any object id values if a corresponding attribute

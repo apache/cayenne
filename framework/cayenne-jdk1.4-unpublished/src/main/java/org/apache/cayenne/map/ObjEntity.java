@@ -277,7 +277,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
             }
         }
     }
-    
+
     /**
      * @since 3.0
      */
@@ -289,7 +289,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
                 return next;
             }
         }
-        
+
         return null;
     }
 
@@ -607,6 +607,16 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
             return attribute;
         }
 
+        // check embedded attribute
+        int dot = name.indexOf('.');
+        if (dot > 0 && dot < name.length() - 1) {
+            Attribute embedded = getAttribute(name.substring(0, dot));
+            if (embedded instanceof EmbeddedAttribute) {
+                return ((EmbeddedAttribute) embedded).getAttribute(name
+                        .substring(dot + 1));
+            }
+        }
+
         if (superEntityName == null) {
             return null;
         }
@@ -726,13 +736,25 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * parameter. Returns null if no such attribute is found.
      */
     public ObjAttribute getAttributeForDbAttribute(DbAttribute dbAttribute) {
-        Iterator it = getAttributeMap().entrySet().iterator();
+        Iterator it = getAttributeMap().values().iterator();
         while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            ObjAttribute objAttr = (ObjAttribute) entry.getValue();
-            if (objAttr.getDbAttribute() == dbAttribute)
-                return objAttr;
+            Object next = it.next();
+
+            if (next instanceof EmbeddedAttribute) {
+                ObjAttribute embeddedAttribute = ((EmbeddedAttribute) next)
+                        .getAttributeForDbPath(dbAttribute.getName());
+                if (embeddedAttribute != null) {
+                    return embeddedAttribute;
+                }
+            }
+            else {
+                ObjAttribute objAttr = (ObjAttribute) next;
+                if (objAttr.getDbAttribute() == dbAttribute) {
+                    return objAttr;
+                }
+            }
         }
+
         return null;
     }
 

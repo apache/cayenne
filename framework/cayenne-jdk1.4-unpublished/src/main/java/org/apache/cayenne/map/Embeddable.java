@@ -21,6 +21,7 @@ package org.apache.cayenne.map;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -48,6 +49,22 @@ public class Embeddable implements XMLSerializable, Serializable {
     public Embeddable(String className) {
         this.attributes = new TreeMap();
         this.className = className;
+    }
+
+    /**
+     * Returns EmbeddableAttribute of this Embeddable that maps to
+     * <code>dbAttribute</code> parameter. Returns null if no such attribute is found.
+     */
+    public EmbeddableAttribute getAttributeForDbPath(String dbPath) {
+        Iterator it = attributes.values().iterator();
+        while (it.hasNext()) {
+            EmbeddableAttribute attribute = (EmbeddableAttribute) it.next();
+            if (dbPath.equals(attribute.getDbAttributeName())) {
+                return attribute;
+            }
+        }
+        
+        return null;
     }
 
     /**
@@ -93,11 +110,11 @@ public class Embeddable implements XMLSerializable, Serializable {
         attributes.put(attribute.getName(), attribute);
         attribute.setEmbeddable(this);
     }
-    
+
     public EmbeddableAttribute getAttribute(String name) {
         return (EmbeddableAttribute) attributes.get(name);
     }
-    
+
     public void removeAttribute(String name) {
         attributes.remove(name);
     }

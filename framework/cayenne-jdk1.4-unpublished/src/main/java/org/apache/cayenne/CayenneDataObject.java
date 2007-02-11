@@ -522,7 +522,14 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
 
         Iterator attributes = objEntity.getAttributes().iterator();
         while (attributes.hasNext()) {
-            ObjAttribute objAttribute = (ObjAttribute) attributes.next();
+            Object next = attributes.next();
+            
+            // TODO: andrus, 2/20/2007 - handle embedded attribute
+            if(!(next instanceof ObjAttribute)) {
+                continue;
+            }
+            
+            ObjAttribute objAttribute = (ObjAttribute) next;
             DbAttribute dbAttribute = objAttribute.getDbAttribute();
             
             // pk may still be generated

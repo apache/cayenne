@@ -79,8 +79,10 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 EmbeddedAttribute embedded = (EmbeddedAttribute) attribute;
                 Iterator embeddedAttributes = embedded.getAttributes().iterator();
                 while (embeddedAttributes.hasNext()) {
-                    createAttributeProperty(descriptor, (ObjAttribute) embeddedAttributes
-                            .next());
+                    createEmbeddedAttributeProperty(
+                            descriptor,
+                            embedded,
+                            (ObjAttribute) embeddedAttributes.next());
                 }
             }
         }
@@ -121,6 +123,38 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 attribute));
     }
 
+    protected void createEmbeddedAttributeProperty(
+            PersistentDescriptor descriptor,
+            EmbeddedAttribute embeddedAttribute,
+            ObjAttribute attribute) {
+
+        Class embeddableClass = embeddedAttribute.getJavaClass();
+
+        String propertyPath = attribute.getName();
+        int lastDot = propertyPath.lastIndexOf('.');
+        if (lastDot <= 0 || lastDot == propertyPath.length() - 1) {
+            throw new IllegalArgumentException("Invalid embeddable path: " + propertyPath);
+        }
+
+        String embeddableName = propertyPath.substring(lastDot + 1);
+
+        Accessor embeddedAccessor = createAccessor(descriptor, embeddedAttribute
+                .getName(), embeddableClass);
+        Accessor embeddedableAccessor = createEmbeddableAccessor(
+                embeddableClass,
+                embeddableName,
+                attribute.getJavaClass());
+
+        Accessor accessor = new EmbeddedFieldAccessor(
+                embeddableClass,
+                embeddedAccessor,
+                embeddedableAccessor);
+        descriptor.addDeclaredProperty(new SimpleAttributeProperty(
+                descriptor,
+                accessor,
+                attribute));
+    }
+
     protected abstract void createToOneProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship);
@@ -155,5 +189,15 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             String propertyName,
             Class propertyType) throws PropertyException {
         return new FieldAccessor(descriptor.getObjectClass(), propertyName, propertyType);
+    }
+
+    /**
+     * Creates an accessor for the property of the embeddable class.
+     */
+    protected Accessor createEmbeddableAccessor(
+            Class embeddableClass,
+            String propertyName,
+            Class propertyType) {
+        return new FieldAccessor(embeddableClass, propertyName, propertyType);
     }
 }
