@@ -20,15 +20,16 @@ package org.apache.cayenne.unit.jira;
 
 import java.io.InputStream;
 
+import junit.framework.TestCase;
+
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.conf.DefaultConfiguration;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.unit.BasicCase;
 
-public class CAY_743Test extends BasicCase {
+public class CAY_743Test extends TestCase {
 
-    public void _testLoad2MapsWithCrossMapInheritance() throws Exception {
+    public void testLoad2MapsWithCrossMapInheritance() throws Exception {
 
         DefaultConfiguration config = new DefaultConfiguration() {
 
