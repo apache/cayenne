@@ -19,6 +19,7 @@
 package org.apache.cayenne.jpa.itest.ch5;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TransactionRequiredException;
 import javax.transaction.TransactionManager;
 
 import org.apache.cayenne.itest.OpenEJBContainer;
@@ -49,29 +50,26 @@ public class _5_5_1_JtaEntityManagerTest extends JpaTestCase {
 
     public void testPersistTransactionRequiredException() throws Exception {
 
-        // TODO: andrus, 2/7/2007 - uncomment once
-        // https://issues.apache.org/jira/browse/GERONIMO-2809 is fixed and we can test
-        // transactional behavior
-        // EntityManager entityManager = ItestSetup
-        // .getInstance()
-        // .createContainerManagedEntityManager();
-        //
-        // SimpleEntity e = new SimpleEntity();
-        // e.setProperty1("XXX");
-        //
-        // assertFalse(OpenEJBContainer.getContainer().isActiveTransaction());
-        //
-        // // throws TransactionRequiredException if invoked on a
-        // // container-managed entity manager of type
-        // // PersistenceContextType.TRANSACTION and there is
-        // // no transaction.
-        //
-        // try {
-        // entityManager.persist(e);
-        // fail("TransactionRequiredException wasn't thrown");
-        // }
-        // catch (TransactionRequiredException ex) {
-        // // expected
-        // }
+        EntityManager entityManager = ItestSetup
+                .getInstance()
+                .createContainerManagedEntityManager();
+
+        SimpleEntity e = new SimpleEntity();
+        e.setProperty1("XXX");
+
+        assertFalse(OpenEJBContainer.getContainer().isActiveTransaction());
+
+        // throws TransactionRequiredException if invoked on a
+        // container-managed entity manager of type
+        // PersistenceContextType.TRANSACTION and there is
+        // no transaction.
+
+        try {
+            entityManager.persist(e);
+            fail("TransactionRequiredException wasn't thrown");
+        }
+        catch (TransactionRequiredException ex) {
+            // expected
+        }
     }
 }
