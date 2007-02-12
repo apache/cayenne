@@ -18,11 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.itest.jpa;
 
-import java.util.Properties;
+import junit.framework.TestCase;
 
 import org.apache.cayenne.itest.ItestDBUtils;
-
-import junit.framework.TestCase;
 
 /**
  * Abstract test case that bootstraps default JPA unit called "itest" and a schema script
@@ -31,11 +29,6 @@ import junit.framework.TestCase;
  * @author Andrus Adamchik
  */
 public abstract class JpaTestCase extends TestCase {
-
-    static {
-        Properties properties = new Properties();
-        ItestSetup.initInstance(properties);
-    }
 
     protected ItestDBUtils getDbHelper() {
         return ItestSetup.getInstance().getDbHelper();

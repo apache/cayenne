@@ -28,8 +28,6 @@ import javax.persistence.Persistence;
 import javax.sql.DataSource;
 import javax.transaction.TransactionSynchronizationRegistry;
 
-import junit.framework.Assert;
-
 import org.apache.cayenne.itest.ItestDBUtils;
 import org.apache.cayenne.itest.OpenEJBContainer;
 import org.apache.openejb.persistence.JtaEntityManager;
@@ -43,7 +41,7 @@ public class ItestSetup {
     public static final String JPA_UNIT_NAME = "itest.jpa.unit";
     public static final String DEFAULT_UNIT_NAME = "itest";
 
-    private static ItestSetup sharedInstance;
+    private static Map<String, ItestSetup> testManagers;
 
     protected EntityManagerFactory sharedFactory;
     protected ItestDataSourceManager dataSourceManager;
@@ -51,7 +49,7 @@ public class ItestSetup {
     protected ItestDBUtils dbHelper;
     protected JtaEntityManagerRegistry openEJBEMRegistry;
 
-    public static void initInstance(Properties properties) {
+    private static ItestSetup createInstance(Properties properties) {
         String schemaScript = properties.getProperty(SCHEMA_SCRIPT_URL);
         if (schemaScript == null) {
             schemaScript = DEFAULT_SCHEMA_SCRIPT;
@@ -62,15 +60,30 @@ public class ItestSetup {
             jpaUnit = DEFAULT_UNIT_NAME;
         }
 
-        sharedInstance = new ItestSetup(schemaScript, jpaUnit);
+        return new ItestSetup(schemaScript, jpaUnit);
     }
 
-    public static ItestSetup getInstance() {
-        Assert.assertNotNull(
-                "Null shared instance, call 'initInstance' first",
-                sharedInstance);
+    public static ItestSetup getInstance(String unitName) {
+        if (testManagers == null) {
+            testManagers = new HashMap<String, ItestSetup>();
+        }
 
-        return sharedInstance;
+        ItestSetup instance = testManagers.get(unitName);
+        if (instance == null) {
+            Properties props = new Properties();
+            props.put(JPA_UNIT_NAME, unitName);
+            instance = createInstance(props);
+            testManagers.put(unitName, instance);
+        }
+
+        return instance;
+    }
+
+    /**
+     * Returns a shared instance for the default test JPA unit called "itest".
+     */
+    public static ItestSetup getInstance() {
+        return getInstance(DEFAULT_UNIT_NAME);
     }
 
     protected ItestSetup(String schemaScriptUrl, String jpaUnit) {
