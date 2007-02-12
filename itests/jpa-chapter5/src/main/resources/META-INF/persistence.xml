@@ -23,4 +23,9 @@
 		<description>Integration test peristence unit #5.</description>
 		<class>org.apache.cayenne.jpa.itest.ch5.entity.SimpleEntity</class>
 	</persistence-unit>
+	
+	<persistence-unit name="itest-non-jta" transaction-type="RESOURCE_LOCAL">
+		<description>Integration test peristence unit #5 - resource local unit.</description>
+		<class>org.apache.cayenne.jpa.itest.ch5.entity.RLEntity1</class>
+	</persistence-unit>
 </persistence>
