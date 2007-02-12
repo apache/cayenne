@@ -51,7 +51,7 @@ import org.apache.cayenne.jpa.conf.JpaUnitFactory;
 import org.apache.cayenne.jpa.conf.UnitLoader;
 import org.apache.cayenne.jpa.enhancer.JpaEnhancerVisitorFactory;
 import org.apache.cayenne.jpa.instrument.InstrumentingUnitFactory;
-import org.apache.cayenne.jpa.instrument.UnitClassTranformer;
+import org.apache.cayenne.jpa.instrument.UnitClassTransformer;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
 import org.apache.cayenne.jpa.reflect.JpaClassDescriptorFactory;
 import org.apache.cayenne.map.DataMap;
@@ -243,7 +243,7 @@ public class Provider implements PersistenceProvider {
                     .getEntityMap()
                     .getMangedClasses();
 
-            unit.addTransformer(new UnitClassTranformer(managedClasses, new Enhancer(
+            unit.addTransformer(new UnitClassTransformer(managedClasses, new Enhancer(
                     new JpaEnhancerVisitorFactory(managedClasses))));
 
             DataMapConverter converter = new DataMapConverter();

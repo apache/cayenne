@@ -36,13 +36,13 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Andrus Adamchik
  */
-public class UnitClassTranformer implements ClassTransformer {
+public class UnitClassTransformer implements ClassTransformer {
 
     protected Log logger;
     protected ClassFileTransformer transformer;
     protected Map<String, JpaClassDescriptor> managedClasses;
 
-    public UnitClassTranformer(Map<String, JpaClassDescriptor> managedClasses,
+    public UnitClassTransformer(Map<String, JpaClassDescriptor> managedClasses,
             ClassFileTransformer transformer) {
         this.transformer = transformer;
         this.managedClasses = managedClasses;
