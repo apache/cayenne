@@ -47,14 +47,12 @@ import org.apache.cayenne.jpa.map.JpaQueryHint;
 import org.apache.cayenne.jpa.map.JpaRelationship;
 import org.apache.cayenne.jpa.map.JpaTable;
 import org.apache.cayenne.jpa.map.JpaVersion;
-import org.apache.cayenne.map.CallbackMethod;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityListener;
-import org.apache.cayenne.map.LifecycleEventCallback;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -127,78 +125,40 @@ public class DataMapConverter {
         EntityListener listener = new EntityListener(jpaListener.getClassName());
 
         if (jpaListener.getPostLoad() != null) {
-            CallbackMethod method = makeCallback(listener, jpaListener
-                    .getPostLoad()
-                    .getMethodName());
-            if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_LOAD)) {
-                method.addCallbackEvent(LifecycleEventCallback.POST_LOAD);
-            }
+            listener.getCallbackMap().getPostLoad().addCallbackMethod(
+                    jpaListener.getPostLoad().getMethodName());
         }
 
         if (jpaListener.getPostPersist() != null) {
-            CallbackMethod method = makeCallback(listener, jpaListener
-                    .getPostPersist()
-                    .getMethodName());
-            if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_PERSIST)) {
-                method.addCallbackEvent(LifecycleEventCallback.POST_PERSIST);
-            }
+            listener.getCallbackMap().getPostPersist().addCallbackMethod(
+                    jpaListener.getPostPersist().getMethodName());
         }
 
         if (jpaListener.getPostRemove() != null) {
-            CallbackMethod method = makeCallback(listener, jpaListener
-                    .getPostRemove()
-                    .getMethodName());
-            if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_REMOVE)) {
-                method.addCallbackEvent(LifecycleEventCallback.POST_REMOVE);
-            }
+            listener.getCallbackMap().getPostRemove().addCallbackMethod(
+                    jpaListener.getPostRemove().getMethodName());
         }
 
         if (jpaListener.getPostUpdate() != null) {
-            CallbackMethod method = makeCallback(listener, jpaListener
-                    .getPostUpdate()
-                    .getMethodName());
-            if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_UPDATE)) {
-                method.addCallbackEvent(LifecycleEventCallback.POST_UPDATE);
-            }
+            listener.getCallbackMap().getPostUpdate().addCallbackMethod(
+                    jpaListener.getPostUpdate().getMethodName());
         }
 
         if (jpaListener.getPrePersist() != null) {
-            CallbackMethod method = makeCallback(listener, jpaListener
-                    .getPrePersist()
-                    .getMethodName());
-            if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_PERSIST)) {
-                method.addCallbackEvent(LifecycleEventCallback.PRE_PERSIST);
-            }
+            listener.getCallbackMap().getPrePersist().addCallbackMethod(
+                    jpaListener.getPrePersist().getMethodName());
         }
 
         if (jpaListener.getPreRemove() != null) {
-            CallbackMethod method = makeCallback(listener, jpaListener
-                    .getPreRemove()
-                    .getMethodName());
-            if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_REMOVE)) {
-                method.addCallbackEvent(LifecycleEventCallback.PRE_REMOVE);
-            }
+            listener.getCallbackMap().getPreRemove().addCallbackMethod(
+                    jpaListener.getPreRemove().getMethodName());
         }
 
         if (jpaListener.getPreUpdate() != null) {
-            CallbackMethod method = makeCallback(listener, jpaListener
-                    .getPreUpdate()
-                    .getMethodName());
-            if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_UPDATE)) {
-                method.addCallbackEvent(LifecycleEventCallback.PRE_UPDATE);
-            }
+            listener.getCallbackMap().getPreUpdate().addCallbackMethod(
+                    jpaListener.getPreUpdate().getMethodName());
         }
         return listener;
-    }
-
-    private CallbackMethod makeCallback(EntityListener listener, String name) {
-        CallbackMethod callback = listener.getCallbackMethod(name);
-        if (callback == null) {
-            callback = new CallbackMethod(name);
-            listener.addCallbackMethod(callback);
-        }
-
-        return callback;
     }
 
     class JpaDefaultEntityListenerVisitor extends BaseTreeVisitor {
@@ -549,77 +509,39 @@ public class DataMapConverter {
 
         private void initCallbacks(JpaEntity jpaEntity, ObjEntity cayenneEntity) {
             if (jpaEntity.getPostLoad() != null) {
-                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
-                        .getPostLoad()
-                        .getMethodName());
-                if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_LOAD)) {
-                    method.addCallbackEvent(LifecycleEventCallback.POST_LOAD);
-                }
+                cayenneEntity.getCallbackMap().getPostLoad().addCallbackMethod(
+                        jpaEntity.getPostLoad().getMethodName());
             }
 
             if (jpaEntity.getPostPersist() != null) {
-                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
-                        .getPostPersist()
-                        .getMethodName());
-                if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_PERSIST)) {
-                    method.addCallbackEvent(LifecycleEventCallback.POST_PERSIST);
-                }
+                cayenneEntity.getCallbackMap().getPostPersist().addCallbackMethod(
+                        jpaEntity.getPostPersist().getMethodName());
             }
 
             if (jpaEntity.getPostRemove() != null) {
-                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
-                        .getPostRemove()
-                        .getMethodName());
-                if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_REMOVE)) {
-                    method.addCallbackEvent(LifecycleEventCallback.POST_REMOVE);
-                }
+                cayenneEntity.getCallbackMap().getPostRemove().addCallbackMethod(
+                        jpaEntity.getPostRemove().getMethodName());
             }
 
             if (jpaEntity.getPostUpdate() != null) {
-                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
-                        .getPostUpdate()
-                        .getMethodName());
-                if (!method.supportsCallbackEvent(LifecycleEventCallback.POST_UPDATE)) {
-                    method.addCallbackEvent(LifecycleEventCallback.POST_UPDATE);
-                }
+                cayenneEntity.getCallbackMap().getPostUpdate().addCallbackMethod(
+                        jpaEntity.getPostUpdate().getMethodName());
             }
 
             if (jpaEntity.getPrePersist() != null) {
-                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
-                        .getPrePersist()
-                        .getMethodName());
-                if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_PERSIST)) {
-                    method.addCallbackEvent(LifecycleEventCallback.PRE_PERSIST);
-                }
+                cayenneEntity.getCallbackMap().getPrePersist().addCallbackMethod(
+                        jpaEntity.getPrePersist().getMethodName());
             }
 
             if (jpaEntity.getPreRemove() != null) {
-                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
-                        .getPreRemove()
-                        .getMethodName());
-                if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_REMOVE)) {
-                    method.addCallbackEvent(LifecycleEventCallback.PRE_REMOVE);
-                }
+                cayenneEntity.getCallbackMap().getPreRemove().addCallbackMethod(
+                        jpaEntity.getPreRemove().getMethodName());
             }
 
             if (jpaEntity.getPreUpdate() != null) {
-                CallbackMethod method = makeCallback(cayenneEntity, jpaEntity
-                        .getPreUpdate()
-                        .getMethodName());
-                if (!method.supportsCallbackEvent(LifecycleEventCallback.PRE_UPDATE)) {
-                    method.addCallbackEvent(LifecycleEventCallback.PRE_UPDATE);
-                }
+                cayenneEntity.getCallbackMap().getPreUpdate().addCallbackMethod(
+                        jpaEntity.getPreUpdate().getMethodName());
             }
-        }
-
-        private CallbackMethod makeCallback(ObjEntity entity, String name) {
-            CallbackMethod callback = entity.getCallbackMethod(name);
-            if (callback == null) {
-                callback = new CallbackMethod(name);
-                entity.addCallbackMethod(callback);
-            }
-
-            return callback;
         }
     }
 

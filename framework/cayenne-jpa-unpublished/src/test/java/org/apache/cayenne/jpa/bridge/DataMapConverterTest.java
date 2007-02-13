@@ -87,7 +87,9 @@ public class DataMapConverterTest extends TestCase {
         EntityListener cl1 = cayenneMap.getEntityListener("abc.C1");
         assertNotNull(cl1);
         assertEquals(l1.getClassName(), cl1.getClassName());
-        assertEquals(2, cl1.getCallbackMethods().size());
+        assertEquals(1, cl1.getCallbackMap().getPostLoad().getCallbackMethods().size());
+        assertEquals(1, cl1.getCallbackMap().getPreRemove().getCallbackMethods().size());
+        assertEquals(0, cl1.getCallbackMap().getPostPersist().getCallbackMethods().size());
     }
 
     public void testEntityCallbackMethods() {
@@ -106,7 +108,17 @@ public class DataMapConverterTest extends TestCase {
 
         ObjEntity entity = cayenneMap.getObjEntity("E1");
         assertNotNull(entity);
-        assertEquals(2, entity.getCallbackMethods().size());
+        assertEquals(1, entity.getCallbackMap().getPostLoad().getCallbackMethods().size());
+        assertEquals(1, entity
+                .getCallbackMap()
+                .getPreRemove()
+                .getCallbackMethods()
+                .size());
+        assertEquals(0, entity
+                .getCallbackMap()
+                .getPostPersist()
+                .getCallbackMethods()
+                .size());
     }
 
     public void testEntityListeners() {
@@ -137,17 +149,19 @@ public class DataMapConverterTest extends TestCase {
         listeners.getEntityListeners().add(l2);
 
         DataMap cayenneMap = new DataMapConverter().toDataMap("n1", context);
-        
+
         ObjEntity entity = cayenneMap.getObjEntity("E1");
         assertNotNull(entity);
-        
+
         Collection entityListeners = entity.getEntityListeners();
         assertEquals(2, entityListeners.size());
 
         EntityListener cl1 = entity.getEntityListener("abc.C1");
         assertNotNull(cl1);
         assertEquals(l1.getClassName(), cl1.getClassName());
-        assertEquals(2, cl1.getCallbackMethods().size());
+        assertEquals(1, cl1.getCallbackMap().getPostLoad().getCallbackMethods().size());
+        assertEquals(1, cl1.getCallbackMap().getPreRemove().getCallbackMethods().size());
+        assertEquals(0, cl1.getCallbackMap().getPostPersist().getCallbackMethods().size());
     }
 
     public void testDataMapDefaults() {
