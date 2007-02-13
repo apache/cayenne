@@ -162,7 +162,7 @@
 		<developerConnection>
 			scm:svn:https://@svn.apache.org/repos/asf/cayenne/main/trunk/cayenne
 		</developerConnection>
-		<url>http://svn.apache.org/repos/asf/cayenne/main/trunk/</url>
+		<url>http://svn.apache.org/viewvc/cayenne/main/trunk/</url>
 	</scm>
 
 	<organization>
