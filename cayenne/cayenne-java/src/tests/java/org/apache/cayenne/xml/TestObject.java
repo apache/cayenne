@@ -126,6 +126,10 @@ public class TestObject extends CayenneDataObject {
 
     public void decodeFromXML(XMLDecoder decoder) {
         
+        if (null != decoder.decodeObject("parent")) {
+            parent = (TestObject) decoder.decodeObject("parent");
+        }
+        
         if (null != decoder.decodeInteger("age")) {
             age = decoder.decodeInteger("age").intValue();
         }
@@ -134,11 +138,6 @@ public class TestObject extends CayenneDataObject {
             open = decoder.decodeBoolean("open").booleanValue();
         }
         
-        // "parent" must come first to fully test 1-to-1 relationships, per CAY-597.
-        if (null != decoder.decodeObject("parent")) {
-            parent = (TestObject) decoder.decodeObject("parent");
-        }
-
         name = decoder.decodeString("name");
         children = (List) decoder.decodeObject("children");
     }
