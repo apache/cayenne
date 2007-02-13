@@ -124,6 +124,61 @@ public class XMLEncoderTest extends TestCase {
         
         assertEquals(comp.toString(), result);
     }
+    
+    //  Added test for 1-to-1 relationship mappings, per CAY-597.
+    public void test1To1Mapping() throws Exception {
+        XMLEncoder encoder = new XMLEncoder(CayenneResources.getResourceURL(
+                XML_DATA_DIR + "1to1-mapping.xml").toExternalForm());
+        
+        TestObject grandParent = new TestObject();
+        grandParent.setAge(117);
+        grandParent.setName("Sue");
+        grandParent.setOpen(false);
+        
+        TestObject parent = new TestObject();
+        parent.setAge(94);
+        parent.setName("Bill");
+        parent.setOpen(true);
+        parent.setParent(grandParent);
+        
+        TestObject child = new TestObject();
+        child.setAge(57);
+        child.setName("George");
+        child.setOpen(false);
+        child.setParent(parent);
+        
+        String result = encoder.encode(child);
+
+        String comp = loadTestFileAsString("1to1-mapped.xml");
+        
+        assertEquals(comp.toString(), result);
+    }
+    
+    // Added test for 1-to-1 relationships, per CAY-597.
+    public void testEncode1To1() throws Exception {
+        TestObject grandParent = new TestObject();
+        grandParent.setAge(117);
+        grandParent.setName("Sue");
+        grandParent.setOpen(false);
+        
+        TestObject parent = new TestObject();
+        parent.setAge(94);
+        parent.setName("Bill");
+        parent.setOpen(true);
+        parent.setParent(grandParent);
+        
+        TestObject child = new TestObject();
+        child.setAge(57);
+        child.setName("George");
+        child.setOpen(false);
+        child.setParent(parent);
+        
+        String xml = new XMLEncoder().encode("Test", child);
+
+        String comp = loadTestFileAsString("1to1-encoded.xml");
+        
+        assertEquals(comp.toString(), xml);
+    }
 
     public void testCollectionMapping() throws Exception {
         XMLEncoder encoder = new XMLEncoder(CayenneResources.getResourceURL(

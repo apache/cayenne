@@ -82,6 +82,36 @@ public class XMLDecoderTest extends TestCase {
         TestObject george = new TestObject("George", 57, false);
         assertEquals(decoded, george);
     }
+    
+    //  Added test for 1-to-1 relationship mappings, per CAY-597.
+    public void testDecodeMapping1To1() throws Exception {
+        Reader xml = new InputStreamReader(CayenneResources.getResource(XML_DATA_DIR
+                + "1to1-mapped.xml"));
+        Object object = decoder.decode(xml, CayenneResources.getResourceURL(
+                XML_DATA_DIR + "1to1-mapping.xml").toExternalForm());
+        
+        assertTrue(object instanceof TestObject);
+        TestObject decoded = (TestObject) object;
+
+        TestObject grandParent = new TestObject();
+        grandParent.setAge(117);
+        grandParent.setName("Sue");
+        grandParent.setOpen(false);
+        
+        TestObject parent = new TestObject();
+        parent.setAge(94);
+        parent.setName("Bill");
+        parent.setOpen(true);
+        parent.setParent(grandParent);
+        
+        TestObject child = new TestObject();
+        child.setAge(57);
+        child.setName("George");
+        child.setOpen(false);
+        child.setParent(parent);
+        
+        assertEquals(decoded, child);
+    }
 
     public void testDecodeMappingCollection() throws Exception {
         Reader xml = new InputStreamReader(CayenneResources.getResource(XML_DATA_DIR
@@ -239,6 +269,35 @@ public class XMLDecoderTest extends TestCase {
         assertEquals("n1", test.getName());
         assertEquals(5, test.getAge());
         assertEquals(true, test.isOpen());
+    }
+    
+    //  Added test for 1-to-1 relationships, per CAY-597.
+    public void testDecode1To1() throws Exception {
+        Reader xml = new InputStreamReader(CayenneResources.getResource(XML_DATA_DIR
+                + "1to1-encoded.xml"));
+        Object object = decoder.decode(xml);
+        
+        assertTrue(object instanceof TestObject);
+        TestObject decoded = (TestObject) object;
+
+        TestObject grandParent = new TestObject();
+        grandParent.setAge(117);
+        grandParent.setName("Sue");
+        grandParent.setOpen(false);
+        
+        TestObject parent = new TestObject();
+        parent.setAge(94);
+        parent.setName("Bill");
+        parent.setOpen(true);
+        parent.setParent(grandParent);
+        
+        TestObject child = new TestObject();
+        child.setAge(57);
+        child.setName("George");
+        child.setOpen(false);
+        child.setParent(parent);
+        
+        assertEquals(decoded, child);
     }
 
     public void testDecodeDataObjectsList() throws Exception {

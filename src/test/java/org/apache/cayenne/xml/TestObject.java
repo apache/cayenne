@@ -35,6 +35,7 @@ public class TestObject extends CayenneDataObject {
     protected int age;
     protected boolean open;
     protected List children = new ArrayList();
+    protected TestObject parent = null;
 
     public TestObject() {
         this("", 0, false);
@@ -69,6 +70,14 @@ public class TestObject extends CayenneDataObject {
     public void setOpen(boolean open) {
         this.open = open;
     }
+    
+    public TestObject getParent() {
+        return parent;
+    }
+    
+    public void setParent(TestObject parent) {
+        this.parent = parent;
+    }
 
     public void setChildren(List children) {
         this.children = children;
@@ -96,12 +105,19 @@ public class TestObject extends CayenneDataObject {
         if (!Util.nullSafeEquals(name, test.getName())) {
             return false;
         }
+        
+        if (!Util.nullSafeEquals(parent, test.getParent())) {
+            return false;
+        }
 
         return ((test.getAge() == age) && (test.isOpen() == open));
     }
 
     public void encodeAsXML(XMLEncoder encoder) {
         encoder.setRoot("Test", this.getClass().getName());
+        
+        // "parent" must come first to fully test 1-to-1 relationships, per CAY-597.
+        encoder.encodeProperty("parent", parent);
         encoder.encodeProperty("name", name);
         encoder.encodeProperty("age", new Integer(age));
         encoder.encodeProperty("open", new Boolean(open));
@@ -109,7 +125,11 @@ public class TestObject extends CayenneDataObject {
     }
 
     public void decodeFromXML(XMLDecoder decoder) {
-
+        
+        if (null != decoder.decodeObject("parent")) {
+            parent = (TestObject) decoder.decodeObject("parent");
+        }
+        
         if (null != decoder.decodeInteger("age")) {
             age = decoder.decodeInteger("age").intValue();
         }
@@ -117,13 +137,14 @@ public class TestObject extends CayenneDataObject {
         if (null != decoder.decodeBoolean("open")) {
             open = decoder.decodeBoolean("open").booleanValue();
         }
-
+        
         name = decoder.decodeString("name");
         children = (List) decoder.decodeObject("children");
     }
 
     public String toString() {
         return new ToStringBuilder(this)
+                .append("parent", parent)
                 .append("name", name)
                 .append("age", age)
                 .append("open", open)
