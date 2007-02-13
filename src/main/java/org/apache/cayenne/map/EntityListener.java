@@ -18,10 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.io.Serializable;
 
 /**
  * A mapping descriptor of an entity listener class that declares one or more callback
@@ -30,18 +27,18 @@ import java.util.TreeMap;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EntityListener {
+public class EntityListener implements Serializable {
 
     protected String className;
-    protected SortedMap callbackMethods;
+    protected CallbackMap callbacks;
 
     public EntityListener() {
         this(null);
     }
 
     public EntityListener(String className) {
-        this.callbackMethods = new TreeMap();
         this.className = className;
+        this.callbacks = new CallbackMap();
     }
 
     public String getClassName() {
@@ -53,53 +50,9 @@ public class EntityListener {
     }
 
     /**
-     * Returns an unmodifiable sorted map of listener methods.
+     * Returns an object that stores callback methods of this listener.
      */
-    public SortedMap getCallbackMethodsMap() {
-        // create a new instance ... Caching unmodifiable map causes
-        // serialization issues (esp. with Hessian).
-        return Collections.unmodifiableSortedMap(callbackMethods);
-    }
-
-    /**
-     * Returns an unmodifiable collection of listener methods.
-     */
-    public Collection getCallbackMethods() {
-        // create a new instance. Caching unmodifiable collection causes
-        // serialization issues (esp. with Hessian).
-        return Collections.unmodifiableCollection(callbackMethods.values());
-    }
-
-    /**
-     * Adds new listener method. If a method has no name, IllegalArgumentException is thrown.
-     */
-    public void addCallbackMethod(CallbackMethod method) {
-        
-        if (method.getName() == null) {
-            throw new IllegalArgumentException("Attempt to insert unnamed method.");
-        }
-
-        Object existingMethod = callbackMethods.get(method.getName());
-        if (existingMethod != null) {
-            if (existingMethod == method) {
-                return;
-            }
-            else {
-                throw new IllegalArgumentException(
-                        "An attempt to override method '"
-                                + method.getName()
-                                + "'");
-            }
-        }
-
-        callbackMethods.put(method.getName(), method);
-    }
-
-    public CallbackMethod getCallbackMethod(String name) {
-        return (CallbackMethod) callbackMethods.get(name);
-    }
-
-    public void removeCallbackMethod(String name) {
-        callbackMethods.remove(name);
+    public CallbackMap getCallbackMap() {
+        return callbacks;
     }
 }
