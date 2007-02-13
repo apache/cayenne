@@ -20,12 +20,22 @@ package org.apache.cayenne.map;
 
 import junit.framework.TestCase;
 
-public class LifecycleEventCallbackTest extends TestCase {
+public class CallbackMapTest extends TestCase {
 
     public void testCallbacks() {
         // assert correct callback ordering
-        for (int i = 0; i < LifecycleEventCallback.CALLBACKS.length; i++) {
-            assertEquals(i, LifecycleEventCallback.CALLBACKS[i]);
+        for (int i = 0; i < CallbackMap.CALLBACKS.length; i++) {
+            assertEquals(i, CallbackMap.CALLBACKS[i]);
+        }
+    }
+    
+    public void testGetCallbacks() {
+        CallbackDescriptor[] callbacks = new CallbackMap().getCallbacks();
+        assertEquals(CallbackMap.CALLBACKS.length, callbacks.length);
+        
+        // assert correct callback ordering
+        for (int i = 0; i < callbacks.length; i++) {
+            assertEquals(CallbackMap.CALLBACKS[i], callbacks[i].getCallbackType());
         }
     }
 }

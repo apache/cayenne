@@ -20,46 +20,29 @@ package org.apache.cayenne.map;
 
 import junit.framework.TestCase;
 
-public class CallbackMethodTest extends TestCase {
+public class CallbackDescriptorTest extends TestCase {
 
-    public void testAddCallbackEvent() {
-        CallbackMethod m = new CallbackMethod();
-        assertFalse(m.supportsCallbackEvent(LifecycleEventCallback.POST_LOAD));
-        m.addCallbackEvent(LifecycleEventCallback.POST_LOAD);
-        assertTrue(m.supportsCallbackEvent(LifecycleEventCallback.POST_LOAD));
-        assertFalse(m.supportsCallbackEvent(LifecycleEventCallback.PRE_PERSIST));
-    }
-
-    public void testAddInvalidCallbackEvent() {
-        CallbackMethod m = new CallbackMethod();
+    public void testConstructor() {
+        CallbackDescriptor m = new CallbackDescriptor(LifecycleEventCallback.POST_LOAD);
+        assertEquals(LifecycleEventCallback.POST_LOAD, m.getCallbackType());
 
         try {
-            m.addCallbackEvent(100);
-        }
-        catch (IllegalArgumentException e) {
-            // expected
-        }
-
-        try {
-            m.addCallbackEvent(-1);
+            new CallbackDescriptor(10000);
+            fail("Must have thrown");
         }
         catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testAddDuplicateCallbackEvent() {
-        CallbackMethod m = new CallbackMethod();
-
-        m.addCallbackEvent(LifecycleEventCallback.POST_LOAD);
-
-        try {
-            m.addCallbackEvent(LifecycleEventCallback.POST_LOAD);
-        }
-        catch (IllegalArgumentException e) {
-            // expected
-        }
-
-        m.addCallbackEvent(LifecycleEventCallback.PRE_REMOVE);
+    public void testAddCallbackMethod() {
+        CallbackDescriptor m = new CallbackDescriptor(LifecycleEventCallback.PRE_PERSIST);
+        assertEquals(0, m.getCallbackMethods().size());
+        m.addCallbackMethod("a");
+        assertEquals(1, m.getCallbackMethods().size());
+        m.addCallbackMethod("b");
+        assertEquals(2, m.getCallbackMethods().size());
+        m.addCallbackMethod("a");
+        assertEquals(2, m.getCallbackMethods().size());
     }
 }

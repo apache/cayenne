@@ -122,18 +122,23 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 Iterator listeners = map.getDefaultEntityListeners().iterator();
                 while (listeners.hasNext()) {
                     EntityListener listener = (EntityListener) listeners.next();
-
                     Object listenerInstance = createListener(listener);
 
-                    Iterator callbacks = listener.getCallbackMethods().iterator();
-                    while (callbacks.hasNext()) {
-                        CallbackMethod method = (CallbackMethod) callbacks.next();
-                        Iterator callbackEvents = method.getCallbackEvents().iterator();
-                        while (callbackEvents.hasNext()) {
-                            Integer event = (Integer) callbackEvents.next();
-                            lifecycleEventCallbacks[event.intValue()].addDefaultListener(
+                    CallbackDescriptor[] callbacks = listener
+                            .getCallbackMap()
+                            .getCallbacks();
+                    for (int i = 0; i < callbacks.length; i++) {
+
+                        Iterator callbackMethods = callbacks[i]
+                                .getCallbackMethods()
+                                .iterator();
+                        while (callbackMethods.hasNext()) {
+                            String method = (String) callbackMethods.next();
+
+                            // note that callbacks[i].getCallbackType() == i
+                            lifecycleEventCallbacks[i].addDefaultListener(
                                     listenerInstance,
-                                    method.getName());
+                                    method);
                         }
                     }
                 }
@@ -149,32 +154,38 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 Iterator entityListeners = entity.getEntityListeners().iterator();
                 while (entityListeners.hasNext()) {
                     EntityListener listener = (EntityListener) entityListeners.next();
-
                     Object listenerInstance = createListener(listener);
 
-                    Iterator callbacks = listener.getCallbackMethods().iterator();
-                    while (callbacks.hasNext()) {
-                        CallbackMethod method = (CallbackMethod) callbacks.next();
-                        Iterator callbackEvents = method.getCallbackEvents().iterator();
-                        while (callbackEvents.hasNext()) {
-                            Integer event = (Integer) callbackEvents.next();
-                            lifecycleEventCallbacks[event.intValue()].addListener(
+                    CallbackDescriptor[] callbacks = listener
+                            .getCallbackMap()
+                            .getCallbacks();
+                    for (int i = 0; i < callbacks.length; i++) {
+
+                        Iterator callbackMethods = callbacks[i]
+                                .getCallbackMethods()
+                                .iterator();
+                        while (callbackMethods.hasNext()) {
+                            String method = (String) callbackMethods.next();
+
+                            // note that callbacks[i].getCallbackType() == i
+                            lifecycleEventCallbacks[i].addListener(
                                     entityClass,
                                     listenerInstance,
-                                    method.getName());
+                                    method);
                         }
                     }
                 }
 
-                Iterator callbacks = entity.getCallbackMethods().iterator();
-                while (callbacks.hasNext()) {
-                    CallbackMethod method = (CallbackMethod) callbacks.next();
-                    Iterator callbackEvents = method.getCallbackEvents().iterator();
-                    while (callbackEvents.hasNext()) {
-                        Integer event = (Integer) callbackEvents.next();
-                        lifecycleEventCallbacks[event.intValue()].addListener(
-                                entityClass,
-                                method.getName());
+                CallbackDescriptor[] callbacks = entity.getCallbackMap().getCallbacks();
+                for (int i = 0; i < callbacks.length; i++) {
+                    Iterator callbackMethods = callbacks[i]
+                            .getCallbackMethods()
+                            .iterator();
+                    while (callbackMethods.hasNext()) {
+                        String method = (String) callbackMethods.next();
+
+                        // note that callbacks[i].getCallbackType() == i
+                        lifecycleEventCallbacks[i].addListener(entityClass, method);
                     }
                 }
             }

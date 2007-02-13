@@ -36,16 +36,5 @@ public interface LifecycleEventCallback {
     public static final int POST_UPDATE = 5;
     public static final int POST_LOAD = 6;
 
-    /**
-     * An array containing all valid callbacks with each callback int value corresponding
-     * to its index in the array.
-     */
-    public static final int[] CALLBACKS = new int[] {
-            LifecycleEventCallback.PRE_PERSIST, LifecycleEventCallback.PRE_REMOVE,
-            LifecycleEventCallback.PRE_UPDATE, LifecycleEventCallback.POST_PERSIST,
-            LifecycleEventCallback.POST_REMOVE, LifecycleEventCallback.POST_UPDATE,
-            LifecycleEventCallback.POST_LOAD
-    };
-
     void performCallback(Object entity);
 }
