@@ -314,7 +314,7 @@ public class XMLEncoder {
     /**
      * Pops the top element from the encoding stack.
      */
-    private Node pop() {
+    Node pop() {
         Node old = parent;
         parent = parent.getParentNode();
         return old;
