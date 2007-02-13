@@ -72,6 +72,9 @@ class SerializableEntity implements XMLSerializable {
         }
         else {
             encodeObject(encoder, this.object, true);
+            
+            // Needed for fix to CAY-597.  This makes sure we get back to the appropriate level in the DOM, rather than constantly re-rooting the tree.
+            encoder.pop();
         }
     }
 
