@@ -24,9 +24,9 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleCallbackRegistry;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataChannelCallbackInterceptorTest extends CayenneCase {

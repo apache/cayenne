@@ -16,11 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.reflect;
 
 import java.util.Collection;
 
 import org.apache.cayenne.LifecycleListener;
+import org.apache.cayenne.map.CallbackMap;
+import org.apache.cayenne.map.EntityResolver;
 
 /**
  * A registry of lifecycle callbacks for all callback event types.

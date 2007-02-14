@@ -27,10 +27,10 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.DeleteRule;
-import org.apache.cayenne.map.LifecycleCallbackRegistry;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
 /**
  * Implements JPA-compliant "PrePersist", "PreRemove" callbacks for the ObjectContext

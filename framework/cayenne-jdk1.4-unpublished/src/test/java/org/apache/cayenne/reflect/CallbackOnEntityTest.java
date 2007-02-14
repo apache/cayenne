@@ -16,9 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.map.CallbackOnEntity;
+import org.apache.cayenne.map.MockCallingBackEntity;
+import org.apache.cayenne.reflect.CallbackOnEntity;
 
 import junit.framework.TestCase;
 
