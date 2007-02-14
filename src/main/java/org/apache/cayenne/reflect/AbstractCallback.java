@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.reflect;
 
 /**
  * Defines a callback operation.

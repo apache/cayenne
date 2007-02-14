@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.map.LifecycleCallbackRegistry;
+import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
 /**
  * A callback interface to listen to persistent object lifecycle events. Note that

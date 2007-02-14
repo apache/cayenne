@@ -16,14 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.reflect;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
 
-public class LifecycleEventCallbackMapTest extends TestCase {
+import org.apache.cayenne.map.EntityResolver;
+
+public class LifecycleCallbackEventHandlerTest extends TestCase {
 
     public void testDefaultListeners() {
 

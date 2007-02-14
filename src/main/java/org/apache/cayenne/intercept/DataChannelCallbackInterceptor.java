@@ -26,8 +26,8 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.CallbackMap;
-import org.apache.cayenne.map.LifecycleCallbackRegistry;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
 /**
  * Implements JPA-compliant "PreUpdate", "PostUpdate", "PostPersist", "PostRemove",
