@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
@@ -28,6 +30,12 @@ import java.util.StringTokenizer;
  * @author Andrus Adamchik
  */
 public class NameConverter {
+
+    private static final Map SPECIAL_CHAR_TO_JAVA_MAPPING = new HashMap();
+
+    static {
+        SPECIAL_CHAR_TO_JAVA_MAPPING.put("#", "pound");
+    }
 
     /**
      * Converts a String name to a String forllowing java convention for the static final
@@ -39,6 +47,11 @@ public class NameConverter {
         if (name == null) {
             return null;
         }
+
+        // clear of non-java chars. While the method name implies that a passed identifier
+        // is pure Java, it is used to build pk columns names and such, so extra safety
+        // check is a good idea
+        name = specialCharsToJava(name);
 
         char charArray[] = name.toCharArray();
         StringBuffer buffer = new StringBuffer();
@@ -72,6 +85,9 @@ public class NameConverter {
         boolean first = true;
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
+
+            // clear of non-java chars
+            token = specialCharsToJava(token);
 
             int len = token.length();
             if (len == 0) {
@@ -114,5 +130,30 @@ public class NameConverter {
             }
         }
         return buf.toString();
+    }
+
+    /**
+     * Replaces special chars with human-readable and Java-id-compatible symbols.
+     */
+    static String specialCharsToJava(String string) {
+        int len = string.length();
+        if (len == 0) {
+            return string;
+        }
+
+        StringBuffer buffer = new StringBuffer(len);
+        for (int i = 0; i < len; i++) {
+
+            char c = string.charAt(i);
+            if (Character.isJavaIdentifierPart(c)) {
+                buffer.append(c);
+            }
+            else {
+                Object word = SPECIAL_CHAR_TO_JAVA_MAPPING.get(String.valueOf(c));
+                buffer.append(word != null ? word : "_");
+            }
+        }
+
+        return buffer.toString();
     }
 }
