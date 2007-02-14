@@ -25,16 +25,16 @@ public class NameConverterTest extends TestCase {
 
     public void testUnderscoredToJava1() throws Exception {
         String expected = "ClassNameIdentifier";
-        assertEquals(
-            expected,
-            NameConverter.underscoredToJava("_CLASS_NAME_IDENTIFIER_", true));
+        assertEquals(expected, NameConverter.underscoredToJava(
+                "_CLASS_NAME_IDENTIFIER_",
+                true));
     }
 
     public void testUnderscoredToJava2() throws Exception {
         String expected = "propNameIdentifier123";
-        assertEquals(
-            expected,
-            NameConverter.underscoredToJava("_prop_name_Identifier_123", false));
+        assertEquals(expected, NameConverter.underscoredToJava(
+                "_prop_name_Identifier_123",
+                false));
     }
 
     public void testUnderscoredToJava3() throws Exception {
@@ -50,6 +50,10 @@ public class NameConverterTest extends TestCase {
     public void testUnderscoredToJava5() throws Exception {
         String expected = "LastName";
         assertEquals(expected, NameConverter.underscoredToJava("LastName", true));
+    }
+
+    public void testUnderscoredToJavaSpecialChars() throws Exception {
+        assertEquals("ABCpoundXyz", NameConverter.underscoredToJava("ABC#_XYZ", true));
     }
 
     public void testJavaToUnderscored1() throws Exception {

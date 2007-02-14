@@ -84,6 +84,7 @@ CAY-710	XMLDecoder decodes Dates wrong
 CAY-712 Allow modifying objects in validate* methods
 CAY-724 Bogus FaultFailureExceptions
 CAY-726 SQLTemplate parsing bug when macros appear at the end of line
+CAY-751 AS400 datafields containing # in field names do not get mapped correctly
 
 API Changes
 ----------------------------------
