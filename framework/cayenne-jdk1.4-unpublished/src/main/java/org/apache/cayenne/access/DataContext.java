@@ -39,6 +39,7 @@ import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.Fault;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -58,7 +59,6 @@ import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEventCallback;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -1388,7 +1388,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Sets default for posting transaction events by new DataContexts.
      * 
-     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
      *             removed in later 3.0 milestones.
      */
     public static void setTransactionEventsEnabledDefault(boolean flag) {
@@ -1398,7 +1398,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Enables or disables posting of transaction events by this DataContext.
      * 
-     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
      *             removed in later 3.0 milestones.
      */
     public void setTransactionEventsEnabled(boolean flag) {
@@ -1406,7 +1406,7 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
      *             removed in later 3.0 milestones.
      */
     public boolean isTransactionEventsEnabled() {
@@ -1444,7 +1444,7 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
      *             removed in later 3.0 milestones.
      */
     void fireWillCommit() {
@@ -1456,7 +1456,7 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
      *             removed in later 3.0 milestones.
      */
     void fireTransactionRolledback() {
@@ -1468,7 +1468,7 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
      *             removed in later 3.0 milestones.
      */
     void fireTransactionCommitted() {

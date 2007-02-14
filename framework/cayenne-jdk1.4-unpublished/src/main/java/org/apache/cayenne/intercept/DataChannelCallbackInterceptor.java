@@ -25,9 +25,8 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEventCallback;
-import org.apache.cayenne.map.LifecycleEventCallbackMap;
+import org.apache.cayenne.map.CallbackMap;
+import org.apache.cayenne.map.LifecycleCallbackRegistry;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -47,53 +46,28 @@ import org.apache.cayenne.query.Query;
  */
 public class DataChannelCallbackInterceptor extends DataChannelDecorator {
 
-    protected LifecycleEventCallbackMap preUpdate;
-    protected LifecycleEventCallbackMap postPersist;
-    protected LifecycleEventCallbackMap postRemove;
-    protected LifecycleEventCallbackMap postUpdate;
-    protected LifecycleEventCallbackMap postLoad;
-
+    protected LifecycleCallbackRegistry callbackRegistry;
     protected boolean contextCallbacksEnabled;
-    protected LifecycleEventCallbackMap preRemove;
-    protected LifecycleEventCallbackMap prePersist;
 
     public void setChannel(DataChannel channel) {
         this.channel = channel;
 
-        // init callback ivars for faster access...
-        if (channel != null) {
-            EntityResolver resolver = getEntityResolver();
-
-            preUpdate = resolver.getCallbacks(LifecycleEventCallback.PRE_UPDATE);
-            postPersist = resolver.getCallbacks(LifecycleEventCallback.POST_PERSIST);
-            postRemove = resolver.getCallbacks(LifecycleEventCallback.POST_REMOVE);
-            postUpdate = resolver.getCallbacks(LifecycleEventCallback.POST_UPDATE);
-            postLoad = resolver.getCallbacks(LifecycleEventCallback.POST_LOAD);
-            preRemove = resolver.getCallbacks(LifecycleEventCallback.PRE_REMOVE);
-            prePersist = resolver.getCallbacks(LifecycleEventCallback.PRE_PERSIST);
-        }
-        else {
-            preUpdate = null;
-            postPersist = null;
-            postRemove = null;
-            postUpdate = null;
-            postLoad = null;
-            preRemove = null;
-            prePersist = null;
-        }
+        callbackRegistry = (channel != null)
+                ? getEntityResolver().getCallbackRegistry()
+                : null;
     }
 
     protected boolean isEmpty() {
-        if (!(preUpdate.isEmpty()
-                && postPersist.isEmpty()
-                && postRemove.isEmpty()
-                && postUpdate.isEmpty() && postLoad.isEmpty())) {
+        if (!(callbackRegistry.isEmpty(CallbackMap.PRE_UPDATE)
+                && callbackRegistry.isEmpty(CallbackMap.POST_PERSIST)
+                && callbackRegistry.isEmpty(CallbackMap.POST_REMOVE)
+                && callbackRegistry.isEmpty(CallbackMap.POST_UPDATE) && callbackRegistry
+                .isEmpty(CallbackMap.POST_LOAD))) {
             return false;
         }
 
-        return contextCallbacksEnabled
-                ? preRemove.isEmpty() && prePersist.isEmpty()
-                : true;
+        return contextCallbacksEnabled ? callbackRegistry.isEmpty(CallbackMap.PRE_REMOVE)
+                && callbackRegistry.isEmpty(CallbackMap.PRE_PERSIST) : true;
     }
 
     public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
@@ -102,14 +76,14 @@ public class DataChannelCallbackInterceptor extends DataChannelDecorator {
         // TODO: andrus, 9/21/2006 - this method incorrectly calls "postLoad" when query
         // refresh flag is set to false and object is already there.
 
-        if (!postLoad.isEmpty()) {
+        if (!callbackRegistry.isEmpty(CallbackMap.POST_LOAD)) {
 
             List list = response.firstList();
             if (list != null
                     && !list.isEmpty()
                     && !(query.getMetaData(originatingContext.getEntityResolver()))
                             .isFetchingDataRows()) {
-                postLoad.performCallbacks(list);
+                callbackRegistry.performCallbacks(CallbackMap.POST_LOAD, list);
             }
         }
 
@@ -139,26 +113,6 @@ public class DataChannelCallbackInterceptor extends DataChannelDecorator {
         return new SyncCallbackProcessor(this, graphManager, changes);
     }
 
-    public LifecycleEventCallbackMap getPostLoad() {
-        return postLoad;
-    }
-
-    public LifecycleEventCallbackMap getPostPersist() {
-        return postPersist;
-    }
-
-    public LifecycleEventCallbackMap getPostRemove() {
-        return postRemove;
-    }
-
-    public LifecycleEventCallbackMap getPostUpdate() {
-        return postUpdate;
-    }
-
-    public LifecycleEventCallbackMap getPreUpdate() {
-        return preUpdate;
-    }
-
     /**
      * Returns whether "PrePersist" and "PreRemove" callbacks should be executed during
      * sync. By default this is false, as they are executed by the parent ObjectContext.
@@ -172,13 +126,7 @@ public class DataChannelCallbackInterceptor extends DataChannelDecorator {
         this.contextCallbacksEnabled = contextCallbacksEnabled;
     }
 
-    
-    public LifecycleEventCallbackMap getPrePersist() {
-        return prePersist;
-    }
-
-    
-    public LifecycleEventCallbackMap getPreRemove() {
-        return preRemove;
+    public LifecycleCallbackRegistry getCallbackRegistry() {
+        return callbackRegistry;
     }
 }

@@ -20,7 +20,6 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.map.LifecycleEventCallback;
 
 /**
  * Defines basic methods for a persistent object in Cayenne.
@@ -153,7 +152,7 @@ public interface DataObject extends Persistent {
     /**
      * @deprecated since 3.0 users must use callbacks instead. This method is no longer
      *             invoked by Cayenne runtime.
-     * @see LifecycleEventCallback
+     * @see LifecycleListener
      */
     public void fetchFinished();
 

@@ -32,6 +32,8 @@ import java.util.Set;
  * @author Andrus Adamchik
  */
 public class CallbackDescriptor implements Serializable {
+    
+   
 
     protected int callbackType;
     protected Set callbackMethods;

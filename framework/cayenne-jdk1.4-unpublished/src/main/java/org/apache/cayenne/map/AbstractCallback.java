@@ -22,19 +22,9 @@ package org.apache.cayenne.map;
  * Defines a callback operation.
  * 
  * @author Andrus Adamchik
+ * @since 3.0
  */
-public interface LifecycleEventCallback {
+abstract class AbstractCallback {
 
-    // these int constants correspond to indexes in array in EntityResolver, so they must
-    // start with 0 and increment by 1.
-
-    public static final int PRE_PERSIST = 0;
-    public static final int PRE_REMOVE = 1;
-    public static final int PRE_UPDATE = 2;
-    public static final int POST_PERSIST = 3;
-    public static final int POST_REMOVE = 4;
-    public static final int POST_UPDATE = 5;
-    public static final int POST_LOAD = 6;
-
-    void performCallback(Object entity);
+    abstract void performCallback(Object entity);
 }

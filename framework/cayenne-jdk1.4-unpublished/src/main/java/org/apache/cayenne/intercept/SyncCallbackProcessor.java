@@ -27,7 +27,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
-import org.apache.cayenne.map.LifecycleEventCallbackMap;
+import org.apache.cayenne.map.CallbackMap;
 
 class SyncCallbackProcessor implements GraphChangeHandler {
 
@@ -50,11 +50,11 @@ class SyncCallbackProcessor implements GraphChangeHandler {
         switch (syncType) {
             case DataChannel.FLUSH_CASCADE_SYNC:
             case DataChannel.FLUSH_NOCASCADE_SYNC:
-                apply(interceptor.getPreUpdate(), updated);
+                apply(CallbackMap.PRE_UPDATE, updated);
 
                 if (interceptor.isContextCallbacksEnabled()) {
-                    apply(interceptor.getPrePersist(), persisted);
-                    apply(interceptor.getPreRemove(), removed);
+                    apply(CallbackMap.PRE_PERSIST, persisted);
+                    apply(CallbackMap.PRE_REMOVE, removed);
                 }
         }
     }
@@ -63,19 +63,19 @@ class SyncCallbackProcessor implements GraphChangeHandler {
         switch (syncType) {
             case DataChannel.FLUSH_CASCADE_SYNC:
             case DataChannel.FLUSH_NOCASCADE_SYNC:
-                apply(interceptor.getPostUpdate(), updated);
-                apply(interceptor.getPostRemove(), removed);
-                apply(interceptor.getPostPersist(), persisted);
+                apply(CallbackMap.POST_UPDATE, updated);
+                apply(CallbackMap.POST_REMOVE, removed);
+                apply(CallbackMap.POST_PERSIST, persisted);
                 break;
             case DataChannel.ROLLBACK_CASCADE_SYNC:
-                apply(interceptor.getPostLoad(), updated);
-                apply(interceptor.getPostLoad(), removed);
+                apply(CallbackMap.POST_LOAD, updated);
+                apply(CallbackMap.POST_LOAD, removed);
         }
     }
 
-    void apply(LifecycleEventCallbackMap callbacks, Collection objects) {
-        if (objects != null && !callbacks.isEmpty()) {
-            callbacks.performCallbacks(objects);
+    void apply(int callbackType, Collection objects) {
+        if (objects != null) {
+            interceptor.getCallbackRegistry().performCallbacks(callbackType, objects);
         }
     }
 
