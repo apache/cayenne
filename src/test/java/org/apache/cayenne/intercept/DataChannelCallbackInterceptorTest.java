@@ -22,9 +22,9 @@ import org.apache.art.Artist;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.ObjectStore;
+import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEventCallback;
-import org.apache.cayenne.map.LifecycleEventCallbackMap;
+import org.apache.cayenne.map.LifecycleCallbackRegistry;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -37,20 +37,13 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
 
     protected void tearDown() throws Exception {
         EntityResolver resolver = getDomain().getEntityResolver();
-
-        resolver.getCallbacks(LifecycleEventCallback.POST_LOAD).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.POST_PERSIST).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.POST_REMOVE).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.POST_UPDATE).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.PRE_PERSIST).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.PRE_REMOVE).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.PRE_UPDATE).removeAll();
+        resolver.getCallbackRegistry().clear();
     }
 
     public void testPostLoad() throws Exception {
-        LifecycleEventCallbackMap postLoad = getDomain()
+        LifecycleCallbackRegistry registry = getDomain()
                 .getEntityResolver()
-                .getCallbacks(LifecycleEventCallback.POST_LOAD);
+                .getCallbackRegistry();
 
         DataChannelCallbackInterceptor i = new DataChannelCallbackInterceptor();
         i.setChannel(getDomain());
@@ -58,9 +51,13 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         ObjectContext context = new DataContext(i, new ObjectStore(getDomain()
                 .getSharedSnapshotCache()));
 
-        postLoad.addListener(Artist.class, "postLoadCallback");
+        registry.addListener(CallbackMap.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
-        postLoad.addListener(Artist.class, listener, "publicCallback");
+        registry.addListener(
+                CallbackMap.POST_LOAD,
+                Artist.class,
+                listener,
+                "publicCallback");
 
         Artist a1 = (Artist) context.newObject(Artist.class);
         a1.setArtistName("XX");
@@ -116,9 +113,9 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
 
     public void testPreUpdate() {
 
-        LifecycleEventCallbackMap preUpdate = getDomain()
+        LifecycleCallbackRegistry registry = getDomain()
                 .getEntityResolver()
-                .getCallbacks(LifecycleEventCallback.PRE_UPDATE);
+                .getCallbackRegistry();
 
         DataChannelCallbackInterceptor i = new DataChannelCallbackInterceptor();
         i.setChannel(getDomain());
@@ -135,7 +132,7 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         context.commitChanges();
         assertFalse(a1.isPreUpdated());
 
-        preUpdate.addListener(Artist.class, "preUpdateCallback");
+        registry.addListener(CallbackMap.PRE_UPDATE, Artist.class, "preUpdateCallback");
         a1.setArtistName("ZZ");
         context.commitChanges();
         assertTrue(a1.isPreUpdated());
@@ -144,7 +141,11 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         assertFalse(a1.isPreUpdated());
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        preUpdate.addListener(Artist.class, listener2, "publicCallback");
+        registry.addListener(
+                CallbackMap.PRE_UPDATE,
+                Artist.class,
+                listener2,
+                "publicCallback");
 
         a1.setArtistName("AA");
         context.commitChanges();
@@ -155,9 +156,9 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
 
     public void testPostUpdate() {
 
-        LifecycleEventCallbackMap postUpdate = getDomain()
+        LifecycleCallbackRegistry registry = getDomain()
                 .getEntityResolver()
-                .getCallbacks(LifecycleEventCallback.POST_UPDATE);
+                .getCallbackRegistry();
 
         DataChannelCallbackInterceptor i = new DataChannelCallbackInterceptor();
         i.setChannel(getDomain());
@@ -174,7 +175,7 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         context.commitChanges();
         assertFalse(a1.isPostUpdated());
 
-        postUpdate.addListener(Artist.class, "postUpdateCallback");
+        registry.addListener(CallbackMap.POST_UPDATE, Artist.class, "postUpdateCallback");
         a1.setArtistName("ZZ");
         context.commitChanges();
         assertTrue(a1.isPostUpdated());
@@ -183,7 +184,11 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         assertFalse(a1.isPostUpdated());
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        postUpdate.addListener(Artist.class, listener2, "publicCallback");
+        registry.addListener(
+                CallbackMap.POST_UPDATE,
+                Artist.class,
+                listener2,
+                "publicCallback");
 
         a1.setArtistName("AA");
         context.commitChanges();
@@ -194,9 +199,9 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
 
     public void testPostRemove() {
 
-        LifecycleEventCallbackMap postRemove = getDomain()
+        LifecycleCallbackRegistry registry = getDomain()
                 .getEntityResolver()
-                .getCallbacks(LifecycleEventCallback.POST_REMOVE);
+                .getCallbackRegistry();
 
         DataChannelCallbackInterceptor i = new DataChannelCallbackInterceptor();
         i.setChannel(getDomain());
@@ -208,9 +213,13 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         a1.setArtistName("XX");
         context.commitChanges();
 
-        postRemove.addListener(Artist.class, "postRemoveCallback");
+        registry.addListener(CallbackMap.POST_REMOVE, Artist.class, "postRemoveCallback");
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        postRemove.addListener(Artist.class, listener2, "publicCallback");
+        registry.addListener(
+                CallbackMap.POST_REMOVE,
+                Artist.class,
+                listener2,
+                "publicCallback");
 
         context.deleteObject(a1);
         context.commitChanges();
@@ -221,9 +230,9 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
 
     public void testPostPersist() {
 
-        LifecycleEventCallbackMap postPersist = getDomain()
+        LifecycleCallbackRegistry registry = getDomain()
                 .getEntityResolver()
-                .getCallbacks(LifecycleEventCallback.POST_PERSIST);
+                .getCallbackRegistry();
 
         DataChannelCallbackInterceptor i = new DataChannelCallbackInterceptor();
         i.setChannel(getDomain());
@@ -236,9 +245,16 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         context.commitChanges();
         assertFalse(a1.isPostPersisted());
 
-        postPersist.addListener(Artist.class, "postPersistCallback");
+        registry.addListener(
+                CallbackMap.POST_PERSIST,
+                Artist.class,
+                "postPersistCallback");
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        postPersist.addListener(Artist.class, listener2, "publicCallback");
+        registry.addListener(
+                CallbackMap.POST_PERSIST,
+                Artist.class,
+                listener2,
+                "publicCallback");
 
         Artist a2 = (Artist) context.newObject(Artist.class);
         a2.setArtistName("XX");

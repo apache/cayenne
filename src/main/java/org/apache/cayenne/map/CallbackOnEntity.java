@@ -32,7 +32,7 @@ import org.apache.cayenne.util.Util;
  * @since 3.0
  * @author Andrus Adamchik
  */
-class CallbackOnEntity implements LifecycleEventCallback {
+class CallbackOnEntity extends AbstractCallback {
 
     private Method callbackMethod;
 

@@ -36,7 +36,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEventCallback;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -428,7 +427,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
      * Default implementation does nothing.
      * 
      * @deprecated since 3.0 use callbacks.
-     * @see LifecycleEventCallback
+     * @see LifecycleListener
      */
     public void fetchFinished() {
     }

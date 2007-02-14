@@ -27,7 +27,6 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.intercept.DataChannelCallbackInterceptor;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEventCallback;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -116,7 +115,6 @@ public class ClientServerChannel implements DataChannel {
      * by this channel. Enabling callbacks allows server side logic to be applied to the
      * persistent objects during select and commit operations.
      * 
-     * @see LifecycleEventCallback
      * @since 3.0
      */
     public void setLifecycleCallbacksEnabled(boolean lifecycleCallbacksEnabled) {

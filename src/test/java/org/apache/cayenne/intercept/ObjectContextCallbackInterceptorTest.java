@@ -20,9 +20,9 @@ package org.apache.cayenne.intercept;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
+import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEventCallback;
-import org.apache.cayenne.map.LifecycleEventCallbackMap;
+import org.apache.cayenne.map.LifecycleCallbackRegistry;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class ObjectContextCallbackInterceptorTest extends CayenneCase {
@@ -33,21 +33,13 @@ public class ObjectContextCallbackInterceptorTest extends CayenneCase {
 
     protected void tearDown() throws Exception {
         EntityResolver resolver = getDomain().getEntityResolver();
-
-        resolver.getCallbacks(LifecycleEventCallback.POST_LOAD).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.POST_PERSIST).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.POST_REMOVE).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.POST_UPDATE).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.PRE_PERSIST).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.PRE_REMOVE).removeAll();
-        resolver.getCallbacks(LifecycleEventCallback.PRE_UPDATE).removeAll();
+        resolver.getCallbackRegistry().clear();
     }
 
     public void testPrePersistCallbacks() {
-
-        LifecycleEventCallbackMap prePersist = getDomain()
+        LifecycleCallbackRegistry registry = getDomain()
                 .getEntityResolver()
-                .getCallbacks(LifecycleEventCallback.PRE_PERSIST);
+                .getCallbackRegistry();
 
         ObjectContextCallbackInterceptor i = new ObjectContextCallbackInterceptor();
         i.setContext(createDataContext());
@@ -57,14 +49,18 @@ public class ObjectContextCallbackInterceptorTest extends CayenneCase {
         assertNotNull(a1);
         assertFalse(a1.isPrePersisted());
 
-        prePersist.addListener(Artist.class, "prePersistCallback");
+        registry.addListener(CallbackMap.PRE_PERSIST, Artist.class, "prePersistCallback");
 
         Artist a2 = (Artist) i.newObject(Artist.class);
         assertNotNull(a2);
         assertTrue(a2.isPrePersisted());
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        prePersist.addListener(Artist.class, listener2, "publicCallback");
+        registry.addListener(
+                CallbackMap.PRE_PERSIST,
+                Artist.class,
+                listener2,
+                "publicCallback");
 
         Artist a3 = (Artist) i.newObject(Artist.class);
         assertNotNull(a3);
@@ -79,9 +75,9 @@ public class ObjectContextCallbackInterceptorTest extends CayenneCase {
     }
 
     public void testPreRemoveCallbacks() {
-        LifecycleEventCallbackMap preRemove = getDomain()
+        LifecycleCallbackRegistry registry = getDomain()
                 .getEntityResolver()
-                .getCallbacks(LifecycleEventCallback.PRE_REMOVE);
+                .getCallbackRegistry();
 
         ObjectContextCallbackInterceptor i = new ObjectContextCallbackInterceptor();
         i.setContext(createDataContext());
@@ -94,7 +90,7 @@ public class ObjectContextCallbackInterceptorTest extends CayenneCase {
         assertFalse(a1.isPrePersisted());
         assertFalse(a1.isPreRemoved());
 
-        preRemove.addListener(Artist.class, "preRemoveCallback");
+        registry.addListener(CallbackMap.PRE_REMOVE, Artist.class, "preRemoveCallback");
 
         Artist a2 = (Artist) i.newObject(Artist.class);
         a2.setArtistName("XX");
@@ -104,7 +100,11 @@ public class ObjectContextCallbackInterceptorTest extends CayenneCase {
         assertTrue(a2.isPreRemoved());
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        preRemove.addListener(Artist.class, listener2, "publicCallback");
+        registry.addListener(
+                CallbackMap.PRE_REMOVE,
+                Artist.class,
+                listener2,
+                "publicCallback");
 
         Artist a3 = (Artist) i.newObject(Artist.class);
         a3.setArtistName("XX");

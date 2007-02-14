@@ -16,15 +16,32 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne;
 
-public class MockLifecycleEventCallbackMap extends LifecycleEventCallbackMap {
+import org.apache.cayenne.map.LifecycleCallbackRegistry;
 
-    protected boolean isExcludingDefaultListeners(Class objectClass) {
-        return false;
-    }
+/**
+ * A callback interface to listen to persistent object lifecycle events. Note that
+ * listeners ARE NOT REQUIRED to implement this interface, and in fact both won't. It
+ * exists for type safety and for simplifying listener registration. See
+ * {@link LifecycleCallbackRegistry} for details on how to register callbacks.
+ * 
+ * @since 3.0
+ * @author Andrus Adamchik
+ */
+public interface LifecycleListener {
 
-    protected boolean isExcludingSuperclassListeners(Class objectClass) {
-        return false;
-    }
+    void prePersist(Object entity);
+
+    void postPersist(Object entity);
+
+    void preRemove(Object entity);
+
+    void postRemove(Object entity);
+
+    void preUpdate(Object entity);
+
+    void postUpdate(Object entity);
+
+    void postLoad(Object entity);
 }

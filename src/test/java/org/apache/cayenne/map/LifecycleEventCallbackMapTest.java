@@ -27,7 +27,8 @@ public class LifecycleEventCallbackMapTest extends TestCase {
 
     public void testDefaultListeners() {
 
-        LifecycleEventCallbackMap map = new MockLifecycleEventCallbackMap();
+        LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler(
+                new EntityResolver());
         L1 l1 = new L1();
         map.addDefaultListener(l1, "callback");
 
@@ -41,7 +42,8 @@ public class LifecycleEventCallbackMapTest extends TestCase {
 
     public void testDefaultListenersCallbackOrder() {
 
-        LifecycleEventCallbackMap map = new MockLifecycleEventCallbackMap();
+        LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler(
+                new EntityResolver());
         L2 l1 = new L2();
         map.addListener(C1.class, l1, "callback");
 
@@ -61,7 +63,8 @@ public class LifecycleEventCallbackMapTest extends TestCase {
 
     public void testCallbackOnSuperclass() {
 
-        LifecycleEventCallbackMap map = new MockLifecycleEventCallbackMap();
+        LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler(
+                new EntityResolver());
         map.addListener(C1.class, "c1Callback");
 
         C3 subclass = new C3();
@@ -73,7 +76,8 @@ public class LifecycleEventCallbackMapTest extends TestCase {
 
     public void testCallbackOnSuperclassWithSublcassOverrides() {
 
-        LifecycleEventCallbackMap map = new MockLifecycleEventCallbackMap();
+        LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler(
+                new EntityResolver());
         map.addListener(C1.class, "c1Callback");
 
         C4 subclass = new C4();
@@ -86,7 +90,8 @@ public class LifecycleEventCallbackMapTest extends TestCase {
 
     public void testCallbackOrderInInheritanceHierarchy() {
 
-        LifecycleEventCallbackMap map = new MockLifecycleEventCallbackMap();
+        LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler(
+                new EntityResolver());
         map.addListener(C2.class, "c2Callback");
         map.addListener(C1.class, "c1Callback");
 

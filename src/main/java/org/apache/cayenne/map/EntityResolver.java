@@ -72,7 +72,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected transient ClassDescriptorMap classDescriptorMap;
 
     // callbacks are not serializable
-    protected transient LifecycleEventCallbackMap[] lifecycleEventCallbacks;
+    protected transient LifecycleCallbackRegistry callbackRegistry;
 
     /**
      * Creates new EntityResolver.
@@ -98,22 +98,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
         this.constructCache();
     }
 
+    /**
+     * Compiles internal callback registry.
+     */
     synchronized void initCallbacks() {
-        if (lifecycleEventCallbacks == null) {
-            LifecycleEventCallbackMap[] lifecycleEventCallbacks = new LifecycleEventCallbackMap[7];
-
-            for (int i = 0; i < lifecycleEventCallbacks.length; i++) {
-                lifecycleEventCallbacks[i] = new LifecycleEventCallbackMap() {
-
-                    protected boolean isExcludingDefaultListeners(Class objectClass) {
-                        return excludingDefaultListeners(objectClass);
-                    }
-
-                    protected boolean isExcludingSuperclassListeners(Class objectClass) {
-                        return excludingSuperclassListeners(objectClass);
-                    }
-                };
-            }
+        if (callbackRegistry == null) {
+            LifecycleCallbackRegistry callbackRegistry = new LifecycleCallbackRegistry(
+                    this);
 
             // load default callbacks
             Iterator maps = this.maps.iterator();
@@ -136,7 +127,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
                             String method = (String) callbackMethods.next();
 
                             // note that callbacks[i].getCallbackType() == i
-                            lifecycleEventCallbacks[i].addDefaultListener(
+                            callbackRegistry.addDefaultListener(
+                                    i,
                                     listenerInstance,
                                     method);
                         }
@@ -168,7 +160,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
                             String method = (String) callbackMethods.next();
 
                             // note that callbacks[i].getCallbackType() == i
-                            lifecycleEventCallbacks[i].addListener(
+                            callbackRegistry.addListener(
+                                    i,
                                     entityClass,
                                     listenerInstance,
                                     method);
@@ -185,12 +178,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
                         String method = (String) callbackMethods.next();
 
                         // note that callbacks[i].getCallbackType() == i
-                        lifecycleEventCallbacks[i].addListener(entityClass, method);
+                        callbackRegistry.addListener(i, entityClass, method);
                     }
                 }
             }
 
-            this.lifecycleEventCallbacks = lifecycleEventCallbacks;
+            this.callbackRegistry = callbackRegistry;
         }
     }
 
@@ -219,34 +212,17 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @since 3.0
-     */
-    boolean excludingDefaultListeners(Class objectClass) {
-        ObjEntity entity = lookupObjEntity(objectClass);
-        return entity != null && entity.isExcludingDefaultListeners();
-    }
-
-    /**
-     * @since 3.0
-     */
-    boolean excludingSuperclassListeners(Class objectClass) {
-        ObjEntity entity = lookupObjEntity(objectClass);
-        return entity != null && entity.isExcludingSuperclassListeners();
-    }
-
-    /**
-     * Returns a {@link LifecycleEventCallbackMap} for a given type of lifecycle events.
-     * Event types are defined as constants in LifecycleEventCallback interface. E.g.
-     * {@link LifecycleEventCallback#PRE_PERSIST}, etc.
+     * Returns a {@link LifecycleCallbackRegistry} for handling callbacks. Registry is
+     * lazily initialized on first call.
      * 
      * @since 3.0
      */
-    public LifecycleEventCallbackMap getCallbacks(int callbackType) {
-        if (lifecycleEventCallbacks == null) {
+    public LifecycleCallbackRegistry getCallbackRegistry() {
+        if (callbackRegistry == null) {
             initCallbacks();
         }
 
-        return lifecycleEventCallbacks[callbackType];
+        return callbackRegistry;
     }
 
     /**

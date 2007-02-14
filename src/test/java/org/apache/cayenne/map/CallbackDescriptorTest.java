@@ -23,8 +23,8 @@ import junit.framework.TestCase;
 public class CallbackDescriptorTest extends TestCase {
 
     public void testConstructor() {
-        CallbackDescriptor m = new CallbackDescriptor(LifecycleEventCallback.POST_LOAD);
-        assertEquals(LifecycleEventCallback.POST_LOAD, m.getCallbackType());
+        CallbackDescriptor m = new CallbackDescriptor(CallbackMap.POST_LOAD);
+        assertEquals(CallbackMap.POST_LOAD, m.getCallbackType());
 
         try {
             new CallbackDescriptor(10000);
@@ -36,7 +36,7 @@ public class CallbackDescriptorTest extends TestCase {
     }
 
     public void testAddCallbackMethod() {
-        CallbackDescriptor m = new CallbackDescriptor(LifecycleEventCallback.PRE_PERSIST);
+        CallbackDescriptor m = new CallbackDescriptor(CallbackMap.PRE_PERSIST);
         assertEquals(0, m.getCallbackMethods().size());
         m.addCallbackMethod("a");
         assertEquals(1, m.getCallbackMethods().size());

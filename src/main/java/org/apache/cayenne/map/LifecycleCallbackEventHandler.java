@@ -25,44 +25,50 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * A runtime callback processor for a single lifecycle event.
+ * A runtime callback processor for a single kind of lifecycle events.
  * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-public abstract class LifecycleEventCallbackMap {
+class LifecycleCallbackEventHandler {
 
-    protected Map listeners;
-    protected Collection defaultListeners;
+    private EntityResolver resolver;
+    private Map listeners;
+    private Collection defaultListeners;
 
-    public LifecycleEventCallbackMap() {
-        listeners = new HashMap();
-        defaultListeners = new ArrayList();
+    LifecycleCallbackEventHandler(EntityResolver resolver) {
+        this.resolver = resolver;
+        this.listeners = new HashMap();
+        this.defaultListeners = new ArrayList();
     }
 
-    protected abstract boolean isExcludingDefaultListeners(Class objectClass);
+    private boolean excludingDefaultListeners(Class objectClass) {
+        ObjEntity entity = resolver.lookupObjEntity(objectClass);
+        return entity != null && entity.isExcludingDefaultListeners();
+    }
 
-    protected abstract boolean isExcludingSuperclassListeners(Class objectClass);
+    private boolean excludingSuperclassListeners(Class objectClass) {
+        ObjEntity entity = resolver.lookupObjEntity(objectClass);
+        return entity != null && entity.isExcludingSuperclassListeners();
+    }
+
+    boolean isEmpty() {
+        return listeners.isEmpty() && defaultListeners.isEmpty();
+    }
 
     /**
      * Removes all listeners.
      */
-    public void removeAll() {
+    void clear() {
         listeners.clear();
-    }
-
-    /**
-     * Returns true if no listeners are regsitered with this callback for any entity.
-     */
-    public boolean isEmpty() {
-        return listeners.isEmpty();
+        defaultListeners.clear();
     }
 
     /**
      * Registers a callback method to be invoked on a provided non-entity object when a
      * lifecycle event occurs on any entity that does not suppress default callbacks.
      */
-    public void addDefaultListener(Object listener, String methodName) {
+    void addDefaultListener(Object listener, String methodName) {
         CallbackOnListener callback = new CallbackOnListener(listener, methodName);
         addDefaultCallback(callback);
     }
@@ -70,7 +76,7 @@ public abstract class LifecycleEventCallbackMap {
     /**
      * Registers a callback object to be invoked when a lifecycle event occurs.
      */
-    public void addDefaultCallback(LifecycleEventCallback callback) {
+    private void addDefaultCallback(AbstractCallback callback) {
         defaultListeners.add(callback);
     }
 
@@ -78,7 +84,7 @@ public abstract class LifecycleEventCallbackMap {
      * Registers a callback method to be invoked on an entity class instances when a
      * lifecycle event occurs.
      */
-    public void addListener(Class entityClass, String methodName) {
+    void addListener(Class entityClass, String methodName) {
         addCallback(entityClass, new CallbackOnEntity(entityClass, methodName));
     }
 
@@ -86,7 +92,7 @@ public abstract class LifecycleEventCallbackMap {
      * Registers callback method to be invoked on a provided non-entity object when a
      * lifecycle event occurs.
      */
-    public void addListener(Class entityClass, Object listener, String methodName) {
+    void addListener(Class entityClass, Object listener, String methodName) {
         CallbackOnListener callback = new CallbackOnListener(
                 listener,
                 methodName,
@@ -97,7 +103,7 @@ public abstract class LifecycleEventCallbackMap {
     /**
      * Registers a callback object to be invoked when a lifecycle event occurs.
      */
-    public void addCallback(Class entityClass, LifecycleEventCallback callback) {
+    private void addCallback(Class entityClass, AbstractCallback callback) {
         Collection entityListeners = (Collection) listeners.get(entityClass.getName());
 
         if (entityListeners == null) {
@@ -111,14 +117,13 @@ public abstract class LifecycleEventCallbackMap {
     /**
      * Invokes callbacks for a given entity object.
      */
-    public void performCallbacks(Object object) {
+    void performCallbacks(Object object) {
 
         // default listeners are invoked first
-        if (!defaultListeners.isEmpty()
-                && !isExcludingDefaultListeners(object.getClass())) {
+        if (!defaultListeners.isEmpty() && !excludingDefaultListeners(object.getClass())) {
             Iterator it = (Iterator) defaultListeners.iterator();
             while (it.hasNext()) {
-                ((LifecycleEventCallback) it.next()).performCallback(object);
+                ((AbstractCallback) it.next()).performCallback(object);
             }
         }
 
@@ -127,16 +132,27 @@ public abstract class LifecycleEventCallbackMap {
     }
 
     /**
+     * Invokes callbacks for a collection of entity objects.
+     */
+    void performCallbacks(Collection objects) {
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object object = it.next();
+            performCallbacks(object);
+        }
+    }
+
+    /**
      * Invokes callbacks for the class hierarchy, starting from the most generic
      * superclass.
      */
-    protected void performCallbacks(Object object, Class callbackEntityClass) {
+    private void performCallbacks(Object object, Class callbackEntityClass) {
         if (Object.class.equals(callbackEntityClass) || callbackEntityClass == null) {
             return;
         }
 
         // recursively perform super callbacks first
-        if (!isExcludingSuperclassListeners(callbackEntityClass)) {
+        if (!excludingSuperclassListeners(callbackEntityClass)) {
             performCallbacks(object, callbackEntityClass.getSuperclass());
         }
 
@@ -147,19 +163,9 @@ public abstract class LifecycleEventCallbackMap {
         if (entityListeners != null) {
             Iterator it = (Iterator) entityListeners.iterator();
             while (it.hasNext()) {
-                ((LifecycleEventCallback) it.next()).performCallback(object);
+                ((AbstractCallback) it.next()).performCallback(object);
             }
         }
     }
 
-    /**
-     * Invokes callbacks for a collection of entity objects.
-     */
-    public void performCallbacks(Collection objects) {
-        Iterator it = objects.iterator();
-        while (it.hasNext()) {
-            Object object = it.next();
-            performCallbacks(object);
-        }
-    }
 }

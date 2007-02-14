@@ -23,14 +23,14 @@ import java.sql.Date;
 
 import org.apache.art.oneway.Artist;
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.map.LifecycleEventCallback;
 import org.apache.cayenne.unit.OneWayMappingCase;
 
 /**
  * @author Holger Hoffstaette
  * @author Andrus Adamchik
- * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be removed in
+ * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
  *             later 3.0 milestones.
  */
 public class DataContextEventsTest extends OneWayMappingCase {

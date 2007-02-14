@@ -21,16 +21,16 @@ package org.apache.cayenne.access.event;
 
 import java.util.Map;
 
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.event.CayenneEvent;
-import org.apache.cayenne.map.LifecycleEventCallback;
 
 /**
  * Represents events sent by DataContext.
  * 
  * @author Dirk Olmes
  * @author Holger Hoffstaette
- * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be removed in
+ * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
  *             later 3.0 milestones.
  */
 public class DataContextEvent extends CayenneEvent {

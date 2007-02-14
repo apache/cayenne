@@ -30,6 +30,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -37,7 +38,6 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.LifecycleEventCallback;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -122,7 +122,7 @@ public class DataContextExtrasTest extends CayenneCase {
     }
 
     /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleEventCallback}. Will be
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
      *             removed in later 3.0 milestones.
      */
     public void testTransactionEventsEnabled() {

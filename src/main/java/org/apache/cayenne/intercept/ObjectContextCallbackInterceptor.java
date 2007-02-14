@@ -25,10 +25,9 @@ import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.DeleteRule;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEventCallback;
-import org.apache.cayenne.map.LifecycleEventCallbackMap;
+import org.apache.cayenne.map.LifecycleCallbackRegistry;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -46,23 +45,14 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  */
 public class ObjectContextCallbackInterceptor extends ObjectContextDecorator {
 
-    protected LifecycleEventCallbackMap prePersist;
-    protected LifecycleEventCallbackMap preRemove;
+    protected LifecycleCallbackRegistry callbackRegistry;
 
     public void setContext(ObjectContext context) {
         super.setContext(context);
 
-        // init callback ivars for faster access...
-        if (context != null) {
-            EntityResolver resolver = context.getEntityResolver();
-
-            prePersist = resolver.getCallbacks(LifecycleEventCallback.PRE_PERSIST);
-            preRemove = resolver.getCallbacks(LifecycleEventCallback.PRE_REMOVE);
-        }
-        else {
-            prePersist = null;
-            preRemove = null;
-        }
+        callbackRegistry = (context != null) ? context
+                .getEntityResolver()
+                .getCallbackRegistry() : null;
     }
 
     /**
@@ -70,9 +60,7 @@ public class ObjectContextCallbackInterceptor extends ObjectContextDecorator {
      */
     public Persistent newObject(Class persistentClass) {
         Persistent object = super.newObject(persistentClass);
-
-        prePersist.performCallbacks(object);
-
+        callbackRegistry.performCallbacks(CallbackMap.PRE_PERSIST, object);
         return object;
     }
 
@@ -81,7 +69,7 @@ public class ObjectContextCallbackInterceptor extends ObjectContextDecorator {
      */
     public void registerNewObject(Object object) {
         super.registerNewObject(object);
-        prePersist.performCallbacks(object);
+        callbackRegistry.performCallbacks(CallbackMap.PRE_PERSIST, object);
     }
 
     /**
@@ -100,7 +88,7 @@ public class ObjectContextCallbackInterceptor extends ObjectContextDecorator {
     void applyPreRemoveCallbacks(Persistent object) {
 
         if (object.getPersistenceState() != PersistenceState.NEW) {
-            preRemove.performCallbacks(object);
+            callbackRegistry.performCallbacks(CallbackMap.PRE_REMOVE, object);
         }
 
         ObjEntity entity = getEntityResolver().lookupObjEntity(object);
