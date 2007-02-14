@@ -13,3 +13,4 @@ Bug Fixes:
 CAY-741 Indexing entities with inheritance across datamaps
 CAY-743 Reordering mappings from domain in xml resulting in StackOverflowException
 CAY-750 Stored procedures without parameters fail on Postgres 8
+CAY-751 AS400 datafields containing # in field names do not get mapped correctly
