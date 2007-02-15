@@ -22,7 +22,7 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
 /**
  * A callback interface to listen to persistent object lifecycle events. Note that
- * listeners ARE NOT REQUIRED to implement this interface, and in fact both won't. It
+ * listeners ARE NOT REQUIRED to implement this interface, and in fact most won't. It
  * exists for type safety and for simplifying listener registration. See
  * {@link LifecycleCallbackRegistry} for details on how to register callbacks.
  * 
