@@ -25,7 +25,11 @@ import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
- * A registry of lifecycle callbacks for all callback event types.
+ * A registry of lifecycle callbacks for all callback event types. Valid event types are
+ * {@link LifecycleListener#PRE_PERSIST}, {@link LifecycleListener#POST_PERSIST},
+ * {@link LifecycleListener#PRE_UPDATE}, {@link LifecycleListener#POST_UPDATE},
+ * {@link LifecycleListener#PRE_REMOVE}, {@link LifecycleListener#POST_REMOVE},
+ * {@link LifecycleListener#POST_LOAD}.
  * 
  * @since 3.0
  * @author Andrus Adamchik
@@ -73,13 +77,13 @@ public class LifecycleCallbackRegistry {
      * methods in this class can be used to register arbitrary listeners.
      */
     public void addDefaultListener(LifecycleListener listener) {
-        addDefaultListener(CallbackMap.PRE_PERSIST, listener, "prePersist");
-        addDefaultListener(CallbackMap.POST_PERSIST, listener, "postPersist");
-        addDefaultListener(CallbackMap.PRE_REMOVE, listener, "preRemove");
-        addDefaultListener(CallbackMap.POST_REMOVE, listener, "postRemove");
-        addDefaultListener(CallbackMap.PRE_UPDATE, listener, "preUpdate");
-        addDefaultListener(CallbackMap.POST_UPDATE, listener, "postUpdate");
-        addDefaultListener(CallbackMap.POST_LOAD, listener, "postLoad");
+        addDefaultListener(LifecycleListener.PRE_PERSIST, listener, "prePersist");
+        addDefaultListener(LifecycleListener.POST_PERSIST, listener, "postPersist");
+        addDefaultListener(LifecycleListener.PRE_REMOVE, listener, "preRemove");
+        addDefaultListener(LifecycleListener.POST_REMOVE, listener, "postRemove");
+        addDefaultListener(LifecycleListener.PRE_UPDATE, listener, "preUpdate");
+        addDefaultListener(LifecycleListener.POST_UPDATE, listener, "postUpdate");
+        addDefaultListener(LifecycleListener.POST_LOAD, listener, "postLoad");
     }
 
     /**
@@ -96,13 +100,13 @@ public class LifecycleCallbackRegistry {
      * methods in this class can be used to register arbitrary listeners.
      */
     public void addListener(Class entityClass, LifecycleListener listener) {
-        addListener(CallbackMap.PRE_PERSIST, entityClass, listener, "prePersist");
-        addListener(CallbackMap.POST_PERSIST, entityClass, listener, "postPersist");
-        addListener(CallbackMap.PRE_REMOVE, entityClass, listener, "preRemove");
-        addListener(CallbackMap.POST_REMOVE, entityClass, listener, "postRemove");
-        addListener(CallbackMap.PRE_UPDATE, entityClass, listener, "preUpdate");
-        addListener(CallbackMap.POST_UPDATE, entityClass, listener, "postUpdate");
-        addListener(CallbackMap.POST_LOAD, entityClass, listener, "postLoad");
+        addListener(LifecycleListener.PRE_PERSIST, entityClass, listener, "prePersist");
+        addListener(LifecycleListener.POST_PERSIST, entityClass, listener, "postPersist");
+        addListener(LifecycleListener.PRE_REMOVE, entityClass, listener, "preRemove");
+        addListener(LifecycleListener.POST_REMOVE, entityClass, listener, "postRemove");
+        addListener(LifecycleListener.PRE_UPDATE, entityClass, listener, "preUpdate");
+        addListener(LifecycleListener.POST_UPDATE, entityClass, listener, "postUpdate");
+        addListener(LifecycleListener.POST_LOAD, entityClass, listener, "postLoad");
     }
 
     /**

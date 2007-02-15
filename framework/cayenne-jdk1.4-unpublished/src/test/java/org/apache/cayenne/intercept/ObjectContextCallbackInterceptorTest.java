@@ -20,7 +20,7 @@ package org.apache.cayenne.intercept;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
-import org.apache.cayenne.map.CallbackMap;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.unit.CayenneCase;
@@ -49,7 +49,7 @@ public class ObjectContextCallbackInterceptorTest extends CayenneCase {
         assertNotNull(a1);
         assertFalse(a1.isPrePersisted());
 
-        registry.addListener(CallbackMap.PRE_PERSIST, Artist.class, "prePersistCallback");
+        registry.addListener(LifecycleListener.PRE_PERSIST, Artist.class, "prePersistCallback");
 
         Artist a2 = (Artist) i.newObject(Artist.class);
         assertNotNull(a2);
@@ -57,7 +57,7 @@ public class ObjectContextCallbackInterceptorTest extends CayenneCase {
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
         registry.addListener(
-                CallbackMap.PRE_PERSIST,
+                LifecycleListener.PRE_PERSIST,
                 Artist.class,
                 listener2,
                 "publicCallback");
@@ -90,7 +90,7 @@ public class ObjectContextCallbackInterceptorTest extends CayenneCase {
         assertFalse(a1.isPrePersisted());
         assertFalse(a1.isPreRemoved());
 
-        registry.addListener(CallbackMap.PRE_REMOVE, Artist.class, "preRemoveCallback");
+        registry.addListener(LifecycleListener.PRE_REMOVE, Artist.class, "preRemoveCallback");
 
         Artist a2 = (Artist) i.newObject(Artist.class);
         a2.setArtistName("XX");
@@ -101,7 +101,7 @@ public class ObjectContextCallbackInterceptorTest extends CayenneCase {
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
         registry.addListener(
-                CallbackMap.PRE_REMOVE,
+                LifecycleListener.PRE_REMOVE,
                 Artist.class,
                 listener2,
                 "publicCallback");

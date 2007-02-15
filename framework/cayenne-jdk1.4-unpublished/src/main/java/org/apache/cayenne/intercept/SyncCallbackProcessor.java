@@ -24,10 +24,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
-import org.apache.cayenne.map.CallbackMap;
 
 class SyncCallbackProcessor implements GraphChangeHandler {
 
@@ -50,11 +50,11 @@ class SyncCallbackProcessor implements GraphChangeHandler {
         switch (syncType) {
             case DataChannel.FLUSH_CASCADE_SYNC:
             case DataChannel.FLUSH_NOCASCADE_SYNC:
-                apply(CallbackMap.PRE_UPDATE, updated);
+                apply(LifecycleListener.PRE_UPDATE, updated);
 
                 if (interceptor.isContextCallbacksEnabled()) {
-                    apply(CallbackMap.PRE_PERSIST, persisted);
-                    apply(CallbackMap.PRE_REMOVE, removed);
+                    apply(LifecycleListener.PRE_PERSIST, persisted);
+                    apply(LifecycleListener.PRE_REMOVE, removed);
                 }
         }
     }
@@ -63,13 +63,13 @@ class SyncCallbackProcessor implements GraphChangeHandler {
         switch (syncType) {
             case DataChannel.FLUSH_CASCADE_SYNC:
             case DataChannel.FLUSH_NOCASCADE_SYNC:
-                apply(CallbackMap.POST_UPDATE, updated);
-                apply(CallbackMap.POST_REMOVE, removed);
-                apply(CallbackMap.POST_PERSIST, persisted);
+                apply(LifecycleListener.POST_UPDATE, updated);
+                apply(LifecycleListener.POST_REMOVE, removed);
+                apply(LifecycleListener.POST_PERSIST, persisted);
                 break;
             case DataChannel.ROLLBACK_CASCADE_SYNC:
-                apply(CallbackMap.POST_LOAD, updated);
-                apply(CallbackMap.POST_LOAD, removed);
+                apply(LifecycleListener.POST_LOAD, updated);
+                apply(LifecycleListener.POST_LOAD, removed);
         }
     }
 

@@ -19,10 +19,10 @@
 package org.apache.cayenne.intercept;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.ObjectStore;
-import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
@@ -51,10 +51,10 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         ObjectContext context = new DataContext(i, new ObjectStore(getDomain()
                 .getSharedSnapshotCache()));
 
-        registry.addListener(CallbackMap.POST_LOAD, Artist.class, "postLoadCallback");
+        registry.addListener(LifecycleListener.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
         registry.addListener(
-                CallbackMap.POST_LOAD,
+                LifecycleListener.POST_LOAD,
                 Artist.class,
                 listener,
                 "publicCallback");
@@ -132,7 +132,7 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         context.commitChanges();
         assertFalse(a1.isPreUpdated());
 
-        registry.addListener(CallbackMap.PRE_UPDATE, Artist.class, "preUpdateCallback");
+        registry.addListener(LifecycleListener.PRE_UPDATE, Artist.class, "preUpdateCallback");
         a1.setArtistName("ZZ");
         context.commitChanges();
         assertTrue(a1.isPreUpdated());
@@ -142,7 +142,7 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
         registry.addListener(
-                CallbackMap.PRE_UPDATE,
+                LifecycleListener.PRE_UPDATE,
                 Artist.class,
                 listener2,
                 "publicCallback");
@@ -175,7 +175,7 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         context.commitChanges();
         assertFalse(a1.isPostUpdated());
 
-        registry.addListener(CallbackMap.POST_UPDATE, Artist.class, "postUpdateCallback");
+        registry.addListener(LifecycleListener.POST_UPDATE, Artist.class, "postUpdateCallback");
         a1.setArtistName("ZZ");
         context.commitChanges();
         assertTrue(a1.isPostUpdated());
@@ -185,7 +185,7 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
         registry.addListener(
-                CallbackMap.POST_UPDATE,
+                LifecycleListener.POST_UPDATE,
                 Artist.class,
                 listener2,
                 "publicCallback");
@@ -213,10 +213,10 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         a1.setArtistName("XX");
         context.commitChanges();
 
-        registry.addListener(CallbackMap.POST_REMOVE, Artist.class, "postRemoveCallback");
+        registry.addListener(LifecycleListener.POST_REMOVE, Artist.class, "postRemoveCallback");
         MockCallingBackListener listener2 = new MockCallingBackListener();
         registry.addListener(
-                CallbackMap.POST_REMOVE,
+                LifecycleListener.POST_REMOVE,
                 Artist.class,
                 listener2,
                 "publicCallback");
@@ -246,12 +246,12 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         assertFalse(a1.isPostPersisted());
 
         registry.addListener(
-                CallbackMap.POST_PERSIST,
+                LifecycleListener.POST_PERSIST,
                 Artist.class,
                 "postPersistCallback");
         MockCallingBackListener listener2 = new MockCallingBackListener();
         registry.addListener(
-                CallbackMap.POST_PERSIST,
+                LifecycleListener.POST_PERSIST,
                 Artist.class,
                 listener2,
                 "publicCallback");
