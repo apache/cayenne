@@ -28,13 +28,14 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.Transaction;
 
-public class ResourceLocalEntityManager implements EntityManager {
+public class ResourceLocalEntityManager implements EntityManager, CayenneEntityManager {
 
     protected EntityTransaction transaction;
     protected ResourceLocalEntityManagerFactory factory;
@@ -52,6 +53,13 @@ public class ResourceLocalEntityManager implements EntityManager {
         this.open = true;
         this.context = context;
         this.factory = factory;
+    }
+
+    /**
+     * Returns a DataChannel of the peer ObjectContext.
+     */
+    public DataChannel getChannel() {
+        return context.getChannel();
     }
 
     /**
@@ -150,7 +158,7 @@ public class ResourceLocalEntityManager implements EntityManager {
      * not exist in the database, throws EntityNotFoundException when the instance state
      * is first accessed. (The persistence provider runtime is permitted to throw the
      * EntityNotFoundException when getReference is called.) The application should not
-     * expect that theinstance state will be available upon detachment, unless it was
+     * expect that the instance state will be available upon detachment, unless it was
      * accessed by the application while the entity manager was open.
      * 
      * @param entityClass
