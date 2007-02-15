@@ -31,6 +31,14 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
  */
 public interface LifecycleListener {
 
+    public static final int PRE_PERSIST = 0;
+    public static final int PRE_REMOVE = 1;
+    public static final int PRE_UPDATE = 2;
+    public static final int POST_PERSIST = 3;
+    public static final int POST_REMOVE = 4;
+    public static final int POST_UPDATE = 5;
+    public static final int POST_LOAD = 6;
+
     void prePersist(Object entity);
 
     void postPersist(Object entity);

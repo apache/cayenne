@@ -20,6 +20,8 @@ package org.apache.cayenne.map;
 
 import java.io.Serializable;
 
+import org.apache.cayenne.LifecycleListener;
+
 /**
  * A generic descriptor of a set of standard lifecycle callbacks.
  * 
@@ -31,22 +33,15 @@ public class CallbackMap implements Serializable {
     // these int constants correspond to indexes in array in LifecycleCallbackRegistry, so
     // they must start with 0 and increment by 1.
 
-    public static final int PRE_PERSIST = 0;
-    public static final int PRE_REMOVE = 1;
-    public static final int PRE_UPDATE = 2;
-    public static final int POST_PERSIST = 3;
-    public static final int POST_REMOVE = 4;
-    public static final int POST_UPDATE = 5;
-    public static final int POST_LOAD = 6;
-
     /**
      * An array containing all valid callbacks with each callback int value corresponding
      * to its index in the array.
      */
     public static final int[] CALLBACKS = new int[] {
-            CallbackMap.PRE_PERSIST, CallbackMap.PRE_REMOVE, CallbackMap.PRE_UPDATE,
-            CallbackMap.POST_PERSIST, CallbackMap.POST_REMOVE, CallbackMap.POST_UPDATE,
-            CallbackMap.POST_LOAD
+            LifecycleListener.PRE_PERSIST, LifecycleListener.PRE_REMOVE,
+            LifecycleListener.PRE_UPDATE, LifecycleListener.POST_PERSIST,
+            LifecycleListener.POST_REMOVE, LifecycleListener.POST_UPDATE,
+            LifecycleListener.POST_LOAD
     };
 
     protected CallbackDescriptor prePersist;
@@ -58,13 +53,13 @@ public class CallbackMap implements Serializable {
     protected CallbackDescriptor postLoad;
 
     public CallbackMap() {
-        this.prePersist = new CallbackDescriptor(CallbackMap.PRE_PERSIST);
-        this.postPersist = new CallbackDescriptor(CallbackMap.POST_PERSIST);
-        this.preUpdate = new CallbackDescriptor(CallbackMap.PRE_UPDATE);
-        this.postUpdate = new CallbackDescriptor(CallbackMap.POST_UPDATE);
-        this.preRemove = new CallbackDescriptor(CallbackMap.PRE_REMOVE);
-        this.postRemove = new CallbackDescriptor(CallbackMap.POST_REMOVE);
-        this.postLoad = new CallbackDescriptor(CallbackMap.POST_LOAD);
+        this.prePersist = new CallbackDescriptor(LifecycleListener.PRE_PERSIST);
+        this.postPersist = new CallbackDescriptor(LifecycleListener.POST_PERSIST);
+        this.preUpdate = new CallbackDescriptor(LifecycleListener.PRE_UPDATE);
+        this.postUpdate = new CallbackDescriptor(LifecycleListener.POST_UPDATE);
+        this.preRemove = new CallbackDescriptor(LifecycleListener.PRE_REMOVE);
+        this.postRemove = new CallbackDescriptor(LifecycleListener.POST_REMOVE);
+        this.postLoad = new CallbackDescriptor(LifecycleListener.POST_LOAD);
     }
 
     /**

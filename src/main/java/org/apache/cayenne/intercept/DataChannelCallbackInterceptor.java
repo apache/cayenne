@@ -21,11 +21,11 @@ package org.apache.cayenne.intercept;
 import java.util.List;
 
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
-import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
@@ -58,16 +58,16 @@ public class DataChannelCallbackInterceptor extends DataChannelDecorator {
     }
 
     protected boolean isEmpty() {
-        if (!(callbackRegistry.isEmpty(CallbackMap.PRE_UPDATE)
-                && callbackRegistry.isEmpty(CallbackMap.POST_PERSIST)
-                && callbackRegistry.isEmpty(CallbackMap.POST_REMOVE)
-                && callbackRegistry.isEmpty(CallbackMap.POST_UPDATE) && callbackRegistry
-                .isEmpty(CallbackMap.POST_LOAD))) {
+        if (!(callbackRegistry.isEmpty(LifecycleListener.PRE_UPDATE)
+                && callbackRegistry.isEmpty(LifecycleListener.POST_PERSIST)
+                && callbackRegistry.isEmpty(LifecycleListener.POST_REMOVE)
+                && callbackRegistry.isEmpty(LifecycleListener.POST_UPDATE) && callbackRegistry
+                .isEmpty(LifecycleListener.POST_LOAD))) {
             return false;
         }
 
-        return contextCallbacksEnabled ? callbackRegistry.isEmpty(CallbackMap.PRE_REMOVE)
-                && callbackRegistry.isEmpty(CallbackMap.PRE_PERSIST) : true;
+        return contextCallbacksEnabled ? callbackRegistry.isEmpty(LifecycleListener.PRE_REMOVE)
+                && callbackRegistry.isEmpty(LifecycleListener.PRE_PERSIST) : true;
     }
 
     public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
@@ -76,14 +76,14 @@ public class DataChannelCallbackInterceptor extends DataChannelDecorator {
         // TODO: andrus, 9/21/2006 - this method incorrectly calls "postLoad" when query
         // refresh flag is set to false and object is already there.
 
-        if (!callbackRegistry.isEmpty(CallbackMap.POST_LOAD)) {
+        if (!callbackRegistry.isEmpty(LifecycleListener.POST_LOAD)) {
 
             List list = response.firstList();
             if (list != null
                     && !list.isEmpty()
                     && !(query.getMetaData(originatingContext.getEntityResolver()))
                             .isFetchingDataRows()) {
-                callbackRegistry.performCallbacks(CallbackMap.POST_LOAD, list);
+                callbackRegistry.performCallbacks(LifecycleListener.POST_LOAD, list);
             }
         }
 

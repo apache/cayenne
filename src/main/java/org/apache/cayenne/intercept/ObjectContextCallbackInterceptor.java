@@ -22,10 +22,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.cayenne.DeleteDenyException;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -60,7 +60,7 @@ public class ObjectContextCallbackInterceptor extends ObjectContextDecorator {
      */
     public Persistent newObject(Class persistentClass) {
         Persistent object = super.newObject(persistentClass);
-        callbackRegistry.performCallbacks(CallbackMap.PRE_PERSIST, object);
+        callbackRegistry.performCallbacks(LifecycleListener.PRE_PERSIST, object);
         return object;
     }
 
@@ -69,7 +69,7 @@ public class ObjectContextCallbackInterceptor extends ObjectContextDecorator {
      */
     public void registerNewObject(Object object) {
         super.registerNewObject(object);
-        callbackRegistry.performCallbacks(CallbackMap.PRE_PERSIST, object);
+        callbackRegistry.performCallbacks(LifecycleListener.PRE_PERSIST, object);
     }
 
     /**
@@ -88,7 +88,7 @@ public class ObjectContextCallbackInterceptor extends ObjectContextDecorator {
     void applyPreRemoveCallbacks(Persistent object) {
 
         if (object.getPersistenceState() != PersistenceState.NEW) {
-            callbackRegistry.performCallbacks(CallbackMap.PRE_REMOVE, object);
+            callbackRegistry.performCallbacks(LifecycleListener.PRE_REMOVE, object);
         }
 
         ObjEntity entity = getEntityResolver().lookupObjEntity(object);
