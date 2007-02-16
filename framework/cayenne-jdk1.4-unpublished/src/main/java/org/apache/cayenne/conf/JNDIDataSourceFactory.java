@@ -97,8 +97,9 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
         // as we don't want compile dependencies on the Modeler, instantiate factory via
         // reflection ...
 
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
         DataSourceFactory prefsFactory = (DataSourceFactory) Class
-                .forName("org.apache.cayenne.modeler.pref.PreferencesDataSourceFactory")
+                .forName("org.apache.cayenne.modeler.pref.PreferencesDataSourceFactory", true, loader)
                 .newInstance();
 
         prefsFactory.initializeWithParentConfiguration(parentConfig);
