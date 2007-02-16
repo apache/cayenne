@@ -36,7 +36,7 @@ import org.apache.cayenne.map.EntityResolver;
  */
 public class LifecycleCallbackRegistry {
 
-    protected LifecycleCallbackEventHandler[] eventCallbacks;
+    private LifecycleCallbackEventHandler[] eventCallbacks;
 
     /**
      * Creates an empty callback registry.
