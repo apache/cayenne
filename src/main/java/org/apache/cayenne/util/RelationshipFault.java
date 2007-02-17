@@ -102,7 +102,7 @@ public abstract class RelationshipFault {
         EntityResolver resolver = relationshipOwner
                 .getObjectContext()
                 .getEntityResolver();
-        ObjEntity sourceEntity = resolver.lookupObjEntity(relationshipOwner
+        ObjEntity sourceEntity = resolver.getObjEntity(relationshipOwner
                 .getObjectId()
                 .getEntityName());
 
@@ -111,9 +111,8 @@ public abstract class RelationshipFault {
         ObjRelationship reverse = relationship.getReverseRelationship();
 
         if (reverse != null && !reverse.isToMany()) {
-            Property property = resolver
-                    .getClassDescriptor(reverse.getSourceEntity().getName())
-                    .getProperty(reverse.getName());
+            Property property = resolver.getClassDescriptor(
+                    reverse.getSourceEntity().getName()).getProperty(reverse.getName());
 
             Iterator it = resolved.iterator();
             while (it.hasNext()) {

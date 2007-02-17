@@ -42,7 +42,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     }
 
     public ClassDescriptor getDescriptor(String entityName) {
-        ObjEntity entity = descriptorMap.getResolver().lookupObjEntity(entityName);
+        ObjEntity entity = descriptorMap.getResolver().getObjEntity(entityName);
         if (entity == null) {
             throw new CayenneRuntimeException("Unmapped entity: " + entityName);
         }

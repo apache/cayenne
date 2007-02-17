@@ -69,8 +69,8 @@ public class ClientEntityResolverTest extends TestCase {
         Collection entities = Collections.singleton(dataMap);
         EntityResolver resolver = new EntityResolver(entities);
 
-        assertSame(entity, resolver.lookupObjEntity(entity.getName()));
-        assertNotNull(resolver.lookupObjEntity(entity.getName()));
+        assertSame(entity, resolver.getObjEntity(entity.getName()));
+        assertNotNull(resolver.getObjEntity(entity.getName()));
     }
 
     public void testInheritance() {

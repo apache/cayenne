@@ -62,9 +62,7 @@ class ChildDiffLoader implements GraphChangeHandler {
             throw new NullPointerException("Null entity name in id " + id);
         }
 
-        ObjEntity entity = context
-                .getEntityResolver()
-                .lookupObjEntity(id.getEntityName());
+        ObjEntity entity = context.getEntityResolver().getObjEntity(id.getEntityName());
         if (entity == null) {
             throw new IllegalArgumentException("Entity not mapped with Cayenne: " + id);
         }
