@@ -129,6 +129,7 @@ public class EntityMapDefaultsProcessor {
             AccessType access = entity.getAccess();
             if (access == null) {
                 access = ((JpaEntityMap) path.getRoot()).getAccess();
+                entity.setAccess(access);
             }
 
             if (access == AccessType.PROPERTY) {
