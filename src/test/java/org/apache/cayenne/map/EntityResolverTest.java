@@ -38,8 +38,9 @@ import org.apache.cayenne.unit.CayenneResources;
 public class EntityResolverTest extends CayenneCase {
 
     public void testObjEntityLookupDuplicates() {
-        AccessStack stack = CayenneResources.getResources().getAccessStack(
-                "GenericStack");
+        AccessStack stack = CayenneResources
+                .getResources()
+                .getAccessStack("GenericStack");
 
         DataMap generic = stack.getDataDomain().getMap("generic");
         EntityResolver resolver = new EntityResolver(Collections.singleton(generic));
@@ -62,9 +63,13 @@ public class EntityResolverTest extends CayenneCase {
         }
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public void testDbEntityLookupDuplicates() {
-        AccessStack stack = CayenneResources.getResources().getAccessStack(
-                "GenericStack");
+        AccessStack stack = CayenneResources
+                .getResources()
+                .getAccessStack("GenericStack");
 
         DataMap generic = stack.getDataDomain().getMap("generic");
         EntityResolver resolver = new EntityResolver(Collections.singleton(generic));
@@ -103,13 +108,17 @@ public class EntityResolverTest extends CayenneCase {
         assertNull(clientResolver.lookupObjEntity(MtTable1.class));
     }
 
-    // //Test DbEntitylookups
-
+    /**
+     * @deprecated since 3.0
+     */
     public void testLookupDbEntityByClass() {
         EntityResolver resolver = new EntityResolver(getDomain().getDataMaps());
         assertIsArtistDbEntity(resolver.lookupDbEntity(Artist.class));
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public void testLookupDbEntityByDataobject() throws Exception {
         EntityResolver resolver = new EntityResolver(getDomain().getDataMaps());
         Artist artist = (Artist) this.createDataContext().newObject("Artist");

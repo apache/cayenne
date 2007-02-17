@@ -38,12 +38,12 @@ public class BatchActionTest extends CayenneCase {
         // test with adapter that supports keys
         DbAdapter adapter = buildAdapter(true);
 
-        InsertBatchQuery batch1 = new InsertBatchQuery(resolver
-                .lookupDbEntity(GeneratedColumnTestEntity.class), 5);
+        InsertBatchQuery batch1 = new InsertBatchQuery(resolver.lookupObjEntity(
+                GeneratedColumnTestEntity.class).getDbEntity(), 5);
         assertTrue(new BatchAction(batch1, adapter, resolver).hasGeneratedKeys());
 
-        InsertBatchQuery batch2 = new InsertBatchQuery(resolver
-                .lookupDbEntity(Artist.class), 5);
+        InsertBatchQuery batch2 = new InsertBatchQuery(resolver.lookupObjEntity(
+                Artist.class).getDbEntity(), 5);
         assertFalse(new BatchAction(batch2, adapter, resolver).hasGeneratedKeys());
     }
 
@@ -53,12 +53,12 @@ public class BatchActionTest extends CayenneCase {
         // test with adapter that does not support keys...
         DbAdapter adapter = buildAdapter(false);
 
-        InsertBatchQuery batch1 = new InsertBatchQuery(resolver
-                .lookupDbEntity(GeneratedColumnTestEntity.class), 5);
+        InsertBatchQuery batch1 = new InsertBatchQuery(resolver.lookupObjEntity(
+                GeneratedColumnTestEntity.class).getDbEntity(), 5);
         assertFalse(new BatchAction(batch1, adapter, resolver).hasGeneratedKeys());
 
-        InsertBatchQuery batch2 = new InsertBatchQuery(resolver
-                .lookupDbEntity(Artist.class), 5);
+        InsertBatchQuery batch2 = new InsertBatchQuery(resolver.lookupObjEntity(
+                Artist.class).getDbEntity(), 5);
         assertFalse(new BatchAction(batch2, adapter, resolver).hasGeneratedKeys());
     }
 

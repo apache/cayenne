@@ -62,7 +62,7 @@ public class PregeneratedPKTest extends CayenneCase {
     }
 
     void updateId(DataContext context, ObjectId id) throws Exception {
-        DbEntity entity = context.getEntityResolver().lookupDbEntity(Artist.class);
+        DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
         DataNode node = context.getParentDataDomain().lookupDataNode(entity.getDataMap());
 
         Object pk = node

@@ -43,43 +43,42 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
     }
 
     public void testCreateSqlString() throws Exception {
-        DbEntity entity =
-            getDomain().getEntityResolver().lookupDbEntity(SimpleLockingTestEntity.class);
+        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+                SimpleLockingTestEntity.class).getDbEntity();
 
-        List idAttributes =
-            Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
-        List updatedAttributes =
-            Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+        List idAttributes = Collections.singletonList(entity
+                .getAttribute("LOCKING_TEST_ID"));
+        List updatedAttributes = Collections.singletonList(entity
+                .getAttribute("DESCRIPTION"));
 
-        UpdateBatchQuery updateQuery =
-            new UpdateBatchQuery(entity, idAttributes, updatedAttributes, null, 1);
+        UpdateBatchQuery updateQuery = new UpdateBatchQuery(
+                entity,
+                idAttributes,
+                updatedAttributes,
+                null,
+                1);
         UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(new JdbcAdapter());
         String generatedSql = builder.createSqlString(updateQuery);
         assertNotNull(generatedSql);
-        assertEquals(
-            "UPDATE "
+        assertEquals("UPDATE "
                 + entity.getName()
-                + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ?",
-            generatedSql);
+                + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
 
     public void testCreateSqlStringWithNulls() throws Exception {
-        DbEntity entity =
-            getDomain().getEntityResolver().lookupDbEntity(SimpleLockingTestEntity.class);
+        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+                SimpleLockingTestEntity.class).getDbEntity();
 
-        List idAttributes =
-            Arrays.asList(
-                new Object[] {
-                    entity.getAttribute("LOCKING_TEST_ID"),
-                    entity.getAttribute("NAME")});
+        List idAttributes = Arrays.asList(new Object[] {
+                entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME")
+        });
 
-        List updatedAttributes =
-            Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+        List updatedAttributes = Collections.singletonList(entity
+                .getAttribute("DESCRIPTION"));
 
         Collection nullAttributes = Collections.singleton("NAME");
 
-        UpdateBatchQuery updateQuery =
-            new UpdateBatchQuery(
+        UpdateBatchQuery updateQuery = new UpdateBatchQuery(
                 entity,
                 idAttributes,
                 updatedAttributes,
@@ -89,10 +88,10 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
         String generatedSql = builder.createSqlString(updateQuery);
         assertNotNull(generatedSql);
         assertEquals(
-            "UPDATE "
-                + entity.getName()
-                + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ? AND NAME IS NULL",
-            generatedSql);
+                "UPDATE "
+                        + entity.getName()
+                        + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ? AND NAME IS NULL",
+                generatedSql);
     }
 
 }

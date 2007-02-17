@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.art.Artist;
-import org.apache.art.Exhibit;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
@@ -52,12 +51,12 @@ public class DataNodeQueriesTest extends CayenneCase {
 
         DataNode node = getNode();
 
-        DbEntity artistEnt = node.getEntityResolver().lookupDbEntity(Artist.class);
+        DbEntity artistEnt = node.getEntityResolver().getDbEntity("ARTIST");
         assertNotNull(node.getAdapter().getPkGenerator().generatePkForDbEntity(
                 node,
                 artistEnt));
 
-        DbEntity exhibitEnt = node.getEntityResolver().lookupDbEntity(Exhibit.class);
+        DbEntity exhibitEnt = node.getEntityResolver().getDbEntity("EXHIBIT");
         assertNotNull(node.getAdapter().getPkGenerator().generatePkForDbEntity(
                 node,
                 exhibitEnt));
