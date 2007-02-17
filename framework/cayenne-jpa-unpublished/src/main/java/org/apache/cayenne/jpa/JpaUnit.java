@@ -75,7 +75,7 @@ public class JpaUnit implements PersistenceUnitInfo {
 
     /**
      * Adds a {@link ClassTransformer} to the persistence unit. Default implementation
-     * does nothing, although a provider can defines a {@link JpaUnitFactory} to integrate
+     * does nothing, although a provider can define a {@link JpaUnitFactory} to integrate
      * with its own class loading mechanism.
      * <h3>JPA Specification, 7.1.4:</h3>
      * Add a transformer supplied by the provider that will be called for every new class
