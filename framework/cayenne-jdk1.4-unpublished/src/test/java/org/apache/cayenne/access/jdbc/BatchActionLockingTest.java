@@ -51,7 +51,9 @@ public class BatchActionLockingTest extends LockingCase {
         // test with adapter that supports keys...
         DbAdapter adapter = buildAdapter(true);
 
-        DbEntity dbEntity = resolver.lookupDbEntity(SimpleLockingTestEntity.class);
+        DbEntity dbEntity = resolver
+                .lookupObjEntity(SimpleLockingTestEntity.class)
+                .getDbEntity();
 
         List qualifierAttributes = Arrays.asList(new Object[] {
                 dbEntity.getAttribute("LOCKING_TEST_ID"), dbEntity.getAttribute("NAME")
@@ -82,7 +84,8 @@ public class BatchActionLockingTest extends LockingCase {
         boolean generatesKeys = false;
 
         BatchAction action = new BatchAction(batchQuery, adapter, resolver);
-        action.runAsIndividualQueries(mockConnection,
+        action.runAsIndividualQueries(
+                mockConnection,
                 batchQueryBuilder,
                 new MockOperationObserver(),
                 generatesKeys);
@@ -96,7 +99,9 @@ public class BatchActionLockingTest extends LockingCase {
         // test with adapter that supports keys...
         DbAdapter adapter = buildAdapter(true);
 
-        DbEntity dbEntity = resolver.lookupDbEntity(SimpleLockingTestEntity.class);
+        DbEntity dbEntity = resolver
+                .lookupObjEntity(SimpleLockingTestEntity.class)
+                .getDbEntity();
 
         List qualifierAttributes = Arrays.asList(new Object[] {
                 dbEntity.getAttribute("LOCKING_TEST_ID"), dbEntity.getAttribute("NAME")
@@ -127,7 +132,8 @@ public class BatchActionLockingTest extends LockingCase {
         boolean generatesKeys = false;
         BatchAction action = new BatchAction(batchQuery, adapter, resolver);
         try {
-            action.runAsIndividualQueries(mockConnection,
+            action.runAsIndividualQueries(
+                    mockConnection,
                     batchQueryBuilder,
                     new MockOperationObserver(),
                     generatesKeys);

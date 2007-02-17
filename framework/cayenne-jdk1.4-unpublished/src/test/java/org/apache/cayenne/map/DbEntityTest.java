@@ -21,7 +21,6 @@ package org.apache.cayenne.map;
 
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.unit.CayenneCase;
@@ -231,7 +230,7 @@ public class DbEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntityIndependentPath() {
-        DbEntity artistE = getDomain().getEntityResolver().lookupDbEntity(Artist.class);
+        DbEntity artistE = getDomain().getEntityResolver().getDbEntity("ARTIST");
 
         Expression e1 = Expression.fromString("db:paintingArray");
         Expression translated = artistE
@@ -241,7 +240,7 @@ public class DbEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntityTrimmedPath() {
-        DbEntity artistE = getDomain().getEntityResolver().lookupDbEntity(Artist.class);
+        DbEntity artistE = getDomain().getEntityResolver().getDbEntity("ARTIST");
 
         Expression e1 = Expression.fromString("db:artistExhibitArray.toExhibit");
         Expression translated = artistE
@@ -253,7 +252,7 @@ public class DbEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntitySplitHalfWay() {
-        DbEntity artistE = getDomain().getEntityResolver().lookupDbEntity(Artist.class);
+        DbEntity artistE = getDomain().getEntityResolver().getDbEntity("ARTIST");
 
         Expression e1 = Expression
                 .fromString("db:paintingArray.toPaintingInfo.TEXT_REVIEW");
@@ -265,7 +264,7 @@ public class DbEntityTest extends CayenneCase {
     }
 
     public void testTranslateToRelatedEntityMatchingPath() {
-        DbEntity artistE = getDomain().getEntityResolver().lookupDbEntity(Artist.class);
+        DbEntity artistE = getDomain().getEntityResolver().getDbEntity("ARTIST");
 
         Expression e1 = Expression.fromString("db:artistExhibitArray.toExhibit");
         Expression translated = artistE.translateToRelatedEntity(

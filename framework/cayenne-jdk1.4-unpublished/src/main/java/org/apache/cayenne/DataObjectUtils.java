@@ -101,13 +101,16 @@ public final class DataObjectUtils {
 
         // replacement ID is more tricky... do some sanity check...
         if (id.isReplacementIdAttached()) {
-            DbEntity entity = dataObject
+            ObjEntity objEntity = dataObject
                     .getObjectContext()
                     .getEntityResolver()
-                    .lookupDbEntity(dataObject);
+                    .lookupObjEntity(dataObject);
 
-            if (entity != null && entity.isFullReplacementIdAttached(id)) {
-                return id.getReplacementIdMap();
+            if (objEntity != null) {
+                DbEntity entity = objEntity.getDbEntity();
+                if (entity != null && entity.isFullReplacementIdAttached(id)) {
+                    return id.getReplacementIdMap();
+                }
             }
         }
 

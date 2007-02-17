@@ -453,22 +453,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
                     else {
                         objEntityCache.put(entityClass, oe);
                     }
-
-                    // lookup DbEntity in EntityResolver cache to take into account all
-                    // DataMaps in the namespace
-                    Object dbEntity = dbEntityCache.get(oe.getDbEntityName());
-                    if (dbEntity != null) {
-                        Object existingDB = dbEntityCache.get(entityClass);
-                        if (existingDB != null) {
-
-                            if (existingDB != DUPLICATE_MARKER) {
-                                dbEntityCache.put(entityClass, DUPLICATE_MARKER);
-                            }
-                        }
-                        else {
-                            dbEntityCache.put(entityClass, dbEntity);
-                        }
-                    }
                 }
             }
 
@@ -583,12 +567,11 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * services the specified class
      * 
      * @return the required DbEntity, or null if none matches the specifier
+     * @deprecated since 3.0 - lookup DbEntity via ObjEntity instead.
      */
     public synchronized DbEntity lookupDbEntity(Class aClass) {
-        if (!indexedByClass) {
-            throw new CayenneRuntimeException("Class index is disabled.");
-        }
-        return this._lookupDbEntity(aClass);
+        ObjEntity oe = lookupObjEntity(aClass);
+        return oe != null ? oe.getDbEntity() : null;
     }
 
     /**
@@ -596,9 +579,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * services the specified data Object
      * 
      * @return the required DbEntity, or null if none matches the specifier
+     * @deprecated since 3.0 - lookup DbEntity via ObjEntity instead.
      */
     public synchronized DbEntity lookupDbEntity(Persistent dataObject) {
-        return this._lookupDbEntity(dataObject.getClass());
+        return lookupDbEntity(dataObject.getClass());
     }
 
     /**
