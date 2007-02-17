@@ -93,7 +93,8 @@ public class JtaEntityManagerFactory extends ResourceLocalEntityManagerFactory {
     @Override
     public EntityManager createEntityManager(Map map) {
         checkClosed();
-        EntityManager em = new JtaEntityManager(createObjectContext(), this);
+        CayenneEntityManager em = new JtaEntityManager(createObjectContext(), this);
+        em = new TypeCheckingEntityManager(em);
 
         if (isActiveTransaction()) {
             em.joinTransaction();

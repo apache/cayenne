@@ -104,7 +104,6 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      */
     public void persist(Object entity) {
         checkClosed();
-        checkEntityType(entity);
         context.registerNewObject(entity);
     }
 
@@ -119,7 +118,6 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      */
     public <T> T merge(T entity) {
         checkClosed();
-        checkEntityType(entity);
         checkNotRemoved(entity);
         Persistent persistent = (Persistent) entity;
         return (T) context.localObject(persistent.getObjectId(), persistent);
@@ -133,7 +131,6 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      */
     public void remove(Object entity) {
         checkClosed();
-        checkEntityType(entity);
         checkAttached(entity);
         context.deleteObject((Persistent) entity);
     }
@@ -149,7 +146,6 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      */
     public <T> T find(Class<T> entityClass, Object primaryKey) {
         checkClosed();
-        checkEntityType(entityClass);
         return (T) DataObjectUtils.objectForPK(context, entityClass, primaryKey);
     }
 
@@ -257,8 +253,6 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      */
     public boolean contains(Object entity) {
         checkClosed();
-        checkEntityType(entity);
-
         Persistent p = (Persistent) entity;
         return p.getObjectContext() == context;
     }
@@ -287,14 +281,11 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      */
     public Query createNamedQuery(String name) {
         checkClosed();
-
         return new JpaQuery(context, name);
     }
 
     public Query createNativeQuery(String sqlString, Class resultClass) {
         checkClosed();
-        checkEntityType(resultClass);
-
         return new JpaNativeQuery(context, sqlString, resultClass);
     }
 
@@ -368,15 +359,10 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      * IllegalArgumentException if not.
      */
     protected void checkAttached(Object entity) throws IllegalArgumentException {
-        if (entity instanceof Persistent) {
-            Persistent p = (Persistent) entity;
-            if (p.getPersistenceState() == PersistenceState.TRANSIENT
-                    || p.getObjectContext() == null) {
-                throw new IllegalArgumentException("entity is detached: " + entity);
-            }
-        }
-        else {
-            throw new IllegalArgumentException("entity must be Persistent: " + entity);
+        Persistent p = (Persistent) entity;
+        if (p.getPersistenceState() == PersistenceState.TRANSIENT
+                || p.getObjectContext() == null) {
+            throw new IllegalArgumentException("entity is detached: " + entity);
         }
     }
 
@@ -385,33 +371,9 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      * IllegalArgumentException if it is.
      */
     protected void checkNotRemoved(Object entity) throws IllegalArgumentException {
-        if (entity instanceof Persistent) {
-            Persistent p = (Persistent) entity;
-            if (p.getPersistenceState() == PersistenceState.DELETED) {
-                throw new IllegalArgumentException("entity is removed: " + entity);
-            }
-        }
-    }
-
-    protected void checkEntityType(Class entityClass) throws IllegalArgumentException {
-        if (entityClass == null) {
-            throw new IllegalArgumentException("Null entity class");
-        }
-
-        if (!Persistent.class.isAssignableFrom(entityClass)) {
-            throw new IllegalArgumentException("Entity class must be Persistent, got: "
-                    + entityClass.getName());
-        }
-    }
-
-    protected void checkEntityType(Object entity) throws IllegalArgumentException {
-        if (entity == null) {
-            throw new IllegalArgumentException("Null entity");
-        }
-
-        if (!(entity instanceof Persistent)) {
-            String className = (entity != null) ? entity.getClass().getName() : "<null>";
-            throw new IllegalArgumentException("entity must be Persistent: " + className);
+        Persistent p = (Persistent) entity;
+        if (p.getPersistenceState() == PersistenceState.DELETED) {
+            throw new IllegalArgumentException("entity is removed: " + entity);
         }
     }
 

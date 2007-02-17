@@ -110,7 +110,8 @@ public class ResourceLocalEntityManagerFactory implements EntityManagerFactory {
      */
     public EntityManager createEntityManager(Map map) {
         checkClosed();
-        return new ResourceLocalEntityManager(createObjectContext(), this);
+        CayenneEntityManager em = new ResourceLocalEntityManager(createObjectContext(), this);
+        return new TypeCheckingEntityManager(em);
     }
 
     /**
