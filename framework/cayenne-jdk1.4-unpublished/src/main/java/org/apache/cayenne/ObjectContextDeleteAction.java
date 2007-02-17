@@ -97,7 +97,7 @@ class ObjectContextDeleteAction {
     private void processDeleteRules(final Persistent object, final int oldState) {
 
         String entityName = object.getObjectId().getEntityName();
-        final ObjEntity entity = context.getEntityResolver().lookupObjEntity(entityName);
+        final ObjEntity entity = context.getEntityResolver().getObjEntity(entityName);
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 entityName);
 

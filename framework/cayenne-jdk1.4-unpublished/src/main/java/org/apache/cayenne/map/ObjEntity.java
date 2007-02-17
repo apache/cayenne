@@ -202,14 +202,11 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
     }
 
     /**
-     * Returns Java class of persistent objects described by this entity. For generic
-     * entities with no class specified explicitly, default DataMap superclass is used,
-     * and if it is not set - CayenneDataObject is used. Casts any thrown exceptions into
-     * CayenneRuntimeException.
-     * 
-     * @since 1.2
+     * Returns a non-null class name. For generic entities with no class specified
+     * explicitly, default DataMap superclass is used, and if it is not set -
+     * CayenneDataObject is used.
      */
-    public Class getJavaClass() {
+    String getJavaClassName() {
         String name = getClassName();
 
         if (name == null && getDataMap() != null) {
@@ -219,6 +216,20 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         if (name == null) {
             name = CAYENNE_DATA_OBJECT_CLASS;
         }
+
+        return name;
+    }
+
+    /**
+     * Returns Java class of persistent objects described by this entity. For generic
+     * entities with no class specified explicitly, default DataMap superclass is used,
+     * and if it is not set - CayenneDataObject is used. Casts any thrown exceptions into
+     * CayenneRuntimeException.
+     * 
+     * @since 1.2
+     */
+    public Class getJavaClass() {
+        String name = getJavaClassName();
 
         try {
             return Util.getJavaClass(name);

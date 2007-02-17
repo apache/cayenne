@@ -93,7 +93,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
             this.classDescriptor = null;
             this.dbEntity = null;
             this.dataMap = null;
-            
+
             ObjEntity entity = null;
 
             if (root != null) {
@@ -111,7 +111,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
                     this.dataMap = entity.getDataMap();
                 }
                 else if (root instanceof String) {
-                    entity = resolver.lookupObjEntity((String) root);
+                    entity = resolver.getObjEntity((String) root);
                     if (entity != null) {
                         this.dbEntity = entity.getDbEntity();
                         this.dataMap = entity.getDataMap();
@@ -136,7 +136,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
             if (entity != null) {
                 this.classDescriptor = resolver.getClassDescriptor(entity.getName());
             }
-            
+
             this.lastRoot = root;
             this.lastEntityResolver = resolver;
             return true;

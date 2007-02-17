@@ -45,10 +45,10 @@ public class EntityResolverTest extends CayenneCase {
         DataMap generic = stack.getDataDomain().getMap("generic");
         EntityResolver resolver = new EntityResolver(Collections.singleton(generic));
 
-        ObjEntity g1 = resolver.lookupObjEntity("Generic1");
+        ObjEntity g1 = resolver.getObjEntity("Generic1");
         assertNotNull(g1);
 
-        ObjEntity g2 = resolver.lookupObjEntity("Generic2");
+        ObjEntity g2 = resolver.getObjEntity("Generic2");
         assertNotNull(g2);
 
         assertNotSame(g1, g2);
@@ -97,7 +97,7 @@ public class EntityResolverTest extends CayenneCase {
         // make sure that client entities got translated properly...
 
         try {
-            assertNotNull(clientResolver.lookupObjEntity("MtTable1"));
+            assertNotNull(clientResolver.getObjEntity("MtTable1"));
         }
         catch (CayenneRuntimeException e) {
             fail("'MtTable1' entity is not mapped. All entities: "

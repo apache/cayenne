@@ -427,31 +427,26 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 // index by name
                 objEntityCache.put(oe.getName(), oe);
 
-                // index by class
+                // index by class.. use class name as a key to avoid class loading here...
                 if (indexedByClass) {
-                    Class entityClass;
-                    try {
-                        entityClass = oe.getJavaClass();
-                    }
-                    catch (CayenneRuntimeException e) {
-                        // DataMaps can contain all kinds of garbage...
-                        // TODO (Andrus, 10/18/2005) it would be nice to log something
-                        // here, but since EntityResolver is used on the client, log4J is
-                        // a no-go...
+                    String className = oe.getJavaClassName();
+                    if (className == null) {
                         continue;
                     }
 
+                    String classKey = classKey(className);
+
                     // allow duplicates, but put a special marker indicating that this
                     // entity can't be looked up by class
-                    Object existing = objEntityCache.get(entityClass);
+                    Object existing = objEntityCache.get(classKey);
                     if (existing != null) {
 
                         if (existing != DUPLICATE_MARKER) {
-                            objEntityCache.put(entityClass, DUPLICATE_MARKER);
+                            objEntityCache.put(classKey, DUPLICATE_MARKER);
                         }
                     }
                     else {
-                        objEntityCache.put(entityClass, oe);
+                        objEntityCache.put(classKey, oe);
                     }
                 }
             }
@@ -620,7 +615,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             throw new CayenneRuntimeException("Class index is disabled.");
         }
 
-        return this._lookupObjEntity(aClass);
+        return _lookupObjEntity(classKey(aClass.getName()));
     }
 
     /**
@@ -630,14 +625,21 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @return the required ObjEntity, or null if none matches the specifier
      */
     public synchronized ObjEntity lookupObjEntity(Object object) {
-        ObjectId id = null;
-
-        if (object instanceof Persistent) {
-            id = ((Persistent) object).getObjectId();
+        if (object instanceof ObjEntity) {
+            return (ObjEntity) object;
         }
 
-        Object key = id != null ? (Object) id.getEntityName() : object.getClass();
-        return this._lookupObjEntity(key);
+        if (object instanceof Persistent) {
+            ObjectId id = ((Persistent) object).getObjectId();
+            if (id != null) {
+                return _lookupObjEntity(id.getEntityName());
+            }
+        }
+        else if (object instanceof Class) {
+            return lookupObjEntity((Class) object);
+        }
+
+        return lookupObjEntity(object.getClass());
     }
 
     /**
@@ -645,9 +647,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * maps to the services the class with the given name
      * 
      * @return the required ObjEntity or null if there is none that matches the specifier
+     * @deprecated since 3.0 - use getObjEntity() instead.
      */
     public synchronized ObjEntity lookupObjEntity(String entityName) {
-        return this._lookupObjEntity(entityName);
+        return _lookupObjEntity(entityName);
     }
 
     public Procedure lookupProcedure(Query q) {
@@ -697,6 +700,17 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
+     * Generates a map key for the object class.
+     * 
+     * @since 3.0
+     */
+    protected String classKey(String className) {
+        // need to ensure that there is no conflict with entity names... I guess such
+        // prefix is enough to guarantee that:
+        return "^cl^" + className;
+    }
+
+    /**
      * Internal usage only - provides the type-unsafe implementation which services the
      * four typesafe public lookupDbEntity methods Looks in the DataMap's that this object
      * was created with for the ObjEntity that maps to the specified object. Object may be
@@ -736,27 +750,20 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * 
      * @return the required ObjEntity or null if there is none that matches the specifier
      */
-    protected ObjEntity _lookupObjEntity(Object object) {
-        if (object instanceof ObjEntity) {
-            return (ObjEntity) object;
-        }
+    protected ObjEntity _lookupObjEntity(String key) {
 
-        if (object instanceof Persistent) {
-            object = object.getClass();
-        }
-
-        Object result = objEntityCache.get(object);
+        Object result = objEntityCache.get(key);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             constructCache();
-            result = objEntityCache.get(object);
+            result = objEntityCache.get(key);
         }
 
         if (result == DUPLICATE_MARKER) {
             throw new CayenneRuntimeException(
                     "Can't perform lookup. There is more than one ObjEntity mapped to "
-                            + object);
+                            + key);
         }
 
         return (ObjEntity) result;

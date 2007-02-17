@@ -335,7 +335,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
     protected void setReverseRelationship(String relName, DataObject val) {
         ObjRelationship rel = (ObjRelationship) objectContext
                 .getEntityResolver()
-                .lookupObjEntity(objectId.getEntityName())
+                .getObjEntity(objectId.getEntityName())
                 .getRelationship(relName);
         ObjRelationship revRel = rel.getReverseRelationship();
         if (revRel != null) {
@@ -353,7 +353,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
     protected void unsetReverseRelationship(String relName, DataObject val) {
 
         EntityResolver resolver = objectContext.getEntityResolver();
-        ObjEntity entity = resolver.lookupObjEntity(objectId.getEntityName());
+        ObjEntity entity = resolver.getObjEntity(objectId.getEntityName());
 
         if (entity == null) {
             throw new IllegalStateException("DataObject's entity is unmapped, objectId: "
@@ -522,17 +522,17 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
         Iterator attributes = objEntity.getAttributes().iterator();
         while (attributes.hasNext()) {
             Object next = attributes.next();
-            
+
             // TODO: andrus, 2/20/2007 - handle embedded attribute
-            if(!(next instanceof ObjAttribute)) {
+            if (!(next instanceof ObjAttribute)) {
                 continue;
             }
-            
+
             ObjAttribute objAttribute = (ObjAttribute) next;
             DbAttribute dbAttribute = objAttribute.getDbAttribute();
-            
+
             // pk may still be generated
-            if(dbAttribute.isPrimaryKey()) {
+            if (dbAttribute.isPrimaryKey()) {
                 continue;
             }
 
