@@ -173,16 +173,24 @@ public class EntityMapAnnotationLoader {
      */
     public void loadClassMapping(Class managedClass) throws JpaProviderException {
 
+        // avoid duplicates loaded from annotations per CAY-756
+        if (context.getEntityMap().containsManagedClass(managedClass.getName())) {
+            context.recordConflict(new SimpleValidationFailure(
+                    managedClass.getName(),
+                    "Duplicate managed class declaration " + managedClass.getName()));
+            return;
+        }
+
         Annotation[] classAnnotations = managedClass.getAnnotations();
 
         // per 'getAnnotations' docs, array is returned by copy, so we can modify it...
         Arrays.sort(classAnnotations, typeAnnotationsSorter);
 
         JpaClassDescriptor descriptor = new JpaClassDescriptor(managedClass);
-        
+
         // initially set access to the map level access - may be overriden below
         descriptor.setAccess(context.getEntityMap().getAccess());
-        
+
         AnnotationContext stack = new AnnotationContext(descriptor);
         stack.push(context.getEntityMap());
 

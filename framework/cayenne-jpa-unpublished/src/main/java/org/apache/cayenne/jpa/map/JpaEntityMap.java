@@ -53,6 +53,41 @@ public class JpaEntityMap {
     protected Collection<JpaTableGenerator> tableGenerators;
 
     /**
+     * Returns true if a given managed class is already loaded.
+     */
+    public boolean containsManagedClass(String className) {
+        if (className == null) {
+            throw new IllegalArgumentException("Null class name");
+        }
+
+        if (mappedSuperclasses != null) {
+            for (JpaMappedSuperclass object : mappedSuperclasses) {
+                if (className.equals(object.getClassName())) {
+                    return true;
+                }
+            }
+        }
+
+        if (entities != null) {
+            for (JpaEntity object : entities) {
+                if (className.equals(object.getClassName())) {
+                    return true;
+                }
+            }
+        }
+
+        if (embeddables != null) {
+            for (JpaEmbeddable object : embeddables) {
+                if (className.equals(object.getClassName())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Compiles and returns a map of managed class descriptors that includes descriptors
      * for entities, managed superclasses and embeddables. Note that class name key in the
      * map uses slashes, not dots, to separate package components.
