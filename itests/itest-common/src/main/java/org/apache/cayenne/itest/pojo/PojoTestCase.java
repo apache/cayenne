@@ -32,7 +32,7 @@ public class PojoTestCase extends TestCase {
 
     static {
         ItestSetup.initInstance();
-        InstrumentUtil.addTransformer(initEnhancer());
+        InstrumentUtil.getInstrumentation().addTransformer(initEnhancer());
     }
 
     protected static ClassFileTransformer initEnhancer() {
