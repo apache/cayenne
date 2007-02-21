@@ -18,11 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.instrument;
 
-import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
-import java.lang.reflect.Method;
-
-import org.apache.cayenne.CayenneRuntimeException;
 
 /**
  * Instrumentation utilities.
@@ -33,49 +29,36 @@ import org.apache.cayenne.CayenneRuntimeException;
 public class InstrumentUtil {
 
     /**
-     * Registers class transformer with the instrumentation agent. Throws an exception if
-     * the application wasn't started with CayenneAgent.
+     * A property specifying the name of the instrumentation factory that is used to
+     * access JVM {@link Instrumentation} instance.
      */
-    public static void addTransformer(ClassFileTransformer transformer) {
-        Instrumentation instrumentation;
-        try {
-            instrumentation = getInstrumentation();
-        }
-        catch (Throwable th) {
-            throw new CayenneRuntimeException("CayenneAgent is not started", th);
-        }
-
-        if (instrumentation == null) {
-            throw new CayenneRuntimeException("CayenneAgent is not started");
-        }
-
-        instrumentation.addTransformer(transformer);
-    }
+    public static final String INSTRUMENTATION_FACTORY_PROPERTY = "org.apache.cayenne.instrument.factory";
 
     /**
-     * Checks whether the JVM was started with CayenneAgent.
+     * Returns JVM instrumentation obtained via a preconfigured factory or from a number
+     * of "standard" places known to Cayenne.
      */
-    public static boolean isAgentLoaded() {
+    public static Instrumentation getInstrumentation() {
 
-        // check whether CayenneAgent class is initialized and instrumentation is set.
-        try {
-            return getInstrumentation() != null;
+        InstrumentationFactory factory;
+
+        String factoryName = System.getProperty(INSTRUMENTATION_FACTORY_PROPERTY);
+        if (factoryName != null) {
+            try {
+                factory = (InstrumentationFactory) Class.forName(
+                        factoryName,
+                        true,
+                        Thread.currentThread().getContextClassLoader()).newInstance();
+            }
+            catch (Throwable th) {
+                throw new IllegalStateException("Invalid instrumentation factory: "
+                        + factoryName, th);
+            }
         }
-        catch (Throwable th) {
-            return false;
+        else {
+            factory = new CayenneInstrumentationFactory();
         }
-    }
 
-    /**
-     * Returns CayenneAgent instrumentation.
-     */
-    static Instrumentation getInstrumentation() throws Exception {
-        Class agent = Class.forName(
-                "org.apache.cayenne.instrument.CayenneAgent",
-                false,
-                Thread.currentThread().getContextClassLoader());
-
-        Method getInstrumentation = agent.getDeclaredMethod("getInstrumentation");
-        return (Instrumentation) getInstrumentation.invoke(null);
+        return factory.getInstrumentation();
     }
 }
