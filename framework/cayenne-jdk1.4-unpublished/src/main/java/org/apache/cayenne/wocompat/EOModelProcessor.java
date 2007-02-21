@@ -423,19 +423,15 @@ public class EOModelProcessor {
                     dbAttr.setEoAttributeName(attrName);
                     dbEntity.addAttribute(dbAttr);
 
-                    Integer width = (Integer) attrMap.get("width");
-                    if (null == width)
-                        width = (Integer) prototypeAttrMap.get("width");
-
-                    if (width != null)
-                        dbAttr.setMaxLength(width.intValue());
-
-                    Integer scale = (Integer) attrMap.get("scale");
-                    if (null == scale)
-                        scale = (Integer) prototypeAttrMap.get("scale");
-
-                    if (scale != null)
-                        dbAttr.setScale(scale.intValue());
+                    int width = getInt("width", attrMap, prototypeAttrMap, -1);
+                    if (width >= 0) {
+                        dbAttr.setMaxLength(width);
+                    }
+                    
+                    int scale = getInt("scale", attrMap, prototypeAttrMap, -1);
+                    if (scale >= 0) {
+                        dbAttr.setScale(scale);
+                    }
 
                     if (primaryKeys.contains(attrName))
                         dbAttr.setPrimaryKey(true);
@@ -464,6 +460,31 @@ public class EOModelProcessor {
                 // set name instead of the actual attribute, as it may be inherited....
                 attr.setDbAttributeName(dbAttrName);
                 objEntity.addAttribute(attr);
+            }
+        }
+    }
+    
+    int getInt(String key, Map map, Map prototypes, int defaultValue) {
+
+        Object value = map.get(key);
+        if (value == null) {
+            value = prototypes.get(key);
+        }
+
+        if (value == null) {
+            return defaultValue;
+        }
+
+        // per CAY-752, value can be a String or a Number, so handle both
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        else {
+            try {
+                return Integer.parseInt(value.toString());
+            }
+            catch(NumberFormatException nfex) {
+                return defaultValue;
             }
         }
     }
