@@ -21,6 +21,7 @@ package org.apache.cayenne.jpa;
 import java.util.Collections;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import junit.framework.TestCase;
@@ -32,6 +33,10 @@ public class ProviderTest extends TestCase {
     public void testCreateEntityManagerFactory() {
         // JTA Unit
         final JpaUnit u1 = new JpaUnit() {
+
+            @Override
+            public void addTransformer(ClassTransformer transformer) {
+            }
 
             @Override
             JpaDataSourceFactory getJpaDataSourceFactory() {
@@ -64,6 +69,9 @@ public class ProviderTest extends TestCase {
 
         // JTA Unit
         JpaUnit u1 = new JpaUnit() {
+            @Override
+            public void addTransformer(ClassTransformer transformer) {
+            }
 
             @Override
             JpaDataSourceFactory getJpaDataSourceFactory() {
@@ -84,6 +92,9 @@ public class ProviderTest extends TestCase {
 
         // RESOURCE_LOCAL Unit
         JpaUnit u2 = new JpaUnit() {
+            @Override
+            public void addTransformer(ClassTransformer transformer) {
+            }
 
             @Override
             JpaDataSourceFactory getJpaDataSourceFactory() {
@@ -104,6 +115,9 @@ public class ProviderTest extends TestCase {
 
         // JTA Unit with RESOURCE_LOCAL override
         JpaUnit u3 = new JpaUnit() {
+            @Override
+            public void addTransformer(ClassTransformer transformer) {
+            }
 
             @Override
             JpaDataSourceFactory getJpaDataSourceFactory() {
@@ -125,6 +139,9 @@ public class ProviderTest extends TestCase {
 
         // RESOURCE_LOCAL Unit with JTA override
         JpaUnit u4 = new JpaUnit() {
+            @Override
+            public void addTransformer(ClassTransformer transformer) {
+            }
 
             @Override
             JpaDataSourceFactory getJpaDataSourceFactory() {

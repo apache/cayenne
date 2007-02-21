@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.conf;
 
 import java.net.URL;
@@ -38,12 +37,9 @@ public class UnitLoader {
 
     protected UnitDescriptorParser parser;
 
-    public UnitLoader(JpaUnitFactory unitFactory,
-            boolean validateDescriptors) {
+    public UnitLoader(boolean validateDescriptors) {
         try {
-            this.parser = new UnitDescriptorParser(
-                    unitFactory,
-                    validateDescriptors);
+            this.parser = new UnitDescriptorParser(validateDescriptors);
         }
         catch (Exception e) {
             throw new RuntimeException("Error creating XML parser", e);
@@ -77,9 +73,8 @@ public class UnitLoader {
                 String descriptorRoot = descriptorURL.substring(0, descriptorURL.length()
                         - DESCRIPTOR_LOCATION.length());
 
-                Collection<JpaUnit> units = parser.getPersistenceUnits(
-                        new InputSource(descriptorURL),
-                        new URL(descriptorRoot));
+                Collection<JpaUnit> units = parser.getPersistenceUnits(new InputSource(
+                        descriptorURL), new URL(descriptorRoot));
 
                 for (JpaUnit unit : units) {
                     if (persistenceUnitName.equals(unit.getPersistenceUnitName())) {

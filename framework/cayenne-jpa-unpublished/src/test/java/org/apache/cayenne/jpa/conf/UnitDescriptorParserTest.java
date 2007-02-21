@@ -67,7 +67,7 @@ public class UnitDescriptorParserTest extends TestCase {
     }
 
     public void testSampleSchemaHeadersValidating() throws Exception {
-        UnitDescriptorParser parser = new UnitDescriptorParser(null, true);
+        UnitDescriptorParser parser = new UnitDescriptorParser(true);
 
         URL root = new URL("file:///xyz");
         InputStream in = Thread
@@ -187,7 +187,7 @@ public class UnitDescriptorParserTest extends TestCase {
     }
 
     public void testInvalidSample1() throws Exception {
-        UnitDescriptorParser parser = new UnitDescriptorParser(null, true);
+        UnitDescriptorParser parser = new UnitDescriptorParser(true);
 
         URL root = new URL("file:///xyz");
         InputStream in = Thread
@@ -206,7 +206,7 @@ public class UnitDescriptorParserTest extends TestCase {
     }
 
     public void testInvalidSample2() throws Exception {
-        UnitDescriptorParser parser = new UnitDescriptorParser(null, true);
+        UnitDescriptorParser parser = new UnitDescriptorParser(true);
 
         URL root = new URL("file:///xyz");
         InputStream in = Thread

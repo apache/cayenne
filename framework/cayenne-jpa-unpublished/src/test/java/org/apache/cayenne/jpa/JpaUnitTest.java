@@ -23,6 +23,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
 
+import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import junit.framework.TestCase;
@@ -34,7 +35,12 @@ public class JpaUnitTest extends TestCase {
 
     public void testTransactionType() {
 
-        JpaUnit info = new JpaUnit();
+        JpaUnit info = new JpaUnit() {
+
+            @Override
+            public void addTransformer(ClassTransformer transformer) {
+            }
+        };
         info.addProperties(Collections.singletonMap(
                 Provider.TRANSACTION_TYPE_PROPERTY,
                 PersistenceUnitTransactionType.JTA.name()));
@@ -48,7 +54,12 @@ public class JpaUnitTest extends TestCase {
     }
 
     public void testClassLoader() {
-        JpaUnit info = new JpaUnit();
+        JpaUnit info = new JpaUnit() {
+
+            @Override
+            public void addTransformer(ClassTransformer transformer) {
+            }
+        };
 
         ClassLoader topLoader = new URLClassLoader(new URL[0], Thread
                 .currentThread()
@@ -58,7 +69,12 @@ public class JpaUnitTest extends TestCase {
     }
 
     public void testGetNewTempClassLoader() {
-        JpaUnit info = new JpaUnit();
+        JpaUnit info = new JpaUnit() {
+
+            @Override
+            public void addTransformer(ClassTransformer transformer) {
+            }
+        };
 
         ClassLoader topLoader = new URLClassLoader(new URL[0], Thread
                 .currentThread()

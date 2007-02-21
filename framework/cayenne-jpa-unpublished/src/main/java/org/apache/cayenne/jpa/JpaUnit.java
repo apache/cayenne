@@ -33,7 +33,6 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.jpa.conf.JpaDataSourceFactory;
-import org.apache.cayenne.jpa.conf.JpaUnitFactory;
 
 /**
  * A <code>javax.persistence.spi.PersistenceUnitInfo</code> implementor used by Cayenne
@@ -41,7 +40,7 @@ import org.apache.cayenne.jpa.conf.JpaUnitFactory;
  * 
  * @author Andrus Adamchik
  */
-public class JpaUnit implements PersistenceUnitInfo {
+public abstract class JpaUnit implements PersistenceUnitInfo {
 
     protected String persistenceUnitName;
     protected List<String> mappingFileNames;
@@ -74,9 +73,7 @@ public class JpaUnit implements PersistenceUnitInfo {
     }
 
     /**
-     * Adds a {@link ClassTransformer} to the persistence unit. Default implementation
-     * does nothing, although a provider can define a {@link JpaUnitFactory} to integrate
-     * with its own class loading mechanism.
+     * Adds a {@link ClassTransformer} to the persistence unit.
      * <h3>JPA Specification, 7.1.4:</h3>
      * Add a transformer supplied by the provider that will be called for every new class
      * definition or class redefinition that gets loaded by the loader returned by the
@@ -88,9 +85,7 @@ public class JpaUnit implements PersistenceUnitInfo {
      * @param transformer A provider-supplied transformer that the Container invokes at
      *            class-(re)definition time
      */
-    public void addTransformer(ClassTransformer transformer) {
-        // noop
-    }
+    public abstract void addTransformer(ClassTransformer transformer);
 
     public PersistenceUnitTransactionType getTransactionType() {
         String type = getProperty(Provider.TRANSACTION_TYPE_PROPERTY);

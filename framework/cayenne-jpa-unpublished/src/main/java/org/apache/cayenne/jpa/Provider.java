@@ -42,15 +42,12 @@ import org.apache.cayenne.conf.ConnectionProperties;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.enhancer.Enhancer;
-import org.apache.cayenne.instrument.InstrumentUtil;
 import org.apache.cayenne.jpa.bridge.DataMapConverter;
 import org.apache.cayenne.jpa.conf.DefaultDataSourceFactory;
 import org.apache.cayenne.jpa.conf.EntityMapLoader;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
-import org.apache.cayenne.jpa.conf.JpaUnitFactory;
 import org.apache.cayenne.jpa.conf.UnitLoader;
 import org.apache.cayenne.jpa.enhancer.JpaEnhancerVisitorFactory;
-import org.apache.cayenne.jpa.instrument.InstrumentingUnitFactory;
 import org.apache.cayenne.jpa.instrument.UnitClassTransformer;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
 import org.apache.cayenne.jpa.reflect.JpaClassDescriptorFactory;
@@ -81,7 +78,6 @@ public class Provider implements PersistenceProvider {
     // provider-specific properties. Must use provider namespace per ch. 7.1.3.1.
     public static final String CREATE_SCHEMA_PROPERTY = "org.apache.cayenne.schema.create";
     public static final String DATA_SOURCE_FACTORY_PROPERTY = "org.apache.cayenne.jpa.jpaDataSourceFactory";
-    public static final String UNIT_FACTORY_PROPERTY = "org.apache.cayenne.jpa.jpaUnitFactory";
 
     // ... DataSource
     public static final String ADAPTER_PROPERTY = "org.apache.cayenne."
@@ -96,9 +92,6 @@ public class Provider implements PersistenceProvider {
             + ConnectionProperties.PASSWORD_KEY;
     public static final String DATA_SOURCE_MIN_CONNECTIONS_PROPERTY = "org.apache.cayenne.datasource.jdbc.minConnections";
     public static final String DATA_SOURCE_MAX_CONNECTIONS_PROPERTY = "org.apache.cayenne.datasource.jdbc.maxConnections";
-
-    static final String INSTRUMENTING_FACTORY_CLASS = InstrumentingUnitFactory.class
-            .getName();
 
     protected boolean validateDescriptors;
     protected UnitLoader unitLoader;
@@ -140,15 +133,6 @@ public class Provider implements PersistenceProvider {
         String transactionType = System.getProperty(TRANSACTION_TYPE_PROPERTY);
         if (transactionType != null) {
             defaultProperties.put(TRANSACTION_TYPE_PROPERTY, transactionType);
-        }
-
-        String unitFactory = System.getProperty(UNIT_FACTORY_PROPERTY);
-        if (unitFactory == null && InstrumentUtil.isAgentLoaded()) {
-            unitFactory = INSTRUMENTING_FACTORY_CLASS;
-        }
-
-        if (unitFactory != null) {
-            defaultProperties.put(UNIT_FACTORY_PROPERTY, unitFactory);
         }
     }
 
@@ -430,27 +414,7 @@ public class Provider implements PersistenceProvider {
      */
     protected UnitLoader getUnitLoader() {
         if (unitLoader == null) {
-
-            JpaUnitFactory factory = null;
-
-            String unitFactoryName = getDefaultProperty(UNIT_FACTORY_PROPERTY);
-            if (unitFactoryName != null) {
-
-                try {
-                    Class factoryClass = Class.forName(unitFactoryName, true, Thread
-                            .currentThread()
-                            .getContextClassLoader());
-
-                    factory = (JpaUnitFactory) factoryClass.newInstance();
-                }
-                catch (Exception e) {
-                    throw new JpaProviderException("Error loading unit infor factory '"
-                            + unitFactoryName
-                            + "'", e);
-                }
-            }
-
-            this.unitLoader = new UnitLoader(factory, validateDescriptors);
+            this.unitLoader = new UnitLoader(validateDescriptors);
         }
 
         return unitLoader;

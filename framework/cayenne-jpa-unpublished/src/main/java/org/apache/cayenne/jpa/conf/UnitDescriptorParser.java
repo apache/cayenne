@@ -35,6 +35,7 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.cayenne.jpa.JpaUnit;
 import org.apache.cayenne.jpa.Provider;
+import org.apache.cayenne.jpa.instrument.InstrumentingUnit;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -68,16 +69,12 @@ public class UnitDescriptorParser {
     static final String VALUE = "value";
 
     protected SAXParserFactory parserFactory;
-    protected JpaUnitFactory unitFactory;
 
     public UnitDescriptorParser() throws SAXException, ParserConfigurationException {
-        this(null, false);
+        this(false);
     }
 
-    public UnitDescriptorParser(JpaUnitFactory unitFactory, boolean validatesAgainstSchema)
-            throws SAXException {
-
-        this.unitFactory = unitFactory;
+    public UnitDescriptorParser(boolean validatesAgainstSchema) throws SAXException {
 
         parserFactory = SAXParserFactory.newInstance();
         parserFactory.setNamespaceAware(true);
@@ -135,7 +132,7 @@ public class UnitDescriptorParser {
                     String name = attributes.getValue("", NAME);
                     String transactionType = attributes.getValue("", TRANSACTION_TYPE);
 
-                    unit = unitFactory != null ? unitFactory.newUnit() : new JpaUnit();
+                    unit = new InstrumentingUnit();
                     unit.setPersistenceUnitName(name);
                     unit.setPersistenceUnitRootUrl(persistenceUnitRootUrl);
 

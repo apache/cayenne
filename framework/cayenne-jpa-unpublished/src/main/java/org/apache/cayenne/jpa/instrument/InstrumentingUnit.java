@@ -21,6 +21,7 @@ package org.apache.cayenne.jpa.instrument;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
 
 import javax.persistence.spi.ClassTransformer;
@@ -42,14 +43,6 @@ public class InstrumentingUnit extends JpaUnit {
     @Override
     public void addTransformer(final ClassTransformer transformer) {
 
-        // sanity check
-        if (!InstrumentUtil.isAgentLoaded()) {
-            getLogger().warn(
-                    "*** No instrumentation instance present. "
-                            + "Check the -javaagent: option");
-            return;
-        }
-
         // wrap in a ClassFileTransformer
         ClassFileTransformer transformerWrapper = new ClassFileTransformer() {
 
@@ -70,7 +63,14 @@ public class InstrumentingUnit extends JpaUnit {
         };
 
         getLogger().info("*** Adding transformer: " + transformer);
-        InstrumentUtil.addTransformer(transformerWrapper);
+
+        Instrumentation i = InstrumentUtil.getInstrumentation();
+        if (i == null) {
+            throw new IllegalStateException("Attempt to add a transformer failed - "
+                    + "instrumentation is not initialized.");
+        }
+
+        i.addTransformer(transformerWrapper);
     }
 
     protected Log getLogger() {
