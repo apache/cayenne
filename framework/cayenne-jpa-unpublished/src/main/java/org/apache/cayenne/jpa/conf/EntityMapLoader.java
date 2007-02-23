@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.conf;
 
 import java.io.IOException;
@@ -132,11 +131,13 @@ public class EntityMapLoader {
         EntityMapMergeProcessor merger = new EntityMapMergeProcessor(context);
 
         Set loadedLocations = new HashSet();
-        EntityMapXMLLoader loader = new EntityMapXMLLoader(unit.getClassLoader(), false);
+        EntityMapXMLLoader loader = new EntityMapXMLLoader(
+                context.getTempClassLoader(),
+                false);
 
         // 1. load from the standard file called orm.xml
         loadedLocations.add(DESCRIPTOR_LOCATION);
-        Enumeration<URL> standardDescriptors = unit.getClassLoader().getResources(
+        Enumeration<URL> standardDescriptors = context.getTempClassLoader().getResources(
                 DESCRIPTOR_LOCATION);
 
         while (standardDescriptors.hasMoreElements()) {
@@ -154,8 +155,9 @@ public class EntityMapLoader {
             // mentioned in the unit...
             if (loadedLocations.add(descriptor)) {
 
-                Enumeration<URL> mappedDescriptors = unit.getClassLoader().getResources(
-                        descriptor);
+                Enumeration<URL> mappedDescriptors = context
+                        .getTempClassLoader()
+                        .getResources(descriptor);
                 while (mappedDescriptors.hasMoreElements()) {
                     JpaEntityMap map = loader.getEntityMap(mappedDescriptors
                             .nextElement());
@@ -174,7 +176,7 @@ public class EntityMapLoader {
 
             // must use Unit class loader to prevent loading an un-enahnced class in the
             // app ClassLoader.
-            ClassLoader loader = persistenceUnit.getClassLoader();
+            ClassLoader loader = context.getTempClassLoader();
             EntityMapAnnotationLoader annotationLoader = new EntityMapAnnotationLoader(
                     context);
 

@@ -21,7 +21,6 @@ package org.apache.cayenne.jpa;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -170,7 +169,7 @@ public abstract class JpaUnit implements PersistenceUnitInfo {
      * Creates and returns a child of the main unit ClassLoader.
      */
     public ClassLoader getNewTempClassLoader() {
-        return new URLClassLoader(new URL[0], classLoader);
+        return new JpaUnitClassLoader(Thread.currentThread().getContextClassLoader());
     }
 
     public void setExcludeUnlistedClasses(boolean excludeUnlistedClasses) {
@@ -209,9 +208,7 @@ public abstract class JpaUnit implements PersistenceUnitInfo {
     }
 
     protected void setDefaultClassLoader() {
-        this.classLoader = new JpaUnitClassLoader(Thread
-                .currentThread()
-                .getContextClassLoader());
+        this.classLoader = Thread.currentThread().getContextClassLoader();
     }
 
     public void addManagedClassName(String managedClassName) {

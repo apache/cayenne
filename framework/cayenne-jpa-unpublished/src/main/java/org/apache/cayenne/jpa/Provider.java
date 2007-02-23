@@ -21,6 +21,7 @@ package org.apache.cayenne.jpa;
 
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.instrument.ClassFileTransformer;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -220,15 +221,16 @@ public class Provider implements PersistenceProvider {
 
             EntityMapLoader loader = new EntityMapLoader(unit);
 
-            // we must set enhancer in this exact place, between JPA and Cayenne mapping
-            // loading. By now all the JpaEntities are loaded (using separate unit class
-            // loader) and Cayenne mapping will be using the App ClassLoader.
+            // add transformer before DataMapConverter starts loading the classes via app
+            // class loader
             Map<String, JpaClassDescriptor> managedClasses = loader
                     .getEntityMap()
                     .getMangedClasses();
-
-            unit.addTransformer(new UnitClassTransformer(managedClasses, new Enhancer(
-                    new JpaEnhancerVisitorFactory(managedClasses))));
+            ClassFileTransformer enhancer = new Enhancer(new JpaEnhancerVisitorFactory(
+                    managedClasses));
+            unit.addTransformer(new UnitClassTransformer(managedClasses, loader
+                    .getContext()
+                    .getTempClassLoader(), enhancer));
 
             DataMapConverter converter = new DataMapConverter();
             DataMap cayenneMap = converter.toDataMap(name, loader.getContext());

@@ -86,12 +86,5 @@ public class JpaUnitTest extends TestCase {
         assertNotSame(topLoader, tmp1);
         assertNotSame(topLoader, tmp2);
         assertNotSame(tmp1, tmp2);
-
-        // presumably spec requirements that ".. scope and classpath of this loader is
-        // exactly the same as that of the loader returned by
-        // PersistenceUnitInfo.getClassLoader..." means that it has to be a child of the
-        // main ClassLoader
-        assertSame(topLoader, tmp1.getParent());
-        assertSame(topLoader, tmp2.getParent());
     }
 }

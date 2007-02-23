@@ -36,11 +36,13 @@ public class EntityMapLoaderContext {
     protected ValidationResult conflicts;
     protected JpaEntityMap entityMap;
     protected PersistenceUnitInfo unit;
+    protected ClassLoader tempClassLoader;
 
     public EntityMapLoaderContext(PersistenceUnitInfo unit) {
         this.unit = unit;
         this.conflicts = new ValidationResult();
         this.entityMap = new JpaEntityMap();
+        this.tempClassLoader = unit.getNewTempClassLoader();
     }
 
     public PersistenceUnitInfo getUnit() {
@@ -57,5 +59,9 @@ public class EntityMapLoaderContext {
 
     public ValidationResult getConflicts() {
         return conflicts;
+    }
+
+    public ClassLoader getTempClassLoader() {
+        return tempClassLoader;
     }
 }

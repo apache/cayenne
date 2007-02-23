@@ -38,14 +38,16 @@ import org.apache.commons.logging.LogFactory;
  */
 public class UnitClassTransformer implements ClassTransformer {
 
+    protected ClassLoader tempClassLoader;
     protected Log logger;
     protected ClassFileTransformer transformer;
     protected Map<String, JpaClassDescriptor> managedClasses;
 
     public UnitClassTransformer(Map<String, JpaClassDescriptor> managedClasses,
-            ClassFileTransformer transformer) {
+            ClassLoader tempClassLoader, ClassFileTransformer transformer) {
         this.transformer = transformer;
         this.managedClasses = managedClasses;
+        this.tempClassLoader = tempClassLoader;
         this.logger = LogFactory.getLog(getClass());
     }
 
@@ -55,6 +57,10 @@ public class UnitClassTransformer implements ClassTransformer {
             Class<?> classBeingRedefined,
             ProtectionDomain protectionDomain,
             byte[] classfileBuffer) throws IllegalClassFormatException {
+
+        if (tempClassLoader == loader) {
+            return null;
+        }
 
         if (isManagedClass(className)) {
             logger.warn("Will transform: " + className);
