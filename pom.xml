@@ -178,41 +178,61 @@
 					<target>1.4</target>
 				</configuration>
 			</plugin>
-			<!--  
-				<plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>javacc-maven-plugin</artifactId>
 				<executions>
-				<execution>
-				<id>jjtree</id>
-				<phase>generate-sources</phase>
-				<goals>
-				<goal>jjtree</goal>
-				</goals>
-				<configuration>
-				<outputDirectory>
-				${basedir}/target/generated-sources/javacc/org/apache/cayenne/ejbql
-				</outputDirectory>
-				</configuration>
-				</execution>
-				<execution>
-				<id>javacc</id>
-				<phase>generate-sources</phase>
-				<goals>
-				<goal>javacc</goal>
-				</goals>
-				<configuration>
-				<sourceDirectory>
-				${basedir}/target/generated-sources/javacc/org/apache/cayenne/ejbql
-				</sourceDirectory>
-				<outputDirectory>
-				${basedir}/target/generated-sources/javacc/org/apache/cayenne/ejbql
-				</outputDirectory>
-				</configuration>
-				</execution>
+					<execution>
+						<id>jjtree-jpql</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceDirectory>
+								${basedir}/src/main/jjtree/org/apache/cayenne/ejbql
+							</sourceDirectory>
+							<outputDirectory>
+								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql
+							</outputDirectory>
+							<buildNodeFiles>false</buildNodeFiles>
+						</configuration>
+						<goals>
+							<goal>jjtree</goal>
+						</goals>
+					</execution>
+
+					<execution>
+						<id>javacc-ejbql</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceDirectory>
+								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql
+							</sourceDirectory>
+							<outputDirectory>
+								${project.build.directory}/generated-sources/javacc/org/apache/cayenne/ejbql
+							</outputDirectory>
+						</configuration>
+						<goals>
+							<goal>javacc</goal>
+						</goals>
+					</execution>
 				</executions>
-				</plugin>
-			-->
+			</plugin>
+			<plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <tasks>
+                                <delete
+                                    file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/Node.java"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>

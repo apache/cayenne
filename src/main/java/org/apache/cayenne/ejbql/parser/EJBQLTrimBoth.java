@@ -16,14 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.ejbql;
+package org.apache.cayenne.ejbql.parser;
 
 /**
- * An abstract EJBQL statement.
- * 
- * @author Andrus Adamchik
  * @since 3.0
+ * @author Andrus Adamchik
  */
-public abstract class QLStatement {
-
+public class EJBQLTrimBoth extends SimpleNode {
+	public EJBQLTrimBoth(int id) {
+		super(id);
+	}
 }
