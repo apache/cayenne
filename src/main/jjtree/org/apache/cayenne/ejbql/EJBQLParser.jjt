@@ -59,7 +59,7 @@ public class EJBQL {
 	
     public static class EJBQLDefaultParser implements EJBQLParser {
 
-       public Object parse(String ejbqlStatement) throws EJBQLException {
+       public EJBQLExpression parse(String ejbqlStatement) throws EJBQLException {
            try {
               return new EJBQL(ejbqlStatement).parseQuery();
            }

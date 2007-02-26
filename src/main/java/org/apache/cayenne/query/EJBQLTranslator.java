@@ -16,47 +16,45 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.ejbql.parser;
+package org.apache.cayenne.query;
 
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
- * A JJTree-compliant tree node interface.
+ * A translator of {@link EJBQLExpression} into the database SQL.
  * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-public interface Node extends EJBQLExpression {
-	/**
-	 * This method is called after the node has been made the current node. It
-	 * indicates that child nodes can now be added to it.
-	 */
-	public void jjtOpen();
+class EJBQLTranslator implements EJBQLExpressionVisitor {
 
-	/**
-	 * This method is called after all the child nodes have been added.
-	 */
-	public void jjtClose();
+    private StringBuffer buffer;
 
-	/**
-	 * This pair of methods are used to inform the node of its parent.
-	 */
-	public void jjtSetParent(Node n);
+    EJBQLTranslator() {
+        this.buffer = new StringBuffer();
+    }
 
-	public Node jjtGetParent();
+    String getSql() {
+        return buffer.length() > 0 ? buffer.toString() : null;
+    }
 
-	/**
-	 * This method tells the node to add its argument to the node's list of
-	 * children.
-	 */
-	public void jjtAddChild(Node n, int i);
+    public boolean visitSelect(EJBQLExpression expression) {
+        buffer.append("SELECT");
+        return true;
+    }
 
-	/**
-	 * This method returns a child node. The children are numbered from zero,
-	 * left to right.
-	 */
-	public Node jjtGetChild(int i);
+    public boolean visitSelectExpression(EJBQLExpression expression) {
+        return true;
+    }
 
-	/** Return the number of children the node has. */
-	public int jjtGetNumChildren();
+    public boolean visitIdentificationVariable(EJBQLExpression expression) {
+        // if we are within the select expression, this is a name of the objentity.
+        return true;
+    }
+
+    public boolean visitFrom(EJBQLExpression expression) {
+        buffer.append(" FROM");
+        return true;
+    }
 }
