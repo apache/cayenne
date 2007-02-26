@@ -86,6 +86,16 @@
                                 <groupId>com.caucho</groupId>
                                 <artifactId>hessian</artifactId>
                         </dependency>
+                        <dependency>
+                                <groupId>jgoodies</groupId>
+                                <artifactId>forms</artifactId>
+                        </dependency>
+
+                        <dependency>
+                                <groupId>jgoodies</groupId>
+                                <artifactId>looks</artifactId>
+                        </dependency>
+
 	</dependencies>
 
 <repositories>
