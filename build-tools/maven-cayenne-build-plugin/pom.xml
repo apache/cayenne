@@ -58,6 +58,34 @@
 			<artifactId>velocity</artifactId>
 			<version>1.4</version>
 		</dependency>
+
+		<!-- 
+                     declare non-standard dependencies coming from ObjectStyle repo here to seed the repo and avoid using
+                     objectstyle repo for the main build
+                -->
+		<dependency>
+                                <groupId>mockrunner</groupId>
+                                <artifactId>mockrunner</artifactId>
+                 </dependency>
+
+                        <dependency>
+                                <groupId>opensymphony</groupId>
+                                <artifactId>oscache</artifactId>
+                        </dependency>
+
+                        <dependency>
+                                <groupId>org.scopemvc</groupId>
+                                <artifactId>scopemvc</artifactId>
+                        </dependency>
+
+<dependency>
+                                <groupId>foundrylogic.vpp</groupId>
+                                <artifactId>vpp</artifactId>
+                        </dependency>
+        <dependency>
+                                <groupId>com.caucho</groupId>
+                                <artifactId>hessian</artifactId>
+                        </dependency>
 	</dependencies>
 
 <repositories>
