@@ -18,12 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLFrom extends SimpleNode {
-	public EJBQLFrom(int id) {
-		super(id);
-	}
+
+    public EJBQLFrom(int id) {
+        super(id);
+    }
+
+    protected boolean nonRecursiveVisit(EJBQLExpressionVisitor visitor) {
+        return visitor.visitFrom(this);
+    }
 }

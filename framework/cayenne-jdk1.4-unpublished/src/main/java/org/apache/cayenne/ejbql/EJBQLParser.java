@@ -27,5 +27,8 @@ package org.apache.cayenne.ejbql;
  */
 public interface EJBQLParser {
 
-    Object parse(String ejbqlStatement) throws EJBQLException;
+    /**
+     * Parses a string EJB QL into an {@link EJBQLExpression}.
+     */
+    EJBQLExpression parse(String ejbqlStatement) throws EJBQLException;
 }

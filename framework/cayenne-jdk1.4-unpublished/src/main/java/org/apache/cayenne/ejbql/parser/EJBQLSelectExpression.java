@@ -18,12 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLSelectExpression extends SimpleNode {
-	public EJBQLSelectExpression(int id) {
-		super(id);
-	}
+
+    public EJBQLSelectExpression(int id) {
+        super(id);
+    }
+
+    public boolean visit(EJBQLExpressionVisitor visitor) {
+        return visitor.visitSelectExpression(this);
+    }
 }

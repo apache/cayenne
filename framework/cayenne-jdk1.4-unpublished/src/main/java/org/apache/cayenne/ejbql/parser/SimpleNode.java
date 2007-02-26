@@ -18,8 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
+
+import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
  * A base node for the EJBQL concrete nodes that satisfies JJTree requirements.
@@ -27,7 +31,7 @@ import java.io.Serializable;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public abstract class SimpleNode implements Node, Serializable {
+public abstract class SimpleNode implements Node, Serializable, EJBQLExpression {
 
     final int id;
     SimpleNode parent;
@@ -37,6 +41,42 @@ public abstract class SimpleNode implements Node, Serializable {
 
     public SimpleNode(int id) {
         this.id = id;
+    }
+
+    /**
+     * A recursive visit method that passes a visitor to this node and all its children,
+     * depth first.
+     */
+    public boolean visit(EJBQLExpressionVisitor visitor) {
+
+        if (!nonRecursiveVisit(visitor)) {
+            return false;
+        }
+
+        int len = getChildrenCount();
+        for (int i = 0; i < len; i++) {
+            if (!children[i].visit(visitor)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * A non-recursive version of accept method. Simply returns true. Subclasses normally
+     * override this method instead of visit().
+     */
+    protected boolean nonRecursiveVisit(EJBQLExpressionVisitor visitor) {
+        return true;
+    }
+
+    public EJBQLExpression getChild(int index) {
+        return (EJBQLExpression) jjtGetChild(index);
+    }
+
+    public int getChildrenCount() {
+        return jjtGetNumChildren();
     }
 
     public String getName() {
@@ -76,14 +116,6 @@ public abstract class SimpleNode implements Node, Serializable {
         return children[i];
     }
 
-    public int getChildCount() {
-        return jjtGetNumChildren();
-    }
-
-    public SimpleNode getChild(int index) {
-        return (SimpleNode) jjtGetChild(index);
-    }
-
     public int jjtGetNumChildren() {
         return (children == null) ? 0 : children.length;
     }
@@ -93,33 +125,17 @@ public abstract class SimpleNode implements Node, Serializable {
     }
 
     public String toString() {
-        return getName();
+        StringWriter buffer = new StringWriter();
+        PrintWriter pw = new PrintWriter(buffer);
+        dump(pw, "", true);
+        pw.close();
+        buffer.flush();
+        return buffer.toString();
     }
 
-    public String toString(String prefix) {
-        return prefix + toString();
-    }
-
-    /**
-     * Debugging method.
-     */
-    public void dump(String prefix) {
-        dump(System.out, prefix);
-    }
-
-    public void dump() {
-        dump(" ");
-    }
-
-    /**
-     * Debugging method to output a parse tree.
-     */
-    public void dump(PrintStream out, String prefix) {
-        dump(out, prefix, false);
-    }
-
-    public void dump(PrintStream out, String prefix, boolean text) {
-        out.println(toString(prefix)
+    void dump(PrintWriter out, String prefix, boolean text) {
+        out.println(prefix
+                + getName()
                 + (text && this.text != null ? " [" + this.text + "]" : ""));
         if (children != null) {
             for (int i = 0; i < children.length; ++i) {
