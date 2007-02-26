@@ -400,6 +400,13 @@
 				<artifactId>openejb-core</artifactId>
 				<version>3.0-incubating-SNAPSHOT</version>
 				<scope>test</scope>
+                                <exclusions>
+                                        <exclusion> 
+                                                <groupId>org.apache.openjpa</groupId>
+                                                <artifactId>openjpa-persistence-jdbc</artifactId>
+                                        </exclusion>
+                                </exclusions>
+
 			</dependency>
 			
 			<dependency>
