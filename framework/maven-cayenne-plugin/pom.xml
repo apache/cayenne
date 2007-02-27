@@ -60,9 +60,19 @@
 			<version>2.0.4</version>
 		</dependency>
 
+		<!-- even though the runtime dependency is on 'cayenne-server', 
+			need to mention this one here as to fix the build failure from the parent folder
+		-->
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>
 			<artifactId>cayenne-jdk1.4-unpublished</artifactId>
+			<version>${version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-server</artifactId>
 			<version>${version}</version>
 		</dependency>
 
