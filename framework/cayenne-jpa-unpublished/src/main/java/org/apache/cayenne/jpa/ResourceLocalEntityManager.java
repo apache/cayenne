@@ -254,7 +254,7 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
     public boolean contains(Object entity) {
         checkClosed();
         Persistent p = (Persistent) entity;
-        return p.getObjectContext() == context;
+        return p.getObjectContext().getGraphManager().getNode(p.getObjectId()) == p;
     }
 
     /**
