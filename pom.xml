@@ -534,22 +534,18 @@
 				<enabled>true</enabled>
 			</releases>
 		</pluginRepository>
-
+		
 		<pluginRepository>
-			<id>objectstyle</id>
-			<name>ObjectStyle Public Maven2 repo</name>
-			<url>http://objectstyle.org/maven2</url>
-			<layout>default</layout>
+			<id>webobjects.mdimension.com/plugin/releases</id>
+			<name>mdimension maven 2 releases repo</name>
+			<url>http://webobjects.mdimension.com/maven2/releases</url>
 			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-				<checksumPolicy>ignore</checksumPolicy>
+				<enabled>false</enabled>
 			</snapshots>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
 		</pluginRepository>
-
 	</pluginRepositories>
 
 	<build>
