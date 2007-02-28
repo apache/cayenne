@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.cayenne.enhancer.EnhancementHelper;
+
 /**
  * Provides information about a class relevant to JPA, such potential persistence fields,
  * etc.
@@ -77,7 +79,7 @@ public class JpaClassDescriptor {
     public AccessType getAccess() {
         return access;
     }
-    
+
     public void setAccess(AccessType access) {
         this.access = access;
     }
@@ -162,9 +164,14 @@ public class JpaClassDescriptor {
             if (Modifier.isTransient(modifiers)) {
                 continue;
             }
-            
+
             // skip static fields
             if (Modifier.isStatic(modifiers)) {
+                continue;
+            }
+
+            // skip fields created by Cayenne enhancer
+            if (EnhancementHelper.isGeneratedField(fields[i].getName())) {
                 continue;
             }
 

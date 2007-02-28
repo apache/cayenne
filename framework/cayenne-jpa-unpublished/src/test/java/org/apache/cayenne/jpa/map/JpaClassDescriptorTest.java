@@ -21,6 +21,7 @@ package org.apache.cayenne.jpa.map;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.jpa.conf.MockFieldRegressionBean;
 import org.apache.cayenne.jpa.conf.MockPropertyRegressionBean;
 
 public class JpaClassDescriptorTest extends TestCase {
@@ -38,7 +39,7 @@ public class JpaClassDescriptorTest extends TestCase {
         assertEquals("this", JpaClassDescriptor.propertyNameForSetter("setThis"));
     }
 
-    public void testGetMemberDescriptors() throws Exception {
+    public void testGetMemberDescriptorsProperty() throws Exception {
 
         JpaClassDescriptor descriptor = new JpaClassDescriptor(
                 MockPropertyRegressionBean.class);
@@ -51,5 +52,22 @@ public class JpaClassDescriptorTest extends TestCase {
 
         assertNotNull(descriptor.getPropertyForMember(MockPropertyRegressionBean.class
                 .getDeclaredMethod("getP3", new Class[] {})));
+    }
+    
+    public void testGetMemberDescriptorsField() throws Exception {
+
+        JpaClassDescriptor descriptor = new JpaClassDescriptor(
+                MockFieldRegressionBean.class);
+        descriptor.setAccess(AccessType.FIELD);
+
+        assertEquals(1, descriptor.getFieldDescriptors().size());
+
+        assertNotNull(descriptor.getPropertyForMember(MockFieldRegressionBean.class
+                .getDeclaredField("p1")));
+
+        assertNull(descriptor.getPropertyForMember(MockFieldRegressionBean.class
+                .getDeclaredField("p2")));
+        assertNull(descriptor.getPropertyForMember(MockFieldRegressionBean.class
+                .getDeclaredField("$cay_x")));
     }
 }
