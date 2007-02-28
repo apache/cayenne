@@ -22,8 +22,9 @@ package org.apache.cayenne.ejbql.parser;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLAvergae extends SimpleNode {
-	public EJBQLAvergae(int id) {
-		super(id);
-	}
+public class EJBQLAverage extends SimpleNode {
+
+    public EJBQLAverage(int id) {
+        super(id);
+    }
 }

@@ -18,13 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLAbstractSchemaName extends SimpleNode {
 
-	public EJBQLAbstractSchemaName(int id) {
-		super(id);
-	}
+    public EJBQLAbstractSchemaName(int id) {
+        super(id);
+    }
+
+    protected boolean nonRecursiveVisit(EJBQLExpressionVisitor visitor) {
+        return visitor.visitAbstractSchemaName(this);
+    }
 }

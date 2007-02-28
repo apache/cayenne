@@ -28,10 +28,13 @@ public class EJBQLTranslatorTest extends TestCase {
 
     public void testSelect1() {
         EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLExpression select = parser.parse("select a from b");
+        EJBQLExpression select = parser.parse("select a from Artist a");
 
         EJBQLTranslator tr = new EJBQLTranslator();
         select.visit(tr);
-        //assertEquals("Failed to translate: " + select, "SELECT A FROM B", tr.getSql());
+//        assertEquals(
+//                "Failed to translate: " + select,
+//                "SELECT t0.ARTIST_ID, t0.ARTIST_NAME, t0.DATE_OF_BIRTH FROM ARTIST t0",
+//                tr.getSql());
     }
 }

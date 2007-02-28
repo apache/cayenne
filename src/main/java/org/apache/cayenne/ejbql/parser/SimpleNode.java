@@ -42,6 +42,10 @@ public abstract class SimpleNode implements Node, Serializable, EJBQLExpression 
     public SimpleNode(int id) {
         this.id = id;
     }
+    
+    public String getText() {
+        return text;
+    }
 
     /**
      * A recursive visit method that passes a visitor to this node and all its children,

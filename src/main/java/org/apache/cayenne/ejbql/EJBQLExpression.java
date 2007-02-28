@@ -42,4 +42,9 @@ public interface EJBQLExpression {
      * Returns a child expression node at the specified index.
      */
     EJBQLExpression getChild(int index);
+
+    /**
+     * Returns a text property of the node.
+     */
+    String getText();
 }

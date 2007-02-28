@@ -535,7 +535,7 @@ void count() #Count : { }
 }
 
 
-void avg() #Avergae : { }
+void avg() #Average : { }
 {
 	<AVG> aggregate_path()
 }
