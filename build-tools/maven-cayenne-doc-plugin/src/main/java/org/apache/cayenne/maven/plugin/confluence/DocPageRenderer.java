@@ -213,8 +213,8 @@ public class DocPageRenderer {
 
         replacementBuffer = new StringBuffer();
         while (matcher.find()) {
-            matcher.appendReplacement(replacementBuffer, matcher.group(0).replace(
-                    "+",
+            matcher.appendReplacement(replacementBuffer, matcher.group(0).replaceAll(
+                    "\\+",
                     "%20"));
         }
         matcher.appendTail(replacementBuffer);
