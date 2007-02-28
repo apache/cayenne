@@ -243,7 +243,7 @@
 				<plugins>
 					<plugin>
 						<groupId>org.apache.cayenne.build-tools</groupId>
-						<artifactId>maven-cayenne-build-plugin</artifactId>
+						<artifactId>maven-cayenne-doc-plugin</artifactId>
 						<executions>
 							<execution>
 								<id>docs</id>

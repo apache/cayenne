@@ -36,5 +36,6 @@
 
 	<modules>
 		<module>maven-cayenne-build-plugin</module>
+		<module>maven-cayenne-doc-plugin</module>
 	</modules>
 </project>

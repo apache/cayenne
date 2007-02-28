@@ -18,9 +18,9 @@
 	under the License.   
 -->
 <project>
-	
+
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
@@ -44,72 +44,62 @@
 			<version>2.0.4</version>
 		</dependency>
 		<dependency>
-			<groupId>com.atlassian.confluence</groupId>
-			<artifactId>confluence-soap</artifactId>
-			<version>2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>axis</groupId>
-			<artifactId>axis</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<dependency>
 			<groupId>velocity</groupId>
 			<artifactId>velocity</artifactId>
 			<version>1.4</version>
 		</dependency>
 
 		<!-- 
-                     declare non-standard dependencies coming from ObjectStyle repo here to seed the repo and avoid using
-                     objectstyle repo for the main build
-                -->
+			declare non-standard dependencies coming from ObjectStyle repo here to seed the repo and avoid using
+			objectstyle repo for the main build
+		-->
 		<dependency>
-                                <groupId>mockrunner</groupId>
-                                <artifactId>mockrunner</artifactId>
-                 </dependency>
+			<groupId>mockrunner</groupId>
+			<artifactId>mockrunner</artifactId>
+		</dependency>
 
-                        <dependency>
-                                <groupId>opensymphony</groupId>
-                                <artifactId>oscache</artifactId>
-                        </dependency>
+		<dependency>
+			<groupId>opensymphony</groupId>
+			<artifactId>oscache</artifactId>
+		</dependency>
 
-                        <dependency>
-                                <groupId>org.scopemvc</groupId>
-                                <artifactId>scopemvc</artifactId>
-                        </dependency>
+		<dependency>
+			<groupId>org.scopemvc</groupId>
+			<artifactId>scopemvc</artifactId>
+		</dependency>
 
-<dependency>
-                                <groupId>foundrylogic.vpp</groupId>
-                                <artifactId>vpp</artifactId>
-                        </dependency>
-        <dependency>
-                                <groupId>com.caucho</groupId>
-                                <artifactId>hessian</artifactId>
-                        </dependency>
-                        <dependency>
-                                <groupId>jgoodies</groupId>
-                                <artifactId>forms</artifactId>
-                        </dependency>
+		<dependency>
+			<groupId>foundrylogic.vpp</groupId>
+			<artifactId>vpp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.caucho</groupId>
+			<artifactId>hessian</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jgoodies</groupId>
+			<artifactId>forms</artifactId>
+		</dependency>
 
-                        <dependency>
-                                <groupId>jgoodies</groupId>
-                                <artifactId>looks</artifactId>
-                        </dependency>
+		<dependency>
+			<groupId>jgoodies</groupId>
+			<artifactId>looks</artifactId>
+		</dependency>
 
 	</dependencies>
 
-<repositories>
-                <repository>
-                        <id>objectstyle</id>
-                        <name>Objectstyle Repository</name>
+	<repositories>
+		<repository>
+			<id>objectstyle</id>
+			<name>Objectstyle Repository</name>
 			<url>http://objectstyle.org/maven2</url>
-                        <layout>default</layout>
-                        <snapshots>
-                                <enabled>false</enabled>
-                        </snapshots>
-                        <releases>
-                                <enabled>true</enabled>
-                        </releases>
-                </repository>
-        </repositories>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
 </project>
