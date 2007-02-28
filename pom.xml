@@ -527,20 +527,8 @@
 			<layout>default</layout>
 			<snapshots>
 				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
+				<updatePolicy>weekly</updatePolicy>
 				<checksumPolicy>ignore</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-		
-		<pluginRepository>
-			<id>webobjects.mdimension.com/plugin/releases</id>
-			<name>mdimension maven 2 releases repo</name>
-			<url>http://webobjects.mdimension.com/maven2/releases</url>
-			<snapshots>
-				<enabled>false</enabled>
 			</snapshots>
 			<releases>
 				<enabled>true</enabled>
