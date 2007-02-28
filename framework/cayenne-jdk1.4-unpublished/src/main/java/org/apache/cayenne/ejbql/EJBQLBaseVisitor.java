@@ -42,4 +42,12 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
     public boolean visitSelectExpression(EJBQLExpression expression) {
         return true;
     }
+    
+    public boolean visitFromItem(EJBQLExpression expression) {
+        return true;
+    }
+    
+    public boolean visitAbstractSchemaName(EJBQLExpression expression) {
+        return true;
+    }
 }

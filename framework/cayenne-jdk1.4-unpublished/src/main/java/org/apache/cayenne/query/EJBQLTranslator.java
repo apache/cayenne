@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLExpression;
-import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
  * A translator of {@link EJBQLExpression} into the database SQL.
@@ -27,7 +27,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-class EJBQLTranslator implements EJBQLExpressionVisitor {
+class EJBQLTranslator extends EJBQLBaseVisitor {
 
     private StringBuffer buffer;
 
@@ -41,15 +41,6 @@ class EJBQLTranslator implements EJBQLExpressionVisitor {
 
     public boolean visitSelect(EJBQLExpression expression) {
         buffer.append("SELECT");
-        return true;
-    }
-
-    public boolean visitSelectExpression(EJBQLExpression expression) {
-        return true;
-    }
-
-    public boolean visitIdentificationVariable(EJBQLExpression expression) {
-        // if we are within the select expression, this is a name of the objentity.
         return true;
     }
 

@@ -27,10 +27,14 @@ package org.apache.cayenne.ejbql;
 public interface EJBQLExpressionVisitor {
 
     boolean visitSelect(EJBQLExpression expression);
-    
+
     boolean visitFrom(EJBQLExpression expression);
-    
+
     boolean visitSelectExpression(EJBQLExpression expression);
-    
+
+    boolean visitFromItem(EJBQLExpression expression);
+
     boolean visitIdentificationVariable(EJBQLExpression expression);
+
+    boolean visitAbstractSchemaName(EJBQLExpression expression);
 }
