@@ -145,6 +145,16 @@
 				<role>Committer</role>
 			</roles>
 		</developer>
+		<developer>
+			<id>amaniatis</id>
+			<name>Aristedes Maniatis</name>
+			<email>ari@ish.com.au</email>
+			<organization>ish</organization>
+			<roles>
+				<role>Committer</role>
+			</roles>
+			<timezone>+10</timezone>
+		</developer>
 	</developers>
 
 	<licenses>
