@@ -21,6 +21,7 @@ package org.apache.cayenne.jpa.itest.ch3;
 import javax.persistence.EntityManager;
 
 import org.apache.cayenne.itest.jpa.EntityManagerCase;
+import org.apache.cayenne.itest.jpa.ItestSetup;
 import org.apache.cayenne.jpa.itest.ch3.entity.CallbackEntity;
 import org.apache.cayenne.jpa.itest.ch3.entity.CallbackEntity2;
 import org.apache.cayenne.jpa.itest.ch3.entity.EntityListener1;
@@ -71,5 +72,49 @@ public class _3_5_1_LifecycleCallbackMethodsTest extends EntityManagerCase {
                 + ":"
                 + EntityListener1.class.getName(), EntityListenerState
                 .getPrePersistCalled());
+    }
+
+    public void testPostPersist() {
+
+        // regular entity
+        CallbackEntity e = new CallbackEntity();
+        assertFalse(e.isPostPersistCalled());
+
+        // don't use super getEntityManager - it starts a tran
+        EntityManager em = ItestSetup.getInstance().createEntityManager();
+
+        // spec reqires the callback to be invoked as a part of persist, without waiting
+        // for flush or commit.
+        em.getTransaction().begin();
+        em.persist(e);
+        assertFalse(e.isPostPersistCalled());
+        assertEquals(0, e.getPostPersistedId());
+        em.getTransaction().commit();
+
+        assertTrue(e.isPostPersistCalled());
+        
+        // Per spec, id must be availble during PostPersist
+        assertEquals(e.getId(), e.getPostPersistedId());
+
+        // external listeners
+        EntityListenerState.reset();
+        assertEquals("", EntityListenerState.getPostPersistCalled());
+        ListenerEntity1 e3 = new ListenerEntity1();
+
+        // reset EM
+        em = ItestSetup.getInstance().createEntityManager();
+        assertEquals("", EntityListenerState.getPostPersistCalled());
+        em.getTransaction().begin();
+        em.persist(e3);
+        assertEquals(":" + EntityListener2.class.getName(), EntityListenerState
+                .getPostPersistCalled(), EntityListenerState.getPostPersistCalled());
+        EntityListenerState.reset();
+        
+        em.getTransaction().commit();
+        assertEquals(":"
+                + EntityListener1.class.getName()
+                + ":"
+                + EntityListener2.class.getName(), EntityListenerState
+                .getPostPersistCalled());
     }
 }

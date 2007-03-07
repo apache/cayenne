@@ -40,6 +40,9 @@ public class CallbackEntity {
 
     @Transient
     protected transient boolean postPersistCalled;
+    
+    @Transient
+    protected transient int postPersistedId;
 
     @Transient
     protected transient boolean preRemoveCalled;
@@ -64,6 +67,7 @@ public class CallbackEntity {
     @PostPersist
     public void postPersistMethod() {
         postPersistCalled = true;
+        postPersistedId = id;
     }
 
     @PreRemove
@@ -101,6 +105,10 @@ public class CallbackEntity {
 
     public boolean isPostPersistCalled() {
         return postPersistCalled;
+    }
+    
+    public int getPostPersistedId() {
+        return postPersistedId;
     }
 
     public boolean isPostRemoveCalled() {
