@@ -95,6 +95,7 @@ public class _3_5_1_LifecycleCallbackMethodsTest extends EntityManagerCase {
         
         // Per spec, id must be availble during PostPersist
         assertEquals(e.getId(), e.getPostPersistedId());
+        assertTrue(e.getId() > 0);
 
         // external listeners
         EntityListenerState.reset();
