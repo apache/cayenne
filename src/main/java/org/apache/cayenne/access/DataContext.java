@@ -1128,20 +1128,22 @@ public class DataContext extends BaseContext implements DataChannel {
         int syncType = cascade
                 ? DataChannel.FLUSH_CASCADE_SYNC
                 : DataChannel.FLUSH_NOCASCADE_SYNC;
+        
+        ObjectStore objectStore = getObjectStore();
 
         // prevent multiple commits occuring simulteneously
-        synchronized (getObjectStore()) {
+        synchronized (objectStore) {
 
             DataContextFlushEventHandler eventHandler = null;
 
-            ObjectStoreGraphDiff changes = getObjectStore().getChanges();
+            ObjectStoreGraphDiff changes = objectStore.getChanges();
             boolean noop = isValidatingObjectsOnCommit()
                     ? changes.validateAndCheckNoop()
                     : changes.isNoop();
 
             if (noop) {
                 // need to clear phantom changes
-                getObjectStore().postprocessAfterPhantomCommit();
+                objectStore.postprocessAfterPhantomCommit();
                 return new CompoundDiff();
             }
 
@@ -1153,7 +1155,16 @@ public class DataContext extends BaseContext implements DataChannel {
 
             try {
                 GraphDiff returnChanges = getChannel().onSync(this, changes, syncType);
-                getObjectStore().postprocessAfterCommit(returnChanges);
+
+                // note that this is a hack resulting from a fix to CAY-766... To support
+                // valid object state in PostPersist callback, 'postprocessAfterCommit' is
+                // invoked by DataDomain.onSync(..). Unless the parent is DataContext, and
+                // this method is not invoked!! As a result, PostPersist will contain temp
+                // ObjectIds in nested contexts and perm ones in flat contexts.
+                // Pending better callback design .....
+                if (objectStore.hasChanges()) {
+                    objectStore.postprocessAfterCommit(returnChanges);
+                }
 
                 // this is a legacy event ... will deprecate in 2.0
                 fireTransactionCommitted();
@@ -1388,8 +1399,8 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Sets default for posting transaction events by new DataContexts.
      * 
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
-     *             removed in later 3.0 milestones.
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
+     *             later 3.0 milestones.
      */
     public static void setTransactionEventsEnabledDefault(boolean flag) {
         transactionEventsEnabledDefault = flag;
@@ -1398,16 +1409,16 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Enables or disables posting of transaction events by this DataContext.
      * 
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
-     *             removed in later 3.0 milestones.
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
+     *             later 3.0 milestones.
      */
     public void setTransactionEventsEnabled(boolean flag) {
         this.transactionEventsEnabled = flag;
     }
 
     /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
-     *             removed in later 3.0 milestones.
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
+     *             later 3.0 milestones.
      */
     public boolean isTransactionEventsEnabled() {
         return this.transactionEventsEnabled;
@@ -1444,8 +1455,8 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
-     *             removed in later 3.0 milestones.
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
+     *             later 3.0 milestones.
      */
     void fireWillCommit() {
         // post event: WILL_COMMIT
@@ -1456,8 +1467,8 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
-     *             removed in later 3.0 milestones.
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
+     *             later 3.0 milestones.
      */
     void fireTransactionRolledback() {
         // post event: DID_ROLLBACK
@@ -1468,8 +1479,8 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
-     *             removed in later 3.0 milestones.
+     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
+     *             later 3.0 milestones.
      */
     void fireTransactionCommitted() {
         // old-style event

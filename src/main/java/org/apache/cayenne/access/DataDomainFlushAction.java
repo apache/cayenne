@@ -253,5 +253,7 @@ class DataDomainFlushAction {
                     Collections.EMPTY_LIST,
                     resultIndirectlyModifiedIds);
         }
+        
+        context.getObjectStore().postprocessAfterCommit(resultDiff);
     }
 }
