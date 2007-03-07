@@ -30,8 +30,8 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
 /**
- * A DataChannel that provides a server-side bridge between client and server objects in a
- * Remote Object Persistence stack.
+ * A DataChannel that provides a server-side end of the bridge between client and server
+ * objects in a Remote Object Persistence stack.
  * 
  * @since 1.2
  * @author Andrus Adamchik
