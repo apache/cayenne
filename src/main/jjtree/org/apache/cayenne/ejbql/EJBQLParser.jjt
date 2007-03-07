@@ -47,21 +47,42 @@ PARSER_BEGIN(EJBQL)
 package org.apache.cayenne.ejbql.parser;
 
 import java.io.*;
+import java.util.*;
 import org.apache.cayenne.ejbql.*;
+import org.apache.cayenne.map.*;
 
-public class EJBQL {
-	String ejbql;
+public class EJBQL extends AbstractParser {
 
-	public EJBQL (String ejbql) {
-		this (new StringReader (ejbql));
-		this.ejbql = ejbql;
+	public EJBQL (String source) {
+		this (new StringReader (source));
+		this.source = source;
 	}
+	
+	EJBQLCompiledExpression compileQuery(EntityResolver resolver) throws ParseException {
+        this.descriptorsById = new HashMap();
+        this.resolver = resolver;
+
+        CompiledExpression compiled = new CompiledExpression();
+        compiled.setExpression(parseQuery());
+        compiled.setDescriptorsById(descriptorsById);
+        compiled.setSource(source);
+        return compiled;
+    }
 	
     public static class EJBQLDefaultParser implements EJBQLParser {
 
        public EJBQLExpression parse(String ejbqlStatement) throws EJBQLException {
            try {
               return new EJBQL(ejbqlStatement).parseQuery();
+           }
+           catch(ParseException e) {
+              throw new EJBQLException("Error parsing EJB QL statement", e);
+           }
+       }
+       
+       public EJBQLCompiledExpression compile(String ejbqlStatement, EntityResolver resolver) throws EJBQLException {
+           try {
+              return new EJBQL(ejbqlStatement).compileQuery(resolver);
            }
            catch(ParseException e) {
               throw new EJBQLException("Error parsing EJB QL statement", e);

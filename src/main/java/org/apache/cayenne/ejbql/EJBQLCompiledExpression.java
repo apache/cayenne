@@ -18,25 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
- * An abstract definition of EJBQL query parser. The actual parser implementing this
- * interface is generated from JavaCC grammar.
+ * Represents an EJB QL expression "compiled" in the context of a certain mapping.
  * 
- * @author andrus
+ * @author Andrus Adamchik
  * @since 3.0
  */
-public interface EJBQLParser {
+public interface EJBQLCompiledExpression {
 
     /**
-     * Parses a string EJB QL into an {@link EJBQLExpression}.
+     * Returns a tree representation of an EJBQL expression.
      */
-    EJBQLExpression parse(String ejbqlStatement) throws EJBQLException;
+    EJBQLExpression getExpression();
 
     /**
-     * Parses and compiles an expression for the EntityResolver.
+     * Returns a ClassDescriptor for the id variable.
      */
-    EJBQLCompiledExpression compile(String ejbqlStatement, EntityResolver resolver)
-            throws EJBQLException;
+    ClassDescriptor getEntityDescriptor(String idVariable);
+    
+    /**
+     * Returns EJB QL source of the compiled expression if available.
+     */
+    String getSource();
 }
