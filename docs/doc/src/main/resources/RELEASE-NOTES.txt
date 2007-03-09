@@ -87,6 +87,8 @@ CAY-726 SQLTemplate parsing bug when macros appear at the end of line
 CAY-751 AS400 datafields containing # in field names do not get mapped correctly
 CAY-752 Importing EOModel gives Cast Exception
 CAY-754 Local jNDI hack breaks when running with Jetty6-Maven
+CAY-764 Exception when importing an EOModel with single table inheritance
+CAY-765 Programmatically overriding "use share cache" fails
 
 API Changes
 ----------------------------------
