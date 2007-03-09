@@ -1,19 +1,19 @@
 {
     attributes = (
         {
+            columnName = "HELPER_ENTITY_ID"; 
+            externalType = int; 
+            name = helperEntityID; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
             allowsNull = Y; 
             columnName = NAME; 
             externalType = char; 
             name = name; 
             valueClassName = NSString; 
             width = 200; 
-        }, 
-        {
-            columnName = "HELPER_ENTITY_ID"; 
-            externalType = int; 
-            name = helperEntityID; 
-            valueClassName = NSNumber; 
-            valueType = i; 
         }, 
         {
             columnName = PK; 

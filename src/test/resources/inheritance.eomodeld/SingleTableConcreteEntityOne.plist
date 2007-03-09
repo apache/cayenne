@@ -1,15 +1,6 @@
 {
     attributes = (
         {
-            allowsNull = Y; 
-            columnName = NAME; 
-            externalType = char; 
-            name = name; 
-            serverTimeZone = "America/New_York"; 
-            valueClassName = NSString; 
-            width = 200; 
-        }, 
-        {
             columnName = "HELPER_ENTITY_ID"; 
             externalType = int; 
             internalInfo = {"_nameInObjectStore" = PK; }; 
@@ -17,6 +8,15 @@
             serverTimeZone = "America/New_York"; 
             valueClassName = NSNumber; 
             valueType = i; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = NAME; 
+            externalType = char; 
+            name = name; 
+            serverTimeZone = "America/New_York"; 
+            valueClassName = NSString; 
+            width = 200; 
         }, 
         {
             columnName = PK; 
@@ -35,6 +35,16 @@
     parent = XSingleTableAbstractEntity; 
     primaryKeyAttributes = (pk); 
     relationships = (
+        {
+            deleteRule = EODeleteRuleCascade; 
+            destination = SingleTableJoin; 
+            isToMany = Y; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = singleTablePk; sourceAttribute = pk; }); 
+            name = singleTableJoins; 
+            ownsDestination = Y; 
+            propagatesPrimaryKey = Y; 
+        }, 
         {
             deleteRule = EODeleteRuleCascade; 
             destination = HelperEntity; 
