@@ -64,7 +64,7 @@ public class InheritanceTest extends PeopleCase {
 
         context.commitChanges();
 
-        context = createDataContextWithLocalCache();
+        context = createDataContextWithDedicatedCache();
         SelectQuery query = new SelectQuery(CustomerRepresentative.class);
         List reps = context.performQuery(query);
 
