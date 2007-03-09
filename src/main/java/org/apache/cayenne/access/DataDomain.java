@@ -312,7 +312,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Returns <code>true</code> if DataContexts produced by this DataDomain are using
      * shared DataRowStore. Returns <code>false</code> if each DataContext would work
-     * with its own DataRowStore.
+     * with its own DataRowStore. Note that this setting can be overwritten per
+     * DataContext. See {@link #createDataContext(boolean)}.
      */
     public boolean isSharedCacheEnabled() {
         return sharedCacheEnabled;
@@ -392,10 +393,25 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Returns snapshots cache for this DataDomain, lazily initializing it on the first
-     * call.
+     * call if 'sharedCacheEnabled' flag is true.
      */
     public synchronized DataRowStore getSharedSnapshotCache() {
         if (sharedSnapshotCache == null && sharedCacheEnabled) {
+            this.sharedSnapshotCache = new DataRowStore(name, properties, eventManager);
+        }
+
+        return sharedSnapshotCache;
+    }
+    
+    /**
+     * Returns a guaranteed non-null shared snapshot cache regardless of the
+     * 'sharedCacheEnabled' flag setting. This allows to build DataContexts that do not
+     * follow the default policy.
+     * 
+     * @since 3.0
+     */
+    synchronized DataRowStore nonNullSharedSnapshotCache() {
+        if (sharedSnapshotCache == null) {
             this.sharedSnapshotCache = new DataRowStore(name, properties, eventManager);
         }
 
@@ -561,7 +577,7 @@ public class DataDomain implements QueryEngine, DataChannel {
         // for new dataRowStores use the same name for all stores
         // it makes it easier to track the event subject
         DataRowStore snapshotCache = (useSharedCache)
-                ? getSharedSnapshotCache()
+                ? nonNullSharedSnapshotCache()
                 : new DataRowStore(name, properties, eventManager);
 
         DataContext context;

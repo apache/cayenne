@@ -177,24 +177,32 @@ public class DataDomainTest extends CayenneCase {
                 .getSharedSnapshotCache());
     }
 
-    public void testCreateDataContextWithLocalCache() throws Exception {
+    public void testCreateDataContextWithDedicatedCache() throws Exception {
         Map properties = new HashMap();
         properties
                 .put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.FALSE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertFalse(domain.isSharedCacheEnabled());
-
-        DataContext c2 = domain.createDataContext(true);
-        assertSame(c2.getObjectStore().getDataRowCache(), domain.getSharedSnapshotCache());
+        assertNull(domain.getSharedSnapshotCache());
 
         DataContext c3 = domain.createDataContext(false);
+        assertNotNull(c3.getObjectStore().getDataRowCache());
+        assertNull(domain.getSharedSnapshotCache());
         assertNotSame(c3.getObjectStore().getDataRowCache(), domain
                 .getSharedSnapshotCache());
 
         DataContext c1 = domain.createDataContext();
+        assertNotNull(c1.getObjectStore().getDataRowCache());
+        assertNull(domain.getSharedSnapshotCache());
         assertNotSame(c1.getObjectStore().getDataRowCache(), domain
                 .getSharedSnapshotCache());
+
+        // this should trigger shared cache creation
+        DataContext c2 = domain.createDataContext(true);
+        assertNotNull(c2.getObjectStore().getDataRowCache());
+        assertNotNull(domain.getSharedSnapshotCache());
+        assertSame(c2.getObjectStore().getDataRowCache(), domain.getSharedSnapshotCache());
 
         DataContext c4 = domain.createDataContext();
         assertNotSame(c4.getObjectStore().getDataRowCache(), c1
