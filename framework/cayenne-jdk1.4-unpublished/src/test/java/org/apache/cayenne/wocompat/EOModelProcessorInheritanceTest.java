@@ -21,6 +21,7 @@ package org.apache.cayenne.wocompat;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
@@ -52,5 +53,17 @@ public class EOModelProcessorInheritanceTest extends BasicCase {
         assertEquals("CONCRETE_ENTITY_ONE", concreteE.getDbEntityName());
         assertEquals("ConcreteEntityClass", concreteE.getClassName());
         assertEquals("AbstractEntityClass", concreteE.getSuperClassName());
+    }
+    
+    public void testLoadFlattenedRelationship() throws Exception {
+        DataMap map = processor.loadEOModel("inheritance.eomodeld");
+
+        ObjEntity e1 = map.getObjEntity("HelperFlatEntity");
+        assertNotNull(e1);
+        
+        ObjRelationship fr = (ObjRelationship) e1.getRelationship("singleTables");
+        assertNotNull(fr);
+        assertEquals("singleTableJoins.toSingleTable", fr.getDbRelationshipPath());
+        assertEquals("SingleTableConcreteEntityOne", fr.getTargetEntityName());
     }
 }
