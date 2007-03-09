@@ -155,7 +155,7 @@ public abstract class CayenneCase extends BasicCase {
      * Creates a DataContext that uses local snapshot cache and is based on default test
      * domain.
      */
-    protected DataContext createDataContextWithLocalCache() {
+    protected DataContext createDataContextWithDedicatedCache() {
         DataContext context = getDomain().createDataContext(false);
 
         assertNotSame(getDomain().getSharedSnapshotCache(), context

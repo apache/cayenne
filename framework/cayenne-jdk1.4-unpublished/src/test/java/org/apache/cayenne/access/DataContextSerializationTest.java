@@ -94,7 +94,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
     public void testSerializeWithLocalCache() throws Exception {
 
-        DataContext context = createDataContextWithLocalCache();
+        DataContext context = createDataContextWithDedicatedCache();
 
         assertNotSame(context.getParentDataDomain().getSharedSnapshotCache(), context
                 .getObjectStore()
