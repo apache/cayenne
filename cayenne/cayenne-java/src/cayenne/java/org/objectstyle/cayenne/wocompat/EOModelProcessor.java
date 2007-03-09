@@ -66,14 +66,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.PredicateUtils;
-import org.objectstyle.cayenne.CayenneRuntimeException;
 import org.objectstyle.cayenne.dba.TypesMapping;
-import org.objectstyle.cayenne.exp.Expression;
-import org.objectstyle.cayenne.exp.parser.ASTDbPath;
 import org.objectstyle.cayenne.map.DataMap;
 import org.objectstyle.cayenne.map.DbEntity;
 import org.objectstyle.cayenne.map.DbJoin;
@@ -85,6 +80,9 @@ import org.objectstyle.cayenne.query.AbstractQuery;
 import org.objectstyle.cayenne.query.Query;
 import org.objectstyle.cayenne.util.ResourceLocator;
 import org.objectstyle.cayenne.wocompat.parser.Parser;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
 
 /**
  * Class for converting stored Apple EOModel mapping files to Cayenne DataMaps.
@@ -686,50 +684,43 @@ public class EOModelProcessor {
             ObjRelationship flatRel = new ObjRelationship();
             flatRel.setName((String) relMap.get("name"));
             flatRel.setSourceEntity(e);
+            flatRel.setDbRelationshipPath(targetPath);
+
+            // find target entity
+            Map entityInfo = info;
+            StringTokenizer toks = new StringTokenizer(targetPath, ".");
+            while (toks.hasMoreTokens() && entityInfo != null) {
+                String pathComponent = toks.nextToken();
+
+                // get relationship info and reset entityInfo, so that we could use
+                // entityInfo state as an indicator of valid flat relationship enpoint
+                // outside the loop
+                Collection relationshipInfo = (Collection) entityInfo
+                        .get("relationships");
+                entityInfo = null;
+
+                if (relationshipInfo == null) {
+                    break;
+                }
+
+                Iterator rit = relationshipInfo.iterator();
+                while (rit.hasNext()) {
+                    Map pathRelationship = (Map) rit.next();
+                    if (pathComponent.equals(pathRelationship.get("name"))) {
+                        String targetName = (String) pathRelationship.get("destination");
+                        entityInfo = helper.entityPListMap(targetName);
+                        break;
+                    }
+                }
+            }
+            
+            if(entityInfo != null) {
+                flatRel.setTargetEntityName((String) entityInfo.get("name"));
+            }
+            
+
             e.addRelationship(flatRel);
-
-            DbEntity dbEntity = e.getDbEntity();
-            if (dbEntity == null) {
-                // not ready to handle inheritance from abstract entities...
-                continue;
-            }
-
-            // determine DB relationship mapping...
-            Expression exp = new ASTDbPath(targetPath);
-            Iterator path = dbEntity.resolvePathComponents(exp);
-
-            DbRelationship firstRel = null;
-            DbRelationship lastRel = null;
-            while (path.hasNext()) {
-                lastRel = (DbRelationship) path.next();
-                flatRel.addDbRelationship(lastRel);
-
-                if (firstRel == null) {
-                    firstRel = lastRel;
-                }
-            }
-
-            if ((firstRel != null) && (lastRel != null)) {
-                Collection potentialTargets = e.getDataMap().getMappedEntities(
-                        (DbEntity) lastRel.getTargetEntity());
-
-                // sanity check
-                if (potentialTargets.size() != 1) {
-                    throw new CayenneRuntimeException(
-                            "One and only one entity should be mapped"
-                                    + " to "
-                                    + lastRel.getTargetEntity().getName()
-                                    + ". Instead found : "
-                                    + potentialTargets.size());
-                }
-
-                flatRel.setTargetEntity((ObjEntity) potentialTargets.iterator().next());
-            }
-            else {
-                throw new CayenneRuntimeException("relationship in the path was null!");
-            }
         }
-
     }
 
     /**
