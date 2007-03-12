@@ -34,6 +34,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.Transaction;
+import org.apache.cayenne.query.EJBQLQuery;
 
 public class ResourceLocalEntityManager implements EntityManager, CayenneEntityManager {
 
@@ -267,8 +268,9 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
     public Query createQuery(String ejbqlString) {
         checkClosed();
 
-        // TODO: Andrus, 2/10/2006 - implement
-        throw new UnsupportedOperationException("TODO");
+        JpaQuery query = new JpaQuery(context);
+        query.setQuery(new EJBQLQuery(ejbqlString));
+        return query;
     }
 
     /**

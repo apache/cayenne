@@ -18,8 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.jpa.itest.ch3;
 
+import java.util.List;
+
 import javax.persistence.EntityExistsException;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 
 import org.apache.cayenne.itest.jpa.EntityManagerCase;
 import org.apache.cayenne.jpa.itest.ch3.entity.NonEntity;
@@ -148,14 +151,6 @@ public class _3_1_1_EntityManagerTest extends EntityManagerCase {
         }
     }
 
-    // TODO: andrus, 1/3/2007 - implement - need to emulate the container environment
-    public void _testMergeTransactionRequiredException() {
-        // throws TransactionRequiredException if invoked on a
-        // container-managed entity manager of type
-        // PersistenceContextType.TRANSACTION and there is
-        // no transaction.
-    }
-
     public void testRemove() throws Exception {
         getDbHelper().deleteAll("SimpleEntity");
 
@@ -193,14 +188,6 @@ public class _3_1_1_EntityManagerTest extends EntityManagerCase {
         }
     }
 
-    // TODO: andrus, 1/3/2007 - implement - need to emulate the container environment
-    public void _testRemoveTransactionRequiredException() {
-        // throws TransactionRequiredException if invoked on a
-        // container-managed entity manager of type
-        // PersistenceContextType.TRANSACTION and there is
-        // no transaction.
-    }
-
     public void testFind() throws Exception {
         getDbHelper().deleteAll("SimpleEntity");
 
@@ -235,11 +222,21 @@ public class _3_1_1_EntityManagerTest extends EntityManagerCase {
         }
     }
 
-    // TODO: andrus, 1/3/2007 - implement - need to emulate the container environment
-    public void _testRefreshTransactionRequiredException() {
-        // throws TransactionRequiredException if invoked on a
-        // container-managed entity manager of type
-        // PersistenceContextType.TRANSACTION and there is
-        // no transaction.
+    public void testCreateQuery() throws Exception {
+        getDbHelper().deleteAll("SimpleEntity");
+
+        getDbHelper().insert("SimpleEntity", new String[] {
+                "id", "property1"
+        }, new Object[] {
+                15, "XXX"
+        });
+
+        Query query = getEntityManager().createQuery("select x from SimpleEntity x");
+        assertNotNull(query);
+        List result = query.getResultList();
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) instanceof SimpleEntity);
+        assertEquals("XXX", ((SimpleEntity) result.get(0)).getProperty1());
     }
 }
