@@ -34,10 +34,16 @@ public interface EJBQLCompiledExpression {
     EJBQLExpression getExpression();
 
     /**
+     * Returns a descriptor of the root of this expression such as entity being fetched or
+     * updated.
+     */
+    ClassDescriptor getRootDescriptor();
+
+    /**
      * Returns a ClassDescriptor for the id variable.
      */
-    ClassDescriptor getEntityDescriptor(String idVariable);
-    
+    ClassDescriptor getEntityDescriptor(String identifier);
+
     /**
      * Returns EJB QL source of the compiled expression if available.
      */

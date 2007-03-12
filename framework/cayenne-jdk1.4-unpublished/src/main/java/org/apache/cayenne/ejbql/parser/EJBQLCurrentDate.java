@@ -18,12 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLCurrentDate extends SimpleNode {
-	public EJBQLCurrentDate(int id) {
-		super(id);
-	}
+
+    public EJBQLCurrentDate(int id) {
+        super(id);
+    }
+
+    EJBQLCurrentDate(AbstractParser parser, int id) {
+        super(id);
+    }
+    
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitCurrentDate(this);
+    }
 }

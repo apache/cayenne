@@ -18,13 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLSubselect extends SimpleNode {
-	public EJBQLSubselect(int id) {
-		super(id);
-	}
 
+    public EJBQLSubselect(int id) {
+        super(id);
+    }
+
+    EJBQLSubselect(AbstractParser parser, int id) {
+        super(id);
+    }
+    
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitSubselect(this);
+    }
 }

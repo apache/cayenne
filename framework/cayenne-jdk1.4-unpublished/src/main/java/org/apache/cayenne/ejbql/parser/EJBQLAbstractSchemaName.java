@@ -30,7 +30,11 @@ public class EJBQLAbstractSchemaName extends SimpleNode {
         super(id);
     }
 
-    protected boolean nonRecursiveVisit(EJBQLExpressionVisitor visitor) {
+    EJBQLAbstractSchemaName(AbstractParser parser, int id) {
+        super(id);
+    }
+
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitAbstractSchemaName(this);
     }
 }

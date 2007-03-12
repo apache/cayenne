@@ -23,7 +23,15 @@ package org.apache.cayenne.ejbql.parser;
  * @author Andrus Adamchik
  */
 public class EJBQLSelectExpressions extends SimpleNode {
-	public EJBQLSelectExpressions(int id) {
-		super(id);
-	}
+
+    public EJBQLSelectExpressions(int id) {
+        super(id);
+    }
+
+    EJBQLSelectExpressions(AbstractParser parser, int id) {
+        super(id);
+    }
+
+    // no visitor method for now, as this node is semantical and not important in
+    // analyzing the query
 }

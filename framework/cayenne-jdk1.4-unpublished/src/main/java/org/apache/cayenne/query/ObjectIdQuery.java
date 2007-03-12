@@ -81,7 +81,7 @@ public class ObjectIdQuery extends IndirectQuery {
     /**
      * Returns query metadata object.
      */
-    // return metadata without creating replacement, as this is not always possible to
+    // return metadata without creating replacement, as it is not always possible to
     // create replacement (e.g. temp ObjectId).
     public QueryMetadata getMetaData(final EntityResolver resolver) {
         // caching metadata as it may be accessed multiple times (at a DC and DD level)

@@ -30,6 +30,10 @@ public class EJBQLIdentificationVariable extends SimpleNode {
         super(id);
     }
 
+    EJBQLIdentificationVariable(AbstractParser parser, int id) {
+        super(id);
+    }
+
     public boolean visit(EJBQLExpressionVisitor visitor) {
         return visitor.visitIdentificationVariable(this);
     }

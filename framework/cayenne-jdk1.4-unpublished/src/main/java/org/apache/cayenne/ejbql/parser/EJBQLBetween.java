@@ -18,13 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLBetween extends SimpleNode {
-	public EJBQLBetween(int id) {
-		super(id);
-	}
 
+    public EJBQLBetween(int id) {
+        super(id);
+    }
+
+    EJBQLBetween(AbstractParser parser, int id) {
+        super(id);
+    }
+
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitBetween(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitBetween(this, childIndex);
+    }
 }

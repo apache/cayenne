@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
-import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.map.EntityResolver;
 
@@ -29,37 +29,26 @@ import org.apache.cayenne.map.EntityResolver;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLQuery implements Query {
+public class EJBQLQuery extends IndirectQuery {
 
     protected String ejbqlStatement;
-    protected String name;
 
-    private transient EJBQLExpression parsedRoot;
+    protected transient EJBQLCompiledExpression expression;
 
     public EJBQLQuery(String ejbqlStatement) {
         this.ejbqlStatement = ejbqlStatement;
     }
 
-    public String getName() {
-        return name;
-    }
+    /**
+     * Compiles EJBQL into a SQLTemplate query and returns this query.
+     */
+    protected Query createReplacementQuery(EntityResolver resolver) {
+        EJBQLCompiledExpression expression = getExpression(resolver);
 
-    public void setName(String name) {
-        this.name = name;
-    }
+        EJBQLTranslator translator = new EJBQLTranslator(expression);
+        String sql = translator.translate();
 
-    public SQLAction createSQLAction(SQLActionVisitor visitor) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public QueryMetadata getMetaData(EntityResolver resolver) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
-        // TODO Auto-generated method stub
+        return new SQLTemplate(expression.getRootDescriptor().getObjectClass(), sql);
     }
 
     /**
@@ -70,13 +59,15 @@ public class EJBQLQuery implements Query {
     }
 
     /**
-     * Returns lazily initialialized parsed root of this query.
+     * Returns lazily initialized EJBQLCompiledExpression for this query EJBQL.
      */
-    Object getParsedRoot() throws EJBQLException {
-        if (parsedRoot == null) {
-            this.parsedRoot = EJBQLParserFactory.getParser().parse(ejbqlStatement);
+    EJBQLCompiledExpression getExpression(EntityResolver resolver) throws EJBQLException {
+        if (expression == null) {
+            this.expression = EJBQLParserFactory.getParser().compile(
+                    ejbqlStatement,
+                    resolver);
         }
 
-        return parsedRoot;
+        return expression;
     }
 }

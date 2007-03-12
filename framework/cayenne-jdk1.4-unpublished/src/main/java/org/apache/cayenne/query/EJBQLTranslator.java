@@ -18,34 +18,80 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
+import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 
 /**
- * A translator of {@link EJBQLExpression} into the database SQL.
+ * A translator of {@link EJBQLExpression} statements into the database SQL.
  * 
  * @since 3.0
  * @author Andrus Adamchik
  */
 class EJBQLTranslator extends EJBQLBaseVisitor {
 
+    private Map aliases;
     private StringBuffer buffer;
+    private EJBQLCompiledExpression compiledExpression;
 
-    EJBQLTranslator() {
-        this.buffer = new StringBuffer();
+    EJBQLTranslator(EJBQLCompiledExpression compiledExpression) {
+        super(false);
+        this.compiledExpression = compiledExpression;
     }
 
-    String getSql() {
+    String translate() {
+        this.buffer = new StringBuffer();
+        compiledExpression.getExpression().visit(this);
         return buffer.length() > 0 ? buffer.toString() : null;
     }
 
     public boolean visitSelect(EJBQLExpression expression) {
-        buffer.append("SELECT");
-        return true;
+        EJBQLSelectTranslator visitor = new EJBQLSelectTranslator(this);
+        expression.visit(visitor);
+        return false;
     }
 
-    public boolean visitFrom(EJBQLExpression expression) {
-        buffer.append(" FROM");
-        return true;
+    public boolean visitDelete(EJBQLExpression expression) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public boolean visitUpdate(EJBQLExpression expression) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    StringBuffer getBuffer() {
+        return buffer;
+    }
+
+    EJBQLCompiledExpression getCompiledExpression() {
+        return compiledExpression;
+    }
+
+    /**
+     * Retrieves a SQL alias for the combination of EJBQL id variable and a table name. If
+     * such alias hasn't been used, it is created on the fly.
+     */
+    String createAlias(String idVariable, String tableName) {
+        String key = idVariable + ":" + tableName;
+
+        String alias;
+
+        if (aliases != null) {
+            alias = (String) aliases.get(key);
+        }
+        else {
+            aliases = new HashMap();
+            alias = null;
+        }
+
+        if (alias == null) {
+            alias = "t" + aliases.size();
+            aliases.put(key, alias);
+        }
+
+        return alias;
     }
 }

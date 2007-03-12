@@ -18,13 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLGreaterOrEqual extends SimpleNode {
-	public EJBQLGreaterOrEqual(int id) {
-		super(id);
-	}
 
+    public EJBQLGreaterOrEqual(int id) {
+        super(id);
+    }
+
+    EJBQLGreaterOrEqual(AbstractParser parser, int id) {
+        super(id);
+    }
+
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitGreaterOrEqual(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitGreaterOrEqual(this, childIndex);
+    }
 }
