@@ -29,8 +29,12 @@ public class EJBQLSelect extends SimpleNode {
     public EJBQLSelect(int id) {
         super(id);
     }
+    
+    EJBQLSelect(AbstractParser parser, int id) {
+        super(id);
+    }
 
-    protected boolean nonRecursiveVisit(EJBQLExpressionVisitor visitor) {
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitSelect(this);
     }
 }

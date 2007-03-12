@@ -18,12 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLIdentifier extends SimpleNode {
-	public EJBQLIdentifier(int id) {
-		super(id);
-	}
+
+    public EJBQLIdentifier(int id) {
+        super(id);
+    }
+
+    EJBQLIdentifier(AbstractParser parser, int id) {
+        super(id);
+    }
+
+    public boolean visit(EJBQLExpressionVisitor visitor) {
+        return visitor.visitIdentifier(this);
+    }
 }

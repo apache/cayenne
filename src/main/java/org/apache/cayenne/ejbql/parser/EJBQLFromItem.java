@@ -26,11 +26,24 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  */
 public class EJBQLFromItem extends SimpleNode {
 
+    private transient AbstractParser parser;
+
     public EJBQLFromItem(int id) {
         super(id);
     }
 
-    protected boolean nonRecursiveVisit(EJBQLExpressionVisitor visitor) {
+    EJBQLFromItem(AbstractParser parser, int id) {
+        super(id);
+        this.parser = parser;
+    }
+
+    public void jjtClose() {
+        if (parser != null) {
+            parser.fromItemLoaded(this);
+        }
+    }
+
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitFromItem(this);
     }
 }

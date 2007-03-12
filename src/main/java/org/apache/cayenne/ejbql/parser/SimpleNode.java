@@ -42,7 +42,7 @@ public abstract class SimpleNode implements Node, Serializable, EJBQLExpression 
     public SimpleNode(int id) {
         this.id = id;
     }
-    
+
     public String getText() {
         return text;
     }
@@ -53,13 +53,13 @@ public abstract class SimpleNode implements Node, Serializable, EJBQLExpression 
      */
     public boolean visit(EJBQLExpressionVisitor visitor) {
 
-        if (!nonRecursiveVisit(visitor)) {
+        if (!visitNode(visitor)) {
             return false;
         }
 
         int len = getChildrenCount();
         for (int i = 0; i < len; i++) {
-            if (!children[i].visit(visitor)) {
+            if (!visitChild(visitor, i)) {
                 return false;
             }
         }
@@ -68,11 +68,19 @@ public abstract class SimpleNode implements Node, Serializable, EJBQLExpression 
     }
 
     /**
-     * A non-recursive version of accept method. Simply returns true. Subclasses normally
-     * override this method instead of visit().
+     * Visits this not without recursion. Default implementation simply returns true.
+     * Subclasses override this method to call an appropriate visitor method.
      */
-    protected boolean nonRecursiveVisit(EJBQLExpressionVisitor visitor) {
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return true;
+    }
+
+    /**
+     * Recursively visits a child at the specified index. Subclasses override this method
+     * if they desire to implement callbacks after visiting each child.
+     */
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return children[childIndex].visit(visitor);
     }
 
     public EJBQLExpression getChild(int index) {

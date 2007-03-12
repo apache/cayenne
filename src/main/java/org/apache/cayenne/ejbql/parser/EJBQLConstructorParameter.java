@@ -18,12 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLConstructorParameter extends SimpleNode {
-	public EJBQLConstructorParameter(int id) {
-		super(id);
-	}
+
+    public EJBQLConstructorParameter(int id) {
+        super(id);
+    }
+
+    EJBQLConstructorParameter(AbstractParser parser, int id) {
+        super(id);
+    }
+    
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitConstructorParameter(this);
+    }
 }

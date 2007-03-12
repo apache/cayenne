@@ -23,6 +23,24 @@ import org.apache.cayenne.unit.CayenneCase;
 
 public class EJBQLCompiledExpressionTest extends CayenneCase {
 
+    public void testGetSource() {
+        String source = "select a from Artist a";
+        EntityResolver resolver = getDomain().getEntityResolver();
+        EJBQLParser parser = EJBQLParserFactory.getParser();
+
+        EJBQLCompiledExpression select = parser.compile(source, resolver);
+        assertEquals(source, select.getSource());
+    }
+
+    public void testGetExpression() {
+        String source = "select a from Artist a";
+        EntityResolver resolver = getDomain().getEntityResolver();
+        EJBQLParser parser = EJBQLParserFactory.getParser();
+
+        EJBQLCompiledExpression select = parser.compile(source, resolver);
+        assertNotNull(select.getExpression());
+    }
+
     public void testGetEntityDescriptor() {
         EntityResolver resolver = getDomain().getEntityResolver();
         EJBQLParser parser = EJBQLParserFactory.getParser();
@@ -31,8 +49,20 @@ public class EJBQLCompiledExpressionTest extends CayenneCase {
                 "select a from Artist a",
                 resolver);
 
-        // assertNotNull(select.getEntityDescriptor("a"));
-        // assertSame(resolver.getObjEntity("Artist"), select.getEntityDescriptor("a"));
+        assertNotNull(select.getEntityDescriptor("a"));
+        assertSame(resolver.getClassDescriptor("Artist"), select.getEntityDescriptor("a"));
+    }
+
+    public void testGetRootDescriptor() {
+        EntityResolver resolver = getDomain().getEntityResolver();
+        EJBQLParser parser = EJBQLParserFactory.getParser();
+
+        EJBQLCompiledExpression select = parser.compile(
+                "select a from Artist a",
+                resolver);
+
+        assertSame("Root is not detected: " + select.getExpression(), resolver
+                .getClassDescriptor("Artist"), select.getRootDescriptor());
     }
 
     public void testGetEntityDescriptorCaseSensitivity() {
@@ -43,21 +73,21 @@ public class EJBQLCompiledExpressionTest extends CayenneCase {
                 "select a from Artist a",
                 resolver);
 
-        // assertNotNull(select1.getEntityDescriptor("a"));
-        // assertNotNull(select1.getEntityDescriptor("A"));
+        assertNotNull(select1.getEntityDescriptor("a"));
+        assertNotNull(select1.getEntityDescriptor("A"));
 
         EJBQLCompiledExpression select2 = parser.compile(
                 "select A from Artist A",
                 resolver);
 
-        // assertNotNull(select2.getEntityDescriptor("a"));
-        // assertNotNull(select2.getEntityDescriptor("A"));
+        assertNotNull(select2.getEntityDescriptor("a"));
+        assertNotNull(select2.getEntityDescriptor("A"));
 
         EJBQLCompiledExpression select3 = parser.compile(
                 "select a from Artist A",
                 resolver);
 
-        // assertNotNull(select3.getEntityDescriptor("a"));
-        // assertNotNull(select3.getEntityDescriptor("A"));
+        assertNotNull(select3.getEntityDescriptor("a"));
+        assertNotNull(select3.getEntityDescriptor("A"));
     }
 }

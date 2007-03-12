@@ -33,6 +33,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 class CompiledExpression implements EJBQLCompiledExpression {
 
     private String source;
+    private String rootId;
     private Map descriptorsById;
     private EJBQLExpression expression;
 
@@ -45,6 +46,10 @@ class CompiledExpression implements EJBQLCompiledExpression {
         idVariable = idVariable.toLowerCase();
 
         return (ClassDescriptor) descriptorsById.get(idVariable);
+    }
+    
+    public ClassDescriptor getRootDescriptor() {
+        return rootId != null ? getEntityDescriptor(rootId) : null;
     }
 
     public EJBQLExpression getExpression() {
@@ -65,5 +70,9 @@ class CompiledExpression implements EJBQLCompiledExpression {
 
     void setSource(String source) {
         this.source = source;
+    }
+    
+    void setRootId(String rootId) {
+        this.rootId = rootId;
     }
 }

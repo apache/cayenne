@@ -18,13 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLIntegerLiteral extends SimpleNode {
-	public EJBQLIntegerLiteral(int id) {
-		super(id);
-	}
 
+    public EJBQLIntegerLiteral(int id) {
+        super(id);
+    }
+
+    EJBQLIntegerLiteral(AbstractParser parser, int id) {
+        super(id);
+    }
+
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitIntegerLiteral(this);
+    }
 }

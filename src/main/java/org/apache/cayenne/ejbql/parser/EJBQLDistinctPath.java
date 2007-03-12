@@ -18,12 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLDistinctPath extends SimpleNode {
-	public EJBQLDistinctPath(int id) {
-		super(id);
-	}
+
+    public EJBQLDistinctPath(int id) {
+        super(id);
+    }
+
+    EJBQLDistinctPath(AbstractParser parser, int id) {
+        super(id);
+    }
+    
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitDistinctPath(this);
+    }
 }

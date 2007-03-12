@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.jdbc;
 
 import java.io.IOException;
@@ -40,24 +39,26 @@ import org.apache.velocity.runtime.parser.node.Node;
 import org.apache.cayenne.util.Util;
 
 /**
- * A custom Velocity directive to describe a ResultSet column.
- * There are the following possible invocation formats inside the template:
+ * A custom Velocity directive to describe a ResultSet column. There are the following
+ * possible invocation formats inside the template:
  * 
  * <pre>
- * #result(column_name) - e.g. #result('ARTIST_ID')
- * #result(column_name java_type) - e.g. #result('ARTIST_ID' 'String')
- * #result(column_name java_type column_alias) - e.g. #result('ARTIST_ID' 'String' 'ID')
- * #result(column_name java_type column_alias data_row_key) - e.g. #result('ARTIST_ID' 'String' 'ID' 'toArtist.ID')
+ *      #result(column_name) - e.g. #result('ARTIST_ID')
+ *      #result(column_name java_type) - e.g. #result('ARTIST_ID' 'String')
+ *      #result(column_name java_type column_alias) - e.g. #result('ARTIST_ID' 'String' 'ID')
+ *      #result(column_name java_type column_alias data_row_key) - e.g. #result('ARTIST_ID' 'String' 'ID' 'toArtist.ID')
  * </pre>
  * 
- * <p>'data_row_key' is needed if SQL 'column_alias' is not appropriate as a DataRow key on the Cayenne
- * side. One common case when this happens is when a DataRow retrieved from a query is mapped
- * using joint prefetch keys. In this case DataRow must use DB_PATH expressions for joint column keys,
- * and their format is incompatible with most databases alias format.</p>
- * 
- * <p>Most common Java types used in JDBC can be specified without 
- * a package. This includes all numeric types, primitives, String, SQL dates, BigDecimal
- * and BigInteger.
+ * <p>
+ * 'data_row_key' is needed if SQL 'column_alias' is not appropriate as a DataRow key on
+ * the Cayenne side. One common case when this happens is when a DataRow retrieved from a
+ * query is mapped using joint prefetch keys. In this case DataRow must use DB_PATH
+ * expressions for joint column keys, and their format is incompatible with most databases
+ * alias format.
+ * </p>
+ * <p>
+ * Most common Java types used in JDBC can be specified without a package. This includes
+ * all numeric types, primitives, String, SQL dates, BigDecimal and BigInteger.
  * </p>
  * 
  * @author Andrus Adamchik
@@ -106,10 +107,7 @@ public class ResultDirective extends Directive {
     }
 
     public boolean render(InternalContextAdapter context, Writer writer, Node node)
-        throws
-            IOException,
-            ResourceNotFoundException,
-            ParseErrorException,
+            throws IOException, ResourceNotFoundException, ParseErrorException,
             MethodInvocationException {
 
         String column = getChildAsString(context, node, 0);
@@ -122,24 +120,27 @@ public class ResultDirective extends Directive {
 
         String alias = getChildAsString(context, node, 2);
         String dataRowKey = getChildAsString(context, node, 3);
-        
+
         // determine what we want to name this column in a resulting DataRow...
         String label = (!Util.isEmptyString(dataRowKey)) ? dataRowKey : (!Util
                 .isEmptyString(alias)) ? alias : null;
-  
 
         ColumnDescriptor columnDescriptor = new ColumnDescriptor();
         columnDescriptor.setName(column);
         columnDescriptor.setLabel(label);
-  
+
         String type = getChildAsString(context, node, 1);
         if (type != null) {
             columnDescriptor.setJavaClass(guessType(type.toString()));
         }
 
         writer.write(column);
-        
-        // append alias if needed
+
+        // append column alias if needed.
+
+        // Note that if table aliases are used, this logic will result in SQL like
+        // "t0.ARTIST_NAME AS ARTIST_NAME". Doing extra regex matching to handle this
+        // won't probably buy us much.
         if (!Util.isEmptyString(alias) && !alias.equals(column)) {
             writer.write(" AS ");
             writer.write(alias);
@@ -150,14 +151,13 @@ public class ResultDirective extends Directive {
     }
 
     protected Object getChild(InternalContextAdapter context, Node node, int i)
-        throws MethodInvocationException {
-        return (i >= 0 && i < node.jjtGetNumChildren())
-            ? node.jjtGetChild(i).value(context)
-            : null;
+            throws MethodInvocationException {
+        return (i >= 0 && i < node.jjtGetNumChildren()) ? node.jjtGetChild(i).value(
+                context) : null;
     }
-    
+
     /**
-     * Returns a directive argument at a given index converted to String. 
+     * Returns a directive argument at a given index converted to String.
      * 
      * @since 1.2
      */
@@ -168,9 +168,9 @@ public class ResultDirective extends Directive {
     }
 
     /**
-     * Converts "short" type notation to the fully qualified class name.
-     * Right now supports all major standard SQL types, including primitives.
-     * All other types are expected to be fully qualified, and are not converted.
+     * Converts "short" type notation to the fully qualified class name. Right now
+     * supports all major standard SQL types, including primitives. All other types are
+     * expected to be fully qualified, and are not converted.
      */
     protected String guessType(String type) {
         String guessed = (String) typesGuess.get(type);
@@ -181,11 +181,10 @@ public class ResultDirective extends Directive {
      * Adds value to the list of result columns in the context.
      */
     protected void bindResult(
-        InternalContextAdapter context,
-        ColumnDescriptor columnDescriptor) {
+            InternalContextAdapter context,
+            ColumnDescriptor columnDescriptor) {
 
-        Collection resultColumns =
-            (Collection) context.getInternalUserContext().get(
+        Collection resultColumns = (Collection) context.getInternalUserContext().get(
                 SQLTemplateProcessor.RESULT_COLUMNS_LIST_KEY);
 
         if (resultColumns != null) {

@@ -18,12 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLDivide extends SimpleNode {
-	public EJBQLDivide(int id) {
-		super(id);
-	}
+
+    public EJBQLDivide(int id) {
+        super(id);
+    }
+
+    EJBQLDivide(AbstractParser parser, int id) {
+        super(id);
+    }
+
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitDivide(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitDivide(this, childIndex);
+    }
 }

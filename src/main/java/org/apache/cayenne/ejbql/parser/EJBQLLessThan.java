@@ -18,12 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
 public class EJBQLLessThan extends SimpleNode {
-	public EJBQLLessThan(int id) {
-		super(id);
-	}
+
+    public EJBQLLessThan(int id) {
+        super(id);
+    }
+
+    EJBQLLessThan(AbstractParser parser, int id) {
+        super(id);
+    }
+
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitLessThan(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitLessThan(this, childIndex);
+    }
 }

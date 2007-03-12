@@ -20,8 +20,10 @@ package org.apache.cayenne.ejbql.parser;
 
 import java.util.Map;
 
+import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -34,16 +36,32 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  */
 abstract class AbstractParser {
 
-     Map descriptorsById;
-     EntityResolver resolver;
-     String source;
+    Map descriptorsById;
+    EntityResolver resolver;
+    String source;
+    String rootId;
 
+    private EJBQLExpressionVisitor rootDescriptorVisitor;
 
     private final boolean callbacksEnabled() {
         return resolver != null;
     }
 
-    void fromItemLoaded(EJBQLExpression expression) {
+    void selectExpressionLoaded(EJBQLSelectExpression expression) {
+        if (rootDescriptorVisitor == null) {
+            rootDescriptorVisitor = new EJBQLBaseVisitor() {
+
+                public boolean visitIdentifier(EJBQLExpression expression) {
+                    rootId = expression.getText();
+                    return true;
+                }
+            };
+        }
+
+        expression.visit(rootDescriptorVisitor);
+    }
+
+    void fromItemLoaded(EJBQLFromItem expression) {
 
         if (!callbacksEnabled()) {
             return;
@@ -55,8 +73,7 @@ abstract class AbstractParser {
         }
 
         // TODO: andrus, 2/28/2007 - resolve path ... for now only support direct
-        // entity
-        // names
+        // entity names
         EJBQLExpression abstractSchemaName = expression.getChild(0);
         String schemaName = abstractSchemaName.getChild(0).getText();
 
