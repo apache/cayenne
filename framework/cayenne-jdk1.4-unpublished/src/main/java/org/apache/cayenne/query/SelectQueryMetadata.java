@@ -41,10 +41,11 @@ class SelectQueryMetadata extends BaseQueryMetadata {
                 this.cacheKey = query.getName();
             }
             else {
-                // create a unique key based on entity, qualifier and ordering
+                // create a unique key based on entity, qualifier, ordering and fetch
+                // limit
 
                 StringBuffer key = new StringBuffer();
-                
+
                 ObjEntity entity = getObjEntity();
                 if (entity != null) {
                     key.append(entity.getName());
@@ -73,6 +74,10 @@ class SelectQueryMetadata extends BaseQueryMetadata {
                     }
                 }
                 
+                if(query.getFetchLimit() > 0) {
+                    key.append('/').append(query.getFetchLimit());
+                }
+
                 this.cacheKey = key.toString();
             }
 
