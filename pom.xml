@@ -551,6 +551,8 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<!-- version is hardcoded as v23 breaks agent ClassLoader -->
+				<version>2.2</version>
 				<configuration>
 					<argLine>
 						-Dcayenne.test.connection=${cayenne.test.connection}
