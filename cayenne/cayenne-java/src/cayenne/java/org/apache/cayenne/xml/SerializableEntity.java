@@ -68,6 +68,9 @@ class SerializableEntity implements XMLSerializable {
                 while (it.hasNext()) {
                     encodeObject(encoder, it.next(), false);
                 }
+                
+                // Make sure we pop the node we just pushed -- needed for fix to CAY-597.
+                encoder.pop();
             }
         }
         else {
