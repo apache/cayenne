@@ -159,6 +159,7 @@ public class XMLDecoderTst extends TestCase {
         TestObject decoded = (TestObject) object;
 
         TestObject george = new TestObject();
+        george.setAge(76);
         george.setName("George");
         assertEquals(decoded, george);
 
@@ -166,10 +167,12 @@ public class XMLDecoderTst extends TestCase {
         assertEquals(children.size(), 2);
 
         TestObject bill = new TestObject();
+        bill.setAge(34);
         bill.setName("Bill");
         assertEquals(children.get(0), bill);
 
         TestObject sue = new TestObject();
+        sue.setAge(31);
         sue.setName("Sue");
         assertEquals(children.get(1), sue);
 

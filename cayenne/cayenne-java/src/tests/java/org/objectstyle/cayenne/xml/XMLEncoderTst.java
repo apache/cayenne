@@ -220,6 +220,7 @@ public class XMLEncoderTst extends TestCase {
         XMLEncoder encoder = new XMLEncoder(CayenneTestResources.getResourceURL(
                 XML_DATA_DIR + "collection-mapping.xml").toExternalForm());
         TestObject george = new TestObject();
+        george.setAge(76);
         george.setName("George");
         george.addChild(new TestObject("Bill", 34, true));
 
