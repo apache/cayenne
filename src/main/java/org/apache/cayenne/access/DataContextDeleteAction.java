@@ -74,7 +74,7 @@ class DataContextDeleteAction {
 
         if (object.getObjectContext() != dataContext) {
             throw new CayenneRuntimeException(
-                    "Attempt to delete object regsitered in a different DataContext. Object: "
+                    "Attempt to delete object registered in a different DataContext. Object: "
                             + object
                             + ", data context: "
                             + dataContext);
