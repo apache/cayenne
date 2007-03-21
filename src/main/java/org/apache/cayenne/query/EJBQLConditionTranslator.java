@@ -34,40 +34,38 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitAnd(EJBQLExpression expression, int finishedChildIndex) {
-        if (finishedChildIndex >= 0) {
-            afterChild(expression, " AND", finishedChildIndex);
-        }
-
+        afterChild(expression, " AND", finishedChildIndex);
         return true;
     }
 
     public boolean visitEquals(EJBQLExpression expression, int finishedChildIndex) {
-        if (finishedChildIndex >= 0) {
-            afterChild(expression, " =", finishedChildIndex);
-        }
-
+        afterChild(expression, " #", finishedChildIndex);
         return true;
     }
 
     public boolean visitOr(EJBQLExpression expression, int finishedChildIndex) {
-        if (finishedChildIndex >= 0) {
-            afterChild(expression, " OR", finishedChildIndex);
-        }
-
+        afterChild(expression, " OR", finishedChildIndex);
         return true;
     }
 
     protected void afterChild(EJBQLExpression e, String text, int childIndex) {
-        if (childIndex + 1 < e.getChildrenCount()) {
-            parent.getParent().getBuffer().append(text);
-        }
+        if (childIndex >= 0) {
+            if (childIndex + 1 < e.getChildrenCount()) {
+                parent.getParent().getBuffer().append(text);
+            }
 
-        // reset delegate if it was set for a child
-        setDelegate(null);
+            // reset child-specific delegate
+            setDelegate(null);
+        }
     }
 
     public boolean visitPath(EJBQLExpression expression) {
         setDelegate(new EJBQLPathVisitor());
+        return true;
+    }
+    
+    public boolean visitStringLiteral(EJBQLExpression expression) {
+        
         return true;
     }
 }
