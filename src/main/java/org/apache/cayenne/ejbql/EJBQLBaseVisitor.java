@@ -121,7 +121,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitDelete(EJBQLExpression expression) {
+    public boolean visitDelete(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -289,7 +289,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitPath(EJBQLExpression expression) {
+    public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -301,7 +301,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitSelect(EJBQLExpression expression) {
+    public boolean visitSelect(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -361,7 +361,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitUpdate(EJBQLExpression expression) {
+    public boolean visitUpdate(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 

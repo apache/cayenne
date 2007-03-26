@@ -25,15 +25,21 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLUpdate extends SimpleNode {
-	public EJBQLUpdate(int id) {
-		super(id);
-	}
-    
+
+    public EJBQLUpdate(int id) {
+        super(id);
+    }
+
     EJBQLUpdate(AbstractParser parser, int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitUpdate(this);
+        return visitor.visitUpdate(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitUpdate(this, childIndex);
     }
 }

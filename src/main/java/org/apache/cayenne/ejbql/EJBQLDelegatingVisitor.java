@@ -128,8 +128,10 @@ public class EJBQLDelegatingVisitor implements EJBQLExpressionVisitor {
         return delegate != null ? delegate.visitDecimalLiteral(expression) : false;
     }
 
-    public boolean visitDelete(EJBQLExpression expression) {
-        return delegate != null ? delegate.visitDelete(expression) : false;
+    public boolean visitDelete(EJBQLExpression expression, int finishedChildIndex) {
+        return delegate != null
+                ? delegate.visitDelete(expression, finishedChildIndex)
+                : false;
     }
 
     public boolean visitDescending(EJBQLExpression expression) {
@@ -318,8 +320,10 @@ public class EJBQLDelegatingVisitor implements EJBQLExpressionVisitor {
         return delegate != null ? delegate.visitOuterJoin(expression) : false;
     }
 
-    public boolean visitPath(EJBQLExpression expression) {
-        return delegate != null ? delegate.visitPath(expression) : false;
+    public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
+        return delegate != null
+                ? delegate.visitPath(expression, finishedChildIndex)
+                : false;
     }
 
     public boolean visitPatternValue(EJBQLExpression expression) {
@@ -332,8 +336,10 @@ public class EJBQLDelegatingVisitor implements EJBQLExpressionVisitor {
                 : false;
     }
 
-    public boolean visitSelect(EJBQLExpression expression) {
-        return delegate != null ? delegate.visitSelect(expression) : false;
+    public boolean visitSelect(EJBQLExpression expression, int finishedChildIndex) {
+        return delegate != null
+                ? delegate.visitSelect(expression, finishedChildIndex)
+                : false;
     }
 
     public boolean visitSelectExpression(EJBQLExpression expression) {
@@ -394,8 +400,10 @@ public class EJBQLDelegatingVisitor implements EJBQLExpressionVisitor {
         return delegate != null ? delegate.visitTrimTrailing(expression) : false;
     }
 
-    public boolean visitUpdate(EJBQLExpression expression) {
-        return delegate != null ? delegate.visitUpdate(expression) : false;
+    public boolean visitUpdate(EJBQLExpression expression, int finishedChildIndex) {
+        return delegate != null
+                ? delegate.visitUpdate(expression, finishedChildIndex)
+                : false;
     }
 
     public boolean visitUpdateField(EJBQLExpression expression) {

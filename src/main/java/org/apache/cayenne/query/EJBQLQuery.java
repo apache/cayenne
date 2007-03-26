@@ -44,11 +44,7 @@ public class EJBQLQuery extends IndirectQuery {
      */
     protected Query createReplacementQuery(EntityResolver resolver) {
         EJBQLCompiledExpression expression = getExpression(resolver);
-
-        EJBQLTranslator translator = new EJBQLTranslator(expression);
-        String sql = translator.translate();
-
-        return new SQLTemplate(expression.getRootDescriptor().getObjectClass(), sql);
+        return new EJBQLTranslator(expression).translate();
     }
 
     /**

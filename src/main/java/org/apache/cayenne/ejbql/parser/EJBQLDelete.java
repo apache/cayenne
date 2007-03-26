@@ -25,15 +25,21 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLDelete extends SimpleNode {
-	public EJBQLDelete(int id) {
-		super(id);
-	}
+
+    public EJBQLDelete(int id) {
+        super(id);
+    }
 
     EJBQLDelete(AbstractParser parser, int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitDelete(this);
+        return visitor.visitDelete(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitDelete(this, childIndex);
     }
 }
