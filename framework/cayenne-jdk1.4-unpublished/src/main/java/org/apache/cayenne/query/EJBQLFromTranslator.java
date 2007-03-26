@@ -20,8 +20,6 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLExpression;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
@@ -40,19 +38,12 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
-    public boolean visitIdentificationVariable(EJBQLExpression expression) {
+    public boolean visitIdentifier(EJBQLExpression expression) {
+        parent.appendRootIdentifier(expression.getText());
         return true;
     }
 
-    public boolean visitIdentifier(EJBQLExpression expression) {
-        String identifier = expression.getText();
-        ClassDescriptor descriptor = parent
-                .getParent()
-                .getCompiledExpression()
-                .getEntityDescriptor(identifier);
-
-        DbEntity table = descriptor.getEntity().getDbEntity();
-        parent.appendTable(identifier, table);
+    public boolean visitIdentificationVariable(EJBQLExpression expression) {
         return true;
     }
 }

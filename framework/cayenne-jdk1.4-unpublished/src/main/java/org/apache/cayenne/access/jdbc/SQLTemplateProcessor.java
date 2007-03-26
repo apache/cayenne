@@ -26,15 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.InternalContextAdapterImpl;
-import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.RuntimeInstance;
 import org.apache.velocity.runtime.log.NullLogSystem;
 import org.apache.velocity.runtime.parser.ParseException;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
-import org.apache.cayenne.CayenneRuntimeException;
 
 /**
  * Processor for SQL velocity templates.
@@ -144,7 +143,10 @@ class SQLTemplateProcessor {
             nodeTree = velocityRuntime.parse(new StringReader(template), template);
         }
         catch (ParseException pex) {
-            throw new ParseErrorException(pex.getMessage());
+            throw new CayenneRuntimeException("Error parsing template '"
+                    + template
+                    + "' : "
+                    + pex.getMessage());
         }
 
         if (nodeTree == null) {

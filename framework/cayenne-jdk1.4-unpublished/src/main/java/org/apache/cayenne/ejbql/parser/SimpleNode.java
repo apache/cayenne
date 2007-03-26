@@ -46,6 +46,10 @@ public abstract class SimpleNode implements Node, Serializable, EJBQLExpression 
     public String getText() {
         return text;
     }
+    
+    public boolean isNegated() {
+        return not;
+    }
 
     /**
      * A recursive visit method that passes a visitor to this node and all its children,

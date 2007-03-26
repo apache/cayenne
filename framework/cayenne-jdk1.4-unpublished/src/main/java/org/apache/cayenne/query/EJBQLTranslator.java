@@ -34,6 +34,7 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
 class EJBQLTranslator extends EJBQLBaseVisitor {
 
     private Map aliases;
+    private Map bindingVariables;
     private StringBuffer buffer;
     private EJBQLCompiledExpression compiledExpression;
 
@@ -42,23 +43,28 @@ class EJBQLTranslator extends EJBQLBaseVisitor {
         this.compiledExpression = compiledExpression;
     }
 
-    String translate() {
+    SQLTemplate translate() {
         this.buffer = new StringBuffer();
         compiledExpression.getExpression().visit(this);
-        return buffer.length() > 0 ? buffer.toString() : null;
+        String sql = buffer.length() > 0 ? buffer.toString() : null;
+        SQLTemplate query = new SQLTemplate(compiledExpression
+                .getRootDescriptor()
+                .getObjectClass(), sql);
+        query.setParameters(bindingVariables);
+        return query;
     }
 
-    public boolean visitSelect(EJBQLExpression expression) {
+    public boolean visitSelect(EJBQLExpression expression, int finishedChildIndex) {
         EJBQLSelectTranslator visitor = new EJBQLSelectTranslator(this);
         expression.visit(visitor);
         return false;
     }
 
-    public boolean visitDelete(EJBQLExpression expression) {
+    public boolean visitDelete(EJBQLExpression expression, int finishedChildIndex) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public boolean visitUpdate(EJBQLExpression expression) {
+    public boolean visitUpdate(EJBQLExpression expression, int finishedChildIndex) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -71,11 +77,47 @@ class EJBQLTranslator extends EJBQLBaseVisitor {
     }
 
     /**
+     * Creates a new parameter variable, binding provided value to it.
+     */
+    String bindParameter(Object value) {
+        return bindParameter(value, "id");
+    }
+
+    /**
+     * Creates a new parameter variable with the specified prefix, binding provided value
+     * to it.
+     */
+    String bindParameter(Object value, String prefix) {
+        if (bindingVariables == null) {
+            bindingVariables = new HashMap();
+        }
+
+        String var = prefix + bindingVariables.size();
+        bindingVariables.put(var, value);
+        return var;
+    }
+
+    /**
      * Retrieves a SQL alias for the combination of EJBQL id variable and a table name. If
      * such alias hasn't been used, it is created on the fly.
      */
-    String createAlias(String idVariable, String tableName) {
-        String key = idVariable + ":" + tableName;
+    String createAlias(String idPath, String tableName) {
+
+        StringBuffer keyBuffer = new StringBuffer();
+
+        // per JPA spec, 4.4.2, "Identification variables are case insensitive.", while
+        // relationship path is case-sensitive
+
+        int dot = idPath.indexOf('.');
+        if (dot > 0) {
+            keyBuffer.append(idPath.substring(0, dot).toLowerCase()).append(
+                    idPath.substring(dot));
+        }
+        else {
+            keyBuffer.append(idPath.toLowerCase());
+        }
+
+        String key = keyBuffer.append(':').append(tableName).toString();
 
         String alias;
 

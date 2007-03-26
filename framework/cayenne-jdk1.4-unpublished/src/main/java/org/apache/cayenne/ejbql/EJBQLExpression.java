@@ -47,4 +47,9 @@ public interface EJBQLExpression {
      * Returns a text property of the node.
      */
     String getText();
+
+    /**
+     * Returns an optional boolean flag that negates the value of the expression.
+     */
+    boolean isNegated();
 }
