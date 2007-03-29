@@ -53,7 +53,7 @@ public abstract class PersistentObject implements Persistent {
         this.persistenceState = persistenceState;
 
         if (persistenceState == PersistenceState.TRANSIENT) {
-            this.objectContext = null;
+            setObjectContext(null);
         }
     }
 
