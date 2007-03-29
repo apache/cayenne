@@ -95,21 +95,9 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
 
     public void graphRolledback(final GraphEvent e) {
 
-        if (shouldProcessEvent(e)) {
-
-            // do we need to merge anything?
-            if (context.internalGraphManager().hasChanges()) {
-                runWithEventsDisabled(new Runnable() {
-
-                    public void run() {
-                        context.internalGraphManager().graphReverted();
-                    }
-                });
-
-                // post event outside of "execute" to make sure it is sent
-                repostAfterMerge(e);
-            }
-        }
+        // TODO: andrus, 3/29/2007: per CAY-771, if a LOCAL peer context posted the event,
+        // just ignore it, however if the REMOTE peer reverted the parent remote
+        // DataContext, we need to invalidate stale committed objects...
     }
 
     // ******* End DataChannelListener methods *******
