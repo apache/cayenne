@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.util.HashMap;
@@ -25,6 +24,7 @@ import java.util.Map;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.event.EventManager;
 
 /**
  * A "lightweight" DataRowStore.
@@ -41,7 +41,7 @@ public class MockDataRowStore extends DataRowStore {
     }
 
     public MockDataRowStore() {
-        super("mock DataRowStore", TEST_DEFAULTS);
+        super("mock DataRowStore", TEST_DEFAULTS, new EventManager());
     }
 
     /**

@@ -30,6 +30,7 @@ import org.apache.cayenne.cache.MockQueryCache;
 import org.apache.cayenne.cache.MockQueryCacheFactory;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheFactory;
+import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneCase;
@@ -339,7 +340,10 @@ public class DataDomainTest extends CayenneCase {
 
         final boolean[] cacheShutdown = new boolean[1];
 
-        DataRowStore cache = new DataRowStore("Y") {
+        DataRowStore cache = new DataRowStore(
+                "Y",
+                Collections.EMPTY_MAP,
+                new EventManager()) {
 
             public void shutdown() {
                 cacheShutdown[0] = true;
