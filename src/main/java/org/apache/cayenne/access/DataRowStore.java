@@ -89,6 +89,9 @@ public class DataRowStore implements Serializable {
 
     /**
      * Creates new named DataRowStore with default configuration.
+     * 
+     * @deprecated since 3.0 as it instantiates an EventManager internally that can lead
+     *             to dispatch thread leaks.
      */
     public DataRowStore(String name) {
         this(name, Collections.EMPTY_MAP);
@@ -102,6 +105,8 @@ public class DataRowStore implements Serializable {
      *            Can't be null.
      * @param properties Properties map used to configure DataRowStore parameters. Can be
      *            null.
+     * @deprecated since 3.0 as it instantiates an EventManager internally that can lead
+     *             to dispatch thread leaks.
      */
     public DataRowStore(String name, Map properties) {
         this(name, properties, new EventManager());

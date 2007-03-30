@@ -17,15 +17,16 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -46,7 +47,10 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
 
         deleteTestData();
 
-        DataRowStore cache = new DataRowStore("cacheTest");
+        DataRowStore cache = new DataRowStore(
+                "cacheTest",
+                Collections.EMPTY_MAP,
+                new EventManager());
 
         c1 = new DataContext((DataChannel) getDomain(), new ObjectStore(cache));
         c2 = new DataContext((DataChannel) getDomain(), new ObjectStore(cache));
