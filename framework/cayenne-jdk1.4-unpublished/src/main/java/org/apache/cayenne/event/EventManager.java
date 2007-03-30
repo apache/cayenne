@@ -43,7 +43,7 @@ import org.apache.cayenne.util.Invocation;
  */
 public class EventManager extends Object {
 
-    private static EventManager defaultManager;
+    private static volatile EventManager defaultManager;
 
     public static final int DEFAULT_DISPATCH_THREAD_COUNT = 5;
 
