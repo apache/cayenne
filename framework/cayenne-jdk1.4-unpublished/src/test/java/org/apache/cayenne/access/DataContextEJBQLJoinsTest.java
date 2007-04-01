@@ -1,0 +1,89 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+package org.apache.cayenne.access;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.art.Artist;
+import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.unit.CayenneCase;
+
+public class DataContextEJBQLJoinsTest extends CayenneCase {
+
+    protected void setUp() throws Exception {
+        deleteTestData();
+    }
+
+    public void testThetaJoins() throws Exception {
+        createTestData("testThetaJoins");
+
+//        String ejbql = "SELECT DISTINCT a "
+//                + "FROM Artist a, Painting b "
+//                + "WHERE a.artistName = b.paintingTitle";
+//
+//        List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
+//        assertEquals(2, artists.size());
+//
+//        Set names = new HashSet(2);
+//        Iterator it = artists.iterator();
+//        while (it.hasNext()) {
+//            Artist a = (Artist) it.next();
+//            names.add(a.getArtistName());
+//        }
+//
+//        assertTrue(names.contains("AA1"));
+//        assertTrue(names.contains("BB2"));
+    }
+
+    public void testInnerJoins() throws Exception {
+        createTestData("testInnerJoins");
+
+//        String ejbql = "SELECT a "
+//                + "FROM Artist a INNER JOIN a.paintingArray p "
+//                + "WHERE a.artistName = 'A1'";
+//
+//        List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
+//        assertEquals(1, artists.size());
+//        assertEquals(33001, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+    }
+
+    public void testOuterJoins() throws Exception {
+        createTestData("testInnerJoins");
+
+        // String ejbql = "SELECT a "
+        // + "FROM Artist a LEFT JOIN a.paintingArray p "
+        // + "WHERE a.artistName = 'A1'";
+        //
+        // List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
+        // assertEquals(2, artists.size());
+        // Set ids = new HashSet(2);
+        // Iterator it = artists.iterator();
+        // while (it.hasNext()) {
+        // Artist a = (Artist) it.next();
+        // ids.add(DataObjectUtils.pkForObject(a));
+        // }
+        //
+        //        assertTrue(ids.contains(new Integer(33001)));
+        //        assertTrue(ids.contains(new Integer(33005)));
+    }
+}
