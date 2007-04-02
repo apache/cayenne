@@ -206,42 +206,33 @@ public class EntityMapDefaultsProcessor {
             }
 
             JpaEntity entity = (JpaEntity) path.firstInstanceOf(JpaEntity.class);
-            JpaClassDescriptor descriptor = entity.getClassDescriptor();
-            JpaPropertyDescriptor property = descriptor.getProperty(jpaBasic.getName());
-
-            boolean typeKnown = false;
 
             // process temporal type defaults
-            if (jpaBasic.getTemporal() != null) {
-                typeKnown = true;
-            }
-            else {
+            if (jpaBasic.getTemporal() == null && jpaBasic.getEnumerated() == null) {
+                JpaClassDescriptor descriptor = entity.getClassDescriptor();
+                JpaPropertyDescriptor property = descriptor.getProperty(jpaBasic
+                        .getName());
+
+                // sanity check
+                if (property == null) {
+                    throw new IllegalStateException("No class property found for name: "
+                            + jpaBasic.getName());
+                }
+
                 if (java.sql.Date.class.isAssignableFrom(property.getType())) {
                     jpaBasic.setTemporal(TemporalType.DATE);
-                    typeKnown = true;
                 }
                 else if (Time.class.isAssignableFrom(property.getType())) {
                     jpaBasic.setTemporal(TemporalType.TIME);
-                    typeKnown = true;
                 }
                 else if (Timestamp.class.isAssignableFrom(property.getType())) {
                     jpaBasic.setTemporal(TemporalType.TIMESTAMP);
-                    typeKnown = true;
                 }
                 else if (Date.class.isAssignableFrom(property.getType())) {
                     jpaBasic.setTemporal(TemporalType.TIMESTAMP);
-                    typeKnown = true;
-                }
-            }
-
-            // process enum type defaults
-            if (!typeKnown) {
-                if (jpaBasic.getEnumerated() != null) {
-                    typeKnown = true;
                 }
                 else if (property.getType().isEnum()) {
                     jpaBasic.setEnumerated(EnumType.ORDINAL);
-                    typeKnown = true;
                 }
             }
 
