@@ -75,6 +75,10 @@ public class ProcedureAction extends BaseSQLAction {
             // stored procedure may contain a mixture of update counts and result sets,
             // and out parameters. Read out parameters first, then
             // iterate until we exhaust all results
+            
+            // TODO: andrus, 4/2/2007 - according to the docs we should store the boolean
+            // return value of this method and avoid calling 'getMoreResults' if it is true.
+            // some db's handle this well, some don't (MySQL).
             statement.execute();
 
             // read out parameters
