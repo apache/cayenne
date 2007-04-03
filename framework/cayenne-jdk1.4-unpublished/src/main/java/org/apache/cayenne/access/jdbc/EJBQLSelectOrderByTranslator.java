@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.query;
+package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 
@@ -26,10 +26,7 @@ import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
  */
 class EJBQLSelectOrderByTranslator extends EJBQLBaseVisitor {
 
-    private EJBQLSelectTranslator parent;
-    
-    EJBQLSelectOrderByTranslator(EJBQLSelectTranslator parent) {
+    EJBQLSelectOrderByTranslator() {
         super(false);
-        this.parent = parent;
     }
 }

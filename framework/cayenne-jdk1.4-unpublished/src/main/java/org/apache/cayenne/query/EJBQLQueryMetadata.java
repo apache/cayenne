@@ -18,32 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
-import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 
-public class EJBQLFromTranslator extends EJBQLBaseVisitor {
+/**
+ * A metadata object for the {@link EJBQLQuery}.
+ * 
+ * @since 3.0
+ * @author Andrus Adamchik
+ */
+class EJBQLQueryMetadata extends BaseQueryMetadata {
 
-    private EJBQLSelectTranslator parent;
+    boolean resolve(EntityResolver resolver, EJBQLQuery query) {
+        ObjEntity root = query.getExpression(resolver).getRootDescriptor().getEntity();
 
-    public EJBQLFromTranslator(EJBQLSelectTranslator parent) {
-        super(false);
-        this.parent = parent;
-    }
-
-    public boolean visitFromItem(EJBQLExpression expression) {
-        return true;
-    }
-
-    public boolean visitAbstractSchemaName(EJBQLExpression expression) {
-        return true;
-    }
-
-    public boolean visitIdentifier(EJBQLExpression expression) {
-        parent.appendRootIdentifier(expression.getText());
-        return true;
-    }
-
-    public boolean visitIdentificationVariable(EJBQLExpression expression) {
-        return true;
+        // TODO: andrus, 4/3/2007 - generate cache key based on EJBQL statement
+        return super.resolve(root, resolver, null);
     }
 }

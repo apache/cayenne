@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.query;
+package org.apache.cayenne.access.jdbc;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -133,7 +133,7 @@ class EJBQLSelectTranslator extends EJBQLDelegatingVisitor {
 
     public boolean visitOrderBy(EJBQLExpression expression) {
         parent.getBuffer().append(" ORDER BY");
-        setDelegate(new EJBQLSelectOrderByTranslator(this));
+        setDelegate(new EJBQLSelectOrderByTranslator());
         return true;
     }
 

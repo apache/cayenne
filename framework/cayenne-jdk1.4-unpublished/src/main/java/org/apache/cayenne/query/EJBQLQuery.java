@@ -18,9 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
@@ -29,22 +31,36 @@ import org.apache.cayenne.map.EntityResolver;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLQuery extends IndirectQuery {
+public class EJBQLQuery implements Query {
 
+    protected String name;
     protected String ejbqlStatement;
 
     protected transient EJBQLCompiledExpression expression;
+    EJBQLQueryMetadata metadata = new EJBQLQueryMetadata();
 
     public EJBQLQuery(String ejbqlStatement) {
         this.ejbqlStatement = ejbqlStatement;
     }
 
-    /**
-     * Compiles EJBQL into a SQLTemplate query and returns this query.
-     */
-    protected Query createReplacementQuery(EntityResolver resolver) {
-        EJBQLCompiledExpression expression = getExpression(resolver);
-        return new EJBQLTranslator(expression).translate();
+    public QueryMetadata getMetaData(EntityResolver resolver) {
+        metadata.resolve(resolver, this);
+        return metadata;
+    }
+
+    public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
+        DataMap map = getMetaData(resolver).getDataMap();
+
+        if (map == null) {
+            throw new CayenneRuntimeException("No DataMap found, can't route query "
+                    + this);
+        }
+
+        router.route(router.engineForDataMap(map), this, substitutedQuery);
+    }
+
+    public SQLAction createSQLAction(SQLActionVisitor visitor) {
+        return visitor.ejbqlAction(this);
     }
 
     /**
@@ -57,7 +73,8 @@ public class EJBQLQuery extends IndirectQuery {
     /**
      * Returns lazily initialized EJBQLCompiledExpression for this query EJBQL.
      */
-    EJBQLCompiledExpression getExpression(EntityResolver resolver) throws EJBQLException {
+    public EJBQLCompiledExpression getExpression(EntityResolver resolver)
+            throws EJBQLException {
         if (expression == null) {
             this.expression = EJBQLParserFactory.getParser().compile(
                     ejbqlStatement,
@@ -65,5 +82,13 @@ public class EJBQLQuery extends IndirectQuery {
         }
 
         return expression;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
