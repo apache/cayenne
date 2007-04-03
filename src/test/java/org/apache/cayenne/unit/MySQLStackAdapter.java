@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Procedure;
 
 /**
  * @author Andrus Adamchik
@@ -48,6 +49,19 @@ public class MySQLStackAdapter extends AccessStackAdapter {
 
     public boolean supportsCaseSensitiveLike() {
         return false;
+    }
+
+    public boolean supportsStoredProcedures() {
+        return true;
+    }
+
+    public void createdTables(Connection con, DataMap map) throws Exception {
+        if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
+            executeDDL(con, "mysql", "create-select-sp.sql");
+            executeDDL(con, "mysql", "create-update-sp.sql");
+            executeDDL(con, "mysql", "create-update-sp2.sql");
+            executeDDL(con, "mysql", "create-out-sp.sql");
+        }
     }
 
     public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
@@ -75,6 +89,14 @@ public class MySQLStackAdapter extends AccessStackAdapter {
                     executeDDL(conn, drop.toString());
                 }
             }
+        }
+
+        Procedure proc = map.getProcedure("cayenne_tst_select_proc");
+        if (proc != null && proc.getDataMap() == map) {
+            executeDDL(conn, "mysql", "drop-select-sp.sql");
+            executeDDL(conn, "mysql", "drop-update-sp.sql");
+            executeDDL(conn, "mysql", "drop-update-sp2.sql");
+            executeDDL(conn, "mysql", "drop-out-sp.sql");
         }
     }
 

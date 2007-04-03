@@ -51,7 +51,6 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        // Don't run this on MySQL
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;
         }
@@ -61,7 +60,6 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     public void testUpdate() throws Exception {
-        // Don't run this on MySQL
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;
         }
@@ -99,7 +97,6 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     public void testUpdateNoParam() throws Exception {
-        // Don't run this on MySQL
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;
         }
@@ -136,7 +133,6 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     public void testSelect1() throws Exception {
-        // Don't run this on MySQL
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;
         }
@@ -165,7 +161,6 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     public void testSelect2() throws Exception {
-        // Don't run this on MySQL
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;
         }
@@ -195,7 +190,6 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     public void testSelect3() throws Exception {
-        // Don't run this on MySQL
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;
         }
@@ -227,7 +221,6 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     public void testOutParams() throws Exception {
-        // Don't run this on MySQL
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;
         }
@@ -250,7 +243,6 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     public void testSelectDataObject() throws Exception {
-        // Don't run this on MySQL
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;
         }
@@ -276,7 +268,6 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         // invalidate painting, it may have been updated in the proc
         ctxt.invalidateObjects(Collections.singletonList(p));
         assertEquals(1101.01, p.getEstimatedPrice().doubleValue(), 0.02);
-
     }
 
     public void testSelectWithRowDescriptor() throws Exception {
