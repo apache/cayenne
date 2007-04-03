@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;

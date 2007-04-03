@@ -17,16 +17,15 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.query;
 
 /**
  * A factory interface to create standard SQLActions for a set of standard queries.
  * Instances of SQLActionVisitor are passed by Cayenne to a Query in
- * {@link org.apache.cayenne.query.Query#createSQLAction(SQLActionVisitor)},
- * allowing query to choose the action type and convert itself to a "standard" query if
- * needed. Individual DbAdapters would provide special visitors, thus allowing for
- * DB-dependent execution algorithms.
+ * {@link org.apache.cayenne.query.Query#createSQLAction(SQLActionVisitor)}, allowing
+ * query to choose the action type and convert itself to a "standard" query if needed.
+ * Individual DbAdapters would provide special visitors, thus allowing for DB-dependent
+ * execution algorithms.
  * 
  * @see org.apache.cayenne.query.Query#createSQLAction(SQLActionVisitor)
  * @since 1.2
@@ -35,27 +34,32 @@ package org.apache.cayenne.query;
 public interface SQLActionVisitor {
 
     /**
-     * Executes a generic update query.
+     * Creates an action to execute a generic update query.
      */
     SQLAction updateAction(Query query);
 
     /**
-     * Executes a batch update query.
+     * Creates an action to execute a batch update query.
      */
     SQLAction batchAction(BatchQuery query);
 
     /**
-     * Executes a SelectQuery.
+     * Creates an action to execute a SelectQuery.
      */
     SQLAction objectSelectAction(SelectQuery query);
 
     /**
-     * Executes a SQLTemplate.
+     * Creates an action to execute a SQLTemplate.
      */
     SQLAction sqlAction(SQLTemplate query);
 
     /**
-     * Executes a ProcedureQuery.
+     * Creates an action to execute a ProcedureQuery.
      */
     SQLAction procedureAction(ProcedureQuery query);
+
+    /**
+     * Creates an action to execute EJBQL query.
+     */
+    SQLAction ejbqlAction(EJBQLQuery query);
 }

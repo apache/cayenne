@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.query;
+package org.apache.cayenne.access.jdbc;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.query.SQLTemplate;
 
 /**
  * A translator of {@link EJBQLExpression} statements into the database SQL.

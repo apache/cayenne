@@ -31,7 +31,7 @@ import org.apache.cayenne.map.ObjEntity;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class SQLTemplateMetadata extends BaseQueryMetadata {
+class SQLTemplateMetadata extends BaseQueryMetadata {
 
     boolean resolve(Object root, EntityResolver resolver, SQLTemplate query) {
 
