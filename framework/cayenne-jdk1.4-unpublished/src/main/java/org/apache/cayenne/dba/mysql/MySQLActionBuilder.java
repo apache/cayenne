@@ -26,6 +26,7 @@ import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 
@@ -51,5 +52,9 @@ class MySQLActionBuilder extends JdbcActionBuilder {
                 return translator;
             }
         };
+    }
+
+    public SQLAction procedureAction(ProcedureQuery query) {
+        return new MySQLProcedureAction(query, getAdapter(), getEntityResolver());
     }
 }
