@@ -55,7 +55,7 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>org.objectstyle.cayenne</groupId>
+			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-nodeps</artifactId>
 			<version>@PROJECT-VERSION@</version>
 		</dependency>
