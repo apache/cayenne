@@ -23,6 +23,7 @@ CAY-754 Local jNDI hack breaks when running with Jetty6-Maven
 CAY-764 Exception when importing an EOModel with single table inheritance
 CAY-765 Programmatically overriding "use share cache" fails
 CAY-774 cayenne-modeler pom.xml has incorrect dependancy
+CAY-775 AutoAdapter fails to detect Sybase when running with jTDS driver
 
 ----------------------------------
 Release: 2.0.2
