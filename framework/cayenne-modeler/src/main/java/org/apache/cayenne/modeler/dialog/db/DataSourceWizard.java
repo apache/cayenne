@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
@@ -186,6 +187,19 @@ public class DataSourceWizard extends CayenneController {
     protected void refreshDataSources() {
         this.dataSources = getApplication().getPreferenceDomain().getDetailsMap(
                 DBConnectionInfo.class);
+
+        // 1.2 migration fix - update data source adapter names
+        Iterator it = dataSources.values().iterator();
+
+        final String _12package = "org.objectstyle.cayenne.";
+        while (it.hasNext()) {
+            DBConnectionInfo info = (DBConnectionInfo) it.next();
+            if (info.getDbAdapter() != null && info.getDbAdapter().startsWith(_12package)) {
+                info.setDbAdapter("org.apache.cayenne."
+                        + info.getDbAdapter().substring(_12package.length()));
+                info.getObjectContext().commitChanges();
+            }
+        }
 
         if (altDataSourceKey != null
                 && !dataSources.containsKey(altDataSourceKey)
