@@ -89,6 +89,7 @@ CAY-752 Importing EOModel gives Cast Exception
 CAY-754 Local jNDI hack breaks when running with Jetty6-Maven
 CAY-764 Exception when importing an EOModel with single table inheritance
 CAY-765 Programmatically overriding "use share cache" fails
+CAY-775 AutoAdapter fails to detect Sybase when running with jTDS driver
 
 API Changes
 ----------------------------------
