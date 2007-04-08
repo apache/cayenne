@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -60,7 +61,11 @@ public class SybaseStackAdapter extends AccessStackAdapter {
 
     public void willDropTables(Connection con, DataMap map, Collection tablesToDrop)
             throws Exception {
-        super.willDropTables(con, map, tablesToDrop);
+
+        Iterator it = tablesToDrop.iterator();
+        while (it.hasNext()) {
+            dropConstraints(con, (String) it.next());
+        }
 
         Procedure proc = map.getProcedure("cayenne_tst_select_proc");
         if (proc != null && proc.getDataMap() == map) {
