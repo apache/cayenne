@@ -33,10 +33,20 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  */
 public class SybaseSniffer implements DbAdapterFactory {
 
-    public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
-        String dbName = md.getDatabaseProductName();
-        return dbName != null && dbName.toUpperCase().indexOf("ADAPTIVE SERVER") >= 0
-                ? new SybaseAdapter()
-                : null;
+    public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {    	
+    	// JTDS driver returns "sql server" for Sybase, so need to handle it differently
+    	String driver = md.getDriverName();
+    	if(driver != null && driver.toLowerCase().startsWith("jtds")) {
+    		String url = md.getURL();
+    		return url != null && url.toLowerCase().startsWith("jdbc:jtds:sybase:")
+    		        ? new SybaseAdapter()
+                    : null;
+    	}
+    	else {
+            String dbName = md.getDatabaseProductName();
+            return dbName != null && dbName.toUpperCase().indexOf("ADAPTIVE SERVER") >= 0
+                    ? new SybaseAdapter()
+                    : null;
+    	}
     }
 }
