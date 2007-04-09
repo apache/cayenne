@@ -30,10 +30,6 @@ public class EJBQLDescending extends SimpleNode {
         super(id);
     }
 
-    EJBQLDescending(AbstractParser parser, int id) {
-        super(id);
-    }
-    
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitDescending(this);
     }

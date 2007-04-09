@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLOrderBy extends SimpleNode {
-	public EJBQLOrderBy(int id) {
-		super(id);
-	}
 
-    EJBQLOrderBy(AbstractParser parser, int id) {
+    public EJBQLOrderBy(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitOrderBy(this);
     }

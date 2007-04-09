@@ -26,19 +26,8 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  */
 public class EJBQLSelectExpression extends SimpleNode {
 
-    private transient AbstractParser parser;
-
     public EJBQLSelectExpression(int id) {
         super(id);
-    }
-
-    EJBQLSelectExpression(AbstractParser parser, int id) {
-        super(id);
-        this.parser = parser;
-    }
-
-    public void jjtClose() {
-        parser.selectExpressionLoaded(this);
     }
 
     public boolean visitNode(EJBQLExpressionVisitor visitor) {

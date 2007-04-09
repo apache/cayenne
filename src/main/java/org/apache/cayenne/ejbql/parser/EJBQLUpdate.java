@@ -30,10 +30,6 @@ public class EJBQLUpdate extends SimpleNode {
         super(id);
     }
 
-    EJBQLUpdate(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitUpdate(this, -1);
     }

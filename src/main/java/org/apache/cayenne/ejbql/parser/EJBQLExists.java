@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLExists extends SimpleNode {
-	public EJBQLExists(int id) {
-		super(id);
-	}
 
-    EJBQLExists(AbstractParser parser, int id) {
+    public EJBQLExists(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitExists(this);
     }

@@ -24,16 +24,18 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLInnerJoin extends SimpleNode {
-	public EJBQLInnerJoin(int id) {
-		super(id);
-	}
-    
-    EJBQLInnerJoin(AbstractParser parser, int id) {
+public class EJBQLInnerJoin extends EJBQLJoin {
+
+    public EJBQLInnerJoin(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitInnerJoin(this);
+        return visitor.visitInnerJoin(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitInnerJoin(this, childIndex);
     }
 }

@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLLocate extends SimpleNode {
-	public EJBQLLocate(int id) {
-		super(id);
-	}
-    
-    EJBQLLocate(AbstractParser parser, int id) {
+
+    public EJBQLLocate(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitLocate(this);
     }

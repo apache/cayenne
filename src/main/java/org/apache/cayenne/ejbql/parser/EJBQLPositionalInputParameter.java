@@ -30,10 +30,6 @@ public class EJBQLPositionalInputParameter extends SimpleNode {
         super(id);
     }
 
-    EJBQLPositionalInputParameter(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitPositionalInputParameter(this);
     }

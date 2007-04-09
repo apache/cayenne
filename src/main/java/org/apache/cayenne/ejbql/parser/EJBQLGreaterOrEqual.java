@@ -30,10 +30,6 @@ public class EJBQLGreaterOrEqual extends SimpleNode {
         super(id);
     }
 
-    EJBQLGreaterOrEqual(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitGreaterOrEqual(this, -1);
     }

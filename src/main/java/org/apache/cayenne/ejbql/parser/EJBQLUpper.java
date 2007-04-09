@@ -26,14 +26,10 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  */
 public class EJBQLUpper extends SimpleNode {
 
-	public EJBQLUpper(int id) {
-		super(id);
-	}
-    
-    EJBQLUpper(AbstractParser parser, int id) {
+    public EJBQLUpper(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitUpper(this);
     }

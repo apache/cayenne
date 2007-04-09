@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLMax extends SimpleNode {
-	public EJBQLMax(int id) {
-		super(id);
-	}
 
-    EJBQLMax(AbstractParser parser, int id) {
+    public EJBQLMax(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitMax(this);
     }

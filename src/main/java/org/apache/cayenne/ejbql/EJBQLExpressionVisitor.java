@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
+import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
+import org.apache.cayenne.ejbql.parser.EJBQLJoin;
+import org.apache.cayenne.ejbql.parser.EJBQLPath;
+
 /**
  * A visitor interface to inspect the EJBQL expression tree.
  * 
@@ -138,7 +142,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitFrom(EJBQLExpression expression);
 
-    boolean visitFromItem(EJBQLExpression expression);
+    boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex);
 
     /**
      * Called on visiting ">=" expression and also after visiting every expression child.
@@ -170,9 +174,9 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitIn(EJBQLExpression expression);
 
-    boolean visitInnerFetchJoin(EJBQLExpression expression);
+    boolean visitInnerFetchJoin(EJBQLJoin join, int finishedChildIndex);
 
-    boolean visitInnerJoin(EJBQLExpression expression);
+    boolean visitInnerJoin(EJBQLJoin join, int finishedChildIndex);
 
     boolean visitIntegerLiteral(EJBQLExpression expression);
 
@@ -265,9 +269,9 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitOrderByItem(EJBQLExpression expression);
 
-    boolean visitOuterFetchJoin(EJBQLExpression expression);
+    boolean visitOuterFetchJoin(EJBQLJoin join, int finishedChildIndex);
 
-    boolean visitOuterJoin(EJBQLExpression expression);
+    boolean visitOuterJoin(EJBQLJoin join, int finishedChildIndex);
 
     /**
      * Called on visiting "path" expression and also after visiting every expression
@@ -278,7 +282,7 @@ public interface EJBQLExpressionVisitor {
      *            time, before its children; otherwise this is an index of a child just
      *            visited.
      */
-    boolean visitPath(EJBQLExpression expression, int finishedChildIndex);
+    boolean visitPath(EJBQLPath expression, int finishedChildIndex);
 
     boolean visitPatternValue(EJBQLExpression expression);
 
@@ -350,5 +354,5 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitUpper(EJBQLExpression expression);
 
-    boolean visitWhere(EJBQLExpression expression);
+    boolean visitWhere(EJBQLExpression expression, int finishedChildIndex);
 }

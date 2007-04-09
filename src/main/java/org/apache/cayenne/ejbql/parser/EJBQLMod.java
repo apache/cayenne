@@ -30,10 +30,6 @@ public class EJBQLMod extends SimpleNode {
         super(id);
     }
 
-    EJBQLMod(AbstractParser parser, int id) {
-        super(id);
-    }
-    
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitMod(this);
     }

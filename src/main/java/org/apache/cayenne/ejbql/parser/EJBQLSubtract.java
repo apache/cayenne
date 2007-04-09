@@ -30,10 +30,6 @@ public class EJBQLSubtract extends SimpleNode {
         super(id);
     }
 
-    EJBQLSubtract(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitSubtract(this, -1);
     }

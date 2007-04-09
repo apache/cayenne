@@ -30,10 +30,6 @@ public class EJBQLLessThan extends SimpleNode {
         super(id);
     }
 
-    EJBQLLessThan(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitLessThan(this, -1);
     }

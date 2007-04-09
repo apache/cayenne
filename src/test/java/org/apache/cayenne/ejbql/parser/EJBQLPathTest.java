@@ -18,19 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
-import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+import junit.framework.TestCase;
 
-/**
- * @since 3.0
- * @author Andrus Adamchik
- */
-public class EJBQLSubstring extends SimpleNode {
+public class EJBQLPathTest extends TestCase {
 
-    public EJBQLSubstring(int id) {
-        super(id);
-    }
+    public void testGetAbsolutePath() {
+        EJBQLPath path = new EJBQLPath(-1);
+        EJBQLIdentifier id = new EJBQLIdentifier(-1);
+        id.setText("x");
 
-    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitSubstring(this);
+        EJBQLIdentificationVariable c1 = new EJBQLIdentificationVariable(-1);
+        c1.setText("y");
+        
+        path.jjtAddChild(id, 0);
+        path.jjtAddChild(c1, 1);
+        assertEquals("x.y", path.getAbsolutePath());
     }
 }

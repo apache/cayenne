@@ -18,32 +18,121 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.Iterator;
+
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
-import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.EJBQLException;
+import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
+import org.apache.cayenne.ejbql.parser.EJBQLJoin;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     private EJBQLSelectTranslator parent;
+    private String lastTableAlias;
 
     public EJBQLFromTranslator(EJBQLSelectTranslator parent) {
-        super(false);
+        super(true);
         this.parent = parent;
     }
 
-    public boolean visitFromItem(EJBQLExpression expression) {
+    public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            if (lastTableAlias != null) {
+                parent.getParent().getBuffer().append(',');
+            }
+
+            lastTableAlias = appendTable(expression.getId());
+        }
         return true;
     }
 
-    public boolean visitAbstractSchemaName(EJBQLExpression expression) {
+    public boolean visitInnerFetchJoin(EJBQLJoin join, int finishedChildIndex) {
+        // TODO: andrus, 4/9/2007 - support for prefetching
+        return visitInnerJoin(join, finishedChildIndex);
+    }
+
+    public boolean visitInnerJoin(EJBQLJoin join, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            appendJoin(join, "INNER JOIN");
+        }
         return true;
     }
 
-    public boolean visitIdentifier(EJBQLExpression expression) {
-        parent.appendRootIdentifier(expression.getText());
+    public boolean visitOuterFetchJoin(EJBQLJoin join, int finishedChildIndex) {
+        // TODO: andrus, 4/9/2007 - support for prefetching
+        return visitOuterJoin(join, finishedChildIndex);
+    }
+
+    public boolean visitOuterJoin(EJBQLJoin join, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            appendJoin(join, "LEFT OUTER JOIN");
+        }
         return true;
     }
 
-    public boolean visitIdentificationVariable(EJBQLExpression expression) {
-        return true;
+    private void appendJoin(EJBQLJoin join, String semantics) {
+
+        String id = join.getId();
+
+        if (lastTableAlias == null) {
+            throw new EJBQLException("No source table for join: " + id);
+        }
+
+        String sourceAlias = lastTableAlias;
+        StringBuffer buffer = parent.getParent().getBuffer();
+
+        buffer.append(" ").append(semantics);
+        String targetAlias = appendTable(id);
+        buffer.append(" ON (");
+
+        ObjRelationship incoming = parent
+                .getParent()
+                .getCompiledExpression()
+                .getIncomingRelationship(id);
+        if (incoming == null) {
+            throw new EJBQLException("No join configured for id " + id);
+        }
+
+        // TODO: andrus, 4/8/2007 - support for flattened relationships
+        DbRelationship incomingDB = (DbRelationship) incoming.getDbRelationships().get(0);
+
+        Iterator it = incomingDB.getJoins().iterator();
+        if (it.hasNext()) {
+            DbJoin dbJoin = (DbJoin) it.next();
+            buffer.append(sourceAlias).append('.').append(dbJoin.getSourceName()).append(
+                    " = ").append(targetAlias).append('.').append(dbJoin.getTargetName());
+        }
+
+        while (it.hasNext()) {
+            buffer.append(", ");
+            DbJoin dbJoin = (DbJoin) it.next();
+            buffer.append(sourceAlias).append('.').append(dbJoin.getSourceName()).append(
+                    " = ").append(targetAlias).append('.').append(dbJoin.getTargetName());
+        }
+
+        buffer.append(")");
+        this.lastTableAlias = targetAlias;
+    }
+
+    private String appendTable(String id) {
+        ClassDescriptor descriptor = parent
+                .getParent()
+                .getCompiledExpression()
+                .getEntityDescriptor(id);
+
+        String tableName = descriptor.getEntity().getDbEntity().getFullyQualifiedName();
+        String alias = parent.getParent().createAlias(id, tableName);
+        parent
+                .getParent()
+                .getBuffer()
+                .append(' ')
+                .append(tableName)
+                .append(" AS ")
+                .append(alias);
+        return alias;
     }
 }

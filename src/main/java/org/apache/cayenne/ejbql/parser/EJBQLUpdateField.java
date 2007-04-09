@@ -28,11 +28,7 @@ public class EJBQLUpdateField extends SimpleNode {
 	public EJBQLUpdateField(int id) {
 		super(id);
 	}
-    
-    EJBQLUpdateField(AbstractParser parser, int id) {
-        super(id);
-    }
-    
+   
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitUpdateField(this);
     }

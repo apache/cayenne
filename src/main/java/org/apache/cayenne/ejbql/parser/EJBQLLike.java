@@ -30,10 +30,6 @@ public class EJBQLLike extends SimpleNode {
         super(id);
     }
 
-    EJBQLLike(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitLike(this, -1);
     }

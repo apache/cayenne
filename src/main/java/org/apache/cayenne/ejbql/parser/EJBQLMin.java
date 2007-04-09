@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLMin extends SimpleNode {
-	public EJBQLMin(int id) {
-		super(id);
-	}
 
-    EJBQLMin(AbstractParser parser, int id) {
+    public EJBQLMin(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitMin(this);
     }

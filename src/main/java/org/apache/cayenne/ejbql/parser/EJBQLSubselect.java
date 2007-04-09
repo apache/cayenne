@@ -30,10 +30,6 @@ public class EJBQLSubselect extends SimpleNode {
         super(id);
     }
 
-    EJBQLSubselect(AbstractParser parser, int id) {
-        super(id);
-    }
-    
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitSubselect(this);
     }

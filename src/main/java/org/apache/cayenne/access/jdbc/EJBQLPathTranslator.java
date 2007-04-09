@@ -21,6 +21,7 @@ package org.apache.cayenne.access.jdbc;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -39,7 +40,7 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
         this.parent = parent;
     }
 
-    public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
+    public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
 
         if (finishedChildIndex > 0) {
 
@@ -88,7 +89,6 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
                     + "'");
         }
 
-        parent.appendInnerJoin(idPath + '.' + lastPathComponent);
         this.currentEntity = (ObjEntity) relationship.getTargetEntity();
     }
 

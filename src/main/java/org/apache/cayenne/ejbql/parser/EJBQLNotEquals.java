@@ -30,10 +30,6 @@ public class EJBQLNotEquals extends SimpleNode {
         super(id);
     }
 
-    EJBQLNotEquals(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitNotEquals(this, -1);
     }

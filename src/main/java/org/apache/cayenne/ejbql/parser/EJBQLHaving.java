@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLHaving extends SimpleNode {
-	public EJBQLHaving(int id) {
-		super(id);
-	}
-    
-    EJBQLHaving(AbstractParser parser, int id) {
+
+    public EJBQLHaving(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitHaving(this);
     }

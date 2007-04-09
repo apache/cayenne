@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLLower extends SimpleNode {
-	public EJBQLLower(int id) {
-		super(id);
-	}
-    
-    EJBQLLower(AbstractParser parser, int id) {
+
+    public EJBQLLower(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitLower(this);
     }

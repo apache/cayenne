@@ -18,19 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
-import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+public class EJBQLJoin extends SimpleNode {
 
-/**
- * @since 3.0
- * @author Andrus Adamchik
- */
-public class EJBQLSubstring extends SimpleNode {
-
-    public EJBQLSubstring(int id) {
+    public EJBQLJoin(int id) {
         super(id);
     }
 
-    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitSubstring(this);
+    public String getId() {
+        int len = getChildrenCount();
+        if (len < 2) {
+            return null;
+        }
+
+        return jjtGetChild(len - 1).getText();
     }
 }

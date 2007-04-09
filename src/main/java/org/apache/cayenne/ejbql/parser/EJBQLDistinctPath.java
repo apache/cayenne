@@ -30,10 +30,6 @@ public class EJBQLDistinctPath extends SimpleNode {
         super(id);
     }
 
-    EJBQLDistinctPath(AbstractParser parser, int id) {
-        super(id);
-    }
-    
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitDistinctPath(this);
     }

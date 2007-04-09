@@ -30,10 +30,6 @@ public class EJBQLIdentifier extends SimpleNode {
         super(id);
     }
 
-    EJBQLIdentifier(AbstractParser parser, int id) {
-        super(id);
-    }
-
     public boolean visit(EJBQLExpressionVisitor visitor) {
         return visitor.visitIdentifier(this);
     }

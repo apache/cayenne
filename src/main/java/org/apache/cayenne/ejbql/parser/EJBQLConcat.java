@@ -30,10 +30,6 @@ public class EJBQLConcat extends SimpleNode {
         super(id);
     }
 
-    EJBQLConcat(AbstractParser parser, int id) {
-        super(id);
-    }
-    
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitConcat(this);
     }

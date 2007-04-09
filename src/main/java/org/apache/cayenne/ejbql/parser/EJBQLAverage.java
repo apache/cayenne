@@ -29,11 +29,7 @@ public class EJBQLAverage extends SimpleNode {
     public EJBQLAverage(int id) {
         super(id);
     }
-    
-    EJBQLAverage(AbstractParser parser, int id) {
-        super(id);
-    }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitAverage(this);
     }

@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLSqrt extends SimpleNode {
-	public EJBQLSqrt(int id) {
-		super(id);
-	}
-    
-    EJBQLSqrt(AbstractParser parser, int id) {
+
+    public EJBQLSqrt(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitSqrt(this);
     }

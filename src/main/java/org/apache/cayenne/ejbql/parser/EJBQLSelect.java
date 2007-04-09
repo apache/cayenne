@@ -30,10 +30,6 @@ public class EJBQLSelect extends SimpleNode {
         super(id);
     }
 
-    EJBQLSelect(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitSelect(this, -1);
     }

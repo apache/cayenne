@@ -30,10 +30,6 @@ public class EJBQLConstructorParameter extends SimpleNode {
         super(id);
     }
 
-    EJBQLConstructorParameter(AbstractParser parser, int id) {
-        super(id);
-    }
-    
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitConstructorParameter(this);
     }

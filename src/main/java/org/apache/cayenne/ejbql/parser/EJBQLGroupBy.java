@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLGroupBy extends SimpleNode {
-	public EJBQLGroupBy(int id) {
-		super(id);
-	}
-    
-    EJBQLGroupBy(AbstractParser parser, int id) {
+
+    public EJBQLGroupBy(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitGroupBy(this);
     }
