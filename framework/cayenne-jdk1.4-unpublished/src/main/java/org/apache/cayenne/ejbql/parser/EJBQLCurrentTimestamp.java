@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLCurrentTimestamp extends SimpleNode {
-	public EJBQLCurrentTimestamp(int id) {
-		super(id);
-	}
-    
-    EJBQLCurrentTimestamp(AbstractParser parser, int id) {
+
+    public EJBQLCurrentTimestamp(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitCurrentTimestamp(this);
     }

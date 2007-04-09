@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLMemberOf extends SimpleNode {
-	public EJBQLMemberOf(int id) {
-		super(id);
-	}
-    
-    EJBQLMemberOf(AbstractParser parser, int id) {
+
+    public EJBQLMemberOf(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitMemberOf(this);
     }

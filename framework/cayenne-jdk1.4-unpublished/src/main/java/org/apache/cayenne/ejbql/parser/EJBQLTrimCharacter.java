@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLTrimCharacter extends SimpleNode {
-	public EJBQLTrimCharacter(int id) {
-		super(id);
-	}
-    
-    EJBQLTrimCharacter(AbstractParser parser, int id) {
+
+    public EJBQLTrimCharacter(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitTrimCharacter(this);
     }

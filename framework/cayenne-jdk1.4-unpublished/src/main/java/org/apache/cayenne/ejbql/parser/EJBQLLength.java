@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLLength extends SimpleNode {
-	public EJBQLLength(int id) {
-		super(id);
-	}
-    
-    EJBQLLength(AbstractParser parser, int id) {
+
+    public EJBQLLength(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitLength(this);
     }

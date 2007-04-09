@@ -30,10 +30,6 @@ public class EJBQLDelete extends SimpleNode {
         super(id);
     }
 
-    EJBQLDelete(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitDelete(this, -1);
     }

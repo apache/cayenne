@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLNamedInputParameter extends SimpleNode {
-	public EJBQLNamedInputParameter(int id) {
-		super(id);
-	}
-    
-    EJBQLNamedInputParameter(AbstractParser parser, int id) {
+
+    public EJBQLNamedInputParameter(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitNamedInputParameter(this);
     }

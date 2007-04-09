@@ -30,10 +30,6 @@ public class EJBQLDivide extends SimpleNode {
         super(id);
     }
 
-    EJBQLDivide(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitDivide(this, -1);
     }

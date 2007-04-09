@@ -28,10 +28,6 @@ public class EJBQLSelectClause extends SimpleNode {
         super(id);
     }
 
-    EJBQLSelectClause(AbstractParser parser, int id) {
-        super(id);
-    }
-
     // no visitor method for now, as this node is semantical and not important in
     // analyzing the query
 }

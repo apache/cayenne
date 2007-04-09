@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLTrimTrailing extends SimpleNode {
-	public EJBQLTrimTrailing(int id) {
-		super(id);
-	}
-    
-    EJBQLTrimTrailing(AbstractParser parser, int id) {
+
+    public EJBQLTrimTrailing(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitTrimTrailing(this);
     }

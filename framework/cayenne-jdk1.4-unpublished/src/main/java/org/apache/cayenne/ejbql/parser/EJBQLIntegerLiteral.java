@@ -30,10 +30,6 @@ public class EJBQLIntegerLiteral extends SimpleNode {
         super(id);
     }
 
-    EJBQLIntegerLiteral(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitIntegerLiteral(this);
     }

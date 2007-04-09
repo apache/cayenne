@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import org.apache.cayenne.ejbql.EJBQLDelegatingVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.parser.EJBQLPath;
 
 /**
  * @since 3.0
@@ -183,7 +184,7 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         }
     }
 
-    public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
+    public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             setDelegate(new EJBQLPathTranslator(parent));
             return true;

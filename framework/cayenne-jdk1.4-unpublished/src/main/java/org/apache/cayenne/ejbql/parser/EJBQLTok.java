@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLTok extends SimpleNode {
-	public EJBQLTok(int id) {
-		super(id);
-	}
 
-    EJBQLTok(AbstractParser parser, int id) {
+    public EJBQLTok(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitTok(this);
     }

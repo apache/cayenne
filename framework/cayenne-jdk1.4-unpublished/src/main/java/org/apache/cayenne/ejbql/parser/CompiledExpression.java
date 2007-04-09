@@ -18,10 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -35,7 +38,13 @@ class CompiledExpression implements EJBQLCompiledExpression {
     private String source;
     private String rootId;
     private Map descriptorsById;
+    private Map incomingById;
     private EJBQLExpression expression;
+    private Collection implicitJoins;
+
+    public Collection getImplicitJoins() {
+        return implicitJoins != null ? implicitJoins : Collections.EMPTY_SET;
+    }
 
     public ClassDescriptor getEntityDescriptor(String idVariable) {
         if (idVariable == null) {
@@ -47,9 +56,13 @@ class CompiledExpression implements EJBQLCompiledExpression {
 
         return (ClassDescriptor) descriptorsById.get(idVariable);
     }
-    
+
     public ClassDescriptor getRootDescriptor() {
         return rootId != null ? getEntityDescriptor(rootId) : null;
+    }
+
+    public ObjRelationship getIncomingRelationship(String identifier) {
+        return (ObjRelationship) incomingById.get(identifier);
     }
 
     public EJBQLExpression getExpression() {
@@ -68,11 +81,19 @@ class CompiledExpression implements EJBQLCompiledExpression {
         this.descriptorsById = descriptorsById;
     }
 
+    void setIncomingById(Map incomingById) {
+        this.incomingById = incomingById;
+    }
+
     void setSource(String source) {
         this.source = source;
     }
-    
+
     void setRootId(String rootId) {
         this.rootId = rootId;
+    }
+
+    void setImplicitJoins(Collection implicitJoins) {
+        this.implicitJoins = implicitJoins;
     }
 }

@@ -30,10 +30,6 @@ public class EJBQLDistinct extends SimpleNode {
         super(id);
     }
 
-    EJBQLDistinct(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitDistinct(this);
     }

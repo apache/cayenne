@@ -29,7 +29,7 @@ options {
 	NODE_DEFAULT_VOID = true;
 	JAVA_UNICODE_ESCAPE = true;
 	STATIC = false;
-	NODE_USES_PARSER = true;
+	NODE_USES_PARSER = false;
 
 	LOOKAHEAD = 1;
 
@@ -51,24 +51,11 @@ import java.util.*;
 import org.apache.cayenne.ejbql.*;
 import org.apache.cayenne.map.*;
 
-public class EJBQL extends AbstractParser {
+public class EJBQL {
 
 	public EJBQL (String source) {
 		this (new StringReader (source));
-		this.source = source;
 	}
-	
-	EJBQLCompiledExpression compileQuery(EntityResolver resolver) throws ParseException {
-        this.descriptorsById = new HashMap();
-        this.resolver = resolver;
-
-        CompiledExpression compiled = new CompiledExpression();
-        compiled.setExpression(parseQuery());
-        compiled.setDescriptorsById(descriptorsById);
-        compiled.setSource(source);
-        compiled.setRootId(rootId);
-        return compiled;
-    }
 	
     public static class EJBQLDefaultParser implements EJBQLParser {
 
@@ -83,7 +70,7 @@ public class EJBQL extends AbstractParser {
        
        public EJBQLCompiledExpression compile(String ejbqlStatement, EntityResolver resolver) throws EJBQLException {
            try {
-              return new EJBQL(ejbqlStatement).compileQuery(resolver);
+              return new Compiler(resolver).compile(ejbqlStatement, new EJBQL(ejbqlStatement).parseQuery());
            }
            catch(ParseException e) {
               throw new EJBQLException("Error parsing EJB QL statement", e);

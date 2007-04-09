@@ -30,10 +30,6 @@ public class EJBQLBetween extends SimpleNode {
         super(id);
     }
 
-    EJBQLBetween(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitBetween(this, -1);
     }

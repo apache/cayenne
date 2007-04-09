@@ -30,10 +30,6 @@ public class EJBQLMultiply extends SimpleNode {
         super(id);
     }
 
-    EJBQLMultiply(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitMultiply(this, -1);
     }

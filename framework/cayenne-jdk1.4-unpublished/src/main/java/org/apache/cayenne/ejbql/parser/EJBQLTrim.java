@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLTrim extends SimpleNode {
-	public EJBQLTrim(int id) {
-		super(id);
-	}
-    
-    EJBQLTrim(AbstractParser parser, int id) {
+
+    public EJBQLTrim(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitTrim(this);
     }

@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLSum extends SimpleNode {
-	public EJBQLSum(int id) {
-		super(id);
-	}
-    
-    EJBQLSum(AbstractParser parser, int id) {
+
+    public EJBQLSum(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitSum(this);
     }

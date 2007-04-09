@@ -26,24 +26,25 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  */
 public class EJBQLFromItem extends SimpleNode {
 
-    private transient AbstractParser parser;
-
     public EJBQLFromItem(int id) {
         super(id);
     }
 
-    EJBQLFromItem(AbstractParser parser, int id) {
-        super(id);
-        this.parser = parser;
-    }
-
-    public void jjtClose() {
-        if (parser != null) {
-            parser.fromItemLoaded(this);
+    public String getId() {
+        int len = getChildrenCount();
+        if (len < 2) {
+            return null;
         }
+
+        return jjtGetChild(len - 1).getText();
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitFromItem(this);
+        return visitor.visitFromItem(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitFromItem(this, childIndex);
     }
 }

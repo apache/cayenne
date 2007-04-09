@@ -30,10 +30,6 @@ public class EJBQLCount extends SimpleNode {
         super(id);
     }
 
-    EJBQLCount(AbstractParser parser, int id) {
-        super(id);
-    }
-    
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitCount(this);
     }

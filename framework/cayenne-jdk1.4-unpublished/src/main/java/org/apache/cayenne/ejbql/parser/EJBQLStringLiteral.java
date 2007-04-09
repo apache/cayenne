@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLStringLiteral extends SimpleNode {
-	public EJBQLStringLiteral(int id) {
-		super(id);
-	}
-    
-    EJBQLStringLiteral(AbstractParser parser, int id) {
+
+    public EJBQLStringLiteral(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitStringLiteral(this);
     }

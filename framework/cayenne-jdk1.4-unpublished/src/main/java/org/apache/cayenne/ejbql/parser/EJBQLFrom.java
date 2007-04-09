@@ -30,10 +30,6 @@ public class EJBQLFrom extends SimpleNode {
         super(id);
     }
 
-    EJBQLFrom(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitFrom(this);
     }

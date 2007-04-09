@@ -30,10 +30,6 @@ public class EJBQLEscapeCharacter extends SimpleNode {
         super(id);
     }
 
-    EJBQLEscapeCharacter(AbstractParser parser, int id) {
-        super(id);
-    }
-    
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitEscapeCharacter(this);
     }

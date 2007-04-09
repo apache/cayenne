@@ -30,10 +30,6 @@ public class EJBQLClassName extends SimpleNode {
         super(id);
     }
 
-    EJBQLClassName(AbstractParser parser, int id) {
-        super(id);
-    }
-    
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitClassName(this);
     }

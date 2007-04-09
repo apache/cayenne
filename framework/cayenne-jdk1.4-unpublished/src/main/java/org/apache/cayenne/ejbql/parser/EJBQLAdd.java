@@ -30,10 +30,6 @@ public class EJBQLAdd extends SimpleNode {
         super(id);
     }
 
-    EJBQLAdd(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitAdd(this, -1);
     }

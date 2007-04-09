@@ -30,10 +30,6 @@ public class EJBQLCurrentDate extends SimpleNode {
         super(id);
     }
 
-    EJBQLCurrentDate(AbstractParser parser, int id) {
-        super(id);
-    }
-    
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitCurrentDate(this);
     }

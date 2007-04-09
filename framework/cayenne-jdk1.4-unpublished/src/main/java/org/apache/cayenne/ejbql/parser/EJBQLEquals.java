@@ -30,10 +30,6 @@ public class EJBQLEquals extends SimpleNode {
         super(id);
     }
 
-    EJBQLEquals(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitEquals(this, -1);
     }

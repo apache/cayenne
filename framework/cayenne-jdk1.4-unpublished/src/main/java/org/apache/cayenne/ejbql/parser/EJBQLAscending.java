@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLAscending extends SimpleNode {
-	public EJBQLAscending(int id) {
-		super(id);
-	}
-    
-    EJBQLAscending(AbstractParser parser, int id) {
+
+    public EJBQLAscending(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitAscending(this);
     }

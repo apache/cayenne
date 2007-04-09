@@ -30,10 +30,6 @@ public class EJBQLTrimBoth extends SimpleNode {
         super(id);
     }
 
-    EJBQLTrimBoth(AbstractParser parser, int id) {
-        super(id);
-    }
-
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitTrimBoth(this);
     }

@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLPatternValue extends SimpleNode {
-	public EJBQLPatternValue(int id) {
-		super(id);
-	}
-    
-    EJBQLPatternValue(AbstractParser parser, int id) {
+
+    public EJBQLPatternValue(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitPatternValue(this);
     }

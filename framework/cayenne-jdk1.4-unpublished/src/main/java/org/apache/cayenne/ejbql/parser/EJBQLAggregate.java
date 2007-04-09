@@ -26,14 +26,10 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  */
 public class EJBQLAggregate extends SimpleNode {
 
-	public EJBQLAggregate(int id) {
-		super(id);
-	}
-
-    EJBQLAggregate(AbstractParser parser, int id) {
+    public EJBQLAggregate(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitAggregate(this);
     }

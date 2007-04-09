@@ -30,11 +30,12 @@ public class EJBQLWhere extends SimpleNode {
         super(id);
     }
 
-    EJBQLWhere(AbstractParser parser, int id) {
-        super(id);
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitWhere(this, -1);
     }
 
-    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitWhere(this);
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitWhere(this, childIndex);
     }
 }

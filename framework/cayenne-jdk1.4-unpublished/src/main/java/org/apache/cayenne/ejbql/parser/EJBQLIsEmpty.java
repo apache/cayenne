@@ -25,14 +25,11 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLIsEmpty extends SimpleNode {
-	public EJBQLIsEmpty(int id) {
-		super(id);
-	}
-    
-    EJBQLIsEmpty(AbstractParser parser, int id) {
+
+    public EJBQLIsEmpty(int id) {
         super(id);
     }
-    
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitIsEmpty(this);
     }

@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
+import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
+import org.apache.cayenne.ejbql.parser.EJBQLJoin;
+import org.apache.cayenne.ejbql.parser.EJBQLPath;
+
 /**
  * A noop implementation of the EJBQL visitor that returns same preset boolean value from
  * all methods. Intended for subclassing.
@@ -157,7 +161,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitFromItem(EJBQLExpression expression) {
+    public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -189,11 +193,11 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitInnerFetchJoin(EJBQLExpression expression) {
+    public boolean visitInnerFetchJoin(EJBQLJoin join, int finishedChildIndex) {
         return continueFlag;
     }
 
-    public boolean visitInnerJoin(EJBQLExpression expression) {
+    public boolean visitInnerJoin(EJBQLJoin join, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -281,15 +285,15 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitOuterFetchJoin(EJBQLExpression expression) {
+    public boolean visitOuterFetchJoin(EJBQLJoin join, int finishedChildIndex) {
         return continueFlag;
     }
 
-    public boolean visitOuterJoin(EJBQLExpression expression) {
+    public boolean visitOuterJoin(EJBQLJoin join, int finishedChildIndex) {
         return continueFlag;
     }
 
-    public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
+    public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -381,7 +385,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitWhere(EJBQLExpression expression) {
+    public boolean visitWhere(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 }

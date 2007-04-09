@@ -41,8 +41,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
         assertTrue(sql, sql.indexOf("t0.ARTIST_ID") > 0);
         assertTrue(sql, sql.indexOf("t0.ARTIST_NAME") > 0);
         assertTrue(sql, sql.indexOf("t0.DATE_OF_BIRTH") > 0);
-        assertTrue(sql, sql.endsWith(" $from0"));
-        assertEquals(" FROM ARTIST t0", query.getParameters().get("from0").toString());
+        assertTrue(sql, sql.endsWith(" FROM ARTIST AS t0"));
     }
 
     public void testSelectDistinct() {
@@ -56,8 +55,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT DISTINCT "));
-        assertTrue(sql, sql.endsWith(" $from0"));
-        assertEquals(" FROM ARTIST t0", query.getParameters().get("from0").toString());
+        assertTrue(sql, sql.endsWith(" FROM ARTIST AS t0"));
     }
 
     public void testSelectFromWhereEqual() {
@@ -71,9 +69,8 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 WHERE t0.ARTIST_NAME "
+        assertTrue(sql, sql.endsWith(" FROM ARTIST AS t0 WHERE t0.ARTIST_NAME "
                 + "#bindEqual('Dali' 'VARCHAR')"));
-        assertEquals(" FROM ARTIST t0", query.getParameters().get("from0").toString());
     }
 
     public void testSelectFromWhereOrEqual() {
@@ -98,13 +95,11 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql1 = query1.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.indexOf(" $from0 WHERE ") > 0);
-        assertEquals(" FROM ARTIST t0", query.getParameters().get("from0").toString());
+        assertTrue(sql, sql.indexOf(" FROM ARTIST AS t0 WHERE ") > 0);
         assertEquals(1, countDelimiters(sql, " OR ", sql.indexOf("WHERE ")));
 
         assertTrue(sql1, sql1.startsWith("SELECT "));
-        assertTrue(sql1, sql.indexOf(" $from0 WHERE ") > 0);
-        assertEquals(" FROM ARTIST t0", query1.getParameters().get("from0").toString());
+        assertTrue(sql1, sql.indexOf(" FROM ARTIST AS t0 WHERE ") > 0);
         assertEquals(2, countDelimiters(sql1, " OR ", sql.indexOf("WHERE ")));
     }
 
@@ -130,11 +125,11 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql1 = query1.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.indexOf(" $from0 WHERE ") > 0);
+        assertTrue(sql, sql.indexOf(" WHERE ") > 0);
         assertEquals(1, countDelimiters(sql, " AND ", sql.indexOf("WHERE ")));
 
         assertTrue(sql1, sql1.startsWith("SELECT "));
-        assertTrue(sql1, sql1.indexOf(" $from0 WHERE ") > 0);
+        assertTrue(sql1, sql1.indexOf(" WHERE ") > 0);
         assertEquals(2, countDelimiters(sql1, " AND ", sql1.indexOf("WHERE ")));
     }
 
@@ -149,7 +144,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 WHERE NOT "
+        assertTrue(sql, sql.endsWith(" WHERE NOT "
                 + "t0.ARTIST_NAME #bindEqual('Dali' 'VARCHAR')"));
     }
 
@@ -164,8 +159,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 "
-                + "WHERE t0.ESTIMATED_PRICE > #bind($id1 'DECIMAL')"));
+        assertTrue(sql, sql.endsWith(" WHERE t0.ESTIMATED_PRICE > #bind($id0 'DECIMAL')"));
     }
 
     public void testSelectFromWhereGreaterOrEqual() {
@@ -179,8 +173,8 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 "
-                + "WHERE t0.ESTIMATED_PRICE >= #bind($id1 'INTEGER')"));
+        assertTrue(sql, sql
+                .endsWith(" WHERE t0.ESTIMATED_PRICE >= #bind($id0 'INTEGER')"));
     }
 
     public void testSelectFromWhereLess() {
@@ -194,8 +188,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 "
-                + "WHERE t0.ESTIMATED_PRICE < #bind($id1 'DECIMAL')"));
+        assertTrue(sql, sql.endsWith(" WHERE t0.ESTIMATED_PRICE < #bind($id0 'DECIMAL')"));
     }
 
     public void testSelectFromWhereLessOrEqual() {
@@ -209,8 +202,8 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 "
-                + "WHERE t0.ESTIMATED_PRICE <= #bind($id1 'DECIMAL')"));
+        assertTrue(sql, sql
+                .endsWith(" WHERE t0.ESTIMATED_PRICE <= #bind($id0 'DECIMAL')"));
     }
 
     public void testSelectFromWhereNotEqual() {
@@ -224,8 +217,8 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 "
-                + "WHERE t0.ARTIST_NAME #bindNotEqual('Dali' 'VARCHAR')"));
+        assertTrue(sql, sql
+                .endsWith(" WHERE t0.ARTIST_NAME #bindNotEqual('Dali' 'VARCHAR')"));
     }
 
     public void testSelectFromWhereBetween() {
@@ -239,9 +232,8 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 "
-                + "WHERE t0.ESTIMATED_PRICE "
-                + "BETWEEN #bind($id1 'INTEGER') AND #bind($id2 'INTEGER')"));
+        assertTrue(sql, sql.endsWith(" WHERE t0.ESTIMATED_PRICE "
+                + "BETWEEN #bind($id0 'INTEGER') AND #bind($id1 'INTEGER')"));
     }
 
     public void testSelectFromWhereNotBetween() {
@@ -255,9 +247,8 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 "
-                + "WHERE t0.ESTIMATED_PRICE "
-                + "NOT BETWEEN #bind($id1 'INTEGER') AND #bind($id2 'INTEGER')"));
+        assertTrue(sql, sql.endsWith(" WHERE t0.ESTIMATED_PRICE "
+                + "NOT BETWEEN #bind($id0 'INTEGER') AND #bind($id1 'INTEGER')"));
     }
 
     public void testSelectFromWhereLike() {
@@ -272,8 +263,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 "
-                + "WHERE t0.PAINTING_TITLE "
+        assertTrue(sql, sql.endsWith(" WHERE t0.PAINTING_TITLE "
                 + "LIKE #bind('Stuff' 'VARCHAR')"));
     }
 
@@ -288,8 +278,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 "
-                + "WHERE t0.PAINTING_TITLE "
+        assertTrue(sql, sql.endsWith(" WHERE t0.PAINTING_TITLE "
                 + "NOT LIKE #bind('Stuff' 'VARCHAR')"));
     }
 
@@ -308,8 +297,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
         System.out.println("SQL: " + sql);
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" $from0 "
-                + "WHERE t1.ARTIST_NAME #bindEqual('AA2' 'VARCHAR')"));
+        assertTrue(sql, sql.endsWith(" WHERE t1.ARTIST_NAME #bindEqual('AA2' 'VARCHAR')"));
         // TODO: andrus, 3/25/2007 - implement joins support
         // assertEquals(" FROM PAINTING t0 JOIN ARTIST t1 ON (t0.ARTIST_ID =
         // t1.ARTIST_ID)", query.getParameters().get("from0"));

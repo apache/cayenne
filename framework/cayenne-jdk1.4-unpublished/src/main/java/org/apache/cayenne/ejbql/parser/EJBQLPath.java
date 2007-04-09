@@ -30,8 +30,36 @@ public class EJBQLPath extends SimpleNode {
         super(id);
     }
 
-    EJBQLPath(AbstractParser parser, int id) {
-        super(id);
+    public String getId() {
+        return (getChildrenCount() > 0) ? jjtGetChild(0).getText() : null;
+    }
+
+    public String getRelativePath() {
+        int len = getChildrenCount();
+        if (len < 2) {
+            return null;
+        }
+
+        StringBuffer buffer = new StringBuffer(jjtGetChild(1).getText());
+        for (int i = 2; i < len; i++) {
+            buffer.append('.').append(jjtGetChild(i).getText());
+        }
+
+        return buffer.toString();
+    }
+
+    public String getAbsolutePath() {
+        int len = getChildrenCount();
+        if (len < 1) {
+            return null;
+        }
+
+        StringBuffer buffer = new StringBuffer(jjtGetChild(0).getText());
+        for (int i = 1; i < len; i++) {
+            buffer.append('.').append(jjtGetChild(i).getText());
+        }
+
+        return buffer.toString();
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
