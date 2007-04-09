@@ -22,6 +22,7 @@ package org.apache.cayenne.conn;
 import java.io.Serializable;
 
 import org.apache.cayenne.conf.PasswordEncoding;
+import org.apache.cayenne.conf.PlainTextPasswordEncoder;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -114,11 +115,7 @@ public class DataSourceInfo implements Cloneable, Serializable {
         buf.append("[").append(this.getClass().getName()).append(":").append(
                 "\n   user name: ").append(userName).append("\n   password: ");
 
-        if (password == null)
-            buf.append("null");
-        else
-            buf.append("**********");
-
+        buf.append("**********");
         buf
                 .append("\n   driver: ")
                 .append(jdbcDriver)
@@ -129,17 +126,19 @@ public class DataSourceInfo implements Cloneable, Serializable {
                 .append("\n   min. connections: ")
                 .append(minConnections)
                 .append("\n   max. connections: ")
-                .append(maxConnections)
-                .append("\n   encoder class: ")
-                .append(passwordEncoderClass)
-                .append("\n   encoder salt: ")
-                .append(passwordEncoderSalt)
-                .append("\n   password location: ")
-                .append(passwordLocation)
-                .append("\n   password source: ")
-                .append(getPasswordSource())
-                .append("\n]");
+                .append(maxConnections);
 
+        if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
+            buf.append("\n   encoder class: ").append(passwordEncoderClass).append(
+                    "\n   encoder salt: ").append(passwordEncoderSalt);
+        }
+
+        if (!PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
+            buf.append("\n   password location: ").append(passwordLocation).append(
+                    "\n   password source: ").append(getPasswordSource());
+        }
+
+        buf.append("\n]");
         return buf.toString();
     }
 
