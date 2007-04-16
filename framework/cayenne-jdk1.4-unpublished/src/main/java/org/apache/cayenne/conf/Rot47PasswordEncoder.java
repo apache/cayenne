@@ -70,7 +70,7 @@ public class Rot47PasswordEncoder implements PasswordEncoding
     {
       char c = value.charAt(i);
 
-      // Process letters, numbers, and symbols -- ignore spaces
+      // Process letters, numbers, and symbols -- ignore spaces.
       if (c != ' ')
       {
         // Add 47 (it is ROT-47, after all).
@@ -79,7 +79,10 @@ public class Rot47PasswordEncoder implements PasswordEncoding
         // If character is now above printable range, make it printable.
         // Range of printable characters is ! (33) to ~ (126).  A value
         // of 127 (just above ~) would therefore get rotated down to a
-        // 33 (the !).
+        // 33 (the !).  The value 94 comes from 127 - 33 = 94, which is
+        // therefore the value that needs to be subtracted from the
+        // non-printable character to put it into the correct printable
+        // range.
         if (c > '~')
           c -= 94;
       }
@@ -90,6 +93,14 @@ public class Rot47PasswordEncoder implements PasswordEncoding
     return result.toString();
   }
 
+  /**
+   * Small test program to run text through the ROT-47 cipher.  This program
+   * can also be run by hand to encode/decode values manually.  The values
+   * passed on the command line are printed to standard out.
+   *   
+   * @param args The array of text values (on the command-line) to be run
+   *             through the ROT-47 cipher.
+   */
   public static void main(String[] args) 
   {
     Rot47PasswordEncoder encoder = new Rot47PasswordEncoder();
