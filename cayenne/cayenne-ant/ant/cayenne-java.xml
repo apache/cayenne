@@ -129,7 +129,7 @@
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Extension-Name" value="org.objectstyle.cayenne"/>
-				<attribute name="Specification-Version" value="${project.name}"/>
+				<attribute name="Specification-Version" value="${project.version}"/>
 				<attribute name="Specification-Vendor" value="ObjectStyle.org"/>
 				<attribute name="Implementation-Vendor-Id"
 					value="org.objectstyle"/>
@@ -197,7 +197,7 @@
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Extension-Name" value="org.objectstyle.cayenne"/>
-				<attribute name="Specification-Version" value="${project.name}"/>
+				<attribute name="Specification-Version" value="${project.version}"/>
 				<attribute name="Specification-Vendor" value="ObjectStyle.org"/>
 				<attribute name="Implementation-Vendor-Id"
 					value="org.objectstyle"/>
@@ -218,7 +218,7 @@
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Extension-Name" value="org.objectstyle.cayenne"/>
-				<attribute name="Specification-Version" value="${project.name}"/>
+				<attribute name="Specification-Version" value="${project.version}"/>
 				<attribute name="Specification-Vendor" value="ObjectStyle.org"/>
 				<attribute name="Implementation-Vendor-Id"
 					value="org.objectstyle"/>
