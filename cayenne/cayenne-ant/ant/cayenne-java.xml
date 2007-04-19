@@ -148,7 +148,7 @@
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Extension-Name" value="org.apache.cayenne"/>
-				<attribute name="Specification-Version" value="${project.name}"/>
+				<attribute name="Specification-Version" value="${project.version}"/>
 				<attribute name="Specification-Vendor" value="Apache.org"/>
 				<attribute name="Implementation-Vendor-Id"
 					value="org.apache"/>
@@ -216,7 +216,7 @@
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Extension-Name" value="org.apache.cayenne"/>
-				<attribute name="Specification-Version" value="${project.name}"/>
+				<attribute name="Specification-Version" value="${project.version}"/>
 				<attribute name="Specification-Vendor" value="Apache.org"/>
 				<attribute name="Implementation-Vendor-Id"
 					value="org.apache"/>
@@ -237,7 +237,7 @@
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Extension-Name" value="org.apache.cayenne"/>
-				<attribute name="Specification-Version" value="${project.name}"/>
+				<attribute name="Specification-Version" value="${project.version}"/>
 				<attribute name="Specification-Vendor" value="Apache.org"/>
 				<attribute name="Implementation-Vendor-Id"
 					value="org.apache"/>
