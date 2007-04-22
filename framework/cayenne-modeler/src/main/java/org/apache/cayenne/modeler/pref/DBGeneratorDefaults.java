@@ -20,19 +20,8 @@ package org.apache.cayenne.modeler.pref;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.dba.DbAdapter;
 
 public class DBGeneratorDefaults extends _DBGeneratorDefaults {
-
-    /**
-     * Updates this object state to provide reasonable defaults for a given adapter.
-     */
-    public void adjustForAdapter(DbAdapter adapter) {
-        if (!adapter.supportsFkConstraints()
-                && booleanForBooleanProperty(CREATE_FK_PROPERTY)) {
-            setCreateFK(Boolean.FALSE);
-        }
-    }
 
     /**
      * Updates DbGenerator settings, consulting its own state.

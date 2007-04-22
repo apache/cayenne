@@ -147,7 +147,6 @@ public class DBGeneratorOptions extends CayenneController {
             DbAdapter adapter = connectionInfo.makeAdapter(getApplication()
                     .getClassLoadingService());
             this.generator = new DbGenerator(adapter, dataMap, tables.getExcludedTables());
-            this.generatorDefaults.adjustForAdapter(adapter);
         }
         catch (Exception ex) {
             reportError("Error loading adapter", ex);
