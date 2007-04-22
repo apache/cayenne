@@ -107,8 +107,8 @@ public class CayenneResources implements BeanFactoryAware {
         if (resources == null) {
             resources = loadResources();
 
-            // rebuild schema after the resources ivar is initialized so that after
-            // possible initial failure we don't attempt rebuilding schema in subseequent
+            // rebuild schema after the resources static var is initialized so that after
+            // possible initial failure we don't attempt rebuilding schema in subsequent
             // tests
             try {
                 resources.rebuildSchema();
