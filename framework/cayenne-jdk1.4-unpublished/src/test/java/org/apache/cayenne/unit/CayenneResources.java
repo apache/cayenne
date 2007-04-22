@@ -66,7 +66,7 @@ public class CayenneResources implements BeanFactoryAware {
 
     private static CayenneResources resources;
 
-    static CayenneResources loadResources() {
+    private static CayenneResources loadResources() {
 
         InputStream in = Thread
                 .currentThread()
@@ -87,13 +87,7 @@ public class CayenneResources implements BeanFactoryAware {
 
         resources.setConnectionKey(System.getProperty(CONNECTION_NAME_KEY));
 
-        try {
-            resources.rebuildSchema();
-        }
-        catch (Exception ex) {
-            logObj.error("Error generating schema...", ex);
-            throw new RuntimeException("Error generating schema");
-        }
+        
 
         return resources;
     }
@@ -112,6 +106,17 @@ public class CayenneResources implements BeanFactoryAware {
     public static CayenneResources getResources() {
         if (resources == null) {
             resources = loadResources();
+
+            // rebuild schema after the resources ivar is initialized so that after
+            // possible initial failure we don't attempt rebuilding schema in subseequent
+            // tests
+            try {
+                resources.rebuildSchema();
+            }
+            catch (Exception ex) {
+                logObj.error("Error generating schema...", ex);
+                throw new RuntimeException("Error generating schema");
+            }
         }
         return resources;
     }
