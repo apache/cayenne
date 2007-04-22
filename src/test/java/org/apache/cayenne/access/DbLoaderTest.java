@@ -104,7 +104,6 @@ public class DbLoaderTest extends CayenneCase {
      */
     public void testLoad() throws Exception {
         try {
-            boolean supportsFK = getNode().getAdapter().supportsFkConstraints();
             boolean supportsUnique = getNode().getAdapter().supportsUniqueConstraints();
             boolean supportsLobs = getAccessStackAdapter().supportsLobs();
 
@@ -122,39 +121,37 @@ public class DbLoaderTest extends CayenneCase {
                 assertLobDbEntities(map);
             }
 
-            if (supportsFK) {
-                // *** TESTING THIS ***
-                loader.loadDbRelationships(map);
+            // *** TESTING THIS ***
+            loader.loadDbRelationships(map);
 
-                Collection rels = getDbEntity(map, "ARTIST").getRelationships();
-                assertNotNull(rels);
-                assertTrue(rels.size() > 0);
+            Collection rels = getDbEntity(map, "ARTIST").getRelationships();
+            assertNotNull(rels);
+            assertTrue(rels.size() > 0);
 
-                // test one-to-one
-                rels = getDbEntity(map, "PAINTING").getRelationships();
-                assertNotNull(rels);
+            // test one-to-one
+            rels = getDbEntity(map, "PAINTING").getRelationships();
+            assertNotNull(rels);
 
-                // find relationship to PAINTING_INFO
-                DbRelationship oneToOne = null;
-                Iterator it = rels.iterator();
-                while (it.hasNext()) {
-                    DbRelationship rel = (DbRelationship) it.next();
-                    if ("PAINTING_INFO".equalsIgnoreCase(rel.getTargetEntityName())) {
-                        oneToOne = rel;
-                        break;
-                    }
+            // find relationship to PAINTING_INFO
+            DbRelationship oneToOne = null;
+            Iterator it = rels.iterator();
+            while (it.hasNext()) {
+                DbRelationship rel = (DbRelationship) it.next();
+                if ("PAINTING_INFO".equalsIgnoreCase(rel.getTargetEntityName())) {
+                    oneToOne = rel;
+                    break;
                 }
+            }
 
-                assertNotNull("No relationship to PAINTING_INFO", oneToOne);
-                assertFalse("Relationship to PAINTING_INFO must be to-one", oneToOne
-                        .isToMany());
-                assertTrue("Relationship to PAINTING_INFO must be to-one", oneToOne
-                        .isToDependentPK());
+            assertNotNull("No relationship to PAINTING_INFO", oneToOne);
+            assertFalse("Relationship to PAINTING_INFO must be to-one", oneToOne
+                    .isToMany());
+            assertTrue("Relationship to PAINTING_INFO must be to-one", oneToOne
+                    .isToDependentPK());
 
-                // test UNIQUE only if FK is supported...
-                if (supportsUnique) {
-                    assertUniqueConstraintsInRelationships(map);
-                }
+            // test UNIQUE only if FK is supported...
+            if (supportsUnique) {
+                assertUniqueConstraintsInRelationships(map);
             }
 
             // *** TESTING THIS ***
@@ -168,11 +165,10 @@ public class DbLoaderTest extends CayenneCase {
                 assertLobObjEntities(map);
             }
 
-            if (supportsFK) {
-                Collection rels = ae.getRelationships();
-                assertNotNull(rels);
-                assertTrue(rels.size() > 0);
-            } // now when the map is loaded, test
+            Collection rels1 = ae.getRelationships();
+            assertNotNull(rels1);
+            assertTrue(rels1.size() > 0);
+            // now when the map is loaded, test
             // various things
             // selectively check how different types were processed
             checkTypes(map);

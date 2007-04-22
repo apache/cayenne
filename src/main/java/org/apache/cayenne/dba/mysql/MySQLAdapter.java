@@ -176,12 +176,8 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     public String createTable(DbEntity entity) {
         String ddlSQL = super.createTable(entity);
-
-        // force InnoDB tables if constraints are enabled
-        if (supportsFkConstraints()) {
-            ddlSQL += " ENGINE=InnoDB";
-        }
-
+        // force InnoDB tables - by default constraints are enabled
+        ddlSQL += " ENGINE=InnoDB";
         return ddlSQL;
     }
 

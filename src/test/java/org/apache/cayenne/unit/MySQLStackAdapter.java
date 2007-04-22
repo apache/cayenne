@@ -36,7 +36,7 @@ import org.apache.cayenne.map.Procedure;
 public class MySQLStackAdapter extends AccessStackAdapter {
 
     static final Collection NO_CONSTRAINTS_TABLES = Arrays.asList(new Object[] {
-            "REFLEXIVE_AND_TO_ONE", "ARTGROUP"
+            "REFLEXIVE_AND_TO_ONE", "ARTGROUP", "FK_OF_DIFFERENT_TYPE"
     });
 
     public MySQLStackAdapter(DbAdapter adapter) {
@@ -67,27 +67,29 @@ public class MySQLStackAdapter extends AccessStackAdapter {
     public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
             throws Exception {
         // special DROP CONSTRAINT syntax for MySQL
-        if (adapter.supportsFkConstraints()) {
-            Map constraintsMap = getConstraints(conn, map, tablesToDrop);
 
-            Iterator it = constraintsMap.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
+        Map constraintsMap = getConstraints(conn, map, tablesToDrop);
 
-                Collection constraints = (Collection) entry.getValue();
-                if (constraints == null || constraints.isEmpty()) {
-                    continue;
-                }
+        Iterator it = constraintsMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
 
-                Object tableName = entry.getKey();
-                Iterator cit = constraints.iterator();
-                while (cit.hasNext()) {
-                    Object constraint = cit.next();
-                    StringBuffer drop = new StringBuffer();
-                    drop.append("ALTER TABLE ").append(tableName).append(
-                            " DROP FOREIGN KEY ").append(constraint);
-                    executeDDL(conn, drop.toString());
-                }
+            Collection constraints = (Collection) entry.getValue();
+            if (constraints == null || constraints.isEmpty()) {
+                continue;
+            }
+
+            Object tableName = entry.getKey();
+            Iterator cit = constraints.iterator();
+            while (cit.hasNext()) {
+                Object constraint = cit.next();
+                StringBuffer drop = new StringBuffer();
+                drop
+                        .append("ALTER TABLE ")
+                        .append(tableName)
+                        .append(" DROP FOREIGN KEY ")
+                        .append(constraint);
+                executeDDL(conn, drop.toString());
             }
         }
 
@@ -103,8 +105,6 @@ public class MySQLStackAdapter extends AccessStackAdapter {
     public boolean supportsFKConstraints(DbEntity entity) {
         // MySQL supports that, but there are problems deleting objects from such
         // tables...
-        return adapter.supportsFkConstraints()
-                && !NO_CONSTRAINTS_TABLES.contains(entity.getName());
+        return !NO_CONSTRAINTS_TABLES.contains(entity.getName());
     }
-
 }

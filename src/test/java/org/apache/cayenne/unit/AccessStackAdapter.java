@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.unit;
 
 import java.io.BufferedReader;
@@ -78,27 +77,28 @@ public class AccessStackAdapter {
     public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
             throws Exception {
 
-        if (adapter.supportsFkConstraints()) {
-            Map constraintsMap = getConstraints(conn, map, tablesToDrop);
+        Map constraintsMap = getConstraints(conn, map, tablesToDrop);
 
-            Iterator it = constraintsMap.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
+        Iterator it = constraintsMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
 
-                Collection constraints = (Collection) entry.getValue();
-                if (constraints == null || constraints.isEmpty()) {
-                    continue;
-                }
+            Collection constraints = (Collection) entry.getValue();
+            if (constraints == null || constraints.isEmpty()) {
+                continue;
+            }
 
-                Object tableName = entry.getKey();
-                Iterator cit = constraints.iterator();
-                while (cit.hasNext()) {
-                    Object constraint = cit.next();
-                    StringBuffer drop = new StringBuffer();
-                    drop.append("ALTER TABLE ").append(tableName).append(
-                            " DROP CONSTRAINT ").append(constraint);
-                    executeDDL(conn, drop.toString());
-                }
+            Object tableName = entry.getKey();
+            Iterator cit = constraints.iterator();
+            while (cit.hasNext()) {
+                Object constraint = cit.next();
+                StringBuffer drop = new StringBuffer();
+                drop
+                        .append("ALTER TABLE ")
+                        .append(tableName)
+                        .append(" DROP CONSTRAINT ")
+                        .append(constraint);
+                executeDDL(conn, drop.toString());
             }
         }
     }
@@ -138,13 +138,13 @@ public class AccessStackAdapter {
     public boolean supportsLobInsertsAsStrings() {
         return supportsLobs();
     }
-    
+
     public boolean supportsFKConstraints(DbEntity entity) {
-        if("FK_OF_DIFFERENT_TYPE".equals(entity.getName())) {
+        if ("FK_OF_DIFFERENT_TYPE".equals(entity.getName())) {
             return false;
         }
-        
-        return adapter.supportsFkConstraints();
+
+        return true;
     }
 
     /**
