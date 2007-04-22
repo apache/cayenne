@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.conn;
 
 import java.io.PrintWriter;
@@ -29,8 +28,10 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.util.Util;
+
 /**
- * A DataSource implementation wrapping a JDBC driver.
+ * A non-pooling DataSource implementation wrapping a JDBC driver.
  * 
  * @author Andrus Adamchik
  */
@@ -45,24 +46,55 @@ public class DriverDataSource implements DataSource {
     protected ConnectionEventLoggingDelegate logger;
 
     /**
+     * Loads JDBC driver using current thread class loader.
+     * 
+     * @since 3.0
+     */
+    private static Driver loadDriver(String driverClassName) throws SQLException {
+
+        Class driverClass;
+        try {
+            driverClass = Class.forName(driverClassName, true, Thread
+                    .currentThread()
+                    .getContextClassLoader());
+        }
+        catch (Exception ex) {
+            throw new SQLException("Can not load JDBC driver named '"
+                    + driverClassName
+                    + "': "
+                    + ex.getMessage());
+        }
+
+        try {
+            return (Driver) driverClass.newInstance();
+        }
+        catch (Exception ex) {
+            throw new SQLException("Error instantiating driver '"
+                    + driverClassName
+                    + "': "
+                    + ex.getMessage());
+        }
+    }
+
+    /**
      * Creates a new DriverDataSource.
      */
     public DriverDataSource(String driverClassName, String connectionUrl)
             throws SQLException {
+        this(driverClassName, connectionUrl, null, null);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public DriverDataSource(String driverClassName, String connectionUrl,
+            String userName, String password) throws SQLException {
+
+        setDriverClassName(driverClassName);
 
         this.connectionUrl = connectionUrl;
-
-        if (driverClassName != null) {
-            try {
-                this.driver = (Driver) Class.forName(driverClassName).newInstance();
-            }
-            catch (Exception ex) {
-                throw new SQLException("Can not load JDBC driver named '"
-                        + driverClassName
-                        + "': "
-                        + ex.getMessage());
-            }
-        }
+        this.userName = userName;
+        this.password = password;
     }
 
     /**
@@ -72,6 +104,7 @@ public class DriverDataSource implements DataSource {
      */
     public DriverDataSource(Driver driver, String connectionUrl, String userName,
             String password) {
+
         this.driver = driver;
         this.connectionUrl = connectionUrl;
         this.userName = userName;
@@ -114,10 +147,10 @@ public class DriverDataSource implements DataSource {
                 }
                 c = driver.connect(connectionUrl, connectProperties);
             }
-            
+
             // some drivers (Oracle) return null connections instead of throwing
             // an exception... fix it here
-            
+
             if (c == null) {
                 throw new SQLException("Can't establish connection: " + connectionUrl);
             }
@@ -159,5 +192,57 @@ public class DriverDataSource implements DataSource {
 
     public void setLogger(ConnectionEventLoggingDelegate delegate) {
         logger = delegate;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public String getConnectionUrl() {
+        return connectionUrl;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setConnectionUrl(String connectionUrl) {
+        this.connectionUrl = connectionUrl;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getDriverClassName() {
+        return driver != null ? driver.getClass().getName() : null;
+    }
+
+    public void setDriverClassName(String driverClassName) throws SQLException {
+        if (!Util.nullSafeEquals(getDriverClassName(), driverClassName)) {
+            this.driver = driverClassName != null ? loadDriver(driverClassName) : null;
+        }
     }
 }
