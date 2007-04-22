@@ -65,6 +65,9 @@ public interface DbAdapter {
 
     /**
      * Returns true if a target database supports FK constraints.
+     * 
+     * @deprecated since 3.0 - almost all DB's support FK's now and also this flag is less
+     *             relevant for Cayenne now.
      */
     public boolean supportsFkConstraints();
 
@@ -109,7 +112,7 @@ public interface DbAdapter {
 
     /**
      * Returns a SQL string that can be used to create a foreign key constraint for the
-     * relationship.
+     * relationship, or null if foreign keys are not supported.
      */
     public String createFkConstraint(DbRelationship rel);
 

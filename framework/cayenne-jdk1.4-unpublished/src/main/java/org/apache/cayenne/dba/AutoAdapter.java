@@ -182,6 +182,10 @@ public class AutoAdapter implements DbAdapter {
         return getAdapter().getAction(query, node);
     }
 
+    /**
+     * @deprecated since 3.0 - almost all DB's support FK's now and also this flag is less
+     *             relevant for Cayenne now.
+     */
     public boolean supportsFkConstraints() {
         return getAdapter().supportsFkConstraints();
     }

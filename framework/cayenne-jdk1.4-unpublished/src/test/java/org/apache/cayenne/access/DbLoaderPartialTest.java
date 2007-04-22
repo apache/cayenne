@@ -73,11 +73,6 @@ public class DbLoaderPartialTest extends CayenneCase {
     public void testPartialLoad() throws Exception {
 
         try {
-            boolean supportsFK = getNode().getAdapter().supportsFkConstraints();
-
-            if (!supportsFK) {
-                return;
-            }
 
             DataMap map = new DataMap();
             String tableLabel = getNode().getAdapter().tableTypeForTable();

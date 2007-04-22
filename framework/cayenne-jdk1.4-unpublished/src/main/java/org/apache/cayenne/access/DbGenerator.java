@@ -35,7 +35,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
@@ -71,7 +70,7 @@ public class DbGenerator {
     // stores generated SQL statements
     protected Map dropTables;
     protected Map createTables;
-    protected Map createFK;
+    protected Map createConstraints;
     protected List createPK;
     protected List dropPK;
 
@@ -153,11 +152,10 @@ public class DbGenerator {
     protected void buildStatements() {
         dropTables = new HashMap();
         createTables = new HashMap();
-        createFK = new HashMap();
+        createConstraints = new HashMap();
 
         DbAdapter adapter = getAdapter();
         Iterator it = dbEntitiesInInsertOrder.iterator();
-        boolean supportsFK = adapter.supportsFkConstraints();
         while (it.hasNext()) {
             DbEntity dbe = (DbEntity) it.next();
 
@@ -169,10 +167,8 @@ public class DbGenerator {
             // build "CREATE TABLE"
             createTables.put(name, adapter.createTable(dbe));
 
-            // build "FK"
-            if (supportsFK) {
-                createFK.put(name, createFkConstraintsQueries(dbe));
-            }
+            // build constraints
+            createConstraints.put(name, createConstraintsQueries(dbe));
         }
 
         PkGenerator pkGenerator = adapter.getPkGenerator();
@@ -230,11 +226,11 @@ public class DbGenerator {
             }
         }
 
-        if (shouldCreateFKConstraints && getAdapter().supportsFkConstraints()) {
+        if (shouldCreateFKConstraints) {
             Iterator it = dbEntitiesInInsertOrder.iterator();
             while (it.hasNext()) {
                 DbEntity ent = (DbEntity) it.next();
-                List fks = (List) createFK.get(ent.getName());
+                List fks = (List) createConstraints.get(ent.getName());
                 list.addAll(fks);
             }
         }
@@ -308,14 +304,13 @@ public class DbGenerator {
 
             // create FK
             if (shouldCreateTables
-                    && shouldCreateFKConstraints
-                    && getAdapter().supportsFkConstraints()) {
+                    && shouldCreateFKConstraints) {
                 Iterator it = dbEntitiesInInsertOrder.iterator();
                 while (it.hasNext()) {
                     DbEntity ent = (DbEntity) it.next();
 
                     if (createdTables.contains(ent.getName())) {
-                        List fks = (List) createFK.get(ent.getName());
+                        List fks = (List) createConstraints.get(ent.getName());
                         Iterator fkIt = fks.iterator();
                         while (fkIt.hasNext()) {
                             safeExecute(connection, (String) fkIt.next());
@@ -380,17 +375,23 @@ public class DbGenerator {
 
     /**
      * Returns an array of queries to create foreign key constraints for a particular
-     * DbEntity. Throws CayenneRuntimeException, if called for adapter that does not
-     * support FK constraints.
+     * DbEntity.
+     * 
+     * @deprecated since 3.0 as this method is used to generate both FK and UNIQUE
+     *             constraints, use 'createConstraintsQueries' instead.
      */
-    public List createFkConstraintsQueries(DbEntity dbEnt) {
-        if (!getAdapter().supportsFkConstraints()) {
-            throw new CayenneRuntimeException(
-                    "FK constraints are not supported by adapter.");
-        }
-
+    public List createFkConstraintsQueries(DbEntity table) {
+        return createConstraintsQueries(table);
+    }
+    
+    /**
+     * Creates FK and UNIQUE constraint statements for a given table.
+     * 
+     * @since 3.0
+     */
+    public List createConstraintsQueries(DbEntity table) {
         List list = new ArrayList();
-        Iterator it = dbEnt.getRelationships().iterator();
+        Iterator it = table.getRelationships().iterator();
         while (it.hasNext()) {
             DbRelationship rel = (DbRelationship) it.next();
 
@@ -427,7 +428,10 @@ public class DbGenerator {
                     }
                 }
 
-                list.add(getAdapter().createFkConstraint(rel));
+                String fk = getAdapter().createFkConstraint(rel);
+                if (fk != null) {
+                    list.add(fk);
+                }
             }
         }
         return list;

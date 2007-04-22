@@ -295,18 +295,17 @@ public abstract class AbstractAccessStack {
         }
 
         // FK constraints
-        if (adapter.supportsFkConstraints()) {
-            it = orderedEnts.iterator();
-            while (it.hasNext()) {
-                DbEntity ent = (DbEntity) it.next();
-                if (ent instanceof DerivedDbEntity
-                        || !getAdapter(node).supportsFKConstraints(ent)) {
-                    continue;
-                }
 
-                List qs = gen.createFkConstraintsQueries(ent);
-                queries.addAll(qs);
+        it = orderedEnts.iterator();
+        while (it.hasNext()) {
+            DbEntity ent = (DbEntity) it.next();
+            if (ent instanceof DerivedDbEntity
+                    || !getAdapter(node).supportsFKConstraints(ent)) {
+                continue;
             }
+
+            List qs = gen.createConstraintsQueries(ent);
+            queries.addAll(qs);
         }
 
         return queries.iterator();
