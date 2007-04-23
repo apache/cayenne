@@ -58,9 +58,10 @@ CAY-741 Indexing entities with inheritance across datamaps
 CAY-743 Reordering mappings from domain in xml resulting in StackOverflowException
 CAY-750 Stored procedures without parameters fail on Postgres 8
 
-Bug Fixes since 1.2 final:
+Bug Fixes since 1.2/2.0 final:
 
 CAY-565 LRUMap NPE
+CAY-597 XML Encoder with Mapping outputs incorrect XML
 CAY-601 Problem resolving relationships in nested DataContext
 CAY-603 QueryChain.isFetchingDataRows() incorrectly returns "false" - must be "true" all the time
 CAY-607	Long query name or qualifier expand query text field off screen
