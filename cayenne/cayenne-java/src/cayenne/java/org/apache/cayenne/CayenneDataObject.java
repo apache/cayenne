@@ -129,7 +129,7 @@ public class CayenneDataObject implements DataObject, XMLSerializable {
         int pathIndex = 0;
 
         for (int i = 0; i < length; i++) {
-            pathIndex += tokenized[i].length();
+            pathIndex += tokenized[i].length() + 1;
 
             object = dataObject.readSimpleProperty(tokenized[i]);
 
