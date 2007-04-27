@@ -57,6 +57,7 @@ CAY-740 MapLoader algorithm improvement
 CAY-741 Indexing entities with inheritance across datamaps
 CAY-743 Reordering mappings from domain in xml resulting in StackOverflowException
 CAY-750 Stored procedures without parameters fail on Postgres 8
+CAY-781 Bug in CayenneDataObject.readNestedProperty
 
 Bug Fixes since 1.2/2.0 final:
 
