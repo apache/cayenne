@@ -3,7 +3,7 @@
  * The ObjectStyle Group Software License, version 1.1
  * ObjectStyle Group - http://objectstyle.org/
  * 
- * Copyright (c) 2002-2006, Andrei (Andrus) Adamchik and individual authors
+ * Copyright (c) 2002-2007, Andrei (Andrus) Adamchik and individual authors
  * of the software. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
