@@ -27,6 +27,8 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -44,6 +46,7 @@ final class XMLMappingDescriptor {
 
     private SerializableEntity rootEntity;
     private Map entities;
+    private DataContext dataContext;
 
     /**
      * Creates new XMLMappingDescriptor using a URL that points to the mapping file.
@@ -99,11 +102,14 @@ final class XMLMappingDescriptor {
      * @return The decoded object.
      * @throws CayenneRuntimeException
      */
-    Object decode(Element xml) throws CayenneRuntimeException {
+    Object decode(Element xml, DataContext dataContext) throws CayenneRuntimeException {
 
         // TODO: Add an error check to make sure the mapping file actually is for this
         // data file.
 
+        // Store a local copy of the data context.
+        this.dataContext = dataContext;
+        
         // Create the object to be returned.
         Object ret = createObject(rootEntity.getDescriptor(), xml);
 
@@ -190,7 +196,7 @@ final class XMLMappingDescriptor {
     }
 
     /**
-     * Sets decoded object property. If a property os of Collection type, an object is
+     * Sets decoded object property. If a property is of Collection type, an object is
      * added to the collection.
      */
     private void setProperty(Object object, String propertyName, Object value) {
@@ -235,6 +241,11 @@ final class XMLMappingDescriptor {
         catch (Exception ex) {
             throw new CayenneRuntimeException("Error creating instance of class "
                     + className, ex);
+        }
+        
+        // If a data context has been supplied by the user, then register the data object with the context.
+        if ((null != dataContext) && (object instanceof Persistent)) {
+            dataContext.registerNewObject((Persistent) object);
         }
 
         NamedNodeMap attributes = objectData.getAttributes();

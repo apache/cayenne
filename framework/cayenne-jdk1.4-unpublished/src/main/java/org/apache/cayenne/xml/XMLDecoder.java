@@ -204,18 +204,14 @@ public class XMLDecoder {
 
         try {
             // This crazy conditional checks if we're decoding a collection. There are two
-            // ways
-            // to enter into this body:
+            // ways to enter into this body:
             // 1) If there are two elements at the same level with the same name, then
-            // they should
-            // part of a collection.
+            // they should be part of a collection.
             // 2) If a single occurring element has the "forceList" attribute set to
-            // "YES", then it
-            // too should be treated as a collection.
+            // "YES", then it too should be treated as a collection.
             // 
             // The final part checks that we have not previously attempted to decode this
-            // collection,
-            // which is necessary to prevent infinite loops .
+            // collection, which is necessary to prevent infinite loops .
             if ((((null != child.getParentNode()) && (XMLUtil.getChildren(
                     child.getParentNode(),
                     child.getNodeName()).size() > 1)) || (child
@@ -313,11 +309,7 @@ public class XMLDecoder {
         // MappingUtils will really do all the work.
         XMLMappingDescriptor mu = new XMLMappingDescriptor(mappingUrl);
 
-        Object ret = mu.decode(data.getDocumentElement());
-
-        if (dataContext != null) {
-            dataContext.registerNewObject((Persistent) ret);
-        }
+        Object ret = mu.decode(data.getDocumentElement(), dataContext);
 
         return ret;
     }
@@ -487,11 +479,7 @@ public class XMLDecoder {
             Object o;
 
             if (mu != null) {
-                o = mu.decode(e);
-
-                if (dataContext != null && o instanceof Persistent) {
-                    dataContext.registerNewObject((Persistent) o);
-                }
+                o = mu.decode(e, dataContext);
             }
             else {
                 // decoder will do DataContext registration if needed.
