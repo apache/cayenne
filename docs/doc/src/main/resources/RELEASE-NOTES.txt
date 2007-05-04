@@ -93,6 +93,7 @@ CAY-764 Exception when importing an EOModel with single table inheritance
 CAY-765 Programmatically overriding "use share cache" fails
 CAY-775 AutoAdapter fails to detect Sybase when running with jTDS driver
 CAY-783 jgroups config file not removed from cayenne.xml
+CAY-784 Deleting an object with a read-only flattened relationship fails
 
 API Changes
 ----------------------------------
