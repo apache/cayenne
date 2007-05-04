@@ -403,12 +403,15 @@ public class CayenneContext extends BaseContext {
             // breaking encapsulation of the DataChannel to detect where in the hierarchy
             // this context is.
 
-            Persistent localObject = (Persistent) descriptor.createObject();
+            Persistent localObject;
+            synchronized (getGraphManager()) {
+                localObject = (Persistent) descriptor.createObject();
 
-            localObject.setObjectContext(this);
-            localObject.setObjectId(id);
+                localObject.setObjectContext(this);
+                localObject.setObjectId(id);
 
-            getGraphManager().registerNode(id, localObject);
+                getGraphManager().registerNode(id, localObject);
+            }
 
             if (prototype != null) {
                 localObject.setPersistenceState(PersistenceState.COMMITTED);
