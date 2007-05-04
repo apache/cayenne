@@ -44,6 +44,14 @@ public class DBCPDataSourcePropertiesTest extends TestCase {
         Properties props2 = DBCPDataSourceProperties.loadProperties(locator, "dbcp.properties");
         assertNotNull(props2);
         assertEquals("a", props2.get("b"));
+        
+        Properties props3 = DBCPDataSourceProperties.loadProperties(locator, "dbcp.driver");
+        assertNotNull(props3);
+        assertEquals("d", props3.get("c"));
+        
+        Properties props4 = DBCPDataSourceProperties.loadProperties(locator, "dbcp.driver.properties");
+        assertNotNull(props4);
+        assertEquals("d", props4.get("c"));
     }
 
     public void testStringProperty() {
