@@ -187,6 +187,11 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
                 if (!sharedCache.isSelected()) {
                     // uncheck remote updates...
                     remoteUpdates.setSelected(false);
+                    
+                    setDomainProperty(
+                            DataRowStore.REMOTE_NOTIFICATION_PROPERTY,
+                            "false",
+                            Boolean.toString(DataRowStore.REMOTE_NOTIFICATION_DEFAULT));
                 }
 
                 // depending on final remote updates status change button status
