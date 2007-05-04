@@ -27,6 +27,7 @@ CAY-774 cayenne-modeler pom.xml has incorrect dependancy
 CAY-775 AutoAdapter fails to detect Sybase when running with jTDS driver
 CAY-778 Cayenne jar manifest lists project.version as "cayenne"
 CAY-781 Bug in CayenneDataObject.readNestedProperty
+CAY-783 jgroups config file not removed from cayenne.xml
 
 ----------------------------------
 Release: 2.0.2
