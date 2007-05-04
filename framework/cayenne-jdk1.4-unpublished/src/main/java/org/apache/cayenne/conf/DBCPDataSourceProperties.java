@@ -42,9 +42,8 @@ class DBCPDataSourceProperties {
     /**
      * Loads properties from the specified location.
      */
-    private static Properties loadProperties(
-            ResourceLocator resourceLocator,
-            String location) throws IOException {
+    static Properties loadProperties(ResourceLocator resourceLocator, String location)
+            throws IOException {
 
         InputStream in = resourceLocator.findResourceStream(location);
 

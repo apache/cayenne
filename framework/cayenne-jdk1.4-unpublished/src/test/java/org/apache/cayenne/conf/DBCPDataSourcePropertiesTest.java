@@ -25,12 +25,26 @@ import java.util.Properties;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.util.ResourceLocator;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
 /**
  * @author Andrus Adamchik
  */
 public class DBCPDataSourcePropertiesTest extends TestCase {
+
+    public void testLoadProperties() throws Exception {
+        ResourceLocator locator = new ResourceLocator();
+        locator.setSkipClasspath(false);
+
+        Properties props1 = DBCPDataSourceProperties.loadProperties(locator, "dbcp");
+        assertNotNull(props1);
+        assertEquals("a", props1.get("b"));
+        
+        Properties props2 = DBCPDataSourceProperties.loadProperties(locator, "dbcp.properties");
+        assertNotNull(props2);
+        assertEquals("a", props2.get("b"));
+    }
 
     public void testStringProperty() {
         Properties props = new Properties();
