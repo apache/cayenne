@@ -484,13 +484,16 @@ public class CayenneContext extends BaseContext {
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
                 id.getEntityName());
 
-        Persistent object = (Persistent) descriptor.createObject();
+        Persistent object;
+        synchronized (graphManager) {
+            object = (Persistent) descriptor.createObject();
 
-        object.setPersistenceState(PersistenceState.HOLLOW);
-        object.setObjectContext(this);
-        object.setObjectId(id);
+            object.setPersistenceState(PersistenceState.HOLLOW);
+            object.setObjectContext(this);
+            object.setObjectId(id);
 
-        graphManager.registerNode(id, object);
+            graphManager.registerNode(id, object);
+        }
 
         return object;
     }
