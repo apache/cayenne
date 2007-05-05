@@ -30,6 +30,7 @@ CAY-778 Cayenne jar manifest lists project.version as "cayenne"
 CAY-781 Bug in CayenneDataObject.readNestedProperty
 CAY-783 jgroups config file not removed from cayenne.xml
 CAY-784 Deleting an object with a read-only flattened relationship fails
+CAY-786 Race condition in DataContext.localObject()
 
 ----------------------------------
 Release: 2.0.2

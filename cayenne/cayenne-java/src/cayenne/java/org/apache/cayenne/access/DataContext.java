@@ -1904,12 +1904,16 @@ public class DataContext implements ObjectContext, DataChannel, QueryEngine, Ser
         // create and merge into a new object
         else {
 
-            Persistent localObject = (Persistent) descriptor.createObject();
+            Persistent localObject;
 
-            localObject.setObjectContext(this);
-            localObject.setObjectId(id);
+            synchronized (getGraphManager()) {
+                localObject = (Persistent) descriptor.createObject();
 
-            getGraphManager().registerNode(id, localObject);
+                localObject.setObjectContext(this);
+                localObject.setObjectId(id);
+
+                getGraphManager().registerNode(id, localObject);
+            }
 
             if (prototype != null
                     && prototype.getPersistenceState() != PersistenceState.HOLLOW) {

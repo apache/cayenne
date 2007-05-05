@@ -347,12 +347,15 @@ public class CayenneContext implements ObjectContext {
             // breaking encapsulation of the DataChannel to detect where in the hierarchy
             // this context is.
 
-            Persistent localObject = (Persistent) descriptor.createObject();
+            Persistent localObject;
+            synchronized (getGraphManager()) {
+                localObject = (Persistent) descriptor.createObject();
 
-            localObject.setObjectContext(this);
-            localObject.setObjectId(id);
+                localObject.setObjectContext(this);
+                localObject.setObjectId(id);
 
-            getGraphManager().registerNode(id, localObject);
+                getGraphManager().registerNode(id, localObject);
+            }
 
             if (prototype != null) {
                 localObject.setPersistenceState(PersistenceState.COMMITTED);
@@ -449,17 +452,20 @@ public class CayenneContext implements ObjectContext {
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
                 id.getEntityName());
 
-        Persistent object = (Persistent) descriptor.createObject();
+        Persistent object;
+        synchronized(graphManager) {
+            object = (Persistent) descriptor.createObject();
 
-        object.setPersistenceState(PersistenceState.HOLLOW);
-        object.setObjectContext(this);
-        object.setObjectId(id);
+            object.setPersistenceState(PersistenceState.HOLLOW);
+            object.setObjectContext(this);
+            object.setObjectId(id);
 
-        // note that this must be called AFTER setting persistence state, otherwise we'd
-        // get ValueHolders incorrectly marked as resolved
-        descriptor.injectValueHolders(object);
-
-        graphManager.registerNode(id, object);
+            // note that this must be called AFTER setting persistence state, otherwise we'd
+            // get ValueHolders incorrectly marked as resolved
+            descriptor.injectValueHolders(object);
+        
+            graphManager.registerNode(id, object);
+        }
 
         return object;
     }
