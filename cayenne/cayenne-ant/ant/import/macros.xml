@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+
+<!-- ================================================= -->
+<!-- Reusable Macros                                   -->
+<!-- ================================================= -->
+<project>
+	<macrodef name="sign">
+		<attribute name="releaseFile"/>
+		
+		<sequential>
+			<checksum file="@{releaseFile}" fileext=".md5"/>
+		</sequential>
+	</macrodef>
+	
+	<!-- ============================================= -->
+	<!-- *** API documentation macro. ***              -->
+	<!-- TODO: how can we define conditional javadoc   -->
+	<!-- execution in a macro?                         -->
+	<!-- ============================================= -->
+	<macrodef name="api">
+		
+		<attribute name="destdir"/>
+		<attribute name="srcref"/>
+		<attribute name="classpathref"/>
+		<attribute name="packagenames" default="org.apache.*"/>
+		
+		<sequential>
+			<mkdir dir="@{destdir}"/>
+			<javadoc packagenames="@{packagenames}" destdir="@{destdir}"
+				sourcepathref="@{srcref}" classpathref="@{classpathref}"
+				author="true" use="false"
+				stylesheetfile="${cayenne.other}/javadoc/apache-javadoc.css"
+				splitindex="true" windowtitle="Apache Cayenne API Documentation - v.${project.version}"
+				overview="${cayenne.other}/javadoc/overview.html">
+				
+				<bottom>
+					<![CDATA[<i>Copyright &#169; 2001-2006 <a href=
+					"http://apache.org" target="_top">Apache.org</a> All Rights Reserved.</i>]]>
+				</bottom>
+			</javadoc>
+		</sequential>
+	</macrodef>
+	
+	<!-- ============================================= -->
+	<!-- Compile with JDK 1.4 compatibility.           -->
+	<!-- ============================================= -->
+	<macrodef name="compile-1_4">
+		
+		<attribute name="destdir"/>
+		<attribute name="srcref"/>
+		<attribute name="classpathref"/>
+		
+		<sequential>
+			<mkdir dir="@{destdir}"/>
+			<javac destdir="@{destdir}" classpathref="@{classpathref}"
+				optimize="on" debug="on" source="1.4" target="1.4" deprecation="on">
+				
+				<src refid="@{srcref}"/>
+			</javac>
+		</sequential>
+	</macrodef>
+	
+	<!-- ============================================= -->
+	<!-- Compile with JDK 1.5 compatibility.           -->
+	<!-- ============================================= -->
+	<macrodef name="compile-1_5">
+		
+		<attribute name="destdir"/>
+		<attribute name="srcref"/>
+		<attribute name="classpathref"/>
+		
+		<sequential>
+			<mkdir dir="@{destdir}"/>
+			<javac destdir="@{destdir}" classpathref="@{classpathref}"
+				optimize="on" debug="on" source="1.5" target="1.5" deprecation="on">
+				
+				<src refid="@{srcref}"/>
+			</javac>
+		</sequential>
+	</macrodef>
+	
+	<!-- ============================================= -->
+	<!-- Run cgen.                                     -->
+	<!-- ============================================= -->
+	<macrodef name="cgen-tests">
+		
+		<attribute name="destdir"/>
+		<attribute name="map"/>
+		<attribute name="superpkg"/>
+		<attribute name="client" default="false"/>
+		
+		<sequential>
+			<taskdef name="cgen-task"
+				classname="org.apache.cayenne.tools.CayenneGenerator">
+				<classpath refid="classpath-tests-run"/>
+			</taskdef>
+			
+			<mkdir dir="@{destdir}"/>
+			<cgen-task map="@{map}" destDir="@{destdir}" superpkg="@{superpkg}"
+				client="@{client}"/>
+		</sequential>
+	</macrodef>
+	
+	<!-- ============================================= -->
+	<!-- Copy property files from a source,            -->
+	<!-- doing default token substitution.             -->
+	<!-- ============================================= -->
+	<macrodef name="copy-properties">
+		
+		<attribute name="destdir"/>
+		<attribute name="srcdir"/>
+		
+		<sequential>
+			<tstamp/>
+			<copy todir="@{destdir}" overwrite="yes">
+				<fileset dir="@{srcdir}" includes="**/*.properties"/>
+				<filterset>
+					<filter token="CAYENNE_BUILD_DATE" value="${TODAY}"/>
+					<filter token="CAYENNE_VERSION" value="${project.version}"/>
+				</filterset>
+			</copy>
+		</sequential>
+	</macrodef>
+	
+	<!-- ============================================= -->
+	<!-- Copies script files in the common bin dir.    -->
+	<!-- ============================================= -->
+	<macrodef name="copy-scripts">
+		
+		<attribute name="srcdir"/>
+		
+		<sequential>
+			<copy todir="${dist}/bin">
+				<fileset dir="@{srcdir}" includes="*.bat,*.sh,*.pl,*.ico"/>
+			</copy>
+			
+			<chmod perm="ugo+rx">
+				<fileset dir="${dist}/bin" includes="**/*.sh,**/*.pl"/>
+			</chmod>
+		</sequential>
+	</macrodef>
+</project>

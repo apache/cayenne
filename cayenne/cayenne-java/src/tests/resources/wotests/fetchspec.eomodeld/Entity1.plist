@@ -1,0 +1,42 @@
+{
+    attributes = (
+        {
+            allowsNull = Y; 
+            columnName = "E2_ID"; 
+            externalType = int; 
+            name = "e2_id"; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            columnName = ID; 
+            externalType = int; 
+            name = id; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = NAME; 
+            externalType = varchar; 
+            name = name; 
+            valueClassName = NSString; 
+            width = 255; 
+        }
+    ); 
+    attributesUsedForLocking = (id, "e2_id"); 
+    className = "org.example.Entity1"; 
+    classProperties = (name, "e2_id", e2); 
+    externalName = ENTITY1; 
+    name = Entity1; 
+    primaryKeyAttributes = (id); 
+    relationships = (
+        {
+            destination = Entity2; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = id; sourceAttribute = "e2_id"; }); 
+            name = e2; 
+        }
+    ); 
+}

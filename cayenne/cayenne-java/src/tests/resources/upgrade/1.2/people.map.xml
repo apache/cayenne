@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<property name="defaultPackage" value="org.objectstyle.cayenne.testdo.inherit"/>
+	<db-entity name="ADDRESS">
+		<db-attribute name="ADDRESS_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="CITY" type="VARCHAR" length="100"/>
+		<db-attribute name="PERSON_ID" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="CLIENT_COMPANY">
+		<db-attribute name="CLIENT_COMPANY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="DEPARTMENT">
+		<db-attribute name="DEPARTMENT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="MANAGER_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<db-entity name="PERSON">
+		<db-attribute name="CLIENT_COMPANY_ID" type="INTEGER"/>
+		<db-attribute name="CLIENT_CONTACT_TYPE" type="VARCHAR" length="50"/>
+		<db-attribute name="DEPARTMENT_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="PERSON_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="PERSON_TYPE" type="CHAR" isMandatory="true" length="2"/>
+		<db-attribute name="SALARY" type="FLOAT"/>
+	</db-entity>
+	<obj-entity name="AbstractPerson" className="org.objectstyle.cayenne.testdo.inherit.AbstractPerson" dbEntityName="PERSON">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+		<obj-attribute name="personType" type="java.lang.String" db-attribute-path="PERSON_TYPE"/>
+	</obj-entity>
+	<obj-entity name="Address" className="org.objectstyle.cayenne.testdo.inherit.Address" dbEntityName="ADDRESS">
+		<obj-attribute name="city" type="java.lang.String" db-attribute-path="CITY"/>
+	</obj-entity>
+	<obj-entity name="ClientCompany" className="org.objectstyle.cayenne.testdo.inherit.ClientCompany" dbEntityName="CLIENT_COMPANY">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="CustomerRepresentative" superEntityName="AbstractPerson" className="org.objectstyle.cayenne.testdo.inherit.CustomerRepresentative">
+		<qualifier><![CDATA[personType = "C"]]></qualifier>
+		<obj-attribute name="clientContactType" type="java.lang.String" db-attribute-path="CLIENT_CONTACT_TYPE"/>
+	</obj-entity>
+	<obj-entity name="Department" className="org.objectstyle.cayenne.testdo.inherit.Department" dbEntityName="DEPARTMENT">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="Employee" superEntityName="AbstractPerson" className="org.objectstyle.cayenne.testdo.inherit.Employee">
+		<qualifier><![CDATA[personType = "EE"]]></qualifier>
+		<obj-attribute name="salary" type="java.lang.Float" db-attribute-path="SALARY"/>
+	</obj-entity>
+	<obj-entity name="Manager" superEntityName="Employee" className="org.objectstyle.cayenne.testdo.inherit.Manager">
+		<qualifier><![CDATA[personType = "EM"]]></qualifier>
+	</obj-entity>
+	<db-relationship name="toPerson" source="ADDRESS" target="PERSON" toMany="false">
+		<db-attribute-pair source="PERSON_ID" target="PERSON_ID"/>
+	</db-relationship>
+	<db-relationship name="representatives" source="CLIENT_COMPANY" target="PERSON" toMany="true">
+		<db-attribute-pair source="CLIENT_COMPANY_ID" target="CLIENT_COMPANY_ID"/>
+	</db-relationship>
+	<db-relationship name="employees" source="DEPARTMENT" target="PERSON" toMany="true">
+		<db-attribute-pair source="DEPARTMENT_ID" target="DEPARTMENT_ID"/>
+	</db-relationship>
+	<db-relationship name="toManager" source="DEPARTMENT" target="PERSON" toMany="false">
+		<db-attribute-pair source="MANAGER_ID" target="PERSON_ID"/>
+	</db-relationship>
+	<db-relationship name="employeeAddresses" source="PERSON" target="ADDRESS" toMany="true">
+		<db-attribute-pair source="PERSON_ID" target="PERSON_ID"/>
+	</db-relationship>
+	<db-relationship name="managedDepartments" source="PERSON" target="DEPARTMENT" toMany="true">
+		<db-attribute-pair source="PERSON_ID" target="MANAGER_ID"/>
+	</db-relationship>
+	<db-relationship name="toClientCompany" source="PERSON" target="CLIENT_COMPANY" toMany="false">
+		<db-attribute-pair source="CLIENT_COMPANY_ID" target="CLIENT_COMPANY_ID"/>
+	</db-relationship>
+	<db-relationship name="toDepartment" source="PERSON" target="DEPARTMENT" toMany="false">
+		<db-attribute-pair source="DEPARTMENT_ID" target="DEPARTMENT_ID"/>
+	</db-relationship>
+	<obj-relationship name="toEmployee" source="Address" target="Employee" db-relationship-path="toPerson"/>
+	<obj-relationship name="representatives" source="ClientCompany" target="CustomerRepresentative" db-relationship-path="representatives"/>
+	<obj-relationship name="toClientCompany" source="CustomerRepresentative" target="ClientCompany" db-relationship-path="toClientCompany"/>
+	<obj-relationship name="employees" source="Department" target="Employee" db-relationship-path="employees"/>
+	<obj-relationship name="toManager" source="Department" target="Manager" db-relationship-path="employees"/>
+	<obj-relationship name="addresses" source="Employee" target="Address" db-relationship-path="employeeAddresses"/>
+	<obj-relationship name="toDepartment" source="Employee" target="Department" db-relationship-path="toDepartment"/>
+	<obj-relationship name="managedDepartments" source="Manager" target="Department" db-relationship-path="managedDepartments"/>
+</data-map>

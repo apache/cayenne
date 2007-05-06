@@ -1,0 +1,43 @@
+{
+    attributes = (
+        {
+            allowsNull = Y; 
+            columnName = "TEST_ATTRIBUTE"; 
+            externalType = varchar; 
+            name = testAttribute; 
+            valueClassName = NSString; 
+            width = 100; 
+        }, 
+        {
+            columnName = "ARTIST_ID"; 
+            externalType = int; 
+            name = artistId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            columnName = PK; 
+            externalType = int; 
+            name = pk; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }
+    ); 
+    attributesUsedForLocking = (pk, artistId); 
+    className = EOGenericRecord; 
+    classProperties = (toArtist, testAttribute); 
+    externalName = "CROSS_MODEL_REL_TEST"; 
+    fetchSpecificationDictionary = {}; 
+    name = CrossModelRelTest; 
+    primaryKeyAttributes = (pk); 
+    relationships = (
+        {
+            destination = Artist; 
+            internalInfo = {"_nameInObjectStore" = Relationship; }; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = artistId; sourceAttribute = artistId; }); 
+            name = toArtist; 
+        }
+    ); 
+}

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	<bean id="A1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (1, 'g1', 's1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (2, 'g2', 's2')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (3, 'g3', 's3')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (4, 'g4', 's4')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A5" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (5, 'g5', 's5')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A6" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (6, 'g6', 's6')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A7" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (7, 'g7', 's7')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A8" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (8, 'g8', 's8')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A9" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (9, 'g9', 's9')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A10" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (10, 'g10', 's10')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (11, 'g11', 's11')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A12" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (12, 'g12', 's12')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A13" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (13, 'g13', 's13')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A14" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (14, 'g14', 's14')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A15" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (15, 'g15', 's15')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A16" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (16, 'g16', 's16')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A17" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (17, 'g17', 's17')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A18" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (18, 'g18', 's18')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A19" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (19, 'g19', 's19')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A20" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (20, 'g20', 's20')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A21" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (21, 'g21', 's21')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A22" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (22, 'g22', 's22')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A23" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (23, 'g23', 's23')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A24" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (24, 'g24', 's24')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A25" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (25, 'g25', 's25')
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	<bean id="testObjects" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="A2"/>
+				<ref bean="A3"/>
+				<ref bean="A4"/>
+				<ref bean="A5"/>
+				<ref bean="A6"/>
+				<ref bean="A7"/>
+				<ref bean="A8"/>
+				<ref bean="A9"/>
+				<ref bean="A10"/>
+				<ref bean="A11"/>
+				<ref bean="A12"/>
+				<ref bean="A13"/>
+				<ref bean="A14"/>
+				<ref bean="A15"/>
+				<ref bean="A16"/>
+				<ref bean="A17"/>
+				<ref bean="A18"/>
+				<ref bean="A19"/>
+				<ref bean="A20"/>
+				<ref bean="A21"/>
+				<ref bean="A22"/>
+				<ref bean="A23"/>
+				<ref bean="A24"/>
+				<ref bean="A25"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

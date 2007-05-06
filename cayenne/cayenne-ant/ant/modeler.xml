@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+
+<!-- ========================================== -->
+<!-- CayenneModeler subproject buildfile.-->
+<!-- ========================================== -->
+<project>
+	<property name="modeler.dist.src" value="${dist}/src/modeler"/>
+	<property name="modeler.build" value="${build}/modeler/classes"/>
+	<property name="modeler.src" value="${cayenne.java}/src/modeler/java"/>
+	<property name="modeler.resources"
+		value="${cayenne.java}/src/modeler/resources"/>
+	<property name="modeler.bin" value="${cayenne.java}/src/modeler/bin"/>
+	
+	<!-- ========================================== -->
+	<!-- Build targets.                             -->
+	<!-- ========================================== -->
+	<target name="compile">
+		<compile-1_4 destdir="${modeler.build}" srcref="srcpath-modeler"
+			classpathref="classpath-cayenne-lib"/>
+		
+		<!-- copy resources -->
+		<copy-properties destdir="${modeler.build}" srcdir="${modeler.src}"/>
+		<copy todir="${modeler.build}">
+			<fileset dir="${modeler.src}">
+				<include name="**/*.xml"/>
+				<include name="**/*.gif"/>
+				<include name="**/*.jpg"/>
+			</fileset>
+			<fileset dir="${modeler.resources}"/>
+		</copy>
+		
+	</target>
+	
+	<target name="dist-src" depends="dist-bin">
+		<copy todir="${modeler.dist.src}">
+			<fileset dir="${modeler.src}"/>
+			<fileset dir="${modeler.resources}"/>
+		</copy>
+	</target>
+	
+	<target name="dist-bin" depends="jar">
+		<copy-scripts srcdir="${modeler.bin}"/>
+		
+		<copy todir="${dist}/lib/modeler">
+			<fileset dir="${cayenne.java}/lib">
+				<include name="${scope.jar}"/>
+				<include name="${hsqldb.jar}"/>
+				<include name="${ognl.jar}"/>
+				<include name="${jgoodies.forms.jar}"/>
+				<include name="${jgoodies.looks.jar}"/>
+				<include name="${commons.pool.jar}"/>
+				<include name="${commons.dbcp.jar}"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- ========================================== -->
+	<!-- Build Modeler JAR file.                    -->
+	<!-- ========================================== -->
+	<target name="jar" depends="compile">
+		<mkdir dir="${dist}/lib/modeler"/>
+		
+		<jar jarfile="${dist}/lib/modeler/cayenne-modeler.jar">
+			<fileset dir="${modeler.build}"/>
+			<metainf dir="${license.dir}/top"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Extension-Name" value="org.apache.cayenne"/>
+				<attribute name="Specification-Version" value="${project.name}"/>
+				<attribute name="Specification-Vendor" value="Apache.org"/>
+				<attribute name="Implementation-Vendor-Id"
+					value="org.apache"/>
+				<attribute name="Implementation-Version"
+					value="${project.version}"/>
+				<attribute name="Implementation-Vendor" value="Apache.org"/>
+				<attribute name="Main-Class"
+					value="org.apache.cayenne.modeler.Main"/>
+				<attribute name="Class-Path"
+					value="../cayenne.jar ${ognl.jar} ${hsqldb.jar} ${jgoodies.forms.jar} ${scope.jar} ${jgoodies.looks.jar} ${commons.pool.jar} ${commons.dbcp.jar}"/>
+			</manifest>
+		</jar>
+	</target>
+</project>

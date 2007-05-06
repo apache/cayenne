@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<property name="defaultPackage" value="org.objectstyle.art"/>
+	<procedure name="cayenne_tst_out_proc">
+		<procedure-parameter name="in_param" type="INTEGER" direction="in"/>
+		<procedure-parameter name="out_param" type="INTEGER" direction="out"/>
+	</procedure>
+	<procedure name="cayenne_tst_select_proc">
+		<procedure-parameter name="aName" type="VARCHAR" length="254" direction="in"/>
+		<procedure-parameter name="paintingPrice" type="INTEGER" direction="in"/>
+	</procedure>
+	<procedure name="cayenne_tst_upd_proc">
+		<procedure-parameter name="paintingPrice" type="INTEGER" direction="in"/>
+	</procedure>
+	<db-entity name="ARTGROUP">
+		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="PARENT_GROUP_ID" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="ARTIST">
+		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
+		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
+	</db-entity>
+	<db-entity name="ARTIST_EXHIBIT">
+		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="ARTIST_GROUP">
+		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="BINARY_PK_TEST1">
+		<db-attribute name="BIN_ID" type="VARBINARY" isPrimaryKey="true" isMandatory="true" length="32"/>
+		<db-attribute name="NAME" type="VARCHAR" length="10"/>
+	</db-entity>
+	<db-entity name="BINARY_PK_TEST2">
+		<db-attribute name="DETAIL_NAME" type="VARCHAR" length="10"/>
+		<db-attribute name="FK_ID" type="VARBINARY" length="32"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="BIT_TEST">
+		<db-attribute name="BIT_COLUMN" type="BIT" isMandatory="true"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="BLOB_TEST">
+		<db-attribute name="BLOB_COL" type="BLOB"/>
+		<db-attribute name="BLOB_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="BOOLEAN_TEST">
+		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN" isMandatory="true"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="CHAR_FK_TEST">
+		<db-attribute name="FK_COL" type="CHAR" length="10"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="CHAR_PK_TEST">
+		<db-attribute name="OTHER_COL" type="CHAR" length="10"/>
+		<db-attribute name="PK_COL" type="CHAR" isPrimaryKey="true" isMandatory="true" length="10"/>
+	</db-entity>
+	<db-entity name="CLOB_TEST">
+		<db-attribute name="CLOB_COL" type="CLOB"/>
+		<db-attribute name="CLOB_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="COMPOUND_FK_TEST">
+		<db-attribute name="F_KEY1" type="VARCHAR" length="20"/>
+		<db-attribute name="F_KEY2" type="VARCHAR" length="20"/>
+		<db-attribute name="NAME" type="VARCHAR" length="255"/>
+		<db-attribute name="PKEY" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="COMPOUND_PK_TEST">
+		<db-attribute name="KEY1" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
+		<db-attribute name="KEY2" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
+		<db-attribute name="NAME" type="VARCHAR" length="255"/>
+	</db-entity>
+	<db-entity name="DATE_TEST">
+		<db-attribute name="DATE_COLUMN" type="DATE"/>
+		<db-attribute name="DATE_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TIMESTAMP_COLUMN" type="TIMESTAMP"/>
+		<db-attribute name="TIME_COLUMN" type="TIME"/>
+	</db-entity>
+	<db-entity name="DECIMAL_PK_TST">
+		<db-attribute name="DECIMAL_PK" type="DECIMAL" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="EXHIBIT">
+		<db-attribute name="CLOSING_DATE" type="TIMESTAMP" isMandatory="true"/>
+		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="GALLERY_ID" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="OPENING_DATE" type="TIMESTAMP" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="FLOAT_TEST">
+		<db-attribute name="FLOAT_COL" type="FLOAT"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="GALLERY">
+		<db-attribute name="GALLERY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="GALLERY_NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<db-entity name="GENERATED_COLUMN_COMP_KEY">
+		<db-attribute name="AUTO_PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+		<db-attribute name="PROPAGATED_PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="GENERATED_COLUMN_COMP_M">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="GENERATED_COLUMN_DEP">
+		<db-attribute name="GENERATED_COLUMN_FK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="GENERATED_COLUMN_TEST">
+		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="250"/>
+	</db-entity>
+	<db-entity name="GENERATED_COLUMN_TEST2">
+		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="MEANINGFUL_PK_DEP">
+		<db-attribute name="DESCR" type="VARCHAR" length="50"/>
+		<db-attribute name="MASTER_PK" type="INTEGER"/>
+		<db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MEANINGFUL_PK_TEST1">
+		<db-attribute name="DESCR" type="VARCHAR" length="50"/>
+		<db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MIXED_PERSISTENCE_STRATEGY">
+		<db-attribute name="DESCRIPTION" type="VARCHAR" length="200"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="MIXED_PERSISTENCE_STRATEGY2">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="MASTER_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="NO_PK_TEST">
+		<db-attribute name="ATTRIBUTE1" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="PAINTING">
+		<db-attribute name="ARTIST_ID" type="INTEGER"/>
+		<db-attribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" precision="2"/>
+		<db-attribute name="GALLERY_ID" type="INTEGER"/>
+		<db-attribute name="PAINTING_DESCRIPTION" type="VARCHAR" length="255"/>
+		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="PAINTING_TITLE" type="VARCHAR" isMandatory="true" length="255"/>
+	</db-entity>
+	<db-entity name="PAINTING1">
+		<db-attribute name="ARTIST_ID" type="INTEGER"/>
+		<db-attribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" precision="2"/>
+		<db-attribute name="GALLERY_ID" type="INTEGER"/>
+		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="PAINTING_TITLE" type="VARCHAR" isMandatory="true" length="255"/>
+	</db-entity>
+	<db-entity name="PAINTING_INFO">
+		<db-attribute name="IMAGE_BLOB" type="LONGVARBINARY"/>
+		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TEXT_REVIEW" type="LONGVARCHAR"/>
+	</db-entity>
+	<db-entity name="SMALLINT_TEST">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="SMALLINT_COL" type="SMALLINT"/>
+	</db-entity>
+	<db-entity name="TINYINT_TEST">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TINYINT_COL" type="TINYINT"/>
+	</db-entity>
+	<db-entity name="ARTIST_ASSETS" parentName="PAINTING">
+		<db-attribute-derived name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isGroupBy="true" spec="%@">
+			<db-attribute-ref name="ARTIST_ID"/>
+		</db-attribute-derived>
+		<db-attribute-derived name="ESTIMATED_PRICE" type="DECIMAL" length="10" precision="2" spec="SUM(%@)">
+			<db-attribute-ref name="ESTIMATED_PRICE"/>
+		</db-attribute-derived>
+		<db-attribute-derived name="PAINTINGS_COUNT" type="INTEGER" length="10" precision="2" spec="COUNT(%@)">
+			<db-attribute-ref name="PAINTING_ID"/>
+		</db-attribute-derived>
+	</db-entity>
+	<obj-entity name="ArtGroup" className="org.objectstyle.art.ArtGroup" dbEntityName="ARTGROUP">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="Artist" className="org.objectstyle.art.Artist" dbEntityName="ARTIST">
+		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
+		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
+	</obj-entity>
+	<obj-entity name="ArtistAssets" className="org.objectstyle.art.ArtistAssets" dbEntityName="ARTIST_ASSETS">
+		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
+		<obj-attribute name="paintingsCount" type="java.lang.Integer" db-attribute-path="PAINTINGS_COUNT"/>
+	</obj-entity>
+	<obj-entity name="ArtistExhibit" className="org.objectstyle.art.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT">
+	</obj-entity>
+	<obj-entity name="ArtistPaintingCounts" className="org.objectstyle.art.ArtistPaintingCounts" dbEntityName="ARTIST_ASSETS">
+		<obj-attribute name="paintingsCount" type="java.lang.Integer" db-attribute-path="PAINTINGS_COUNT"/>
+	</obj-entity>
+	<obj-entity name="BinaryPKTest1" className="org.objectstyle.art.BinaryPKTest1" dbEntityName="BINARY_PK_TEST1">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="BinaryPKTest2" className="org.objectstyle.art.BinaryPKTest2" dbEntityName="BINARY_PK_TEST2">
+		<obj-attribute name="detailName" type="java.lang.String" db-attribute-path="DETAIL_NAME"/>
+	</obj-entity>
+	<obj-entity name="BitNumberTest" className="org.objectstyle.art.BitNumberTest" dbEntityName="BIT_TEST">
+		<obj-attribute name="bitColumn" type="java.lang.Integer" db-attribute-path="BIT_COLUMN"/>
+	</obj-entity>
+	<obj-entity name="BitTest" className="org.objectstyle.art.BitTest" dbEntityName="BIT_TEST">
+		<obj-attribute name="bitColumn" type="java.lang.Boolean" db-attribute-path="BIT_COLUMN"/>
+	</obj-entity>
+	<obj-entity name="BlobTest" className="org.objectstyle.art.BlobTest" dbEntityName="BLOB_TEST">
+		<obj-attribute name="blobCol" type="byte[]" db-attribute-path="BLOB_COL"/>
+	</obj-entity>
+	<obj-entity name="BooleanTest" className="org.objectstyle.art.BooleanTest" dbEntityName="BOOLEAN_TEST">
+		<obj-attribute name="booleanColumn" type="java.lang.Boolean" db-attribute-path="BOOLEAN_COLUMN"/>
+	</obj-entity>
+	<obj-entity name="CharFkTest" className="org.objectstyle.art.CharFkTest" dbEntityName="CHAR_FK_TEST">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="CharPkTest" className="org.objectstyle.art.CharPkTest" dbEntityName="CHAR_PK_TEST">
+		<obj-attribute name="otherCol" type="java.lang.String" db-attribute-path="OTHER_COL"/>
+		<obj-attribute name="pkCol" type="java.lang.String" db-attribute-path="PK_COL"/>
+	</obj-entity>
+	<obj-entity name="ClobTest" className="org.objectstyle.art.ClobTest" dbEntityName="CLOB_TEST">
+		<obj-attribute name="clobCol" type="java.lang.String" db-attribute-path="CLOB_COL"/>
+	</obj-entity>
+	<obj-entity name="CompoundFkTest" className="org.objectstyle.art.CompoundFkTest" dbEntityName="COMPOUND_FK_TEST">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="CompoundPainting" className="org.objectstyle.art.CompoundPainting" readOnly="true" dbEntityName="PAINTING">
+		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="toArtist.ARTIST_NAME"/>
+		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
+		<obj-attribute name="galleryName" type="java.lang.String" db-attribute-path="toGallery.GALLERY_NAME"/>
+		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
+		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
+	</obj-entity>
+	<obj-entity name="CompoundPkTest" className="org.objectstyle.art.CompoundPkTest" dbEntityName="COMPOUND_PK_TEST">
+		<obj-attribute name="key1" type="java.lang.String" db-attribute-path="KEY1"/>
+		<obj-attribute name="key2" type="java.lang.String" db-attribute-path="KEY2"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="DateTest" className="org.objectstyle.art.DateTest" dbEntityName="DATE_TEST">
+		<obj-attribute name="dateColumn" type="java.util.Date" db-attribute-path="DATE_COLUMN"/>
+		<obj-attribute name="timeColumn" type="java.util.Date" db-attribute-path="TIME_COLUMN"/>
+		<obj-attribute name="timestampColumn" type="java.util.Date" db-attribute-path="TIMESTAMP_COLUMN"/>
+	</obj-entity>
+	<obj-entity name="DecimalPKTest" className="org.objectstyle.art.DecimalPKTest" dbEntityName="DECIMAL_PK_TST">
+		<obj-attribute name="decimalPK" type="java.math.BigDecimal" db-attribute-path="DECIMAL_PK"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="DecimalPKTest1" className="org.objectstyle.art.DecimalPKTest1" dbEntityName="DECIMAL_PK_TST">
+		<obj-attribute name="decimalPK" type="java.lang.Double" db-attribute-path="DECIMAL_PK"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="Exhibit" className="org.objectstyle.art.Exhibit" dbEntityName="EXHIBIT">
+		<obj-attribute name="closingDate" type="java.util.Date" db-attribute-path="CLOSING_DATE"/>
+		<obj-attribute name="openingDate" type="java.util.Date" db-attribute-path="OPENING_DATE"/>
+	</obj-entity>
+	<obj-entity name="Gallery" className="org.objectstyle.art.Gallery" dbEntityName="GALLERY">
+		<obj-attribute name="galleryName" type="java.lang.String" db-attribute-path="GALLERY_NAME"/>
+	</obj-entity>
+	<obj-entity name="GeneratedColumnCompKey" className="org.objectstyle.art.GeneratedColumnCompKey" dbEntityName="GENERATED_COLUMN_COMP_KEY">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="GeneratedColumnCompMaster" className="org.objectstyle.art.GeneratedColumnCompMaster" dbEntityName="GENERATED_COLUMN_COMP_M">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="GeneratedColumnDep" className="org.objectstyle.art.GeneratedColumnDep" dbEntityName="GENERATED_COLUMN_DEP">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="GeneratedColumnTest" className="org.objectstyle.art.GeneratedColumnTest" dbEntityName="GENERATED_COLUMN_TEST">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="GeneratedColumnTest2" className="org.objectstyle.art.GeneratedColumnTest2" dbEntityName="GENERATED_COLUMN_TEST2">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MeaningfulGeneratedColumnTest" className="org.objectstyle.art.MeaningfulGeneratedColumnTest" dbEntityName="GENERATED_COLUMN_TEST">
+		<obj-attribute name="generatedColumn" type="java.lang.Integer" db-attribute-path="GENERATED_COLUMN"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MeaningfulPKDep" className="org.objectstyle.art.MeaningfulPKDep" dbEntityName="MEANINGFUL_PK_DEP">
+		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
+	</obj-entity>
+	<obj-entity name="MeaningfulPKTest1" className="org.objectstyle.art.MeaningfulPKTest1" dbEntityName="MEANINGFUL_PK_TEST1">
+		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
+		<obj-attribute name="pkAttribute" type="java.lang.Integer" db-attribute-path="PK_ATTRIBUTE"/>
+	</obj-entity>
+	<obj-entity name="MixedPersistenceStrategy" className="org.objectstyle.art.MixedPersistenceStrategy" dbEntityName="MIXED_PERSISTENCE_STRATEGY">
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="DESCRIPTION"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MixedPersistenceStrategy2" className="org.objectstyle.art.MixedPersistenceStrategy2" dbEntityName="MIXED_PERSISTENCE_STRATEGY2">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="NoPkTest" className="org.objectstyle.art.NoPkTest" dbEntityName="NO_PK_TEST">
+		<obj-attribute name="attribute1" type="java.lang.Integer" db-attribute-path="ATTRIBUTE1"/>
+	</obj-entity>
+	<obj-entity name="Painting" className="org.objectstyle.art.Painting" dbEntityName="PAINTING" superClassName="org.objectstyle.art.ArtDataObject">
+		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
+		<obj-attribute name="paintingDescription" type="java.lang.String" db-attribute-path="PAINTING_DESCRIPTION"/>
+		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
+	</obj-entity>
+	<obj-entity name="Painting1" className="org.objectstyle.art.Painting1" dbEntityName="PAINTING1">
+		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
+		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
+	</obj-entity>
+	<obj-entity name="PaintingInfo" className="org.objectstyle.art.PaintingInfo" dbEntityName="PAINTING_INFO">
+		<obj-attribute name="imageBlob" type="byte[]" db-attribute-path="IMAGE_BLOB"/>
+		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="TEXT_REVIEW"/>
+	</obj-entity>
+	<obj-entity name="ROArtist" className="org.objectstyle.art.ROArtist" readOnly="true" dbEntityName="ARTIST">
+		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
+		<obj-attribute name="dateOfBirth" type="java.sql.Date" db-attribute-path="DATE_OF_BIRTH"/>
+	</obj-entity>
+	<obj-entity name="ROPainting" className="org.objectstyle.art.ROPainting" readOnly="true" dbEntityName="PAINTING">
+		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
+		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
+	</obj-entity>
+	<obj-entity name="RWCompoundPainting" className="org.objectstyle.art.RWCompoundPainting" dbEntityName="PAINTING">
+		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
+		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
+		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
+	</obj-entity>
+	<obj-entity name="SmallintTest" className="org.objectstyle.art.SmallintTest" dbEntityName="SMALLINT_TEST">
+		<obj-attribute name="smallintCol" type="java.lang.Short" db-attribute-path="SMALLINT_COL"/>
+	</obj-entity>
+	<obj-entity name="SubPainting" className="org.objectstyle.art.SubPainting" dbEntityName="PAINTING">
+		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
+	</obj-entity>
+	<obj-entity name="TinyintTest" className="org.objectstyle.art.TinyintTest" dbEntityName="TINYINT_TEST">
+		<obj-attribute name="tinyintCol" type="java.lang.Byte" db-attribute-path="TINYINT_COL"/>
+	</obj-entity>
+	<db-relationship name="artistGroupArray" source="ARTGROUP" target="ARTIST_GROUP" toMany="true">
+		<db-attribute-pair source="GROUP_ID" target="GROUP_ID"/>
+	</db-relationship>
+	<db-relationship name="toChildGroups" source="ARTGROUP" target="ARTGROUP" toMany="true">
+		<db-attribute-pair source="GROUP_ID" target="PARENT_GROUP_ID"/>
+	</db-relationship>
+	<db-relationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP" toMany="false">
+		<db-attribute-pair source="PARENT_GROUP_ID" target="GROUP_ID"/>
+	</db-relationship>
+	<db-relationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="artistGroupArray" source="ARTIST" target="ARTIST_GROUP" toMany="true">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="toArtist" source="ARTIST_ASSETS" target="ARTIST" toMany="false">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST" toMany="false">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT" toMany="false">
+		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
+	</db-relationship>
+	<db-relationship name="toArtist" source="ARTIST_GROUP" target="ARTIST" toMany="false">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP" toMany="false">
+		<db-attribute-pair source="GROUP_ID" target="GROUP_ID"/>
+	</db-relationship>
+	<db-relationship name="binaryPKDetails" source="BINARY_PK_TEST1" target="BINARY_PK_TEST2" toMany="true">
+		<db-attribute-pair source="BIN_ID" target="FK_ID"/>
+	</db-relationship>
+	<db-relationship name="toBinaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1" toMany="false">
+		<db-attribute-pair source="FK_ID" target="BIN_ID"/>
+	</db-relationship>
+	<db-relationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" toMany="false">
+		<db-attribute-pair source="FK_COL" target="PK_COL"/>
+	</db-relationship>
+	<db-relationship name="charFKs" source="CHAR_PK_TEST" target="CHAR_FK_TEST" toMany="true">
+		<db-attribute-pair source="PK_COL" target="FK_COL"/>
+	</db-relationship>
+	<db-relationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST" toMany="false">
+		<db-attribute-pair source="F_KEY1" target="KEY1"/>
+		<db-attribute-pair source="F_KEY2" target="KEY2"/>
+	</db-relationship>
+	<db-relationship name="compoundFkArray" source="COMPOUND_PK_TEST" target="COMPOUND_FK_TEST" toMany="true">
+		<db-attribute-pair source="KEY1" target="F_KEY1"/>
+		<db-attribute-pair source="KEY2" target="F_KEY2"/>
+	</db-relationship>
+	<db-relationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
+	</db-relationship>
+	<db-relationship name="toGallery" source="EXHIBIT" target="GALLERY" toMany="false">
+		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
+	</db-relationship>
+	<db-relationship name="exhibitArray" source="GALLERY" target="EXHIBIT" toMany="true">
+		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
+	</db-relationship>
+	<db-relationship name="paintingArray" source="GALLERY" target="PAINTING" toMany="true">
+		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
+	</db-relationship>
+	<db-relationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M" toMany="false">
+		<db-attribute-pair source="PROPAGATED_PK" target="ID"/>
+	</db-relationship>
+	<db-relationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="ID" target="PROPAGATED_PK"/>
+	</db-relationship>
+	<db-relationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST" toMany="false">
+		<db-attribute-pair source="GENERATED_COLUMN_FK" target="GENERATED_COLUMN"/>
+	</db-relationship>
+	<db-relationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="GENERATED_COLUMN" target="GENERATED_COLUMN_FK"/>
+	</db-relationship>
+	<db-relationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1" toMany="false">
+		<db-attribute-pair source="MASTER_PK" target="PK_ATTRIBUTE"/>
+	</db-relationship>
+	<db-relationship name="meaningfulPKDepArray" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">
+		<db-attribute-pair source="PK_ATTRIBUTE" target="MASTER_PK"/>
+	</db-relationship>
+	<db-relationship name="details" source="MIXED_PERSISTENCE_STRATEGY" target="MIXED_PERSISTENCE_STRATEGY2" toMany="true">
+		<db-attribute-pair source="ID" target="MASTER_ID"/>
+	</db-relationship>
+	<db-relationship name="master" source="MIXED_PERSISTENCE_STRATEGY2" target="MIXED_PERSISTENCE_STRATEGY" toMany="false">
+		<db-attribute-pair source="MASTER_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="toArtist" source="PAINTING" target="ARTIST" toMany="false">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="toGallery" source="PAINTING" target="GALLERY" toMany="false">
+		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
+	</db-relationship>
+	<db-relationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
+	</db-relationship>
+	<db-relationship name="toArtist" source="PAINTING1" target="ARTIST" toMany="false">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="painting" source="PAINTING_INFO" target="PAINTING" toMany="false">
+		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
+	</db-relationship>
+	<obj-relationship name="artistArray" source="ArtGroup" target="Artist" deleteRule="Nullify" db-relationship-path="artistGroupArray.toArtist"/>
+	<obj-relationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toChildGroups"/>
+	<obj-relationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toParentGroup"/>
+	<obj-relationship name="artistExhibitArray" source="Artist" target="ArtistExhibit" deleteRule="Cascade" db-relationship-path="artistExhibitArray"/>
+	<obj-relationship name="groupArray" source="Artist" target="ArtGroup" deleteRule="Cascade" db-relationship-path="artistGroupArray.toGroup"/>
+	<obj-relationship name="paintingArray" source="Artist" target="Painting" deleteRule="Cascade" db-relationship-path="paintingArray"/>
+	<obj-relationship name="toArtist" source="ArtistAssets" target="Artist" deleteRule="Deny" db-relationship-path="toArtist"/>
+	<obj-relationship name="toArtist" source="ArtistExhibit" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
+	<obj-relationship name="toExhibit" source="ArtistExhibit" target="Exhibit" deleteRule="Nullify" db-relationship-path="toExhibit"/>
+	<obj-relationship name="binaryPKDetails" source="BinaryPKTest1" target="BinaryPKTest2" db-relationship-path="binaryPKDetails"/>
+	<obj-relationship name="toBinaryPKMaster" source="BinaryPKTest2" target="BinaryPKTest1" db-relationship-path="toBinaryPKMaster"/>
+	<obj-relationship name="toCharPK" source="CharFkTest" target="CharPkTest" db-relationship-path="toCharPK"/>
+	<obj-relationship name="charFKs" source="CharPkTest" target="CharFkTest" db-relationship-path="charFKs"/>
+	<obj-relationship name="toCompoundPk" source="CompoundFkTest" target="CompoundPkTest" db-relationship-path="toCompoundPk"/>
+	<obj-relationship name="toArtist" source="CompoundPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
+	<obj-relationship name="toGallery" source="CompoundPainting" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
+	<obj-relationship name="toPaintingInfo" source="CompoundPainting" target="PaintingInfo" deleteRule="Cascade" db-relationship-path="toPaintingInfo"/>
+	<obj-relationship name="compoundFkArray" source="CompoundPkTest" target="CompoundFkTest" db-relationship-path="compoundFkArray"/>
+	<obj-relationship name="artistExhibitArray" source="Exhibit" target="ArtistExhibit" deleteRule="Cascade" db-relationship-path="artistExhibitArray"/>
+	<obj-relationship name="toGallery" source="Exhibit" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
+	<obj-relationship name="exhibitArray" source="Gallery" target="Exhibit" deleteRule="Cascade" db-relationship-path="exhibitArray"/>
+	<obj-relationship name="paintingArray" source="Gallery" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
+	<obj-relationship name="toMaster" source="GeneratedColumnCompKey" target="GeneratedColumnCompMaster" db-relationship-path="toMaster"/>
+	<obj-relationship name="toDetail" source="GeneratedColumnCompMaster" target="GeneratedColumnCompKey" db-relationship-path="toDetail"/>
+	<obj-relationship name="toMaster" source="GeneratedColumnDep" target="GeneratedColumnTest" db-relationship-path="toMaster"/>
+	<obj-relationship name="toDep" source="GeneratedColumnTest" target="GeneratedColumnDep" db-relationship-path="toDep"/>
+	<obj-relationship name="toMeaningfulPK" source="MeaningfulPKDep" target="MeaningfulPKTest1" db-relationship-path="toMeaningfulPK"/>
+	<obj-relationship name="meaningfulPKDepArray" source="MeaningfulPKTest1" target="MeaningfulPKDep" db-relationship-path="meaningfulPKDepArray"/>
+	<obj-relationship name="details" source="MixedPersistenceStrategy" target="MixedPersistenceStrategy2" db-relationship-path="details"/>
+	<obj-relationship name="master" source="MixedPersistenceStrategy2" target="MixedPersistenceStrategy" db-relationship-path="master"/>
+	<obj-relationship name="toArtist" source="Painting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
+	<obj-relationship name="toGallery" source="Painting" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
+	<obj-relationship name="toPaintingInfo" source="Painting" target="PaintingInfo" deleteRule="Cascade" db-relationship-path="toPaintingInfo"/>
+	<obj-relationship name="toArtist" source="Painting1" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
+	<obj-relationship name="painting" source="PaintingInfo" target="Painting" deleteRule="Nullify" db-relationship-path="painting"/>
+	<obj-relationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
+	<obj-relationship name="toArtist" source="ROPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
+	<query name="NonSelectingQuery" factory="org.objectstyle.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
+VALUES (512, 'No Painting Like This', 12.5)]]></sql>
+		<sql adapter-class="org.objectstyle.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (512, 'No Painting Like This', 12.5)]]></sql>
+	</query>
+	<query name="ObjectQuery" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Painting">
+		<property name="cayenne.GenericSelectQuery.refreshingObjects" value="false"/>
+		<qualifier><![CDATA[toArtist = $artist]]></qualifier>
+		<ordering><![CDATA[paintingTitle]]></ordering>
+	</query>
+	<query name="ParameterizedNonSelectingQuery" factory="org.objectstyle.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
+VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
+		<sql adapter-class="org.objectstyle.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) values (#bind($id), #bind($title), #bind($price))]]></sql>
+	</query>
+	<query name="ParameterizedQueryWithLocalCache" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
+		<property name="cayenne.GenericSelectQuery.cachePolicy" value="localcache"/>
+		<qualifier><![CDATA[artistName like $name]]></qualifier>
+	</query>
+	<query name="ParameterizedQueryWithSharedCache" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
+		<property name="cayenne.GenericSelectQuery.cachePolicy" value="sharedcache"/>
+		<qualifier><![CDATA[artistName like $name]]></qualifier>
+	</query>
+	<query name="ProcedureQuery" factory="org.objectstyle.cayenne.map.ProcedureQueryBuilder" root="procedure" root-name="cayenne_tst_select_proc" result-entity="Artist">
+	</query>
+	<query name="QueryWithLocalCache" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
+		<property name="cayenne.GenericSelectQuery.cachePolicy" value="localcache"/>
+	</query>
+	<query name="QueryWithOrdering" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
+		<ordering descending="true" ignore-case="true"><![CDATA[artistName]]></ordering>
+		<ordering><![CDATA[dateOfBirth]]></ordering>
+	</query>
+	<query name="QueryWithPrefetch" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Gallery">
+		<prefetch>paintingArray</prefetch>
+	</query>
+	<query name="QueryWithQualifier" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
+		<qualifier><![CDATA[artistName = $param1]]></qualifier>
+	</query>
+	<query name="QueryWithSharedCache" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
+		<property name="cayenne.GenericSelectQuery.cachePolicy" value="sharedcache"/>
+	</query>
+</data-map>

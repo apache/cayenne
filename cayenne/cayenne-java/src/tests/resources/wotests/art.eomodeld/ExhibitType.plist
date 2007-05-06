@@ -1,0 +1,25 @@
+{
+    attributes = (
+        {
+            columnName = "EXHIBIT_TYPE_ID"; 
+            externalType = int; 
+            name = exhibitTypeId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            columnName = "GALLERY_NAME"; 
+            externalType = varchar; 
+            name = name; 
+            valueClassName = NSString; 
+            width = 100; 
+        }
+    ); 
+    attributesUsedForLocking = (exhibitTypeId); 
+    className = "org.apache.cayenne.art.ExhibitType"; 
+    classProperties = (name); 
+    externalName = "EXHIBIT_TYPE"; 
+    name = ExhibitType; 
+    primaryKeyAttributes = (exhibitTypeId); 
+    sharedObjectFetchSpecificationNames = (FetchAll); 
+}

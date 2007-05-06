@@ -1,0 +1,13 @@
+{
+    EOModelVersion = 2.1; 
+    adaptorName = None; 
+    connectionDictionary = {}; 
+    entities = (
+        {className = org.apache.art.Artist; name = Artist; }, 
+        {className = org.apache.art.ArtistExhibit; name = ArtistExhibit; }, 
+        {className = org.apache.art.Exhibit; name = Exhibit; }, 
+        {className = org.apache.art.Gallery; name = Gallery; }, 
+        {className = org.apache.art.Painting; name = Painting; }, 
+        {className = org.apache.art.PaintingInfo; name = PaintingInfo; }
+    ); 
+}

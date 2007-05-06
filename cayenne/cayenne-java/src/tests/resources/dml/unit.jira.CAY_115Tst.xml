@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">
+	
+	<bean id="CMInsert1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.ClobMaster</value></constructor-arg>
+		<constructor-arg><value>insert into CLOB_MASTER (CLOB_MASTER_ID, CLOB_COLUMN, NAME) values (1, 'cm1 clob', 'cm1')</value></constructor-arg>
+	</bean>
+
+	<bean id="CMInsert2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.ClobMaster</value></constructor-arg>
+		<constructor-arg><value>insert into CLOB_MASTER (CLOB_MASTER_ID, CLOB_COLUMN, NAME) values (2, 'cm2 clob', 'cm2')</value></constructor-arg>
+	</bean>
+
+	<bean id="CMInsert3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.ClobMaster</value></constructor-arg>
+		<constructor-arg><value>insert into CLOB_MASTER (CLOB_MASTER_ID, CLOB_COLUMN, NAME) values (3, 'cm3 clob', 'cm3')</value></constructor-arg>
+	</bean>
+
+	<bean id="CDInsert1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.ClobDetail</value></constructor-arg>
+		<constructor-arg><value>insert into CLOB_DETAIL (CLOB_DETAIL_ID, CLOB_MASTER_ID, NAME) values (1, 1, 'cd11')</value></constructor-arg>
+	</bean>
+	<bean id="CDInsert2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.ClobDetail</value></constructor-arg>
+		<constructor-arg><value>insert into CLOB_DETAIL (CLOB_DETAIL_ID, CLOB_MASTER_ID, NAME) values (2, 2, 'cd21')</value></constructor-arg>
+	</bean>
+	<bean id="CDInsert3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.ClobDetail</value></constructor-arg>
+		<constructor-arg><value>insert into CLOB_DETAIL (CLOB_DETAIL_ID, CLOB_MASTER_ID, NAME) values (3, 2, 'cd22')</value></constructor-arg>
+	</bean>
+	<bean id="CDInsert4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.ClobDetail</value></constructor-arg>
+		<constructor-arg><value>insert into CLOB_DETAIL (CLOB_DETAIL_ID, CLOB_MASTER_ID, NAME) values (4, 3, 'cd31')</value></constructor-arg>
+	</bean>
+
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	<bean id="testDistinctClobFetch" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="CMInsert1"/>
+				<ref bean="CMInsert2"/>
+				<ref bean="CMInsert3"/>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="testDistinctClobFetchWithToManyJoin" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="CMInsert1"/>
+				<ref bean="CMInsert2"/>
+				<ref bean="CMInsert3"/>
+				<ref bean="CDInsert1"/>
+				<ref bean="CDInsert2"/>
+				<ref bean="CDInsert3"/>
+				<ref bean="CDInsert4"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>
