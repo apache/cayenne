@@ -1,0 +1,63 @@
+Cayenne Release Notes 1.2 M7 milestone
+Date: 
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+
+Changes/New Features:
+
+* ObjectContext API:
+  - ObjectContext graph events.
+  - OPPChannel graph events (including remote)
+  - commit/rollback renamed to look like DataContext ones - commitChanges/rollbackChanges
+  - new revertChanges and flushChanges methods.
+  - Runtime-customizable ClassDescriptors.
+  - Auto-sorted relationship list - org.objectstyle.cayenne.util.IndexPropertyList. Currently
+  	supported in ObjectContext only, but should be easy to extend to DataContext.
+  
+* Multi Tier API:
+  - support for shared sessions (peer ObjectContexts controlled by different users share the same parent)
+  - OPPConnector was renamed to OPPConnection (all implementors were renamed accordingly).
+  - web.xml configuration is simplified (see HessianService Javadocs for details). 
+    WARINING: You must update your web.xml if you used HessianService with M6, check UPGRADE-NOTES for details.
+
+*  CAY-395 - The meaning of SnapshotEvent "source" and "postedBy" attributes is reversed per CAY-395 for
+   better efficiency. If you implemented custom listeners of SnapshotEvents, you may need to 
+   doublecheck their logic. From now on events use DataRowStore as source, and EventBridge or
+   ObjectStore as postedBy, depending on whether this was a local or a remote event. I.e. the 
+   new structure is the opposite to what we used in 1.1.
+* Built in support for mapping int or character DB columns as JDK 1.5 Enums. No need 
+  to register special ExtendedTypes for your custom enums.
+* JDOM is no longer needed for XML (de)serialization - everything is done using JAXP classes 
+  bundled with JDK.
+* AutoAdapter is introduced. If you are using one of the standard DbAdapters shipped with Cayenne,
+  it is no longer needed to enter it in the Modeler. Cayenne will automatically guess the right adapter 
+  from the database metadata in runtime. In CayenneModeler adapter field is moved to a separate tab, 
+  as now it doesn't have to be configured in most cases.
+* No longer storing or relying on ClassLoader stored in Configuration. 
+  Thread.currentThread().getContextClassLoader() is what Cayenne now uses internally.
+* Cayenne stack events are no longer sent via a shared "default" EventManager. Instead
+  an EventManager instance is assigned to Configuration.
+* EventBridge supports multiple local EventSubjects.
+* Listener methods registered with EventManager no longer have to be public. Any non-public methods 
+  and non-public classes will work. This is nice for implementing listener methods without exposing 
+  them in the API (or using inner classes that didn't work before).
+* Support for ExtendedTypeFactory that among other things enables mapping of interface properties.
+  
+
+  Bugs Fixed:
+  
+* Cayenne no longer includes Oracle "recycle bin" tables in reverse-engineering results (those are the 
+    tables with names like "BIN$04LhcpndanfgMAAAAAANPw==$0" that are "recycled" dropped tables.
+* CAY-392	ConfigurationException on context reload in Tomcat
+* CAY-396	1.2M6, nodeps & log4j trouble
+* CAY-397	Update Java Package causes error dialog
+* CAY-372	MySQL should drop tables "if exists"
+* CAY-353	Keyboard navigation
+* CAY-393	Change cgen Velocity singleton to VelocityEngine instances
+* CAY-398	Compiler warnings in generated auto classes when using inheritance

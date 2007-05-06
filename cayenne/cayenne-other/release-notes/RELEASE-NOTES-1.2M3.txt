@@ -1,0 +1,34 @@
+Cayenne Release Notes 1.2 Milesone (M3)
+Date: March 20, 2005
+============================================
+
+For the latest information go to the project web site at 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+Changes:
+
+* Support for "joint" prefetches in SelectQuery and SQLTemplate
+* SQLTemplate support for explicit DataRow columns naming that is different from SQL
+  (via forth parameter in the #result directive)
+* support for DataContext "userProperties" map
+CAY-258 Support for specifying generated Java files encoding in the Modeler and cgen task
+CAY-276	Optimistic locking support for delete
+CAY-15	Support for prefetching of flattened relationships (via joint prefetches)
+CAY-287	Postgres default PK generator is changed to use sequences
+
+Bugs Fixed:
+
+CAY-293	Fetch Specs import from EOF.
+CAY-215	resolveFault() needs to throw subclass of CayenneRuntimeException
+CAY-280	Relaxed expression for BigDecimal
+CAY-290	DataRow.createObjectId accepts nulls
+CAY-256	InvalidateObject (also refetch) snapshot sync transient-izes object in other contexts
+CAY-295	Certain preferences required a Modeler restart to be updated
+CAY-269	DB2 throws when there are line breaks in SQLTemplate
+CAY-99	modeler.bat file doesn't handle file paths with spaces
+CAY-281	Cayenne Modeller Not Escaping Strings
+CAY-260	Add javadoc for DataContext.deleteObject() stating NullPointerException thrown
+

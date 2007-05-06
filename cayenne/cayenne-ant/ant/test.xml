@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+
+<!-- ========================================== -->
+<!-- Cayenne tests subproject buildfile.        -->
+<!-- ========================================== -->
+<project>
+	
+	<property name="test.dist.src" value="${dist}/src/tests"/>
+	<property name="test.build" value="${build}/tests-1_4/classes"/>
+	<property name="test.build.1_5" value="${build}/tests-1_5/classes"/>
+	<property name="test.coverage" value="${build}/tests-coverage"/>
+	<property name="test.run" value="${build}/tests-run"/>
+	<property name="test.src" value="${cayenne.java}/src/tests/java"/>
+	<property name="test.src.1_5" value="${cayenne.java.1_5}/src/tests/java"/>
+	<property name="test.filter" value="**/*Tst.class"/>
+	
+	<!-- ============================================= -->
+	<!-- Compiles test source code.                    -->
+	<!-- ============================================= -->
+	<target name="compile" depends="compile-1_4">
+		
+		<compile-1_5 destdir="${test.build.1_5}" srcref="srcpath-tests-1_5"
+			classpathref="classpath-cayenne-lib-tools"/>
+	</target>
+	
+	<target name="compile-1_4">
+		<!-- generate test classes in case mapping has changed -->
+		<cgen-tests map="${cayenne.java}/src/tests/resources/multi-tier.map.xml"
+			destDir="${test.src}"
+			superpkg="org.objectstyle.cayenne.testdo.mt.auto"/>
+		<cgen-tests map="${cayenne.java}/src/tests/resources/multi-tier.map.xml"
+			destDir="${test.src}"
+			superpkg="org.objectstyle.cayenne.testdo.mt.auto" client="true"/>
+		
+		<!-- compile -->
+		<compile-1_4 destdir="${test.build}" srcref="srcpath-tests-1_4"
+			classpathref="classpath-cayenne-lib-tools"/>
+	</target>
+	
+	<!-- ============================================= -->
+	<!-- Runs and reports on tests.                    -->
+	<!-- ============================================= -->
+	<target name="test" depends="check-connection,compile">
+		<antcall target="test-run" inheritrefs="true">
+			<param name="test.target" value="test-run"/>
+		</antcall>
+	</target>
+	
+	<target name="test-1_4" depends="check-connection,compile-1_4">
+		<antcall target="test-run" inheritrefs="true">
+			<param name="test.target" value="test-run-1_4"/>
+		</antcall>
+	</target>
+	
+	<target name="test-run">
+		<!-- emma code coverage -->
+		<taskdef resource="emma_ant.properties"
+			classpathref="classpath-tests-run"/>
+		
+		<delete dir="${test.run}"/>
+		<mkdir dir="${test.run}"/>
+		
+		<!-- Fork for test run to avoid classloader weirdness in JUnit -->
+		<emmajava enabled="${coverage.enabled}" verbosity="quiet" fork="true"
+			libclasspathref="classpath-tests-run"
+			classname="org.apache.tools.ant.Main" dir="${test.run}"
+			failonerror="true">
+			
+			<!-- put the coverage report into a connection-specific subdir -->
+			<html
+				outfile="${test.coverage}/${cayenne.test.connection}/coverage.html"
+				sort="+name, +line"/>
+			
+			<!-- do not instrument test classes -->
+			<filter includes="org.objectstyle.cayenne.*"/>
+			<filter
+				excludes="*Tst*,*Test*,*test*,org.objectstyle.cayenne.unit.*"/>
+			
+			<arg value="-f"/>
+			<arg value="${basedir}/ant/test-run.xml"/>
+			<arg value="${test.target}"/>
+			
+			<jvmarg value="-Xms64m"/>
+			<jvmarg value="-Xmx96m"/>
+			<sysproperty key="java.library.path" value="${java.library.path}"/>
+			<sysproperty key="cayenne.test.config"
+				value="${cayenne.test.config}"/>
+			<sysproperty key="cayenne.test.connection"
+				value="${cayenne.test.connection}"/>
+			<sysproperty key="cayenne.test.schema.skip"
+				value="${cayenne.test.schema.skip}"/>
+			<sysproperty key="cayenne.test.report"
+				value="${cayenne.test.report}"/>
+			<sysproperty key="ant.home" value="${ant.home}"/>
+			<sysproperty key="project.version" value="${project.version}"/>
+			<sysproperty key="build" value="${build}"/>
+			<sysproperty key="test.filter" value="${test.filter}"/>
+			<sysproperty key="test.exclude" value="${test.exclude}"/>
+			<classpath refid="classpath-tests-run"/>
+		</emmajava>
+	</target>
+	
+	<target name="use-embedded-hsqldb" unless="cayenne.test.connection">
+		<echo message="using internal_embedded_datasource for test connection."/>
+		<property name="cayenne.test.connection"
+			value="internal_embedded_datasource"/>
+		<path id="classpath">
+			<path refid="classpath-tests-run"/>
+			<fileset dir="${cayenne.java}/lib" includes="${hsqldb.jar}"/>
+		</path>
+	</target>
+	
+	<target name="use-specified-connection" if="cayenne.test.connection">
+		<path id="classpath">
+			<path refid="classpath-tests-run"/>
+		</path>
+	</target>
+	
+	<!-- This is a simple property check, misspelled property can still -->
+	<!-- lead to failed connection to the test database. -->
+	
+	
+	<!-- dependency order is important as use-embedded-hsqldb sets the conditional -->
+	<target name="check-connection"
+		depends="use-specified-connection,use-embedded-hsqldb">
+	</target>
+</project>
+

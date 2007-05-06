@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+
+<!-- ================================================= -->
+<!-- Reusable Macros                                   -->
+<!-- ================================================= -->
+<project>
+	
+	<!-- ============================================= -->
+	<!-- *** API documentation macro. ***              -->
+	<!-- TODO: how can we define conditional javadoc   -->
+	<!-- execution in a macro?                         -->
+	<!-- ============================================= -->
+	<macrodef name="api">
+		
+		<attribute name="destdir"/>
+		<attribute name="srcref"/>
+		<attribute name="classpathref"/>
+		<attribute name="packagenames" default="org.objectstyle.*"/>
+		
+		<sequential>
+			<mkdir dir="@{destdir}"/>
+			<javadoc packagenames="@{packagenames}" destdir="@{destdir}"
+				sourcepathref="@{srcref}" classpathref="@{classpathref}"
+				author="true" use="false"
+				stylesheetfile="${cayenne.other}/javadoc/objectstyle-javadoc.css"
+				splitindex="true" windowtitle="Cayenne API Documentation - v.${project.version}"
+				overview="${cayenne.other}/javadoc/overview.html">
+				
+				<bottom>
+					<![CDATA[<!--@@SFLOGO@@--> &nbsp; <i>Copyright &#169; 2001-2006 <a href=
+					"http://objectstyle.org" target="_top">ObjectStyle.org</a> All Rights Reserved.</i>]]>
+				</bottom>
+			</javadoc>
+		</sequential>
+	</macrodef>
+	
+	<!-- ============================================= -->
+	<!-- Compile with JDK 1.4 compatibility.           -->
+	<!-- ============================================= -->
+	<macrodef name="compile-1_4">
+		
+		<attribute name="destdir"/>
+		<attribute name="srcref"/>
+		<attribute name="classpathref"/>
+		
+		<sequential>
+			<mkdir dir="@{destdir}"/>
+			<javac destdir="@{destdir}" classpathref="@{classpathref}"
+				optimize="on" debug="on" source="1.4" target="1.4" deprecation="on">
+				
+				<src refid="@{srcref}"/>
+			</javac>
+		</sequential>
+	</macrodef>
+	
+	<!-- ============================================= -->
+	<!-- Compile with JDK 1.5 compatibility.           -->
+	<!-- ============================================= -->
+	<macrodef name="compile-1_5">
+		
+		<attribute name="destdir"/>
+		<attribute name="srcref"/>
+		<attribute name="classpathref"/>
+		
+		<sequential>
+			<mkdir dir="@{destdir}"/>
+			<javac destdir="@{destdir}" classpathref="@{classpathref}"
+				optimize="on" debug="on" source="1.5" target="1.5" deprecation="on">
+				
+				<src refid="@{srcref}"/>
+			</javac>
+		</sequential>
+	</macrodef>
+	
+	<!-- ============================================= -->
+	<!-- Run cgen.                                     -->
+	<!-- ============================================= -->
+	<macrodef name="cgen-tests">
+		
+		<attribute name="destdir"/>
+		<attribute name="map"/>
+		<attribute name="superpkg"/>
+		<attribute name="client" default="false"/>
+		
+		<sequential>
+			<taskdef name="cgen-task"
+				classname="org.objectstyle.cayenne.tools.CayenneGenerator">
+				<classpath refid="classpath-tests-run"/>
+			</taskdef>
+			
+			<mkdir dir="@{destdir}"/>
+			<cgen-task map="@{map}" destDir="@{destdir}" superpkg="@{superpkg}"
+				client="@{client}"/>
+		</sequential>
+	</macrodef>
+	
+	<!-- ============================================= -->
+	<!-- Copy property files from a source,            -->
+	<!-- doing default token substitution.             -->
+	<!-- ============================================= -->
+	<macrodef name="copy-properties">
+		
+		<attribute name="destdir"/>
+		<attribute name="srcdir"/>
+		
+		<sequential>
+			<tstamp/>
+			<copy todir="@{destdir}" overwrite="yes">
+				<fileset dir="@{srcdir}" includes="**/*.properties"/>
+				<filterset>
+					<filter token="CAYENNE_BUILD_DATE" value="${TODAY}"/>
+					<filter token="CAYENNE_VERSION" value="${project.version}"/>
+				</filterset>
+			</copy>
+		</sequential>
+	</macrodef>
+	
+	<!-- ============================================= -->
+	<!-- Copies script files in the common bin dir.    -->
+	<!-- ============================================= -->
+	<macrodef name="copy-scripts">
+		
+		<attribute name="srcdir"/>
+		
+		<sequential>
+			<copy todir="${dist}/bin">
+				<fileset dir="@{srcdir}" includes="*.bat,*.sh,*.pl,*.ico"/>
+			</copy>
+			
+			<chmod perm="ugo+rx">
+				<fileset dir="${dist}/bin" includes="**/*.sh,**/*.pl"/>
+			</chmod>
+		</sequential>
+	</macrodef>
+</project>

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.objectstyle.ashwood</groupId>
+  <artifactId>ashwood</artifactId>
+  <version>1.1</version>
+  <packaging>jar</packaging>
+  <description>Ashwood Graph Library</description>
+  
+  <licenses>
+		<license>
+		  <name>The Apache Software License, Version 1.1</name>
+		</license>
+  </licenses>
+  
+  <scm>
+		<connection>scm:cvs:pserver:anonymous:@cvs.sourceforge.net:/cvsroot/ashwood</connection>
+		<developerConnection>scm:cvs:ext:DEVELOPER_NAME@cvs.sourceforge.net:/cvsroot/ashwood</developerConnection>
+		<url>http://cvs.sourceforge.net/viewcvs.py/ashwood/</url>
+  </scm>
+	
+	<url>http://objectstyle.org/ashwood/</url>
+	
+	<dependencies>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.1</version>
+		</dependency>
+	</dependencies>
+</project>

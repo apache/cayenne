@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Cayenne Documentation - ${page.title}</title>
+    <style type="text/css">@import "${basePath}style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://objectstyle.org/cayenne/"><img src="${basePath}images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="${basePath}index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">${page.title}</span>
+  </div>
+${pageContent}
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('${basePath}images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2006 ObjectStyle Group and content authors
+  </div>
+
+</body>
+</html>

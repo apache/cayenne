@@ -1,0 +1,36 @@
+Cayenne Release Notes 1.2 B1 (beta)
+Date: 04/06/2006
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+
+Changes/New Features:
+
+* DataObjectUtils.objectForQuery(..) now returns Object instead of DataObject to accomodate DataRows, 
+  Persistent objects, etc. If you are using this method, you may need to use a cast.
+* "opp" package and all classes whose names started with OPP* were renamed. Check a 'web.xml' 
+  descriptor and change the following configuration parameters to reflect the new names:
+  
+  - cayenne.OPPRemoteService.EventBridge.factory to cayenne.RemoteService.EventBridge.factory
+  - org.objectstyle.cayenne.opp.hessian.HessianServlet to org.objectstyle.cayenne.remote.hessian.service.HessianServlet
+  
+* WebApplicationListener and WebApplicationContextProvider are deprecated. Now the official choice for webapp
+  configuration is WebApplicationContextFilter. Still users are free to use custom listeners if they choose to do 
+  so, i.e. the deprecation is done to reduce confusion regarding the choices, not because the listener approach doesn't work.
+  
+* CAY-471	Nested DataContexts - change notifications
+* CAY-474	Delete Rules in remote CayenneContext
+* CAY-485	Modeler gives cryptic method in alert box when user tries to create classes
+* CAY-473	Better caching in remote CayenneContext
+* CAY-472	Remoting Layer: Hessian sessions and session timeouts
+* CAY-491	Support Schemas for HSQLDB 1.8 during schema generation
+* CAY-479	Reverse engineer does not load target FKs on partial import (in fact this was already fixed in M12)
+* CAY-490	On client class generation, cgen should automatically filter out entities that are explicitly not supported on the client
+* CAY-391	Exposing Primary Key to objEntity from dbEntity and then synching
+* CAY-346	Selection moves to next entity on sync
+* CAY-484	Add missing toolbar to the DbEntity panel

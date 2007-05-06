@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.objectstyle.cayenne</groupId>
+	<artifactId>cayenne-client-nodeps</artifactId>
+	<name>Cayenne Client</name>
+	<packaging>jar</packaging>
+	<version>@PROJECT-VERSION@</version>
+	
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 1.1</name>
+			<url>http://objectstyle.org/cayenne/license.html</url>
+		</license>
+	</licenses>
+	
+	<scm>
+		<connection>
+			scm:cvs:pserver:anonymous:@cvs.sourceforge.net:/cvsroot/cayenne</connection>
+		<developerConnection>
+			scm:cvs:ext:DEVELOPER_NAME@cvs.sourceforge.net:/cvsroot/cayenne</developerConnection>
+		<url>http://cvs.sourceforge.net/viewcvs.py/cayenne/</url>
+	</scm>
+	
+	<organization>
+		<name>ObjectStyle Group</name>
+		<url>http://www.objectstyle.org/</url>
+	</organization>
+	
+	<inceptionYear>2001</inceptionYear>
+	<description>Cayenne Object Persistence Framework</description>
+	<url>http://objectstyle.org/cayenne/</url>
+	<issueManagement>
+		<system>JIRA</system>
+		<url>
+			http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000</url>
+	</issueManagement>
+	
+	<mailingLists>
+		<mailingList>
+			<name>Cayenne Users and Developers</name>
+			<subscribe> http://objectstyle.org/cayenne/lists.html</subscribe>
+			<unsubscribe> http://objectstyle.org/cayenne/lists.html</unsubscribe>
+			<archive>http://objectstyle.org/cayenne/lists.html</archive>
+		</mailingList>
+	</mailingLists>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.caucho</groupId>
+			<artifactId>hessian</artifactId>
+			<version>3.0.13</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.0.4</version>
+		</dependency>
+	</dependencies>
+</project>

@@ -1,0 +1,20 @@
+Cayenne Release Notes 1.2.1
+Date: August 30, 2006
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://issues.apache.org/cayenne/
+
+Bug Fixes:
+
+CAY-639	JDBC datatype of MySQL INT UNSIGNED is mapped as java.lang.Integer should be java.lang.Long
+CAY-617	ROP: shared session functionality over XMPP is broken
+CAY-614	ToManyList contains references to transient objects
+CAY-609	Modeler prevents intermediate prefetch creation
+CAY-608	Prefetch validation incorrectly reports error on multi-step prefetches
+CAY-607	Long query name or qualifier expand query text field off screen
+CAY-603	QueryChain.isFetchingDataRows() incorrectly returns "false" - must be "true" all the time
+CAY-601	Problem resolving relationships in nested DataContext

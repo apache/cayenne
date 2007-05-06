@@ -1,0 +1,417 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<title>Launch4j :: Empaquetador cross-platform de aplicaciones Java para crear ejecutables nativos de Windows</title>
+		<meta name="description" content="Empaquetador cross-platform de aplicaciones Java para crear ejecutables nativos de Windows. Con funcionalidad para pantallas de bienvenida nativas, icono de aplicación, empaquetado de poco tamaño.">
+		<meta name="keywords" content="Java, java, exe, native, windows, Windows, jar, wrap, wrapper, launch, run, execute, executable, splash, icon, ico, ant, build, script, deploy, free, freeware, open source, gpl, GPL, lgpl, LGPL, sourceforge, c++, C++, W2K, WXP, W98, linux, Linux">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="author" content="Grzegorz Kowal" >
+		<link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+	<body>
+		<div id="container">
+			<div id="top">
+				<img style="width: 249px; height: 58px;" src="launch4j.gif" alt="launch4j"> <span class="version">2.1.1</span>
+			</div>
+			<div id="leftnav">
+				<ul>
+					<li><a href="index_es.html">Inicio</a></li>
+					<li><a href="docs_es.html">Documentación</a></li>
+					<li><a href="changelog_es.html">Historial de cambios</a></li>
+					<li><a href="http://sourceforge.net/project/screenshots.php?group_id=95944">Capturas de pantalla</a></li>
+					<li><a href="http://sourceforge.net/project/showfiles.php?group_id=95944&package_id=152236">Descarga</a></li>
+					<li><a href="http://sourceforge.net/forum/?group_id=95944">Soporte</a></li>
+					<li><a href="http://sourceforge.net/projects/launch4j">Resumen del proyecto</a></li>
+					<li><a href="http://sourceforge.net/tracker/?atid=613100&group_id=95944">Informes de errores</a></li>
+					<li><a href="links_es.html">Enlaces</a></li>
+				</ul>
+				<ul style="margin-top: 20px; font-size: 75%">
+					<li><a href="index.html">English</a></li>
+					<li><a href="index_es.html">Español</a></li>
+				</ul>
+			</div>
+			<div id="content">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<a href="#Running_launch4j">Ejecutando launch4j</a><br>
+<a href="#Configuration_file">Fichero de configuración</a><br>
+<a href="#Importing_1.x_configuration">Importando configuración 1.x</a><br>
+<a href="#Ant_task">Tarea Ant</a><br>
+<a href="#Debug_launching_mode">Lanzamiento en modo de depuración</a><br>
+
+<h2 id="Running_launch4j">Ejecutando launch4j</h2>
+Ejecute <em>launch4j.exe</em> o el script&nbsp; <em>launch4j</em> sin argumentos
+de línea de órdenes para entrar en el modo gráfico (GUI).
+
+<pre>launch4j.exe</pre>
+
+Para empaquetar un jar en modo consola use <em>launch4jc.exe</em>&nbsp;y especifique
+el fichero de configuración.
+
+<pre>launch4jc.exe config.xml</pre>
+
+En Linux use el script <em>launch4j</em>.
+
+<pre>launch4j ./demo/l4j/config.xml</pre>
+
+<h2 id="Configuration_file">Fichero de configuración</h2>
+Launch4j necesita un fichero de configuración xml para cada ejecutable. Puede
+crearlo y editarlo convenientemente usando la interfaz gráfica de usuario o su
+editor favorito. También es posible pasar todos los parámetros de configuración
+a través de la tarea Ant. Para todos los ficheros excepto excepto para <em>&lt;jre&gt;&lt;path&gt;</em>
+se pueden usar rutas absolutas o relativas a la ruta del fichero de
+configuración.
+
+<pre>&lt;!-- <strong>Bold</strong> elements are required --&gt;<br><strong>&lt;launch4jConfig&gt;<br></strong>  &lt;!-- Header types: 0-GUI, 1-console --&gt;<strong><br></strong>  <strong>&lt;headerType&gt;</strong><span class="codeword">0|1</span><strong>&lt;/headerType&gt;</strong><br><strong></strong>  <strong>&lt;outfile&gt;</strong><span class="codeword">file.exe</span><strong><span class="codeword"></span>&lt;/outfile&gt;<br></strong>  <strong>&lt;jar&gt;</strong><span class="codeword">file</span><span class="codeword"></span><strong>&lt;/jar&gt;<br></strong>  &lt;dontWrapJar&gt;<span class="codeword">true|<u>false</u></span>&lt;/dontWrapJar&gt;<br>  &lt;errTitle&gt;<span class="codeword">text</span>&lt;/errTitle&gt;<br>  &lt;jarArgs&gt;<span class="codeword">text</span>&lt;/jarArgs&gt;<br>  &lt;chdir&gt;<span class="codeword">path</span>&lt;/chdir&gt;<br>  &lt;customProcName&gt;<span class="codeword">true|<u>false</u></span>&lt;/customProcName&gt;<br>  &lt;stayAlive&gt;<span class="codeword">true|false</span>&lt;/stayAlive&gt;<br>  &lt;icon&gt;<span class="codeword">file</span>&lt;/icon&gt;<br>  &lt;headerObjects&gt;<br>    <strong>&lt;file&gt;</strong><span class="codeword">object file</span><strong>&lt;/file&gt;</strong><br>    <strong>&lt;file&gt;</strong><span class="codeword">object file</span><strong>&lt;/file&gt;</strong><br>    <strong>...</strong><br>  &lt;/headerObjects&gt;<br>  &lt;libs&gt;<br>    <strong>&lt;file&gt;</strong><span class="codeword">w32api lib</span><strong>&lt;/file&gt;<br></strong><strong>    &lt;file&gt;</strong><span class="codeword">w32api lib</span><strong>&lt;/file&gt;<br>    ...<br></strong>  &lt;/libs&gt;<br>  <strong>&lt;jre&gt;<br></strong>    &lt;!-- Specify one of the following or both --&gt;<br>    <strong>&lt;path&gt;</strong><span class="codeword">path</span><strong>&lt;/path&gt;<br>    </strong><strong>&lt;minVersion&gt;</strong><span class="codeword">x.x.x[_xx]</span><strong>&lt;/minVersion&gt;<br></strong>    &lt;maxVersion&gt;<span class="codeword">x.x.x[_xx]</span>&lt;/maxVersion&gt;<br>    &lt;!-- Heap sizes in MB, 0-use default --&gt;<br>    &lt;initialHeapSize&gt;<span class="codeword">MB</span>&lt;/initialHeapSize&gt;<br>    &lt;maxHeapSize&gt;<span class="codeword">MB</span>&lt;/maxHeapSize&gt;<br>    &lt;args&gt;<span class="codeword">text</span>&lt;/args&gt;<br>  <strong>&lt;/jre&gt;</strong><br>  &lt;splash&gt;<br>    <strong>&lt;file&gt;</strong><span class="codeword">file</span><strong>&lt;/file&gt;</strong><br>    &lt;waitForWindow&gt;<span class="codeword"><u>true</u>|false</span>&lt;/waitForWindow&gt;<br>    &lt;timeout&gt;<span class="codeword">seconds [60]</span>&lt;/timeout&gt;<br>    &lt;timeoutErr&gt;<span class="codeword"><u>true</u>|false</span>&lt;/timeoutErr&gt;<br>  &lt;/splash&gt;<br>  &lt;versionInfo&gt;<br>    <strong>&lt;fileVersion&gt;</strong><span class="codeword">x.x.x.x</span><strong>&lt;/fileVersion&gt;</strong><br>    <strong>&lt;txtFileVersion&gt;</strong><span class="codeword">text</span><strong>&lt;/txtFileVersion&gt;</strong><br>    <strong>&lt;fileDescription&gt;</strong><span class="codeword">text</span><strong>&lt;/fileDescription&gt;</strong><br>    <strong>&lt;copyright&gt;</strong><span class="codeword">text</span><strong>&lt;/copyright&gt;</strong><br>    <strong>&lt;productVersion&gt;</strong><span class="codeword">x.x.x.x</span><strong>&lt;/productVersion&gt;</strong><br>    <strong>&lt;txtProductVersion&gt;</strong><span class="codeword">text</span><strong>&lt;/txtProductVersion&gt;</strong><br>    <strong>&lt;productName&gt;</strong><span class="codeword">text</span><strong>&lt;/productName&gt;</strong><br>    &lt;companyName&gt;<span class="codeword">text</span>&lt;/companyName&gt;<br>    <strong>&lt;internalName&gt;</strong><span class="codeword">filename</span><strong>&lt;/internalName&gt;</strong><br>    <strong>&lt;originalFilename&gt;</strong><span class="codeword">filename.exe</span><strong>&lt;/originalFilename&gt;</strong><br>  &lt;/versionInfo&gt;<br><strong>&lt;/launch4jConfig&gt;</strong><br></pre>
+
+<dl>
+	<dt>&lt;headerType&gt;</dt>
+	<dd>Tipo de cabecera usada para empaquetar la aplicación.</dd>
+</dl>
+
+<table>
+	<thead>
+    	<tr>
+    		<th>Tipo de cabecera</th>
+    		<th>Tipo de aplicación</th>
+    		<th>Lanzador</th>
+    		<th>Pantalla de bienvenida</th>
+    		<th style="white-space: nowrap;">Esperar a que se cierre la
+			aplicación</th>
+    	</tr>
+	</thead>
+	<tbody>
+    	<tr>
+    		<td>0</td>
+    		<td>GUI</td>
+    		<td>javaw</td>
+    		<td>sí</td>
+    		<td class="description">el empaquetador espera sólo si <em>stayAlive</em>
+			está puesto a true (verdadero), en otro caso termina inmediatamente
+			o después de cerrar la pantalla de bienvenida.
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>1</td>
+    		<td>consola</td>
+    		<td>java</td>
+    		<td>no</td>
+    		<td class="description">siempre espera y devuelve el código de
+			salida de la aplicación.</td>
+    	</tr>
+    </tbody>
+</table>
+
+<dl>
+	<dt>&lt;outfile&gt;</dt>
+	<dd>El fichero ejecutable de salida.</dd>
+</dl>
+<dl>
+	<dt>&lt;jar&gt;</dt>
+	<dd>
+		Depende de <em>&lt;dontWrapJar&gt;</em>, si false (falso, por defecto) 
+		entonces este elemento es el jar ejecutable que empaquetar.
+		Cuando <em>&lt;dontWrapJar&gt;</em> está puesto a true (verdadero) es la 
+		ruta del jar relativa al ejecutable. Por ejemplo, si el lanzador 
+		ejecutable y la aplicación jar, llamados calc.exe y calc.jar 
+		respectivamente, están en el mismo directorio, entonces debería usar <i>&lt;jar&gt;calc.jar&lt;/jar&gt;</i>.
+	</dd>
+</dl>
+<dl>
+	<dt>&lt;dontWrapJar&gt;</dt>
+	<dd>
+		No empaquetar el fichero jar.
+		Opcional, por defecto a false (falso). Launch4j por defecto empaqueta 
+		jars en los ejecutables nativos, usted puede evitar esto poniendo <em>&lt;dontWrapJar&gt;</em> 
+		a true (verdadero).
+		El ejecutable actúa como un lanzador e inicia la aplicación especificada 
+		en <em>&lt;jar&gt;.</em>
+	</dd>
+</dl>
+<dl>
+	<dt>&lt;errTitle&gt;</dt>
+	<dd>
+	<p align="justify">Opcional, estable el título de la ventana de error que se
+	muestra si Java no se ha podido encontrar, por ejemplo. Este normalmente
+	debería contener el nombre de su aplicación. La cabecera de tipo consola
+	muestra esta propiedad delante del mensaje de error (myapp: error...)
+	</dd>
+</dl>
+<dl>
+	<dt>&lt;jarArgs&gt;</dt>
+	<dd>Opcional, los argumentos de la línea de órdenes.</dd>
+</dl>
+<dl>
+	<dt>&lt;chdir&gt;</dt>
+	<dd>
+	<p align="justify">Opcional. Cambia el directorio actual a una ruta relativa
+	arbitraria al ejecutable. Si omite esta propiedad o la deja en blanco, no
+	tendrá ningún efecto. Si establece esta propiedad como <em>.</em> se
+	cambiará el directorio actual al mismo directorio que el ejecutable. <em>..</em>
+	lo cambiará al directorio padre y así sucesivamente.
+	</dd>
+	<dd>
+		<pre>&lt;chdir&gt;.&lt;/chdir&gt;</pre>
+	</dd>
+	<dd>
+		<pre>&lt;chdir&gt;../somedir&lt;/chdir&gt;</pre>
+	</dd>
+</dl>
+<dl>
+	<dt>&lt;customProcName&gt;</dt>
+	<dd>
+	<p align="justify">Opcional, por defecto puesta a false (falso). Establece
+	el nombre del proceso como el nombre del fichero ejecutable. Crea un fichero
+	temporal en el directorio launch4j-tmp dentro del JRE usado. Estos ficheros
+	son borrados por cualquier aplicación empaquetada por launch4j, que
+	establece el nombre del proceso y usa el mismo JRE. El borrado tiene lugar
+	cuando la aplicación <strong>comienza</strong>, así que al menos una copia
+	de este fichero siempre estará presente.
+	</dd>
+</dl>
+<dl>
+	<dt>&lt;stayAlive&gt;</dt>
+	<dd>
+	<p align="justify">Opcional, por defecto puesta a&nbsp; false (falso) en la
+	cabecera GUI, siempre es true (verdadero) en la cabecera de tipo consola.
+	Cuando está activada, el lanzador espera a que la aplicación finalice y
+	devuelve su código de salida.
+	</dd>
+</dl>
+<dl>
+	<dt>&lt;icon&gt;</dt>
+	<dd>Icono de aplicación en formato ICO. Puede contener varias profundidades
+	de color/resoluciones.</dd>
+</dl>
+<dl>
+	<dt>&lt;headerObjects&gt;</dt>
+	<dd>Opcional, sólo cabeceras personalizadas. Lista ordenada de los ficheros
+	objeto de cabecera.</dd>
+</dl>
+<blockquote>
+	<dl>
+    	<dt>&lt;file&gt;</dt>
+		<dt>&lt;file&gt;</dt>
+		<dt>...</dt>
+	</dl>
+</blockquote>
+<dl>
+	<dt>&lt;libs&gt;</dt>
+	<dd>Opcional, sólo cabeceras personalizadas. Lista ordenada de bibliotecas
+	usadas por la cabecera.</dd>
+</dl>
+<blockquote>
+	<dl>
+    	<dt>&lt;file&gt;</dt>
+		<dt>&lt;file&gt;</dt>
+		<dt>...</dt>
+	</dl>
+</blockquote>
+
+<dl>
+	<dt>&lt;jre&gt;</dt>
+	<dd>Elementos requeridos que agrupan la configuración del JRE.</dd>
+</dl>
+<blockquote>
+    <dl>
+    	<dt>&lt;path&gt;, &lt;minVersion&gt;, &lt;maxVersion&gt;</dt>
+        <dd>
+		<p align="justify">La propiedad <em>&lt;path&gt;</em> se usa para especificar
+		la ruta relativa (al ejecutable) de un JRE embebido, que no depende del
+		directorio actual o <em>&lt;chdir&gt;</em>. Nótese que esta ruta no se
+		comprueba hasta la ejecución de la aplicación. Si desea que el
+		empaquetador busque un JRE (público o SDK privado) use la propiedad <em>
+		&lt;minVersion&gt;</em>, también puede especificar <em>&lt;maxVersion&gt; </em> para
+		evitar que se usa una versión superior de Java. Launch4j siempre usará
+		la versión más alta disponible (en el rango mínimo/máximo, por
+		supuesto). Puede combinar estas propiedades para cambiar el proceso de
+		inicio...</dd>
+	</dl>
+	<blockquote>
+        <dl>
+        	<dt>&lt;path&gt;</dt>
+        	<dd>Se ejecuta si el&nbsp; JRE y javaw.exe están presentes, de otro
+			modo se para con error.</dd>
+            <dt>&lt;path&gt; + &lt;minVersion&gt;&nbsp; [+ &lt;maxVersion&gt;]</dt>
+            <dd>
+			<p align="justify">Usa primero el JRE, si no puede encontrarlo busca
+			Java, si eso falla muestra un mensaje de error y abre la página de
+			descarga de Java.
+        	</dd>
+            <dt>&lt;minVersion&gt;&nbsp; [+ &lt;maxVersion&gt;]</dt>
+            <dd>Busca Java, si no se encuentra ninguna versión correcta, muestra
+			un mensaje de error y abre la página de descarga de Java.
+        	</dd>
+        </dl>
+	</blockquote>
+</blockquote>
+<blockquote>
+	<dl>
+		<dt>&lt;initialHeapSize&gt;</dt>
+		<dd>Opcional, tamaño inicial de la pila, en MB, 0 por defecto.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;maxHeapSize&gt;</dt>
+		<dd>Opcional, tamaño máximo de la pila, en MB, 0 por defecto.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;args&gt;</dt>
+		<dd>
+		<p align="justify">Opcional, acepta todo lo que normalmente se le
+		pasaría al lanzador java/javaw: opciones assertion, opciones de sistema
+		y opciones X. Aquí puede mapear variables de entorno y variables
+		especiales <em>EXEDIR</em>
+		(directorio del ejecutable), <em>EXEFILE</em> (ruta completa del fichero
+		del ejecutable) a propiedades del sistema. Todas las referencias a las
+		varibles deben ir rodeadas por signos de porcentaje y entre comillas.<pre>-Dlaunch4j.exedir=&quot;%EXEDIR%&quot;<br>-Dlaunch4j.exefile=&quot;%EXEFILE%&quot;<br>-Denv.path=&quot;%Path%&quot;</pre>
+		</dd>
+	</dl>
+</blockquote>
+
+<dl>
+	<dt>&lt;splash&gt;</dt>
+	<dd>Opcional, agrupa los ajustes de configuración de la pantalla de
+	bienvenida. Sólo permitido en la cabecera GUI.</dd>
+</dl>
+<blockquote>
+	<dl>
+		<dt>&lt;file&gt;</dt>
+		<dd>La imagen de la pantalla de bienvenida en formato BMP.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;waitForWindow&gt;</dt>
+		<dd>
+		<p align="justify">Opcional, por defecto puesta a true (verdadero).
+		Cierra la pantalla de bienvenida cuando aparece la ventana de la
+		aplicación o un mensaje de error de Java. Si se pone a false, la
+		pantalla de bienvenida se cerrará después del tiempo de espera.
+		</dd>
+	</dl>
+	<dl>
+		<dt>&lt;timeout&gt;</dt>
+		<dd>
+		<p align="justify">Tiempo de espera. Opcional, por defecto puesto a 60.
+		Número de segundos después de que la ventana de bienvenida se cierre. El
+		tiempo de espera puede causar un error dependiendo del <em>&lt;timeoutErr&gt;</em>.
+		</dd>
+	</dl>
+	<dl>
+		<dt>&lt;timeoutErr&gt;</dt>
+		<dd>
+		<p align="justify">Opcional, por defecto puesto a true (verdadero). True
+		señala un error después del tiempo de espera de la pantalla de
+		bienvenida, false (falso) cierra la pantalla de bienvenida
+		silenciosamente.
+		</dd>
+	</dl>
+</blockquote>
+
+<dl>
+	<dt>&lt;versionInfo&gt;</dt>
+	<dd>Opcional, información de la versión que se mostrará en el Windows
+	Explorer.</dd>
+</dl>
+<blockquote>
+	<dl>
+		<dt>&lt;fileVersion&gt;</dt>
+		<dd>Versión del fichero. Número de versión &#39;x.x.x.x&#39;.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;txtFileVersion&gt;</dt>
+		<dd>Versión del fichero. Forma libre de versión, por ejemplo &#39;1.20.RC1&#39;.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;fileDescription&gt;</dt>
+		<dd>Descripción del fichero presentado al usuario.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;copyright&gt;</dt>
+		<dd>Copyright legal.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;productVersion&gt;</dt>
+		<dd>Versión del producto. Número de versión &#39;x.x.x.x&#39;.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;txtProductVersion&gt;</dt>
+		<dd>Versión del producto. Forma libre de versión, por ejemplo
+		&#39;1.20.RC1&#39;.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;productName&gt;</dt>
+		<dd>Nombre del producto. Texto.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;companyName&gt;</dt>
+		<dd>Nombre de la compañía u organización. Texto opcional.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;internalName&gt;</dt>
+		<dd>Nombre interno sin extensión, el nombre original del fichero o el
+		módulo, por ejemplo.</dd>
+		<dt>&nbsp;</dt>
+		<dt>&lt;originalFilename&gt;</dt>
+		<dd>Nombre original del fichero sin la ruta. Permite determinar si un
+		fichero ha sido renombrado por un usuario. </dd>
+	</dl>
+</blockquote>
+
+<h2 id="Importing_1.x_configuration">Importando configuración 1.x</h2>
+<p align="justify">Es posible importar un fichero de configuración 1.x usando la
+interfaz gráfica (GUI). Abra el fichero, corrija las rutas y guárdelo como una
+nueva configuración xml.</p>
+<h2 id="Ant_task">Tarea Ant</h2>
+Puede especificar una propiedad de directorio launch4j&nbsp; o cambiar la
+definición de la tarea.
+
+<pre>&lt;property name=&quot;launch4j.dir&quot; location=&quot;/opt/launch4j&quot; /&gt;</pre>
+
+Defina la tarea en su script Ant.
+
+<pre>&lt;taskdef name=&quot;launch4j&quot;<br>  classname=&quot;net.sf.launch4j.ant.Launch4jTask&quot;<br>  classpath=&quot;${launch4j.dir}/launch4j.jar<br>    :${launch4j.dir}/lib/xstream.jar&quot; /&gt;</pre>
+
+¡Ejecute la tarea!
+
+<pre>&lt;launch4j configFile=&quot;./l4j/demo.xml&quot; /&gt;</pre>
+
+Puede especificar las siguientes propiedades de configuración...<br>
+
+<em>&lt;jar&gt;<br>
+&lt;outfile&gt;<br>
+&lt;versionInfo&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;fileVersion&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;txtFileVersion&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;productVersion&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;txtProductVersion&gt;</em>
+
+<pre>&lt;launch4j configFile=&quot;./l4j/demo.xml&quot;<br>  outfile=&quot;mydemo.exe&quot;<br> &nbsp;fileVersion=&quot;1.0.0.0&quot; txtFileVersion=&quot;1.0 RC2&quot; /&gt;</pre>
+
+<p align="justify">También puede definir toda la configuración en la tarea, pero
+no será posible editarla en modo gráfico (GUI). Todos las rutas excepto&nbsp; <em>
+&lt;chdir&gt;</em>
+y <em>&lt;jre&gt;&lt;path&gt;</em> se calculan usando el atributo de proyecto <em>basedir</em>.
+</p>
+
+<pre>&lt;launch4j&gt;<br>  &lt;config headerType=&quot;0&quot; jar=&quot;demo.jar&quot; outfile=&quot;demo.exe&quot;&gt;<br>    &lt;jre minVersion=&quot;1.4.0&quot; /&gt;<br>  &lt;/config&gt;<br>&lt;/launch4j&gt;</pre>
+
+<h2 id="Debug_launching_mode">Lanzamiento en modo depuración</h2>
+Para asegurarse de que la salida del ejecutable está configurada correctamente,
+puede usar el lanzamiento en modo depuración que muestra diversa información
+antes de ejecutar la aplicación Java. Para habilitarlo ponga la variable de
+entorno <em>launch4j=debug </em> y ejecute el programa empaquetado.<pre>set launch4j=debug<br>app.exe</pre>
+			</div>
+			<div class="footer">
+            	Copyright &copy; 2005-2006 Grzegorz Kowal <br>
+				Traducción al español Copyright &copy; 2005-2006 Patricio Martínez Ros
+            	<p style="margin-top: 2em">
+            		<a href="http://sourceforge.net"><img style="width: 125px; height: 37px; border: none" src="http://sourceforge.net/sflogo.php?group_id=95944&amp;type=4" alt="sf.net"></a>
+            		<a href="http://www.nosoftwarepatents.com"><img style="width: 90px; height: 40px; border: none; margin-left: 5%" src="http://www.nosoftwarepatents.com/banners/90x40_3.jpg" alt=""></a>
+            		<a href="http://validator.w3.org/check?uri=referer"><img style="width: 88px; height: 31px; border: none; margin-left: 5%" src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01!"></a>
+            	</p>
+			</div>
+		</div>
+	</body>
+</html>

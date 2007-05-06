@@ -1,0 +1,180 @@
+/* ====================================================================
+ * 
+ * The ObjectStyle Group Software License, version 1.1
+ * ObjectStyle Group - http://objectstyle.org/
+ * 
+ * Copyright (c) 2002-2005, Andrei (Andrus) Adamchik and individual authors
+ * of the software. All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ * 
+ * 3. The end-user documentation included with the redistribution, if any,
+ *    must include the following acknowlegement:
+ *    "This product includes software developed by independent contributors
+ *    and hosted on ObjectStyle Group web site (http://objectstyle.org/)."
+ *    Alternately, this acknowlegement may appear in the software itself,
+ *    if and wherever such third-party acknowlegements normally appear.
+ * 
+ * 4. The names "ObjectStyle Group" and "Cayenne" must not be used to endorse
+ *    or promote products derived from this software without prior written
+ *    permission. For written permission, email
+ *    "andrus at objectstyle dot org".
+ * 
+ * 5. Products derived from this software may not be called "ObjectStyle"
+ *    or "Cayenne", nor may "ObjectStyle" or "Cayenne" appear in their
+ *    names without prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE OBJECTSTYLE GROUP OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ * 
+ * This software consists of voluntary contributions made by many
+ * individuals and hosted on ObjectStyle Group web site.  For more
+ * information on the ObjectStyle Group, please see
+ * <http://objectstyle.org/>.
+ */
+package org.objectstyle.cayenne.unit;
+
+import java.util.Iterator;
+import java.util.Map;
+
+import org.objectstyle.cayenne.access.DataDomain;
+import org.objectstyle.cayenne.access.DataNode;
+import org.objectstyle.cayenne.access.UnitTestDomain;
+import org.objectstyle.cayenne.event.EventManager;
+import org.objectstyle.cayenne.map.DataMap;
+import org.objectstyle.cayenne.map.Procedure;
+import org.objectstyle.cayenne.query.Query;
+
+/**
+ * Default implementation of the AccessStack that has a single DataNode per DataMap.
+ * 
+ * @author Andrei Adamchik
+ */
+public class SimpleAccessStack extends AbstractAccessStack implements AccessStack {
+
+    protected UnitTestDomain domain;
+    protected DataSetFactory dataSetFactory;
+
+    public SimpleAccessStack(CayenneTestResources resources,
+            DataSetFactory dataSetFactory, DataMap[] maps) throws Exception {
+
+        this.dataSetFactory = dataSetFactory;
+        this.resources = resources;
+        this.domain = new UnitTestDomain("domain");
+        domain.setEventManager(new EventManager(2));
+        for (int i = 0; i < maps.length; i++) {
+            initNode(maps[i]);
+        }
+    }
+
+    protected DataDomain getDomain() {
+        return domain;
+    }
+
+    protected void initNode(DataMap map) throws Exception {
+        DataNode node = resources.newDataNode(map.getName());
+
+        // tweak mapping with a delegate
+        Iterator procedures = map.getProcedures().iterator();
+        while (procedures.hasNext()) {
+            Procedure proc = (Procedure) procedures.next();
+            getAdapter(node).tweakProcedure(proc);
+        }
+
+        node.addDataMap(map);
+
+        // avoid using shared DataSource if there is more than one node
+        if (!domain.getDataNodes().isEmpty()) {
+            node.setDataSource(resources.createDataSource());
+        }
+
+        domain.addNode(node);
+
+    }
+
+    /**
+     * Returns DataDomain for this AccessStack.
+     */
+    public UnitTestDomain getDataDomain() {
+        return domain;
+    }
+
+    public void createTestData(Class testCase, String testName, Map parameters)
+            throws Exception {
+        Query query = dataSetFactory.getDataSetQuery(testCase, testName, parameters);
+        getDataDomain().onQuery(null, query);
+    }
+
+    /**
+     * Deletes all data from the database tables mentioned in the DataMap.
+     */
+    public void deleteTestData() throws Exception {
+        Iterator it = domain.getDataNodes().iterator();
+        while (it.hasNext()) {
+            DataNode node = (DataNode) it.next();
+            deleteTestData(node, (DataMap) node.getDataMaps().iterator().next());
+        }
+    }
+
+    /** Drops all test tables. */
+    public void dropSchema() throws Exception {
+        Iterator it = domain.getDataNodes().iterator();
+        while (it.hasNext()) {
+            DataNode node = (DataNode) it.next();
+            dropSchema(node, (DataMap) node.getDataMaps().iterator().next());
+        }
+    }
+
+    /**
+     * Creates all test tables in the database.
+     */
+    public void createSchema() throws Exception {
+        Iterator it = domain.getDataNodes().iterator();
+        while (it.hasNext()) {
+            DataNode node = (DataNode) it.next();
+            createSchema(node, (DataMap) node.getDataMaps().iterator().next());
+        }
+    }
+
+    public void dropPKSupport() throws Exception {
+        Iterator it = domain.getDataNodes().iterator();
+        while (it.hasNext()) {
+            DataNode node = (DataNode) it.next();
+            dropPKSupport(node, (DataMap) node.getDataMaps().iterator().next());
+        }
+    }
+
+    /**
+     * Creates primary key support for all node DbEntities. Will use its facilities
+     * provided by DbAdapter to generate any necessary database objects and data for
+     * primary key support.
+     */
+    public void createPKSupport() throws Exception {
+        Iterator it = domain.getDataNodes().iterator();
+        while (it.hasNext()) {
+            DataNode node = (DataNode) it.next();
+            createPKSupport(node, (DataMap) node.getDataMaps().iterator().next());
+        }
+    }
+}

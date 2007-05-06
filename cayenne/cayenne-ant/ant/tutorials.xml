@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<!-- =============================================== -->
+<!-- Tutorial buildfile - just copy the sources.     -->
+<!-- =============================================== -->
+<project>
+	<target name="dist-src">
+		<mkdir dir="${dist}/src/tutorials"/>
+		
+		<copy todir="${dist}/src/tutorials">
+			<fileset dir="${cayenne.tutorials}" excludes="**/bin/**"/>
+		</copy>
+	</target>
+</project>
+
