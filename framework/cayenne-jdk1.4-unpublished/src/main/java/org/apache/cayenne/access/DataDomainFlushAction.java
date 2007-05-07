@@ -128,24 +128,23 @@ class DataDomainFlushAction {
         this.flattenedBucket = new DataDomainFlattenedBucket(this);
 
         this.queries = new ArrayList();
+        this.resultIndirectlyModifiedIds = new HashSet();
+
+        preprocess(context, changes);
+
+        if (queries.isEmpty()) {
+            return new CompoundDiff();
+        }
+
+        this.resultDiff = new CompoundDiff();
+        this.resultDeletedIds = new ArrayList();
+        this.resultModifiedSnapshots = new HashMap();
+
+        runQueries();
 
         // note that there is no syncing on the object store itself. This is caller's
         // responsibility.
         synchronized (context.getObjectStore().getDataRowCache()) {
-
-            this.resultIndirectlyModifiedIds = new HashSet();
-
-            preprocess(context, changes);
-
-            if (queries.isEmpty()) {
-                return new CompoundDiff();
-            }
-
-            this.resultDiff = new CompoundDiff();
-            this.resultDeletedIds = new ArrayList();
-            this.resultModifiedSnapshots = new HashMap();
-
-            runQueries();
             postprocess(context);
             return resultDiff;
         }
