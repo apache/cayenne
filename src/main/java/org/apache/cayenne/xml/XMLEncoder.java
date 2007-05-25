@@ -20,7 +20,9 @@
 package org.apache.cayenne.xml;
 
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.xml.transform.OutputKeys;
@@ -227,7 +229,15 @@ public class XMLEncoder {
             node.setAttribute("type", object.getClass().getName());
         }
 
-        node.appendChild(document.createTextNode(object.toString()));
+        // Dates need special handling
+        if (object instanceof Date) {
+            SimpleDateFormat sdf = new SimpleDateFormat(XMLUtil.DEFAULT_DATE_FORMAT);
+            node.appendChild(document.createTextNode(sdf.format(object)));
+        }
+        else {
+            node.appendChild(document.createTextNode(object.toString()));
+        }
+
         pop();
     }
 
