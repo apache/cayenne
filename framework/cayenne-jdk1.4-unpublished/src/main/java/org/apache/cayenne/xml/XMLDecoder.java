@@ -22,6 +22,7 @@ package org.apache.cayenne.xml;
 
 import java.io.Reader;
 import java.lang.reflect.Constructor;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -245,7 +246,21 @@ public class XMLDecoder {
 
             // handle dates using hardcoded format....
             if (Date.class.isAssignableFrom(objectClass)) {
-                return new SimpleDateFormat("E MMM dd hh:mm:ss z yyyy").parse(text);
+                try {
+                    return new SimpleDateFormat(XMLUtil.DEFAULT_DATE_FORMAT).parse(text);
+                }
+                catch (ParseException e) {
+                    // handle pre-3.0 default data format for backwards compatibilty
+                    
+                    try {
+                        return new SimpleDateFormat("E MMM dd hh:mm:ss z yyyy").parse(text);
+                    }
+                    catch (ParseException eOld) {
+                        
+                        // rethrow the original exception
+                        throw e;
+                    }
+                }
             }
 
             // handle all other primitive types...

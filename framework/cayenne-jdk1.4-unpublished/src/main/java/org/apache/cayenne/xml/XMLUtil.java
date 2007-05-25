@@ -41,6 +41,9 @@ import org.w3c.dom.NodeList;
  * @author Andrus Adamchik
  */
 class XMLUtil {
+    
+    // note that per CAY-792, to be locale-safe the format must not contain literal parts
+    static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss zzz"; 
 
     static DocumentBuilderFactory sharedFactory;
 
