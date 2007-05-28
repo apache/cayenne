@@ -163,6 +163,11 @@ public class IncrementalFaultList implements List {
         return internalQuery;
     }
 
+    /**
+     * Returns true if it is possible to read the first page of inflated objects from the
+     * ResultSet returned from the main query. False is returned for queries with
+     * prefetches as resolving prefetches is not possible in this situation.
+     */
     private boolean resolvesFirstPage() {
         return internalQuery.getPrefetchTree() == null;
     }
