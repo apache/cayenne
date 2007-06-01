@@ -1,0 +1,55 @@
+<document>
+<title>User Guide - Design</title>
+<toc name="toc-user-guide" chapter="4. Design"/>
+<body>
+    <section name="4. Design">
+        <subsection name="4.3 Data Objects" anchor="do">
+            <p>Cayenne's main function is to provide object-based access
+            to relational data sources. DataObjects in Cayenne are fully portable and contain
+            only data and business logic. It is a task of the framework to perform operations 
+            required to provide objects persistence.</p>
+            
+            <p>All objects that represent persistent data in Cayenne must implement <a href=
+            "../../api/cayenne/org/objectstyle/cayenne/DataObject.html">DataObject</a> interface.
+            Default implementation of DataObject is <a href=
+            "../../api/cayenne/org/objectstyle/cayenne/CayenneDataObject.html">CayenneDataObject</a>.
+            In most cases application classes that are used for data access would extend 
+            CayenneDataObject. DataContext provides persistence services to DataObjects:
+            </p>
+            
+            <img src="/images/data-objects.gif" width="420" height="331" alt="Cayenne DataObjects"/> 
+
+            <subsection name="4.3.1 ObjectId">
+            	<p>Each object in Cayenne is identified by <a href=
+            	"../../api/cayenne/org/objectstyle/cayenne/ObjectId.html">ObjectId</a>. 
+            	ObjectId is an abstraction similar to the Primary Key concept in
+            	relational databases. Its internal implementation in fact uses 
+            	primary key values from the database. Cayenne takes care of creating 
+            	and managing ObjectId's. Application developers normally do not 
+            	work with ObjectId directly.          		
+            	</p>
+            	
+            	<panel name="Note:">
+            	The fact that ObjectIds are opaque has a consequence that
+            	primary key columns are normally not included as class properties
+            	of DataObjects. From the DataMap perspective, this means that while
+            	DbEntities would have attributes that map to primary key columns,
+            	ObjEntities will not.
+            	</panel>
+            </subsection>
+            
+            <subsection name="4.3.2 Object Persistence States">
+            	<p>DataObjects can be in 
+            	one of the few persistence states. Transitions between the states occur when
+            	user (or Cayenne framework on user's behalf) performs certain operations. 
+				The following state diagram lists these transitions for the most common
+				scenarious: 
+            	</p>
+            	
+            	<img src="/images/dataobject-state.gif" alt="Cayenne DataObject State Diagram"/> 
+
+            </subsection>
+        </subsection>
+    </section>
+</body>
+</document>

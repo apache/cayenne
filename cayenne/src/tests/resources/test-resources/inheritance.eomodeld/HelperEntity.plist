@@ -1,0 +1,17 @@
+{
+    attributes = (
+        {
+            columnName = PK; 
+            externalType = int; 
+            name = pk; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }
+    ); 
+    attributesUsedForLocking = (pk); 
+    className = HelperEntityClass; 
+    externalName = "HELPER_ENTITY"; 
+    fetchSpecificationDictionary = {}; 
+    name = HelperEntity; 
+    primaryKeyAttributes = (pk); 
+}

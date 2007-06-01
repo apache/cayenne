@@ -1,0 +1,17 @@
+Cayenne Release Notes 1.1 M3
+Date: 02/29/2004
+============================================
+
+For the latest information go to the project web site at http://objectstyle.org/cayenne/
+
+Features and Improvements:
+
+- SelectQueries are now first-class mapping objects and can be created in CayenneModeler
+and saved to the DataMap XML file.
+
+CAY-93	Expressions now can be created from Strings, significantly reducing the amount of
+code needed to build expressions.
+
+CAY-96	Incorrectly setting relationships to NULL on commit
+
+CAY-95	Modeler SQL save-as dialog: can't navigate to parent directories

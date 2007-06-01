@@ -1,0 +1,13 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="4. Common Modeling Tasks"/>
+<body>
+	<section name="4. Common Modeling Tasks">
+	<subsection name="4.4 Generate Java Classes">
+ 	 	<p>To be done...</p>
+<img src="/images/modelerguide/datamap-generateclasses.jpg" width="450" height="314" border="0" 
+        align="middle" alt="Class Generation Dialog"/>
+ 	 	</subsection>
+    </section>
+</body>
+</document>

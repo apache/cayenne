@@ -1,0 +1,25 @@
+<document>
+<title>CayenneModeler Guide - Running CayenneModeler</title>
+<toc name="toc-modeler-guide" chapter="1. Introduction"/>
+<body>
+ <section name="1. Introduction">
+    <subsection name="1.2. CayenneModeler and Eclipse">
+        	<p>If you use <a href="http://www.eclipse.org" target="_blank">Eclipse IDE</a> for your Java development,
+        	it can be configured to launch CayenneModeler when clicking on "cayenne.xml" file in the project tree. Here is 
+        	the instructions for Windows, other platforms should work in a similar fashion.
+        	</p>
+        	
+        	<p>In Eclipse Properties panel go to "Workbench -> File Associations". Add an association for "cayenne.xml" to 
+        	open with "external editor". Select "modeler.bat" file as an external editor. Caveat - CAYENNE_HOME 
+        	variable must be either defined in the environment, or you may need to edit modeler.bat and set it right there, otherwise
+        	modeler will not start.
+        	</p>
+        	</subsection>
+    </section>
+</body>
+</document>
+
+
+
+
+

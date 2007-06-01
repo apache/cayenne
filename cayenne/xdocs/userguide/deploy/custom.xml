@@ -1,0 +1,102 @@
+<document>
+<title>User Guide - Deployment</title>
+<toc name="toc-user-guide" chapter="12. Deployment"/>
+<body>
+     <section name="12. Deployment">
+		<subsection name="12.3 Customizing Configuration" anchor="custom">
+			<p>A user can create her own subclass of Configuration and use it
+			instead of the classes provided by Cayenne. Custom subclasses are
+			usually created to load configuration files from non-standard locations,
+			to automatically configure Cayenne during  certain events that happen
+			in deployment containers, etc.
+			Cayenne provides a few implementations of Configuration discussed later
+			in this chapter.
+			</p>
+
+			<p>To ensure that Cayenne uses the correct Configuration class, 
+			it must be initialized properly before any calls to Configuration are made: 
+			</p>
+
+<source>
+import org.objectstyle.cayenne.conf.Configuration
+...
+Class myConfigSubclass = my.package.ConfigSubclass.class;
+Configuration.initializeSharedConfiguration(myConfigSubclass);
+</source>
+
+			<p>After this code is executed, any subsequent calls to
+			<code>Configuration.getSharedConfiguration()</code> will return an instance
+			of the custom class instead of <code>DefaultConfiguration</code>.
+			</p>
+            	
+			<p>Another useful feature is the customization of the resource lookup
+			strategy implemented by the existing classes. Currently, both
+			<code>DefaultConfiguration</code> and <code>FileConfiguration</code>
+			offer the possibility to add additional paths which will be searched for
+			resources.
+			</p>
+
+           	<subsection name="12.3.1 DefaultConfiguration">
+				<p><code>DefaultConfiguration</code> uses the application's class path for
+				locating configuration files; this works for both "expanded" class paths
+				and JAR files. "Out of the box" only resources on the top level of the class
+				path are found; very often it is convenient to have a subdirectory ('package') with
+				configuration files. There are two ways to make Configuration find these files:
+				</p>
+
+<source>
+import org.objectstyle.cayenne.conf.DefaultConfiguration;
+...
+DefaultConfiguration conf = new DefaultConfiguration();			
+conf.addClassPath("my/package/conf");
+Configuration.initializeSharedConfiguration(conf);
+</source>
+
+			<p>Alternatively you can place an empty subclass of <code>DefaultConfiguration</code>
+			into your package and use that class directly:
+			</p>
+
+<source>
+import my.package.conf.MyPackageConfiguration;
+...
+Configuration.initializeSharedConfiguration(new MyPackageConfiguration());
+</source>
+			</subsection>
+
+			<subsection name="12.3.2 FileConfiguration">
+				<p><code>FileConfiguration</code> uses the regular file system to load its
+				files, and works very silimar to <code>DefaultConfiguration</code>:
+				</p>
+
+<source>
+import org.objectstyle.cayenne.conf.FileConfiguration;
+...
+String fileName = "/some/path/to/my-cayenne.xml";
+FileConfiguration conf = new FileConfiguration(new File(fileName));
+Configuration.initializeSharedConfiguration(conf);
+</source>
+
+				<p>The <code>fileName</code> argument can be absolute or relative to the
+				application's working directory, and is checked for accessibility.
+				A more flexible lookup can be done by using the name without any path
+				and adding search paths:
+				</p>
+<source>
+import org.objectstyle.cayenne.conf.FileConfiguration;
+...
+FileConfiguration conf = new FileConfiguration("my-cayenne.xml");
+conf.addFilesystemPath("a/relative/path");
+conf.addFilesystemPath("/another/absolute/path");
+conf.addFilesystemPath(new File("/some/path/that/must/exist/"));
+Configuration.initializeSharedConfiguration(conf);
+</source>
+				<p>The difference between the <code>String</code> and <code>File</code> arguments
+				is that the latter are checked for existence. Both variants can be absolute or
+				relative, and are evaluated in the order in which they are added to the Configuration.
+				</p>
+
+			</subsection>
+		</subsection>
+    </section>
+</body>
+</document>

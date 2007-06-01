@@ -1,0 +1,19 @@
+<document>
+	<title>User Guide - Design</title>
+	<toc name="toc-user-guide" chapter="13. Access Stack Internals"/>
+	<body>
+		<section name="13. Access Stack Internals">
+			<subsection name="13.1 DbAdapter Internals">
+				<subsection name="13.1.1 Non-SQL Adapters">
+					<p>Since DbAdapter serves as a factory of DataNodes, it is 
+						possible to implement adapters to non-JDBC and even 
+						non-SQL data sources, such as XML feeds, LDAP, flat 
+						files, etc.</p>
+				</subsection>
+				<subsection name="13.1.2 Porting Cayenne to a New RDBMS">
+					<p>To Be Done...</p>
+				</subsection>
+			</subsection>
+		</section>
+	</body>
+</document>

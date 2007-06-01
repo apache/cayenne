@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+
+<!-- ========================================== -->
+<!-- Cayenne Data View Modeler(Swing) subproject buildfile.-->
+<!-- ========================================== -->
+<project default="compile">
+	<property name="dvmodeler.dist.src" value="${dist}/src/dvmodeler"/>
+	<property name="dvmodeler.build" value="build/dvmodeler"/>
+	<property name="dvmodeler.build.properties" value="${dvmodeler.build}/properties"/>
+	<property name="dvmodeler.build.deps" value="${dvmodeler.build}/deps"/>
+	<property name="dvmodeler.src" value="src/dvmodeler/java"/>
+	<property name="dvmodeler.bin" value="src/dvmodeler/bin"/>
+	
+    
+	<!-- ========================================== -->
+    <!-- Build targets.                             -->
+    <!-- ========================================== -->
+	
+	<target name="compile">
+		<ant antfile="build-subproj.xml" target="compile">
+			<property name="subproj" value="dvmodeler"/>
+		</ant>
+	</target>
+	
+	<target name="dist-src" depends="dist-bin">
+		<copy todir="${dvmodeler.dist.src}">
+ 			<fileset dir="${dvmodeler.src}"/>
+        </copy>
+	</target>
+
+	<target name="dist-bin" depends="jar">
+	    <copy todir="${dist}/bin">
+            <fileset dir="${dvmodeler.bin}" includes="*.bat,*.sh,*.ico"/>
+        </copy>
+
+        <chmod perm="ugo+rx">
+            <fileset dir="${dist}/bin">
+                <include name="**/*.sh"/>
+            </fileset>
+        </chmod>
+
+        <copy todir="${dist}/lib/dvmodeler">
+            <fileset dir="${otherlib.dir}">
+                <include name="${jdom.jar}"/>
+                <include name="${jgoodies.forms.jar}"/>
+                <include name="${jgoodies.forms-extras.jar}"/>
+                <include name="${jgoodies.looks.jar}"/>
+            </fileset>
+        </copy>
+	</target>
+	
+	
+	<!-- ========================================== -->
+    <!-- Build Modeler JAR file.                    -->
+    <!-- ========================================== -->
+    <target name="jar" depends="compile,prepare-properties">
+    	<mkdir dir="${dist}/lib/dvmodeler"/>
+    	
+        <jar jarfile="${dist}/lib/dvmodeler/cayenne-dvmodeler.jar">
+ 			<fileset dir="${dvmodeler.build}/classes"/>
+			<fileset dir="${dvmodeler.build.properties}"/>
+			<fileset dir="${dvmodeler.src}">
+				<include name="**/*.xml"/>
+            	<include name="**/*.gif"/>
+        		<include name="**/*.jpg"/>
+			</fileset>
+            
+            <metainf dir="doc/licenses" includes="LICENSE"/>
+            <manifest>
+               <attribute name="Built-By" value="${user.name}"/>
+               <attribute name="Extension-Name" value="org.objectstyle.cayenne"/>
+               <attribute name="Specification-Version" value="${project.name}"/>
+               <attribute name="Specification-Vendor" value="ObjectStyle.org"/>
+               <attribute name="Implementation-Vendor-Id" value="org.objectstyle"/>
+               <attribute name="Implementation-Version" value="${project.version}"/>
+               <attribute name="Implementation-Vendor" value="ObjectStyle.org"/>
+               <attribute name="Main-Class" value="org.objectstyle.cayenne.dataview.dvmodeler.Main"/>
+               <attribute name="Class-Path" value="${jdom.jar} ${jgoodies.forms.jar} ${scope.jar} ${jgoodies.looks.jar}"/>
+            </manifest>
+        </jar>
+    </target>  
+    
+    
+    <!-- ========================================== -->
+    <!-- Performs replacements in property files.   -->
+    <!-- ========================================== -->
+    <target name="prepare-properties">
+    	<tstamp/>
+		<copy todir="${dvmodeler.build.properties}" overwrite="yes">
+			<fileset dir="${dvmodeler.src}" >
+				<include name="**/*.properties"/>
+			</fileset>
+			<filterset>
+				<filter token="CAYENNE_BUILD_DATE" value="${TODAY}" />
+				<filter token="CAYENNE_VERSION" value="${project.version}"/>
+			</filterset>
+		</copy>
+	</target>
+</project>

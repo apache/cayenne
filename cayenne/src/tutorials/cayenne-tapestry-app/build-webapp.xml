@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+
+<!-- =============================================== -->
+<!-- cayenne-tapestry-app tutorial buildfile.             -->
+<!-- =============================================== -->
+<project name="cayenne-tapestry-app" default="compile">
+    <path id="classpath">
+		<fileset dir="WEB-INF/lib">
+			<include name="*.jar"/>
+		</fileset>
+    </path>    
+    
+	<target name="compile">
+		<javac	srcdir="WEB-INF/classes" 
+				debug="on" 
+				deprecation="on">
+			<classpath refid="classpath"/>
+		</javac>
+	</target>
+</project>

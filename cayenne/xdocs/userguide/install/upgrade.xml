@@ -1,0 +1,33 @@
+<document>
+<title>User Guide - Installation</title>
+<toc name="toc-user-guide" chapter="2. Installation"/>
+<body>
+    <section name="2. Installation">       
+    	<subsection name="2.5 Upgrading from Earlier Versions">
+    	
+    	<subsection name="2.5.1 Upgrading Project XML Files">
+    	<p>Opening a 1.0 projects in CayenneModeler would display an upgrade
+    	dialog. Select "Yes" button to perform the upgrade.
+    	</p>
+ 		<panel name="Warning!">Upgrading a project to 1.1 will make it unusable with
+ 		earlier versions of Cayenne.</panel>
+ 		</subsection>
+ 		
+    	<subsection name="2.5.2 Clean Recompile">
+    	<p>Cayenne 1.1 introduces a few API changes. Most of them are done to the backend and should not
+    	affect the applications written with the earlier versions. However it is a good idea to perform a clean 
+    	compilation of all Java code that relies on Cayenne. Updating calls to deprecated methods is a good idea 
+    	as well.</p>
+    	</subsection>
+
+		<subsection name="2.5.3 Cleaning Stale Modeler Preferences">
+    	<p>Cayenne 1.1 almost completely switched its preferences engine to use an embedded HSQL database,
+		however a number of preferences are still loaded from the old preferences file. As a result a number of 
+		bugs associated with the old preferences may reappear in 1.1, even though they were fixed. To clean old
+		preferences shut down all running instances of CayenneModeler, then delete a file $HOME/.cayenne/modeler.preferences.
+		$HOME is a user home directory which is OS and machine specific. </p>
+    	</subsection>
+        </subsection>
+    </section>
+</body>
+</document>

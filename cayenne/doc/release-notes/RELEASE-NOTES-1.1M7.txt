@@ -1,0 +1,35 @@
+Cayenne Release Notes 1.1 M7
+Date: 06/14/2004
+============================================
+
+For the latest information go to the project web site at 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+Changes, Features And Improvements:
+
+CAY-92	Shared namespace that spans multiple DataMaps within DataDomain.
+CAY-36	Caching query results, including lookup data
+- DataContext.performQueries(Collection, OperationObserver, Transaction) will no longer generate
+  prefetch queries. Instead this is done upstream in performQuery(GenericSelectQuery). If you subclassed
+  DataContext for whatever reason, check if this affects your subclass.
+
+
+Bugs Fixed:
+
+CAY-146	ConcurrentModificationException during validation
+CAY-145	Modeler Configured ClassLoader is not used on DB schema generation	
+CAY-124	No validation of mandatory to-one relationships	
+CAY-123	most-significant term Ordering in a multiple-ordering list not documented.
+CAY-129	NPE reverse engineering EOModel with no "externalName"	
+CAY-127	Upgrade to new JavaGroups libraries (JGroups )	
+CAY-143	Null map values improperly being pruned from qualifiers	
+CAY-147	Tried to reengineer and got exception	
+CAY-133	Error Generating Classes	
+CAY-142	Can update an entities reverse relation if it is a relationship to itself	
+CAY-122	org.objectstyle.cayenne.util.ConversionUtil.toComparabe() misspelled	
+
+
+

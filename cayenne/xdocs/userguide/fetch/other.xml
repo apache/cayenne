@@ -1,0 +1,44 @@
+<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="7. Using Queries"/> 
+<body>
+    <section name="7. Using Queries">        
+        <subsection name="7.4 SelectQuery Customization">
+	<p>SelectQueries allow to fine tune the behavior of the fetch using the following API:				
+	</p>
+	
+	<ul>            		
+            	<li><code>public void <b>setFetchLimit</b>(int fetchLimit)</code><br/>
+            	If set to a value greater than zero, tells Cayenne that query should 
+            	never retrieve more than X objects (X == fetchLimit) from the database. If a result set contains
+            	more rows, they are simply ignored and never read. This is a "safety" feature
+            	that can be used to prevent the application from crashing when an unexpectedly
+            	high number of records exists for a given query.
+            	<p></p>
+            	</li>
+            	
+            	<li><code>public void <b>setDistinct</b>(boolean distinct)</code><br/>
+            	If set to true (default is false), tells Cayenne that query should fetch distinct rows.
+            	<p></p>
+            	</li>
+            	
+            	<li><code>public void <b>setFetchingDataRows</b>(boolean flag)</code><br/>
+            	If set to true (default is false), tells Cayenne that instead of creating DataObjects, it should 
+            	fetch "data rows" - dictionaries containing database values, using table column names
+            	for the keys. "Performance Tuning" chapter explains how data rows can improve performance
+            	and how and when to use them.
+            	<p></p>
+            	</li>
+            	
+            	<li><code>public void <b>setPageSize</b>(int pageSize)</code><br/>
+            	If set to a value greater than zero, tells Cayenne that query should do a "lazy" fetch,
+            	breaking result into "pages". "Performance Tuning" chapter has a detailed discussion of  
+            	paged queries.
+            	<p></p>
+            	</li>
+        </ul>
+        </subsection>
+    </section>
+</body>
+</document>
+

@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+
+<!-- 
+Broken PostgreSQL types mapping.
+-->
+
+<types>
+   <jdbc-type name="ARRAY"/>
+   <jdbc-type name="BIGINT">
+       <db-type name="bigint"/>
+   </jdbc-type>
+   <jdbc-type name="BINARY">
+   <!-- this is an undocumented type with known JDBC issues
+    some testing needs to be done. -->
+       <db-type name="bytea"/>
+   </jdbc-type>
+   <jdbc-type name="BIT">
+   		<!-- PostgreSQL BIT is a "bit string", so mapping it as boolean seems more appropriate -->
+       <db-type name="boolean"/>
+   </jdbc-type>
+   <jdbc-type name="BLOB">
+       <db-type name="bytea"/>
+   </jdbc-type>
+   <jdbc-type name="BOOLEAN">
+       <db-type name="boolean"/>
+   </jdbc-type>
+   <jdbc-type name="CHAR">
+       <db-type name="character"/>
+   </jdbc-type>
+   <jdbc-type name="CLOB">
+       <db-type name="text"/>
+   </jdbc-type>
+   <jdbc-type name="DATALINK"/>
+   <jdbc-type name="DATE">
+       <db-type name="date"/>
+   </jdbc-type>
+   <jdbc-type name="DECIMAL">
+       <db-type name="decimal"/>
+   </jdbc-type>
+   <jdbc-type name="DOUBLE">
+       <db-type name="double precision"/>
+   </jdbc-type>
+   <jdbc-type name="FLOAT">
+       <db-type name="float"/>
+   </jdbc-type>
+   <jdbc-type name="INTEGER">
+       <db-type name="integer"/>
+   </jdbc-type>
+   <jdbc-type name="JAVA_OBJECT"/>
+   <jdbc-type name="LONGVARBINARY">
+       <db-type name="bytea"/>
+   </jdbc-type>
+   <jdbc-type name="LONGVARCHAR">
+       <db-type name="text"/>
+   </jdbc-type>
+   <jdbc-type name="NUMERIC">
+       <db-type name="numeric"/>
+   </jdbc-type>
+   <jdbc-type name="OTHER"/>
+   <jdbc-type name="REAL">
+       <db-type name="real"/>
+   </jdbc-type>
+   <jdbc-type name="REF"/>
+   <jdbc-type name="SMALLINT">
+       <db-type name="smallint"/>
+   </jdbc-type>
+   <jdbc-type name="STRUCT"/>
+   <jdbc-type name="TIME">
+       <db-type name="time"/>
+   </jdbc-type>
+   <jdbc-type name="TIMESTAMP">
+       <db-type name="timestamp with time zone"/>
+   </jdbc-type>
+   <jdbc-type name="TINYINT">
+       <db-type name="smallint"/>
+   </jdbc-type>
+   <jdbc-type name="VARBINARY">
+       <db-type name="bytea"/>
+   </jdbc-type>
+   <jdbc-type name="VARCHAR">
+       <db-type name="varchar"/>
+   </jdbc-type>
+</types>

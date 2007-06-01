@@ -1,0 +1,34 @@
+Upgrade Information
+============================================
+
+1. General Upgrade Advise:
+
+-  Upgrading Project XML Files: Opening a 1.0 projects in CayenneModeler would 
+   display an upgrade dialog. Select "Yes" button to perform the upgrade. Note that
+   upgrading a project to 1.1 will make it unusable with earlier versions of Cayenne.
+   
+-  Upgrading between 1.1 milestones will not display an upgrade dialog, however on
+   save mapping may slightly change, as the format evolved up till Beta.
+
+-  Clean Recompile: Cayenne 1.1 introduces a few API changes. Most of them are done 
+   to the backend and should not affect the applications written with the earlier versions. 
+   However it is a good idea to perform a clean compilation of all Java code that relies on 
+   Cayenne. Updating calls to deprecated methods is also a very good idea.
+
+
+2. General Warning:
+
+Classes SnapshotManager, ToManyListDataSource, RelationshipDataSource, 
+FlattenedRelationshipDeleteQuery, FlattenedRelationshipInsertQuery and a few others
+were removed from Cayenne, since maintaining them in a deprecated state wasn't 
+possible.
+
+
+For the latest upgrade instructions see the Use Guide included in Cayenne download: 
+
+    [cayenne_install_dir]/doc/userguide/install/upgrade.html
+
+For the list of new features in 1.1 see another Use Guide chapter:
+
+    [cayenne_install_dir]/doc/userguide/introduction/whats-new.html
+

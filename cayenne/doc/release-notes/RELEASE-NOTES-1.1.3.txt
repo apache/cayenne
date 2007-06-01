@@ -1,0 +1,17 @@
+Cayenne Release Notes 1.1.3
+Date: September 28, 2005
+============================================
+
+
+
+* For the latest information go to the project web site at http://objectstyle.org/cayenne/
+* To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+This is a maintenance release that fixes a number of bugs.
+
+
+CAY-360 Non-refreshed Named Queries in Modeler throw exception
+CAY-382	PropertyListSerialization string quoting - fix once and for all
+CAY-317	Improve SQL Logging Output when Optimistic Locking is Used
+CAY-323	Cayenne thinks array types are modified across request/response cycles

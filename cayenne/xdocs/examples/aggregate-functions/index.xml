@@ -1,0 +1,31 @@
+<document>
+<title>Aggregate Functions Example</title>
+<toc name="toc-examples" chapter="6. Aggregate Functions"/>
+<body>
+    <section name="6. Aggregate Functions">
+            
+	<p>Demonstrates how to use "derived" DbEntities for SQL aggregate functions, such as
+	MIN, MAX, COUNT. This example is runnable from command line.</p>
+
+	<panel name="Deprecation Note">
+		With introduction of SQLTemplate this example should be considered 
+		deprecated, as derived DbEntities are very limited by nature.
+	</panel>
+	
+	<subsection name="6.1 Building Example">
+	<p>Follow generic instructions for building examples. <strong>(Important!)</strong> Before the 
+	build, edit "default.properties" file, setting "driver.jar" property to the location of the
+	JAR file of the JDBC driver.</p>
+	
+	</subsection>
+	
+	<subsection name="6.2 Running Example">
+	<p>JAR file produced by the build script is runnable. E.g. the example can be executed like that:</p>
+	
+	<source># cd aggregate-functions/dist/lib/
+# java -jar aggregate-functions.jar
+	</source>
+	</subsection>
+    </section>
+</body>
+</document>

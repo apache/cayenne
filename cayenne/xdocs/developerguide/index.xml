@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<document>
+    <title>Developer Guide</title>
+    <toc name="toc-developer-guide"/>
+    <body>
+        <section name="Cayenne Developer Guide  - version 1.1">
+        <p>This section is intended for current and future Cayenne developers. "Developers" in this
+        context means people who contribute code to Cayenne. If you simply downloaded Cayenne and want to
+        use it on your Java project, further information is
+        provided in the <a href="../userguide/index.html">User Guide section</a>.        
+        </p>
+        </section>
+    </body>
+</document>
+

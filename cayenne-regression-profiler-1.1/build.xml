@@ -1,0 +1,14 @@
+<!-- 
+	This ant file is called from maven and is not a full standalone build script.
+	Properties are set in pom.xml
+-->
+<project>
+	
+	<target name="generate-classes">
+		<taskdef name="cgen" classname="org.objectstyle.cayenne.tools.CayenneGenerator" 
+			classpathref="maven.compile.classpath"/>
+		
+		<cgen map="src/main/resources/regression-profile.map.xml" destDir="src/main/java"
+			superpkg="org.apache.cayenne.profile.entity.auto"/>
+	</target>
+</project>

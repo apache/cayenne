@@ -1,0 +1,57 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="8. Configuring Deployment Settings"/>
+<body>
+        <section name="8.3 Configuring Caching Behavior">
+        	<p>Cayenne supports local and distributed caching of fetched data. The design
+        	of the caching feature is discussed in the <a href="../../userguide/design/caching.html">User
+        	Guide</a>. When a new DataDomain is created, it uses default caching settings - data is cached
+        	within JVM, but no remote synchronization is performed. User can change these settings depending
+        	on the target application deployment strategy.</p>
+        	
+        	<subsection name="8.3.1 No Cache Sharing Configuration">
+        	<p>This type of configuration
+        	may result in somewhat faster commit operations, but is likely to lead to stale data when multiple
+        	users modify data in the same application. To disable any cache sharing uncheck "Use Shared Cache" 
+        	checkbox. </p>
+        	</subsection>
+        	
+        	<subsection name="8.3.2 Local VM Cache Sharing Configuration">
+        	<p>Default configuration for the new DataDomains. Ideal for applications that 
+        	do not care about data being modified outside of the application. This configuration 
+        	is acceptable for a lot of client-server and web applications.</p>
+        	</subsection>
+        	
+        	<subsection name="8.3.3 Cross-VM Cache Sharing Configuration">
+        	<p>Configuration that allows to notify other applications about changes made by an application
+        	and to listen for such changes made by others. This type of configuration incurrs the most overhead, because it will constantly
+        	send and receive synchronization messages, but it is also the most powerful configuration. 
+        	Cayenne currently supports the use of <a href="http://java.sun.com/products/jms/" target="_new">JMS</a>
+        	and <a href="http://www.jgroups.org/javagroupsnew/docs/index.html" target="_new">JavaGroups</a> 
+        	frameworks for synchronization, and also allows users to create their own transport mechanism. 
+        	</p>
+        	
+        	<panel name="Note:">Cayenne distribution archive does not include JavaGroups or JMS libraries.
+        	Those must be downloaded and installed separately. However until deployment phase, Cayenne 
+        	does not require those libraries to be installed. 
+        	</panel>
+        	
+        	<p>To configure distributed cache sharing, check "Remote Change Notifications" checkbox, and click 
+        	"Configure" button to select and configure the type of transport to use.</p>
+        	
+        	<panel name="Tip:">Synchronization is only done between remote DataDomains with the same name. Note that for 
+        	JavaGroups configuration, a combination of multicast address and port must be unique for each DataDomain name.</panel>
+        	</subsection>
+        	
+        	<subsection name="8.3.4 Choosing JavaGroups over JMS">
+        	<p>JavaGroups is the most portable and flexible mechanism. At the minimum, JMS setup requires a JMS server running, and 
+        	subjects for each of the DataDomains to be configured. JavaGroups is peer-to-peer library that is embedded into  applications. 
+        	Default configuration provided by CayenneModeler will work out of the box, provided that IP multicast is enabled on the network.
+        	</p>
+        	
+        	<p>The conclusion is that using JMS is probably most appropriate when deploying within J2EE containers that alreay support
+        	this service, while JavaGroups can be used in almost any environment.</p>
+        	</subsection>
+        </section>
+    </body>
+</document>

@@ -1,0 +1,89 @@
+<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="7. Using Queries"/> 
+<body>
+    <section name="7. Using Queries">      
+        <subsection name="7.1 SelectQuery">
+            <p>The most commonly used query is 
+            <a href="../../api/cayenne/org/objectstyle/cayenne/query/SelectQuery.html">SelectQuery</a>. 
+            It is a descriptor that allows DataContext to fetch lists of DataObjects of the right type
+            matching the specified criteria. SelectQuery together with the DataMap provides just enough
+            information to the Cayenne runtime objects to build the right SQL SELECT statement and 
+            control various execution parameters.
+            </p>
+            
+            <subsection name="7.1.1 SelectQuery Parts">
+            
+            <p>A <code>SelectQuery</code> consists of a root object, qualifier expression and orderings list.
+            Here is a logical correspondence of Cayenne SelectQuery parts and SQL constructs:
+            </p>
+            
+            <table>
+            	<tr>
+            		<th>Cayenne SelectQuery</th>
+            		<th>SQL SELECT statement</th>
+            		<th>Required</th>
+            	</tr>
+            	<tr>
+            		<td>Root</td>
+            		<td>FROM clause</td>
+            		<td>yes</td>
+            	</tr>
+             	<tr>
+            		<td>Qualifier Expression</td>
+            		<td>WHERE clause</td>
+            		<td>no</td>
+            	</tr>
+            	<tr>
+            		<td>Orderings</td>
+            		<td>ORDER BY clause</td>
+            		<td>no</td>
+            	</tr>
+            </table>
+            <p>
+            The only required query part is root. Query root tells Cayenne what kind of
+            objects to fetch. It can be one of the following:
+            
+            <ul>
+            	<li><i>(most commonly used)</i> Java class for the type of persistent objects in question.</li>
+            	<li>ObjEntity that provides the mapping for the class in question.</li>
+            	<li>A String that is an ObjEntity name.</li>
+            </ul>
+            
+            SelectQuery provides constructors for all three types. For example:
+            </p>
+            
+<source>import org.objectstyle.cayenne.query.SelectQuery;
+...
+// this is a valid Cayenne query that would allow to fetch
+// all records from the ARTIST table as Artist objects
+SelectQuery query = new SelectQuery(Artist.class);
+</source>
+	<p>Other components of the SelectQuery are discussed in the following sections.</p>
+	</subsection>
+	
+	<subsection name="7.1.2 Executing SelectQueries">
+	<p>As mentioned earlier, queries are executed via <code>DataContext.performQuery()</code>. 
+	For instance to fetch all Artists existing in the database the following code is used:</p>
+	
+<source>import org.objectstyle.cayenne.query.SelectQuery;
+import org.objectstyle.cayenne.access.DataContext;
+import java.util.List;
+...
+DataContext ctxt; // assume this exists
+SelectQuery query = new SelectQuery(Artist.class);
+
+// The query would fetch *ALL* rows from the ARTIST table
+// The list returned contains Artist objects, one object per row
+List artists = ctxt.performQuery(query);
+</source>	
+
+	<p>There is a special case when a query is run using <code>DataContext.performIteratedQuery()</code>.
+	This is discussed in "Performance Tuning" chapter.		
+	</p>
+	
+	</subsection>	 		
+        </subsection>
+    </section>
+</body>
+</document>

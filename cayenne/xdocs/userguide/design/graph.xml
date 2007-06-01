@@ -1,0 +1,65 @@
+<document>
+<title>User Guide - Design</title>
+<toc name="toc-user-guide" chapter="4. Design"/>
+<body>
+    <section name="4. Design">
+            <subsection name="4.2 Object Graph" anchor="graph">
+            <p>Mapping discussed in the previous chapter is used to translate data coming from the
+            database into a bunch of <a href=
+            "../../api/cayenne/org/objectstyle/cayenne/DataObject.html">DataObjects</a>. DataObjects 
+            interconnected with each other using relationships form an object graph. Object graph is a 
+            useful abstraction when thinking about interactions between persistent objects in 
+            Cayenne application.</p>
+            
+            <panel name="Object Graph Note:">There is no "ObjectGraph" class in Cayenne - this is a 
+            pure logical concept transparent to the user. Other terms describing
+            the same concept as object graph are "business objects layer",  "persistent objects", etc. 
+            Object graph is stored in memory and manipulated by the ObjectStore instance.
+            </panel>
+            <p></p>
+            <panel name="Object Relationship Note:">While relationships between objects are represented
+            as ObjRelationship instances in the DataMap, objects themselves implement relationships as
+            simple List or DataObject properties.
+            </panel>
+            
+            <p>Cayenne object graph has the following principal properties that make it useful and easy
+            to use in the application:</p>
+            <ul>
+            	<li><i>All operations on the object graph are controllable by the application.</i><br/>
+            	Developers can add/remove/modify objects related to a given object via corresponding
+            	method calls.
+            	<p></p></li>            	
+            	
+            	<li><i>Initial set of objects is obtained by running a select query, or creating new DataObjects.</i>
+            	<p></p></li>
+            	
+            	<li><i>Most objects related to the initial objects can be obtained via simple method calls on
+            	initial objects.</i>
+            	<p></p></li>
+            	
+            	<li><i>Object identity and uniquing in a certain context.</i><br/> 
+            	Cayenne ensures that there will be no more than one object in any given 
+            	DataContext that corresponds to a given database row. For instance if an object is 
+            	obtained via a relationship method call, and later another object is obtained 
+            	via a query interface for the same database row (think same primary key), only
+            	one object will be created in Cayenne. For the later case an object will not be created,
+            	but rather an already existing object will be reused.
+            	<p></p>
+            	</li>
+            	
+            	<li><i>Synchronization with the database.</i><br/> 
+            	Object graph changes can be synchronized with the database in a single method call.
+            		This greatly simplifies management of changes and solves transactional issues.
+            	<p></p>
+            	</li>
+            	
+            	<li><i>Discarding changes.</i><br/>
+            	Object graph changes made since last commit can be 
+            	discarded using a single method call.
+            	<p></p>
+            	</li>
+            </ul>
+        </subsection>
+    </section>
+</body>
+</document>

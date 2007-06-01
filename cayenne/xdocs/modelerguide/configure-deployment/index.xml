@@ -1,0 +1,14 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="8. Configuring Deployment Settings"/>
+<body>
+        <section name="8. Configuring Deployment Settings">
+        	<p>Cayenne project deployment settings, aside from DataNode configuration
+        	discussed elsewhere, are done using DataDomain panel. This chapter describes
+        	various supported settings.</p>
+        	
+        	<img src="/images/modelerguide/data-domain.jpg" width="400" height="240" border="0" align="middle"
+			alt="DataDomain Configuration Panel"/>
+        </section>
+    </body>
+</document>

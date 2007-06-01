@@ -1,0 +1,71 @@
+<document>
+<title>User Guide - Performance Tuning</title>
+<toc name="toc-user-guide" chapter="11. Performance Tuning"/>
+<body>
+    <section name="11. Performance Tuning">
+            
+			<subsection name="11.4 Paginated Queries">
+            <p>Another common situation found in interactive applications is when it is needed
+            to fetch a large number of rows, and at the same time only a small subset of objects
+            is accessed directly. An example of such application would be a search page. 
+            User would like to see how many total results exist that match a certain criteria,
+            but she will only look at a few pages of results out of possibly hundreds or thousands.
+            It will be extremely inefficient to fetch all objects in the memory.</p>
+            
+            <p>A solution
+            offered by Cayenne is "paginated" queries. A user can set a size of a "page" of a select query.
+            If page size is greater than zero, on query execution Cayenne will only fetch the first
+            "page" as DataObjects. For the rest of the result set, only primary keys are read.
+            When a user accesses an object that has not been resolved
+            yet, the whole page containing this object will be resolved all at once. Most important, 
+            this happens totally transparent to the user.</p>
+            
+            <p>Our tests show almost an order of magnitude speed increase when comparing the time it  
+            takes to read a full list of 2000 objects, and the time it takes
+            to do the initial paginated query fetch with page size of 50.</p>
+            
+            <p>Paged query example:</p>
+            
+<source>
+import java.util.List;
+import java.util.Map;
+import org.objectstyle.cayenne.access.DataContext;
+import org.objectstyle.cayenne.query.SelectQuery;
+import org.objectstyle.art.Artist;
+...
+DataContext ctxt;
+
+// create a query returning data rows
+SelectQuery q = new SelectQuery(Artist.class);
+q.setPageSize(50);
+
+// the fact that result is paged is transparent
+List artistRows = ctxt.performQuery(q);
+
+
+// we are reading from the first page (index &lt; 50), 
+// this will simply return an object
+Artist artist1 = (Artist)artistRows.get(3);
+
+// we are reading from the 4th page, 
+// this will transparently resolve all objects on "Page #4"
+// and then return an object in question
+Artist artist2 = (Artist)artistRows.get(153);
+
+
+// This is safe and will NOT trigger a full fetch
+int size = artistRows.size();
+...
+
+</source> 
+			<p> </p>
+			<panel name="Combining data rows and paginated queries">
+			Cayenne supports combining both performance optimizations in the same query -
+			fetching data rows (see previous chapters) and paginated queries. So if users 
+			work with tabular data and don't care much about real objects, combining the
+			two approaches would improve speed and memory use even more.
+			</panel>
+			</subsection>
+    </section>
+</body>
+</document>

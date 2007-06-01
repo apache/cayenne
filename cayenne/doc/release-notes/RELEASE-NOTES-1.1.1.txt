@@ -1,0 +1,20 @@
+Cayenne Release Notes 1.1.1
+Date: March 13, 2005
+============================================
+
+
+
+* For the latest information go to the project web site at http://objectstyle.org/cayenne/
+* To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+This is a maintenance release that fixes a number of bugs.
+
+
+CAY-246	Importing a complex EO Model.	Bug
+CAY-255	ORA-01000: maximum open cursors exceeded	Bug
+CAY-280	Relaxed expression for BigDecimal	New Feature
+CAY-271	Oracle Procedure: Ref cursor is invalid	Bug
+CAY-251	NPE on calling stored proc for SQL Server	Bug
+CAY-281	Cayenne Modeller Not Escaping Strings	Bug
+CAY-272	PK generation failure with jTDS driver	Bug

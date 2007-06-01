@@ -1,0 +1,29 @@
+<document>
+<title>User Guide - Installation</title>
+<toc name="toc-user-guide" chapter="2. Installation"/> 
+<body>
+    <section name="2. Installation">        
+		<subsection name="2.4 Compiling from Source" anchor="compile">	
+			<panel name="Note:">Normally users don't need to build Cayenne from source. 
+            All required prebuilt JAR's are included with the distribution.</panel>
+            
+            <p>If there is a need to rebuild Cayenne with custom modifications, the best way to
+            do that is to check out the source
+            from <a href="http://sourceforge.net/cvs/?group_id=48132">anonymous CVS</a> (preferred 
+            way) or to download one of the latest stable or development <a href=
+            "http://objectstyle.org/downloads/cayenne/cvs-snapshots/">CVS snapshots</a>.
+            See <a href="../../developerguide/index.html">Developer Guide</a> for details on how to 
+            build Cayenne.  However since CVS checkout contains all needed dependencies (except for Java and Ant), 
+            this should be very easy:</p>          
+
+		<source>cd $CAYENNE_HOME/src
+ant</source>
+
+<p> </p>
+
+			<panel name="Note:">Cayenne Team discontinued shipping "build.xml"  file with Cayenne distribution
+			to avoid maintaining two parallel build systems, and reduce confusion.</panel>
+		</subsection>
+    </section>
+</body>
+</document>

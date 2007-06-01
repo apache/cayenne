@@ -1,0 +1,50 @@
+  .body {font-family:  Verdana, Arial, Helvetica, sans-serif; font-size: 9pt; letter-spacing: normal } 
+  .body-black {font-family:  Verdana, Arial, Helvetica, sans-serif; color:#000000; font-size: 9pt; letter-spacing: normal }
+  .body-black:hover {font-family:  Verdana, Arial, Helvetica, sans-serif; color:#000000; font-size: 9pt; letter-spacing: normal }
+  .body-white {font-family:  Verdana, Arial, Helvetica, sans-serif; color:#ffffff; font-size: 9pt; letter-spacing: normal }
+  .body-white-small {font-family:  Verdana, Arial, Helvetica, sans-serif; color:#ffffff; font-size: 8pt; letter-spacing: normal }
+  .small {font-family:  Verdana, Arial, Helvetica, sans-serif; font-size: 9px; letter-spacing: normal }
+  .big {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12pt }
+  .normal {font-family:  Verdana, Arial, Helvetica, sans-serif; font-size:  10pt; letter-spacing: normal}
+  .normal-red {font-family:  Verdana, Arial, Helvetica, sans-serif; color:#cc0000; font-size:  10pt; letter-spacing: normal}
+  
+  A  {
+      FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; LETTER-SPACING: normal
+     }
+    
+  A:hover {
+      FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; LETTER-SPACING: normal; TEXT-DECORATION: none;
+     }
+  
+  .input {
+      BACKGROUND: #ffffff; 
+      BORDER-BOTTOM: #000000 1px solid; 
+      BORDER-LEFT: #000000 1px solid; 
+      BORDER-RIGHT: #000000 1px solid; 
+      BORDER-TOP: #000000 1px solid; 
+      COLOR: #000000; 
+      FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; 
+      FONT-SIZE: 8pt;
+     }
+     
+ .note { 
+      BACKGROUND: #cccccc;
+      BORDER-BOTTOM: #000000 1px solid; 
+      BORDER-LEFT: #000000 1px solid; 
+      BORDER-RIGHT: #000000 1px solid; 
+      BORDER-TOP: #000000 1px solid; 
+      COLOR: #000000; 
+      FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; 
+      FONT-SIZE: 9pt;
+     }
+      
+ .source { 
+     BACKGROUND: #ffffcc; 
+     BORDER-BOTTOM: #999966 1px solid; 
+     BORDER-LEFT: #999966 1px solid; 
+     BORDER-RIGHT: #999966 1px solid; 
+     BORDER-TOP: #999966 1px solid; 
+     COLOR: #000000; 
+     FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; 
+     FONT-SIZE: 9pt;
+    }

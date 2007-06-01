@@ -1,0 +1,48 @@
+Upgrade Information
+============================================
+
+RC3 is a drop-in replacement of RC2. If you are upgrading from an earlier release, read this notes
+from RC2:
+
+0. CAY-212 Note (displaying Japanese and Chinese chars):
+
+To make sure that fix for CAY-212 issue takes effect on your machine follow these instructions:
+
+- Download and install Cayenne 1.1 RC2 or newer.
+- Close all Modeler instances
+- Open ~/modeler.preferences file in a text editor
+- Remove the line that starts with "Editor.theme=..."
+- Start the Modeler - it will select "Sky Bluer" theme by default.
+
+
+1. General Upgrade Advise:
+
+-  Upgrading Project XML Files: Opening a 1.0 projects in CayenneModeler would 
+   display an upgrade dialog. Select "Yes" button to perform the upgrade. Note that
+   upgrading a project to 1.1 will make it unusable with earlier versions of Cayenne.
+   
+-  Upgrading between 1.1 milestones will not display an upgrade dialog, however on
+   save mapping may slightly change, as the format evolved up till Beta.
+
+-  Clean Recompile: Cayenne 1.1 introduces a few API changes. Most of them are done 
+   to the backend and should not affect the applications written with the earlier versions. 
+   However it is a good idea to perform a clean compilation of all Java code that relies on 
+   Cayenne. Updating calls to deprecated methods is also a very good idea.
+
+
+2. General Warning:
+
+Classes SnapshotManager, ToManyListDataSource, RelationshipDataSource, 
+FlattenedRelationshipDeleteQuery, FlattenedRelationshipInsertQuery and a few others
+were removed from Cayenne, since maintaining them in a deprecated state wasn't 
+possible.
+
+
+For the latest upgrade instructions see the Use Guide included in Cayenne download: 
+
+    [cayenne_install_dir]/doc/userguide/install/upgrade.html
+
+For the list of new features in 1.1 see another Use Guide chapter:
+
+    [cayenne_install_dir]/doc/userguide/introduction/whats-new.html
+

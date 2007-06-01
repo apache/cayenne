@@ -1,0 +1,42 @@
+<span jwcid="@PageWrapper">
+
+<br>
+<span class="titleTextStrong">Artist Browse Page</span><br><br>
+
+<table width="100%" class="standardTable" border="0" cellspacing="0">
+<span jwcid="artists">
+<tr bgcolor="silver">
+	<td colspan="2"><b>Artist Details:</b></td>
+	<td align="right"><a jwcid="addPaintingLink">add painting</a></td>
+</tr>
+<tr>
+	<td width="125"><span jwcid="artistName"></span></td>
+	<td><b>Paintings:</b></td>
+	<td align="right"><b>DOB:</b> <span jwcid="dateOfBirth"></span></td>
+</tr>
+<tr>
+	<td></td>
+	<td valign="top">
+	  	<span jwcid="paintings">
+           <LI><i><span jwcid="paintingTitle"></span></i>
+		   <span jwcid="isOnDisplay">
+		   		, currently displayed at <span jwcid="galleryName"></span>
+		   </span>
+		   <span jwcid="isNotOnDisplay">
+		   		- <a jwcid="submitPaintingLink">submit this painting to gallery for display</a>
+		   </span>
+		   
+    	</span>
+	</td>
+	<td></td>
+</tr>
+<tr>
+	<td colspan="3"><br></td>
+</tr>
+</span>
+<tr>
+	<td colspan="3" align="center"><br><a jwcid="@PageLink" page="AddArtistPage">Add Artist</a></td>
+</tr>
+</table>
+
+</span>

@@ -1,0 +1,102 @@
+	<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="7. Using Queries"/> 
+<body>
+    <section name="7. Using Queries">        
+        <subsection name="7.5 Parameterized Queries">
+		<p>SelectQuery objects can be rather complex. They may contain long qualifiers
+    	and lots of tuning parameters. <i>Parameterized Queries</i> feature addresses reusability 
+    	of complex queries. With this feature, for each group of queries that differ only in the values 
+    	used in the qualifier, a developer may create a single shared "prototype" or "template" query, 
+    	and use it later 
+    	as a factory for other queries. All settings configured in the prototype object will be passed to 
+    	the final queries. Qualifier of the prototype query may use named parameters that are substituted 
+    	for real values when a final query is created from the prototype.
+		</p>
+	
+		<panel name="Note:">"Prototype" queries are normally created in CayenneModeler and stored
+		in the DataMap XML file. "Queries Stored in DataMap" chapter describes how to use such 
+		templates. This chapter shows how to create them on the spot using the API calls.</panel>
+		 
+		<p>Building a prototype query using <code>Expression.fromString(..)</code>:</p>
+<source>import org.objectstyle.cayenne.exp.Expression;
+import org.objectstyle.cayenne.query.SelectQuery;
+...
+// create a qualifier with two named parameters: "pname" and "aname"
+Expression qual = Expression.fromString("paintingTitle = $pname or toArtist.artistName = $aname");
+
+// build a query prototype of a query - simply another select query
+SelectQuery proto = new SelectQuery(Painting.class, qual);
+proto.setDistinct(true);
+</source>
+		 
+		<p>Same example but using <code>ExpressionFactory</code>:</p>
+<source>import java.util.*;
+import org.objectstyle.cayenne.exp.Expression;
+import org.objectstyle.cayenne.exp.ExpressionFactory;
+import org.objectstyle.cayenne.exp.ExpressionParameter;
+import org.objectstyle.cayenne.query.SelectQuery;
+...
+// create a qualifier with two named parameters: 
+//  "pname" and "aname"
+List list = new ArrayList();
+list.add(ExpressionFactory.matchExp("paintingTitle", 
+         new ExpressionParameter("pname")));
+list.add(ExpressionFactory.matchExp("toArtist.artistName", 
+         new ExpressionParameter("aname")));
+Expression qual = ExpressionFactory.joinExp(Expression.OR, list);
+
+// build a query prototype of a query - simply another select query
+SelectQuery proto = new SelectQuery(Painting.class, qual);
+proto.setDistinct(true);
+</source>
+
+
+		<p>Prototype built in the example above can be used to create other queries. Relevalnt API is:</p>
+		<ul>
+			<li>public SelectQuery <b>SelectQuery.queryWithParameters</b>(Map parameters, boolean pruneMissing)<br/>
+            Creates and returns a new SelectQuery using current query as a prototype. Map of 
+            parameters is used to substitute named parameters in the qualifier with the real values.
+            Returned query is a separate instance and can be further customized without affecting the prototype. 
+            
+			<p>If <code>pruneMissing</code> is <code>true</code> and some of the named parameters are missing
+            from the parameters map, Cayenne would prune expressions that can not be resolved.
+            If <code>pruneMissing</code> is set to <code>false</code>, the method would throw an exception
+            unless all the named parameters can be resolved.</p>
+            <p></p>
+            </li>
+            
+			<li>public SelectQuery <b>SelectQuery.queryWithParameters</b>(Map parameters)<br/>
+            A shortcut for <code>public SelectQuery queryWithParameters(Map parameters, true)</code>.
+            <p></p>
+            </li>
+        </ul>
+        <p>Example of using <code>queryWithParameters</code> is shown below:</p>
+        
+<source>import java.util.Map;
+import java.util.HashMap;
+import org.objectstyle.cayenne.query.SelectQuery;
+...
+SelectQuery proto = ... // this was built in the example above
+
+// create a query
+Map params1 = new HashMap();
+params1.put("aname", "Dali");
+SelectQuery query1 = proto.queryWithParameters(params1);
+
+// further customize returned query 
+// without affecting the prototype
+query1.setFetchLimit(100);
+... 
+// create another query with a different set of parameters
+Map params2 = new HashMap();
+params2.put("aname", "Monet");
+params2.put("pname", "The Beach at Trouville");
+SelectQuery query2 = proto.queryWithParameters(params2);
+... 
+</source>
+        </subsection>
+    </section>
+</body>
+</document>
+

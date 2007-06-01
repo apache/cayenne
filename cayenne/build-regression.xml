@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+
+<!-- ================================================= -->
+<!-- Regression Test Application subproject buildfile. -->
+<!-- ================================================= -->
+<project default="compile">
+	<property name="regression.dist.src" value="${dist}/src/regression"/>
+	<property name="regression.build" value="build/regression"/>
+	<property name="regression.src" value="src/regression/java"/>
+	<property environment="regression.env"/>
+    
+    <path id="classpath">
+    	<fileset dir="${otherlib.dir}">
+			<include name="${bcel.jar}"/>
+		</fileset>
+		<fileset dir="${dist}/lib">
+			<include name="cayenne.jar"/>
+		</fileset>
+		<pathelement path="${regression.build}/classes"/>
+		<pathelement path="${regression.src}"/>
+		<pathelement path="${regression.env.CLASSPATH}"/>
+    </path>
+    
+    
+    <!-- ========================================== -->
+    <!-- Build targets.                             -->
+    <!-- ========================================== -->
+    <target name="test" depends="compile">
+		<java fork="true" 
+		      failonerror="true"
+		      classname="org.objectstyle.cayenne.regression.AntMain">
+		      
+			<classpath refid="classpath"/>
+			
+			<jvmarg value="-Xms64m"/>
+			<jvmarg value="-Xmx64m"/>
+			
+			<sysproperty key="cayenne.test.connection" value="${cayenne.test.connection}"/>
+			<sysproperty key="test.new_objects_per_table" value="${regression.new_objects_per_table}"/>
+			<sysproperty key="test.delete_objects_per_table" value="${regression.delete_objects_per_table}"/>
+			<sysproperty key="test.max_references_per_table" value="${regression.max_references_per_table}"/>
+			<sysproperty key="test.max_foreign_keys_per_table" value="${regression.max_foreign_keys_per_table}"/>
+			<sysproperty key="test.loop_count" value="${regression.loop_count}"/>
+			<sysproperty key="test.max_loops_per_table" value="${regression.max_loops_per_table}"/>
+			<sysproperty key="test.schema_count" value="${regression.schema_count}"/>
+			<sysproperty key="test.commits_per_schema" value="${regression.commits_per_schema}"/>
+		</java>
+	</target>
+	
+	<target name="compile">
+		<ant antfile="build-subproj.xml" target="compile">
+			<property name="subproj" value="regression"/>
+		</ant>
+	</target>
+
+	<target name="dist-bin" depends="jar">
+        <copy file="${otherlib.dir}/${bcel.jar}" todir="${dist}/lib/regression"/>
+	</target>
+	
+	
+	<!-- ========================================== -->
+    <!-- Build Regression JAR file.                 -->
+    <!-- ========================================== -->
+    <target name="jar" depends="compile">
+    	<mkdir dir="${dist}/lib/regression"/>
+    	
+        <jar jarfile="${dist}/lib/regression/cayenne-regression.jar">
+ 			<fileset dir="${regression.build}/classes"/>
+			<fileset dir="${regression.src}">
+				<include name="**/*.xml"/>
+			</fileset>
+            
+            <metainf dir="doc/licenses" includes="LICENSE"/>
+            <manifest>
+               <attribute name="Built-By" value="${user.name}"/>
+               <attribute name="Extension-Name" value="org.objectstyle.cayenne"/>
+               <attribute name="Specification-Version" value="${project.name}"/>
+               <attribute name="Specification-Vendor" value="ObjectStyle.org"/>
+               <attribute name="Implementation-Vendor-Id" value="org.objectstyle"/>
+               <attribute name="Implementation-Version" value="${project.version}"/>
+               <attribute name="Implementation-Vendor" value="ObjectStyle.org"/>
+               <attribute name="Main-Class" value="org.objectstyle.cayenne.regression.Main"/>
+               <attribute name="Class-Path" value="../cayenne.jar ../cayenne-tests.jar bcel.jar"/>
+            </manifest>
+        </jar>
+    </target>
+</project>

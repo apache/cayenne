@@ -1,0 +1,50 @@
+<document>
+<title>CayenneModeler Guide - Modeling ObjEntities</title>
+<toc name="toc-modeler-guide" chapter="6. Modeling Object Layer"/>  
+<body>
+    <section name="6. Modeling Object Layer">
+    	<subsection name="6.1 Modeling ObjEntities">
+		<p>Java object layer in Cayenne is modeled as a set of ObjEntities
+		with relationships between them. Each ObjEntity consists of a reference to a 
+		DbEntity (table). It also specifies the Java class for a business
+		object and a set of attributes of this class.</p>
+	
+		<p>A default set of ObjEntities is created during reverse engineering the database.
+		It can be modified manually. E.g. certain entities may be excluded,
+		certain attributes deleted if they are not a part of object layer. Some relationships
+		can be "flattened" as described later in this chapter.
+		</p>
+	
+		<p>Modeler has a useful function that allows to update an ObjEntity after the changes were made to
+		an underlying DbEntity. E.g. if a new database table called PAINTING_INFO was added, and a DbEntity
+		created for this table, the following steps
+		can be taken to quickly create a corresponding ObjEntity.
+		</p>
+	
+		<ul>
+			<li>Create a new ObjEntity. Rename it to "PaintingInfo", specify the Java class.</li>
+			<li>From the dropdown of DbEntities select "PAINTING_INFO".</li>
+			<li>While the new entity is selected, from the "Project" menu select "Sync ObjEntity 
+			with DbEntity" item.</li>
+			<li>Inspect PaintingInfo attributes and relationships. A set of values matching
+			the underlying DbEntity should've been created.</li>
+		</ul>
+		
+		<p> </p>
+
+		<subsection name="6.1.1 ObjEntity Qualifier">
+			<p>ObjEntities can hold a qualifier expression that is automatically appended to all
+			SelectQueries rooted in a given ObjEntity. Entity qualifier can be viewed as 
+            a global data filter for a given entity. One area where this feature is used is <a href=
+            "inheritance.html">inheritance mapping</a>, 
+            however by itself it has nothing to do with inheritance as such and can be used
+            standalone. To set an entity qualifier, type a Cayenne expression into the "Qualifier" field of the
+            ObjEntity editor panel. Valid expressions grammar is described <a href=
+            "../../grammar/ExpressionParser.html">here</a>.
+            </p>
+		</subsection>
+	</subsection>
+    </section>
+</body>
+</document>
+

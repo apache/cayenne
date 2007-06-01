@@ -1,0 +1,17 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="4. Common Modeling Tasks"/>
+<body>
+	<section name="4. Common Modeling Tasks">
+		<p>This chapter describes a number of very common operations performed 
+			in CayenneModeler. All tasks assume that the Modeler has been 
+			started successfully, and, in most cases, that there is an open 
+			project.</p>
+    </section>
+</body>
+</document>
+
+
+
+
+

@@ -1,0 +1,14 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="9. Preferences Panel"/>
+<body>
+        <section name="9. Preferences Panel">
+			<subsection name="9.1 General Preferences"> 
+			<p>"General Preferences" panel currently supports configuration of a single parameter - "Preferences Save Interval". This
+			parameter determines how often should the Modeler commit preference values that it collects automatically during normal
+			operation (e.g. main window or panel sizes, etc.). Don't set this to a small value as this may sometimes degrade Modeler performance.
+			</p>
+		</subsection>
+        </section>
+    </body>
+</document>

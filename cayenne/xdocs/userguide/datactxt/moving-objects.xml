@@ -1,0 +1,50 @@
+<document>
+<title>User Guide - Using DataContext</title>
+<toc name="toc-user-guide" chapter="6. Using DataContext"/>
+<body>
+    <section name="6. Using DataContext">
+	<subsection name="6.4 Moving Objects Between Contexts">
+	
+	<p>Each instance of a DataObject belongs to only one DataContext for the duration
+	of the object lifecycle. Sometimes there maybe a need to transfer a list of objects
+	from one DataContext to another. The goal of this operation is to be able
+	to use such objects in relationships with objects of the target DataContext.
+	Most common use for this feature is the following. An application may have a "shared"
+	DataContext that is used to fetch "static" read only lookup data. To avoid
+	fetching the same data over and over again for each session, objects from the
+	shared DataContext can be transferred to a session DataContext by calling
+	<code>DataContext.localObject()</code>:
+	</p>
+
+	
+<source>
+...
+HttpSession session; // assume this exists
+
+// assume that ServletContext contains a list of UserType DataObjects
+// fetched via some global DataContext
+List sharedUserTypes = (List) session.getServletContext().getAttribute("userTypes);
+
+// transfer shared
+DataContext sessionContext = BasicServletConfiguration.getDefaultContext(session);
+List localUserTypes = sessionContext.localObjects(sharedUserTypes);
+
+UserType type = (UserType) localUserTypes.get(0);
+User user; // assume this exists
+
+// now it is safe to use the UserTypes in relationships with other
+// session objects
+user.setUserType(type);
+...
+</source>
+
+<p> </p>
+<panel name="Note:">This feature only works for COMMITTED and HOLLOW objects. Any other
+DataObject state would result in a CayenneRuntimeException. Therefore it is mostly
+suited for read-only "static" data.
+</panel>
+
+	</subsection>
+    </section>
+</body>
+</document>

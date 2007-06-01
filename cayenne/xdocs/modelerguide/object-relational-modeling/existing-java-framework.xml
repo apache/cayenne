@@ -1,0 +1,49 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="2. ORM Case Study"/>
+<body>
+	<section name="2. ORM Case Study">
+ 	 <subsection name="2.3 Converting an Existing Business Framework">
+ 	 	<p>If there is an existing data layer (e.g. DAO) that needs to be converted to Cayenne, 
+ 	 	currently most of the mapping tasks will have to be done manually using the Modeler.
+ 	 	</p>
+ 	 	
+ 	 	<panel name="Note for EOF Users:">CayenneModeler provides import function for the 
+ 	 	EOModels. So most of the mapping conversions should be automatic.</panel>
+ 	 	
+ 	 	<p>In any case there is a good chance of reusing business methods already defined in a 
+ 	 	persistence framework. And definitely any existing database can be used as is. One possible
+ 	 	approach to conversion is to follow these steps:
+ 	 	</p>
+ 	 	
+ 	 	<ul>
+ 	 		<li>Reverse engineer the database schema into a new Cayenne mapping project.</li>
+ 	 		<li>Update class names and packages match the names of the existing classes.</li>
+ 	 		<li>Run class generation using "generation gap" pattern (to create subclass/superclass
+ 	 		pair for each entity). This would only create superclasses with set/get methods
+ 	 		for persistent properties, without touching the existing classes.</li>
+ 	 		<li>Modify existing DAO classes to change the superclass to a corresponding generated
+ 	 		one (e.g. "Employee extends _Employee").</li>
+ 	 		<li>Remove any persistent properties with their setters
+ 	 		and getters from the subclass.</li>
+ 	 		<li>Remove all the DAO-specific persistence code.</li>
+ 	 		<li>Rewrite any other "business" methods to use DataContext for data operations.</li>
+ 	 	</ul>
+ 	 	
+ 	 	<p>See the following topics explaining individual tasks involved:</p>
+ 	 	
+ 	 	<ul>
+ 	 		<li><a href="../common-tasks/create-project.html">Create New Project</a></li>
+ 	 		<li><a href="../common-tasks/create-data-node.html">Create DataNode</a></li>
+ 	 		<li><a href="../common-tasks/reverse-engineer.html">Create New DataMap by reverse engineering database</a></li>
+ 	 		<li><a href="../common-tasks/generate-java.html">Generate Java Classes</a></li>
+ 	 	</ul>
+		</subsection>
+    </section>
+</body>
+</document>
+
+
+
+
+

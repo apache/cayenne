@@ -1,0 +1,172 @@
+<document>
+<title>User Guide - Using Expressions</title>
+<toc name="toc-user-guide" chapter="10. Using Expressions"/>
+<body>
+    <section name="10. Using Expressions">        
+		<subsection name="10.3 Expression Factory Utilities">
+		<p>Sometimes there is a need to build an expression by combining other existing expressions. Also
+		quiet often it is desirable to use strongly typed API instead of interpreted string expressions.
+		The following sections describe ExpressionFactory and Expression methods that allow to construct
+		expressions step by step via API calls.
+		</p>
+		
+		<subsection name="10.3.1 Path/Value Expressions">
+		<p>The most simple expressions are the ones that match an object property
+		path with a value or a list of values. ExpressionFactory provides a set of methods to build 
+		such "path/value" expressions:</p>
+		
+		<ul>
+        	<li>public static Expression <b>matchExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>noMatchExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>matchDbExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>lessExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>lessOrEqualExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>greaterExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>greaterOrEqualExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>inExp</b>(String pathSpec, Object[] values)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>inExp</b>(String pathSpec, java.util.List values)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>betweenExp</b>(String pathSpec, Object value1, Object value2)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>likeExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>likeIgnoreCaseExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>notInExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>notBetweenExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>notLikeExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+            
+            <li>public static Expression <b>notLikeIgnoreCaseExp</b>(String pathSpec, Object value)<br/>
+            <p></p>
+            </li>
+        </ul>		
+		</subsection>
+		
+		<subsection name="10.3.2 Chanining Expressions">
+		<p>Expression class itself provides a set of convenience methods to chain expressions
+		as they are built from smaller parts. Note that each of these methods does not modify
+		the original expression, rather it builds and returns a new instance of the expression.</p>
+		
+		<ul>
+            <li>public Expression <b>joinExp</b>(int type, Expression exp)<br/>
+            		Creates and returns a new expression that joins this object with another 
+            		expression, using specified join type. This is a shorter equivalent of
+            		<code>ExpressionFactory.binaryExpression(type, this, exp)</code>.
+            		<p></p>
+            		</li>
+            		
+            		<li>public Expression <b>andExp</b>(Expression exp)<br/>
+            		A shorter equivalent for <code>joinExp(Expression.AND, exp)</code>.
+            		<p></p>
+            		</li>
+            		
+            		<li>public Expression <b>orExp</b>(Expression exp)<br/>
+            		A shorter equivalent for <code>joinExp(Expression.OR, exp)</code>.
+            		<p></p>
+            		</li>
+            	</ul>
+            	
+            	<p>Example of using chaining:</p>
+<source>import org.objectstyle.cayenne.exp.Expression;
+import org.objectstyle.cayenne.exp.ExpressionFactory;
+import org.objectstyle.cayenne.query.SelectQuery;
+...
+
+// find artists whose name starts with "D"
+// with invalid or null date of birth
+
+Expression qual = ExpressionFactory.greaterOrEqualExp("dateOfBirth", new Date());
+   
+// 1. chain expressions, note the assignment back to "qual", 
+// since a new instance is created
+qual = qual.orExp(ExpressionFactory.matchExp("dateOfBirth", null));
+
+// 2. "AND" applies to a combined earlier criteria
+qual = 
+   qual.andExp(ExpressionFactory.likeIgnoreCaseExp("artistName", "D%"));
+    
+SelectQuery select = new SelectQuery(Artist.class, qual);
+</source>
+			</subsection>
+			
+			<subsection name="10.3.3 Creating Complex Expressions">
+			<p>There is a way to create complex expressions either from the 
+			Lists of expressions or from the Maps containing values using "path" Strings
+			as keys. This approach significantly simplifies connecting Cayenne queries
+			to the UI, and reduces the number of steps needed to create expressions
+			in other cases. ExpressionFactory provides the following methods:
+			</p>
+			
+			<ul>
+			 	<li>public static Expression <b>joinExp</b>(int type, java.util.List expressions)<br/>
+			 	Joins all expressions into a single expression. type is used as an expression type 
+			 	for expressions joining each one of the items on the list. 
+			 	type is normally AND or OR.
+            	<p></p>
+            	</li>
+            	
+                <li>public static Expression <b>matchAllExp</b>(java.util.Map map, int type)<br/>
+			 	Creates an expression that matches all path/value pairs in map. Path is OBJ_PATH.
+            	<p></p>
+            	</li>
+            	
+            	<li>public static Expression <b>matchAllDbExp</b>(java.util.Map map, int type)<br/>
+			 	Same as above, but path is interpreted to be DB_PATH.
+            	<p></p>
+            	</li>
+            	
+            	<li>public static Expression <b>matchAnyExp</b>(java.util.Map map, int type)<br/>
+			 	Creates an expression that matches any of the path/value pairs in map. Path is OBJ_PATH.
+            	<p></p>
+            	</li>
+            	
+            	<li>public static Expression <b>matchAnyDbExp</b>(java.util.Map map, int type)<br/>
+			 	Same as above, but path is interpreted to be DB_PATH.
+            	<p></p>
+            	</li>
+			</ul>
+			</subsection>
+		</subsection>
+    </section>
+</body>
+</document>

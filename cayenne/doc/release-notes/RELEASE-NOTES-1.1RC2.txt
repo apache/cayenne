@@ -1,0 +1,27 @@
+Cayenne Release Notes 1.1 Release Candidate 2 (RC2)
+Date: 
+============================================
+
+For the latest information go to the project web site at 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+Changes, Features And Improvements:
+
+CAY-18	Import EOModel: should create DataNode
+- Preferences UI Documentation
+
+
+Bugs Fixed:
+
+CAY-205	Cayenne Modeler loses character in Superclass Package (generating classes)
+CAY-198	Deletion of objects in flattened relationships
+CAY-213	NullPointerException in ContextCommit with locking
+CAY-218	Unneeded queries when prefetching on to-many with inheritance
+CAY-167	Attribute and relationship names must be checked for invalid chars
+CAY-17	CM doesn't handle custom data types when importing an EOMode
+CAY-212	CayenneModeler can't display Japanese.
+CAY-161	Modeler exception thrown during eomodel import
+

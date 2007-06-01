@@ -1,0 +1,24 @@
+<project name="Cayenne" href="http://objectstyle.org/cayenne/">
+
+    <title>Cayenne 1.1</title>
+    
+    <menu name="LOCAL DOCS">
+    	<item name="Start" href="/index.html"/>
+        <item name="User Guide" href="/userguide/index.html"/>
+        <item name="Modeler Guide" href="/modelerguide/index.html"/>
+        <item name="Examples" href="/examples/index.html"/>
+        <item name="Javadoc API" href="/api/cayenne/index.html"/>
+        <item name="License" href="/license.html"/>
+    </menu>
+    
+    <menu name="ONLINE RESOURCES">
+        <item name="Home" href="http://objectstyle.org/cayenne/"/>
+        <item name="Download" href="http://objectstyle.org/cayenne/download.html"/>
+        <item name="Bugs and Features" href="http://objectstyle.org/cayenne/bugs-features.html"/>
+        <item name="Commercial Support" href="http://objectstyle.org/cayenne/cayenne-commercial-support.html"/>
+    </menu>
+    
+    <!-- Embedded TOC Start -->
+    <!--@TOC@-->
+    <!-- Embedded TOC End -->
+</project>

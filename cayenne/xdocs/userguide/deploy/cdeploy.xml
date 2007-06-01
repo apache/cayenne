@@ -1,0 +1,133 @@
+<document>
+<title>User Guide - Deployment</title>
+<toc name="toc-user-guide" chapter="12. Deployment"/>
+<body>
+    <section name="12. Deployment">        
+           <subsection name="12.5 Deployment with Ant">
+            <p>There is a number of 
+            cases when it is highly desirable to automate changing of Cayenne 
+            configuration files, including <code>cayenne.xml</code> and driver information files:</p>
+            
+            <ul>
+            <li><i>Changing connection information when porting an application
+            from one environment to another:</i> Deployment environment uses different information for the
+            database connections from what was used in development.</li>
+            <li><i>Deployment of Cayenne libraries:</i> Third party Cayenne libraries may contain DataMaps
+            and business classes, but they normally do not have <code>cayenne.xml</code> 
+            file, since ultimate deployment configuration is unknown when the library is created.</li>
+            </ul>
+            
+            <p>Cayenne provides an Ant task described below that takes care of such things.
+			</p>
+            
+            <subsection name="12.5.1 Cdeploy (Cayenne Deployment Configurator)" anchor="cdeploy">
+			<h3>Description</h3>
+			
+			<p><code>Cdeploy</code> is an Ant task that configures Cayenne connection information
+			in existing jar files that contain Cayenne project information. It is useful for 
+			the automation of
+			deployment of Cayenne-based frameworks in different environments.
+			</p>
+
+			<h3>Parameters</h3>
+			
+			<table border="1" cellpadding="2" cellspacing="0">
+				<tr>
+					<th valign="top"><b>Attribute</b></th>
+					<th valign="top"><b>Description</b></th>
+					<th align="center" valign="top"><b>Required</b></th>
+				</tr>
+				<tr>
+					<td valign="top">src</td>
+					<td valign="top">Source jar file that contains Cayenne project
+					files among other things.</td>
+					<td valign="top" align="center">Yes</td>
+				</tr>
+				<tr>
+					<td valign="top">dest</td>
+					<td valign="top">Destination jar file that should be generated 
+					as a result of this task execution. If omitted, <i>src</i>
+					is used.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">altProjectFile</td>
+					<td valign="top">An alternative location of <i>cayenne.xml</i>
+					file. User can specify an arbitrary file. This file will be used as
+					the main project file, replacing any existing
+					cayenne.xml in the source jar. This gives the users an ultimate
+					flexibility in configuring deployment libraries. For instance this feature
+					can be used to deploy standalone DataMaps.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+			</table>
+			
+			<h3>Nested Elements:</h3>
+			
+			<h4>node</h4>
+			
+			<p>One or more nested "node" elements specify connection information for the named
+			nodes. All nested nodes must exist in the project, or otherwise they
+			will be ignored.</p>
+			
+			<h4>Nested <i>node</i> Parameters:</h4>
+			<table border="1" cellpadding="2" cellspacing="0">
+				<tr>
+					<th valign="top"><b>Attribute</b></th>
+					<th valign="top"><b>Description</b></th>
+					<th align="center" valign="top"><b>Required</b></th>
+				</tr>
+				<tr>
+					<td valign="top">name</td>
+					<td valign="top">DataNode name</td>
+					<td valign="top" align="center">Yes</td>
+				</tr>
+				<tr>
+					<td valign="top">domain</td>
+					<td valign="top">Parent DataDomain of this node. If omitted,
+					project must have only a single domain (very common case).</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">adapter</td>
+					<td valign="top">DataNode adapter.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">dataSource</td>
+					<td valign="top">DataSource name to use for this node.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">driverFile</td>
+					<td valign="top">File that contains driver information.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+			</table>
+			
+			<p>"dataSource" and "driverFile" are mutually exclusive, but none of them
+			are required.</p>
+			
+			<h3>Examples:</h3>
+			<p>Here is an example of using <code>Cdeploy</code> to regenerate a jar file
+			called "business.jar" with connection info located in "alt.driver.xml":</p>
+<source>
+&amp;lt;taskdef name="cdeploy" classname="org.objectstyle.cayenne.tools.DeploymentConfigurator"/&amp;gt;
+&amp;lt;cdeploy src="business.jar"&amp;gt;
+    &amp;lt;node name="main-node" driverFile="alt.driver.xml"/&amp;gt;
+&amp;lt;/cdeploy&amp;gt;
+</source>
+
+<p>An example of using <code>Cdeploy</code> to redeploy a 3-rd party library that contains
+datamaps, but may not contain cayenne.xml:</p>
+<source>
+&amp;lt;taskdef name="cdeploy" classname="org.objectstyle.cayenne.tools.DeploymentConfigurator"/&amp;gt;
+&amp;lt;cdeploy src="business.jar" altProjectFile="my-cayenne.xml"/&amp;gt;
+</source>
+
+
+			</subsection>
+        </subsection>
+    </section>
+</body>
+</document>

@@ -1,0 +1,24 @@
+Cayenne Release Notes 1.1 Release Candidate 3 (RC3)
+Date: November 20, 2004
+============================================
+
+For the latest information go to the project web site at 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+
+Bugs Fixed:
+
+CAY-194	Error in generating SQL query in modeling parent child relathionship
+CAY-234	Oracle BLOB error
+CAY-220	New Modeler won't generate Classes
+CAY-221	Modeler Error on delete ObjEntity
+CAY-227	Cannot launch modeler on OSX when logged in as user with networked home directory
+CAY-239	EOModel Integration Bugs - Cayenne 1.1RC3
+CAY-237	RollBack flattened inserts
+CAY-212	CayenneModeler can't display Japanese - fixed for DVModeler as well.
+CAY-240	Class generation creates inherited attributes and relationships
+CAY-229	Runtime Error with Stored Procedure
+

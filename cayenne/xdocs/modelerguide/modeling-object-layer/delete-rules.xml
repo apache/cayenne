@@ -1,0 +1,46 @@
+<document>
+<title>CayenneModeler Guide - Relationship Delete Rules</title>
+<toc name="toc-modeler-guide" chapter="6. Modeling Object Layer"/>  
+<body>
+    <section name="6. Modeling Object Layer">
+    	<subsection name="6.5 Delete Rules">
+		<p>One of the columns in the Modeler ObjRelationships panel is "Delete Rule". It tells Cayenne what to do with related objects
+		when a <strong>source object</strong> of the relationship is deleted. Cayenne will use this delete rule to perform cleanup
+		of other objects after a given object was deleted from the graph.
+		</p>
+
+		<p>Default delete rule is <strong>No Action</strong>, meaning just that - when an object is deleted, no changes should 
+		happen to objects related to this object via a given relationship. Though this is a default, it is not very useful,
+		and can lead to object graph corruption in many cases. It is developer responsibility to select a more meaningful delete rule. 
+		The choices are: "Nullify", "Cascade" and "Deny". Each one of them is explained below.</p>
+		
+		<ul>
+		<li><strong>Nullify Rule:</strong> When a <strong>source object</strong> is deleted, any pointers from the <strong>target 
+		object(s)</strong> back to the deleted object will be reset to null. This presumes an existence of reverse ObjRelationship for
+		a given ObjRelationship. If no such reverse relationship exist, "Nullify" rule has no effect. This rule should be used when target
+		object(s) of relationship can exist without the source object and do not depend on it. Example: <code>Employee.toDepartment</code>
+		relationship logically should use "Nullify" rule. <br/><br/>
+		</li>
+		
+		<li><strong>Cascade Rule:</strong> When a <strong>source object</strong> is deleted, any of the <strong>target 
+		object(s)</strong> will be deleted too. This may cause the whole tree of objects to be deleted with one command.
+		This rule should be used when target object(s) of relationship can not exist without the source object. Example: 
+		<code>Department.employeeArray</code> relationship may use "Cascade" rule. <br/><br/></li>
+		
+		<li><strong>Deny Rule:</strong> When a <strong>source object</strong> is being deleted, but it  has at least
+		one <strong>target object</strong> this rule would generate a runtime exception on delete attempt. This rule
+		is usually a reflection of certain business rules in the application.  Example: 
+		<code>Department.employeeArray</code> relationship may use "Deny" rule if there is an application requirement
+		that explicitly states that non-empty departments can not be deleted.</li>
+		</ul>
+		
+		<panel name="Cayenne Delete Rules vs. DB Delete Rules">
+		Some databases allow to define delete rules logically similar to the rules described above. Cayenne rules differ from DB
+		rules in that they deal with object graph instead of relational schema. Some changes to the object graph will result in
+		database operations (e.g. resetting FK to NULL as a result of Nullify rule), some others will not (e.g. removing a deleted 
+		DataObject from the to-many array as a result of another Nullify rule).
+		</panel>
+	</subsection>
+    </section>
+</body>
+</document>

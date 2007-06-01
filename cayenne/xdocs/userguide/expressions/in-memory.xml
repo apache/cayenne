@@ -1,0 +1,75 @@
+<document>
+<title>User Guide - Using Expressions</title>
+<toc name="toc-user-guide" chapter="10. Using Expressions"/>  
+<body>
+    <section name="10. Using Expressions">        
+		<subsection name="10.5 In-Memory Evaluation">
+		
+		<p>In additions to providing a database-independent WHERE clause for SQL queries,
+		expressions support in-memory evaluation. An expressions can be evaluated with any type
+		of objects that follow Java Beans method naming convention. Of course this includes 
+		DataObjects. The following API is used for expressions evaluation: </p>
+		
+			<ul>
+            <li>public Object <b>evaluate</b>(Object object)<br/>
+            Evaluates expression with object, returning the result.
+            <p></p>
+            </li>
+            
+            <li>public boolean <b>match</b>(Object object)<br/>
+            Returns true if an object "matches" expression criteria.
+            <p></p>
+            </li>
+            		
+            <li>public java.util.List <b>filterObjects</b>(java.util.List objects)<br/>
+            Returns a list of objects from the original list that match expression criteria.
+            <p></p>
+            </li>
+        </ul>
+        
+        <panel name="Limitation of In-Memory Expressions">
+        Current limitation of in-memory expressions is that no collections are permitted in the object property
+        path. In case of DataObjects that means that path containing to-many relationships may not work for
+        in-memory evaluation.
+        </panel>
+        
+        <p>Here is an example of evaluating expression with a single object:</p>
+        
+<source>
+public class User extends CayenneDataObject {
+     public String getName() {
+         ...
+     }
+}
+... 
+public class NonPersistentUser extends Object {
+     protected String name;
+     public String getName() {
+         return name;
+     }
+     ...
+}
+... 
+Expression exp = ExpressionFactory.inExp("name", new Object[] {"John", "Bob"});  
+User persistentObject;
+NonPersistentUser nonPersistentBean;
+... 
+// evaluate with DataObject
+if(exp.match(persistentObject)) {
+    // do something
+}
+
+if(exp.match(nonPersistentBean)) {
+    // do something else
+}
+</source>
+		</subsection>
+		
+		<p>Another example - using expression to filter a list objects:</p>
+<source>
+Expression exp = ExpressionFactory.likeExp("artistName", "A%");  
+List startWithA = exp.filterObjects(artists);
+</source>
+    </section>
+</body>
+</document>

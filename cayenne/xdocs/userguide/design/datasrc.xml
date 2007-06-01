@@ -1,0 +1,32 @@
+<document>
+<title>User Guide - Design</title>
+<toc name="toc-user-guide" chapter="4. Design"/>
+<body>
+    <section name="4. Design">
+        <subsection name="4.5 Cayenne DataSource">
+        
+        	<p>Default implementation of DataNode accesses persistent storage via JDBC.
+        	Database connections are obtained via <code>javax.sql.DataSource</code>. If an
+        	application is deployed in a J2EE container, DataSource is normally provided by container via JNDI.
+        	For standalone applications Cayenne includes a full implementation of 
+        	DataSource functionality, including connection pooling. Cayenne DataSource is 
+        	implemented as <a href=
+            "../../api/cayenne/org/objectstyle/cayenne/conn/package-summary.html">org.objectstyle.cayenne.conn</a>
+            package. Normally instances of <a href=
+        	"../../api/cayenne/org/objectstyle/cayenne/conn/PoolManager.html">PoolManager</a>
+        	class serve as a publicly accessible DataSource objects.</p>
+        	
+        	<p>DataSource configuration is done as a part of the mapping, so normally 
+        	there is no need to access it in the code.
+        	</p>
+        	
+        	<panel name="Note:">Cayenne DataSource implementation is fully independent from 
+        	the rest of the framework and can be used as a standalone module. But since Cayenne's
+        	main focus is on O/R features, DataSource use outside of Cayenne is not supported. 
+        	You may use other standalone implementations of DataSource, 
+        	e.g. Jakarta commons-dbcp.</panel>
+        </subsection>
+        
+    </section>
+</body>
+</document>

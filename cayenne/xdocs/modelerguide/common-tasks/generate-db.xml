@@ -1,0 +1,22 @@
+<document>
+	<title>CayenneModeler Guide</title>
+	<toc name="toc-modeler-guide" chapter="4. Common Modeling Tasks"/>
+	<body>
+		<section name="4. Common Modeling Tasks">
+			<subsection name="4.5 Generate Database Schema">
+				<p>To be done...</p>
+				<img width="560" height="344" 
+					src="/images/modelerguide/generate-connect.jpg" 
+					alt="Generate Schema - connect"/>
+				<p></p>
+				<img width="560" height="375" 
+					src="/images/modelerguide/generate-options.jpg" 
+					alt="Generate Schema - options"/>
+				<p></p>
+				<img width="560" height="376" 
+					src="/images/modelerguide/generate-options-tables.jpg" 
+					alt="Generate Schema - options"/>
+			</subsection>
+		</section>
+	</body>
+</document>

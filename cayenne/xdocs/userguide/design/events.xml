@@ -1,0 +1,35 @@
+<document>
+<title>User Guide - Design</title>
+<toc name="toc-user-guide" chapter="4. Design"/>
+<body>
+    <section name="4. Design">
+        <subsection name="4.11 Event Package">
+            <p>Cayenne includes a full-featured <a href="../../api/cayenne/org/objectstyle/cayenne/event/package-summary.html">events 
+            mechanism</a>. It allows creation of local and distributed event queues. It is very powerful and generic; it is not tied to 
+            Cayenne persistence features in any way and can be used in any application. The most important features are:
+            </p>
+            
+            <ul>
+            	<li>Event senders do not have to deal with event dispatching details - listener handling and dispatches
+            	are done via instances of EventManager.</li>
+            	<li>Any types of listeners can be registered. Listeners do not have to implement a specific interface.</li>
+            	<li>No explicit unregistering of listeners is required. Listeners are cleaned up when they go out of scope,
+            	or when the event subject goes out of scope.</li>
+            	<li>Supports local and remote dispatches. Remote dispatches can be done via arbitrary transport by implementing
+            	transport-specific EventBridge. There are two existing EventBridge implementations - using JMS and using JavaGroups.</li>
+            	<li>Dispatches can be done both synchronously (sender waits till all listeners finish) or asyncronously (sender posts an event
+            	to the queue, and returns without waiting for the processing to complete).</li>
+            	<li>In a similar manner individual listeners can register as blocking or non-blocking.</li>
+            </ul>
+            
+            <p> </p>
+            <panel name="EventSubject Tip:">
+            The most common error when using EventSubject is not storing a reference to it. This may result in a premature cleanup
+            of a given subject, and automatic unregistering of all listeners. Good practice is to make subject a "public static final" variable
+            of the event sender class if a subject is common for all instances of senders; or make it an ivar of a sender instance if subject
+            is only related to this instance.
+            </panel>
+            </subsection>
+    </section>
+</body>
+</document>

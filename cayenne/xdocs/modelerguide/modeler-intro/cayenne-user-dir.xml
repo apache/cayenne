@@ -1,0 +1,49 @@
+<document>
+<title>CayenneModeler Guide - CayenneModeler Concepts</title>
+<toc name="toc-modeler-guide" chapter="1. Introduction"/>
+<body>
+ <section name="1. Introduction">
+ 	<subsection name="1.4 Cayenne User Directory"> 
+ 		
+		<p>Cayenne has a notion of Cayenne User Directory - a file system directory, one per each user 
+		account on a given machine, where Cayenne-related information is stored. While Cayenne runtime 
+		knows how to locate and access this directory, it never uses it or relies on its presence. The reason is that Cayenne 
+		is often deployed in J2EE containers and should avoid any assumptions about the underlying filesystem layout. 
+		CayenneModeler on the other hand uses it to store a number of things, like log files, preferences, etc.
+		While users shouldn't normally care about Cayenne User Directory, as its creation and use are transparent,
+		sometimes it is helpful to know where it is located and what information is stored there.
+		</p>
+
+		<subsection name="1.4.1 Cayenne User Directory Location">
+		<p>Cayenne User Directory is a filesystem directory called ".cayenne" (notice the dot in front of the name, it makes it "hidden" on 
+		UNIX operating systems) that is a subdirectory of a user HOME directory. HOME directory is OS and
+		machine dependent. For example on Windows this is something like "C:\Documents and Settings\username\".
+		Cayenne User Directory  is created automatically when CayenneModeler is started on a user 
+		machine for the first time.</p>
+		</subsection>
+
+		<subsection name="1.4.2 Accessing Cayenne User Directory Programmatically">
+		<p>For those rare cases when you application needs to access Cayenne User Directory, you can take advantage of 
+		<a href="../../api/cayenne/org/objectstyle/cayenne/project/CayenneUserDir.html">CayenneUserDir class</a> API, via
+		 a shared instance of CayenneUserDir.</p>
+		</subsection>
+
+		<subsection name="1.4.3 Information Stored in Cayenne User Directory">
+		<ul>
+		<li><code>prefs</code>: preferences database subdirectory.</li>
+		<li><code>modeler.preferences</code>: this is an old modeler preferences file. It is still used by CayenneModeler, but will be
+		completely replaced by the preferences database in the future releases.</li>
+		<li><code>cayenne-log.properties</code>: Log4J configuration file for the Modeler.</li>
+		<li><code>modeler.log</code>: CayenneModeler log file.</li>
+		<li><code>modeler.classpath</code>: (unused) an old CLASSPATH configuration file that is now migrated to the preferences database.</li>
+		</ul>
+		</subsection>
+		</subsection>
+    </section>
+</body>
+</document>
+
+
+
+
+

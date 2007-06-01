@@ -1,0 +1,15 @@
+<document>
+<title>User Guide - Introduction</title>
+<toc name="toc-user-guide" chapter="1. Introduction"/>
+<body>
+    <section name="1. Introduction">
+        <subsection name="1.2  Acknowledgements">
+        	<p>We would like to thank our dedicated team of 
+        	<a href="http://objectstyle.org/cayenne/contributors.html" target="_new">contributors</a> - 
+			for making this project possible, early adopters - for taking all the pain to help us make a usable
+        	product, other users - for providing feedback, comments, patches and bug reports.
+			</p>
+        </subsection>
+    </section>
+</body>
+</document>

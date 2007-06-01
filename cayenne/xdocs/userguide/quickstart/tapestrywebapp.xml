@@ -1,0 +1,73 @@
+<document>
+	<title>User Guide - Quick Start</title>
+	<toc name="toc-user-guide" chapter="3. Quick Start"/>
+	<body>
+		<section name="3. Quick Start">
+			<subsection name="3.4 Tapestry Tutorial">
+				<p><a href="http://jakarta.apache.org/tapestry/" 
+					target="_blank">Tapestry</a> is a powerful component-based 
+					web application framework. This section shows how to write 
+					and a deploy a Tapestry web application using Cayenne as an 
+					O/R layer.</p>
+				<subsection name="3.4.1 Tutorial Setup">
+					<p>Make sure you successfully finished <a 
+						href="index.html">common setup steps</a>.</p>
+					<p>Install a web container. This tutorial was tested with 
+						<a href= 
+						"http://jakarta.apache.org/tomcat/index.html">Tomcat</a>. 
+						It should work with any other container that is 
+						compliant with Servlet 2.3 or 2.2 specification. All 
+						references to Tomcat below should apply in some form to 
+						other web containers as well.</p>
+					<p>Use tutorial source directory distributed with Cayenne 
+						at 
+						<code>$CAYENNE_HOME/src/tutorials/cayenne-tapestry-app</code> 
+						as a project directory.</p>
+					<p>Copy <code>cayenne.jar</code> to the 
+						<code>WEB-INF/lib</code> subdirectory of the tutorial 
+						project directory.</p>
+					<p>Copy JDBC driver jar file to <code>WEB-INF/lib</code> 
+						subdirectory of the tutorial project. </p>
+					<p>Obtain the latest <a 
+						href="http://jakarta.apache.org/tapestry/">Tapestry 
+						distribution</a> and unzip somewhere. This tutorial 
+						targets Tapestry version 3.0 and will not work with 
+						earlier versions. Copy <code>tapestry-*.jar</code> and 
+						other libraries required by Tapestry from the Tapestry 
+						distribution to <code>WEB-INF/lib</code> subdirectory 
+						of the tutorial project. </p>
+				</subsection>
+				<subsection name="3.4.2 Prepare Tutorial Database" anchor="2">
+					<p>Run <a 
+						href="../../tutorials/cayenne-tapestry-app/tutorialdb.sql"><code>tutorialdb.sql</code></a> 
+						script located in the project directory to create test 
+						tables. See step 3.2.2 from Command Line Tutorial.</p>
+				</subsection>
+				<subsection name="3.4.3 Setup DataNode">
+					<p>See step 3.2.3 from Command Line Tutorial.</p>
+				</subsection>
+				<subsection name="3.4.4 Setup Automatic Primary Key Generation">
+					<p>See step 3.2.4 from Command Line Tutorial.</p>
+				</subsection>
+				<subsection name="3.4.5 Generate Java Code for DataObjects">
+					<p>See step 3.2.5 from Command Line Tutorial.</p>
+				</subsection>
+				<subsection name="3.4.6 Compile and Deploy the Application">
+					<p>To compile the application, the easiest way is to use 
+						ant. Change into the cayenne-tapestry-app directory and 
+						invoke ant. The application will be built. <i>Note that 
+						"servlet.jar" (or an appropriate jar file with all the 
+						servlet classes) must be accessible to ant. Feel free 
+						to modify the buildfile accordingly.</i></p>
+					<p>To deploy, simply copy <code>cayenne-tapestry-app</code> 
+						directory to Tomcat <code>webapps</code> directory and 
+						restart the Tomcat. URL of the new applications is <a 
+						target="_new" href= 
+						"http://localhost:8080/cayenne-tapestry-app/artist">http://localhost:8080/cayenne-tapestry-app/artist</a> 
+						(on containers other then Tomcat, the prefix will 
+						probably be different). </p>
+				</subsection>
+			</subsection>
+		</section>
+	</body>
+</document>

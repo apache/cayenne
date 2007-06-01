@@ -1,0 +1,64 @@
+{
+    attributes = (
+        {
+            columnName = "HELPER_ENTITY_ID"; 
+            externalType = int; 
+            name = helperEntityID; 
+            serverTimeZone = "America/New_York"; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = NAME; 
+            externalType = char; 
+            name = name; 
+            serverTimeZone = "America/New_York"; 
+            valueClassName = NSString; 
+            width = 200; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = "OTHER_FIELD"; 
+            externalType = char; 
+            internalInfo = {"_nameInObjectStore" = NAME; }; 
+            name = otherField; 
+            serverTimeZone = "America/New_York"; 
+            valueClassName = NSString; 
+            width = 200; 
+        }, 
+        {
+            columnName = PK; 
+            externalType = int; 
+            name = pk; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }
+    ); 
+    attributesUsedForLocking = (pk, helperEntityID, name); 
+    className = SingeTableConcreteEntityTwoClass; 
+    classProperties = (toHelper, toHelper1, name, otherField); 
+    externalName = "SINGLE_TABLE"; 
+    fetchSpecificationDictionary = {}; 
+    name = SingleTableConcreteEntityTwo; 
+    parent = XSingleTableAbstractEntity; 
+    primaryKeyAttributes = (pk); 
+    relationships = (
+        {
+            destination = HelperEntity; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = pk; sourceAttribute = helperEntityID; }); 
+            name = toHelper; 
+        }, 
+        {
+            destination = HelperEntity; 
+            internalInfo = {"_nameInObjectStore" = toHelper1; }; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = pk; sourceAttribute = helperEntityID; }); 
+            name = toHelper1; 
+        }
+    ); 
+    restrictingQualifier = "(pk > 40)"; 
+}

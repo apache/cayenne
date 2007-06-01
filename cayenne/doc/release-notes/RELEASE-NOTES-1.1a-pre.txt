@@ -1,0 +1,33 @@
+Cayenne Release Notes 1.1 Alpha Preview 
+Date: 02/01/2004
+============================================
+
+For the latest information go to the project web site at http://objectstyle.org/cayenne/
+
+Features and Improvements:
+
+CAY-31	DataObject validation before save.
+CAY-30	Created shared distributed cache for DataRows.
+CAY-65	Useing Fault as "flyweight" for relationships.
+CAY-19	Support for custom class templates in the Modeler.
+CAY-77	CayenneModeler must allow to configure CLASSPATH on the fly	New Feature.
+CAY-76	Upgrade Warning Panel must pop up when saving (or opening?) a 1.0 project.
+CAY-85	Upgrade Tapestry Tutorial to Tapestry 3.0.
+CAY-50	Optimize DbRelationship snapshot methods.
+CAY-73	number of possible relationships in modeler is less then needed.
+CAY-47	OpenBaseAdapter.
+CAY-81	Add appropriate string for createAndRegisterNewObject to generated class
+CAY-43	New CayenneModeler main class
+- Tapestry Tutorial is upgraded to Tapoestry 3.0
+
+
+Various Changes and Resolved Issues:
+
+- QueryEngine.performQuery(Query, OperationObserver) is deprecated, since it is redundant.
+- ContextSelectObserver is deprecated. Its functionality is now implemented in the superclass.
+- SnapshotManager is deprecated in favor of DataRowUtils that is used in a static fashion.
+- Implemented open and extensible transaction API.
+CAY-28	Commit must work at least somewhat atomically across DataNodes
+CAY-64	Deleting HOLLOW object with to-many relationships causes an error
+CAY-70	Openbase does not support "(COLUMN) NOT LIKE UPPER(binding)"
+CAY-54	Newly created project in the modeler is marked as modified

@@ -1,0 +1,85 @@
+<document>
+<title>User Guide - Performance Tuning</title>
+<toc name="toc-user-guide" chapter="11. Performance Tuning"/>
+<body>
+    <section name="11. Performance Tuning">        
+			<subsection name="11.3 Iterating Through Data Rows">
+			<p>There are cases when the result sets are so large that even when fetching data rows, 
+			application can run out of memory. For instance, a user may be creating a report
+			that requires in-memory processing of hundreds of thousands of database rows. 
+			In such cases normal Cayenne behavior of reading the whole <code>java.sql.ResultSet</code> 
+			in the memory before returning it to the user may result in an application exhausing all
+			memory and crashing.</p>
+			
+			<p>Cayenne solves this by allowing to 
+			obtain results in the form of <a href=
+			"../../api/cayenne/org/objectstyle/cayenne/access/ResultIterator.html"><code>ResultIterator</code></a>. 
+			<code>ResultIterator</code> is connected
+			to an open <code>java.sql.ResultSet</code>, therefore its methods may throw checked 
+			exceptions. ResultIterator returns data rows (not DataObjects) one at a time, reading them
+			on demand from the open ResultSet. Each data row can be converted to a DataObject or accessed
+			directly. <strong>Open ResultIterator locks the database connection, therefore 
+			ResultIterator always requires explicit closing
+			in the user code.</strong></p>
+			
+			<panel name="Note:">
+			In web applications, programmers must ensure
+			that no open ResultIterators are kept between HTTP requests. Failure to do so
+			may result in too many database connections being locked, thus quickly exhausting 
+			connection pool. In general, an application with Web GUI is NOT a good candidate
+			for implementation using ResultIterators.
+			</panel>
+			
+			<p>When working with open ResultIterator, users still can perform any other database
+			operations: select queries, traversing object relationships, etc. Any parallel data
+			operation will internally check out an unused connection from the connection pool
+			as it would normally do, while ResultIterator still locks its own connection.
+			</p>
+			
+			<p>ResultIterator annotated example: </p>
+<source>
+import java.util.List;
+import java.util.Map;
+import org.objectstyle.cayenne.access.DataContext;
+import org.objectstyle.cayenne.access.ResultIterator;
+import org.objectstyle.cayenne.query.SelectQuery;
+import org.objectstyle.cayenne.CayenneException;
+import org.objectstyle.art.Artist;
+...
+DataContext ctxt;
+
+// create a usual query
+SelectQuery q = new SelectQuery(Artist.class);
+ResultIterator it = null;
+
+// ResultIterator operations all throw checked CayenneException
+try {
+   // special "performIteratedQuery" method is used
+   it = ctxt.performIteratedQuery(q);
+
+   while(it.hasNextRow()) {
+      // ResultIterator always returns data rows 
+      Map row = it.nextDataRow();
+      
+      // do something with the row...
+      ...
+   }
+}
+catch(CayenneException ex) {
+   ex.printStackTrace();
+}
+finally {
+   try {
+      // explicit closing of the iterator is required !!!
+      it.close();
+   }
+   catch(CayenneException closeEx) {
+       closeEx.printStackTrace();
+   }
+}
+...
+</source>
+			</subsection>
+    </section>
+</body>
+</document>

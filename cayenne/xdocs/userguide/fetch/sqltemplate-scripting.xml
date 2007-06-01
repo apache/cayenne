@@ -1,0 +1,199 @@
+<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="7. Using Queries"/> 
+<body>
+	<section name="7. Using Queries"> 
+		<subsection name="7.7 Scripting SQLTemplate">
+		<p>SQLTemplate's internal SQL string is a dynamic script that is processed at runtime to generate 
+		PreparedStatement SQL code. Dynamic nature of SQLTemplate makes possible a few important things - it allows 
+		to bind parameters on the fly; it provides a way to pass extra information to Cayenne that is not included
+		in the SQL text; it supports including/excluding chunks of SQL depending on runtime parameters.
+		</p>
+		
+		<p>Scripting of SQL strings is done using <a href="http://jakarta.apache.org/velocity" target="_blank">Jakarta
+		Velocity</a>. Velocity was chosen primarily for its concise template language (no XML tags within SQL!) that doesn't
+		conflict with the SQL syntax. When creating dynamic SQL template, all standard Velocity directives are available,
+		including <code>#set, #foreach, #if</code>.
+		However due to the nature of the SQL and the need to integrate it with Cayenne runtime, only a few Cayenne 
+		custom directives are normally used. These directives (<code>#bind..., #result, #chain, #chunk</code>) are described below.</p>
+		
+		<panel name="Directive Syntax Note">Velocity directives start with pound sign (#) and have their parameters 
+		separated by space, not comma. E.g. #bind('SOMESTRING' 'VARCHAR').
+		</panel>
+		<p> </p>
+
+		<subsection name="7.7.1 Named Parameters"><p><code>SQLTemplate.setParameters(java.util.Map)</code> allows setting 
+		a number of named parameters that are used to build parts of the query. During template processing by Velocity all keys in the parameters
+		map are available as variables. For example if the map contains a key "name", its value can be referenced as "$name" in the template.
+		Value of the parameter will be insterted in the SQL unmodified:</p>
+		
+<source>// build SQLTemplate
+String sql = "delete from $tableName";
+SQLTemplate delete = new SQLTemplate(Artist.class, sql, false);
+...
+// this will create a query "delete from ARTIST"
+update.setParameters(Collections.singletonMap("tableName", "ARTIST"));
+...
+// this will create a query "delete from PAINTING"
+update.setParameters(Collections.singletonMap("tableName", "PAINTING"));
+</source>
+		</subsection>
+		
+		<subsection name="7.7.2 Describing the Results - #result Directive">
+		<p><code>#result</code> directive is used in selecting SQLTemplates to quickly map an arbitrary ResultSet to a DataObject
+		(or a data row with known keys), and also to control Java types of result values. #result directive has a variable number of
+		arguments:</p>
+		
+		<ul>
+ 		<li><code>#result(columnName)</code> - e.g. #result('ARTIST_NAME')</li>
+ 		<li><code>#result(columnName javaType)</code> - e.g. #result('DATE_OF_BIRTH' 'java.util.Date')</li>
+ 		<li><code>#result(columnName javaType columnAlias)</code> - e.g. #result('DATE_OF_BIRTH' 'java.util.Date' 'DOB') - in this case
+ 		returned data row will use "DOB" instead of "DATE_OF_BIRTH" for the result value.</li>
+ 		</ul>
+		
+		<panel name="Java Type Note:">Generally "javaType" argument is a fully-qualified Java class name for a given
+		result column. However for simplicity most common Java types used in JDBC can be specified without 
+		a package. These include all numeric types, primitives, String, SQL dates, BigDecimal and BigInteger.
+		So "#result('A' 'String')", "#result('B' 'java.lang.String')" and "#result('C' 'int')" are all valid.
+		</panel>
+		
+				<p>While "select * from" queries may work just fine, in most cases it is a good idea to explicitly describe results.</p>
+				<p>Examples:</p>
+<source>// build selecting SQLTemplate
+String sql = "SELECT"
+   + " #result('ARTIST_ID' 'int'),"
+   + " #result('ARTIST_NAME' 'String'),"
+   + " #result('DATE_OF_BIRTH' 'java.util.Date')"
+   + " FROM ARTIST";
+SQLTemplate select = new SQLTemplate(Artist.class, sql, true);
+...
+DataContext context...;
+List artists = context.performQuery(select);
+</source>
+	</subsection>
+		
+		<subsection name="7.7.3 Binding Parameters -  #bind Directive">
+		<p>SQLTemplate uses <code>#bind</code> directive to indicate value binding. It has the same meaning as PreparedStatement 
+		question mark ("?" ), however it also tells Cayenne about the nature of the bound value,  so it should be used for all bindings.
+		<code>#bind()</code> directive can have a variable number of arguments. The following are the valid invocation formats: 
+		</p>
+		
+		<ul>
+ 		<li><code>#bind(value)</code> - e.g. #bind($xyz) or #bind('somestring')</li>
+ 		<li><code>#bind(value jdbcTypeName)</code> - e.g. #bind($xyz 'VARCHAR'). Second argument is the name of JDBC type for
+ 		this binding. Valid JDBC types are defined in java.sql.Types class. This form is the the most common and useful. 
+ 		It is generally preferred to the single argument form, as it explicitly tells what type of JDBC value this binding is.</li>
+ 		<li><code>#bind(value jdbcTypeName precision)</code> - e.g. #bind($xyz 'DECIMAL' 2)</li>
+ 		</ul>
+ 		
+ 		<p><code>#bind</code> directive example:</p>
+<source>// build SQLTemplate
+String sql = "update ARTIST set ARTIST_NAME = #bind($name) where ARTIST_ID = #bind($id)";
+SQLTemplate update = new SQLTemplate(Artist.class, sql, false);
+...
+// set parameters and run it...
+Map parameters = new HashMap();
+parameters.put("name", "Publo Picasso");
+parameters.put("id", new Integer(1001));
+update.setParameters(parameters);
+
+DataContext context...;
+context.performNonSelectingQuery(update);
+</source>
+		</subsection>
+		
+		<subsection name="7.7.4 Null Values in Bindings -  #bindEqual and #bindNotEqual Directives">
+		<p>Sometimes when a parameter is NULL, SQL code has to be changed. For example, instead of <code>"WHERE COLUMN = ?"</code>,
+		PreparedStatement should be rewritten as <code>"WHERE COLUMN IS NULL"</code>, and instead of <code>"WHERE COLUMN &lt;&gt; ?"</code>
+		- as <code>"WHERE COLUMN IS NOT NULL"</code>. #bindEqual and #bindNotEqual directives are used to dynamically generate 
+		correct SQL string in this case. Their semantics is the same as #bind directive above, except that they do not require "=", "!=" or "&lt;&gt;" 
+		in front of them:</p>
+		
+		<ul>
+ 		<li><code>#bindEqual(value), #bindNotEqual(value)</code></li>
+ 		<li><code>#bindEqual(value jdbcTypeName), #bindNotEqual(value jdbcTypeName)</code></li>
+ 		<li><code>#bindEqual(value jdbcTypeName precision), #bindNotEqual(value jdbcTypeName precision)</code></li>
+ 		</ul>
+		<p>Examples:</p>
+<source>// build SQLTemplate
+// note that "=" is ommitted for the second binding, since it is a part of the directive
+String sql = "update ARTIST set ARTIST_NAME = #bind($name) where ARTIST_ID #bindEqual($id);
+SQLTemplate update = new SQLTemplate(Artist.class, sql, false);
+...
+// set parameters and run it...
+Map parameters = new HashMap();
+parameters.put("name", "Publo Picasso");
+parameters.put("id", new Integer(1001));
+update.setParameters(parameters);
+
+DataContext context...;
+
+// after binding processing PrepapredStatement SQL will look like 
+// "update ARTIST set ARTIST_NAME = ? where ARTIST_ID = ?"
+context.performNonSelectingQuery(update);
+</source>
+<p> </p>
+<source>// build SQLTemplate
+// note that "!=" is ommitted for the second binding, since it is a part of the directive
+String sql = "update ARTIST set ARTIST_NAME = #bind($name) where ARTIST_ID #bindNotEqual($id)";
+SQLTemplate update = new SQLTemplate(Artist.class, sql, false);
+...
+// set parameters and run it...
+Map parameters = new HashMap();
+parameters.put("name", "Publo Picasso");
+parameters.put("id", null);
+update.setParameters(parameters);
+
+DataContext context...;
+
+// after binding processing PrepapredStatement SQL will look like 
+// "update ARTIST set ARTIST_NAME = ? where ARTIST_ID IS NOT NULL"
+context.performNonSelectingQuery(update);
+</source>
+
+		</subsection>
+		
+		<subsection name="7.7.5 Building Dynamic SQL - #chain and #chunk Directives">
+		<p>Often it is desirable to exclude parts of the WHERE clause if some parameters are null
+		or not set. This task is not trivial considering the semantics of a SQL statement. Consider this 
+		fairly simple example:</p>
+		
+<source>String sql = "SELECT DISTINCT"
+   + " #result('ARTIST_ID' 'int'),"
+   + " #result('ARTIST_NAME' 'String'),"
+   + " #result('DATE_OF_BIRTH' 'java.util.Date')"
+   + " FROM ARTIST t0"
+   + " WHERE ARTIST_NAME LIKE #bind($name)"
+   + " OR ARTIST_ID > #bind($id)";
+SQLTemplate select = new SQLTemplate(Artist.class, sql, true);
+</source>
+
+		<p>It would be nice to exclude ARTIST_NAME matching if "name" parameter is null, exclude ARTIST_ID
+		matching if "id" is null, and exclude the whole WHERE clause if both are null. #chain and #chunk directives are
+		used for this purpose. Each logical piece is wrapped in a conditional "chunk", and a number of chunks are grouped
+		in a chain. If chain contains no chunks it doesn't render anything enclosed in it.
+		</p>
+		
+<source>String sql = "SELECT DISTINCT"
+   + " #result('ARTIST_ID' 'int'),"
+   + " #result('ARTIST_NAME' 'String'),"
+   + " #result('DATE_OF_BIRTH' 'java.util.Date')"
+   + " FROM ARTIST t0"
+   + " #chain('OR' 'WHERE')                              // start chain prefixed by WHERE, 
+                                                         // and joined by OR
+   + " #chunk($name) ARTIST_NAME LIKE #bind($name) #end" // ARTIST_NAME "chunk"
+   + " #chunk($id) ARTIST_ID > #bind($id) #end"          // ARTIST_ID "chunk"
+   + " #end";                                            // end of chain
+SQLTemplate select = new SQLTemplate(Artist.class, sql, true);
+</source>		
+		
+		
+		</subsection>
+		
+		<subsection name="7.7.6 Binding ObjectId Values.">
+		<p>TO BE DONE</p>
+		</subsection>
+		</subsection>
+    </section>
+</body>
+</document>

@@ -1,0 +1,55 @@
+<document>
+<title>User Guide - Deployment</title>
+<toc name="toc-user-guide" chapter="12. Deployment" subchapter="12.2 Web Applications"/>
+<body>
+     <section name="12. Deployment">
+           <subsection name="12.2 Web Applications">
+
+               <p>When deploying an application in a web container it is possible to use the procedure described earlier for the standalone 
+				applications, as long as all Cayenne project XML files are placed in the location accessible to the application ClassLoader 
+				(e.g. "mywebapp/WEB-INF/classes/"). In addition Cayenne provides the following configuration features that take 
+				advantage of the environment provided by the Java web container. These features make Cayenne use with web applications easier 
+				and more consistent.
+               </p>
+
+				<ul>
+					<li><strong>Storing cayenne.xml and other project files in WEB-INF/ directory.</strong> "mywebapp/WEB-INF/" is a conventional
+					location for various web application configuration files. Letting Cayenne use this location instead of CLASSPATH provides 
+					extra consistency.</li>
+					<li><strong>Automatic creation of a session DataContext and binding it to an HttpSession.</strong> As DataContext usually has 
+					a session scope, Cayenne can be configured via a web application deployment descriptor (web.xml) to create a session DataContext 
+					automatically, making it accessible as a session attribute.</li>
+					<li><strong>Binding of a session DataContext to the request thread.</strong> Some object persistence code may be written to 
+					be intentionally unaware of the web environment, with the goal of being reused in both web and standalone applications. At the same time
+					it is nice to be able to provide an appropriate DataContext to such code without explicitly passing DataContext refrence around. 
+					To solve this problem, Cayenne can be configured via web.xml to bind a session DataContext to the current request thread. Thread-bound
+					DataContext can be retrieved at any time by persistence code without knowing anything about the environment.
+					</li>
+				</ul>
+
+				<panel name="Shared Locations Warning!">It is strongly advised against putting either cayenne.jar or cayenne XML 
+				files in the shared locations in the web container, as this confuses nested application ClassLoader, and actually requires
+				special "bootstrapping" code to make it work. Recommended location for cayenne.jar is "mywebapp/WEB-INF/lib/".
+				Recommended location for cayenne.xml is one of the following: "mywebapp/WEB-INF/classes/", "mywebapp/WEB-INF/lib/mywebapp.jar" 
+				or "mywebapp/WEB-INF/".
+				</panel>
+
+               <p>Further we will discuss in detail three main approaches to web application configuration, mentioning
+				container requirements and specific configuration steps:
+               </p>
+				<ul>
+					<li><a href="init-servlet.html">Initialization Servlet</a></li>
+					<li><a href="webapplicationlistener.html">WebApplicationListener</a></li>
+					<li><a href="webapplicationcontextprovider.html">WebApplicationContextProvider</a></li>
+				</ul>
+
+				<panel name="Servlet Specification Versions">Cayenne web application configuration evolved together
+				with Servlet Specification. So while it is possible to use Cayenne in a container with any level of Servlet Specification support,
+				some of the features are only available starting at a certain Servlet Specification version, as indicated in the following chapters. 
+				Check your container documentation to determine the version that you have. For example Tomcat 3.* supports specification version 
+				2.2, Tomcat 4.* - 2.3, Tomcat 5.* - 2.4.
+				</panel>
+</subsection>    
+    </section>
+</body>
+</document>

@@ -1,0 +1,60 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="4. Common Modeling Tasks"/>
+<body>
+	<section name="4. Common Modeling Tasks">
+	<subsection name="4.7 Setting DataMap Defaults">
+ 	 	<p>DataMap editing panel allows to define a number of default values for the entities 
+		in this map.</p>
+
+<img src="/images/modelerguide/datamap-defaults.jpg" width="512" height="256" border="0" 
+        align="middle" alt="DataMap Defaults"/>
+
+		<p>Defaults are stored in the DataMap XML file and used in CayenneModeler 
+		to make entity creation/modification easier. The following defaults are supported:</p>
+
+	<ul>
+	<li><strong>DB Schema</strong>. 
+	Default schema for newly created DbEntities and Procedures. Clicking "Update.." button next
+	to default schema will reset the schema of all existing DbEntities and Procedures to match the default.
+	<p></p>
+	</li>
+
+	<li><strong>Java Package</strong>. 
+	Default package for newly created ObjEntities. When specified, newly created ObjEntities will
+	be assigned a class name that is a combination of default package and initial entity name. 
+	Clicking "Update.." button next
+	to default package will reset the package of the existing Java classes in the DataMap.
+	<p></p>
+	</li>
+
+	<li><strong>DataObject Superclass</strong>. 
+	DataObject superclass allows to specify default superclass for the DataObject classes
+	mapped via ObjEntities. Clicking "Update.." button next to DataObject superclass field 
+	will reset the superclass of all existing Java classes in the DataMap.
+	<p></p>
+	</li>
+
+	<li><strong>Optimistic Locking</strong>. 
+	Default optimistic locking policy for ObjEntities. Clicking "Update.." button next
+	to the optimistic locking checkbox will reset the optimistic locking policy of all existing ObjEntities 
+	to match the default.
+	<p></p>
+	</li>
+		</ul>
+
+	<panel name="Defaults are ignored in runtime">
+	Note that none of the defaults affect entities runtime behavior. For example if a DbEntity "ARTIST"
+	has empty schema, and a DataMap defines a default schema to be "SCHEMA1", Cayenne will 
+	assume that ARTIST entity does not use schema.
+	</panel>
+
+        </subsection>
+    </section>
+</body>
+</document>
+
+
+
+
+

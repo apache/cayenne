@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC
+  "-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+  "http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="cayenne.tutorial.tapestry.pages.AddPaintingPage">
+	<component id="hasErrors" type="Conditional">
+   		<binding name="condition" expression="hasErrorMessage"/>
+	</component>
+	
+	<component id="errorMessage" type="Insert">
+    	<binding name="value" expression="errorMessage"/>
+		<binding name="raw" expression="true"/>
+	</component>
+	
+	<component id="paintingTitle" type="TextField">
+		<binding name="value" expression="painting.paintingTitle" />
+	</component>
+	
+	<component id="estimatedPrice" type="TextField">
+		<binding name="value" expression="painting.estimatedPrice" />
+	</component>
+
+	<component id="savePaintingButton" type="Submit">
+		<binding name="listener" expression="listeners.savePaintingAction"/>
+	</component>
+
+	<property-specification name="artist" type="cayenne.tutorial.tapestry.domain.Artist" persistent="yes"/>
+	<property-specification name="painting" type="cayenne.tutorial.tapestry.domain.Painting" persistent="yes"/>
+</page-specification>

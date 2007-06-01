@@ -1,0 +1,11 @@
+Cayenne Release Notes 1.1 Alpha Preview 2
+Date: 02/08/2004
+============================================
+
+For the latest information go to the project web site at http://objectstyle.org/cayenne/
+
+Features and Improvements:
+
+CAY-90	Implemented DbAdapter for MS SQL Server
+CAY-91	Added "Import DataMap" function to CayenneModeler
+CAY-29	Added support for container-managed transactions.

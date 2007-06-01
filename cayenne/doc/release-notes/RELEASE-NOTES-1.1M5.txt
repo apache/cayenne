@@ -1,0 +1,23 @@
+Cayenne Release Notes 1.1 M5
+Date: 04/14/2004
+============================================
+
+For the latest information go to the project web site at http://objectstyle.org/cayenne/
+
+To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+Features And Improvements:
+
+CAY-24	Implement Single Table Inheritance
+CAY-52	Implement Optimistic Locking
+-				Qualifiers in ObjEntities.
+-				Simplified Documentation Layout in the download.
+
+
+Bugs Fixed:
+
+CAY-106	PropertyListSerialization can't handle // comments
+CAY-103	Error when reengineer Data scheme	
+CAY-105	Problem with multistep to-many prefetches
+

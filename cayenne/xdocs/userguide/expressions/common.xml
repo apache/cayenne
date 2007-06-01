@@ -1,0 +1,81 @@
+<document>
+<title>User Guide - Using Expressions</title>
+<toc name="toc-user-guide" chapter="10. Using Expressions"/>  
+<body>
+    <section name="10. Using Expressions">        
+		<subsection name="10.2 Building Expressions">
+		<p>Static method <code>Expression.fromString(String)</code> provides an easy way
+		to create expressions of arbitrary complexity.  Structure of expressions is fairly intuitive,
+		with the formal grammar provided <a href="../../grammar/ExpressionParser.html">here</a>.
+		Among other things grammar link above can tell what operators are currently supported. 
+		A simple example of creating an expression that matches Paintings with names that start 
+		with "A" and a price less than $1000.00:
+		</p>
+		
+<source>
+Expression e = Expression.fromString("paintingTitle like 'A%' and estimatedPrice &lt; 1000");
+</source>
+
+	<subsection name="10.2.1 String Expression Tips">
+<p>Character constants should be enclosed in single or double quotes:</p>
+<source>
+// e1 and e2 are equivalent
+Expression e1 = Expression.fromString("'ABC'");
+Expression e2 = Expression.fromString("\"ABC\"");
+</source>
+
+<p>Object path expressions are unquoted strings, optionally prefixed by "obj:", database
+path expressions are unquoted strings always prefixed with "db:" :</p>
+<source>
+// object path 
+Expression e1 = Expression.fromString("artistName");
+
+// same object path
+Expression e2 = Expression.fromString("obj:artistName");
+
+// database path, "db:" prefix is mandatory
+Expression e3 = Expression.fromString("db:ARTIST_NAME");
+</source>
+
+<p>Predefined expression operators are all case sensitive, and are usually lowercase. Complex
+words mostly follow the "Java nameing style":</p>
+<source>
+// correct
+Expression e1 = Expression.fromString("artistName likeIgnoreCase 'A%'");
+
+// INCORRECT - will result in ParseException
+Expression e2 = Expression.fromString("artistName LIKEIGNORECASE 'A%'");
+</source>
+
+<p>Grouping of operations is done with parenthesis:</p>
+<source>
+Expression e1 = Expression.fromString("(estimatedPrice + 250.00) * 3");
+</source>
+
+<p>Expression can have parameters (names that start with "$"). Parameterized
+expressions are a cool way to create reusable expression templates:</p>
+<source>
+Expression template = Expression.fromString("artistName = $name");
+...
+Map params = new HashMap();
+params.put("name", "Dali");
+Expression e1 = template.expWithParameters(params);
+...
+params.put("name", "Monet");
+Expression e2 = template.expWithParameters(params);
+</source>
+
+<p>Expressions used as query qualifiers must be boolean conditions:</p>
+<source>
+// valid qualifier
+Expression e1 = Expression.fromString("artistName likeIgnoreCase 'A%'");
+
+// INVALID QUALIFIER - will result in a SQL exception. 
+// Though this is still a valid Cayenne expression
+Expression e2 = Expression.fromString("artistName");
+</source>
+		</subsection>
+		</subsection>
+    </section>
+</body>
+</document>

@@ -1,0 +1,24 @@
+Cayenne Release Notes 1.1 B1
+Date: 
+============================================
+
+For the latest information go to the project web site at 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+Changes, Features And Improvements:
+
+- CAY-120	DataMap Defaults
+- CAY-139	"Save As" Menu
+- Reworked ProcedureQuery and SQLTemplate editor panels
+- new DataContext performQuery methods to work with various mapped queries.
+
+
+Bugs Fixed:
+
+- CAY-159	Doublequotes in table names are not escaped properly
+- CAY-149	"Recent File" path references to deleted cayenne.xml files grow extremely long
+- lots of other unregistered Modeler bugs.
+

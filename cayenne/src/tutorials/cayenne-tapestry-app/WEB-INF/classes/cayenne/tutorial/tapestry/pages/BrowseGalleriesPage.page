@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC
+  "-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+  "http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="cayenne.tutorial.tapestry.pages.BrowseGalleriesPage">
+  	<component id="galleries" type="Foreach">
+  		<binding name="source" expression="galleryList"/>
+  		<binding name="value" expression="gallery"/>
+	</component>
+
+ 	<component id="galleryName" type="Insert">
+    	<binding name="value" expression="gallery.galleryName"/>
+	</component>
+	
+	<component id="paintings" type="Foreach">
+  		<binding name="source" expression="gallery.paintingArray"/>
+  		<binding name="value" expression="painting"/>
+	</component>	
+	
+	<component id="paintingTitle" type="Insert">
+    	<binding name="value" expression="painting.paintingTitle"/>
+	</component>
+	
+	<component id="estimatedPrice" type="Insert">
+    	<binding name="value" expression="painting.estimatedPrice"/>
+	</component>
+	
+	<component id="artistName" type="Insert">
+    	<binding name="value" expression="painting.toArtist.artistName"/>
+	</component>
+	
+	<component id="removePaintingLink" type="ActionLink">
+    	<binding name="listener" expression="listeners.removePaintingAction"/>
+	</component>
+
+	<property-specification name="galleryList" type="java.util.List" persistent="yes"/>
+	<property-specification name="gallery" type="cayenne.tutorial.tapestry.domain.Gallery" persistent="no"/>
+	<property-specification name="painting" type="cayenne.tutorial.tapestry.domain.Painting" persistent="no"/>
+</page-specification>

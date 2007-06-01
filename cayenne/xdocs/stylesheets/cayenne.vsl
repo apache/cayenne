@@ -1,0 +1,296 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+#set ($centralWidth = "83%")
+#set ($rightWidth = "10%")
+#set ($rightBG = "${relativePath}/images/778899.gif")
+#if ($root.getChild("toc"))
+    #set ($centralWidth = "65%")
+    #set ($rightWidth = "28%")  
+    #set ($rightBG = "${relativePath}/images/666633.gif")
+#end
+
+<html>
+<head>
+        <title>$project.getChild("title").getText(): $root.getChild("title").getText()</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+        <meta name="keywords" content="Object Relational Mapping framework for Java database applications, Java Development, Cayenne, OO-to-Relational mapping, Object-Oriented Software, OpenSource Development, WebObjects, EOF, Enterprise Objects Framework">
+        <meta name="description" content="Cayenne is an object-relational mapping Java framework. It is free and OpenSource, developed under apache license.">
+        <link href="${relativePath}/images/objectstyle.css" rel="stylesheet">
+</head>
+
+<body text="#000000" bgcolor="#ffffff" link="#000000" alink="#000000" vlink="#000000" 
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+<br>
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+  <tbody><tr>
+    <td width="12%" height="70" align="right" valign="top" background="${relativePath}/images/778899.gif">
+       <a href="http://objectstyle.org/" target="_new"><img border="0" src="${relativePath}/images/os_logo.gif" width="160" height="32"></a>
+    </td>
+    <td width="1" bgcolor="#333333"><img src="${relativePath}/images/spacer.gif" width="1" height="1"></td>
+    <td width="${centralWidth}" align="right" background="${relativePath}/images/cccc99.gif">
+       <a href="http://objectstyle.org/cayenne/" target="_new"><img border="0" src="${relativePath}/images/cayenne_logo.gif" width="300" height="92"></a>
+    </td>
+    <td width="1" bgcolor="#333333"><img src="${relativePath}/images/spacer.gif" width="1" height="1"></td>
+    <td width="${rightWidth}" background="${rightBG}"> </td>
+  </tr>
+  <tr>
+    <td width="12%" valign="top" bgcolor="#778899" height="450" ><table width="100%" border="0" cellspacing="10" cellpadding="0">
+    <tbody>
+      <tr>
+        <td align="right" class="normal">
+        #leftMenu()
+        </td>
+      </tr>
+    </tbody>
+    </table></td>
+    <td width="1" bgcolor="#333333"><img src="${relativePath}/images/spacer.gif" width="1" height="1"></td>
+    <td width="${centralWidth}" valign="top" bgcolor="#cccc99" class="body-black">
+    
+    #set ($allSections = $root.getChild("body").getChildren("section"))
+    #foreach ( $section in $allSections )
+          #section ($section)
+    #end
+    </td>
+    <td width="1" bgcolor="#333333"><img src="${relativePath}/images/spacer.gif" width="1" height="1"></td>
+    
+    #tableOfContents()
+  </tr>  <tr>
+
+    <td width="12%" height="1" bgcolor="#333333"><img src="${relativePath}/images/spacer.gif" width="1" height="1"></td>
+    <td width="1" height="1" bgcolor="#333333"><img src="${relativePath}/images/spacer.gif" width="1" height="1"></td>
+    <td width="${centralWidth}" height="1" bgcolor="#333333"><img src="${relativePath}/images/spacer.gif" width="1" height="1"></td>
+    <td width="1" height="1" bgcolor="#333333"><img src="${relativePath}/images/spacer.gif" width="1" height="1"></td>
+    <td width="${rightWidth}" height="1" bgcolor="#333333"><img border="0" src="${relativePath}/images/spacer.gif" width="1" height="1"></td>
+  </tr>
+  <tr>
+    <td width="12%"></td>
+    <td width="1" bgcolor="#333333"><img src="${relativePath}/images/spacer.gif" width="1" height="1"></td>
+    <td width="${centralWidth}" valign="top"><table width="100%" border="0" cellspacing="10" cellpadding="0" class="body-black">
+      <tbody><tr>
+        <td>Copyright &copy;2001-2004 ObjectStyle Group</td>
+      </tr>
+    </tbody></table></td>
+    <td width="1" bgcolor="#333333"><img src="${relativePath}/images/spacer.gif" width="1" height="1"></td>
+    <td width="${rightWidth}"> </td>
+  </tr>
+</tbody></table>
+<br>
+</body>
+</html>
+
+#macro ( panel $panel)
+<table width="100%" border="0" cellpadding="0" cellspacing="7" class="note">
+  <tr>
+   <td  class="body-black"><b><img src="$relativePath/images/i.gif" width="12" height="12">
+   &nbsp;$panel.getAttributeValue("name")</b> <br>
+$panel.getText()<br></td>
+  </tr>
+</table>
+#end
+
+
+#macro ( table $table)
+<table width="100%" border="0" cellspacing="1" cellpadding="3" class="body-black" bgcolor="#999966">
+    #foreach ( $items in $table.getChildren() )
+        #if ($items.getName().equals("tr"))
+            #tr ($items)
+        #elseif ($items.getName().equals("list-arch"))
+        	#listarch ($items)
+        #end
+    #end
+</table>
+#end
+
+#macro ( tr $tr)
+<tr>
+    #foreach ( $items in $tr.getChildren() )
+        #if ($items.getName().equals("td"))
+            #td ($items)
+        #elseif ($items.getName().equals("th"))
+            #th ($items)
+        #end
+    #end
+</tr>
+#end
+
+#macro ( td $value)
+#if ($value.getAttributeValue("colspan"))
+#set ($colspan = $value.getAttributeValue("colspan"))
+#end
+#if ($value.getAttributeValue("rowspan"))
+#set ($rowspan = $value.getAttributeValue("rowspan"))
+#end
+<td  bgcolor="#FFFFCC" class="body-black" colspan="$!colspan" rowspan="$!rowspan" valign="top" align="left">
+        #if ($value.getText().length() != 0 || $value.hasChildren())
+        $value.getContent()
+        #else
+        &nbsp;
+        #end
+</td>
+#end
+
+#macro ( th $value)
+#if ($value.getAttributeValue("colspan"))
+#set ($colspan = $value.getAttributeValue("colspan"))
+#end
+#if ($value.getAttributeValue("rowspan"))
+#set ($rowspan = $value.getAttributeValue("rowspan"))
+#end
+<td  bgcolor="#FFFF99" class="body-black" colspan="$!colspan" rowspan="$!rowspan" valign="top" align="left">
+        #if ($value.getText().length() != 0 || $value.hasChildren())
+        $value.getContent()
+        #else
+        &nbsp;
+        #end
+</td>
+#end
+
+#macro ( projectanchor $name $value )
+#if ($value.startsWith("http://"))
+    <a href="$value">$name</a>
+#else
+    <a href="$relativePath$value">$name</a>
+#end
+#end
+
+#macro ( menuprojectanchor $name $value )
+#if ($value.startsWith("http://"))
+    <a href="$value" class="body-white-small" target="_new">$name</a>
+#else
+    <a href="$relativePath$value" class="body-white-small">$name</a>
+#end
+#end
+
+
+#macro ( image $value )
+#set ($tag = "<img src='${relativePath}$value.getAttributeValue('src')'")
+#if ($value.getAttributeValue("width"))
+#set ($tag = "$tag width='$value.getAttributeValue('width')'")
+#end
+#if ($value.getAttributeValue("height"))
+#set ($tag = "$tag height='$value.getAttributeValue('height')'")
+#end
+#if ($value.getAttributeValue("align"))
+#set ($tag = "$tag align='$value.getAttributeValue('align')'")
+#end
+#if ($value.getAttributeValue("alt"))
+#set ($tag = "$tag alt='$value.getAttributeValue('alt')'")
+#end
+#set ($tag = "$tag/>")
+$tag
+#end
+
+#macro ( source $value)
+<table width="100%" border="0" cellpadding="0" cellspacing="7" bgcolor="#FFFFCC"  class="source">
+  <tr>
+    <td class="body-black"><pre>$value.getText()</pre></td>
+  </tr>
+</table>   
+#end
+
+#macro ( subsection $subsection)
+    #if( $subsection.getAttributeValue("anchor") )
+    <a name="$subsection.getAttributeValue("anchor")"></a>
+    #end
+    
+    <strong><br>
+    $subsection.getAttributeValue("name")<br>
+    </strong><br>
+        #foreach ( $item in $subsection.getChildren() )
+            #if ($item.getName().equals("img"))
+                #image ($item)
+            #elseif ($item.getName().equals("source"))
+                #source ($item)
+            #elseif ($item.getName().equals("panel"))
+                #panel ($item)
+            #elseif ($item.getName().equals("table"))
+                #table ($item)
+            #elseif ($item.getName().equals("subsection"))
+                #subsection ($item)
+            #else
+                $item
+            #end
+        #end
+#end
+
+    
+#macro ( section $section)
+    #if( $section.getAttributeValue("anchor") )
+    <a name="$section.getAttributeValue("anchor")"></a>
+    #end
+    <table width="100%" border="0" cellspacing="10" cellpadding="0">
+      <tbody><tr>
+        <td align="left" valign="top" class="body-black"><strong><font class="normal-red">$section.getAttributeValue("name")</font>
+            <img src="${relativePath}/images/redline.gif" width="100%" height="1"><br></strong><br>
+                  #foreach ( $item in $section.getChildren() )
+            #if ($item.getName().equals("img"))
+                #image ($item)
+            #elseif ($item.getName().equals("source"))
+                #source ($item)
+            #elseif ($item.getName().equals("panel"))
+                #panel ($item)
+            #elseif ($item.getName().equals("table"))
+                #table ($item)
+            #elseif ($item.getName().equals("subsection"))
+                #subsection ($item)
+            #else
+                $item
+            #end
+        #end
+        </td>
+      </tr>
+    </tbody>
+    </table>
+#end
+
+#macro ( leftMenu )
+    #set ($menus = $project.getChildren("menu"))
+    #foreach ( $menu in $menus )
+    <p>
+    <strong class="body-white">$menu.getAttributeValue("name")</strong><br>
+    #foreach ( $item in $menu.getChildren() )
+    #set ($name = $item.getAttributeValue("name"))
+       #menuprojectanchor($name $item.getAttributeValue("href"))<br>
+    #end
+    </p>
+    #end
+#end
+
+#macro ( tableOfContents)
+    #if ($root.getChild("toc"))
+    <td width="30%" valign="top" bgcolor="#999966"><table width="100%" border="0" cellspacing="10" cellpadding="0">
+      <tbody>
+       	<tr>
+       		<td align="left" class="normal">
+       		#set ($toc = $project.getChild("toc").getChild($root.getChild("toc").getAttributeValue("name")))
+       		<strong class="body-white">#menuprojectanchor($toc.getAttributeValue("name") $toc.getAttributeValue("href"))</strong><br>
+       		<p><strong class="body-white">TABLE OF CONTENTS:</strong></p>
+
+         #foreach ( $item in $toc.getChildren())
+    		#set ($name = $item.getAttributeValue("name"))
+    		<p>
+       		#menuprojectanchor($name $item.getAttributeValue("href"))<br>
+       		
+       		#if($name == $root.getChild("toc").getAttributeValue("chapter"))
+       		#foreach ( $subitem in $item.getChildren("item"))
+       		   #set ($subname = $subitem.getAttributeValue("name"))
+       		   &nbsp;#menuprojectanchor($subname $subitem.getAttributeValue("href"))<br>
+       		   
+       		   #if($subname == $root.getChild("toc").getAttributeValue("subchapter"))
+       		   #foreach ( $subchapteritem in $subitem.getChildren("item"))
+       		   #set ($subchaptername = $subchapteritem.getAttributeValue("name"))
+       		   &nbsp;&nbsp;#menuprojectanchor($subchaptername $subchapteritem.getAttributeValue("href"))<br>
+       		   #end
+       		   #end
+       		#end
+       		#end</p>
+    	 #end
+    	 </td>
+    	 </tr>
+      </tbody>
+    </table>
+    </td>    
+    #else
+      <td width="10%" bgcolor="#778899"></td>          
+    #end
+#end

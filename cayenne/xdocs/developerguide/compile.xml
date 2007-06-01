@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<document>
+    <title>Developer Guide</title>
+    <toc name="toc-developer-guide" chapter="2. Compiling Cayenne"/>
+    <body>
+        <section name="2. Compiling Cayenne">
+           <p>To compile Cayenne, run ant (must be version 1.4.1 or higher) on the main buildfile:</p>
+            
+<source># cd cayenne
+# ant</source>
+
+        <p>Ant can be downloaded from <a href="http://ant.apache.org">http://ant.apache.org</a>.</p>
+        </section>
+    </body>
+</document>
+

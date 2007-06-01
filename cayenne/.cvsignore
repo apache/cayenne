@@ -1,0 +1,16 @@
+bin
+dist
+velocity.log
+tmp
+testrun
+build.properties
+perfresults
+build
+cayenne.jpx
+cayenne.jpx~
+cayenne-deps.library
+cayenne.jpx.local
+cayenne.jpx.local~
+classes
+bak
+

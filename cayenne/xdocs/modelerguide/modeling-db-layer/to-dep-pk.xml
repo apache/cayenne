@@ -1,0 +1,32 @@
+<document>
+	<title>CayenneModeler Guide</title>
+	<toc name="toc-modeler-guide" chapter="5. Modeling Database Layer"/>
+	<body>
+		<section name="5. Modeling Database Layer">
+			<subsection name="5.1 &quot;To Dep PK&quot; Checkbox">
+				<p>Some DB relationships consist only of the primary key 
+					columns of the participating tables. Examples of such 
+					relationships are:</p>
+				<ul>
+					<li>One-to-one relationship between master and detail 
+						tables.</li>
+					<li>One-to-many relationship between each main table and a 
+						join table in a many-to-many relationship spanning 
+						three tables.</li>
+				</ul>
+				<p>Normally one side of the relationship is considered "master" 
+					and another one - "dependent", meaning that "dependent" 
+					part can not exist without a corresponding "master" record, 
+					while "master" record can exist without any dependents. 
+					This fact is reflected in Cayenne mapping. DbEntity 
+					"Relationships" panel contains "To Dep PK" column. The 
+					checkboxes in this column are disabled, unless the 
+					relationship only consists of the PK attributes. If this is 
+					the case, you must select the relationship going in the 
+					direction from "master" to "dependent" and check the "To 
+					Dep PK" checkbox on this relationship. Otherwise Cayenne 
+					will not be able to handle such relationship properly.</p>
+			</subsection>
+		</section>
+	</body>
+</document>

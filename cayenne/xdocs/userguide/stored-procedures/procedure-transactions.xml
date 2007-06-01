@@ -1,0 +1,32 @@
+<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="9. Using Stored Procedures"/>
+<body>
+    <section name="9. Using Stored Procedures">
+    <subsection name="9.3 Stored Procedures and Transactions">
+		<p>There maybe a situations when stored procedures handle their own transactions and 
+		an application is configured to use Cayenne-managed transactions. This is obviously 
+		conflicting and undesirable behavior. In this case ProcedureQueries should be executed 
+		explicitly wrapped in an "external" Transaction. This is one of the few cases when a user
+		should worry about transactions at all.
+		</p>
+<source>
+DataContext ctxt = ...;
+ProcedureQuery query = ...;
+QueryResult resultsCollection = new QueryResult();
+
+// obtain a new instance of "external" Transaction
+Transaction externalTransaction = Transaction.externalTransaction(null);
+
+// run wrapping in Transaction that would not commit explicitly
+Transaction.performQueries(ctxt, Collections.singletonList(query), resultsCollection);
+
+// process results
+List results = resultCollection.getFirstRows(query);
+...
+</source>
+	</subsection>
+    </section>
+</body>
+</document>
+

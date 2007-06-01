@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- =================================================== -->
+<!-- Cayenne Driver DTD,  v 1.1                          -->
+<!--                                                     -->
+<!-- Copyright (c) 2002-2004 Andrei Adamchik and         -->
+<!-- individual authors. All rights reserved             -->
+<!--                                                     -->
+<!-- Author: Andrei Adamchik                             -->
+<!--                                                     -->
+<!-- Describes Cayenne JDBC driver configuration files   -->
+<!-- usually called *.driver.xml. Note that driver files -->
+<!-- are only used when DataSource is NOT provided by    -->
+<!-- container.                                          -->
+<!-- =================================================== -->
+
+<!ELEMENT driver (url, connectionPool?, login?)>
+<!ATTLIST driver
+	class CDATA #REQUIRED
+>
+
+<!ELEMENT url EMPTY>
+<!ATTLIST url
+	value CDATA #REQUIRED
+>
+
+<!ELEMENT connectionPool>
+<!ATTLIST connectionPool
+	min CDATA #REQUIRED
+	max CDATA #REQUIRED
+>
+
+<!ELEMENT login>
+<!ATTLIST login
+	userName CDATA #REQUIRED
+	password CDATA #REQUIRED
+>

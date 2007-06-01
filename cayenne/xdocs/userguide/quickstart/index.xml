@@ -1,0 +1,58 @@
+<document>
+	<title>User Guide - Quick Start</title>
+	<toc name="toc-user-guide" chapter="3. Quick Start"/>
+	<body>
+		<section name="3. Quick Start">
+			<subsection name="Common Setup Steps">
+				<p>These setup steps are the same for all tutorials in this 
+					chapter:</p>
+				<p><strong>1. Install Cayenne:</strong><br/> Check <a 
+					href="../install/index.html">these</a> and <a 
+					href="../install/install.html">these</a> instructions. In 
+					particular, JDK 1.4 or newer must be installed.</p>
+				<p><strong>2. Get access to a Relational 
+					Database:</strong><br/> For instance this can be a shared 
+					database running somewhere on the server in your 
+					organization. If you don't have access to such database (or 
+					don't have permissions to create and drop tables in it), it 
+					will probably be simpler if you install a local database on 
+					the development machine. All the tutorial SQL scripts were 
+					written for MySQL, so installing MySQL should be the 
+					simplest option.</p>
+				<p><strong>3. Install JDBC Driver:</strong><br/> Install JDBC 
+					driver for the database used in step (2). Put the driver 
+					jars somewhere in the filesystem. You don't have to add 
+					them to CLASSPATH for the CayenneModeler to run, however 
+					you may need to do that to run your application.</p>
+				<p><strong>4. Start CayenneModeler GUI Application, Configure 
+					Driver Settings:</strong><br/> Follow <a 
+					href="../../modelerguide/modeler-intro/runmodeler.html">these 
+					instructions</a> to start the Modeler.</p>
+				<p><strong>5. Configure Driver Settings:</strong><br/> In the 
+					Modeler go to <code>"Tools > Preferences > 
+					ClassPath"</code> and create an entry or entries for the 
+					JDBC driver JAR files installed in the step (3). Once these 
+					preferences are saved, they will be used by the Modeler, 
+					even after it is restarted.</p>
+				<p><strong>6. Configure Preferred DataSources:</strong><br/> Go 
+					to <code>"Tools > Preferences > Local DataSources"</code> 
+					and configure one or more named DataSources for any 
+					databases you might need to access now and in the future. A 
+					documentation for this operation can be found <a 
+					href="../../modelerguide/preferences/pref-datasource.html">here</a>. 
+					<i>This step is optional, however performing it now will 
+					speed up any database work that you will do when working on 
+					tutorials and with your own application.</i></p>
+				<panel name="Note:"> Source code for the tutorials discussed in 
+					this chapter is bundled with Cayenne distribution. More 
+					advanced Cayenne examples are available as a separate 
+					download from the download page. </panel>
+				<p>Database schema used in all tutorials in this chapter is 
+					shown below:</p>
+				<img src="/images/userguide/quickstart-schema.jpg" width="400" 
+					height="200" border="0" align="middle" 
+					alt="Art Catalog Schema"/>
+			</subsection>
+		</section>
+	</body>
+</document>

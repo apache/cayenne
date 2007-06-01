@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+  <!-- ========== Form Bean Definitions =================================== -->
+
+  <form-beans>
+      <form-bean name="artistForm" type="formbean.ArtistForm" />
+	  <form-bean name="paintingForm" type="formbean.PaintingForm" />
+	  <form-bean name="galleryForm" type="formbean.GalleryForm" />		
+  </form-beans>
+
+  <!-- ========== Global Forward Definitions ============================== -->
+  <global-forwards>
+  
+  </global-forwards>
+
+  <!-- ========== Action Mapping Definitions ============================== -->
+
+  <action-mappings>
+ 
+    <action path="/browseArtists" type="action.ArtistPageAction">
+      <forward name="success" path="/artistBrowsePage.jsp" />
+    </action>
+	
+	<action path="/browseGalleries" type="action.GalleryPageAction">
+      <forward name="success" path="/galleryBrowsePage.jsp" />
+    </action>
+
+	<action path="/addArtist" type="action.AddArtistAction" name="artistForm" scope="request" validate="false">
+       <forward name="success" path="/addArtistPage.jsp" redirect="false" />
+    </action>
+	
+	<action path="/addGallery" type="action.AddGalleryAction" scope="request" validate="false" name="galleryForm">
+		<forward name="success" path="/addGalleryPage.jsp" redirect="false" />
+	</action>
+	
+	<action path="/addPainting" type="action.AddPaintingAction" name="paintingForm" scope="request" validate="false">
+		<forward name="success" path="/addPaintingPage.jsp" redirect="false" />
+	</action>
+	
+	<action path="/saveArtist" type="action.SaveArtistAction" name="artistForm" scope="request" input="/addArtistPage.jsp">
+		<forward name="success" path="/browseArtists.do" />
+    </action>
+	
+	<action path="/saveGallery" type="action.SaveGalleryAction" name="galleryForm" scope="request" input="/galleryBrowsePage.jsp">
+		<forward name="success" path="/browseGalleries.do" />
+    </action>
+	
+	<action path="/savePainting" type="action.SavePaintingAction" name="paintingForm" scope="request" input="/artistDetailPage.jsp">
+		<forward name="success" path="/browseArtists.do" />
+    </action>
+	
+	<action path="/addPaintingToGallery" type="action.AddPaintingToGalleryAction">
+      <forward name="success" path="/chooseGalleryPage.jsp" />
+    </action>
+	
+	<action path="/choosePaintingForGallery" type="action.SubmitPaintingToGalleryAction">
+      <forward name="success" path="/browseArtists.do" />
+    </action>
+	
+	<action path="/removePaintingFromGallery" type="action.RemovePaintingFromGalleryAction">
+      <forward name="success" path="/browseGalleries.do" />
+    </action>
+  </action-mappings>
+
+
+  <!-- ========== Message Resources Definitions =========================== -->
+  <message-resources parameter="ApplicationResources" key="org.apache.struts.action.MESSAGE" />
+
+</struts-config>

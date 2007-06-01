@@ -1,0 +1,30 @@
+<document>
+<title>User Guide - Design</title>
+<toc name="toc-user-guide" chapter="4. Design"/>
+<body>
+    <section name="4. Design">
+        	 <subsection name="4.8 How Information Is Stored in Cayenne">
+        	 <p>There are two types of data items stored by Cayenne - DataObjects and DataRows.</p>
+        	 
+        	 <p><a href="../../api/cayenne/org/objectstyle/cayenne/DataObject.html">DataObject</a> graph 
+        	 is stored by instances of <a href="../../api/cayenne/org/objectstyle/cayenne/access/ObjectStore.html">ObjectStore</a>
+        	 associated with every DataContext. As discussed earlier, "graph" is simply a number of DataObjects 
+        	 interconnected with each other via relationships.</p>
+        	 
+        	 <p><a href="../../api/cayenne/org/objectstyle/cayenne/DataRow.html">DataRows</a> are 
+        	 snapshots of database table rows. They are stored by <a href=
+        	 "../../api/cayenne/org/objectstyle/cayenne/access/DataRowStore.html">DataRowStore</a>.  
+        	 DataRows are used internally for many tasks performed by Cayenne, including creation
+        	 of DataObjects, tracking changes to DataObjects, caching.
+        	 </p>
+        	 
+        	 <p>Both DataRowStore and ObjectStore use ObjectIds as lookup keys to their corresponding 
+        	 data items.</p>
+        	 
+        	 <panel name="Note:">
+        	 Relationship between ObjectStore and DataRow store is discussed in the caching chapter.
+        	 </panel>
+            </subsection>
+</section>
+</body>
+</document>

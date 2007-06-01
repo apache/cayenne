@@ -1,0 +1,14 @@
+<document>
+<title>Servlet Filter Example</title>
+<toc name="toc-examples" chapter="5. Servlet Filter"/>
+<body>
+    <section name="5. Servlet Filter">
+           <p>WebApplicationContextFilter is a contribution by Gary Jarrel to provide functionality
+		similar to WebApplicationContextProvider (i.e. automatic binding of session DataContext to a thread) 
+		via a different servlet container hook - a filter - that is compatible with Servlet specification 2.3. Read WebApplicationContextFilter
+		JavaDocs for usage instructions in a web application.</p>
+
+		<p>WebApplicationContextFilter will be included in the core Cayenne in the future release.</p>
+	</section>
+</body>
+</document>

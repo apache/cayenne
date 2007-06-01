@@ -1,0 +1,88 @@
+<document>
+<title>Cayenne Examples</title>
+<toc name="toc-examples"/>
+<body>
+    <section name="Cayenne Examples">        
+	<p>Cayenne examples should be <a href="../download.html">downloaded</a> separately from Cayenne. 
+	Examples are normally not tested as thourougly as the core Cayenne code. They are provided mostly 
+	for reference and learning purposes.
+	</p>
+	
+	<panel name="Contributing Examples">
+	Please contribute your own examples if you think they may be helpful to the new users or 
+	demonstrate some unobvious use of Cayenne.
+	</panel>
+	
+	<p>The following examples are currently available:</p>
+	
+	<table>
+	<tr>
+		<th>Example</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td><a href="blog-tapestry/index.html">Tapestry Blog</a></td>
+		<td>This is a fully functional (though simple) Cayenne/Tapestry blogging application.
+		</td>
+	</tr>
+	<tr>
+		<td><a href="hr-dataview/index.html">HRDataView</a></td>
+		<td>Demonstrates how to use Cayenne DataViews to simplify creation of Swing applications
+		by taking advantage of rich metadata available via Cayenne.
+		</td>
+	</tr>
+	<tr>
+		<td><a href="data-port/index.html">DataPort</a></td>
+		<td>Demonstrates how Cayenne can be used to port relational data from one 
+			database to another. It shows the operation of the few internal parts of 
+			Cayenne, normally not used in the applications. DataPort also contains a working 
+			Ant task, so it has practical value for certain database maintenance tasks.
+		</td>
+	</tr>
+	<tr>
+		<td><a href="ejb-facade/index.html">EJB Facade</a></td>
+		<td>Demonstrates deploying Cayenne on JBoss server and accessing it via a SessionBean facade.
+		</td>
+	</tr>
+	<tr>
+		<td><a href="servlet-filter/index.html">Servlet Filter</a></td>
+		<td>This is a contribution by Gary Jarrel to provide WebApplicationContextProvider functionality
+		(i.e. automatic binding of session DataContext to a thread) via a different servlet container hook - 
+		a filter - that is compatible with Servlet specification 2.3. This will be included in the core Cayenne
+		in the future release.
+		</td>
+	</tr>
+	<tr>
+		<td><a href="aggregate-functions/index.html">SQL Aggregate Functions</a></td>
+		<td>Demonstrates how to use "derived" DbEntities for SQL aggregate functions, such as
+		MIN, MAX, COUNT. With introduction of SQLTemplate this example should be considered 
+		deprecated, as derived DbEntities are very limited by nature.
+		</td>
+	</tr>
+	</table>
+	
+	<subsection name="Installing and Building Examples">
+	<p>Most examples are distributed in a source form only, users must compile them
+	using Ant buildfiles (build.xml) provided with each example. This is generic instructions for building a given
+	example. Some examples may require slightly different steps due to their nature.</p>
+	
+	<p>Extract contents of cayenne-examples-[version].tar.gz into Cayenne installation directory
+	(the location is important for the ant build files to find Cayenne):
+	</p>
+	<source># cd $CAYENNE_HOME
+# gz -dc cayenne-examples-[version].tar.gz | tar xf -</source>
+
+	<p>Go to examples directory and modify "default.properties" file that is shared by all examples. This file
+	sets the location of Cayenne installation and JDBC driver.
+	</p>
+
+	<p>If a given example contains <code>cayenne.xml</code> file, open it using CayenneModeler, set appropriate 
+	connection information for the DataNodes, and generate database schema.</p>
+
+	<p>Build example with ant:</p>
+	<source># cd $CAYENNE_HOME/cayenne-examples-[version]/[example-name]
+# ant</source>
+	</subsection>
+    </section>
+</body>
+</document>

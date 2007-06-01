@@ -1,0 +1,40 @@
+<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="7. Using Queries"/> 
+<body>
+    <section name="7. Using Queries">      
+	<p>Queries are Cayenne abstraction for communicating with a data source (usually an RDBMS).
+ 	Queries are Java objects that are generally independent from the SQL dialect used by the target 
+	database. <code>org.objectstyle.cayenne.query</code> package contains a number of classes,
+	however Cayenne users should only care about the following three queries:</p>
+
+	<ul>
+	<li><strong><a href="selectquery.html">SelectQuery</a></strong>. 
+	SelectQuery is an "object query" based on some Java class. All its parameters are specified in terms of 
+	the properties of this Java class. It is completely portable and SQL-free. SelectQuery is the most commonly
+	used out of the three queries discussed here, as it stays as close to the object model as possible. 
+	For most tasks it should be considered the first choice. Other types of queries should be used only 
+	if SelectQuery can't address a particular application need.
+	<p></p>
+	</li>
+
+	<li><strong><a href="sqltemplate.html">SQLTemplate</a></strong>. 
+	SQLTemplate is a scriptable raw SQL query, that can be both selecting and non-selecting. Main use of SQLTemplate
+	is to create complex SQL queries with structure that has no direct correspondence with the object model. 
+	SQLTemplate allows customizing SQL dialect code for more than one target database, encapsulating this 
+	fact from the callers. Just like other types of queries, SQLTemplates can be mapped in CayenneModeler, so the code
+	can stay free from SQL building.
+	<p></p>
+	</li>
+
+	<li><strong><a href="../stored-procedures/index.html">ProcedureQuery</a></strong>. 
+	As the name implies, ProcedureQuery is intended to invoke mapped stored procedures. It can be selecting or
+	non-selecting, or even contain multiple result sets and update counts, depending on what the target
+	procedure does.
+	<p></p>
+	</li>
+	</ul>
+    </section>
+</body>
+
+</document>

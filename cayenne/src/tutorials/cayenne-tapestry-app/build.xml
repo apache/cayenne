@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+
+<!-- =============================================== -->
+<!-- cayenne-tapestry-app tutorial buildfile.             -->
+<!-- =============================================== -->
+<project name="cayenne-tapestry-app" default="compile">
+    <property name="tutorial.subpath" value="tutorials/cayenne-tapestry-app"/>
+    <property name="tutorial.build" value="${build}/${tutorial.subpath}/classes"/>
+    <property name="tutorial.src" value="src/${tutorial.subpath}/WEB-INF/classes"/>
+    <property name="tutorial.dist" value="${dist}/src/${tutorial.subpath}"/>
+    
+    <path id="classpath">
+		<fileset dir="${otherlib.dir}">
+			<include name="*.jar"/>
+		</fileset>
+		<pathelement path="${build}/cayenne/classes"/>
+    </path>
+    
+    
+    <target name="prepare">
+    	<mkdir dir="${tutorial.build}"/>
+    </target>
+    
+    
+	<target name="compile" depends="prepare">
+		<javac	srcdir="${tutorial.src}" 
+				destdir="${tutorial.build}" 
+				debug="on" 
+				deprecation="on">
+			<classpath refid="classpath"/>
+		</javac>
+	</target>
+	
+       <!-- Copy to the dist directory all except build.xml (our internal file) and then
+       rename build-webapp.xml to build.xml so that end users can simply invoke ant and have things
+       built for them -->
+	<target name="dist-src" depends="prepare">
+		<copy todir="${tutorial.dist}">
+            <fileset dir="src/${tutorial.subpath}">
+            	<exclude name="build.xml"/>
+            </fileset>
+            </copy>
+               <move file="${tutorial.dist}/build-webapp.xml"
+                       tofile="${tutorial.dist}/build.xml" />
+       </target>
+</project>

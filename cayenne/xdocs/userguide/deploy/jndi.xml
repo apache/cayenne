@@ -1,0 +1,87 @@
+<document>
+<title>User Guide - Deployment</title>
+<toc name="toc-user-guide" chapter="12. Deployment"/>
+<body>
+     <section name="12. Deployment">              
+               <subsection name="12.4 Using JNDI">
+               
+                <p>In many cases it is desirable to connect to the database
+                using a preconfigured DataSource accessible via JNDI. In this case,
+                Cayenne DataNodes must be configured (in the Modeler, or manually) to use 
+                JNDIDataSourceFactory. Steps to make a DataSource accessible via JNDI 
+                are normally external to the application and depend on a container used.
+                Here is an extract from a sample web application deployment descriptor (web.xml file). 
+                It declares a JNDI resource named "jdbc/mydb" of type "javax.sql.DataSource". 
+                </p>
+                
+<source>...
+
+&amp;lt;listener&amp;gt;
+   &amp;lt;listener-class&amp;gt;org.objectstyle.cayenne.conf.ServletConfiguration&amp;lt;/listener-class&amp;gt;
+&amp;lt;/listener&amp;gt; 
+
+...
+
+&amp;lt;resource-ref&amp;gt;
+   &amp;lt;res-ref-name&gt;jdbc/mydb&amp;lt;/res-ref-name&amp;gt;
+   &amp;lt;res-type&gt;javax.sql.DataSource&amp;lt;/res-type&amp;gt;
+   &amp;lt;res-auth&gt;Container&amp;lt;/res-auth&amp;gt;
+&amp;lt;/resource-ref&amp;gt;
+...</source>
+                
+             <p>For the users of Tomcat >= 4.0, here is a sample configuration of a single
+             web application context that makes a datasource available to this web application
+             under the JNDI name "jdbc/mydb". <i>Note that configuration
+             below is most certainly incompatible with other containers and will work with Tomcat
+             only.</i> This code may be inserted in $CATALINA_HOME/conf/server.xml file between 
+             the &lt;Host&gt;...&lt;/Host&gt; tags.
+             </p>
+<source>
+&amp;lt;Context path="/myapp" docBase="myapp" debug="1" reloadable="true" crossContext="true"&amp;gt;
+    &amp;lt;Logger className="org.apache.catalina.logger.FileLogger" 
+                   prefix="myapp-log." 
+                   suffix=".txt" 
+                   timestamp="true"/&amp;gt;
+   
+    &amp;lt;ResourceParams name="jdbc/mydb"&amp;gt;
+            &amp;lt;parameter&amp;gt;
+                &amp;lt;name&amp;gt;factory&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;org.objectstyle.cayenne.conn.ContainerPoolFactory&amp;lt;/value&amp;gt;
+            &amp;lt;/parameter&amp;gt;
+            
+            &amp;lt;parameter&amp;gt;
+                &amp;lt;name&amp;gt;username&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;user&amp;lt;/value&amp;gt;
+            &amp;lt;/parameter&amp;gt;
+            
+            &amp;lt;parameter&amp;gt;
+                &amp;lt;name&amp;gt;password&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;bla-bla&amp;lt;/value&amp;gt;
+            &amp;lt;/parameter&amp;gt;
+                
+            &amp;lt;parameter&amp;gt;
+                &amp;lt;name&amp;gt;driver&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;org.gjt.mm.mysql.Driver&amp;lt;/value&amp;gt;
+            &amp;lt;/parameter&amp;gt;
+            
+            &amp;lt;parameter&amp;gt;
+                &amp;lt;name&amp;gt;url&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;jdbc:mysql://dbserver/mydb&amp;lt;/value&amp;gt;
+            &amp;lt;/parameter&amp;gt;
+            
+            &amp;lt;parameter&amp;gt;
+                &amp;lt;name&amp;gt;min&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;1&amp;lt;/value&amp;gt;
+            &amp;lt;/parameter&amp;gt;
+            
+            &amp;lt;parameter&amp;gt;
+                &amp;lt;name&amp;gt;max&amp;lt;/name&amp;gt;
+                &amp;lt;value&amp;gt;3&amp;lt;/value&amp;gt;
+            &amp;lt;/parameter&amp;gt;
+    &amp;lt;/ResourceParams&amp;gt;
+&amp;lt;/Context&amp;gt;
+</source>
+           </subsection>      
+    </section>
+</body>
+</document>

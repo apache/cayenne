@@ -1,0 +1,107 @@
+<document>
+<title>User Guide - Generating Classes with Ant</title>
+<toc name="toc-user-guide" chapter="5. Generating Classes with Ant"/>
+<body>
+    <section name="5. Generating Classes with Ant">        
+            <p>Java classes can be generated from an existing DataMap using CayenneModeler
+            tool or a special <a href="http://jakarta.apache.org/ant/">Ant</a> task, 
+            <code>Cgen</code> (short for "Cayenne Class Generator"), implemented by <a href=
+            "../api/cayenne/org/objectstyle/cayenne/tools/CayenneGenerator.html">CayenneGenerator</a>
+            Java class. 
+            This chapter describes how to use <code>Cgen</code> task. For details on 
+            how class generation can be done using GUI see 
+            <a href="../modelerguide/index.html">CayenneModeler chapter</a>.</p>
+            
+            <p><strong>Cgen (Cayenne Class Generator)</strong></p>
+            
+			<h3>Description</h3>
+			
+			<p><code>Cgen</code> is an Ant task that generates and maintains DataObjects
+			source files based on Cayenne DataMap. If "makepairs" is set to "true" (default), this task
+			will generate a pair of classes (superclass/subclass) for each ObjEntity in the
+			DataMap. Superclasses should not be changed manually, since they are always 
+			overwritten. Subclasses are never overwritten and may be later customized by the user.
+			If "makepairs" is set to "false", a single class will be generated for each ObjEntity.
+			</p>
+
+			<h3>Parameters</h3>
+			
+			<table border="1" cellpadding="2" cellspacing="0">
+				<tr>
+					<th valign="top"><b>Attribute</b></th>
+					<th valign="top"><b>Description</b></th>
+					<th align="center" valign="top"><b>Required</b></th>
+				</tr>
+				<tr>
+					<td valign="top">map</td>
+					<td valign="top">DataMap XML file to use as a base for class generation.</td>
+					<td valign="top" align="center">Yes</td>
+				</tr>
+				<tr>
+					<td valign="top">destDir</td>
+					<td valign="top">Destination directory for Java classes
+					<i>(ignoring their package names)</i>.</td>
+					<td valign="top" align="center">Yes</td>
+				</tr>
+				<tr>
+					<td valign="top">overwrite</td>
+					<td valign="top">If set to "true", will overwrite older versions of
+					generated classes. Ignored unless makepairs is set to "false".</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">makepairs</td>
+					<td valign="top">If set to "true", will generate subclass/superclass
+					pairs, with all generated code included in superclass
+					<i>(default is "true")</i>.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">template</td>
+					<td valign="top">Location of Velocity template file for Java class
+					generation. If ommitted, default template is used.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">supertemplate</td>
+					<td valign="top">Location of Velocity template file for Java superclass 
+					generation. Ignored unless "makepairs" set to "true".
+					If ommitted, default template is used.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">superpkg</td>
+					<td valign="top">Java package name of generated superclasses.
+					Ignored unless "makepairs" set to "true". If omitted,
+					each superclass will be assigned the same package as subclass.
+					<i>Note that having superclass in a different package
+					would only make sense when "usepkgpath" is set to "true". 
+					Otherwise classes from different packages will end up in the same 
+					directory.</i></td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">usepkgpath</td>
+					<td valign="top">If set to "true" (default), 
+					a directory tree will be generated
+					in "destDir" corresponding to the class package structure,
+					if set to "false", classes will be generated in "destDir"
+					ignoring their package.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+			</table>
+			
+			<h3>Examples:</h3>
+			<p>Here is an example of using <code>CGen</code> to generate DataObject
+			subclass/superclass pairs from DataMap located in "src/datamap.xml". All generated
+			subclasses and superclasses will be saved in the same directory "src/java/dobj" regardless
+			of their package names:</p>
+<source>
+&amp;lt;taskdef name="cgen" classname="org.objectstyle.cayenne.tools.CayenneGenerator"&amp;gt;
+     &amp;lt;classpath refid="classpath"/&amp;gt;
+&amp;lt;/taskdef&amp;gt;
+&amp;lt;cgen map="src/datamap.xml" destDir="src/java/dobj" usepkgpath="false"/&amp;gt;
+</source>
+    </section>
+</body>
+</document>

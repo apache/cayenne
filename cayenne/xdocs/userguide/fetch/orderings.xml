@@ -1,0 +1,64 @@
+<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="7. Using Queries"/> 
+<body>
+    <section name="7. Using Queries">        
+        <subsection name="7.3 Using Orderings" anchor="order">
+		<p>To sort SelectQuery results, orderings are used. 
+		Orderings use path expressions 
+            discussed in the previous section to identify the attributes 
+            that must be used in sorting. For example to order results by
+            artist name, the following code can be used:
+            </p>
+<source>import org.objectstyle.cayenne.query.SelectQuery;
+...
+SelectQuery query = new SelectQuery("Artist");
+
+// add ordering by Artist name:
+query.addOrdering("artistName", true);
+</source>    
+
+		<p>Orderings also support in-memory sorting of lists of Java Beans 
+		(all DataObjects are normally  Java Beans, since they has set/get method
+		pairs for all the properties). For instance 
+		to sort with a single ordering, the following code might be used:
+		</p>
+
+<source>import org.objectstyle.cayenne.query.Ordering;
+...
+// assume this is a properly initialized list of Artists
+List list = ...; 
+
+// creates asending ordering by Artist name
+Ordering ordering = new Ordering("artistName", true);
+
+// orders a list
+ordering.orderList(list);
+</source>    
+
+		<p>If there is a need to sort on more than one object property, 
+		multiple Orderings can be passed as a List to a static method 
+		<code>orderList(List, List)</code>. A significance of Orderings in
+		the ordering list decreases with index increase. The list of objects 
+		ends up being sorted by the first Ordering, then if any two objects 
+		are equal for first Ordering, they are sorted by the second, and so on.
+		</p>
+
+<source>import org.objectstyle.cayenne.query.Ordering;
+...
+// assume this is a properly initialized list of Paintings
+List list = ...; 
+
+List orderings = new ArrayList();
+orderings.add(new Ordering("paintingTitle", true));
+orderings.add(new Ordering("estimatedPrice", false));
+
+// orders a list aplying multiple orderings
+Ordering.orderList(list, orderings);
+</source>    				
+		
+        </subsection>
+    </section>
+</body>
+</document>
+

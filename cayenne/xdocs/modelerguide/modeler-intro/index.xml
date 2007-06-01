@@ -1,0 +1,34 @@
+<document>
+<title>CayenneModeler Guide - Introduction</title>
+<toc name="toc-modeler-guide" chapter="1. Introduction"/>
+<body>
+   <section name="1. Introduction">
+            <p>Cayenne stores mapping and deployment information using a set of XML files with a predefined
+            format. These files can be always edited by hand, but Cayenne goes beyond that. A
+            standard distribution contains CayenneModeler - a Java Swing GUI application that serves
+            as an Object/Relational modeling tool. It is much more than just a specialized XML editor. 
+            It provides a comprehensive set of O/R functions, including:</p>
+            <ul>
+                <li>Work with Cayenne mapping projects.</li>
+            	<li>Reverse-engineering RDBMS schema into Cayenne DataMaps.</li>
+            	<li>Generation of the database schema from the mapping information stored in DataMaps.</li>
+            	<li>Java class generation from the mapping information stored in DataMaps.</li>
+            	<li>Management of the project deployment structure and database connection
+            	information.</li>
+            	<li>Validation of created mappings.</li>
+            	<li>Import from some other O/R model formats (EOF).</li>
+            </ul>
+            
+            <p>Among other things CayenneModeler allows new users to learn the concepts used in 
+            Cayenne framework, its terminology, and the overall structure.</p> 
+            
+            <p>The following chapters of this Guide discuss how to use various functions of CayenneModeler.
+            </p>
+    </section>
+</body>
+</document>
+
+
+
+
+

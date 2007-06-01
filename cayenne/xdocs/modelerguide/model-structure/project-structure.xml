@@ -1,0 +1,60 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="3. Cayenne Project Structure"/>
+<body>
+	<section name="3. Cayenne Project Structure">
+ 	 	<subsection name="3.1 Cayenne Projects">
+ 	 	    <p>Cayenne project is a set of XML configuration files
+            needed for a Java application to work with Cayenne. It is editable
+            by CayenneModeler. A project has roughly the following structure:</p>
+            
+            <img src="/images/cayenne-project.gif" width="400" height="235" alt="Cayenne Project"/>
+            
+            <p>This structure is saved in the following set of files:</p>
+            
+            <p><strong>- cayenne.xml file: </strong> This is a main project file
+            in each application. It should always be called <code>cayenne.xml</code>.
+            It configures the layout of the data sources
+            used by the application, breaking it by domains and nodes. It also 
+            links to other parts of Cayenne project described below. Nodes represent
+            <strong>physical datasources</strong>. 
+            For each database JDBC URL there should be
+            a single node configured. Domains represent 
+            <strong>virtual datasources</strong> that are a combination of one or
+            more physical datasources. In a simplest
+            (and most common) case, there will be only one domain (virtual datasource)
+            that has a single node (physical datasource). But Cayenne is flexible 
+            to allow grouping multiple nodes under domains thus hiding lots of underlying
+            details and allowing applications to work with multiple
+            databases as if it was a single one. 
+            XML structure of <code>cayenne.xml</code>
+            is described in this <a href="../../dtd/domains.dtd">DTD file</a>.
+            </p>
+            
+            <p><strong>- DataMap file : </strong>
+            Used to instantiate 
+            <a href="../../api/cayenne/org/objectstyle/cayenne/map/DataMap.html">DataMap</a>
+            objects that desribe a database schema and map it to the Java classes
+            in the Java application. XML structure of the DataMap file is described 
+            in this <a href="../../dtd/data-map.dtd">DTD file</a>.
+            </p>
+            
+            <p><strong>- DataSource file : </strong> In a standalone Java
+            application, Java code has no access to DataSource objects that are normally 
+            provided by deployment containers. Cayenne framework still needs a DataSource
+            to connect to the database. Therefore Cayenne has a set of wrapper classes
+            located in <a href=
+            "../../api/cayenne/org/objectstyle/cayenne/conn/package-summary.html">org.objectstyle.cayenne.conn</a>
+            package, to create DataSource objects based on regular JDBC drivers.
+            DataSource file provides needed information about database URL, JDBC driver, login, password
+            and connection pooling parameters of a single DataSource.
+            <i>Note: such configuration file can be present in development so that CayenneModeler
+            tool could obtain a database connection, even if an application wouldn't use 
+            it in deployment 
+            and instead would use a DataSource provided by the container.</i> DTD for the DataSource file can be 
+            found <a href="../../dtd/driver.dtd">here</a>.
+            </p>
+ 	 	</subsection>
+    </section>
+</body>
+</document>

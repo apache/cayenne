@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="1.1">
+<domain name="DefaultDomain">
+	<map name="datamap" location="datamap.map.xml"/>
+
+	<node name="datanode"
+		 datasource="datanode.driver.xml"
+		 adapter="org.objectstyle.cayenne.dba.mysql.MySQLAdapter"
+		 factory="org.objectstyle.cayenne.conf.DriverDataSourceFactory">
+			<map-ref name="datamap"/>
+	 </node>
+</domain>
+</domains>

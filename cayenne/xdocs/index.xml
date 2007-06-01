@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<document>
+    <title>Cayenne 1.1</title>
+
+    <body>
+        <section name="Cayenne 1.1">
+        
+         <p>Quick Documentation Links:</p>
+		<ul>
+		<li><a href="userguide/index.html">User Guide</a> - installation instructions and general usage notes.</li>
+		<li><a href="modelerguide/index.html">Modeler Guide</a> - Cayenne Modeler documentation.</li>
+		<li><a href="examples/index.html">Examples</a> - examples documentation</li>
+		<li><a href="api/cayenne/index.html">Javadoc API</a></li>
+		</ul>
+		
+		<p>Online Resources:</p>
+		<ul>
+		<li><a href="http://objectstyle.org/cayenne/" target="_new">Cayenne Home</a></li>
+		<li><a href="http://objectstyle.org/cayenne/download.html" target="_new">Downloads</a></li>
+		<li><a href="http://objectstyle.org/cayenne/bugs-features.html" target="_new">Report Bugs</a></li>
+		<li><a href="http://objectstyle.org/cayenne/cayenne-commercial-support.html" target="_new">Commercial Support</a></li>
+		</ul>
+         
+        </section>
+    </body>
+</document>

@@ -1,0 +1,25 @@
+<document>
+<title>User Guide - Working with DataObjects</title>
+<toc name="toc-user-guide" chapter="8. Working with DataObjects"/>
+<body>
+    <section name="8. Working with DataObjects">
+    	<subsection name="8.2 Flattened Relationships">
+		<p>Flattened relationships represent relationship between two types of DataObjects that
+		is not direct in the underlying relational storage. Instead it is mapped across one or more
+		"join" tables. Still from the application point of view there is no diffrence in working with 
+		flattened relationships compared to the "normal" ones. Cayenne internally figures out how to 
+		build the needed query joins to retrieve related objects. On adding or removing an object to/from
+		a flattened relationship via a corresponding "addTo..." / "removeFrom..." method an appropriate
+		join record is created or removed.
+		</p>
+
+		<panel name="Flattened Relationships Limitations">Currently only many-to-many flattened
+		relatationships with a single join table can be modified. All other types of flattened relationships
+		can be used as "read-only". This is reflected in the DataObject code generated for such relationships -
+		no set/addTo/RemoveFrom methods are created for read-only relationships.
+		</panel>
+    	</subsection>
+    </section>
+</body>
+</document>
+

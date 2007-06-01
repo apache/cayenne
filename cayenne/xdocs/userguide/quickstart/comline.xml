@@ -1,0 +1,173 @@
+<document>
+	<title>User Guide - Quick Start</title>
+	<toc name="toc-user-guide" chapter="3. Quick Start"/>
+	<body>
+		<section name="3. Quick Start">
+			<subsection name="3.2 Command-Line Tutorial">
+				<p>This is a simple command-line Cayenne application tutorial. 
+					Full tutorial source code is included in Cayenne 
+					distribution in "src/tutorials" folder. </p>
+				<subsection name="3.2.1 Prepare the Environment">
+					<p>Make sure you successfully finished <a 
+						href="index.html">common setup steps</a>.</p>
+					<p>Create a new folder named <code>cayenne-cmd-app</code> 
+						anywhere in the filesystem. This directory is referred 
+						to as "project directory" further in this chapter. Note 
+						that when you are finished going through all the steps 
+						below, project directory will become similar to this 
+						tutorial source folder distributed with Cayenne.</p>
+				</subsection>
+				<subsection name="3.2.2 Prepare Tutorial Database">
+					<p>Run <a 
+						href="../../tutorials/cayenne-cmd-app/tutorialdb.sql"><code>tutorialdb.sql</code></a> 
+						script located in the project directory to create test 
+						tables. This script is tested on MySQL, but it should 
+						be easy to port to any other RDBMS.</p>
+				</subsection>
+				<subsection name="3.2.3 Setup DataNode">
+					<p>The following configuration files make up a Cayenne 
+						project for this tutorial: </p>
+					<ul>
+						<li>
+							<a 
+								href="../../tutorials/cayenne-cmd-app/cayenne.xml">
+								 cayenne.xml</a>
+						</li>
+						<li>
+							<a 
+								href="../../tutorials/cayenne-cmd-app/datamap.map.xml">
+								 datamap.map.xml</a>
+						</li>
+						<li>
+							<a 
+								href="../../tutorials/cayenne-cmd-app/datanode.driver.xml">
+								 driverinfo.driver.xml</a>
+						</li>
+					</ul>
+					<p>In this step we will change the default information 
+						stored in these files to point to your own database. Open 
+						<code>cayenne.xml</code> in CayenneModeler and perform 
+						the following operations.</p>
+					<ul>
+						<li>On the left-hand side object tree click on an icon 
+							with title "datanode", a DataNode editor panel will 
+							open on the right.</li>
+						<li>If the database you are planning to use is NOT 
+							MySQL, select an appropriate adapter from the "DB 
+							Adapter" dropdown list on the right.</li>
+						<li>From the "Local DataSource" dropdown list select 
+							one of the local DataSources configured previously 
+							per "Common Setup Steps" instructions. After this 
+							is done, click "Sync with Local" button in the 
+							bottom right corner.</li>
+						<li>Save the project by clicking "Save" button or 
+							selecting <code>File -> Save</code> from the 
+							menu.</li>
+					</ul>
+				</subsection>
+				<subsection name="3.2.4 Setup Automatic Primary Key Generation">
+					<p>This step is needed to allow Cayenne to generate primary 
+						keys automatically for the newly inserted objects. With 
+						project still open in the Modeler, select an icon 
+						titled "datamap" on the left, and go to <code>Tools > 
+						Generate Database Schema</code>, then follow the steps 
+						outlined in the <a 
+						href="../../modelerguide/common-tasks/pksupport.html">modeler 
+						guide</a> to setup the database for primary key 
+						generation support.</p>
+				</subsection>
+				<subsection name="3.2.5 Generate Java Code for DataObjects">
+					<p>In this step we will generate persistent Java classes 
+						from the existing mapping information. Create 
+						"<code>java</code>" subdirectory in the project 
+						directory. It will contain generated classes. In 
+						CayenneModeler with "datamap" still selected, go to 
+						<code>"Tools > Generate Classes"</code>, select the 
+						newly created directory as an "Output Directory", and 
+						click "Generate" button.</p>
+					<p>After class generation is done, the following files 
+						should appear in the <code>java/test</code> and 
+						<code>java/auto</code> subdirectories of the project 
+						directory:</p>
+					<ul>
+						<li>
+							<a 
+								href="../../tutorials/cayenne-cmd-app/java/test/_Artist.java">
+								_Artist.java</a>
+						</li>
+						<li>
+							<a 
+								href="../../tutorials/cayenne-cmd-app/java/test/Artist.java">
+								Artist.java</a>
+						</li>
+						<li>
+							<a 
+								href="../../tutorials/cayenne-cmd-app/java/test/_Painting.java">
+								_Painting.java</a>
+						</li>
+						<li>
+							<a 
+								href="../../tutorials/cayenne-cmd-app/java/test/Painting.java">
+								Painting.java</a>
+						</li>
+						<li>
+							<a 
+								href="../../tutorials/cayenne-cmd-app/java/test/_Gallery.java">
+								_Gallery.java</a>
+						</li>
+						<li>
+							<a 
+								href="../../tutorials/cayenne-cmd-app/java/test/Gallery.java">
+								Gallery.java</a>
+						</li>
+					</ul>
+				</subsection>
+				<subsection name="3.2.6 Application Code">
+					<p>A simple application that uses Cayenne is located in <a 
+						href="../../tutorials/cayenne-cmd-app/java/test/Main.java">Main.java</a>. 
+						Copy the source file to the java/test project 
+						subdirectory. </p>
+				</subsection>
+				<subsection name="3.2.7 Compile and Run the Application">
+					<p>Compile the source code (assume that JAVA_HOME variable 
+						points to the JSDK 1.4 installation). On Windows:</p>
+					<source><![CDATA[projectdir> set CLASSPATH=%CLASSPATH%;%CAYENNE_HOME%\lib\cayenne.jar
+projectdir> %JAVA_HOME%\bin\javac java\test\*.java]]> </source>
+					<p>On UNIX:</p>
+					<source><![CDATA[projectdir# export CLASSPATH=$CLASSPATH:$CAYENNE_HOME/lib/cayenne.jar
+projectdir# $JAVA_HOME/bin/javac java/test/*.java]]> </source>
+					<p>Main tutorial class is "test.Main". It takes a single 
+						parameter - a search word to look up a gallery by name. 
+						It will try to find a matching gallery, then create a 
+						new artist (Salvador Dali) with a single painting and 
+						add this painting to the found gallery. To run the 
+						tutorial do something like this (example given for 
+						Windows): </p>
+					<source><![CDATA[projectdir> set CLASSPATH=%CLASSPATH%;java
+projectdir> %JAVA_HOME%\bin\java test.Main metro]]> </source>
+					<p>If there is a gallery matching search criteria (in our 
+						case "Metropolitan Museum of Art" would match the word 
+						"metro"), the following output will be printed: </p>
+					<source><![CDATA[
+WARN  QueryLogger: --- will run 1 query.
+WARN  QueryLogger: SELECT t0.GALLERY_NAME, t0.GALLERY_ID 
+FROM GALLERY t0 WHERE UPPER(t0.GALLERY_NAME) LIKE UPPER(?) 
+[params: '%metro%'] - prepared in 20 ms.
+WARN  QueryLogger: === returned 1 row. - took 0 ms.
+
+Found gallery 'The Metropolitan Museum of Art'.
+
+WARN  QueryLogger: --- will run 2 queries.
+WARN  QueryLogger: INSERT INTO ARTIST (ARTIST_ID, DATE_OF_BIRTH, ARTIST_NAME) 
+VALUES (?, ?, ?) [params: 320, NULL, 'Salvador Dali']
+WARN  QueryLogger: === updated 1 row.
+WARN  QueryLogger: INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, 
+ESTIMATED_PRICE, PAINTING_TITLE) VALUES (?, ?, ?, ?) 
+[params: 320, 320, NULL, 'Sleep']
+WARN  QueryLogger: === updated 1 row.
+WARN  QueryLogger: +++ transaction committed.]]> </source>
+				</subsection>
+			</subsection>
+		</section>
+	</body>
+</document>

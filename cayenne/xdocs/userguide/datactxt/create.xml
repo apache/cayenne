@@ -1,0 +1,102 @@
+<document>
+<title>User Guide - Using DataContext</title>
+<toc name="toc-user-guide" chapter="6. Using DataContext"/>
+<body>   	
+    
+    <section name="6. Using DataContext">
+	<subsection name="6.1 Obtaining DataContext">
+		<p>Depending on deployment environment and application needs, Cayenne can be configured in a few
+		different ways to make DataContext instances available. This is discussed in detail in <a href=
+		"../deploy/index.html">deployment chapter</a>. In this chapter we assume a properly 
+		deployed application and will concentrate on how to obtain a DataContext for the database access.
+		The following are the most common ways to achieve that:
+		</p>
+		
+		<subsection name="6.1.1 Creating DataContext on the Spot">
+		<p>A new DataContext instance normally can be created using the following code:</p> 
+<source>
+import org.objectstyle.cayenne.access.DataContext;
+...
+DataContext context = DataContext.createDataContext();</source>
+        
+        	<p>This approach may be used in standalone applications, where the notion of a "session" is user-defined.
+			In web applications the correct instance of DataContext is usually bound to a session or a request thread
+			externally, and all that is needed is to retrieve it, as discussed below. Creating a new DataContext for each 
+			request is not a recommended practice.</p>
+		</subsection>
+		
+		<subsection name="6.1.2 Retrieving Session-Bound DataContext in Web Applications">
+        	<p>A web application <a href=
+			"../deploy/web-application.html">can be configured</a> to automatically create a new instance 
+			of DataContext for each new HttpSession, and set it as a session attribute.
+        	Retrieving it from a session is done with the following code:</p>
+
+		<source>
+import org.objectstyle.cayenne.conf.BasicServletConfiguration;
+import org.objectstyle.cayenne.access.DataContext;
+...
+
+// assume this exists
+HttpSession session;
+DataContext context = BasicServletConfiguration.getDefaultContext(session);</source>
+		</subsection>
+
+		<subsection name="6.1.3 Retrieving Thread-Bound DataContext.">
+        	<p>An application can bind a DataContext to a current execution thread.  Later on the code that needs DB access
+			can retrieve this DataContext without making any assumptions about the environment. This approach is universal and works in 
+			all types of applications (web, standalone, etc.). Previously bound DataContext can be retrieved by calling 
+			DataContext.getThreadDataContext() static method. If no DataContext
+			was bound to the current thread, this method throws IllegalStateException:</p>
+
+		<source>
+import org.objectstyle.cayenne.access.DataContext;
+...
+// we are positive there is DataContext in the current thread, and do not want
+// to handle possible exception...
+DataContext context = DataContext.getThreadDataContext();</source>
+<p> </p>
+<source>
+import org.objectstyle.cayenne.access.DataContext;
+...
+// we want to handle the condition of no thread context...
+try {
+    DataContext context = DataContext.getThreadDataContext();
+}
+catch(IllegalStateException ex) {
+    // handle failure
+    ....
+}</source>
+		</subsection>
+	
+		<subsection name="6.1.4 Multiple DataDomains (Advanced)">
+		<p>Cayenne can be configured to support mass database hosting. This is a so-called
+		Application Service Provider (ASP) scenario. Basic architecture of such setup
+		is a single application supporting multiple databases (or more generally - data sources), 
+		each one with same or similar schema. Each data source corresponds to an individual ASP
+		"customer" using the system. Each customer has a number of users that will log in to the 
+		system and are only allowed to view data from their data source.</p>
+		
+		<p>This approach, though not required for most normal applications, could be quiet common
+		and powerful in some enterprise systems. To implement it, each DataContext must be limited
+		to access only a relevant subset of datasources.</p>
+		
+		<p>Considering that behind the scenes a source of
+		DataContext instances is an object called DataDomain, Cayenne allows creation of multiple 
+		DataDomains per project. Each DataDomain would 
+		support a single "customer". Creation of DataContext in this case is done using DataDomain name 
+		as a parameter:</p>
+		
+		<source>
+import org.objectstyle.cayenne.access.DataContext;
+...
+
+// domain name string is initialized depending on
+// the application logic. For instance it can be based
+// on the logged in user's company, etc.
+String domainName = ...;
+DataContext context = DataContext.createDataContext(domainName);</source>
+		</subsection>
+	</subsection>
+    </section>
+</body>
+</document>

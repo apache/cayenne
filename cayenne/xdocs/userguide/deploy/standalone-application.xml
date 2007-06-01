@@ -1,0 +1,75 @@
+<document>
+<title>User Guide - Deployment</title>
+<toc name="toc-user-guide" chapter="12. Deployment"/>
+<body>
+     <section name="12. Deployment">        
+           <subsection name="12.1 Standalone Applications">
+				<subsection name="12.1.1 Shared Configuration">
+               <p>In a standalone Java application, <a href=
+               "../../api/cayenne/org/objectstyle/cayenne/conf/DefaultConfiguration.html">DefaultConfiguration</a>
+                is used to locate and load configuration files. This approach does not require any additional setup. 
+				Shared configuration instance can simply be obtained by calling <code>getSharedConfiguration()</code>:</p>
+                
+<source>import org.objectstyle.cayenne.conf.Configuration;
+...           
+Configuration conf = Configuration.getSharedConfiguration();
+</source>
+<p>DefaultConfiguration will expect <code>cayenne.xml</code> file to be located 
+              in the CLASSPATH. The same is true for datamaps referenced in <code>cayenne.xml</code>.
+              Their location is resolved relative to CLASSPATH as well. To make these files available to
+              Cayenne, you can simply include them in the root of your application jar file (read 
+				<a href="custom.html">Chapter 12.3.2</a> on how to change that). 
+              </p>
+              
+              <p>The location of the datasource files referenced in <code>cayenne.xml</code>
+              depends on what factory was assigned to each datasource in <code>cayenne.xml</code>.
+              Normally this would be a <a href=
+               "../../api/cayenne/org/objectstyle/cayenne/conf/DriverDataSourceFactory.html"
+               >org.objectstyle.cayenne.conf.DriverDataSourceFactory</a>. It would use
+               the following lookup order to resolve locations:
+               
+               <ul>
+                  <li>Location is assumed to be a file relative to the user HOME 
+                  directory (as defined by <code>user.home</code> system property).</li>
+                  <li>Location is assumed to be a file relative to the current directory
+                  from which the application was started.</li>
+                  <li>Location is assumed to be a resource relative to CLASSPATH.</li>
+               </ul>
+               
+               This lookup order makes configuration very flexible in that it separates
+               datasource configuration files from the application distribution (jar file).
+               A compiled application can be deployed as a jar file containing <code>cayenne.xml</code>
+               and datamap files, without any datasource files.  This way a user wouldn't
+               need to rebuild a jar for each of the target environments that has a 
+               different database server or user id (also check out <a href="cdeploy.html">"cdeploy" 
+				Ant task</a> for cleaner ways to configure deployment database settings).
+               </p>
+				</subsection>
+
+				<p> </p>
+
+				<subsection name="12.1.2 Shared Configuration and DataContext">
+				<p>In a setup that relies on shared Configuration a DataContext can be created by calling 
+				DataContext.createDataContext() static method that internally uses shared configuration:
+				</p>
+<source>
+import org.objectstyle.cayenne.access.DataContext;
+...
+DataContext context = DataContext.createDataContext();</source>
+
+				<p>Later a DataContext can be passed around in the code explicitly, or it can be bound to an 
+				execution thread, making it accessible to all code being run within this thread (e.g. this can be a 
+				Swing event thread):
+				</p>
+<source>
+import org.objectstyle.cayenne.access.DataContext;
+...
+DataContext context = DataContext.createDataContext();
+DataContext.bindThreadDataContext(context);</source>
+				</subsection>
+
+              
+           </subsection>
+    </section>
+</body>
+</document>

@@ -1,0 +1,11 @@
+<document>
+<title>Tapestry Blog Example</title>
+<toc name="toc-examples" chapter="1. Tapestry Blog"/>
+<body>
+    <section name="1. Tapestry Blog">
+      <p>Tapestry Blog is a working (though simple) web application for blogging. For installation instructions check the README.txt file
+		in the example directory. Note that the application relies on Cayenne DataObjects library called "blog-common" that is included as
+		another example.</p>
+	</section>
+</body>
+</document>

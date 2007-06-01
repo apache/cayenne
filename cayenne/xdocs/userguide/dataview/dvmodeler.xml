@@ -1,0 +1,29 @@
+<document>
+<title>User Guide - DataViews</title>
+<toc name="toc-user-guide" chapter="14. DataViews"/>
+<body>
+    <section name="14. DataViews">
+        <subsection name="14.3 DVModeler GUI Tool">
+			<p>DVModeler is a Java GUI tool to work with DataViews configuration included in Cayenne projects. 
+			Steps needed to start DVModeler are similar to that of CayenneModeler. Main class is
+			<code>org.objectstyle.cayenne.dataview.dvmodeler.Main</code>. For convenience
+			Cayenne distribution provides run scripts to start DVModeler on
+			Windows and UNIX platforms. To take advantage of these scripts, user must
+			set CAYENNE_HOME <i>(optional)</i>  and JAVA_HOME environment variables as described in the
+			<a href="../install/install.html">installation section</a>.</p>
+        	
+        	<p>To run DVModeler, simply doubleclick the appropriate script. Alternatively it can be run from the command line. 
+        	</p>
+        	<p>Windows:</p>
+
+        	<source>%CAYENNE_HOME%\bin\dvmodeler.bat</source>
+
+        	<p>UNIX:</p>
+
+        	<source>$CAYENNE_HOME/bin/dvmodeler.sh</source>
+        	
+        	<p></p>
+        </subsection>
+    </section>
+</body>
+</document>

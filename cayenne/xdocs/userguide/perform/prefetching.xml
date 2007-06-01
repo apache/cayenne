@@ -1,0 +1,49 @@
+<document>
+<title>User Guide - Performance Tuning</title>
+<toc name="toc-user-guide" chapter="11. Performance Tuning"/>
+<body>
+    <section name="11. Performance Tuning">
+    <subsection name="11.1 Prefetching">
+    	<p>"Prefetching" is a term that refers to the ability of Cayenne to 
+    	expand SelectQuery scope to fetch additional objects related to 
+    	the main result objects. This improves application performance in some cases.
+    	Consider the following example:
+    	</p>
+    	
+    	<ul>
+    		<li>Fetch a list of paintings matching certain criteria.</li>
+    		<li>Display these paintings in an HTML table, showing the following 
+    		data in each row: painting name, painting price, and artist name.</li>
+    	</ul>
+    	
+    	<p>The second requirement means that when rendering an HTML table with paintings,
+    	"painting.getToArtist()" method will be called for each painting in a loop. 
+    	This may result in a database query to fetch artist if it is not in the memory yet,
+    	meaning that for N paintings there will be up to N queries executed in addition to 
+    	the main query that returned the paintings. Using prefetching will reduce this 
+    	number to just one extra query. Prefetching API is very simple:
+    	</p>
+    	
+<source>
+SelectQuery query = new SelectQuery(Painting.class);
+
+// use prefetching on "toArtist" relationship
+query.addPrefetch("toArtist");
+
+// the fact that prefetching is done is transparent
+List paintings = ctxt.performQuery(q);
+</source>
+         
+    <p>Prefetching hints:</p>
+    
+    <ul>
+    	<li>More than one relationship can be prefetched in the same query.</li>
+    	<li>Prefetching works for to-one as well as to-many relationships.</li>
+    	<li>Prefetching specification can span multiple relationships, e.g.
+    	"toArtist.artistExhibitArray.toExhibit".</li>
+    </ul>
+       
+	</subsection>
+    </section>
+</body>
+</document>

@@ -1,0 +1,29 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="2. ORM Case Study"/>
+<body>
+	<section name="2. ORM Case Study">
+ 	<subsection name="2.2 New System">
+ 	 	<p>For the tasks that do not use neither an existing Java layer, nor an existing database schema,
+ 	 	Cayenne mapping project can serve as a starting point for both. User
+ 	 	would start a new Cayenne project, create a DataMap with DbEntities corresponding to the
+ 	 	desired schema, and then create a set of ObjEntities on top of that. After this is done,
+ 	 	both Java and database layer can be generated from the mapping.
+ 	 	</p>
+ 	 	
+ 	 	<p>See the following topics explaining individual tasks involved:</p>
+ 	 	
+ 	 	<ul>
+ 	 		<li><a href="../common-tasks/create-project.html">Create New Project</a></li>
+ 	 		<li><a href="../common-tasks/generate-db.html">Generate Database Schema</a></li>
+ 	 		<li><a href="../common-tasks/generate-java.html">Generate Java Classes</a></li>
+ 	 	</ul>
+	</subsection>
+    </section>
+</body>
+</document>
+
+
+
+
+

@@ -1,0 +1,51 @@
+<document>
+<title>User Guide - Deployment</title>
+<toc name="toc-user-guide" chapter="12. Deployment"  subchapter="12.2 Web Applications"/>
+<body>
+     <section name="12. Deployment">      
+           <subsection name="12.2 Web Applications" anchor="web">
+               <subsection name="12.2.3 WebApplicationContextProvider">
+			<p>This configuration approach is based on setting up a WebApplicationContextProvider as a listener for servlet context, 
+					session, and also request events. On each request session DataContext is rebound to the request worker thread, and can be 
+					obtained via DataContext.getThreadDataContext().
+					Listener approach allows to remove any Servlet API dependencies from the context retrieval code.</p>
+				<table>
+				<tr>
+					<th>Servlet Spec. Compatibility:</th>
+					<td>Version 2.4 and newer</td>
+				</tr>
+				<tr>
+					<th>Participating classes:</th>
+					<td>org.objectstyle.cayenne.conf.WebApplicationContextProvider</td>
+				</tr>
+				<tr>
+					<th>Allows cayenne.xml in WEB-INF/:</th>
+					<td>Yes</td>
+				</tr>
+				<tr>
+					<th>Session-bound DataContext:</th>
+					<td>Yes</td>
+				</tr>
+				<tr>
+					<th>Request thread-bound DataContext:</th>
+					<td>Yes</td>
+				</tr>
+				</table>
+
+<p>Sample <code>web.xml</code> snippet: </p>      
+<source>&amp;lt;listener&amp;gt;
+   &amp;lt;listener-class&amp;gt;org.objectstyle.cayenne.conf.WebApplicationContextProvider&amp;lt;/listener-class&amp;gt;
+&amp;lt;/listener&amp;gt; 
+</source>
+<p>Sample DataContext retrieval code: </p>  
+<source>
+import org.objectstyle.cayenne.access.DataContext;
+...
+// get session DataContext bound to the current request thread
+DataContext context = DataContext.getThreadDataContext();
+</source>
+		</subsection>
+</subsection>    
+    </section>
+</body>
+</document>

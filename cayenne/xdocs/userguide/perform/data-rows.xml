@@ -1,0 +1,54 @@
+<document>
+<title>User Guide - Performance Tuning</title>
+<toc name="toc-user-guide" chapter="11. Performance Tuning"/>
+<body>
+    <section name="11. Performance Tuning">        
+            <subsection name="11.2 Data Rows">
+            <p>DataObjects creation and registering with DataContext is an expensive operation.
+            There are cases when only a few objects are really used, but the application still
+            has to fetch a lot of objects. For instance when a user performs a search, result may
+            contain thousands of records, but user will only check 2-3 of them. Cayenne allows
+            programmers to explicitly disable objects creation for such cases. Results will be returned
+            in the form of java.util.Map's. In Cayenne such maps are called <code>Data Rows</code>.
+            </p>
+            
+            <p>Benefits of <code>Data Rows</code>: </p>
+            <ul>
+            	<li>Fetch speed increase. Our tests show 2x to 5x performance increase.</li>
+            	<li>Using regular Cayenne query API.</li>
+            	<li>Using same DataMaps.</li>
+            	<li>Easy to convert to DataObjects.</li>
+            </ul>
+            
+            <p>Data rows don't have all the object-oriented features of DataObjects. In 
+            particular, data rows don't support relationships. It is easy to create a DataObject
+            from a row though. See examples below.</p>
+            
+            <p>Data rows example: </p>
+<source>
+import java.util.List;
+import java.util.Map;
+import org.objectstyle.cayenne.access.DataContext;
+import org.objectstyle.cayenne.query.SelectQuery;
+import org.objectstyle.art.Artist;
+...
+DataContext ctxt;
+
+// create a query returning data rows
+SelectQuery q = new SelectQuery(Artist.class);
+q.setFetchingDataRows(true);
+
+List artistRows = ctxt.performQuery(q);
+
+// since query was configured to return data rows,
+// result list elements are java.util.Map's
+Map row = (Map)artistRows.get(0);
+
+// convert row to an artist
+Artist artist = (Artist)ctxt.objectFromDataRow("Artist", row);
+...
+</source>
+			</subsection>
+    </section>
+</body>
+</document>

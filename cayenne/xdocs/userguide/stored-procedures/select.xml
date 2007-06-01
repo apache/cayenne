@@ -1,0 +1,48 @@
+<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="9. Using Stored Procedures"/>
+<body>
+    <section name="9. Using Stored Procedures">
+    <subsection name="9.1 Selecting Objects">
+		<p>If a stored procedure is known to return at least one result set, procedure 
+		queries can be executed just like normal select queries. Of course in addtion to returning
+		data, such procedures can perform any other database operations. </p>
+		
+		<panel name="Note:">
+		Currently all procedure queries will return data rows, not DataObjects. If the returned 
+		row (Map) contains all the attributes needed to recreate a DataObject, this can be done 
+		by calling DataContext.objectFromDataRow().
+		</panel>
+		
+		<p>Below is an example of creating a ProcedureQuery, initializing its parameters,
+		and processing execution results.
+		</p>
+<source>
+DataContext ctxt;
+
+// "my_procedure" is a name of a stored procedure,
+// that must exist in the DataMap
+ProcedureQuery query = new ProcedureQuery("my_procedure");
+
+// Set "IN" parameter values
+query.addParam("paramter1", "abc");
+query.addParam("parameter2", new Integer(3000));
+
+// run query as a normal select query
+List rows = ctxt.performQuery(query);
+
+// process results
+Iterator it = rows.iterator();
+while(it.hasNext()) {
+  Map row = (Map)it.next();
+  
+  // do something with result, e.g. instantiate a real DataObject
+  MyDataObject object = (MyDataObject)ctxt.objectFromDataRow("MyDataObject", row);
+  ....
+}
+</source>
+	</subsection>
+    </section>
+</body>
+</document>
+

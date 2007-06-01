@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC
+  "-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+  "http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="cayenne.tutorial.tapestry.pages.AddArtistPage">
+	<component id="hasErrors" type="Conditional">
+   		<binding name="condition" expression="hasErrorMessage"/>
+	</component>
+	
+	<component id="errorMessage" type="Insert">
+    	<binding name="value" expression="errorMessage"/>
+		<binding name="raw" expression="true"/>
+	</component>
+	
+	<component id="artistName" type="TextField">
+		<binding name="value" expression="artist.artistName"/>
+	</component>
+	
+	<component id="dateOfBirth" type="DatePicker">
+		<binding name="value" expression="artist.dateOfBirth"/>
+	</component>
+
+	<component id="saveArtistButton" type="Submit">
+		<binding name="listener" expression="listeners.saveArtistAction"/>
+	</component>
+	
+	
+	<property-specification name="artist" type="cayenne.tutorial.tapestry.domain.Artist" persistent="yes"/>
+</page-specification>

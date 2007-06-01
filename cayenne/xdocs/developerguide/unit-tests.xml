@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<document>
+    <title>Developer Guide</title>
+    <toc name="toc-developer-guide" chapter="3. Unit Tests"/>
+    <body>
+        <section name="3. Unit Tests">
+        <p>Cayenne provides a comprehensive suite of unit tests. To execute
+            unit tests do the following:</p>
+            
+            <p><strong>Step 1.</strong> Configure one or more datasources. To do this, create a directory 
+            <code>$HOME/.cayenne/</code> and place a file called <code>connection.properties</code>
+            in this directory. File contents should be similar to this example:</p>
+            
+<source>
+example1.cayenne.adapter = org.objectstyle.cayenne.dba.mysql.MySQLAdapter
+example1.jdbc.username = someuser
+example1.jdbc.password = somepasswd
+example1.jdbc.url = jdbc:someurl1
+example1.jdbc.driver = com.xyz.MyDriverClass
+
+example2.cayenne.adapter = org.objectstyle.cayenne.dba.oracle.OracleAdapter
+example2.jdbc.username = someuser
+example2.jdbc.password = somepasswd
+example2.jdbc.url = jdbc:someurl2
+example2.jdbc.driver = com.xyz.MyDriverClass 
+</source>
+
+		<p>Each key starts with an identifier for a datasource. In the file above, "example1" 
+		and "example2" are such identifiers. They can be arbitrary strings without "." (dot) 
+		symbols.
+		</p>
+        
+        <p><strong>Step 2.</strong> Run unit tests for one of the configured datasources:</p>
+<source># cd cayenne
+# ant test -Dcayenne.test.connection=example1</source>
+
+		<p>Substitute "example1" with a name of your data source configured in the 
+		previous step. In case of total success, one of the last messages Ant prints
+		on console is <code>BUILD SUCCESSFUL</code>. If build fails, failure report is 
+		generated in HTML format under <code>....cayenne/build/tests/report/example1/index.html</code>
+		and can be viewed using a web browser (again, substitute "example1" in this
+		path with the name of data source used).</p>
+		
+		<p>To run only a subset of existing Cayenne test cases, Ant-style pattern matching 
+		can be used. A property called 
+		<code>test.filter</code> defines a set of class files to be run. For instance to run only 
+		tests from the "tools" package, 
+		the following startup parameters can be used:</p>
+		
+<source># cd cayenne
+# ant test -Dcayenne.test.connection=example1 -Dtest.filter="**/tools/*Tst.class"</source>
+        </section>
+    </body>
+</document>
+

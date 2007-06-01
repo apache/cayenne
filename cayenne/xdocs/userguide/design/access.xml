@@ -1,0 +1,92 @@
+<document>
+<title>User Guide - Design</title>
+<toc name="toc-user-guide" chapter="4. Design"/>
+<body>
+    <section name="4. Design">
+            <subsection name="4.4 Access Classes">
+            <p>Cayenne database access module consists of a stack of objects, 
+            all implementing <a href=
+            "../../api/cayenne/org/objectstyle/cayenne/access/QueryEngine.html">QueryEngine
+            interface</a>:</p>
+            
+            <img src="/images/access-layer.gif" width="520" height="341" alt="Cayenne Access Class Diagram"/>
+            
+            <p>Since all classes on the stack implement QueryEngine, each higher layer 
+            of control is optional. Only DataNode layer is required for Cayenne to operate. 
+            Each higher layer serves as a controller for the underlying layer, adding more
+            functionality. Responsibilities of each class are described below:</p>
+            
+            <p><a href="../../api/cayenne/org/objectstyle/cayenne/access/DataNode.html">1.
+            DataNode</a> - lowest layer controller class, closest to the database. Its
+            functions are (some of them are delegated to helper classes):</p>
+            
+            <ul>
+                <li>connects to the database obtaining connection via a JDBC DataSource.</li>
+                
+                <li>converts <a href=
+                "../../api/cayenne/org/objectstyle/cayenne/query/Query.html">Query</a>
+                objects into SQL statements and execute them.</li>
+                
+                <li>converts JDBC ResultSets into object snapshots (normally this
+                is objects implementing Map interface).</li>
+                
+                <li>generates primary keys for the newly inserted objects.</li>
+            </ul>
+            
+            <p><a href="../../api/cayenne/org/objectstyle/cayenne/access/DataDomain.html">
+            2. DataDomain</a> - second layer controller class on top of DataNode.
+            Provides following functionality:</p>
+            <ul>
+                <li>Combines physical datasources (DataNodes) into a logical
+                datasource. For example, when an application fetches data from
+                more then 1 database, programmer need not to be concerned with the
+                details of connection management. DataDomain will route all queries
+                to appropriate DataNode for execution.</li>
+
+                <li>Allows creation of DataSource <b>groups</b>. This is the
+                advanced scenario and may not be used all that often. One example when
+                this is useful is a case of web application hosting. 
+                A single application may need to
+                serve multiple companies. Each company would have their own set of
+                databases. For each one of such sets, a DataDomain will be
+                configured. When a user of such application starts a new session,
+                application will need to decide (based on some criteria, like user
+                login id, virtual host URL, etc.) which company this user belongs to,
+                and assign a corresponding DataDomain to a session. This way user
+                view of the database is locked within her company area. 
+                &quot;Domain&quot; is a term that Cayenne uses to describe 
+                such area. Most of the time all users will work with the same set of
+                DataSources. In this case application will use a 
+                &quot;default domain&quot; shared by all users.</li>
+
+                <li>Serves
+                as a factory for both lower level DataNodes as well as higher level
+                DataContexts.</li>
+            </ul>
+            
+            <p><a href="../../api/cayenne/org/objectstyle/cayenne/access/DataContext.html">3.
+            DataContext</a> - highest layer controller class. This is the class directly
+            accessed by users in most cases. Provides <a href=
+            "../../api/cayenne/org/objectstyle/cayenne/DataObject.html">DataObjects</a>
+            management including these functions:</p>
+            
+            <ul>
+                <li>Isolates in-memory object changes. DataObjects with uncommitted
+                changes are tracked in the context. Changes are not visible outside
+                the context.</li>
+                
+                <li>Commits in 1 line of code. If you have a bunch of
+                DataObjects that you modified (changed attribute values, created new
+                objects from scratch, marked objects as deleted), it would nice to
+                commit them all at once without writing any SQL (or even without
+                creating a bunch of Query objects). DataContext tracks all changes to
+                objects, so it will do this for you. Just call &quot;<a href=
+                "../../api/cayenne/org/objectstyle/cayenne/access/DataContext.html#commitChanges()">commitChanges</a>&quot;.
+                </li>
+                
+                <li>Caches DataObjects. Performs automatic lazy fetching of related objects.</li>
+		</ul>
+        </subsection>
+	</section>
+</body>
+</document>

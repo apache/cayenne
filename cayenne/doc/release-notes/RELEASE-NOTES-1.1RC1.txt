@@ -1,0 +1,39 @@
+Cayenne Release Notes 1.1 Release Candidate 1 (RC1)
+Date: 
+============================================
+
+For the latest information go to the project web site at 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+Changes, Features And Improvements:
+
+- cayenne-log.properties included in cayenne.jar has more sensible defaults - 
+  WARN for everything except for QueryLogger.
+- Removed confusing "New Project" dialog from CayenneModeler. Instead a 
+  default project is created with one empty DataDomain.
+- New CayenneModeler peferences mechanism based on embedded HSQLDB 
+  and Cayenne as persistence engine.
+- [CAY-121] CayenneModeler now allows to store a number of local DataSources 
+  and map DataNodes to them for the purspose of the DB access. This is a great feature
+  that simplifies team development and allows to perform DB operations even with 
+  JNDI DataNodes.
+- Refactored CayenneModeler to have a central Application class that provides "services"
+  to components. Rewrote parts of the Modeler to use a "jstaple light" - a OGNL-based
+  Swing bindings package.
+
+
+Bugs Fixed:
+
+CAY-162	Cayenne Modeler doesn't remember custom class templates
+CAY-12 Prefetching on entity used in qualifier
+CAY-196 DataObjectUtils.objectForPK should look in shared cache
+CAY-194 Error in generating SQL query for to-one faults with inheritance
+
+
+New Modeler Jar Files:
+
+CayenneModeler now requires two more JAR files - hsqldb-1.7.2.jar and ognl-2.6.5.jar. Both are included 
+in the download

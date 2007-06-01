@@ -1,0 +1,46 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="2. ORM Case Study"/>
+<body>
+ 	 <section name="2. ORM Case Study">
+		<p>This chapter shows how ORM (Object Relational Modeling) approach should 
+		be chosen based on the project
+		requirements and other factors. It contains links to technical aspects of modeling
+		that are discussed elsewhere. A few scenarios are shown below that describe 
+		the most common cases that a
+		development team may encounter on a typical O/R project. Lets assume an 
+		imaginary company called "Some Company" that sells services to consumers as its
+		main business, but also sells consumer products, and works with business customers.
+		There are a number of project teams working on a set of Object/Relational projects.
+		</p>
+		
+		<p><strong>Project 1: Java Interface to an Existing Database</strong></p>
+		<p>"Some Company" has a billing system that runs on Sybase database, that
+		uses a set of UNIX C++ applications to perform nightly batch jobs and print
+		the bills. The project goal is to create a Java client-server Object/Relational system
+		that will be used by customer service representatives to provide
+		customer support and correct billing errors. Such system must use the existing database
+		schema without changing it, but both Swing frontend and Java business layer that performs
+		the database access have to be created from scratch.
+		</p>
+		
+		<p><strong>Project 2: New System</strong></p>
+		<p>"Some Company" is planning a brand new e-commerce site for its
+		web users. Both the database and Java business objects must be designed 
+		from scratch as a part of the same project.</p>
+		
+		<p><strong>Project 3: Converting an Existing Java Business Framework</strong></p>
+		<p>Before getting into O/R technology, "Some Company" created a set of Java applications
+		for its sales and marketing teams working with business customers. These applications
+		use a custom persistence framework based on Data Access Objects (DAO - a term for 
+		objects that encapsulate the handcoded SQL for their persistence operations).
+		The goal of the project is to convert DAO to Cayenne-based Object/Relational business
+		framework, preserving all business rules, and using the existing database.</p>
+    </section>
+</body>
+</document>
+
+
+
+
+

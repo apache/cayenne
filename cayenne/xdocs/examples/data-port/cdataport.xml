@@ -1,0 +1,91 @@
+<document>
+<title>CDataPort task</title>
+<toc name="toc-examples" chapter="3. DataPort"/>
+<body>
+    <section name="3. DataPort">
+    <subsection name="3.2 CDataPort Ant Task">
+			<h3>Description</h3>
+			
+			<p>Sometimes it is necessary to recreate a database, copying data
+            from another existing database. For instance, recreating development database 
+            instance from production data, etc. While most RDBMS provide data import/export
+            tools, they normally require advanced DBA skills to use and are most often not
+            portable across database engines. Cayenne will provide a lightweight ant task to 
+			do data porting between the databases with identical schema, using DataMap information.
+            </p>
+            
+			<p><code>CDataPort</code> is an Ant task that takes a Cayenne project (cayenne.xml) 
+			with at least one DataMap and two DataNodes and ports data from source DataNode to a 
+			destination DataNode. All DataMaps linked to either the source or the target DataNode will 
+			be considered for porting.
+			</p>
+			
+			<h3>Installation</h3>
+			
+			<p>Copy cayenne.jar and data-port.jar to $ANT_HOME/lib, or refrence both in the build script
+			classpath for dataport "taskdef". As CDataPort doesn't rely on ObjEntities and works at the DB level, 
+			it doesn't need to access generated DataObject classes.</p>
+
+			<h3>Parameters</h3>
+			
+			<table border="1" cellpadding="2" cellspacing="0">
+				<tr>
+					<th valign="top"><b>Attribute</b></th>
+					<th valign="top"><b>Description</b></th>
+					<th align="center" valign="top"><b>Required</b></th>
+				</tr>
+				<tr>
+					<td valign="top">projectFile</td>
+					<td valign="top">Location of Cayenne project file containing mapping.</td>
+					<td valign="top" align="center">Yes</td>
+				</tr>
+				<tr>
+					<td valign="top">maps</td>
+					<td valign="top">A comma-separated list of DataMap names within the project, whoose entities 
+					data needs to be ported. If ommitted, all DataMaps in the project will be ported.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">srcNode</td>
+					<td valign="top">Source DataNode name.</td>
+					<td valign="top" align="center">Yes</td>
+				</tr>
+				<tr>
+					<td valign="top">destNode</td>
+					<td valign="top">Destination DataNode name.</td>
+					<td valign="top" align="center">Yes</td>
+				</tr>
+				<tr>
+					<td valign="top">cleanDest</td>
+					<td valign="top">If false, will skip deleting data from the destination tables. True is default.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">includeTables</td>
+					<td valign="top">Comma-separated list of tables to
+					include in the port. If ommitted, all mapped DbEntities will be used.
+					It is possible to use "*" to indicate name patterns.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+				<tr>
+					<td valign="top">excludeTables</td>
+					<td valign="top">Comma-separated list of tables to
+					exclude from the port. If ommitted, all mapped DbEntities will be used.
+					It is possible to use "*" to indicate name patterns.</td>
+					<td valign="top" align="center">No</td>
+				</tr>
+			</table>
+			
+			<h3>Examples:</h3>
+			<p>Here is an example of using <code>CDataPort</code> to port data using all
+			source DataMaps, excluding DBEntities with name matching "BILL_*":</p>
+<source>
+&amp;lt;taskdef name="cdataport" classname="org.objectstyle.cayenne.dataport.ant.CayenneDataPort"&amp;gt;
+     &amp;lt;classpath refid="classpath"/&amp;gt;
+&amp;lt;/taskdef&amp;gt;
+&amp;lt;cdataport projectFile="subdir/cayenne.xml" srcNode="ProductionNode" destNode="DevNode" excludeTables="BILL_*"/&amp;gt;
+</source>
+	</subsection>
+    </section>
+</body>
+</document>

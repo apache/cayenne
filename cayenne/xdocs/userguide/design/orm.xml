@@ -1,0 +1,47 @@
+<document>
+<title>User Guide - Design</title>
+<toc name="toc-user-guide" chapter="4. Design"/>
+<body>
+    <section name="4. Design">
+        <subsection name="4.1 Object Relational Mapping" anchor="or_map">
+            <p>Normally mapping is done between a Java class and a database table or view. 
+            Instances of such class will correspond to single rows in the database.
+            Persistent properties of such object (properties in a "JavaBeans" sense) would map 
+            either to table columns or to database primary-foreign key relationships. 
+            Summarizing possible mappings, the most common cases are:</p>
+            
+            <ul>
+                <li>Java class -&gt; database table or view</li>
+                <li>"simple" class property -&gt; table column</li>
+                <li>"complex" class property -&gt; related table via a database relationship</li>
+            </ul>
+            <ul>
+                <li>Java object -&gt; row in a table</li>
+                <li>"simple" object property value -&gt; value of column in a row</li>
+                <li>"complex" object property value -&gt; another object or list of objects</li>
+            </ul>
+
+            <p>The following diagram shows how mapping is organized in Cayenne:</p>
+            
+            <img src="/images/entities.gif" width="520" height="275" alt="Cayenne DataMap"/> 
+            
+            <p>Cayenne mapping is implemented as 2 layers: database layer and Java layer. 
+            Java layer uses database layer to tie Java classes to the database
+            tables. Main benefit of using 2 mapping layers is loose coupling of database metadata 
+            information and Java class information. For instance, database layer may describe the 
+            full structure of the database to allow database schema generation, while Java layer would
+            only map to a subset of tables. Another case is when a relationship between Java classes
+            spans a chain of relationships between database tables. This mapping scenario will be supported
+            by Cayenne in the future.
+            </p>  
+            
+            <p>Cayenne organizes mapping information into <a href=
+            "../../api/cayenne/org/objectstyle/cayenne/map/DataMap.html">DataMap's</a>. Normally a DataMap is
+            saved in XML format. Other formats are also possible. For instance Cayenne can create DataMaps
+            using WebObjects EOModel format. 
+            Normally DataMaps are created and maintained using CayenneModeler GUI tool.
+            </p>
+            </subsection>
+    </section>
+</body>
+</document>

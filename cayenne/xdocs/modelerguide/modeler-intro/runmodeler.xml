@@ -1,0 +1,45 @@
+<document>
+<title>CayenneModeler Guide - Running CayenneModeler</title>
+<toc name="toc-modeler-guide" chapter="1. Introduction"/>
+<body>
+ <section name="1. Introduction">
+    <subsection name="1.1. Running CayenneModeler">
+        	<p>CayenneModeler is a regular Java application and can be run on
+        	a JSDK1.4 compatible JVM. Main class is
+        	<code>org.objectstyle.cayenne.modeler.Main</code>. For convenience
+        	Cayenne distribution provides run scripts to start modeler on
+        	Windows
+        	and UNIX platforms. To take advantage of these scripts, user must
+        	set CAYENNE_HOME <i>(optional)</i> 
+        	and JAVA_HOME environment variables as described in the
+        	<a href="../../userguide/install/install.html">installation section</a>.</p>
+        	
+        	<p>To run CayenneModeler, simply doubleclick an appropriate script file.
+        	To run them from the command line, use the following commands.</p>
+        	
+        	<p>Windows:</p>
+
+        	<source>%CAYENNE_HOME%\bin\modeler.bat</source>
+
+        	<p>UNIX:</p>
+
+        	<source>$CAYENNE_HOME/bin/modeler.sh</source>
+        	
+        	<p></p>
+     
+        	<panel name="System CLASSPATH Note:">CayenneModeler startup scripts currently append
+			System CLASSPATH variable value to the Modeler startup CLASSPATH. This behavior is obsolete and 
+			can cause a number conflicts (e.g. if a user machine has different versions of libraries used by CayenneModeler).
+			A reference to the system CLASSPATH will be removed in the future. Currently if you run into one of such conflicts, 
+			you should remove it yourself by manually editing a script file. If you need to make Modeler aware of your external JAR files
+			(such as JDBC drivers), there is a better way -  go to "Tools > Preferences" and configure them under "ClassPath".
+			</panel>
+        	</subsection>
+    </section>
+</body>
+</document>
+
+
+
+
+

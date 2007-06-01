@@ -1,0 +1,27 @@
+<document>
+<title>User Guide - Working with DataObjects</title>
+<toc name="toc-user-guide" chapter="8. Working with DataObjects"/>
+<body>
+    <section name="8. Working with DataObjects">
+    	<p>DataObjects (Cayenne persistent objects) are composed of attributes and relationships. 
+		Attributes are the simplest object properties
+		(as in "java bean properties") that can be stored in the columns in the database. Those are usually 
+		string, numeric, binary or date values. Another type of properties is relationships.  They represent 
+		related DataObjects (to-one relationships) or collections of DataObjects (to-many relationships). 
+		To read and modify attributes and relationships, 
+		application code would simply invoke corresponding get or set methods. In case of to-many relationships 
+		represented by collections there are also add and remove methods. 
+		</p>
+
+		<p>Queries discussed in the previous chapter are used to obtain the initial sets of DataObjects. After that
+		a graph of persistent objects is navigated and modified via relationship methods, thus hiding the underlying
+		relational storage complexity and giving application a nice object view of the relevant subset of the database 
+		data.</p> 
+
+		<p>
+		Examples of working with attributes and relationships are given later in this chapter.
+    	</p>
+    </section>
+</body>
+</document>
+

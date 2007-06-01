@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<project default="compile">
+	<property name="performance.build" value="build/performance"/>
+	
+	<target name="compile">
+		<ant antfile="build-subproj.xml" target="compile">
+			<property name="subproj" value="performance"/>
+		</ant>
+	</target>
+	
+    <target name="dist-bin" depends="jar">
+    	<!-- dummy target -->
+	</target>
+
+    <!-- ================================== -->
+    <!-- Build JAR file with dependencies.  -->
+    <!-- ================================== -->
+    <target name="jar" depends="compile">
+    	<jar jarfile="${dist}/lib/cayenne-performance.jar" manifest="src/performance/MANIFEST.MF">
+            <fileset dir="${performance.build}/classes"/>
+            <metainf dir="doc" includes="LICENSE"/>
+        </jar>
+    </target>
+
+    <!-- ======================= -->
+    <!-- Run performance tests.  -->
+    <!-- ======================= -->
+    <target name="test" depends="dist-bin">
+   		<echo>
+		Sorry, performance tests are not available yet.
+		</echo>
+    </target>
+    
+</project>

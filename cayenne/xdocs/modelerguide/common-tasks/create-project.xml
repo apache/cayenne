@@ -1,0 +1,30 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="4. Common Modeling Tasks"/>
+<body>
+	<section name="4. Common Modeling Tasks">
+	<subsection name="4.1 Create New Project">
+ 	    <p><strong>Start New Project</strong>. Select <code>"File > New Project"</code> menu item (or click
+ 	    <code>"New Project"</code> toolbar button):</p>
+ 	    
+        <img src="/images/modelerguide/new-project.jpg" width="400" height="240" border="0" align="middle"
+		alt="Create Project"/>
+ 	 	
+		<p>A new project is created with a single empty DataDomain:
+		</p>
+	
+        <img src="/images/modelerguide/new-project-done.jpg" width="400" height="240" border="0" align="middle"
+		alt="New Project Done"/>
+ 	 	
+		<p>When you click on "UntitledDomain", this opens an editor for this domain and also activates two new actions: 
+		<code>"Create DataNode"</code> and <code>"Create DataMap"</code>.
+		</p>
+        </subsection>
+    </section>
+</body>
+</document>
+
+
+
+
+

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<document>
+    <title>Developer Guide</title>
+    <toc name="toc-developer-guide" chapter="1. CVS Access"/>
+    <body>
+        <section name="1. CVS Access">
+            <p>To get the source code from CVS, follow the instructions on Cayenne
+            <a href="http://sourceforge.net/cvs/?group_id=48132">CVS SourceForge page</a>. 
+            Module name is <code>cayenne</code>. Also you may find <a href="http://objectstyle.org/developer/cvs.html">
+            this page</a> helpful if you are trying to setup CVS/SSH
+            access on Windows.
+            </p>
+        </section>
+    </body>
+</document>
+

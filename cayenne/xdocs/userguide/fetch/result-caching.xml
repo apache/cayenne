@@ -1,0 +1,89 @@
+<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="7. Using Queries"/> 
+<body>
+	<section name="7. Using Queries"> 
+		<subsection name="7.9 Caching Query Results">
+		<p>Cayenne provides a way to cache query results to avoid unneeded datrabase trips for the 
+		frequently used queries. Caching policy is configured per select query. This can be done via the API or
+		in CayenneModeler.  The following cache policies are supported:</p>
+		
+		<ul>
+			<li><code>GenericSelectQuery.NO_CACHE</code>  - default cache policy. Each query execution will result in database access.
+			<p> </p>
+			</li>
+			<li><code>GenericSelectQuery.LOCAL_CACHE</code>  - caching is done independently for each DataContext.
+			<p> </p>
+			</li>
+			<li><code>GenericSelectQuery.SHARED_CACHE</code>  - result cache is shared by all DataContexts in the same JVM.
+			<p> </p>
+			</li>
+		</ul>
+		<p> </p>
+		<panel name="Note:">Query result caching is done independently from caching individual DataObjects and DataRows. 
+		Query result cache is not distributed across VMs (event the shared cache).
+		</panel>
+		
+		<subsection name="7.9.1 Setting Up a Query to Use Caching">
+		<panel name="Query 'name' and caching">
+		Query "name" property is used as a key to access the cache. Therefore two different queries can potentially share and 
+		update the same cache entry. Also query name is required when result caching is used.
+		</panel>
+		<p> </p>
+		
+		<source>
+DataContext context = ... // assume this exists
+
+SelectQuery query = new SelectQuery(Artist.class);
+...
+
+// configure query to use local cache
+query.setName("MySelect");
+query.setCachePolicy(GenericSelectQuery.LOCAL_CACHE);
+
+// make sure to turn off refreshing...
+query.setRefreshingObjects(false);
+
+List objects = context.performQuery(query);
+</source>
+
+<p> </p>
+		<source>
+DataContext context = ... // assume this exists
+
+SQLTemplate query = new SQLTemplate(Artist.class, true);
+...
+
+// configure query to use shared cache
+query.setName("MyRawSelect");
+query.setCachePolicy(GenericSelectQuery.SHARED_CACHE);
+
+// make sure to turn off refreshing...
+query.setRefreshingObjects(false);
+
+List objects = context.performQuery(query);
+</source>
+		
+		</subsection>
+		
+		<subsection name="7.9.2 Refreshing the Cache">
+		<p>To force a  refresh of the cached result, set "refreshingObjects" property of the 
+		query to true (this is actually a default):</p>
+		<source>
+DataContext context = ... // assume this exists
+
+SelectQuery query = new SelectQuery(Artist.class);
+...
+query.setName("MySelect");
+query.setCachePolicy(GenericSelectQuery.LOCAL_CACHE);
+
+// Force cache refreshing
+query.setRefreshingObjects(true);
+
+List objects = context.performQuery(query);
+</source>		
+		</subsection>
+	</subsection>
+    </section>
+</body>
+</document>

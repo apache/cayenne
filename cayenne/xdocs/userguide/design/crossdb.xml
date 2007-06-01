@@ -1,0 +1,67 @@
+<document>
+	<title>User Guide - Design</title>
+	<toc name="toc-user-guide" chapter="4. Design"/>
+	<body>
+		<section name="4. Design">
+			<subsection name="4.6 Cross-Database Issues">
+				<p>JDBC specification was created by Sun to provide a uniform 
+					way of connecting to relational databases from the Java 
+					code. In theory this should allow Java developer to create 
+					database-aware code that is portable across RDBMS vendors. 
+					In reality this is only partially true. While providing 
+					universal connectivity, JDBC doesn't handle certain 
+					portability issues. The following problems remain when 
+					developing with JDBC:</p>
+				<ul>
+					<li>There is no fully standard-compliant databases (even 
+						though all of them claim to be). Certain "standard" 
+						features may not be implemented in some RDBMS. </li>
+					<li>SQL syntax may vary across RDBMS. Things like outer 
+						join queries, database objects creation, BLOB handling, 
+						etc. are handled differently by different vendors. </li>
+					<li>Data type definitions vary across RDBMS. Data types may 
+						have different names, size and precision. </li>
+					<li>Vendors provide their own extensions of SQL and JDBC 
+						functionality. Taking advantage of these extensions and 
+						creating portable code at the same time is not a 
+						trivial task. </li>
+				</ul>
+				<p> This becomes even a bigger problem in a generic product 
+					like Cayenne that should support any database. Cayenne 
+					addresses this issue by providing a <a href= 
+					"../../api/cayenne/org/objectstyle/cayenne/dba/package-summary.html">DbAdapter</a> 
+					for each supported database engine. </p>
+				<subsection name="4.6.1 DbAdapter Design Overview">
+					<p>Each DataNode (as mentioned before, DataNode models a 
+						physical datasource) has an assocaited instance of <a 
+						href= 
+						"../../api/cayenne/org/objectstyle/cayenne/dba/DbAdapter.html">DbAdapter</a>. 
+						DbAdapter is delegated certain tasks. Here is a 
+						schematic representation of DataNode, DbAdapter and 
+						JDBC layer working together:</p>
+					<img src="/images/db-adapter.gif" width="280" height="349" 
+						alt="DbAdapter"/>
+					<p>Most common functions of DbAdapter are to:</p>
+					<ul>
+						<li>map database data types to JDBC "standard" 
+							types.</li>
+						<li>serve as a factory of DataNodes.</li>
+						<li>serve as a factory of <a href= 
+							"../../api/cayenne/org/objectstyle/cayenne/access/QueryTranslator.html">QueryTranslators</a>.</li>
+						<li>provide information about the features supported by 
+							a target database.</li>
+						<li>provide <a href="autopk.html">automatic primary key 
+							generation</a>.</li>
+					</ul>
+					<p>A generic implementation of DbAdapter is <a href= 
+						"../../api/cayenne/org/objectstyle/cayenne/dba/JdbcAdapter.html">JdbcAdapter</a>. 
+						Database-specific implementations usually subclass 
+						JdbcAdapter. </p>
+					<p><i>More information on DbAdapter configuration can be found 
+						in the <a href="../access-stack/dbadapter.html">Access 
+						Stack Internals</a> section.</i></p>
+				</subsection>
+			</subsection>
+		</section>
+	</body>
+</document>

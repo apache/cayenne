@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- =================================================== -->
+<!-- Cayenne Project DTD, v 1.0                          -->
+<!--                                                     -->
+<!-- Copyright (c) 2002-2004 Andrei Adamchik and         -->
+<!-- individual authors. All rights reserved             -->
+<!--                                                     -->
+<!-- Author: Andrei Adamchik                             -->
+<!-- =================================================== -->
+
+<!ELEMENT domains (domain*)>
+<!ATTLIST domains
+	project-version CDATA
+>
+
+<!ELEMENT domain (map*, node*)>
+<!ATTLIST domain
+	name CDATA #REQUIRED
+>
+
+
+<!ELEMENT map (dep-map-ref*)>
+<!ATTLIST map
+	name CDATA #REQUIRED
+    location CDATA #REQUIRED
+>
+
+<!ELEMENT dep-map-ref>
+<!ATTLIST dep-map-ref
+	name CDATA #REQUIRED
+>
+
+<!ELEMENT node (map-ref*)>
+<!ATTLIST node
+	name CDATA #REQUIRED
+    factory CDATA #REQUIRED
+    datasource CDATA #REQUIRED
+    adapter CDATA #IMPLIED 
+>
+
+<!ELEMENT map-ref>
+<!ATTLIST map-ref
+	name CDATA #REQUIRED
+>
+

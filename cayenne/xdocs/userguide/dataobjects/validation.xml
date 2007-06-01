@@ -1,0 +1,100 @@
+<document>
+<title>User Guide - Working with DataObjects</title>
+<toc name="toc-user-guide" chapter="8. Working with DataObjects"/>
+<body>
+    <section name="8. Working with DataObjects">
+    	<subsection name="8.6 DataObject Validation">
+    	<p>DataObject implements a set of methods to validate its state. DataContext calls these methods 
+    	before performing a commit. If validation fails, commit is aborted with <a href=
+    	"../../api/cayenne/org/objectstyle/cayenne/validation/ValidationException.html">ValidationException</a>.
+    	There are a few clear benefits of validating DataObjects at the application level before committing them to the
+    	database: 
+    	</p>
+    	
+    	<ul>
+    		<li>Cayenne can leverage ORM metadata (DataMap) to check for many standard error
+    		conditions.</li>
+    		<li>Custom validation can be easily integrated into the business objects by overriding standard 
+    		validation methods.</li>
+    		<li>Validation failures can be tracked down to the individual objects and their properties, allowing creation of
+    		user-friendly, internationalized validation messages.</li>
+    		<li>Relying on database validation for things like mandatory properties, 
+    		etc., would result in errors that are meaningless or extremely hard to decode in the application context.</li>
+    		<li>Application validation partially addresses shortcomings of databases that do not support real 
+    		transactions (e.g. MySQL). Validation would trap the whole class of errors that would otherwise result in 
+    		failure halfway through the commit, leaving database in inconsistent state.</li>
+    		<li>Automating of the business objects validation takes away some burden from the UI that now has 
+    		fewer things to track.</li>
+    	</ul>
+    	
+    	<subsection name="8.6.1 Validation API">
+    	<p>Each DataObject participating in commit operation (i.e. those in state NEW, DELETED or MODIFIED , in other words 
+    	"non-committed")  will be validated by DataContext's ObjectStore during commit processing. Depending on the non-committed 
+    	object state, ObjectStore calls one of the methods described below (description of method behavior is provided for 
+    	CayenneDataObject implementation):</p>
+    	
+    	<ul>
+            <li><code>public void <b>validateForInsert</b>(ValidationResult validationResult)</code><br/>
+			
+			<code>public void <b>validateForUpdate</b>(ValidationResult validationResult)</code><br/>
+			<p>Implementation internally calls <code>validateForSave(..)</code>.  When 
+			overriding, in most cases developers should invoke "super".
+			</p>
+			</li>
+			
+			<li><code>public void <b>validateForDelete</b>(ValidationResult validationResult)</code><br/>
+			This method does nothing by default and exists merely for overriding.
+			<p></p>
+			</li>
+			
+			<li><code>protected void <b>validateForSave</b>(ValidationResult validationResult)</code><br/>
+			This method only exists in CayenneDataObject (and not in DataObject). It is invoked  internally 
+			from  <code>validateForInsert(..)</code> and 
+			<code>validateForUpdate(..)</code>, performing some generic validation 
+			based on the DataMap information. This includes checking for nulls and for values that exceed their
+			database size limitations. When overriding this method to include custom validation, developers 
+			should call "super" in most cases.
+			<p></p>
+			</li>
+        </ul>
+        
+        <p>Custom validation method implementation would normally append any failures to the provided <a href=
+    	"../../api/cayenne/org/objectstyle/cayenne/validation/ValidationResult.html">ValidationResult</a> 
+    	instance. After validating all non-committed objects, DataContext (or rather its ObjectStore)
+        will check if the ValidationResult is not empty, and throw an exception if there is at least one failure.
+       Typical custom validation method would look like that:</p>
+       
+<source>
+public class Painting extends _Painting {
+   ...
+   protected void validateForSave(ValidationResult validationResult) {
+      super.validateForSave(validationResult);
+     
+      // check business rules
+      if(getEstimatedPrice().doubleValue() &lt;= 0.0) {
+         validationResult.addFailure(
+                this, // source object of the failure
+                Painting.ESTIMATED_PRICE_PROPERTY, // failed property name
+                "Painting price must be greater than zero.")); // error message  
+      }
+   }
+   ...
+} 
+</source>
+		</subsection>
+		
+		<subsection name="8.6.2 Turning Validation On/Off">
+		<p>Whether DataContext performs validation at all depends on the value of its property
+		"validatingObjectsOnCommit". Calling "isValidatingObjectsOnCommit()" returns currently 
+		configured value. Default value (usually "true") is propagated from the parent DataDomain
+		when DataContext is created. This default value can be configured using CayenneModeler as 
+		described in <a href="../../modelerguide/configure-deployment/configure-validation.html">Deployment 
+		Configuration</a> chapter of the Modeler Guide. 
+		</p>
+		</subsection>
+		
+    	</subsection>
+    </section>
+</body>
+</document>
+

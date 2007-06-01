@@ -1,0 +1,20 @@
+<document>
+<title>User Guide - Introduction</title>
+<toc name="toc-user-guide"/>
+<body>
+    <section name="User Guide  - version 1.1">
+    <p>User Guide documents Cayenne behavior and most common patterns of Cayenne use. 
+    It includes a set of tutorials, discussion of Cayenne design and deployment.
+    </p>
+    
+    <subsection name="Quick Upgrade Links:">
+    
+    <ul>
+    	<li><a href="introduction/whats-new.html">What's New in the Cayenne Version 1.1</a></li>
+    	<li><a href="install/upgrade.html">Upgrade Information</a></li>
+    </ul>
+    
+    </subsection>
+    </section>
+</body>
+</document>

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<document>
+    <title>Developer Guide</title>
+    <toc name="toc-developer-guide" chapter="4. Using Eclipse IDE"/>
+    <body>
+        <section name="4. Using Eclipse IDE">
+     	<p>Quiet a few Cayenne developers use <a href="http://eclipse.org">Eclipse 
+        IDE</a>. Though of course this is by no means a requirement. This section documents the 
+        process of setting up Eclipse for Cayenne project.
+        	</p>
+        	
+        	<p>To setup Cayenne as an Eclipse project, check out the code, and copy the two
+            files in <code>cayenne/contrib/ide/eclipse/</code> directory 
+            (.classpath and .project) into the root "cayenne" directory, then import the 
+            project into eclipse.</p>
+
+			<p>If you have used eclipse to check out the tree (much easier!) you can use
+			the Resource Navigator to copy the files. Either use copy/paste via the
+			context menu or drag-and-CTRL-drop them to the root of the directory.</p>
+
+			<p>If you have copied the files from outside eclipse (Windows Explorer,
+			command line..) you will need to restart in order to have the project 
+			recognized as 'Java project'.
+        	</p>
+        </section>
+    </body>
+</document>
+

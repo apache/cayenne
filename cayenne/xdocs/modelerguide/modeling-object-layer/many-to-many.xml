@@ -1,0 +1,19 @@
+<document>
+<title>CayenneModeler Guide - Many-to-Many Relationships</title>
+<toc name="toc-modeler-guide" chapter="6. Modeling Object Layer"/>  
+<body>
+    <section name="6. Modeling Object Layer">
+    	<subsection name="6.3 Many-to-Many Relationships">
+	<p>Many-to-many relationships can be modeled in two different ways:</p>
+	
+	<ul>
+		<li>By modeling a join table as an ObjEntity. This is the most trivial case
+		but it makes traversing many-to-many relationships relatively inconvenient.</li>
+		<li>Making join table transparent to the object model. This is achieved by using 
+		<a href="flattenedrel.html">flattened relationships</a> discussed further in 
+		this chapter.</li>
+	</ul>
+	</subsection>
+    </section>
+</body>
+</document>

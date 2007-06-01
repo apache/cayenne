@@ -1,0 +1,1 @@
+Copy cayenne.jar, and struts jar files into this directory.

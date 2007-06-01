@@ -1,0 +1,13 @@
+<document>
+<title>User Guide - Introduction</title>
+<toc name="toc-user-guide" chapter="1. Introduction"/>
+<body>
+    <section name="1. Introduction">     
+        <subsection name="1.3 License">
+            <p>This software is distributed and should be used on terms of BSD software license. 
+            In short, it is free of charge, and unrestricted for commercial use as well. Full license text
+            can be found <a href="../../license.html">here</a>.</p>
+        </subsection>
+    </section>
+</body>
+</document>

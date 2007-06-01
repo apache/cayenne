@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="1.1">
+<domain name="regression-profile">
+	<map name="regression-profile" location="regression-profile.map.xml"/>
+
+	<node name="regression-profile"
+		 datasource="regression-profile"
+		 adapter="org.objectstyle.cayenne.dba.JdbcAdapter"
+		 factory="org.apache.cayenne.profile.TestDataSourceFactory">
+			<map-ref name="regression-profile"/>
+	 </node>
+</domain>
+</domains>

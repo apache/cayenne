@@ -1,0 +1,87 @@
+<document>
+<title>User Guide - Installation</title>
+<toc name="toc-user-guide" chapter="2. Installation"/>
+<body>
+    <section name="2. Installation">       
+    	<subsection name="2.3 JAR Files and Dependencies">
+    		<p>This sections explains where all the relevant jar files are
+    		located. It also lists Cayenne dependencies.</p>
+    	
+    		<subsection name="2.3.1 Cayenne Runtime Framework">
+            <p> There are two Cayenne JAR files in <code>[cayenne_install_dir]/lib/</code>
+            directory: <ul>
+            	<li><strong><code>cayenne.jar</code></strong></li>
+				<li><strong><code>cayenne-nodeps.jar</code></strong></li>
+			</ul>
+			
+            Either one or another should be used (<strong>but not both of them</strong>
+            at the same time).
+            In most cases <code>cayenne.jar</code> is the best choice. It has 
+            Cayenne classes as well as all the needed dependencies. 
+            Dependencies are bundled for easier installation and configuration of Cayenne.
+            They include:
+            
+            <ul>
+            	<li><a href="http://objectstyle.org/ashwood/" target="_blank">ObjectStyle Ashwood Graph Library</a>,
+            	version 1.1</li>
+            	<li><a href="http://jakarta.apache.org/velocity/" target="_blank">Jakarta Velocity Template 
+            	Engine</a>, version 1.3</li>
+				<li><a href="http://jakarta.apache.org/oro/" target="_blank">Jakarta ORO Regular Expressions 
+				package</a> <i>(also bundled with Velocity)</i></li>
+				<li><a href="http://jakarta.apache.org/log4j/" target="_blank">Jakarta Log4J 
+				package</a>, version 1.2.8</li>
+				<li><a href="http://jakarta.apache.org/commons/lang/" target="_blank">Jakarta Commons Lang 
+				package</a>, version 2.0</li>
+				<li><a href="http://jakarta.apache.org/commons/collections/" target="_blank">Jakarta Commons Collections 
+				package</a>, version 3.1</li>
+				<li><a href="http://jakarta.apache.org/commons/logging/" target="_blank">Jakarta Commons Logging 
+				package</a>, version 1.0.3</li>
+				<li><a href="http://jakarta.apache.org/commons/beanutils/" target="_blank">Jakarta Commons Beanutils 
+				package</a>, version 1.6.1</li>
+			</ul>
+            
+            If bundled Cayenne dependencies conflict with other packages installed
+            on the user machine, a leaner <code>cayenne-nodeps.jar</code> file should be used.
+            In this case all the dependencies must be installed manually.
+            </p>
+            
+            <p><code>cayenne.jar</code> or <code>cayenne-nodeps.jar</code> should be accessible by 
+			the applications that use Cayenne. There are a few "standard" ways of doing it in Java,
+			like setting CLASSPATH variable, adding file to the WEB-INF/lib/ directory of the web
+			application, etc.</p>
+            
+            <panel name="Warning:">It is NOT recommended to put Cayenne JAR files under 
+            JRE extensions directory ($JRE_HOME/lib/ext or $JAVA_HOME/jre/lib/ext), or include 
+            cayenne.jar in a JVM bootstrap ClassLoader in any other way.</panel>
+            
+            <p>The reason for such warning is that classes loaded from extensions 
+            directory have their own ClassLoader and can't directly 
+            access resources associated with other ClassLoaders. Cayenne allows to "bootstrap"
+            other ClassLoaders for the purpose of resource lookup, but this requires extra code
+            and doesn't solve all problems.</p>
+            </subsection>  
+            
+            <subsection name="2.3.2 CayenneModeler Tool">
+            	<p>Java classes and resources used exclusively by CayenneModeler and not required
+            	by the runtime are located in <code>[cayenne_install_dir]/lib/modeler/</code> 
+            	directory:
+            	
+            	<ul>
+            		<li><strong><code>cayenne-modeler.jar</code></strong></li>
+					<li><strong><code>scope-bin-1.0.1.jar</code></strong></li>
+					<li><strong><code>forms-1.0.3.jar</code></strong></li>
+					<li><strong><code>plastic-1.1.2.jar</code></strong></li>
+					<li><strong><code>hsqldb-1.7.2.jar</code></strong></li>
+					<li><strong><code>ognl-2.6.5.jar</code></strong></li>
+				</ul>
+            	
+            	<code>cayenne-modeler.jar</code> implicitly relies on the presence of 
+				<code>[cayenne_install_dir]/lib/cayenne.jar</code>. Instructions on how to start
+				modeler can be found <a href="../../modelerguide/modeler-intro/runmodeler.html">here</a>.
+            	</p>
+            	
+            </subsection>       
+        </subsection>
+    </section>
+</body>
+</document>

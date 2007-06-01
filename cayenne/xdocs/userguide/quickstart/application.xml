@@ -1,0 +1,42 @@
+<document>
+<title>User Guide - Quick Start</title>
+<toc name="toc-user-guide" chapter="3. Quick Start"/>
+<body>
+    <section name="3. Quick Start">
+    	<subsection name="3.1 Cayenne Application">    	
+            <p>This is an approximate simplified algorithm for creating a Cayenne-enabled application. This should give
+            you some understanding of what is going on in the following chapters. You can skip this page for now and proceed
+            to the tutorials.</p>
+            
+            <p><strong>1. Create Cayenne Project:</strong><br/>
+            Cayenne project is a set of XML mapping and deployment files used by a Cayenne Java application.
+            Projects are normally created and edited in CayenneModeler GUI tool. All the needed mapping information
+            is either obtained by reverse-engineering an existing database (as shown later in this chapter), or
+            by creating individual mapping components in the Modeler.
+            </p>
+            
+            <p><strong>2. Generate Java Classes:</strong><br/>
+            Persistent Java classes (aka DataObjects) are generated and synchronized with the mapping using the Modeler (or alternatively 
+            with a "cgen" Ant task).
+            </p>
+            
+            <p><strong>3. (optional) Generate DB Schema:</strong><br/>
+            If a project wasn't reverse-engineered from an existing database, but rather created manually in the 
+            Modeler, a matching database schema can be generated from the Modeler.
+            </p>
+            
+            <p><strong>4. Write the Actual Application:</strong><br/>
+            Write a Java application taking advantage of Cayenne functionality. 
+            Hint: <a href="../datactxt/index.html">DataContext</a> is normally a starting point providing an application with 
+            access to Cayenne.      
+            </p>
+            
+            <p><strong>5. Configure Deployment Settings:</strong><br/>
+            Depending on how you plan to deploy your application you may configure Cayenne in a few ways. 
+            Possible deployment scenarious include standalone application, web application, EJB application. Standalone 
+            applications usually do not require any special configuration. Web applications usually need an entry in a web.xml file.
+            </p>
+    </subsection>
+    </section>
+</body>
+</document>

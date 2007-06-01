@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- =================================================== -->
+<!-- Cayenne Project DTD, v 1.1                          -->
+<!--                                                     -->
+<!-- Copyright (c) 2002-2004 Andrei Adamchik and         -->
+<!-- individual authors. All rights reserved             -->
+<!--                                                     -->
+<!-- Author: Andrei Adamchik                             -->
+<!--                                                     -->
+<!-- Cayenne project files described by this DTD are     -->
+<!-- normally called "cayenne.xml" and describe          -->
+<!-- Cayenne deployment configuration for a particular   -->
+<!-- application.                                        -->
+<!-- =================================================== -->
+
+<!ELEMENT domains (domain*)>
+<!ATTLIST domains
+	project-version CDATA
+>
+
+<!ELEMENT domain (property*, map*, node*, view*)>
+<!ATTLIST domain
+	name CDATA #REQUIRED
+>
+
+<!ELEMENT property>
+<!ATTLIST property
+	name CDATA #REQUIRED
+	value CDATA #REQUIRED
+>
+
+<!ELEMENT map>
+<!ATTLIST map
+	name CDATA #REQUIRED
+	location CDATA #REQUIRED
+>
+
+<!ELEMENT node (map-ref*)>
+<!ATTLIST node
+	name CDATA #REQUIRED
+	factory CDATA #REQUIRED
+	datasource CDATA #REQUIRED
+	adapter CDATA #IMPLIED 
+>
+
+<!ELEMENT view>
+<!ATTLIST view
+	name CDATA #REQUIRED
+	location CDATA #REQUIRED
+>
+
+<!ELEMENT map-ref>
+<!ATTLIST map-ref
+	name CDATA #REQUIRED
+>
+

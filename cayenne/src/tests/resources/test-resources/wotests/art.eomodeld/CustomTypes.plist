@@ -1,0 +1,29 @@
+{
+    attributes = (
+        {
+            adaptorValueConversionMethodName = setType; 
+            columnName = PK; 
+            externalType = int; 
+            factoryMethodArgumentType = EOFactoryMethodArgumentIsNSString; 
+            name = pk; 
+            valueClassName = CustomType1; 
+            valueFactoryMethodName = getType; 
+        }, 
+        {
+            adaptorValueConversionMethodName = setType; 
+            columnName = OTHER; 
+            externalType = int; 
+            factoryMethodArgumentType = EOFactoryMethodArgumentIsNSString; 
+            name = other; 
+            valueClassName = CustomType2; 
+            valueFactoryMethodName = getType; 
+        }
+    ); 
+    attributesUsedForLocking = (pk, other); 
+    className = CustomTypes; 
+    classProperties = (pk, other); 
+    externalName = "CUSTOM_TYPES"; 
+    fetchSpecificationDictionary = {}; 
+    name = CustomTypes; 
+    primaryKeyAttributes = (pk); 
+}

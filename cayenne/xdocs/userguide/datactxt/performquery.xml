@@ -1,0 +1,88 @@
+<document>
+<title>User Guide - Using DataContext</title>
+<toc name="toc-user-guide" chapter="6. Using DataContext"/>
+<body>   	
+    
+    <section name="6. Using DataContext">
+	<subsection name="6.2 Running Queries">
+	<p>Cayenne Query API is discussed in the <a href="../fetch/index.html">following chapters</a>. This chapter concentrates 
+	on how to execute an existing query via a DataContext. Still we'd like to point to a few aspects of the query API here, as they
+	are important for the query execution discussion:</p>
+	
+	<ul>
+	<li>There are selecting and non-selecting queries. Selecting queries return objects back to the caller, while 
+	non-selecting just perform some DB operation (such as INSERT, DELETE, UPDATE, etc.) without returning anything back.</li>
+	
+	<li>Queries can be created in two ways - either by instantiating and configuring a Query object directly, 
+	or by mapping a query in CayenneModeler, and then referring to it by name. Mapped named queries are generally
+	easier to create and maintain.
+	</li>
+	</ul>
+	
+	<p>Being an instance of <a href="../../api/cayenne/org/objectstyle/cayenne/access/QueryEngine.html">QueryEngine</a>,
+	DataContext has generic API to execute any type of queries, however it is rarely used directly. Instead 
+	DataContext provides a number of overriden convenience methods to run the types of queries mentioned above.</p>
+	
+	<subsection name="6.2.1 Running Query Instances">
+	
+	<p>The following methods are used for running selecting and non-selecting Query objects built in the code:</p>
+	
+	<ul>
+	<li><code>public java.util.List <b>performQuery</b>(GenericSelectQuery query)</code><br/>
+	This is the most commonly used method for any selecting query.
+	<p></p>
+	</li>
+	
+	<li><code>public ResultIterator <b>performIteratedQuery</b>(GenericSelectQuery query) throws CayenneException</code><br/>
+	Performs a selecting query, returning an iterator over the result backed by an open JDBC ResultSet. Benefits and shortcomings of 
+	using result iterators are discussed in "<a href="../perform/result-iterator.html">Performance Tuning</a>" chapter. This is the only query 
+	method that throws checked exceptions. Also returned ResultIterator requires explicit cleanup via calling <code>close()</code>.
+	<p></p>
+	</li>
+	
+	<li><code>public int[] <b>performNonSelectingQuery</b>(Query query)</code>  
+	<br/>Executes a non-selecting query, returning update counts.
+	<p></p>
+	</li>
+	<li><code>public void <b>performQueries</b>(java.util.List queries, OperationObserver resultConsumer)</code>  
+	<br/>A generic (and the least convenient) query execution method, defined in QueryEngine interface. Used for 
+	queries with complex results.  For example queries based on stored procedures can have more than one result set,
+	do multiple updates, and return values as OUT parameters. This method can be used to capture all such information 
+	via OperationObserver. A very useful OperationObserver implementation is <a href=
+		"../../api/cayenne/org/objectstyle/cayenne/access/QueryResult.html">QueryResult</a>.
+	<p></p>
+	</li>
+	
+	</ul>
+	</subsection>
+	
+	<subsection name="6.2.2 Running Mapped Queries">
+	<p>The following methods are used to run named selecting and non-selecting queries mapped using 
+	CayenneModeler and stored in the DataMap XML file:</p>
+	
+	<ul>
+	<li><code>public java.util.List <b>performQuery</b>(String name, boolean refresh)</code><br/>
+	Runs a named selecting query stored in the DataMap.
+	<p></p>
+	</li>
+	
+	<li><code>public java.util.List <b>performQuery</b>(String name, Map parameters, boolean refresh)</code><br/>
+	Runs a named selecting query stored in the DataMap, using a map of named parameters.
+	<p></p>
+	</li>
+	
+	<li><code>public int[] <b>performNonSelectingQuery</b>(String name)</code><br/>
+	Runs a named non-selecting query stored in the DataMap.
+	<p></p>
+	</li>
+	
+	<li><code>public int[] <b>performNonSelectingQuery</b>(String name, Map parameters)</code><br/>
+	Runs a named non-selecting query stored in the DataMap, using a map of named parameters.
+	<p></p>
+	</li>
+	</ul>
+	</subsection>
+	</subsection>
+    </section>
+</body>
+</document>

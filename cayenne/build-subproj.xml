@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+
+<!-- ================================================= -->
+<!--  Helper build file to compile subprojects.        -->
+<!--                                                   -->
+<!-- Depends on externally defined set of properties:  -->
+<!-- - subproj                                         -->
+<!-- - javacc.dir                                      -->
+<!-- - javacc.grammar                                  -->
+<!--                                                   -->
+<!-- ================================================= -->
+<project default="compile">
+
+	<!-- ========================================== -->
+    <!-- Build paths's for subprojects.             -->
+    <!-- (Would be nice if we could import such     -->
+    <!-- things).                                   -->
+    <!-- ========================================== -->    
+	<path id="classpath-cayenne">
+		<fileset dir="${otherlib.dir}">
+			<include name="*.jar"/>
+		</fileset>
+    </path>
+    
+    <path id="classpath-modeler">
+		<path refid="classpath-cayenne"/>
+		<pathelement path="build/cayenne/classes"/>
+    </path>
+    
+    <path id="classpath-dvmodeler">
+		<path refid="classpath-cayenne"/>
+		<pathelement path="build/cayenne/classes"/>
+    </path>
+    
+    <path id="classpath-tests">
+		<path refid="classpath-modeler"/>
+    </path>
+    
+    <path id="classpath-regression">
+		<path refid="classpath-modeler"/>
+		<pathelement path="build/tests/classes"/>
+    </path>
+    
+    <path id="classpath-tests-modeler">
+		<path refid="classpath-tests"/>
+		<pathelement path="build/modeler/classes"/>
+		<pathelement path="build/tests-modeler/classes"/>
+		<pathelement path="build/tests/classes"/>
+		<pathelement path="build/tests/deps"/>
+    </path>
+    
+    <path id="classpath-performance">
+		<path refid="classpath-tests"/>
+		<pathelement path="build/tests/classes"/>
+    </path>
+    
+	<path id="javacc-classpath">
+		<fileset dir="${otherlib.dir}">
+			<include name="javacc*.jar"/>
+		</fileset>
+    </path>
+	
+	<target name="prepare" depends="nosubproj">
+		<tstamp/>
+		<mkdir dir="build/${subproj}/properties"/>
+		<mkdir dir="build/${subproj}/deps"/>
+		<mkdir dir="build/${subproj}/classes"/>
+		<mkdir dir="${dist}/src/${subproj}"/>
+		<mkdir dir="${dist}/lib"/>
+		<mkdir dir="${dist}/bin"/>
+	</target>
+	
+	
+	<target name="jjtree" depends="javacc-nodir,javacc-nogrammar,jjtree-uptodate" unless="jj.uptodate">	
+		<java dir="${basedir}" fork="true" classname="jjtree" failonerror="true">
+			<classpath refid="javacc-classpath"/>
+			<arg value="-OUTPUT_DIRECTORY:${parser.dir}"/>
+			<arg value="${parser.dir}/${parser.base}.jjt"/>
+		</java>
+		
+		<java dir="${basedir}" fork="true" classname="javacc" failonerror="true">
+			<classpath refid="javacc-classpath"/>
+			<arg value="-OUTPUT_DIRECTORY:${parser.dir}"/>
+			<arg value="${parser.dir}/${parser.base}.jj"/>
+		</java>
+	</target>
+	
+	<target name="jjdoc" depends="jjtree,javacc-nodir,javacc-nogrammar,jjdoc-uptodate" unless="jjdoc.uptodate">
+		<!-- this property may be reset by the caller. -->
+		<property name="parser.doc.dir" value="${parser.dir}"/>
+		<java dir="${basedir}" fork="true" classname="jjdoc" failonerror="true">
+			<classpath refid="javacc-classpath"/>
+			<arg value="-OUTPUT_FILE:${parser.doc.dir}/${parser.base}.html"/>
+			<arg value="${parser.dir}/${parser.base}.jj"/>
+		</java>
+	</target>
+	
+	<target name="jjtree-uptodate" depends="javacc-nodir,javacc-nogrammar">
+		<uptodate property="jj.uptodate" 
+			targetfile="${parser.dir}/${parser.base}.jj"
+			srcfile="${parser.dir}/${parser.base}.jjt"/>
+	</target>
+	
+	<target name="jjdoc-uptodate" depends="javacc-nodir,javacc-nogrammar">
+		<uptodate property="jjdoc.uptodate" 
+			targetfile="${parser.doc.dir}/${parser.base}.html"
+			srcfile="${parser.dir}/${parser.base}.jj"/>
+	</target>
+	
+	<target name="javacc" depends="javacc-nodir,javacc-nogrammar">	
+		<java dir="${basedir}" fork="true" classname="javacc" failonerror="true">
+			<classpath refid="javacc-classpath"/>
+			<arg value="-OUTPUT_DIRECTORY:${parser.dir}"/>
+			<arg value="${parser.dir}/${parser.base}.jj"/>
+		</java>
+	</target>
+
+	<target name="javacc-nodir" unless="parser.dir">
+		<fail>"parser.dir" is undefined.</fail>
+	</target>
+	
+	<target name="javacc-nogrammar" unless="parser.base">
+		<fail>"parser.base" is undefined.</fail>
+	</target>
+
+	<target name="compile" depends="nosubproj,prepare">
+		<javac	srcdir="src/${subproj}/java" 
+				destdir="build/${subproj}/classes" 
+				debug="on" 
+				deprecation="on">
+			<classpath refid="classpath-${subproj}"/>
+		</javac>
+	</target>
+	
+	<target name="nosubproj" unless="subproj">
+		<fail>"subproj" is undefined.</fail>
+	</target>
+	
+	
+	<!-- ========================================== -->
+    <!-- Lazy API documenatation build.             -->
+    <!-- ========================================== -->
+    <target name="api" depends="nosubproj,check-api,build-api"/>
+    
+    <target name="build-api" depends="prepare" unless="api.up2date">
+		<mkdir dir="${dist}/doc/api/${subproj}"/>
+        <javadoc    packagenames="org.objectstyle.*"
+                    sourcepath="src/${subproj}/java"
+                    defaultexcludes="yes"
+                    destdir="${dist}/doc/api/${subproj}"
+                    author="true"
+                    use="true"
+                    stylesheetfile="doc/objectstyle-javadoc.css"
+                    splitindex="true"
+                    windowtitle="Cayenne API"
+                    overview="src/${subproj}/java/overview.html">
+            
+            <bottom><![CDATA[<!--@SFLOGO@--> &nbsp; <i>Copyright &#169; 2001-2004 <a href=
+            "http://objectstyle.org" target="_top">ObjectStyle.org</a> All Rights Reserved.</i>]]>
+            </bottom>
+            <classpath refid="classpath-${subproj}"/>
+        </javadoc>
+    </target>
+    
+    <target name="check-api">
+		<uptodate property="api.up2date" targetfile="${dist}/doc/api/${subproj}/index.html" >
+			<srcfiles dir= "src/${subproj}/java" includes="**/*.java"/>
+		</uptodate>
+    </target>
+</project>

@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+
+<!-- ========================================== -->
+<!-- Cayenne tests subproject buildfile.        -->
+<!-- ========================================== -->
+<project default="compile">
+	<property name="test.dist.src" value="${dist}/src/tests"/>
+	<property name="test.build" value="build/tests"/>
+	<property name="test.src" value="src/tests/java"/>
+	<property name="test.bin" value="src/tests/bin"/>
+	<property name="test.resources" value="src/tests/resources"/>
+	<property name="test.output" value="${test.build}/out/${cayenne.test.connection}"/>
+	<property name="test.report" value="${test.build}/report/${cayenne.test.connection}"/>
+	<property name="test.filter" value="**/*Tst.class"/>
+	<property environment="test.env"/>
+	
+    <path id="classpath">
+    	<fileset dir="${otherlib.dir}">
+			<include name="${ant-junitreport.jar}"/>
+			<include name="${junit.jar}"/>
+			<include name="${servlet.jar}"/>
+    		<include name="${mockrunner.jar}"/>
+			<include name="${spring.jar}"/>
+			<include name="${jgroups.jar}"/>
+		</fileset>
+    	<fileset dir="${ant.home}/lib">
+			<include name="*.jar"/>		
+		</fileset>
+		<fileset dir="${dist}/lib">
+			<include name="cayenne.jar"/>
+		</fileset>
+		<pathelement path="build/tests/classes"/>
+		<pathelement path="build/tests/deps"/>
+		<pathelement path="${test.env.CLASSPATH}"/>
+    </path>
+    
+
+	<target name="compile">
+		<ant antfile="build-subproj.xml" target="compile">
+			<property name="subproj" value="tests"/>
+		</ant>
+	</target>
+	
+	<target name="dist-src" depends="dist-bin">
+		<copy todir="${test.dist.src}">
+			<fileset dir="${test.src}"/>		
+			<fileset dir="${test.resources}"/>
+        </copy>
+	</target>
+
+	<target name="dist-bin" depends="jar">        
+        <!-- JUnit JAR is required for the tests to run. -->
+        <copy file="${otherlib.dir}/${junit.jar}" todir="${dist}/lib"/>
+	</target>
+  
+  
+    <!-- ========================================== -->
+    <!-- Builds tests JAR file.                     -->
+    <!-- ========================================== -->
+    <target name="jar" depends="compile">
+    	<jar jarfile="${dist}/lib/cayenne-tests.jar" manifest="src/tests/MANIFEST.MF">
+            <fileset dir="${test.build}/classes"/>
+            <fileset dir="${test.resources}"/>
+            <metainf dir="doc" includes="LICENSE"/>
+        </jar>
+    </target>
+    
+    
+    <!-- ============================================= -->
+    <!-- Runs and reports on tests.                    -->
+    <!-- ============================================= -->
+    <target name="test" depends="check-connection,compile">
+    	<!-- Run Java on itself to avoid classloader weirdness in JUnit -->
+    	<java fork="true" classname="org.apache.tools.ant.Main" failonerror="true">
+    		<arg value="-f"/>
+    		<arg value="build-tests.xml"/>
+    		<arg value="unit-test-run"/>
+
+			<jvmarg value="-Xms64m"/>
+			<jvmarg value="-Xmx64m"/>
+    		
+			<sysproperty key="cayenne.test.config" value="${cayenne.test.config}"/>
+    		<sysproperty key="cayenne.test.connection" value="${cayenne.test.connection}"/>
+			<sysproperty key="cayenne.test.report" value="${cayenne.test.report}"/>
+			<sysproperty key="ant.home" value="${ant.home}"/>
+			<sysproperty key="dist" value="${dist}"/>
+			<sysproperty key="test.filter" value="${test.filter}"/>
+			<sysproperty key="test.exclude" value="${test.exclude}"/>
+			<classpath refid="classpath"/>
+    	</java>
+    </target>    
+    
+    <!-- ============================================= -->
+    <!-- Defines testing sequence                      -->
+    <!-- ============================================= -->
+    <target name="unit-test-run" depends="unit-test,unit-test-report-needed,unit-test-report">
+    	<fail message="Cayenne tests failed, see files in ${test.output} for details." if="cayenne.test.failure"/>
+    </target>
+    
+    <!-- ============================================= -->
+    <!-- Runs Unit tests.                              -->
+    <!-- ============================================= -->
+    <target name="unit-test">
+        <delete>
+        	<fileset dir="${basedir}">
+        		<include name="${test.output}/**"/>
+        		<include name="${test.report}/**"/>
+        	</fileset>
+        </delete>
+        
+        <mkdir dir="${test.output}"/>
+        <mkdir dir="${test.report}"/>
+        
+        <copy todir="build/tests/deps">
+        	<fileset dir="src/tests/resources"/>
+        </copy>
+        
+        
+        <junit fork="false" 
+               haltonfailure="no" 
+               errorProperty="cayenne.test.failure"
+               failureProperty="cayenne.test.failure">
+               
+            <formatter type="xml" usefile="true"/>
+            <batchtest todir="${test.output}">
+                <fileset dir="${test.build}/classes" includes="${test.filter}" excludes="${test.exclude}"/>
+            </batchtest>
+        </junit>
+    </target>
+    
+    <!-- ============================================= -->
+    <!-- Reports failures.                             -->
+    <!-- ============================================= -->
+    <target name="unit-test-report" depends="unit-test" if="cayenne.test.report.needed">
+    	<!-- HTML report is only generated on failures for speed -->
+    	<junitreport todir="${test.report}">
+			<fileset dir="${test.output}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report format="frames" todir="${test.report}"/>
+		</junitreport>
+    </target>
+    
+    <target name="unit-test-report-needed">
+         <!-- In case of failures, always run report,  -->
+         <!-- in case of success, only when asked.     -->
+         <condition property="cayenne.test.report.needed">
+         	<or>
+         		<isset property="cayenne.test.failure"/>
+         		<istrue value="${cayenne.test.report}"/>
+         	</or>
+         </condition>
+    </target>
+    
+    <!-- This is a simple property check, misspelled property can still -->
+    <!-- lead to failed connection to the test database. -->
+    <target name="check-connection" unless="cayenne.test.connection">
+    	<fail>'cayenne.test.connection' property must be defined to point to a named connection entry.</fail>
+    </target>
+</project>
+

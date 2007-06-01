@@ -1,0 +1,20 @@
+<document>
+	<title>User Guide - Design</title>
+	<toc name="toc-user-guide" chapter="13. Access Stack Internals"/>
+	<body>
+		<section name="13. Access Stack Internals">
+			<p>"Access stack" is a term used for the runtime engine in the 
+				heart of Cayenne. Its operation conditions are defined by the 
+				object-relational mapping and deployment information built 
+				using CayenneModeler. As <a 
+				href="../design/access.html">mentioned before</a>, "stack" is 
+				composed of a number of layers working on top of each other: 
+				Application API Layer, Query Routing Layer and Access Layer. 
+				Part of the Application API Layer most visible to a user is of 
+				course the DataContext that was discussed earlier. The goal of 
+				this chapter is to demonstrate a number of advanced 
+				customization features that involve other classes participating 
+				in the access stack. </p>
+		</section>
+	</body>
+</document>

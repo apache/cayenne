@@ -1,0 +1,149 @@
+<document>
+	<title>CayenneModeler Guide - CayenneModeler Concepts</title>
+	<toc name="toc-modeler-guide" chapter="1. Introduction"/>
+	<body>
+		<section name="1. Introduction">
+			<subsection name="1.3. General Navigation">
+				<p>CayenneModeler supports executing commands via its main menu 
+					and a button toolbar. Currently Modeler DOES NOT support 
+					contextual menus that open on right-click. All of the 
+					toolbar buttons have corresponding items in the menu that 
+					perform exact same operation (plus there are operations 
+					that are available via the menu only). If an item or a 
+					button action can not be performed in a given context an 
+					item is visually disabled.</p>
+				<subsection name="1.3.1 Toolbar">
+					<img src="../../../images/modelerguide/toolbar.jpg" 
+						width="500" height="100" alt="CayenneModeler Toolbar"/>
+					<p>The following is a quick reference of the toolbar button 
+						functions.</p>
+					<p>
+						<strong>Project:</strong>
+						<img src="../../images/modeler/icon-new.gif" width="16" 
+							height="16"/>
+						<img src="../../images/modeler/icon-open.gif" 
+							width="16" height="16"/>
+						<img src="../../images/modeler/icon-save.gif" 
+							width="16" height="16"/>
+					</p>
+					<p> Cayenne Project is a logical deployment unit, that 
+						consists of a main project file (called 
+						<code>cayenne.xml</code>) and zero or more DataNode 
+						(*.driver.xml) and DataMap (*.map.xml) XML files. 
+						Currently CayenneModeler supports a single project per 
+						running Modeler instance, however multiple instances of 
+						Modeler can be started to edit multiple projects at the 
+						same time.</p>
+					<p>
+						<strong>DataDomain:</strong>
+						<img src="../../images/modeler/icon-dom.gif" width="16" 
+							height="16"/>
+					</p>
+					<p> Each DataDomain is an abstraction of a logical data 
+						source, possibly spreading multiple physical databases. 
+						<code>cayenne.xml</code> file lists DataDomains present 
+						in the project. Most projects will contain only a 
+						single domain. DataDomain button creates a new 
+						DataDomain in the currently open project. </p>
+					<p>
+						<strong>DataNode:</strong>
+						<img src="../../images/modeler/icon-node.gif" 
+							width="16" height="16"/>
+					</p>
+					<p> DataNode is an object that corresponds to a single 
+						physical data source, normally a database. Currently 
+						there are two types of DataNodes: <ul> <li>Based on 
+						DataSource obtained via JNDI from the container (e.g. a 
+						WebLogic or Tomcat server).</li> <li>Based on JDBC 
+						driver. In this case Cayenne provides its own 
+						connection pooling and other functions expected from a 
+						DataSource.</li> </ul> DataNode references zero or more 
+						DataMaps defined under DataDomain. </p>
+					<p>
+						<strong>DataMap:</strong>
+						<img src="../../images/modeler/icon-datamap.gif" 
+							width="16" height="16"/>
+					</p>
+					<p> DataMap is a collection of Object/Relational mapping 
+						information linking Java object layer with the 
+						relational database. DataMaps are created within 
+						DataDomains and can be later linked to DataNodes. </p>
+					<p>
+						<strong>Entities:</strong>
+						<img src="../../images/modeler/icon-dbentity.gif" 
+							width="16" height="16"/>
+						<img 
+							src="../../images/modeler/icon-derived-dbentity.gif" 
+							width="16" height="16"/>
+						<img src="../../images/modeler/icon-objentity.gif" 
+							width="16" height="16"/>
+					</p>
+					<p> There are two types of entities in Cayenne DataMaps: 
+						ObjEntities, reflecting the structure of the object 
+						layer, and DbEntities that describe database tables and 
+						views. In other words, ObjEntity is a descriptor of a 
+						persistent Java class, and DbEntity is a descriptor of 
+						a database table or view. Each ObjEntity is based on a 
+						DbEntity, but there can be DbEntities that do not have 
+						a corresponding ObjEntity. </p>
+					<p>There is a special kind of DbEntity - DerivedDbEntity - 
+						that has limited capabilities of defining "virtual" 
+						database views. </p>
+					<p>
+						<strong>Attributes:</strong>
+						<img src="../../images/modeler/icon-attribute.gif" 
+							width="16" height="16"/>
+					</p>
+					<p> Attributes define simple data fields. ObjAttributes are 
+						descriptors for Java class persistent properties, 
+						DbAttributes are descriptors for table or view columns. 
+						ObjAttributes map to DbAttributes. </p>
+					<p>
+						<strong>Relationships:</strong>
+						<img src="../../images/modeler/icon-relationship.gif" 
+							width="16" height="16"/>
+					</p>
+					<p> Relationships define how different entities relate to 
+						each other. ObjRelationships describe an association 
+						between two persistent Java classes (e.g. "Artist 
+						object has one or more Painting objects"), 
+						DbRelationships model the same concept in the database 
+						world (Primary Key - Foreign Key association). 
+						ObjRelationship consists of one or more 
+						DbRelationships. </p>
+					<p>
+						<strong>Procedures:</strong>
+						<img 
+							src="../../images/modeler/icon-stored-procedure.gif" 
+							width="16" height="16"/>
+					</p>
+					<p> Procedure is a decriptor of a database stored 
+						procedure. It can be created in the modeler and later 
+						invoked using ProcedureQuery. Note that not all 
+						databases support stored procedures. </p>
+					<p>
+						<strong>ProcedureParameters:</strong>
+						<img src="../../images/modeler/icon-attribute.gif" 
+							width="16" height="16"/>
+					</p>
+					<p> ProcedureParameters (though they use the same icon as 
+						entity attributes) define positional parameters used to 
+						call stored procedures. After ProcedureParameter is 
+						assigned to a Procedure in a particular position, it 
+						can later be referred by name in ProcedureQuery. 
+						ProcedureParameters are directional and can be IN, OUT, 
+						IN_OUT. </p>
+					<p>
+						<strong>Query:</strong>
+						<img src="../../images/modeler/icon-query.gif" 
+							width="16" height="16"/>
+					</p>
+					<p>Cayenne allows to store queries in the DataMap. There 
+						are three types of Cayenne queries that can be created 
+						in the Modeler - object select query, raw SQL query, 
+						and procedure query.</p>
+				</subsection>
+			</subsection>
+		</section>
+	</body>
+</document>

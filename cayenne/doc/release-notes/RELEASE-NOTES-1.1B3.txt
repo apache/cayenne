@@ -1,0 +1,38 @@
+Cayenne Release Notes 1.1 B3
+Date: 
+============================================
+
+For the latest information go to the project web site at 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+Changes, Features And Improvements:
+
+- Added "File -> Revert" menu to the modeler.
+- Changed behavior of DbGenerator to stop guessing what tables should be dropped/created. Instead now
+  it runs all generated SQL statements, and catches any problems. This is more reliable, as old 
+  behavior didn't work well when a user had default access to multiple schemas (e.g. a DBA user on Oracle).
+CAY-48	Support StoredProcedure reverse engineering
+CAY-138	Add Select All to the class generation page
+CAY-110	Modeler must show progress bar for long running tasks
+
+
+Bugs Fixed:
+
+CAY-171	Conflict when Multiple Domains Having DataMap with the same name
+CAY-38	Class Generator should skip "set" methods for read-only flattened relationships
+CAY-187	Relationship across DataMaps doesn't make it into ObjEntity
+CAY-179	Transaction gets enabled on nontransaction database
+CAY-115	Using DISTINCT when joining on to-many sometimes causes trouble
+CAY-184	6 duplicates associations are created for one foreign key
+CAY-182	Getting FK relationships Causes Exception
+CAY-186	Incorrect in-memory evaluation of nulls in [NOT] equal to expressions
+CAY-177	Reverse Engineering DB should exclude Cayenne-related PK objects
+CAY-188	PrefetchHelper IllegalArgumentException
+CAY-189	Validation failure of meaningful mandatory FKs
+CAY-178	Selecting a objentity attribute row (incorrect selection colors)
+CAY-134	Changing entity name should ask to change class name
+CAY-176	DbLoader: questionable use of DatabaseMetaData.getTables()
+

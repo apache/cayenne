@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--$Id$ -->
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+ "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+<web-app>
+<display-name>Cayenne Tapestry Tutorial</display-name>
+
+<servlet>
+	<servlet-name>CayenneTapestryApp</servlet-name>
+	<servlet-class>cayenne.tutorial.tapestry.ArtistAppServlet</servlet-class>
+	<init-param>
+			<param-name>org.apache.tapestry.application-specification</param-name>
+			<param-value>ArtistApp.application</param-value>
+	</init-param>
+	<load-on-startup>0</load-on-startup>
+</servlet>
+ 
+<servlet-mapping>
+	<servlet-name>CayenneTapestryApp</servlet-name>
+	<url-pattern>/artist</url-pattern>
+</servlet-mapping>
+  
+<session-config>
+	<session-timeout>15</session-timeout>
+</session-config>
+
+</web-app>

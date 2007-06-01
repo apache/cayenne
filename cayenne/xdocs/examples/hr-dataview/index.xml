@@ -1,0 +1,10 @@
+<document>
+<title>HRDataView Example</title>
+<toc name="toc-examples" chapter="2. HRDataView"/>
+<body>
+    <section name="2. HRDataView">
+            <p>Demonstrates how to use Cayenne DataViews to simplify creation of Swing applications
+		by taking advantage of rich metadata available via Cayenne.</p>
+	</section>
+</body>
+</document>

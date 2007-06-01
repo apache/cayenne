@@ -1,0 +1,15 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="8. Configuring Deployment Settings"/>
+<body>
+        <section name="8.2 Configuring Transactional Behavior">
+        	<p>Each DataDomain can be configured to explicitly commit/rollback its transactions or to rely on 
+        	deployment container to do that. This is done by checking or unchecking "Container-Managed
+	 		Transactions" checkbox. 
+	 		</p><p>
+	 		By default "Container-Managed Transactions" is unchecked, letting Cayenne to handle its
+	 		transactions. Check this checkbox when using Cayenne under container-managed transactions 
+	 		control, i.e. within EJB environment.</p>
+        </section>
+    </body>
+</document>

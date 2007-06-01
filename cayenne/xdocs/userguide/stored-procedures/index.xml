@@ -1,0 +1,17 @@
+<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="9. Using Stored Procedures"/>
+<body>
+    <section name="9. Using Stored Procedures">
+	<p>In addition to mapping database tables and views as entities, Cayenne allows mapping
+	and executing database stored procedures. Just like table structure is described by DbEntities,
+	stored procedures are described by <a 
+	href="../../api/cayenne/org/objectstyle/cayenne/map/Procedure.html">Procedure</a> class. 
+	Stored procedures are created using CayenneModeler, and are executed using <a 
+	href="../../api/cayenne/org/objectstyle/cayenne/query/ProcedureQuery.html">ProcedureQuery</a>,
+	as described in the following chapters.</p>
+	
+    </section>
+</body>
+</document>
+

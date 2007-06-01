@@ -1,0 +1,59 @@
+<document>
+<title>User Guide - Installation</title>
+<toc name="toc-user-guide" chapter="2. Installation"/>
+<body>
+    <section name="2. Installation">
+        <subsection name="2.2 Installation">
+            <p>Installation of Cayenne is simple. It consists of downloading 
+            the distribution, unpacking it and making JAR files available to the 
+            applications.</p>
+            
+            <p>Download Cayenne from <a href=
+            "http://objectstyle.org/cayenne/download.html">
+            http://objectstyle.org/cayenne/download.html</a>. 
+            Choose the type of download that fits your needs. If you need
+            a stable version, download a <strong>release distribution</strong>.
+            To get the latest features, download a <strong>nightly
+            build distribution</strong>. Downloaded file is called 
+            something like <code>cayenne-src-[release-suffix].tar.gz</code>.
+            </p>
+            
+            <panel name="Note:">
+            Cayenne nightly builds all pass extensive automated unit testing. But 
+			still nightly build users must understand that this is development
+			code and it may not always work as advertised.
+            </panel>
+            
+            <p>Unpack <code>cayenne-[release-suffix].tar.gz</code> into the target installation
+            directory. On Windows you can use <a href=
+            "http://www.winzip.com/">WinZip</a> to unpack the distribution. 
+            WinZip supports UNIX .tar.gz archives, therefore Cayenne is not provided as a zip file. 
+            On UNIX, run the following command:</p>
+            
+            <source># gz -dc [filename].tar.gz | tar xf -</source>
+                
+            <p>or if you happen to have GNU tar</p>
+                
+            <source># tar xzf [filename].tar.gz</source>
+            
+            <p>To take advantage of the scripts located in the <code>bin</code>
+            directory of Cayenne, set the following environment variables:
+            <ul>
+                <li><code>JAVA_HOME</code> - should point to your JSDK 1.4 installation. 
+                It may already exist in the environment.</li>
+                
+                <li><code>CAYENNE_HOME</code> <i>(optional)</i> - should point to
+                the directory created when your unpacked Cayenne distribution in the previous 
+                steps. (Directory named like <code>cayenne-[release-suffix]</code>). If CAYENNE_HOME
+                is undefined, scripts can still guess it as long as they are run from their own directory
+                (<code>cayenne-[release-suffix]/bin/</code>)</li>
+                    
+            </ul>
+            
+            <i>Note that these variables are only necessary to use the scripts in the <code>bin</code>
+            directory. They are not needed on a deployment machine.</i>
+            </p>
+        </subsection>
+ 	</section>
+</body>
+</document>

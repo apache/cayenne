@@ -1,0 +1,45 @@
+<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="7. Using Queries"/> 
+<body>
+	<section name="7. Using Queries"> 
+		<subsection name="7.8 Queries Stored in DataMap">
+		<p>To facilitate reuse of queries users can assign symbolic names to them
+		and store such named queries in a DataMap. Normally this is done by <a href=
+		"../../modelerguide/modeling-queries/index.html">creating a query in CayenneModeler</a>.
+		Storing queries in a DataMap reduces the amount of code and speeds up query 
+		creation process.
+		</p>
+		<p>
+		This example shows how to get a shared instance of a stored query, and use it as a template
+		for customized query.
+		</p>
+<source>
+DataContext context = ... // assume this exists
+
+// 1. lookup prototype
+
+// note a cast to SelectQuery... Generally DataMap can store any type of queries
+SelectQuery prototype = (SelectQuery) context.getEntityResolver().lookupQuery("MySelect");
+
+// 2. customize query
+Map params = new HashMap();
+params.put("aname", "Monet");
+SelectQuery query = prototype.queryWithParameters(params);
+
+// 3. execute query
+List objects = context.performQuery(query);
+</source>
+
+		<p>DataContext supports running a named query with preset parameters directly:</p> 
+
+<source>
+DataContext context = ... // assume this exists
+
+// "false" indicates that a cached result should be used if available 
+List objects = context.performQuery("MySelect", false);
+</source>
+	</subsection>
+    </section>
+</body>
+</document>

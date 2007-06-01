@@ -1,0 +1,56 @@
+<document>
+<title>User Guide - Deployment</title>
+<toc name="toc-user-guide" chapter="12. Deployment"  subchapter="12.2 Web Applications"/>
+<body>
+     <section name="12. Deployment">      
+           <subsection name="12.2 Web Applications" anchor="web">
+               <subsection name="12.2.2 WebApplicationListener">
+<p>This configuration approach is based on setting up a WebApplicationListener as a listener for servlet context 
+					and session events. Session DataContext is retrieved via BasicServletConfiguration.getDefaultContext(..) static method.
+					Listener approach is 100% configuration-based and removes a need for special initialization servlet.</p>
+				<table>
+				<tr>
+					<th>Servlet Spec. Compatibility:</th>
+					<td>Version 2.3 and newer</td>
+				</tr>
+				<tr>
+					<th>Participating classes:</th>
+					<td>org.objectstyle.cayenne.conf.BasicServletConfiguration, org.objectstyle.cayenne.conf.WebApplicationListener</td>
+				</tr>
+				<tr>
+					<th>Allows cayenne.xml in WEB-INF/:</th>
+					<td>Yes</td>
+				</tr>
+				<tr>
+					<th>Session-bound DataContext:</th>
+					<td>Yes</td>
+				</tr>
+				<tr>
+					<th>Request thread-bound DataContext:</th>
+					<td>No</td>
+				</tr>
+				</table>
+
+<p>Sample <code>web.xml</code> snippet: </p>      
+<source>&amp;lt;listener&amp;gt;
+   &amp;lt;listener-class&amp;gt;org.objectstyle.cayenne.conf.WebApplicationListener&amp;lt;/listener-class&amp;gt;
+&amp;lt;/listener&amp;gt; 
+</source>
+<p>Sample DataContext retrieval code: </p>  
+<source>
+import org.objectstyle.cayenne.access.DataContext;
+import org.objectstyle.cayenne.conf.BasicServletConfiguration;
+import javax.servlet.http.HttpServletRequest;
+...
+
+// this code is executed within requrest, so assume we have access to request object
+HttpServletRequest r;
+
+// get session DataContext to perform database queries
+DataContext context = BasicServletConfiguration.getDefaultContext(r.getSession());
+</source>
+		</subsection>
+</subsection>    
+    </section>
+</body>
+</document>

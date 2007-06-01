@@ -1,0 +1,26 @@
+<document>
+<title>User Guide - DataViews</title>
+<toc name="toc-user-guide" chapter="14. DataViews"/>
+<body>
+    <section name="14. DataViews">
+    	<p> Cayenne takes care of managing persistence layer for all types of 
+	applications - web, rich client, command line, etc. With DataViews Cayenne extends into 
+	the area of integrating such persistent layer with Swing GUI.</p>
+	
+	<p>DataViews define various presentation parameters of the DataObjects in an XML format.
+	Just like DataMaps are edited using CayenneModeler, DataViews are edited with
+    	<a href="dvmodeler.html">DVModeler GUI application</a>.
+	<a href="../../api/cayenne/org/objectstyle/cayenne/dataview/package-summary.html">Runtime
+	DataView classes</a>  are a part of the main Cayenne JAR file. </p>
+	
+	<p>For manual editing of the DataViews,  <a href="../../dtd/cayenne-data-view-1_1.dtd">DataView 
+	DTD</a> is included in the distribution.  It is pretty small and the names are self-explanatory once you
+    become familiar with the Data View structure described in this chapter.
+	</p>
+	
+	<panel name="JDOM Note:">DataViews use JDOM, so in addition to the jar files required by a regular 
+	Cayenne application, DataViews-based application must have access to JDOM jars. JDOM can be 
+	downloaded from http://www.jdom.org/ . </panel>
+    </section>
+</body>
+</document>

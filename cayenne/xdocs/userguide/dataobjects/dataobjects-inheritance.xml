@@ -1,0 +1,133 @@
+<document>
+<title>User Guide - Working with DataObjects</title>
+<toc name="toc-user-guide" chapter="8. Working with DataObjects"/>
+<body>
+    <section name="8. Working with DataObjects">
+    	<subsection name="8.7 Handling Inheritance">
+    	<p>"Inheritance" is an Object Oriented concept absent in traditional RDBMS. Cayenne however allows to
+    	map a hierarchical class tree to a single base table (so called "single table inheritance"). Such mapping
+    	is <a href="../../modelerguide/modeling-object-layer/inheritance.html">described in detail</a> in the 
+    	Modeler Guide. The idea of single table inheritance is that a "class" of a database row is determined 
+    	from the values in one or more columns of the base table. These columns are called "class designator 
+    	columns".
+    	</p>
+    	
+		<panel name="Initial Values of the Classs Designator Columns">Assigning correct values to the 
+		"class designator columns" mentioned above is one task that is not yet automated in Cayenne 
+		and requires user code in the DataObject, as discussed in the next subsection. In the future versions 
+		this will likely be handled in the mapping and completely outside of the Java classes, 
+		so the advise below will become obsolete.</panel>
+    	
+		<subsection name="8.7.1 Inheritance and new DataObjects">
+		<p>Consider the following class hierarchy (also used in the Modeler Guide example): </p>
+    	<img src="/images/modelerguide/inheritance-diagram.jpg" width="300" height="249"/>
+    	
+    	<p>If a class designator column is "PERSON_TYPE", AbstractPerson class should define an attribute 
+    	(for instance called "personType") that maps to PERSON_TYPE. This attribute
+    	is redundant and meanigless in Java, since person type is defined already by the Java class of the object, 
+    	however we still have to keep it around so that when the new objects are saved, correct PERSON_TYPE data is
+    	stored in the database. Currently it is a developer responsibility to set "personType" value (or values of any 
+    	other attributes that map to "class designator columns") when the new object is registered with DataContext. 
+    	One way to take care of this is to override "setPersistenceState(..)" method on each DataObject class in 
+    	the inheritance hierarchy to catch when the object is registered with DataContext:
+    	</p>
+<source>public class Employee extends _Employee {
+    public void setPersistenceState(int state) {
+        super.setPersistenceState(state);
+        
+        // if object was just created
+        if(state == PersistenceState.NEW) {
+           setPersonType("EMPLOYEE");
+        }
+    }
+...
+}
+
+public class Manager extends _Manager {
+    public void setPersistenceState(int state) {
+        super.setPersistenceState(state);
+        
+        // if object was just created
+        if(state == PersistenceState.NEW) {
+           setPersonType("MANAGER");
+        }
+    }
+...
+}
+
+public class CustomerContact extends _CustomerContact {
+    public void setPersistenceState(int state) {
+        super.setPersistenceState(state);
+        
+        // if object was just created
+        if(state == PersistenceState.NEW) {
+           setPersonType("CUSTOMER");
+        }
+    }
+...
+}</source>
+    	</subsection>
+    	
+    	<subsection name="8.7.2 Inheritance and SelectQueries">
+    	<p>When performing SelectQuery on a table that maps to inheritance hierarchy, Cayenne will
+    	only return rows that belong to root class of the query and all its subclasses. No superclasses or
+    	objects from parallel inheritance branches will be returned. For example executing a SelectQuery 
+    	with Employee class as root will potentially return a mix of 
+    	Employees and Managers (who are also Employees of course), but no CustomerContact objects:</p>
+    	
+<source>DataContext context;
+...
+SelectQuery query = new SelectQuery(Employee.class);
+List employees = context.performQuery(query);
+ 
+// employees list will contain "regular" employees and managers
+Iterator it = employees.iterator();
+while(it.hasNext()) {
+   Employee e = (Employee) it.next();
+   if(e instanceof Manager) {
+   	// do something with manager...
+   }
+}</source>
+ 
+ 		<p>The need to determine the correct class for each fetched database row makes 
+ 		queries on entities that use inheritance less efficient than the regular queries. 
+ 		If an application doesn't care about the query root class subclasses, the 
+ 		query can be optimized by explicitly turning off inheritance resolution. If this is done,
+ 		the example above will return all Managers as instances of Employee class, not Manager class:</p>
+ <source>DataContext context;
+...
+SelectQuery query = new SelectQuery(Employee.class);
+ 
+// *** explicitly turn off inheritance resolution
+query.setResolvingInherited(false);
+ 
+List employees = context.performQuery(query);
+ 
+// employees list will contain no Manager instances...
+// all Managers will be returned as regular Employees</source>
+ 
+ 		<p> </p>  	
+    	<panel name="Relationship Note:">Whenever an object is obtained via a relationship, 
+    	it is always fully resolved to the lowest possible subclass in an entity inheritance tree.
+    	</panel>
+    	<p> </p>
+    	<panel name="Warning:">Use "setResolvingInherited(false)" with caution, and only if you never
+    	plan to work with subclasses. The downside of it is that the DataContext may end up with two
+    	objects pointing to the same database row, thus violating uniquing principle. With the above example, 
+    	this may happen if at a later time user decides to fetch Managers directly, or if a Manager object is
+    	obtained via a relationship.
+    	</panel>
+    	</subsection>
+
+		<subsection name="8.7.3 Current Inheritance Limitations">
+		<p><strong>Custom Types used in subclasses:</strong></p>
+    	<p>As reported in <a target="_blank" href="http://objectstyle.org/jira/secure/ViewIssue.jspa?key=CAY-207">JIRA 
+		issue CAY-207</a>, SelectQueries performed using superclass as a root can't correctly resolve attributes
+		mapped in subclasses to non-standard (or custom) Java types. Here "standard" mapping means Java class to JDBC
+		type mapping defined in JDBC specification.</p>
+		</subsection>
+    	</subsection>
+    </section>
+</body>
+</document>
+

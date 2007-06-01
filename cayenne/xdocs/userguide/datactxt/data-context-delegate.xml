@@ -1,0 +1,41 @@
+<document>
+<title>User Guide - Using DataContext</title>
+<toc name="toc-user-guide" chapter="6. Using DataContext"/>
+<body>   	
+    
+    <section name="6. Using DataContext">
+	<subsection name="6.5 Using DataContextDelegate">
+		<p>DataContext supports runtime customization via a <a href=
+		"../../api/cayenne/org/objectstyle/cayenne/access/DataContextDelegate.html">DataContextDelegate 
+		interface</a>. A user can assign a custom delegate instance to a DataContext
+		by calling <code>DataContext.setDelegate(..)</code>. Delegate is optional, and if it is not set, DataContext
+		would go on with its default behavior. If a delegate is set, DataContext consults with it at some critical points 
+		in the normal flow execution. A delegate can modify the flow, abort an operation, modify objects 
+		participating in an operation,  or perform any other tasks it deems necessary. 
+		</p>
+		
+		<p>DataContextDelegate currently has two groups of methods - method to filter select queries, and methods
+		to react to external updates of the ObjectStore:</p>
+		
+		<ul>
+			<li><code>public GenericSelectQuery <b>willPerformSelect</b>(DataContext context, GenericSelectQuery query)</code><br/><br/>
+			Called from <code>DataContext.performQuery(...)</code> before running any select query, including prefetch queries. Implementation
+			has a choice to modify an original query, replace it with alternative one, or return NULL, blocking query execution alltogether.
+			<p></p></li>
+			
+			<li><code>public boolean <b>shouldMergeChanges</b>(DataObject object, DataRow snapshotInStore)</code><br/>
+			<code>public boolean <b>shouldProcessDelete</b>(DataObject object)</code><br/>
+			<code>public void <b>finishedMergeChanges</b>(DataObject object)</code><br/>
+			<code>public void <b>finishedProcessDelete</b>(DataObject object)</code><br/><br/>
+			These methods are called by the ObjectStore whenever it performs an update of its state triggered by external
+			events. Default ObjectStore behavior is to merge all changes to the existing objects, and change deleted objects state
+			to TRANSIENT, removing them from the store. Delegate has an option to abort standard processing by returning "false" from
+			"should*" methods.
+			<p></p>
+			</li>
+		</ul>
+	
+	</subsection>
+    </section>
+</body>
+</document>

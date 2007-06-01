@@ -1,0 +1,9 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="6. Modeling Object Layer"/>
+<body>
+	<section name="6. Modeling Object Layer">
+		<p>This chapter describes modeling persistent object layer in Cayenne.</p>
+    </section>
+</body>
+</document>

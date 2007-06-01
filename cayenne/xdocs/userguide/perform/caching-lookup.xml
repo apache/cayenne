@@ -1,0 +1,31 @@
+<document>
+<title>User Guide - Performance Tuning</title>
+<toc name="toc-user-guide" chapter="11. Performance Tuning"/>
+<body>
+    <section name="11. Performance Tuning">
+			<subsection name="11.5 Caching Lookup Tables">
+            <p>Query result caching feature can be used to implement caching of lookup tables.
+            "Lookup" or "configuration" tables can be loosely defined as small tables that change rarely
+            and  mostly used in read-only fashion.   Examples of such tables are COUNTRY, USER_TYPE, 
+            AREA_CODE, etc.  Often data from such tables is displayed in a combo box or dropdown.
+            </p>
+            
+            <p>For performance reasons it makes sense to store the lookup data in the shared 
+            cache. The following steps could be taken to create and use a shared query for a Country
+            entity:</p>
+            
+            <ul>
+            		<li>Create a named SelectQuery in CayenneModeler. Call it something like "AllCountries".
+            		Select a root to be Country ObjEntity, select shared caching and uncheck "refresh" checkbox.
+                <p> </p>
+                </li>
+                
+                <li>Whenever a list of countries is needed, use a local DataContext to get it from cache - 
+                <code>context.performQuery("AllCountries", false)</code>.
+                <p> </p>
+                </li>
+            </ul>
+			</subsection>
+    </section>
+</body>
+</document>

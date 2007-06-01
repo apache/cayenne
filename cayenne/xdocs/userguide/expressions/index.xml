@@ -1,0 +1,18 @@
+<document>
+<title>User Guide - Using Expressions</title>
+<toc name="toc-user-guide" chapter="10. Using Expressions"/>  
+<body>
+    <section name="10. Using Expressions">
+    	<p>Cayenne defines a simple yet powerful object-based expression language. Cayenne expressions are database 
+    	independent and are used as query qualifiers and orderings and also to perform in-memory evaluation with 
+    	DataObjects (and generally any kind of Java Beans). BNF of Cayenne expression language is described 
+    	<a href="../../grammar/ExpressionParser.html">here</a>.</p> 
+    	
+    	<p>Expressions are broadly divided into the following categories: object property expressions (also called "path expressions"), 
+    	arithmetic operations, and conditional expressions. Cayenne contains a parser 
+    	to build expressions from strings, and also features explicit expression API. Various ways of creating and using expressions
+    	are described later in this chapter.
+        </p>
+    </section>
+</body>
+</document>

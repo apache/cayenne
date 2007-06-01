@@ -1,0 +1,24 @@
+<document>
+<title>User Guide - Performance Tuning</title>
+<toc name="toc-user-guide" chapter="11. Performance Tuning"/>
+<body>
+    <section name="11. Performance Tuning">        
+    <p>Most performance problems in database applications, including those using ORM,
+    are related to the inefficient queries and/or large volumes of data in the database.
+    Here is a few common issues that a typical application may run into:</p>
+    
+    <ul>
+    	<li>Converting a large ResultSet into objects takes very long time.</li>
+        <li>Storing objects from a large ResultSet takes large amounts of memory. 
+        Application may eventually run out of memory and crash.</li>
+        <li>Given a list of objects, there may be a need to retrieve a list
+        of related objects. Often this is done in a suboptimal way, by issuing 
+        a single query for each dependent object.</li>
+    </ul>
+           
+    <p>There is no single solution to all performance problems.
+    Cayenne offers a few strategies to improve performance. They should be
+    applied where appropriate.</p> 
+    </section>
+</body>
+</document>

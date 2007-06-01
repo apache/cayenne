@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+
+<!-- ========================================== -->
+<!-- CayenneModeler tests subproject buildfile. -->
+<!-- ========================================== -->
+<project default="test">
+    <property file="default.properties" />
+	<property name="test.build" value="build/tests-modeler"/>
+	<property name="test.output" value="${test.build}/out"/>
+	<property name="test.report" value="${test.build}/report"/>
+	<property name="test.filter" value="**/*Tst.class"/>
+	
+	<path id="classpath">
+    	<fileset dir="${otherlib.dir}" includes="${junit.jar}"/>
+	   	<fileset dir="${ant.home}/lib" includes="ant*.jar,optional.jar"/>
+		<fileset dir="${dist}/lib" includes="**/*.jar"/>
+		
+		<pathelement path="build/tests-modeler/classes"/>
+		<pathelement path="build/tests/classes"/>
+		<pathelement path="build/tests/deps"/>
+		<pathelement path="${test.env.CLASSPATH}"/>
+    </path>
+    
+	<target name="compile">
+		<ant antfile="build-subproj.xml" target="compile">
+			<property name="subproj" value="tests-modeler"/>
+		</ant>
+	</target>  
+  
+  
+    <!-- ============================================= -->
+    <!-- Runs and reports on tests.                    -->
+    <!-- ============================================= -->
+    <target name="test" depends="compile">
+        <!-- Run Java on itself to avoid classloader weirdness in JUnit -->
+    	<java fork="true" classname="org.apache.tools.ant.Main" failonerror="true">
+    		<arg value="-f"/>
+    		<arg value="build-tests-modeler.xml"/>
+    		<arg value="unit-test-report"/>
+    		
+			<sysproperty key="ant.home" value="${ant.home}"/>
+			<sysproperty key="dist" value="${dist}"/>
+			<sysproperty key="test.filter" value="${test.filter}"/>
+			<classpath refid="classpath"/>
+    	</java>
+    </target>    
+    
+    <!-- ============================================= -->
+    <!-- Runs Unit tests.                              -->
+    <!-- ============================================= -->
+    <target name="unit-test">
+        <delete>
+        	<fileset dir="${basedir}">
+        		<include name="${test.output}/**"/>
+        		<include name="${test.report}/**"/>
+        	</fileset>
+        </delete>
+        
+        <mkdir dir="${test.output}"/>
+        <mkdir dir="${test.report}"/>
+        
+        <junit fork="false" 
+               haltonfailure="no" 
+               errorProperty="test.modeler.failure"
+               failureProperty="test.modeler.failure">
+               
+            <classpath refid="classpath"/>
+            
+            <formatter type="xml" usefile="true"/>
+            <batchtest todir="${test.output}">
+                <fileset dir="${test.build}/classes">
+                    <include name="${test.filter}"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+    
+    <!-- ============================================= -->
+    <!-- Reports failures.                             -->
+    <!-- ============================================= -->
+    <target name="unit-test-report" depends="unit-test" if="test.modeler.failure">
+    	<!-- HTML report is only generated on failures for speed -->
+    	<junitreport todir="${test.report}">
+			<fileset dir="${test.output}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report format="frames" todir="${test.report}"/>
+		</junitreport>
+		
+        <fail message="CayenneModeler tests failed, see files in ${test.output} for details"/>
+    </target>
+</project>
+

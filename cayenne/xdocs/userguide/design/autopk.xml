@@ -1,0 +1,97 @@
+<document>
+<title>User Guide - Design</title>
+<toc name="toc-user-guide" chapter="4. Design"/>
+<body>
+    <section name="4. Design">
+        <subsection name="4.7 Primary Key Generation">
+            <p>Depending on the type of persistent objects and the database
+            design, primary key values can be handled in a few different ways. 
+            A decision to use one or another technique will affect how 
+            the mapping is done. Here is a summary of possible scenarious. Each one
+            is described below in details.
+            </p>
+            
+             <table>
+            <tr>
+            	<th></th>
+            	<th>PK Has DbAttribute</th>
+            	<th>PK Has ObjAttribute</th>
+            	<th>PK is a DataObject property</th>
+            </tr>
+            <tr>
+            	<td>Meaningful Primary Key</td>
+            	<td>Yes</td>
+            	<td>Yes</td>
+            	<td>Yes</td>
+            </tr>
+            <tr>
+            	<td>Primary Key Derived From Relationship</td>
+            	<td>Yes</td>
+            	<td>No</td>
+            	<td>No</td>
+            </tr>
+            <tr>
+            	<td>Generated Primary Key</td>
+            	<td>Yes</td>
+            	<td>No</td>
+            	<td>No</td>
+            </tr>
+            </table>
+            
+            <subsection name="4.7.1 Meaningful Primary Key" anchor="pk-do">            
+            <p>DataObjects can provide their own values for the primary key 
+            columns. Sometimes this makes sense, for example if a primary
+            key column conains meaningful data like a Social Security Number.
+            In such cases primary key handling is no different from handling any other
+            persistent attributes. Each primary key column (DbAttribute) will
+            have an ObjAttribute mapped to it. The Java class implementing DataObject
+            will contain a property described by this ObjAttribute. The value
+            of this property will be saved to the database.</p>
+            </subsection>
+            
+                   
+          	<subsection name="4.7.2 Primary Key Derived From Relationship" anchor="pk-rel">            
+            	<p>A primary key column of a table may depend on a primary key 
+            	column of another table. This is normally the case with "join"
+            	tables used to resolve many-to-many relationships. In such cases 
+            	DataObject normally does not contain a property mapped to a PK column.
+            	Instead the value is automatically derived by Cayenne
+            	from a primary key of a related object using a relationship.
+            	</p>
+        	</subsection>
+        	       
+        	<subsection name="4.7.3 Generated Primary Key" anchor="pk-gen">            
+            	<p>In most cases, database primary key is a purely relational concept that
+            	has no correspondence in the object model. Normally this is a unique
+            	sequential number that identifies a row in the database.
+            	This means that creating a property in a persistent object that
+            	corresponds to a primary key is an artificial step. To avoid doing that
+            	Cayenne assigns each object an ObjectId that internally handles the details
+            	of primary key handling.</p>
+            	
+            	<p>When a new DataObject is saved, and its properties and relationships 
+            	do not contain primary key values, Cayenne would attempt to
+            	automatically generate a key value. Generation mechanism depends
+            	on DbAdapter used and can be customized by users by subclassing 
+            	one of the included adapters. Current Cayenne adapters use the following mechanisms:
+            	
+            	<ul>
+            		<li>MySQL, PostgreSQL, HSQL Adapter: use select/update from a special AUTO_PK_TABLE lookup table.</li>
+            		<li>Oracle Adapter: uses Oracle sequences.</li>
+            		<li>DB2 Adapter: uses DB2 sequences.</li>
+            		<li>Sybase Adapter: uses a strored procedure tied to AUTO_PK_TABLE lookup table.</li>
+            		<li>OpenBase Adapter: uses OpenBase specific NEWID mechanism.</li>
+            	</ul>
+            	</p>
+            	
+            	<p>To generate needed database objects for the primary key autogeneration
+            	use CayenneModeler and follow the instructions given 
+            	<a href="../../modelerguide/common-tasks/pksupport.html">here</a>.</p>
+            	
+            	<p><i>Note: Cayenne only supports automatic PK generation for a single column per table.</i></p>
+            	
+            </subsection>
+        </subsection>
+    </section>
+</body>
+</document>

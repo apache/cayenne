@@ -1,0 +1,13 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="8. Configuring Deployment Settings"/>
+<body>
+        <section name="8.1 Configuring Object Validation">
+        	<p>Each DataDomain can be configured to enable or disable DataObject pre-commit 
+        	validation by (un)checking "Child DataContexts Validate Objects" checkbox. By default
+        	validation is enabled for all newly created DataDomains. More information on 
+        	DataObject validation is provided in the <a href="../../userguide/dataobjects/validation.html">user
+        	guide</a>.</p>
+        </section>
+    </body>
+</document>

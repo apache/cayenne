@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+
+<!-- =============================================== -->
+<!-- Tutorials buildfile.                            -->
+<!-- Tutorials normally do not follow the "standard" -->
+<!-- Cayenne subproject layout, therefore they have  -->
+<!-- their own build.xml file called from here.      -->
+<!-- =============================================== -->
+<project default="compile">
+	<target name="compile">
+		<ant antfile="src/tutorials/cayenne-cmd-app/build.xml" target="compile"/>
+		<ant antfile="src/tutorials/cayenne-web-app/build.xml" target="compile"/>
+		<ant antfile="src/tutorials/cayenne-tapestry-app/build.xml" target="compile"/>
+	</target>
+	
+	<target name="dist-src">
+		<ant antfile="src/tutorials/cayenne-cmd-app/build.xml" target="dist-src"/>
+		<ant antfile="src/tutorials/cayenne-web-app/build.xml" target="dist-src"/>
+		<ant antfile="src/tutorials/cayenne-tapestry-app/build.xml" target="dist-src"/>
+		
+		<mkdir dir="${dist}/doc/tutorials"/>
+	     
+        <copy todir="${dist}/doc/tutorials">
+             <fileset dir="${dist}/src/tutorials"/> 
+        </copy>
+	</target>
+	
+	<target name="release-site" depends="nositedir,dist-src">
+	     <mkdir dir="${site.dir}/cayenne/tutorials"/>
+	     
+         <copy todir="${site.dir}/cayenne/tutorials">
+             <fileset dir="${dist}/src/tutorials"/> 
+         </copy>
+	</target>
+	
+	<target name="doc" depends="dist-src"/>
+	
+	
+	<!-- Simply calls compile task. Exists in the project  -->
+    <!-- for consistency with other subproject buildfiles. -->
+	<target name="dist-bin" depends="compile"/>
+	
+	<target name="nositedir" unless="site.dir">
+    	<fail>"site.dir" must be defined.</fail>
+    </target>
+</project>
+

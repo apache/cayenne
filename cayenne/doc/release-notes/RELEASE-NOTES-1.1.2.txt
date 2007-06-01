@@ -1,0 +1,16 @@
+Cayenne Release Notes 1.1.2
+Date: April 28, 2005
+============================================
+
+
+
+* For the latest information go to the project web site at http://objectstyle.org/cayenne/
+* To browse individual bug reports, see 
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+This is a maintenance release that fixes a number of bugs.
+
+
+CAY-297	deadlock between commit and external event
+CAY-277	ExpressionFactory.noMatchDbExp does not exist
+CAY-290	DataRow.createObjectId accepts nulls

@@ -1,0 +1,51 @@
+<document>
+	<title>CayenneModeler Guide - Flattened Relationships</title>
+	<toc name="toc-modeler-guide" chapter="6. Modeling Object Layer"/>
+	<body>
+		<section name="6. Modeling Object Layer">
+			<subsection name="6.4 Flattened Relationships">
+				<p>ObjRelationships that map to more than a single 
+					DbRelationship are called "flattened".</p>
+				<p>The most common case for using flattened relationships is 
+					modeling many-to-many relationships with a join table. E.g. 
+					ARTIST DbEntity has to-many relationship to ARTIST_EXHIBIT; 
+					ARTIST_EXHIBIT in turn has a to-one relationship to EXHIBIT 
+					DbEntity. We can create a single ObjRelationship from 
+					Artist ObjEntity to Exhibit ObjEntity that spawns two 
+					DbRelationships. This will be a to-many relationship. Lets 
+					say it is called "exhibitArray". Generated class file for 
+					Artist would contain a getExhibitArray() method returning a 
+					list of Exhibits for a given artist instance. An obvious 
+					advantage of having a flattened relationship in this case 
+					is to avoid mapping a join table as an object, meaningless 
+					in the context of the object model.</p>
+				<p>Flattened relationships work across any combination of 
+					to-one and to-many DbRelationships. If all the 
+					relationships are to-one, then the resulting flattened 
+					relationship is also to-one. If there is at least one 
+					to-many, the result is to-many as well.</p>
+				<panel name="Read-Only Note:">Most of flattened relationships 
+					are treated as read-only by Cayenne. Only one (the most 
+					commonly used) type is read/write. It is many-to-many (n:m) 
+					flattened relationships with a single join table.</panel>
+				<p>To map an ObjRelationship to a chain of DbRelationships, 
+					select ObjRelationship table row and click "Edit 
+					Relationship" button in the bottom right. "ObjRelationship 
+					Inspector" dialog will appear.</p>
+				<img 
+					src="/images/modelerguide/objrelationship-path-selection.jpg" 
+					width="465" height="248"/>
+				<p>The dialog contains a DbRelationship table. Clicking on 
+					each row in this table will show valid choices of 
+					DbRelationships. Once you add a "chain" component, another 
+					row automatically opens below, so you can build a chain of 
+					arbitrary length.</p>
+				<panel name="Join Table Tip:">If you flatten across a join 
+					table and this join table was mapped to an ObjEntity (and a 
+					correspoding Java class), such ObjEntity can be deleted, as 
+					it is no longer needed. Underlying DbEntity must be 
+					preserved.</panel>
+			</subsection>
+		</section>
+	</body>
+</document>

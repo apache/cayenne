@@ -1,0 +1,32 @@
+<document>
+<title>CayenneModeler Guide</title>
+<toc name="toc-modeler-guide" chapter="2. ORM Case Study"/>
+<body>
+	<section name="2. ORM Case Study">
+ 	 <subsection name="2.1 Java Interface to an Existing Database">
+ 	 	<p>To quickly start a new project based on an existing database, CayenneModeler
+ 	 	"reverse engineering" functionality is used. Cayenne will create an exact model
+ 	 	of the database schema, and extrapolate it to the object layer. DataMaps created 
+		during reverse engineering will contain metadata for Java business layer.
+ 	 	The names of classes and their properties
+ 	 	will be compatible with Java naming conventions. E.g for a table 
+ 	 	called "USER_TYPE", a class named "UserType" will be created in the mapping.
+ 	 	</p>
+ 	 	
+ 	 	<p>See the following topics explaining how to reverse engineer a database into a
+ 	 	Cayenne model:</p>
+ 	 	
+ 	 	<ul>
+ 	 		<li><a href="../common-tasks/create-project.html">Create New Project</a></li>
+ 	 		<li><a href="../common-tasks/create-data-node.html">Create DataNode</a></li>
+ 	 		<li><a href="../common-tasks/reverse-engineer.html">Create New DataMap by reverse engineering database</a></li>
+ 	 	</ul>
+ 	 </subsection>
+    </section>
+</body>
+</document>
+
+
+
+
+

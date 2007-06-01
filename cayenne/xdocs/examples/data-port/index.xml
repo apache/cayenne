@@ -1,0 +1,24 @@
+<document>
+<title>DataPort</title>
+<toc name="toc-examples" chapter="3. DataPort"/>
+<body>
+    <section name="3. DataPort">
+            
+	<p>This example demonstrates how Cayenne can be used to port relational data from one 
+	database to another. It shows the operation of the few internal parts of 
+	Cayenne, normally not used in the applications. DataPort also contains a working 
+	Ant task, so it has practical value for certain
+	database maintenance tasks. The following things come to mind:</p>
+	
+	<ul>
+		<li>Setting up database environment for individual developers, copying data
+		from production or staging database.</li>	
+		<li>Recreating predictable datasets in the test database for the purpose 
+		of unit testing (e.g. there can be a reference schema created manually, and a test 
+		schema that is refreshed on every test run).</li>
+		<li>Porting data between databases from different vendors (i.e. a case when there is
+		no vendor supported data migration tools).</li>
+	</ul>
+    </section>
+</body>
+</document>

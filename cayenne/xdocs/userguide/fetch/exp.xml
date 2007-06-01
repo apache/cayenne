@@ -1,0 +1,46 @@
+<document>
+<title>User Guide - Using SelectQueries</title>
+<toc name="toc-user-guide" chapter="7. Using Queries"/>  
+<body>
+    <section name="7. Using Queries">        
+        <subsection name="7.2 Qualifier Expressions">
+               
+        <panel name="Note:">This chapter is dedicated to the use of expressions as qualifiers. 
+        A detailed discussion on expressions in general is provided in Chapter 10.
+        </panel>
+        
+        
+ 		<p>The previous chapter showed how to build a query to fetch all data from
+ 		a single table. In most situations though only a subset of data matching a 
+ 		certain criteria is needed. Cayenne provides an <a href=
+        "../../api/cayenne/org/objectstyle/cayenne/exp/package-summary.html">expressions package</a>
+        to control the filtering behavior of the queries. <a href=
+        "../../api/cayenne/org/objectstyle/cayenne/exp/Expression.html">Expressions</a>
+        applied to queries are called "qualifiers".</p>
+             	
+        <p>SelectQuery provides a few ways to initialize and modify the qualifier:</p>
+        <ul>
+			<li><code>public <b>SelectQuery</b>(Class objectClass, Expression e)</code><br/>
+			Passing expression as a second argument in constructor.
+			<p></p>
+			</li>
+         
+            <li><code>public void <b>setQualifier</b>(Expression qualifier)</code><br/>
+            Explicitly setting the qualifier expression.
+            		<p></p>
+            		</li>
+            		
+            <li><code>public void <b>andQualifier</b>(Expression e)</code><br/>
+            		Adding an expression to an already existing qualifier using logical AND.
+            		<p></p>
+            		</li>
+            		
+            <li><code>public void <b>orQualifier</b>(Expression e)</code><br/>
+            		Adding an expression to an already existing qualifier using logical OR.
+            		<p></p>
+			</li>
+        </ul>
+        </subsection>
+    </section>
+</body>
+</document>

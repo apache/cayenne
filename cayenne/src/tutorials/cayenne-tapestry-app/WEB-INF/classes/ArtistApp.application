@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE application PUBLIC 
+  "-//Apache Software Foundation//Tapestry Specification 3.0//EN" 
+  "http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<application name="Artist Web App">
+  <property name="org.apache.tapestry.visit-class">cayenne.tutorial.tapestry.Visit</property>
+
+  <page name="Home" specification-path="/cayenne/tutorial/tapestry/pages/Home.page"/>
+  <page name="Main" specification-path="/cayenne/tutorial/tapestry/pages/Main.page"/>
+  <page name="BrowseArtistsPage" specification-path="/cayenne/tutorial/tapestry/pages/BrowseArtistsPage.page"/>
+  <page name="BrowseGalleriesPage" specification-path="/cayenne/tutorial/tapestry/pages/BrowseGalleriesPage.page"/>
+  <page name="AddArtistPage" specification-path="/cayenne/tutorial/tapestry/pages/AddArtistPage.page"/>
+  <page name="AddGalleryPage" specification-path="/cayenne/tutorial/tapestry/pages/AddGalleryPage.page"/>
+  <page name="AddPaintingPage" specification-path="/cayenne/tutorial/tapestry/pages/AddPaintingPage.page"/>
+  <page name="ChooseGalleryPage" specification-path="/cayenne/tutorial/tapestry/pages/ChooseGalleryPage.page"/>
+  
+  <component-type type="PageWrapper" specification-path="/cayenne/tutorial/tapestry/components/PageWrapper.jwc"/>
+</application>
