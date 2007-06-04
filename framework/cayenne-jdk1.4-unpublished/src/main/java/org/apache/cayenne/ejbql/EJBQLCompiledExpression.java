@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import java.util.Collection;
-
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -35,15 +33,6 @@ public interface EJBQLCompiledExpression {
      * Returns a tree representation of an EJBQL expression.
      */
     EJBQLExpression getExpression();
-
-    /**
-     * Returns a collection of EJBQLExpressions, each representing an implicit join in the
-     * query. The most common example of implicit joins are joins introduced by
-     * relationships in the WHERE clause. Some implicit joins may also have matching
-     * explicit joins in the same query. Such joins are not included in the returned
-     * collection.
-     */
-    Collection getImplicitJoins();
 
     /**
      * Returns a descriptor of the root of this expression such as entity being fetched or

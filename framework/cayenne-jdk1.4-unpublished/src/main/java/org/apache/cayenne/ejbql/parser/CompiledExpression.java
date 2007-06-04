@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
@@ -40,11 +38,6 @@ class CompiledExpression implements EJBQLCompiledExpression {
     private Map descriptorsById;
     private Map incomingById;
     private EJBQLExpression expression;
-    private Collection implicitJoins;
-
-    public Collection getImplicitJoins() {
-        return implicitJoins != null ? implicitJoins : Collections.EMPTY_SET;
-    }
 
     public ClassDescriptor getEntityDescriptor(String idVariable) {
         if (idVariable == null) {
@@ -91,9 +84,5 @@ class CompiledExpression implements EJBQLCompiledExpression {
 
     void setRootId(String rootId) {
         this.rootId = rootId;
-    }
-
-    void setImplicitJoins(Collection implicitJoins) {
-        this.implicitJoins = implicitJoins;
     }
 }

@@ -18,12 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
+import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLDelegatingVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
@@ -35,7 +34,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.Property;
 
 /**
- * A visitor that compiles an EJBQL expression.
+ * Produces an {@link EJBQLCompiledExpression} out of an EJBQL expression tree.
  * 
  * @since 3.0
  * @author Andrus Adamchik
@@ -46,7 +45,6 @@ class Compiler {
     private EntityResolver resolver;
     private Map descriptorsById;
     private Map incomingById;
-    private Collection implicitJoins;
     private EJBQLExpressionVisitor fromItemVisitor;
     private EJBQLExpressionVisitor joinVisitor;
     private EJBQLExpressionVisitor whereClauseVisitor;
@@ -56,8 +54,7 @@ class Compiler {
         this.resolver = resolver;
         this.descriptorsById = new HashMap();
         this.incomingById = new HashMap();
-        this.implicitJoins = new ArrayList(2);
-
+ 
         this.rootDescriptorVisitor = new SelectExpressionVisitor();
         this.fromItemVisitor = new FromItemVisitor();
         this.joinVisitor = new JoinVisitor();
@@ -73,7 +70,6 @@ class Compiler {
 
         compiled.setRootId(rootId);
         compiled.setDescriptorsById(descriptorsById);
-        compiled.setImplicitJoins(implicitJoins);
         compiled.setIncomingById(incomingById);
 
         return compiled;
