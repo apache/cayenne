@@ -37,9 +37,11 @@ public interface EJBQLCompiledExpression {
     EJBQLExpression getExpression();
 
     /**
-     * Returns a collection of EJBQLExpressions each representing an implicit join in the
+     * Returns a collection of EJBQLExpressions, each representing an implicit join in the
      * query. The most common example of implicit joins are joins introduced by
-     * relationships in the WHERE clause.
+     * relationships in the WHERE clause. Some implicit joins may also have matching
+     * explicit joins in the same query. Such joins are not included in the returned
+     * collection.
      */
     Collection getImplicitJoins();
 
