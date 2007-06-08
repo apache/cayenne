@@ -107,21 +107,21 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
     }
 
     public void testImplicitJoins() throws Exception {
-        createTestData("testChainedJoins");
+        // createTestData("testChainedJoins");
         // String ejbql = "SELECT a "
         // + "FROM Artist a "
-        // + "WHERE a.paintingArray.gallery.galleryName = 'gallery2'";
-        //
+        // + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
+        //        
         // List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
         // assertEquals(1, artists.size());
-        // assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+        //         assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
     }
 
     public void testPartialImplicitJoins() throws Exception {
         createTestData("testChainedJoins");
         // String ejbql = "SELECT a "
         // + "FROM Artist a JOIN a.paintingArray b "
-        // + "WHERE a.paintingArray.gallery.galleryName = 'gallery2'";
+        // + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
         //
         // List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
         // assertEquals(1, artists.size());
