@@ -59,6 +59,7 @@ CAY-743 Reordering mappings from domain in xml resulting in StackOverflowExcepti
 CAY-750 Stored procedures without parameters fail on Postgres 8
 CAY-763 XML Deserialization fails on relationships when using a mapping file
 CAY-781 Bug in CayenneDataObject.readNestedProperty
+CAY-800 SQLTemplate improvement - API to control the capitalization of the data row labels
 
 Bug Fixes since 1.2/2.0 final:
 
