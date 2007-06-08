@@ -48,7 +48,7 @@ import org.apache.commons.collections.Transformer;
  * </p>
  * 
  * <pre>
- *  SELECT ID, NAME FROM SOME_TABLE WHERE NAME LIKE $a
+ *    SELECT ID, NAME FROM SOME_TABLE WHERE NAME LIKE $a
  * </pre>
  * 
  * <p>
@@ -74,6 +74,8 @@ import org.apache.commons.collections.Transformer;
  */
 public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         XMLSerializable {
+
+    static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.SQLTemplate.columnNameCapitalization";
 
     /**
      * @since 3.0
@@ -218,6 +220,12 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 
         selectInfo.encodeAsXML(encoder);
 
+        if (getColumnNamesCapitalization() != null) {
+            encoder.printProperty(
+                    COLUMN_NAME_CAPITALIZATION_PROPERTY,
+                    getColumnNamesCapitalization());
+        }
+
         // encode default SQL
         if (defaultTemplate != null) {
             encoder.print("<sql><![CDATA[");
@@ -260,6 +268,16 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     public void initWithProperties(Map properties) {
         // must init defaults even if properties are empty
         selectInfo.initWithProperties(properties);
+
+        if (properties == null) {
+            properties = Collections.EMPTY_MAP;
+        }
+
+        Object columnNamesCapitalization = properties
+                .get(COLUMN_NAME_CAPITALIZATION_PROPERTY);
+        this.columnNamesCapitalization = (columnNamesCapitalization != null)
+                ? columnNamesCapitalization.toString()
+                : null;
     }
 
     /**
@@ -566,7 +584,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * across database engines that can have varying default capitalization. Default
      * (null) value indicates that column names provided in result set are used unchanged.
      * <p/> Note that while a non-default setting is useful for queries that do not rely
-     * on a #result directive to describe columns, it works for all SQLTemplates the same way.
+     * on a #result directive to describe columns, it works for all SQLTemplates the same
+     * way.
      * 
      * @param columnNameCapitalization Can be null of one of
      *            {@link #LOWERCASE_COLUMN_NAMES} or {@link #UPPERCASE_COLUMN_NAMES}.
