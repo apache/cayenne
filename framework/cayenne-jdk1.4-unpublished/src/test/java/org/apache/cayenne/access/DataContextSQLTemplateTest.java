@@ -40,6 +40,37 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         context = createDataContext();
     }
 
+    public void testColumnNamesCapitalization() throws Exception {
+        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+
+        String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
+        SQLTemplate query = new SQLTemplate(Artist.class, template);
+        query.setColumnNamesCapitalization(SQLTemplate.LOWERCASE_COLUMN_NAMES);
+        query.setFetchingDataRows(true);
+
+        List rows = context.performQuery(query);
+
+        DataRow row1 = (DataRow) rows.get(0);
+        assertFalse(row1.containsKey("ARTIST_ID"));
+        assertTrue(row1.containsKey("artist_id"));
+
+        DataRow row2 = (DataRow) rows.get(1);
+        assertFalse(row2.containsKey("ARTIST_ID"));
+        assertTrue(row2.containsKey("artist_id"));
+    
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        
+        List rowsUpper = context.performQuery(query);
+
+        DataRow row3 = (DataRow) rowsUpper.get(0);
+        assertFalse(row3.containsKey("artist_id"));
+        assertTrue(row3.containsKey("ARTIST_ID"));
+
+        DataRow row4 = (DataRow) rowsUpper.get(1);
+        assertFalse(row4.containsKey("artist_id"));
+        assertTrue(row4.containsKey("ARTIST_ID"));
+    }
+
     public void testFetchDataRows() throws Exception {
         getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
 

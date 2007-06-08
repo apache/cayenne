@@ -77,6 +77,28 @@ public class RowDescriptor {
 
         indexTypes(types);
     }
+    
+    /**
+     * Converts result column labels to uppercase using the default Locale.
+     * 
+     * @since 3.0 
+     */
+    public void forceUpperCaseColumnNames() {
+        for(int i = 0; i < columns.length; i++) {
+            columns[i].setLabel(columns[i].getLabel().toUpperCase());
+        }
+    }
+    
+    /**
+     * Converts result column labels to lowercase using the default Locale.
+     * 
+     * @since 3.0 
+     */
+    public void forceLowerCaseColumnNames() {
+        for(int i = 0; i < columns.length; i++) {
+            columns[i].setLabel(columns[i].getLabel().toLowerCase());
+        }
+    }
 
     /**
      * Initializes converters for columns.
