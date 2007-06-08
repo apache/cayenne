@@ -75,22 +75,13 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         });
     }
 
-    protected void initView() {
-        super.initView();
-
-        // create widgets
-
-        dataObjects = new JCheckBox();
-
-        entities = CayenneWidgetFactory.createComboBox();
-        entities.setRenderer(CellRenderers.listRendererWithIcons());
-
-        // assemble
+    protected PanelBuilder createPanelBuilder() {
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
                 "right:max(80dlu;pref), 3dlu, left:max(10dlu;pref), "
                         + "3dlu, left:max(37dlu;pref), 3dlu, fill:max(147dlu;pref)",
                 "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
+
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
 
@@ -107,9 +98,21 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         builder.add(fetchLimit.getComponent(), cc.xywh(3, 11, 3, 1));
         builder.addLabel("Page Size:", cc.xy(1, 13));
         builder.add(pageSize.getComponent(), cc.xywh(3, 13, 3, 1));
+        return builder;
+    }
+
+    protected void initView() {
+        super.initView();
+
+        // create widgets
+
+        dataObjects = new JCheckBox();
+
+        entities = CayenneWidgetFactory.createComboBox();
+        entities.setRenderer(CellRenderers.listRendererWithIcons());
 
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
+        this.add(createPanelBuilder().getPanel(), BorderLayout.CENTER);
     }
 
     /**

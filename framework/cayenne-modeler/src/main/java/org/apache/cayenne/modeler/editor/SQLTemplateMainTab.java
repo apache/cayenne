@@ -20,7 +20,16 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -28,6 +37,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.Query;
@@ -38,6 +48,7 @@ import org.apache.cayenne.validation.ValidationException;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
 /**
  * A main panel for editing a SQLTemplate.
@@ -45,6 +56,22 @@ import com.jgoodies.forms.layout.FormLayout;
  * @author Andrus Adamchik
  */
 public class SQLTemplateMainTab extends JPanel {
+
+    private static final String DEFAULT_CAPS_LABEL = "Database Default";
+    private static final String LOWER_CAPS_LABEL = "Force Lower Case";
+    private static final String UPPER_CAPS_LABEL = "Force Upper Case";
+
+    private static final String[] LABEL_CAPITALIZATION = {
+            null, SQLTemplate.LOWERCASE_COLUMN_NAMES, SQLTemplate.UPPERCASE_COLUMN_NAMES
+    };
+
+    private static final Map labelCapsLabels = new HashMap();
+
+    static {
+        labelCapsLabels.put(null, DEFAULT_CAPS_LABEL);
+        labelCapsLabels.put(SQLTemplate.LOWERCASE_COLUMN_NAMES, LOWER_CAPS_LABEL);
+        labelCapsLabels.put(SQLTemplate.UPPERCASE_COLUMN_NAMES, UPPER_CAPS_LABEL);
+    }
 
     protected ProjectController mediator;
     protected TextAdapter name;
@@ -65,20 +92,7 @@ public class SQLTemplateMainTab extends JPanel {
             }
         };
 
-        properties = new RawQueryPropertiesPanel(mediator) {
-
-            protected void setEntity(ObjEntity entity) {
-                SQLTemplateMainTab.this.setEntity(entity);
-            }
-
-            public ObjEntity getEntity(Query query) {
-                if (query instanceof SQLTemplate) {
-                    return SQLTemplateMainTab.this.getEntity((SQLTemplate) query);
-                }
-
-                return null;
-            }
-        };
+        properties = new SQLTemplateQueryPropertiesPanel(mediator);
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -178,4 +192,82 @@ public class SQLTemplateMainTab extends JPanel {
             mediator.fireQueryEvent(new QueryEvent(this, template));
         }
     }
+
+    final class LabelCapsRenderer extends DefaultListCellRenderer {
+
+        public Component getListCellRendererComponent(
+                JList list,
+                Object object,
+                int arg2,
+                boolean arg3,
+                boolean arg4) {
+            object = labelCapsLabels.get(object);
+            return super.getListCellRendererComponent(list, object, arg2, arg3, arg4);
+        }
+    }
+
+    final class SQLTemplateQueryPropertiesPanel extends RawQueryPropertiesPanel {
+
+        private JComboBox labelCase;
+
+        SQLTemplateQueryPropertiesPanel(ProjectController mediator) {
+            super(mediator);
+        }
+
+        protected PanelBuilder createPanelBuilder() {
+            labelCase = CayenneWidgetFactory.createComboBox();
+            labelCase.setRenderer(new LabelCapsRenderer());
+            
+            labelCase.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent event) {
+                    Object value = labelCase.getModel().getSelectedItem();
+                    setQueryProperty("columnNamesCapitalization", value);
+                }
+            });
+
+            PanelBuilder builder = super.createPanelBuilder();
+
+            RowSpec[] extraRows = RowSpec.decodeSpecs("3dlu, p");
+            for (int i = 0; i < extraRows.length; i++) {
+                builder.appendRow(extraRows[i]);
+            }
+
+            CellConstraints cc = new CellConstraints();
+            builder.addLabel("Row Label Case:", cc.xy(1, 15));
+            builder.add(labelCase, cc.xywh(3, 15, 5, 1));
+
+            return builder;
+        }
+
+        public void initFromModel(Query query) {
+            super.initFromModel(query);
+
+            if (query instanceof SQLTemplate) {
+                SQLTemplate template = (SQLTemplate) query;
+                DefaultComboBoxModel labelCaseModel = new DefaultComboBoxModel(
+                        LABEL_CAPITALIZATION);
+
+                String capitalization = template.getColumnNamesCapitalization();
+                if (capitalization == null) {
+                    capitalization = LABEL_CAPITALIZATION[0];
+                }
+
+                labelCaseModel.setSelectedItem(capitalization);
+                labelCase.setModel(labelCaseModel);
+            }
+        }
+
+        protected void setEntity(ObjEntity entity) {
+            SQLTemplateMainTab.this.setEntity(entity);
+        }
+
+        public ObjEntity getEntity(Query query) {
+            if (query instanceof SQLTemplate) {
+                return SQLTemplateMainTab.this.getEntity((SQLTemplate) query);
+            }
+
+            return null;
+        }
+    };
 }
