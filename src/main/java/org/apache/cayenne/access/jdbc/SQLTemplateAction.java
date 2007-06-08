@@ -200,6 +200,17 @@ public class SQLTemplateAction implements SQLAction {
         RowDescriptor descriptor = (compiled.getResultColumns().length > 0)
                 ? new RowDescriptor(compiled.getResultColumns(), types)
                 : new RowDescriptor(resultSet, types);
+                
+           if (query.getColumnNamesCapitalization() != null) {
+            if (SQLTemplate.LOWERCASE_COLUMN_NAMES.equals(query
+                    .getColumnNamesCapitalization())) {
+                descriptor.forceLowerCaseColumnNames();
+            }
+            else if (SQLTemplate.UPPERCASE_COLUMN_NAMES.equals(query
+                    .getColumnNamesCapitalization())) {
+                descriptor.forceUpperCaseColumnNames();
+            }
+        }
 
         JDBCResultIterator result = new JDBCResultIterator(
                 connection,

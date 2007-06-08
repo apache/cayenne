@@ -48,7 +48,7 @@ import org.apache.commons.collections.Transformer;
  * </p>
  * 
  * <pre>
- *                    SELECT ID, NAME FROM SOME_TABLE WHERE NAME LIKE $a
+ *  SELECT ID, NAME FROM SOME_TABLE WHERE NAME LIKE $a
  * </pre>
  * 
  * <p>
@@ -75,6 +75,16 @@ import org.apache.commons.collections.Transformer;
 public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         XMLSerializable {
 
+    /**
+     * @since 3.0
+     */
+    public static final String UPPERCASE_COLUMN_NAMES = "upper";
+
+    /**
+     * @since 3.0
+     */
+    public static final String LOWERCASE_COLUMN_NAMES = "lower";
+
     private static final Transformer nullMapTransformer = new Transformer() {
 
         public Object transform(Object input) {
@@ -85,6 +95,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     protected String defaultTemplate;
     protected Map templates;
     protected Map[] parameters;
+    protected String columnNamesCapitalization;
 
     SQLTemplateMetadata selectInfo = new SQLTemplateMetadata();
 
@@ -335,7 +346,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     public void setCachePolicy(String policy) {
         this.selectInfo.setCachePolicy(policy);
     }
-    
+
     /**
      * @since 3.0
      */
@@ -532,5 +543,36 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      */
     public void clearPrefetches() {
         selectInfo.clearPrefetches();
+    }
+
+    /**
+     * Returns a column name capitalization policy applied to selecting queries. This is
+     * used to simplify mapping of the queries like "SELECT * FROM ...", ensuring that a
+     * chosen Cayenne column mapping strategy (e.g. all column names in uppercase) is
+     * portable across database engines that can have varying default capitalization.
+     * Default (null) value indicates that column names provided in result set are used
+     * unchanged.
+     * 
+     * @since 3.0
+     */
+    public String getColumnNamesCapitalization() {
+        return columnNamesCapitalization;
+    }
+
+    /**
+     * Sets a column name capitalization policy applied to selecting queries. This is used
+     * to simplify mapping of the queries like "SELECT * FROM ...", ensuring that a chosen
+     * Cayenne column mapping strategy (e.g. all column names in uppercase) is portable
+     * across database engines that can have varying default capitalization. Default
+     * (null) value indicates that column names provided in result set are used unchanged.
+     * <p/> Note that while a non-default setting is useful for queries that do not rely
+     * on a #result directive to describe columns, it works for all SQLTemplates the same way.
+     * 
+     * @param columnNameCapitalization Can be null of one of
+     *            {@link #LOWERCASE_COLUMN_NAMES} or {@link #UPPERCASE_COLUMN_NAMES}.
+     * @since 3.0
+     */
+    public void setColumnNamesCapitalization(String columnNameCapitalization) {
+        this.columnNamesCapitalization = columnNameCapitalization;
     }
 }
