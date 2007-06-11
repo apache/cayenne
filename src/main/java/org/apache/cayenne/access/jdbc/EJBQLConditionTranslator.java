@@ -31,10 +31,10 @@ import org.apache.cayenne.ejbql.parser.EJBQLPath;
  */
 class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
-    private EJBQLSelectTranslator parent;
+    private EJBQLTranslationContext context;
 
-    EJBQLConditionTranslator(EJBQLSelectTranslator parent) {
-        this.parent = parent;
+    EJBQLConditionTranslator(EJBQLTranslationContext context) {
+        this.context = context;
     }
 
     public boolean visitAnd(EJBQLExpression expression, int finishedChildIndex) {
@@ -47,15 +47,15 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         switch (finishedChildIndex) {
             case 0:
                 if (expression.isNegated()) {
-                    parent.getParent().getBuffer().append(" NOT");
+                    context.append(" NOT");
                 }
-                parent.getParent().getBuffer().append(" BETWEEN #bind(");
+                context.append(" BETWEEN #bind(");
                 break;
             case 1:
-                parent.getParent().getBuffer().append(") AND #bind(");
+                context.append(") AND #bind(");
                 break;
             case 2:
-                parent.getParent().getBuffer().append(")");
+                context.append(")");
                 break;
         }
 
@@ -71,10 +71,10 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         setDelegate(null);
         switch (finishedChildIndex) {
             case 0:
-                parent.getParent().getBuffer().append(" #bindEqual(");
+                context.append(" #bindEqual(");
                 break;
             case 1:
-                parent.getParent().getBuffer().append(")");
+                context.append(")");
                 break;
         }
 
@@ -82,7 +82,7 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitNot(EJBQLExpression expression) {
-        parent.getParent().getBuffer().append(" NOT");
+        context.append(" NOT");
         return true;
     }
 
@@ -90,10 +90,10 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         setDelegate(null);
         switch (finishedChildIndex) {
             case 0:
-                parent.getParent().getBuffer().append(" #bindNotEqual(");
+                context.append(" #bindNotEqual(");
                 break;
             case 1:
-                parent.getParent().getBuffer().append(")");
+                context.append(")");
                 break;
         }
 
@@ -104,10 +104,10 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         setDelegate(null);
         switch (finishedChildIndex) {
             case 0:
-                parent.getParent().getBuffer().append(" > #bind(");
+                context.append(" > #bind(");
                 break;
             case 1:
-                parent.getParent().getBuffer().append(")");
+                context.append(")");
                 break;
         }
 
@@ -118,10 +118,10 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         setDelegate(null);
         switch (finishedChildIndex) {
             case 0:
-                parent.getParent().getBuffer().append(" >= #bind(");
+                context.append(" >= #bind(");
                 break;
             case 1:
-                parent.getParent().getBuffer().append(")");
+                context.append(")");
                 break;
         }
 
@@ -132,10 +132,10 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         setDelegate(null);
         switch (finishedChildIndex) {
             case 0:
-                parent.getParent().getBuffer().append(" <= #bind(");
+                context.append(" <= #bind(");
                 break;
             case 1:
-                parent.getParent().getBuffer().append(")");
+                context.append(")");
                 break;
         }
 
@@ -146,10 +146,10 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         setDelegate(null);
         switch (finishedChildIndex) {
             case 0:
-                parent.getParent().getBuffer().append(" < #bind(");
+                context.append(" < #bind(");
                 break;
             case 1:
-                parent.getParent().getBuffer().append(")");
+                context.append(")");
                 break;
         }
 
@@ -161,12 +161,12 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         switch (finishedChildIndex) {
             case 0:
                 if (expression.isNegated()) {
-                    parent.getParent().getBuffer().append(" NOT");
+                    context.append(" NOT");
                 }
-                parent.getParent().getBuffer().append(" LIKE #bind(");
+                context.append(" LIKE #bind(");
                 break;
             case 1:
-                parent.getParent().getBuffer().append(")");
+                context.append(")");
                 break;
         }
 
@@ -176,7 +176,7 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
     protected void afterChild(EJBQLExpression e, String text, int childIndex) {
         if (childIndex >= 0) {
             if (childIndex + 1 < e.getChildrenCount()) {
-                parent.getParent().getBuffer().append(text);
+                context.append(text);
             }
 
             // reset child-specific delegate
@@ -186,7 +186,7 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
     public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
-            setDelegate(new EJBQLPathTranslator(parent));
+            setDelegate(new EJBQLPathTranslator(context));
             return true;
         }
         else {
@@ -196,20 +196,19 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
     public boolean visitStringLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
-            parent.getParent().getBuffer().append("null");
+            context.append("null");
         }
         else {
             // note that String Literal text is already wrapped in single quotes, with
             // quotes that are part of the string escaped.
-            parent.getParent().getBuffer().append(expression.getText()).append(
-                    " 'VARCHAR'");
+            context.append(expression.getText()).append(" 'VARCHAR'");
         }
         return true;
     }
 
     public boolean visitIntegerLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
-            parent.getParent().getBuffer().append("null");
+            context.append("null");
         }
         else {
             Object value;
@@ -221,15 +220,15 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
                 throw new EJBQLException("Invalid integer: " + expression.getText());
             }
 
-            String var = parent.getParent().bindParameter(value);
-            parent.getParent().getBuffer().append('$').append(var).append(" 'INTEGER'");
+            String var = context.bindParameter(value);
+            context.append('$').append(var).append(" 'INTEGER'");
         }
         return true;
     }
 
     public boolean visitDecimalLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
-            parent.getParent().getBuffer().append("null");
+            context.append("null");
         }
         else {
             Object value;
@@ -241,12 +240,12 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
                 throw new EJBQLException("Invalid decimal: " + expression.getText());
             }
 
-            String var = parent.getParent().bindParameter(value);
-            parent.getParent().getBuffer().append('$').append(var).append(" 'DECIMAL'");
+            String var = context.bindParameter(value);
+            context.append('$').append(var).append(" 'DECIMAL'");
         }
         return true;
     }
-    
+
     public boolean visitPatternValue(EJBQLExpression expression) {
         // TODO: andrus 3/25/2007 - implement me
         return true;

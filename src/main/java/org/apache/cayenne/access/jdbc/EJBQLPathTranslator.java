@@ -30,14 +30,14 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
-    private EJBQLSelectTranslator parent;
+    private EJBQLTranslationContext context;
     private ObjEntity currentEntity;
     private String lastPathComponent;
     private String idPath;
 
-    EJBQLPathTranslator(EJBQLSelectTranslator parent) {
+    EJBQLPathTranslator(EJBQLTranslationContext context) {
         super(true);
-        this.parent = parent;
+        this.context = context;
     }
 
     public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
@@ -55,10 +55,8 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitIdentifier(EJBQLExpression expression) {
-        ClassDescriptor descriptor = parent
-                .getParent()
-                .getCompiledExpression()
-                .getEntityDescriptor(expression.getText());
+        ClassDescriptor descriptor = context.getCompiledExpression().getEntityDescriptor(
+                expression.getText());
         if (descriptor == null) {
             throw new EJBQLException("Invalid identification variable: "
                     + expression.getText());
@@ -98,10 +96,8 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 .getAttribute(lastPathComponent);
 
         DbEntity table = currentEntity.getDbEntity();
-        String alias = parent.getParent().createAlias(
-                idPath,
-                table.getFullyQualifiedName());
-        parent.getParent().getBuffer().append(' ').append(alias).append('.').append(
+        String alias = context.createAlias(idPath, table.getFullyQualifiedName());
+        context.append(' ').append(alias).append('.').append(
                 attribute.getDbAttributeName());
     }
 }
