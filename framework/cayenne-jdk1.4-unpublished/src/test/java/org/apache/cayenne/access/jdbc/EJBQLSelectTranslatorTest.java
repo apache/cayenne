@@ -24,16 +24,20 @@ import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
 
-public class EJBQLTranslatorTest extends CayenneCase {
+public class EJBQLSelectTranslatorTest extends CayenneCase {
+
+    private SQLTemplate translateSelect(String ejbql) {
+        EJBQLParser parser = EJBQLParserFactory.getParser();
+        EJBQLCompiledExpression select = parser.compile(ejbql, getDomain()
+                .getEntityResolver());
+
+        EJBQLTranslationContext tr = new EJBQLTranslationContext(select);
+        select.getExpression().visit(new EJBQLSelectTranslator(tr));
+        return tr.getQuery();
+    }
 
     public void testSelectFrom() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select a from Artist a",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select a from Artist a");
         String sql = query.getDefaultTemplate();
 
         // column order is unpredictable, just need to ensure that they are all there
@@ -45,13 +49,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectDistinct() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select distinct a from Artist a",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select distinct a from Artist a");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT DISTINCT "));
@@ -59,13 +57,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereEqual() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select a from Artist a where a.artistName = 'Dali'",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select a from Artist a where a.artistName = 'Dali'");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -74,24 +66,13 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereOrEqual() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select a from Artist a where a.artistName = 'Dali' "
-                        + "or a.artistName = 'Malevich'",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select a from Artist a where a.artistName = 'Dali' "
+                + "or a.artistName = 'Malevich'");
         String sql = query.getDefaultTemplate();
 
-        EJBQLCompiledExpression select1 = parser.compile(
-                "select a from Artist a where a.artistName = 'Picasso' "
-                        + "or a.artistName = 'Malevich' "
-                        + "or a.artistName = 'Dali'",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr1 = new EJBQLTranslator(select1);
-        SQLTemplate query1 = tr1.translate();
+        SQLTemplate query1 = translateSelect("select a from Artist a where a.artistName = 'Picasso' "
+                + "or a.artistName = 'Malevich' "
+                + "or a.artistName = 'Dali'");
         String sql1 = query1.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -104,24 +85,14 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereAndEqual() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select a from Artist a where a.artistName = 'Dali' "
-                        + "and a.artistName = 'Malevich'",
-                getDomain().getEntityResolver());
 
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select a from Artist a where a.artistName = 'Dali' "
+                + "and a.artistName = 'Malevich'");
         String sql = query.getDefaultTemplate();
 
-        EJBQLCompiledExpression select1 = parser.compile(
-                "select a from Artist a where a.artistName = 'Picasso' "
-                        + "and a.artistName = 'Malevich' "
-                        + "and a.artistName = 'Dali'",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr1 = new EJBQLTranslator(select1);
-        SQLTemplate query1 = tr1.translate();
+        SQLTemplate query1 = translateSelect("select a from Artist a where a.artistName = 'Picasso' "
+                + "and a.artistName = 'Malevich' "
+                + "and a.artistName = 'Dali'");
         String sql1 = query1.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -134,13 +105,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereNot() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select a from Artist a where not (a.artistName = 'Dali')",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select a from Artist a where not (a.artistName = 'Dali')");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -149,13 +114,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereGreater() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select p from Painting p where p.estimatedPrice > 1.0",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice > 1.0");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -163,13 +122,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereGreaterOrEqual() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select p from Painting p where p.estimatedPrice >= 2",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice >= 2");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -178,13 +131,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereLess() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select p from Painting p where p.estimatedPrice < 1.0",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice < 1.0");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -192,13 +139,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereLessOrEqual() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select p from Painting p where p.estimatedPrice <= 1.0",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice <= 1.0");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -207,13 +148,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereNotEqual() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select a from Artist a where a.artistName <> 'Dali'",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select a from Artist a where a.artistName <> 'Dali'");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -222,13 +157,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereBetween() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select p from Painting p where p.estimatedPrice between 3 and 5",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice between 3 and 5");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -237,13 +166,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereNotBetween() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select p from Painting p where p.estimatedPrice not between 3 and 5",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice not between 3 and 5");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -252,14 +175,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereLike() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select p from Painting p where p.paintingTitle like 'Stuff'",
-                getDomain().getEntityResolver());
-
-        System.out.println(select.getExpression().toString());
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select p from Painting p where p.paintingTitle like 'Stuff'");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -268,13 +184,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereNotLike() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select p from Painting p where p.paintingTitle NOT like 'Stuff'",
-                getDomain().getEntityResolver());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select p from Painting p where p.paintingTitle NOT like 'Stuff'");
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
@@ -283,15 +193,7 @@ public class EJBQLTranslatorTest extends CayenneCase {
     }
 
     public void testSelectFromWhereRelationshipPropertyPath() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(
-                "select p from Painting p where p.toArtist.artistName = 'AA2'",
-                getDomain().getEntityResolver());
-
-        System.out.println("Expression: " + select.getExpression());
-
-        EJBQLTranslator tr = new EJBQLTranslator(select);
-        SQLTemplate query = tr.translate();
+        SQLTemplate query = translateSelect("select p from Painting p where p.toArtist.artistName = 'AA2'");
         String sql = query.getDefaultTemplate();
 
         System.out.println("SQL: " + sql);

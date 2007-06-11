@@ -23,7 +23,9 @@ import java.sql.SQLException;
 
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
+import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLActionVisitor;
@@ -50,8 +52,27 @@ public class EJBQLAction extends BaseSQLAction {
 
     public void performAction(Connection connection, OperationObserver observer)
             throws SQLException, Exception {
-        EJBQLCompiledExpression expression = query.getExpression(getEntityResolver());
-        SQLTemplate sql = new EJBQLTranslator(expression).translate();
-        actionFactory.sqlAction(sql).performAction(connection, observer);
+        EJBQLCompiledExpression compiledExpression = query.getExpression(getEntityResolver());
+        final EJBQLTranslationContext context = new EJBQLTranslationContext(compiledExpression);
+        
+        compiledExpression.getExpression().visit(new EJBQLBaseVisitor(false) {
+
+            public boolean visitSelect(EJBQLExpression expression, int finishedChildIndex) {
+                EJBQLSelectTranslator visitor = new EJBQLSelectTranslator(context);
+                expression.visit(visitor);
+                return false;
+            }
+
+            public boolean visitDelete(EJBQLExpression expression, int finishedChildIndex) {
+                throw new UnsupportedOperationException("Not yet implemented");
+            }
+
+            public boolean visitUpdate(EJBQLExpression expression, int finishedChildIndex) {
+                throw new UnsupportedOperationException("Not yet implemented");
+            }
+        });
+
+        SQLTemplate sqlQuery = context.getQuery();
+        actionFactory.sqlAction(sqlQuery).performAction(connection, observer);
     }
 }
