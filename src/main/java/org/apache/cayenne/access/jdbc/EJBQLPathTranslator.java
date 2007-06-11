@@ -37,8 +37,9 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
     private ObjEntity currentEntity;
     private ObjRelationship currentIncoming;
     private String lastPathComponent;
+    private String lastAlias;
     private String idPath;
-    private String unresolvedPath;
+    private String fullPath;
     private EJBQLFromTranslator joinAppender;
 
     EJBQLPathTranslator(EJBQLTranslationContext context) {
@@ -71,7 +72,7 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
         this.currentEntity = descriptor.getEntity();
         this.idPath = expression.getText();
-        this.unresolvedPath = idPath;
+        this.fullPath = idPath;
         return true;
     }
 
@@ -91,11 +92,12 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
         String newPath = idPath + '.' + lastPathComponent;
         String oldPath = context.registerReusableJoin(idPath, lastPathComponent, newPath);
-        
-        this.unresolvedPath = unresolvedPath + '.' + lastPathComponent;
+
+        this.fullPath = fullPath + '.' + lastPathComponent;
 
         if (oldPath != null) {
             this.idPath = oldPath;
+            this.lastAlias = context.getAlias(oldPath, currentEntity.getDbEntityName());
         }
         else {
             // register join
@@ -110,7 +112,7 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
             path.jjtAddChild(idVar, 1);
 
             EJBQLIdentifier joinId = new EJBQLIdentifier(-1);
-            joinId.setText(unresolvedPath);
+            joinId.setText(fullPath);
 
             EJBQLInnerJoin join = new EJBQLInnerJoin(-1);
             join.jjtAddChild(path, 0);
@@ -129,9 +131,8 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
             context.switchToMainBuffer();
 
             this.idPath = newPath;
+            this.lastAlias = context.getAlias(fullPath, currentEntity.getDbEntityName());
         }
-
-        
     }
 
     private void processIntermediatePath() {
@@ -155,7 +156,9 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 .getAttribute(lastPathComponent);
 
         DbEntity table = currentEntity.getDbEntity();
-        String alias = context.getAlias(idPath, table.getFullyQualifiedName());
+        String alias = this.lastAlias != null ? lastAlias : context.getAlias(
+                idPath,
+                table.getFullyQualifiedName());
         context.append(' ').append(alias).append('.').append(
                 attribute.getDbAttributeName());
     }
