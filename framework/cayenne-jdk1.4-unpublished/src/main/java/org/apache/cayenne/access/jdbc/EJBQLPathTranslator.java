@@ -96,7 +96,7 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 .getAttribute(lastPathComponent);
 
         DbEntity table = currentEntity.getDbEntity();
-        String alias = context.createAlias(idPath, table.getFullyQualifiedName());
+        String alias = context.getAlias(idPath, table.getFullyQualifiedName());
         context.append(' ').append(alias).append('.').append(
                 attribute.getDbAttributeName());
     }

@@ -30,7 +30,8 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 public class EJBQLFromTranslator extends EJBQLBaseVisitor {
-
+    
+   
     private EJBQLTranslationContext context;
     private String lastTableAlias;
 
@@ -133,7 +134,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
                 id);
 
         String tableName = descriptor.getEntity().getDbEntity().getFullyQualifiedName();
-        String alias = context.createAlias(id, tableName);
+        String alias = context.getAlias(id, tableName);
         context.append(' ').append(tableName).append(" AS ").append(alias);
         return alias;
     }
