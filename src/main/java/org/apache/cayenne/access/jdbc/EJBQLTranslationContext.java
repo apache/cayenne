@@ -21,52 +21,34 @@ package org.apache.cayenne.access.jdbc;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
-import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.query.SQLTemplate;
 
 /**
- * A translator of {@link EJBQLExpression} statements into the database SQL.
+ * A context used for translating of EJBQL to SQL.
  * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-class EJBQLTranslator extends EJBQLBaseVisitor {
+class EJBQLTranslationContext {
 
     private Map aliases;
     private Map bindingVariables;
     private StringBuffer buffer;
     private EJBQLCompiledExpression compiledExpression;
 
-    EJBQLTranslator(EJBQLCompiledExpression compiledExpression) {
-        super(false);
+    EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression) {
         this.compiledExpression = compiledExpression;
+        this.buffer = new StringBuffer();
     }
 
-    SQLTemplate translate() {
-        this.buffer = new StringBuffer();
-        compiledExpression.getExpression().visit(this);
+    SQLTemplate getQuery() {
         String sql = buffer.length() > 0 ? buffer.toString() : null;
         SQLTemplate query = new SQLTemplate(compiledExpression
                 .getRootDescriptor()
                 .getObjectClass(), sql);
         query.setParameters(bindingVariables);
         return query;
-    }
-
-    public boolean visitSelect(EJBQLExpression expression, int finishedChildIndex) {
-        EJBQLSelectTranslator visitor = new EJBQLSelectTranslator(this);
-        expression.visit(visitor);
-        return false;
-    }
-
-    public boolean visitDelete(EJBQLExpression expression, int finishedChildIndex) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    public boolean visitUpdate(EJBQLExpression expression, int finishedChildIndex) {
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     StringBuffer getBuffer() {

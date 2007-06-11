@@ -35,10 +35,10 @@ import org.apache.cayenne.map.DbEntity;
  */
 class EJBQLSelectTranslator extends EJBQLDelegatingVisitor {
 
-    private EJBQLTranslator parent;
+    private EJBQLTranslationContext parent;
     private Set columns;
 
-    EJBQLSelectTranslator(EJBQLTranslator parent) {
+    EJBQLSelectTranslator(EJBQLTranslationContext parent) {
         this.parent = parent;
     }
 
@@ -74,7 +74,7 @@ class EJBQLSelectTranslator extends EJBQLDelegatingVisitor {
         }
     }
 
-    EJBQLTranslator getParent() {
+    EJBQLTranslationContext getParent() {
         return parent;
     }
 
