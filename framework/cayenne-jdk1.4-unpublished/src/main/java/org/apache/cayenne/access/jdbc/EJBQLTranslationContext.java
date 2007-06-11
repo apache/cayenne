@@ -36,6 +36,7 @@ class EJBQLTranslationContext {
     private Map bindingVariables;
     private StringBuffer buffer;
     private EJBQLCompiledExpression compiledExpression;
+    private Map translationVariables;
 
     EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression) {
         this.compiledExpression = compiledExpression;
@@ -51,8 +52,33 @@ class EJBQLTranslationContext {
         return query;
     }
 
-    StringBuffer getBuffer() {
-        return buffer;
+    void putTranslationVariable(String var, Object value) {
+        if (translationVariables == null) {
+            translationVariables = new HashMap();
+        }
+
+        translationVariables.put(var, value);
+    }
+
+    Object getTranslationValue(String var) {
+        return translationVariables != null ? translationVariables.get(var) : null;
+    }
+
+    /**
+     * Appends a piece of SQL to the internal buffer.
+     */
+    EJBQLTranslationContext append(String chunk) {
+        buffer.append(chunk);
+        return this;
+    }
+
+    /**
+     * Appends a piece of SQL to the internal buffer.
+     */
+
+    public EJBQLTranslationContext append(char chunk) {
+        buffer.append(chunk);
+        return this;
     }
 
     EJBQLCompiledExpression getCompiledExpression() {

@@ -31,18 +31,18 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
-    private EJBQLSelectTranslator parent;
+    private EJBQLTranslationContext context;
     private String lastTableAlias;
 
-    public EJBQLFromTranslator(EJBQLSelectTranslator parent) {
+    public EJBQLFromTranslator(EJBQLTranslationContext context) {
         super(true);
-        this.parent = parent;
+        this.context = context;
     }
 
     public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             if (lastTableAlias != null) {
-                parent.getParent().getBuffer().append(',');
+                context.append(',');
             }
 
             lastTableAlias = appendTable(expression.getId());
@@ -83,14 +83,12 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         }
 
         String sourceAlias = lastTableAlias;
-        StringBuffer buffer = parent.getParent().getBuffer();
 
-        buffer.append(" ").append(semantics);
+        context.append(" ").append(semantics);
         String targetAlias = appendTable(id);
-        buffer.append(" ON (");
+        context.append(" ON (");
 
-        ObjRelationship incoming = parent
-                .getParent()
+        ObjRelationship incoming = context
                 .getCompiledExpression()
                 .getIncomingRelationship(id);
         if (incoming == null) {
@@ -103,36 +101,40 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         Iterator it = incomingDB.getJoins().iterator();
         if (it.hasNext()) {
             DbJoin dbJoin = (DbJoin) it.next();
-            buffer.append(sourceAlias).append('.').append(dbJoin.getSourceName()).append(
-                    " = ").append(targetAlias).append('.').append(dbJoin.getTargetName());
+            context
+                    .append(sourceAlias)
+                    .append('.')
+                    .append(dbJoin.getSourceName())
+                    .append(" = ")
+                    .append(targetAlias)
+                    .append('.')
+                    .append(dbJoin.getTargetName());
         }
 
         while (it.hasNext()) {
-            buffer.append(", ");
+            context.append(", ");
             DbJoin dbJoin = (DbJoin) it.next();
-            buffer.append(sourceAlias).append('.').append(dbJoin.getSourceName()).append(
-                    " = ").append(targetAlias).append('.').append(dbJoin.getTargetName());
+            context
+                    .append(sourceAlias)
+                    .append('.')
+                    .append(dbJoin.getSourceName())
+                    .append(" = ")
+                    .append(targetAlias)
+                    .append('.')
+                    .append(dbJoin.getTargetName());
         }
 
-        buffer.append(")");
+        context.append(")");
         this.lastTableAlias = targetAlias;
     }
 
     private String appendTable(String id) {
-        ClassDescriptor descriptor = parent
-                .getParent()
-                .getCompiledExpression()
-                .getEntityDescriptor(id);
+        ClassDescriptor descriptor = context.getCompiledExpression().getEntityDescriptor(
+                id);
 
         String tableName = descriptor.getEntity().getDbEntity().getFullyQualifiedName();
-        String alias = parent.getParent().createAlias(id, tableName);
-        parent
-                .getParent()
-                .getBuffer()
-                .append(' ')
-                .append(tableName)
-                .append(" AS ")
-                .append(alias);
+        String alias = context.createAlias(id, tableName);
+        context.append(' ').append(tableName).append(" AS ").append(alias);
         return alias;
     }
 }

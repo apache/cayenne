@@ -18,13 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
@@ -44,11 +48,11 @@ import org.apache.cayenne.reflect.ToOneProperty;
  */
 class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
-    private EJBQLSelectTranslator parent;
+    private EJBQLTranslationContext context;
 
-    EJBQLSelectColumnsTranslator(EJBQLSelectTranslator parent) {
+    EJBQLSelectColumnsTranslator(EJBQLTranslationContext context) {
         super(false);
-        this.parent = parent;
+        this.context = context;
     }
 
     public boolean visitSelectExpression(EJBQLExpression expression) {
@@ -60,10 +64,8 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
         final String idVar = expression.getText();
 
         // append all table columns
-        ClassDescriptor descriptor = parent
-                .getParent()
-                .getCompiledExpression()
-                .getEntityDescriptor(idVar);
+        ClassDescriptor descriptor = context.getCompiledExpression().getEntityDescriptor(
+                idVar);
 
         PropertyVisitor visitor = new PropertyVisitor() {
 
@@ -83,7 +85,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                                     "ObjAttribute has no DbAttribute: " + oa.getName());
                         }
 
-                        parent.appendColumn(idVar, dbAttr, oa.getType());
+                        appendColumn(idVar, dbAttr, oa.getType());
                     }
                 }
                 return true;
@@ -109,7 +111,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                     DbJoin join = (DbJoin) joins.get(i);
                     DbAttribute src = join.getSource();
 
-                    parent.appendColumn(idVar, src);
+                    appendColumn(idVar, src);
                 }
             }
         };
@@ -119,5 +121,41 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
         descriptor.visitAllProperties(visitor);
 
         return true;
+    }
+
+    private void appendColumn(String identifier, DbAttribute column) {
+        appendColumn(identifier, column, TypesMapping.getJavaBySqlType(column.getType()));
+    }
+
+    private void appendColumn(String identifier, DbAttribute column, String javaType) {
+        DbEntity table = (DbEntity) column.getEntity();
+        String alias = context.createAlias(identifier, table.getFullyQualifiedName());
+        String columnName = alias + "." + column.getName();
+
+        Set columns = getColumns();
+
+        if (columns.add(columnName)) {
+            // using #result directive:
+            // 1. to ensure that DB default captalization rules won't lead to changing
+            // result columns capitalization, as #result() gives SQLTemplate a hint as to
+            // what name is expected by the caller.
+            // 2. to ensure proper type conversion
+            context.append(columns.size() > 1 ? ", " : " ").append("#result('").append(
+                    columnName).append("' '").append(javaType).append("' '").append(
+                    column.getName()).append("')");
+        }
+    }
+
+    private Set getColumns() {
+
+        String columnsKey = getClass().getName() + ":columns";
+        Set columns = (Set) context.getTranslationValue(columnsKey);
+
+        if (columns == null) {
+            columns = new HashSet();
+            context.putTranslationVariable(columnsKey, columns);
+        }
+
+        return columns;
     }
 }
