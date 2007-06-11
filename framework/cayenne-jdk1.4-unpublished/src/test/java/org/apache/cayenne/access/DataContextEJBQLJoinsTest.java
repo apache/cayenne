@@ -35,28 +35,28 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
     }
 
     public void testThetaJoins() throws Exception {
-        createTestData("testThetaJoins");
-
+        // createTestData("testThetaJoins");
+        //
         // String ejbql = "SELECT DISTINCT a "
         // + "FROM Artist a, Painting b "
         // + "WHERE a.artistName = b.paintingTitle";
-        //
+        //        
         // EJBQLQuery query = new EJBQLQuery(ejbql);
-        //
+        //        
         // System.out.println(""
         // + query.getExpression(getDomain().getEntityResolver()).getExpression());
         // List artists = createDataContext().performQuery(query);
         // assertEquals(2, artists.size());
-        //
+        //        
         // Set names = new HashSet(2);
         // Iterator it = artists.iterator();
         // while (it.hasNext()) {
         // Artist a = (Artist) it.next();
         // names.add(a.getArtistName());
-        // }
-        //
-        // assertTrue(names.contains("AA1"));
-        // assertTrue(names.contains("BB2"));
+        //         }
+        //        
+        //         assertTrue(names.contains("AA1"));
+        //         assertTrue(names.contains("BB2"));
     }
 
     public void testInnerJoins() throws Exception {
@@ -107,25 +107,41 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
     }
 
     public void testImplicitJoins() throws Exception {
-        // createTestData("testChainedJoins");
-        // String ejbql = "SELECT a "
-        // + "FROM Artist a "
-        // + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
-        //        
-        // List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
-        // assertEquals(1, artists.size());
-        //         assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+         createTestData("testChainedJoins");
+         String ejbql = "SELECT a "
+         + "FROM Artist a "
+         + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
+         
+         EJBQLQuery query = new EJBQLQuery(ejbql);
+         
+         System.out.println(""
+                 + query.getExpression(getDomain().getEntityResolver()).getExpression());
+                
+         List artists = createDataContext().performQuery(query);
+         assertEquals(1, artists.size());
+                 assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
     }
 
-    public void testPartialImplicitJoins() throws Exception {
+    public void testPartialImplicitJoins1() throws Exception {
         createTestData("testChainedJoins");
-        // String ejbql = "SELECT a "
-        // + "FROM Artist a JOIN a.paintingArray b "
-        // + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
-        //
-        // List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
-        // assertEquals(1, artists.size());
-        // assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+         String ejbql = "SELECT a "
+         + "FROM Artist a JOIN a.paintingArray b "
+         + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
+        
+         List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
+         assertEquals(1, artists.size());
+         assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+    }
+    
+    public void testPartialImplicitJoins2() throws Exception {
+        createTestData("testChainedJoins");
+         String ejbql = "SELECT a "
+         + "FROM Artist a JOIN a.paintingArray b "
+         + "WHERE a.paintingArray.paintingTitle = 'CC2'";
+        
+         List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
+         assertEquals(1, artists.size());
+         assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
     }
 
     public void testMultipleJoinsToTheSameTable() throws Exception {
