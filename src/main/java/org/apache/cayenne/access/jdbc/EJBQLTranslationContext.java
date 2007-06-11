@@ -36,7 +36,7 @@ class EJBQLTranslationContext {
     private Map bindingVariables;
     private StringBuffer buffer;
     private EJBQLCompiledExpression compiledExpression;
-    private Map translationVariables;
+    private Map attributes;
 
     EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression) {
         this.compiledExpression = compiledExpression;
@@ -52,16 +52,24 @@ class EJBQLTranslationContext {
         return query;
     }
 
-    void putTranslationVariable(String var, Object value) {
-        if (translationVariables == null) {
-            translationVariables = new HashMap();
-        }
-
-        translationVariables.put(var, value);
+    /**
+     * Returns a context "attribute" stored for the given name. Attributes is a state
+     * preservation mechanism used by translators and have the same scope as the context.
+     */
+    Object getAttribute(String name) {
+        return attributes != null ? attributes.get(name) : null;
     }
 
-    Object getTranslationValue(String var) {
-        return translationVariables != null ? translationVariables.get(var) : null;
+    /**
+     * Sets a context "attribute". Attributes is a state preservation mechanism used by
+     * translators and have the same scope as the context.
+     */
+    void setAttribute(String var, Object value) {
+        if (attributes == null) {
+            attributes = new HashMap();
+        }
+
+        attributes.put(var, value);
     }
 
     /**
@@ -75,7 +83,6 @@ class EJBQLTranslationContext {
     /**
      * Appends a piece of SQL to the internal buffer.
      */
-
     EJBQLTranslationContext append(char chunk) {
         buffer.append(chunk);
         return this;

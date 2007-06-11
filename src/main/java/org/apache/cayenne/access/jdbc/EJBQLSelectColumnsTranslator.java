@@ -149,11 +149,11 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
     private Set getColumns() {
 
         String columnsKey = getClass().getName() + ":columns";
-        Set columns = (Set) context.getTranslationValue(columnsKey);
+        Set columns = (Set) context.getAttribute(columnsKey);
 
         if (columns == null) {
             columns = new HashSet();
-            context.putTranslationVariable(columnsKey, columns);
+            context.setAttribute(columnsKey, columns);
         }
 
         return columns;
