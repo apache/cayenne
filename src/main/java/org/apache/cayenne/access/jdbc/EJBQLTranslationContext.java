@@ -117,7 +117,7 @@ class EJBQLTranslationContext {
      * Retrieves a SQL alias for the combination of EJBQL id variable and a table name. If
      * such alias hasn't been used, it is created on the fly.
      */
-    String createAlias(String idPath, String tableName) {
+    String getAlias(String idPath, String tableName) {
 
         StringBuffer keyBuffer = new StringBuffer();
 

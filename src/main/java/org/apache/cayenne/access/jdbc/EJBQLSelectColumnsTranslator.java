@@ -129,7 +129,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
     private void appendColumn(String identifier, DbAttribute column, String javaType) {
         DbEntity table = (DbEntity) column.getEntity();
-        String alias = context.createAlias(identifier, table.getFullyQualifiedName());
+        String alias = context.getAlias(identifier, table.getFullyQualifiedName());
         String columnName = alias + "." + column.getName();
 
         Set columns = getColumns();
