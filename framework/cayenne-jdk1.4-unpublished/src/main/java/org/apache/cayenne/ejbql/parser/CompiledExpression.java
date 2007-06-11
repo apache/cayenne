@@ -45,7 +45,12 @@ class CompiledExpression implements EJBQLCompiledExpression {
         }
 
         // per JPA spec, 4.4.2, "Identification variables are case insensitive."
-        idVariable = idVariable.toLowerCase();
+
+        int pathSeparator = idVariable.indexOf('.');
+        idVariable = pathSeparator < 0 ? idVariable.toLowerCase() : idVariable.substring(
+                0,
+                pathSeparator).toLowerCase()
+                + idVariable.substring(pathSeparator);
 
         return (ClassDescriptor) descriptorsById.get(idVariable);
     }

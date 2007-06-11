@@ -51,6 +51,17 @@ public class EJBQLCompiledExpressionTest extends CayenneCase {
 
         assertNotNull(select.getEntityDescriptor("a"));
         assertSame(resolver.getClassDescriptor("Artist"), select.getEntityDescriptor("a"));
+
+        EJBQLCompiledExpression select1 = parser.compile(
+                "select p from Painting p WHERE p.toArtist.artistName = 'a'",
+                resolver);
+        assertNotNull(select1.getEntityDescriptor("p"));
+        assertSame(resolver.getClassDescriptor("Painting"), select1
+                .getEntityDescriptor("p"));
+        
+        assertNotNull(select1.getEntityDescriptor("p.toArtist"));
+        assertSame(resolver.getClassDescriptor("Artist"), select1
+                .getEntityDescriptor("p.toArtist"));
     }
 
     public void testGetRootDescriptor() {

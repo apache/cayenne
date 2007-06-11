@@ -54,7 +54,7 @@ class Compiler {
         this.resolver = resolver;
         this.descriptorsById = new HashMap();
         this.incomingById = new HashMap();
- 
+
         this.rootDescriptorVisitor = new SelectExpressionVisitor();
         this.fromItemVisitor = new FromItemVisitor();
         this.joinVisitor = new JoinVisitor();
@@ -226,7 +226,41 @@ class Compiler {
     }
 
     class WhereClauseVisitor extends EJBQLBaseVisitor {
-        // TODO: andrus 4/9/2007 - load implicit joins
+
+        public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
+            if (finishedChildIndex < 0) {
+
+                String id = expression.getId();
+
+                ClassDescriptor descriptor = (ClassDescriptor) descriptorsById.get(id);
+                if (descriptor == null) {
+                    throw new EJBQLException("Unmapped id variable: " + id);
+                }
+
+                StringBuffer buffer = new StringBuffer(id);
+
+                for (int i = 1; i < expression.getChildrenCount(); i++) {
+
+                    String pathChunk = expression.getChild(i).getText();
+                    buffer.append('.').append(pathChunk);
+
+                    Property property = descriptor.getProperty(pathChunk);
+                    if (property instanceof ArcProperty) {
+                        ObjRelationship incoming = ((ArcProperty) property)
+                                .getRelationship();
+                        descriptor = ((ArcProperty) property).getTargetDescriptor();
+                        String path = buffer.substring(0, buffer.length());
+
+                        descriptorsById.put(path, descriptor);
+                        incomingById.put(path, incoming);
+                    }
+                }
+
+            }
+
+            return true;
+        }
+
     }
 
     class SelectExpressionVisitor extends EJBQLBaseVisitor {
