@@ -44,9 +44,15 @@ class EJBQLSelectTranslator extends EJBQLDelegatingVisitor {
         return true;
     }
 
-    public boolean visitFrom(EJBQLExpression expression) {
-        context.append(" FROM");
-        setDelegate(new EJBQLFromTranslator(context));
+    public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            context.append(" FROM");
+            setDelegate(new EJBQLFromTranslator(context));
+        }
+        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.markCurrentPosition(EJBQLTranslationContext.FROM_TAIL_MARKER);
+        }
+        
         return true;
     }
 

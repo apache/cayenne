@@ -190,8 +190,10 @@ public class EJBQLDelegatingVisitor implements EJBQLExpressionVisitor {
         return delegate != null ? delegate.visitExists(expression) : continueFlag;
     }
 
-    public boolean visitFrom(EJBQLExpression expression) {
-        return delegate != null ? delegate.visitFrom(expression) : continueFlag;
+    public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
+        return delegate != null
+                ? delegate.visitFrom(expression, finishedChildIndex)
+                : continueFlag;
     }
 
     public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
@@ -235,9 +237,9 @@ public class EJBQLDelegatingVisitor implements EJBQLExpressionVisitor {
     }
 
     public boolean visitInnerFetchJoin(EJBQLJoin join, int finishedChildIndex) {
-        return delegate != null ? delegate.visitInnerFetchJoin(
-                join,
-                finishedChildIndex) : continueFlag;
+        return delegate != null
+                ? delegate.visitInnerFetchJoin(join, finishedChildIndex)
+                : continueFlag;
     }
 
     public boolean visitInnerJoin(EJBQLJoin join, int finishedChildIndex) {
@@ -345,9 +347,9 @@ public class EJBQLDelegatingVisitor implements EJBQLExpressionVisitor {
     }
 
     public boolean visitOuterFetchJoin(EJBQLJoin join, int finishedChildIndex) {
-        return delegate != null ? delegate.visitOuterFetchJoin(
-                join,
-                finishedChildIndex) : continueFlag;
+        return delegate != null
+                ? delegate.visitOuterFetchJoin(join, finishedChildIndex)
+                : continueFlag;
     }
 
     public boolean visitOuterJoin(EJBQLJoin join, int finishedChildIndex) {

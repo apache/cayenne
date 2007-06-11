@@ -136,7 +136,7 @@ public abstract class SimpleNode implements Node, Serializable, EJBQLExpression 
         return (children == null) ? 0 : children.length;
     }
 
-    void setText(String text) {
+    public void setText(String text) {
         this.text = text;
     }
 
