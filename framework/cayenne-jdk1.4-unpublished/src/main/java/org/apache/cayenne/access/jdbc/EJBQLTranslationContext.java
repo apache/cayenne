@@ -76,7 +76,7 @@ class EJBQLTranslationContext {
      * Appends a piece of SQL to the internal buffer.
      */
 
-    public EJBQLTranslationContext append(char chunk) {
+    EJBQLTranslationContext append(char chunk) {
         buffer.append(chunk);
         return this;
     }
