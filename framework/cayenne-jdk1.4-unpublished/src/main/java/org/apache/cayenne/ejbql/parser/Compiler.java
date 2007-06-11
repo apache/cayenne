@@ -75,6 +75,17 @@ class Compiler {
         return compiled;
     }
 
+    static String normalizeIdPath(String idPath) {
+        
+        // per JPA spec, 4.4.2, "Identification variables are case insensitive."
+        
+        int pathSeparator = idPath.indexOf('.');
+        return pathSeparator < 0 ? idPath.toLowerCase() : idPath.substring(
+                0,
+                pathSeparator).toLowerCase()
+                + idPath.substring(pathSeparator);
+    }
+
     class CompilationVisitor extends EJBQLDelegatingVisitor {
 
         CompilationVisitor() {
@@ -142,8 +153,7 @@ class Compiler {
         public boolean visitIdentifier(EJBQLExpression expression) {
 
             // per JPA spec, 4.4.2, "Identification variables are case insensitive."
-            String rootId = expression.getText();
-            rootId = rootId.toLowerCase();
+            rootId = normalizeIdPath(expression.getText());
 
             // resolve class descriptor
             ClassDescriptor descriptor = resolver.getClassDescriptor(entityName);
@@ -230,7 +240,7 @@ class Compiler {
         public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
             if (finishedChildIndex < 0) {
 
-                String id = expression.getId();
+                String id = normalizeIdPath(expression.getId());
 
                 ClassDescriptor descriptor = (ClassDescriptor) descriptorsById.get(id);
                 if (descriptor == null) {
