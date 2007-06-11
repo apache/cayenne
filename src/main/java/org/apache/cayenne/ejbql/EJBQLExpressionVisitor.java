@@ -140,7 +140,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitExists(EJBQLExpression expression);
 
-    boolean visitFrom(EJBQLExpression expression);
+    boolean visitFrom(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex);
 

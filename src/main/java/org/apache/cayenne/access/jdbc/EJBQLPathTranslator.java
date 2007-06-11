@@ -21,6 +21,9 @@ package org.apache.cayenne.access.jdbc;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.parser.EJBQLIdentificationVariable;
+import org.apache.cayenne.ejbql.parser.EJBQLIdentifier;
+import org.apache.cayenne.ejbql.parser.EJBQLInnerJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
@@ -32,8 +35,11 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     private ObjEntity currentEntity;
+    private ObjRelationship currentIncoming;
     private String lastPathComponent;
     private String idPath;
+    private String unresolvedPath;
+    private EJBQLFromTranslator joinAppender;
 
     EJBQLPathTranslator(EJBQLTranslationContext context) {
         super(true);
@@ -51,6 +57,7 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 processLastPath();
             }
         }
+
         return true;
     }
 
@@ -64,16 +71,67 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
         this.currentEntity = descriptor.getEntity();
         this.idPath = expression.getText();
+        this.unresolvedPath = idPath;
         return true;
     }
 
     public boolean visitIdentificationVariable(EJBQLExpression expression) {
-        if (this.lastPathComponent != null) {
-            this.idPath += '.' + lastPathComponent;
+
+        // TODO: andrus 6/11/2007 - if the path ends with relationship, the last join will
+        // get lost...
+        if (lastPathComponent != null) {
+            resolveJoin();
         }
 
         this.lastPathComponent = expression.getText();
         return true;
+    }
+
+    private void resolveJoin() {
+
+        String newPath = idPath + '.' + lastPathComponent;
+        String oldPath = context.registerReusableJoin(idPath, lastPathComponent, newPath);
+        
+        this.unresolvedPath = unresolvedPath + '.' + lastPathComponent;
+
+        if (oldPath != null) {
+            this.idPath = oldPath;
+        }
+        else {
+            // register join
+            EJBQLIdentifier id = new EJBQLIdentifier(-1);
+            id.setText(idPath);
+
+            EJBQLIdentificationVariable idVar = new EJBQLIdentificationVariable(-1);
+            idVar.setText(lastPathComponent);
+
+            EJBQLPath path = new EJBQLPath(-1);
+            path.jjtAddChild(id, 0);
+            path.jjtAddChild(idVar, 1);
+
+            EJBQLIdentifier joinId = new EJBQLIdentifier(-1);
+            joinId.setText(unresolvedPath);
+
+            EJBQLInnerJoin join = new EJBQLInnerJoin(-1);
+            join.jjtAddChild(path, 0);
+            join.jjtAddChild(joinId, 1);
+
+            if (joinAppender == null) {
+                joinAppender = new EJBQLFromTranslator(context);
+            }
+
+            ObjEntity sourceEntity = (ObjEntity) currentIncoming.getSourceEntity();
+
+            context.switchToMarker(EJBQLTranslationContext.FROM_TAIL_MARKER);
+            joinAppender.setLastTableAlias(context.getAlias(idPath, sourceEntity
+                    .getDbEntityName()));
+            joinAppender.visitInnerJoin(join, -1);
+            context.switchToMainBuffer();
+
+            this.idPath = newPath;
+        }
+
+        
     }
 
     private void processIntermediatePath() {
@@ -87,6 +145,7 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
                     + "'");
         }
 
+        this.currentIncoming = relationship;
         this.currentEntity = (ObjEntity) relationship.getTargetEntity();
     }
 

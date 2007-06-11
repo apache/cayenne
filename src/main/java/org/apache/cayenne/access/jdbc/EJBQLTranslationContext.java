@@ -32,24 +32,69 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 class EJBQLTranslationContext {
 
+    static final String FROM_TAIL_MARKER = "FROM_TAIL_MARKER";
+
     private Map aliases;
     private Map bindingVariables;
-    private StringBuffer buffer;
+    private StringBuffer mainBuffer;
+    private StringBuffer currentBuffer;
     private EJBQLCompiledExpression compiledExpression;
     private Map attributes;
+    private Map reusableJoins;
 
     EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression) {
         this.compiledExpression = compiledExpression;
-        this.buffer = new StringBuffer();
+        this.mainBuffer = new StringBuffer();
+        this.currentBuffer = mainBuffer;
     }
 
     SQLTemplate getQuery() {
-        String sql = buffer.length() > 0 ? buffer.toString() : null;
+        String sql = mainBuffer.length() > 0 ? mainBuffer.toString() : null;
         SQLTemplate query = new SQLTemplate(compiledExpression
                 .getRootDescriptor()
                 .getObjectClass(), sql);
         query.setParameters(bindingVariables);
         return query;
+    }
+
+    /**
+     * Inserts a marker in the SQL, mapped to a StringBuffer that can be later filled with
+     * content.
+     */
+    void markCurrentPosition(String marker) {
+        // make sure we mark the main buffer
+        StringBuffer current = this.currentBuffer;
+
+        try {
+            switchToMainBuffer();
+            String internalMarker = bindParameter(new StringBuffer(), "marker");
+            append("${").append(internalMarker).append("}");
+
+            // register mapping of internal to external marker
+            setAttribute(marker, internalMarker);
+        }
+        finally {
+            this.currentBuffer = current;
+        }
+    }
+
+    void switchToMarker(String marker) {
+        String internalMarker = (String) getAttribute(marker);
+        if (internalMarker == null) {
+            throw new IllegalArgumentException("Invalid marker: " + marker);
+        }
+
+        Object object = bindingVariables.get(internalMarker);
+        if (!(object instanceof StringBuffer)) {
+            throw new IllegalArgumentException("Invalid or missing buffer for marker: "
+                    + marker);
+        }
+
+        this.currentBuffer = (StringBuffer) object;
+    }
+
+    void switchToMainBuffer() {
+        this.currentBuffer = this.mainBuffer;
     }
 
     /**
@@ -76,7 +121,7 @@ class EJBQLTranslationContext {
      * Appends a piece of SQL to the internal buffer.
      */
     EJBQLTranslationContext append(String chunk) {
-        buffer.append(chunk);
+        currentBuffer.append(chunk);
         return this;
     }
 
@@ -84,7 +129,7 @@ class EJBQLTranslationContext {
      * Appends a piece of SQL to the internal buffer.
      */
     EJBQLTranslationContext append(char chunk) {
-        buffer.append(chunk);
+        currentBuffer.append(chunk);
         return this;
     }
 
@@ -111,6 +156,28 @@ class EJBQLTranslationContext {
         String var = prefix + bindingVariables.size();
         bindingVariables.put(var, value);
         return var;
+    }
+
+    /**
+     * Registers a "reusable" join, returning a preexisting ID if the join is already
+     * registered. Reusable normally means an inner join that can be duplicated implicitly
+     * in the path expressions.
+     */
+    String registerReusableJoin(String sourceIdPath, String relationship, String targetId) {
+        if (reusableJoins == null) {
+            reusableJoins = new HashMap();
+        }
+
+        String key = sourceIdPath + ":" + relationship;
+
+        String oldId = (String) reusableJoins.put(key, targetId);
+        if (oldId != null) {
+            // revert back to old id
+            reusableJoins.put(key, oldId);
+            return oldId;
+        }
+
+        return null;
     }
 
     /**

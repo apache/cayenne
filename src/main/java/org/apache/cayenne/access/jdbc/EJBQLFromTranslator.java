@@ -30,10 +30,10 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 public class EJBQLFromTranslator extends EJBQLBaseVisitor {
-    
-   
+
     private EJBQLTranslationContext context;
     private String lastTableAlias;
+    private String lastId;
 
     public EJBQLFromTranslator(EJBQLTranslationContext context) {
         super(true);
@@ -46,8 +46,10 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
                 context.append(',');
             }
 
-            lastTableAlias = appendTable(expression.getId());
+            lastId = expression.getId();
+            lastTableAlias = appendTable(lastId);
         }
+
         return true;
     }
 
@@ -58,7 +60,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     public boolean visitInnerJoin(EJBQLJoin join, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
-            appendJoin(join, "INNER JOIN");
+            appendJoin(join, "INNER JOIN", true);
         }
         return true;
     }
@@ -70,12 +72,16 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     public boolean visitOuterJoin(EJBQLJoin join, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
-            appendJoin(join, "LEFT OUTER JOIN");
+            appendJoin(join, "LEFT OUTER JOIN", false);
         }
         return true;
     }
 
-    private void appendJoin(EJBQLJoin join, String semantics) {
+    void setLastTableAlias(String alias) {
+        this.lastTableAlias = alias;
+    }
+
+    private void appendJoin(EJBQLJoin join, String semantics, boolean reusable) {
 
         String id = join.getId();
 
@@ -126,7 +132,13 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         }
 
         context.append(")");
+
+        if (reusable) {
+            context.registerReusableJoin(lastId, incoming.getName(), id);
+        }
+
         this.lastTableAlias = targetAlias;
+        this.lastId = id;
     }
 
     private String appendTable(String id) {
