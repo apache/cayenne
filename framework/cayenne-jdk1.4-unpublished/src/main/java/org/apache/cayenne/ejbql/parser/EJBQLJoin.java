@@ -24,7 +24,18 @@ public class EJBQLJoin extends SimpleNode {
         super(id);
     }
 
-    public String getId() {
+    public String getLeftHandSideId() {
+        int len = getChildrenCount();
+        if (len < 1) {
+            return null;
+        }
+
+        EJBQLPath path = (EJBQLPath) getChild(0);
+        EJBQLIdentifier lhsId = (EJBQLIdentifier) path.getChild(0);
+        return lhsId.getText();
+    }
+
+    public String getRightHandSideId() {
         int len = getChildrenCount();
         if (len < 2) {
             return null;

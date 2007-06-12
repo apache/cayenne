@@ -35,7 +35,6 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     private ObjEntity currentEntity;
-    private ObjRelationship currentIncoming;
     private String lastPathComponent;
     private String lastAlias;
     private String idPath;
@@ -122,11 +121,8 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 joinAppender = new EJBQLFromTranslator(context);
             }
 
-            ObjEntity sourceEntity = (ObjEntity) currentIncoming.getSourceEntity();
-
             context.switchToMarker(EJBQLTranslationContext.FROM_TAIL_MARKER);
-            joinAppender.setLastTableAlias(context.getAlias(idPath, sourceEntity
-                    .getDbEntityName()));
+
             joinAppender.visitInnerJoin(join, -1);
             context.switchToMainBuffer();
 
@@ -146,7 +142,6 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
                     + "'");
         }
 
-        this.currentIncoming = relationship;
         this.currentEntity = (ObjEntity) relationship.getTargetEntity();
     }
 
