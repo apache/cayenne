@@ -21,6 +21,7 @@ package org.apache.cayenne.ejbql;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
+import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 
 /**
  * A base implementation of the EJBQLExpressionVisitor that implements all methods to
@@ -368,7 +369,7 @@ public class EJBQLDelegatingVisitor implements EJBQLExpressionVisitor {
         return delegate != null ? delegate.visitPatternValue(expression) : continueFlag;
     }
 
-    public boolean visitPositionalInputParameter(EJBQLExpression expression) {
+    public boolean visitPositionalInputParameter(EJBQLPositionalInputParameter expression) {
         return delegate != null
                 ? delegate.visitPositionalInputParameter(expression)
                 : continueFlag;

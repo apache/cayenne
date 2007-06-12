@@ -24,6 +24,7 @@ import org.apache.cayenne.ejbql.EJBQLDelegatingVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
+import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 
 /**
  * @since 3.0
@@ -248,6 +249,13 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
     public boolean visitPatternValue(EJBQLExpression expression) {
         // TODO: andrus 3/25/2007 - implement me
+        return true;
+    }
+
+    public boolean visitPositionalInputParameter(EJBQLPositionalInputParameter expression) {
+
+        String parameter = context.bindPositionalParameter(expression.getPosition());
+        context.append('$').append(parameter);
         return true;
     }
 }

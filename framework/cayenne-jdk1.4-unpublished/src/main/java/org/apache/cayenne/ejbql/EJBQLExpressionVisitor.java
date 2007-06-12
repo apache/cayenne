@@ -21,6 +21,7 @@ package org.apache.cayenne.ejbql;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
+import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 
 /**
  * A visitor interface to inspect the EJBQL expression tree.
@@ -286,7 +287,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitPatternValue(EJBQLExpression expression);
 
-    boolean visitPositionalInputParameter(EJBQLExpression expression);
+    boolean visitPositionalInputParameter(EJBQLPositionalInputParameter expression);
 
     /**
      * Called on visiting "select" and also after visiting every expression child.

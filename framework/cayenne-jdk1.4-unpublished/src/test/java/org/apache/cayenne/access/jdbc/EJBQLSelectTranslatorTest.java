@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.Collections;
+
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLParser;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
@@ -31,7 +33,9 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         EJBQLCompiledExpression select = parser.compile(ejbql, getDomain()
                 .getEntityResolver());
 
-        EJBQLTranslationContext tr = new EJBQLTranslationContext(select);
+        EJBQLTranslationContext tr = new EJBQLTranslationContext(
+                select,
+                Collections.EMPTY_MAP);
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         return tr.getQuery();
     }
@@ -208,17 +212,15 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
                 + "NOT LIKE #bind('Stuff' 'VARCHAR')"));
     }
 
-    public void testSelectFromWhereRelationshipPropertyPath() {
-        SQLTemplate query = translateSelect("select p from Painting p where p.toArtist.artistName = 'AA2'");
+    public void testSelectPositionalParameters() {
+        SQLTemplate query = translateSelect("select a from Artist a where a.artistName = ?1 or a.artistName = ?2");
         String sql = query.getDefaultTemplate();
 
-        System.out.println("SQL: " + sql);
-
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" WHERE t1.ARTIST_NAME #bindEqual('AA2' 'VARCHAR')"));
-        // TODO: andrus, 3/25/2007 - implement joins support
-        // assertEquals(" FROM PAINTING t0 JOIN ARTIST t1 ON (t0.ARTIST_ID =
-        // t1.ARTIST_ID)", query.getParameters().get("from0"));
+        assertTrue(
+                sql,
+                sql
+                        .endsWith("t0.ARTIST_NAME #bindEqual($id1) OR t0.ARTIST_NAME #bindEqual($id2)"));
     }
 
     private int countDelimiters(String string, String delim, int fromIndex) {

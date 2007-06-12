@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
@@ -35,6 +39,7 @@ public class EJBQLQuery implements Query {
 
     protected String name;
     protected String ejbqlStatement;
+    protected Map parameters;
 
     protected transient EJBQLCompiledExpression expression;
     EJBQLQueryMetadata metadata = new EJBQLQueryMetadata();
@@ -90,5 +95,56 @@ public class EJBQLQuery implements Query {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Returns unmodifiable map of combined named and positional parameters. Positional
+     * parameter keys are Integers, while named parameter keys are strings.
+     */
+    public Map getParameters() {
+        return parameters != null
+                ? Collections.unmodifiableMap(parameters)
+                : Collections.EMPTY_MAP;
+    }
+
+    /**
+     * Sets a named query parameter value.
+     */
+    public void setParameter(String name, Object object) {
+
+        // do a minimal sanity check
+        if (name == null || name.length() < 1) {
+            throw new IllegalArgumentException("Null or empty parameter name");
+        }
+
+        // TODO: andrus, 6/12/2007 - validate against available query parameters - JPA
+        // spec requires it.
+
+        if (parameters == null) {
+            parameters = new HashMap();
+        }
+
+        parameters.put(name, object);
+    }
+
+    /**
+     * Sets a positional query parameter value. Note that parameter indexes are starting
+     * from 1.
+     */
+    public void setParameter(int position, Object object) {
+
+        if (position < 1) {
+            throw new IllegalArgumentException("Parameter position must be >= 1: "
+                    + position);
+        }
+
+        // TODO: andrus, 6/12/2007 - validate against available query parameters - JPA
+        // spec requires it.
+
+        if (parameters == null) {
+            parameters = new HashMap();
+        }
+
+        parameters.put(new Integer(position), object);
     }
 }

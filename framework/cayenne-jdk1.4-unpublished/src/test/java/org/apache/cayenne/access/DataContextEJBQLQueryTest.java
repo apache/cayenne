@@ -180,4 +180,15 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         List ps = createDataContext().performQuery(query);
         assertEquals(2, ps.size());
     }
+    
+    public void testSelectFromWhereDecimalNumberPositional() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "select P from Painting P WHERE p.estimatedPrice <= ?1";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter(1, new BigDecimal(5000.00));
+
+        List ps = createDataContext().performQuery(query);
+        assertEquals(2, ps.size());
+    }
 }
