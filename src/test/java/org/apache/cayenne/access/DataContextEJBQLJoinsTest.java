@@ -53,10 +53,10 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
         // while (it.hasNext()) {
         // Artist a = (Artist) it.next();
         // names.add(a.getArtistName());
-        //         }
+        // }
         //        
-        //         assertTrue(names.contains("AA1"));
-        //         assertTrue(names.contains("BB2"));
+        // assertTrue(names.contains("AA1"));
+        // assertTrue(names.contains("BB2"));
     }
 
     public void testInnerJoins() throws Exception {
@@ -74,7 +74,7 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
     public void testOuterJoins() throws Exception {
         createTestData("testInnerJoins");
 
-         String ejbql = "SELECT a "
+        String ejbql = "SELECT a "
                 + "FROM Artist a LEFT JOIN a.paintingArray p "
                 + "WHERE a.artistName = 'AA1'";
 
@@ -107,46 +107,46 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
     }
 
     public void testImplicitJoins() throws Exception {
-         createTestData("testChainedJoins");
-         String ejbql = "SELECT a "
-         + "FROM Artist a "
-         + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
-         
-         EJBQLQuery query = new EJBQLQuery(ejbql);
-         
-         System.out.println(""
-                 + query.getExpression(getDomain().getEntityResolver()).getExpression());
-                
-         List artists = createDataContext().performQuery(query);
-         assertEquals(1, artists.size());
-                 assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+        createTestData("testChainedJoins");
+        String ejbql = "SELECT a "
+                + "FROM Artist a "
+                + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        System.out.println(""
+                + query.getExpression(getDomain().getEntityResolver()).getExpression());
+
+        List artists = createDataContext().performQuery(query);
+        assertEquals(1, artists.size());
+        assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
     }
 
     public void testPartialImplicitJoins1() throws Exception {
         createTestData("testChainedJoins");
-         String ejbql = "SELECT a "
-         + "FROM Artist a JOIN a.paintingArray b "
-         + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
-        
-         List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
-         assertEquals(1, artists.size());
-         assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+        String ejbql = "SELECT a "
+                + "FROM Artist a JOIN a.paintingArray b "
+                + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
+
+        List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
+        assertEquals(1, artists.size());
+        assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
     }
-    
+
     public void testPartialImplicitJoins2() throws Exception {
         createTestData("testChainedJoins");
-         String ejbql = "SELECT a "
-         + "FROM Artist a JOIN a.paintingArray b "
-         + "WHERE a.paintingArray.paintingTitle = 'CC2'";
-        
-         List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
-         assertEquals(1, artists.size());
-         assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+        String ejbql = "SELECT a "
+                + "FROM Artist a JOIN a.paintingArray b "
+                + "WHERE a.paintingArray.paintingTitle = 'CC2'";
+
+        List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
+        assertEquals(1, artists.size());
+        assertEquals(33002, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
     }
 
     public void testMultipleJoinsToTheSameTable() throws Exception {
         createTestData("testMultipleJoinsToTheSameTable");
-         String ejbql = "SELECT a "
+        String ejbql = "SELECT a "
                 + "FROM Artist a JOIN a.paintingArray b JOIN a.paintingArray c "
                 + "WHERE b.paintingTitle = 'P1' AND c.paintingTitle = 'P2'";
 

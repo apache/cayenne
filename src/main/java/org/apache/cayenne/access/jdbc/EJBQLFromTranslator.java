@@ -32,8 +32,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
-    private String lastTableAlias;
-    private String lastId;
 
     public EJBQLFromTranslator(EJBQLTranslationContext context) {
         super(true);
@@ -42,12 +40,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
-            if (lastTableAlias != null) {
-                context.append(',');
-            }
-
-            lastId = expression.getId();
-            lastTableAlias = appendTable(lastId);
+            appendTable(expression.getId());
         }
 
         return true;
@@ -77,33 +70,30 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
-    void setLastTableAlias(String alias) {
-        this.lastTableAlias = alias;
-    }
-
     private void appendJoin(EJBQLJoin join, String semantics, boolean reusable) {
 
-        String id = join.getId();
+        String rhsId = join.getRightHandSideId();
 
-        if (lastTableAlias == null) {
-            throw new EJBQLException("No source table for join: " + id);
-        }
-
-        String sourceAlias = lastTableAlias;
-
-        context.append(" ").append(semantics);
-        String targetAlias = appendTable(id);
-        context.append(" ON (");
-
-        ObjRelationship incoming = context
+        ObjRelationship joinRelationship = context
                 .getCompiledExpression()
-                .getIncomingRelationship(id);
-        if (incoming == null) {
-            throw new EJBQLException("No join configured for id " + id);
+                .getIncomingRelationship(rhsId);
+        if (joinRelationship == null) {
+            throw new EJBQLException("No join configured for id " + rhsId);
         }
 
         // TODO: andrus, 4/8/2007 - support for flattened relationships
-        DbRelationship incomingDB = (DbRelationship) incoming.getDbRelationships().get(0);
+        DbRelationship incomingDB = (DbRelationship) joinRelationship
+                .getDbRelationships()
+                .get(0);
+
+        String lhsId = join.getLeftHandSideId();
+        String sourceAlias = context.getAlias(lhsId, incomingDB
+                .getSourceEntity()
+                .getName());
+
+        context.append(" ").append(semantics);
+        String targetAlias = appendTable(rhsId);
+        context.append(" ON (");
 
         Iterator it = incomingDB.getJoins().iterator();
         if (it.hasNext()) {
@@ -134,11 +124,8 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         context.append(")");
 
         if (reusable) {
-            context.registerReusableJoin(lastId, incoming.getName(), id);
+            context.registerReusableJoin(lhsId, joinRelationship.getName(), rhsId);
         }
-
-        this.lastTableAlias = targetAlias;
-        this.lastId = id;
     }
 
     private String appendTable(String id) {

@@ -48,6 +48,22 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         assertTrue(sql, sql.endsWith(" FROM ARTIST AS t0${marker0}"));
     }
 
+    public void testSelectMultipleJoinsToTheSameTable() throws Exception {
+        SQLTemplate query = translateSelect("SELECT a "
+                + "FROM Artist a JOIN a.paintingArray b JOIN a.paintingArray c "
+                + "WHERE b.paintingTitle = 'P1' AND c.paintingTitle = 'P2'");
+        String sql = query.getDefaultTemplate();
+
+        assertTrue(sql, sql.startsWith("SELECT "));
+        assertTrue(
+                sql,
+                sql.indexOf("INNER JOIN PAINTING AS t1 ON (t0.ARTIST_ID = t1.ARTIST_ID)") > 0);
+        assertTrue(
+                sql,
+                sql.indexOf("INNER JOIN PAINTING AS t2 ON (t0.ARTIST_ID = t2.ARTIST_ID)") > 0);
+
+    }
+
     public void testSelectDistinct() {
         SQLTemplate query = translateSelect("select distinct a from Artist a");
         String sql = query.getDefaultTemplate();
