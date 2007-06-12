@@ -146,12 +146,12 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
 
     public void testMultipleJoinsToTheSameTable() throws Exception {
         createTestData("testMultipleJoinsToTheSameTable");
-        // String ejbql = "SELECT a "
-        // + "FROM Artist a JOIN a.paintingArray b JOIN a.paintingArray c "
-        // + "WHERE b.paintingTitle = 'P1' AND c.paintingTitle = 'P2'";
-        //
-        // List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
-        // assertEquals(1, artists.size());
-        // assertEquals(33001, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
+         String ejbql = "SELECT a "
+                + "FROM Artist a JOIN a.paintingArray b JOIN a.paintingArray c "
+                + "WHERE b.paintingTitle = 'P1' AND c.paintingTitle = 'P2'";
+
+        List artists = createDataContext().performQuery(new EJBQLQuery(ejbql));
+        assertEquals(1, artists.size());
+        assertEquals(33001, DataObjectUtils.intPKForObject((Artist) artists.get(0)));
     }
 }
