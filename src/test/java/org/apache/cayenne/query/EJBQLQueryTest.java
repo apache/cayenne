@@ -18,11 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.Map;
+
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class EJBQLQueryTest extends CayenneCase {
+
+    public void testParameters() {
+        String ejbql = "select a FROM Artist a WHERE a.artistName = ?1 OR a.artistName = :name";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter(1, "X");
+        query.setParameter("name", "Y");
+
+        Map parameters = query.getParameters();
+        assertEquals(2, parameters.size());
+        assertEquals("X", parameters.get(new Integer(1)));
+        assertEquals("Y", parameters.get("name"));
+    }
 
     public void testGetExpression() {
         String ejbql = "select a FROM Artist a";

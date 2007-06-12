@@ -41,11 +41,13 @@ class EJBQLTranslationContext {
     private EJBQLCompiledExpression compiledExpression;
     private Map attributes;
     private Map reusableJoins;
+    private Map parameters;
 
-    EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression) {
+    EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression, Map parameters) {
         this.compiledExpression = compiledExpression;
         this.mainBuffer = new StringBuffer();
         this.currentBuffer = mainBuffer;
+        this.parameters = parameters;
     }
 
     SQLTemplate getQuery() {
@@ -135,6 +137,14 @@ class EJBQLTranslationContext {
 
     EJBQLCompiledExpression getCompiledExpression() {
         return compiledExpression;
+    }
+    
+    String bindPositionalParameter(int position) {
+        return bindParameter(parameters.get(new Integer(position)));
+    }
+    
+    String bindNamedParameter(String name) {
+        return bindParameter(parameters.get(name));
     }
 
     /**

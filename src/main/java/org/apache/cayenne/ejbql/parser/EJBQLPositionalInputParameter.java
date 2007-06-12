@@ -33,4 +33,8 @@ public class EJBQLPositionalInputParameter extends SimpleNode {
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitPositionalInputParameter(this);
     }
+
+    public int getPosition() {
+        return getText() != null ? Integer.parseInt(getText()) : -1;
+    }
 }

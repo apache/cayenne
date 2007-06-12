@@ -52,9 +52,12 @@ public class EJBQLAction extends BaseSQLAction {
 
     public void performAction(Connection connection, OperationObserver observer)
             throws SQLException, Exception {
-        EJBQLCompiledExpression compiledExpression = query.getExpression(getEntityResolver());
-        final EJBQLTranslationContext context = new EJBQLTranslationContext(compiledExpression);
-        
+        EJBQLCompiledExpression compiledExpression = query
+                .getExpression(getEntityResolver());
+        final EJBQLTranslationContext context = new EJBQLTranslationContext(
+                compiledExpression,
+                query.getParameters());
+
         compiledExpression.getExpression().visit(new EJBQLBaseVisitor(false) {
 
             public boolean visitSelect(EJBQLExpression expression, int finishedChildIndex) {

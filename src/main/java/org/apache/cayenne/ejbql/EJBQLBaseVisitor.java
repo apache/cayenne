@@ -21,6 +21,7 @@ package org.apache.cayenne.ejbql;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
+import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 
 /**
  * A noop implementation of the EJBQL visitor that returns same preset boolean value from
@@ -301,7 +302,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitPositionalInputParameter(EJBQLExpression expression) {
+    public boolean visitPositionalInputParameter(EJBQLPositionalInputParameter expression) {
         return continueFlag;
     }
 
