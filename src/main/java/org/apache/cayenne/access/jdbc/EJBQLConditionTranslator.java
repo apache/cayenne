@@ -81,6 +81,12 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
         return true;
     }
+    
+    public boolean visitNamedInputParameter(EJBQLExpression expression) {
+        String parameter = context.bindNamedParameter(expression.getText());
+        context.append('$').append(parameter);
+        return true;
+    }
 
     public boolean visitNot(EJBQLExpression expression) {
         context.append(" NOT");
@@ -195,18 +201,6 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         }
     }
 
-    public boolean visitStringLiteral(EJBQLExpression expression) {
-        if (expression.getText() == null) {
-            context.append("null");
-        }
-        else {
-            // note that String Literal text is already wrapped in single quotes, with
-            // quotes that are part of the string escaped.
-            context.append(expression.getText()).append(" 'VARCHAR'");
-        }
-        return true;
-    }
-
     public boolean visitIntegerLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
             context.append("null");
@@ -256,6 +250,18 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
         String parameter = context.bindPositionalParameter(expression.getPosition());
         context.append('$').append(parameter);
+        return true;
+    }
+
+    public boolean visitStringLiteral(EJBQLExpression expression) {
+        if (expression.getText() == null) {
+            context.append("null");
+        }
+        else {
+            // note that String Literal text is already wrapped in single quotes, with
+            // quotes that are part of the string escaped.
+            context.append(expression.getText()).append(" 'VARCHAR'");
+        }
         return true;
     }
 }
