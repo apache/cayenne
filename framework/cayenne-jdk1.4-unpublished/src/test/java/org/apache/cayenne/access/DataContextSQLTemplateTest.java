@@ -174,6 +174,24 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(33002, DataObjectUtils.intPKForObject(p));
     }
 
+    public void testBindObjectEqualNull() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        String template = "SELECT * FROM PAINTING t0"
+                + " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
+        SQLTemplate query = new SQLTemplate(Painting.class, template);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setParameters(Collections.singletonMap("a", null));
+
+        List objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+
+        Painting p = (Painting) objects.get(0);
+        assertEquals(33003, DataObjectUtils.intPKForObject(p));
+    }
+
     public void testBindObjectNotEqualFull() throws Exception {
         createTestData("prepare");
 
@@ -193,6 +211,28 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         Painting p = (Painting) objects.get(0);
         assertEquals(33001, DataObjectUtils.intPKForObject(p));
     }
+    
+    public void testBindObjectNotEqualNull() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        String template = "SELECT * FROM PAINTING t0"
+                + " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
+        SQLTemplate query = new SQLTemplate(Painting.class, template);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setParameters(Collections.singletonMap("a", null));
+
+        List objects = context.performQuery(query);
+        assertEquals(2, objects.size());
+
+        Painting p1 = (Painting) objects.get(0);
+        assertEquals(33001, DataObjectUtils.intPKForObject(p1));
+        
+        Painting p2 = (Painting) objects.get(1);
+        assertEquals(33002, DataObjectUtils.intPKForObject(p2));
+    }
+
 
     public void testFetchLimit() throws Exception {
         getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
