@@ -74,6 +74,7 @@ class SQLTemplateProcessor {
         sharedRuntime.addProperty("userdirective", BindDirective.class.getName());
         sharedRuntime.addProperty("userdirective", BindEqualDirective.class.getName());
         sharedRuntime.addProperty("userdirective", BindNotEqualDirective.class.getName());
+        sharedRuntime.addProperty("userdirective", BindObjectEqualDirective.class.getName());
         sharedRuntime.addProperty("userdirective", ResultDirective.class.getName());
         sharedRuntime.addProperty("userdirective", ChainDirective.class.getName());
         sharedRuntime.addProperty("userdirective", ChunkDirective.class.getName());
