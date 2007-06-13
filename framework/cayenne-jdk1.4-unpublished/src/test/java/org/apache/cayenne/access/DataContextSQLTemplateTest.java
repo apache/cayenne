@@ -19,11 +19,15 @@
 
 package org.apache.cayenne.access;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.art.Artist;
+import org.apache.art.Painting;
+import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -57,9 +61,9 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         DataRow row2 = (DataRow) rows.get(1);
         assertFalse(row2.containsKey("ARTIST_ID"));
         assertTrue(row2.containsKey("artist_id"));
-    
+
         query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
-        
+
         List rowsUpper = context.performQuery(query);
 
         DataRow row3 = (DataRow) rowsUpper.get(0);
@@ -108,6 +112,46 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         Artist artist2 = (Artist) objects.get(1);
         assertEquals("artist2", artist2.getArtistName());
+    }
+
+    public void testBindObjectEqualShort() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+
+        String template = "SELECT * FROM PAINTING "
+                + "WHERE #bindObjectEqual($a) ORDER BY PAINTING_ID";
+        SQLTemplate query = new SQLTemplate(Painting.class, template);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setParameters(Collections.singletonMap("a", a));
+
+        List objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+
+        Painting p = (Painting) objects.get(0);
+        assertEquals(33002, DataObjectUtils.intPKForObject(p));
+    }
+
+    public void testBindObjectEqualFull() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+
+        String template = "SELECT * FROM PAINTING t0"
+                + " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
+        SQLTemplate query = new SQLTemplate(Painting.class, template);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setParameters(Collections.singletonMap("a", a));
+
+        List objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+
+        Painting p = (Painting) objects.get(0);
+        assertEquals(33002, DataObjectUtils.intPKForObject(p));
     }
 
     public void testFetchLimit() throws Exception {
