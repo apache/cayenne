@@ -20,10 +20,13 @@
 package org.apache.cayenne.access;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.art.Artist;
+import org.apache.art.CompoundFkTestEntity;
+import org.apache.art.CompoundPkTestEntity;
 import org.apache.art.Painting;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
@@ -211,7 +214,62 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         Painting p = (Painting) objects.get(0);
         assertEquals(33001, DataObjectUtils.intPKForObject(p));
     }
+
+    public void testBindObjectEqualCompound() throws Exception {
+        createTestData("testBindObjectEqualCompound");
+
+        ObjectContext context = createDataContext();
+
+        Map pk = new HashMap();
+        pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
+        pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "a2");
+
+        CompoundPkTestEntity a = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+                context,
+                CompoundPkTestEntity.class,
+                pk);
+
+        String template = "SELECT * FROM COMPOUND_FK_TEST t0"
+                + " WHERE #bindObjectEqual($a [ 't0.F_KEY1', 't0.F_KEY2' ] [ 'KEY1', 'KEY2' ] ) ORDER BY PKEY";
+        SQLTemplate query = new SQLTemplate(CompoundFkTestEntity.class, template);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setParameters(Collections.singletonMap("a", a));
+
+        List objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+
+        CompoundFkTestEntity p = (CompoundFkTestEntity) objects.get(0);
+        assertEquals(33001, DataObjectUtils.intPKForObject(p));
+    }
     
+    public void testBindObjectNotEqualCompound() throws Exception {
+        createTestData("testBindObjectEqualCompound");
+
+        ObjectContext context = createDataContext();
+
+        Map pk = new HashMap();
+        pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
+        pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "a2");
+
+        CompoundPkTestEntity a = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+                context,
+                CompoundPkTestEntity.class,
+                pk);
+
+        String template = "SELECT * FROM COMPOUND_FK_TEST t0"
+                + " WHERE #bindObjectNotEqual($a [ 't0.F_KEY1', 't0.F_KEY2' ] [ 'KEY1', 'KEY2' ] ) ORDER BY PKEY";
+        SQLTemplate query = new SQLTemplate(CompoundFkTestEntity.class, template);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setParameters(Collections.singletonMap("a", a));
+
+        List objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+
+        CompoundFkTestEntity p = (CompoundFkTestEntity) objects.get(0);
+        assertEquals(33002, DataObjectUtils.intPKForObject(p));
+    }
+
+
     public void testBindObjectNotEqualNull() throws Exception {
         createTestData("prepare");
 
@@ -228,11 +286,10 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         Painting p1 = (Painting) objects.get(0);
         assertEquals(33001, DataObjectUtils.intPKForObject(p1));
-        
+
         Painting p2 = (Painting) objects.get(1);
         assertEquals(33002, DataObjectUtils.intPKForObject(p2));
     }
-
 
     public void testFetchLimit() throws Exception {
         getAccessStack().createTestData(DataContextCase.class, "testArtists", null);

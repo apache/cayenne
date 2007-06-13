@@ -49,6 +49,40 @@
 		</value></constructor-arg>
 	</bean>
 	
+	<bean id="P13" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33003, 'P3', null, 5000)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="CP1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_PK_TEST (KEY1, KEY2) values ('a1', 'a2')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="CP2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_PK_TEST (KEY1, KEY2) values ('b1', 'b2')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="CF1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_FK_TEST (PKEY, F_KEY1, F_KEY2) values (33001, 'a1', 'a2')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="CF2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_FK_TEST (PKEY, F_KEY1, F_KEY2) values (33002, 'b1', 'b2')
+		</value></constructor-arg>
+	</bean>
 
 	<!-- ======================================= -->
 	<!-- Data Sets -->
@@ -63,6 +97,18 @@
 				<ref bean="A4"/>
 				<ref bean="P11"/>
 				<ref bean="P12"/>
+				<ref bean="P13"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testBindObjectEqualCompound" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="CP1"/>
+				<ref bean="CP2"/>
+				<ref bean="CF1"/>
+				<ref bean="CF2"/>
 			</list>
 		</constructor-arg>
 	</bean>
