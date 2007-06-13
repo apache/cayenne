@@ -119,6 +119,9 @@ public class BindObjectEqualDirective extends BindDirective {
         else if (object instanceof ObjectId) {
             return ((ObjectId) object).getIdSnapshot();
         }
+        else if(object instanceof Map) {
+            return (Map) object;
+        }
         else if (object != null) {
             throw new ParseErrorException(
                     "Invalid object parameter, expected Persistent or ObjectId or null: "
