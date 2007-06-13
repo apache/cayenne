@@ -134,6 +134,26 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(33002, DataObjectUtils.intPKForObject(p));
     }
 
+    public void testBindObjectNotEqualShort() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+
+        String template = "SELECT * FROM PAINTING "
+                + "WHERE #bindObjectNotEqual($a) ORDER BY PAINTING_ID";
+        SQLTemplate query = new SQLTemplate(Painting.class, template);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setParameters(Collections.singletonMap("a", a));
+
+        List objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+
+        Painting p = (Painting) objects.get(0);
+        assertEquals(33001, DataObjectUtils.intPKForObject(p));
+    }
+
     public void testBindObjectEqualFull() throws Exception {
         createTestData("prepare");
 
@@ -152,6 +172,26 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         Painting p = (Painting) objects.get(0);
         assertEquals(33002, DataObjectUtils.intPKForObject(p));
+    }
+
+    public void testBindObjectNotEqualFull() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+
+        String template = "SELECT * FROM PAINTING t0"
+                + " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
+        SQLTemplate query = new SQLTemplate(Painting.class, template);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setParameters(Collections.singletonMap("a", a));
+
+        List objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+
+        Painting p = (Painting) objects.get(0);
+        assertEquals(33001, DataObjectUtils.intPKForObject(p));
     }
 
     public void testFetchLimit() throws Exception {
