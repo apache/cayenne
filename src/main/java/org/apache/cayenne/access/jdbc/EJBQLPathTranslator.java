@@ -51,10 +51,10 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
         if (finishedChildIndex > 0) {
 
             if (finishedChildIndex + 1 < expression.getChildrenCount()) {
-                processIntermediatePath();
+                processIntermediatePathComponent();
             }
             else {
-                processLastPath();
+                processLastPathComponent();
             }
         }
 
@@ -87,6 +87,14 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    private EJBQLFromTranslator getJoinAppender() {
+        if (joinAppender == null) {
+            joinAppender = new EJBQLFromTranslator(context);
+        }
+
+        return joinAppender;
+    }
+
     private void resolveJoin() {
 
         String newPath = idPath + '.' + lastPathComponent;
@@ -117,13 +125,9 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
             join.jjtAddChild(path, 0);
             join.jjtAddChild(joinId, 1);
 
-            if (joinAppender == null) {
-                joinAppender = new EJBQLFromTranslator(context);
-            }
-
             context.switchToMarker(EJBQLTranslationContext.FROM_TAIL_MARKER);
 
-            joinAppender.visitInnerJoin(join, -1);
+            getJoinAppender().visitInnerJoin(join, -1);
             context.switchToMainBuffer();
 
             this.idPath = newPath;
@@ -131,7 +135,7 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
         }
     }
 
-    private void processIntermediatePath() {
+    private void processIntermediatePathComponent() {
         ObjRelationship relationship = (ObjRelationship) currentEntity
                 .getRelationship(lastPathComponent);
         if (relationship == null) {
@@ -145,10 +149,27 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
         this.currentEntity = (ObjEntity) relationship.getTargetEntity();
     }
 
-    private void processLastPath() {
-        // TODO: andrus 3/25/2007 - process terminal relationships
+    private void processLastPathComponent() {
+
         ObjAttribute attribute = (ObjAttribute) currentEntity
                 .getAttribute(lastPathComponent);
+
+        if (attribute != null) {
+            processTerminatingAttribute(attribute);
+            return;
+        }
+
+        ObjRelationship relationship = (ObjRelationship) currentEntity
+                .getRelationship(lastPathComponent);
+        if (relationship != null) {
+            processTerminatingRelationship(relationship);
+            return;
+        }
+
+        throw new IllegalStateException("Invalid path component: " + lastPathComponent);
+    }
+
+    private void processTerminatingAttribute(ObjAttribute attribute) {
 
         DbEntity table = currentEntity.getDbEntity();
         String alias = this.lastAlias != null ? lastAlias : context.getAlias(
@@ -156,5 +177,16 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 table.getFullyQualifiedName());
         context.append(' ').append(alias).append('.').append(
                 attribute.getDbAttributeName());
+    }
+
+    private void processTerminatingRelationship(ObjRelationship relationship) {
+
+        // check whether we need a join
+        if (relationship.isSourceIndependentFromTargetChange()) {
+            // TODO: andrus, 6/13/2007 - implement
+        }
+        else {
+            // match FK against the target object
+        }
     }
 }
