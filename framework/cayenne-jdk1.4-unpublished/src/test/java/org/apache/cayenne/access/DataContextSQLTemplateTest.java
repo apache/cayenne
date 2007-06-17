@@ -177,6 +177,27 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(33002, DataObjectUtils.intPKForObject(p));
     }
 
+    public void testBindObjectEqualFullNonArray() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+
+        String template = "SELECT * FROM PAINTING t0"
+                + " WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' ) ORDER BY PAINTING_ID";
+        SQLTemplate query = new SQLTemplate(Painting.class, template);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setParameters(Collections.singletonMap("a", a));
+
+        List objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+
+        Painting p = (Painting) objects.get(0);
+        assertEquals(33002, DataObjectUtils.intPKForObject(p));
+    }
+
+    
     public void testBindObjectEqualNull() throws Exception {
         createTestData("prepare");
 
