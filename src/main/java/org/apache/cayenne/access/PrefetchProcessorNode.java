@@ -86,9 +86,9 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         if (parent != null) {
 
             // if a relationship is to-one (i.e. flattened to-one), can connect right
-            // away....
+            // away.... write directly to prevent changing persistence state.
             if (incoming instanceof ToOneProperty) {
-                incoming.writeProperty(parent, null, object);
+                incoming.writePropertyDirectly(parent, null, object);
             }
             else {
 
