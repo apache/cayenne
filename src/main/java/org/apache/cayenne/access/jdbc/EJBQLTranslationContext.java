@@ -35,7 +35,7 @@ class EJBQLTranslationContext {
     static final String FROM_TAIL_MARKER = "FROM_TAIL_MARKER";
 
     private Map aliases;
-    private Map bindingVariables;
+    private Map boundParameters;
     private StringBuffer mainBuffer;
     private StringBuffer currentBuffer;
     private EJBQLCompiledExpression compiledExpression;
@@ -55,7 +55,7 @@ class EJBQLTranslationContext {
         SQLTemplate query = new SQLTemplate(compiledExpression
                 .getRootDescriptor()
                 .getObjectClass(), sql);
-        query.setParameters(bindingVariables);
+        query.setParameters(boundParameters);
         return query;
     }
 
@@ -86,7 +86,7 @@ class EJBQLTranslationContext {
             throw new IllegalArgumentException("Invalid marker: " + marker);
         }
 
-        Object object = bindingVariables.get(internalMarker);
+        Object object = boundParameters.get(internalMarker);
         if (!(object instanceof StringBuffer)) {
             throw new IllegalArgumentException("Invalid or missing buffer for marker: "
                     + marker);
@@ -159,12 +159,12 @@ class EJBQLTranslationContext {
      * to it.
      */
     String bindParameter(Object value, String prefix) {
-        if (bindingVariables == null) {
-            bindingVariables = new HashMap();
+        if (boundParameters == null) {
+            boundParameters = new HashMap();
         }
 
-        String var = prefix + bindingVariables.size();
-        bindingVariables.put(var, value);
+        String var = prefix + boundParameters.size();
+        boundParameters.put(var, value);
         return var;
     }
 
