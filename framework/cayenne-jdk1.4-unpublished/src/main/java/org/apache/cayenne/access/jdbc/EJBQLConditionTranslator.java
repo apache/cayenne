@@ -193,7 +193,7 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
     public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
-            setDelegate(new EJBQLPathTranslator(context));
+            setDelegate(new EJBQLConditionPathTranslator(context));
             return true;
         }
         else {
