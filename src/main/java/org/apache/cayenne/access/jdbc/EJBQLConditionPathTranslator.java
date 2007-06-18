@@ -31,7 +31,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
-class EJBQLPathTranslator extends EJBQLBaseVisitor {
+class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     private ObjEntity currentEntity;
@@ -41,7 +41,7 @@ class EJBQLPathTranslator extends EJBQLBaseVisitor {
     private String fullPath;
     private EJBQLFromTranslator joinAppender;
 
-    EJBQLPathTranslator(EJBQLTranslationContext context) {
+    EJBQLConditionPathTranslator(EJBQLTranslationContext context) {
         super(true);
         this.context = context;
     }
