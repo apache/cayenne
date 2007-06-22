@@ -19,7 +19,13 @@
 package org.apache.cayenne.access.jdbc;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ejbql.EJBQLDelegatingVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
@@ -34,8 +40,18 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
     private EJBQLTranslationContext context;
 
+    private List multiColumnOperands;
+
     EJBQLConditionTranslator(EJBQLTranslationContext context) {
         this.context = context;
+    }
+
+    void addMultiColumnOperand(EJBQLMultiColumnOperand operand) {
+        if (multiColumnOperands == null) {
+            multiColumnOperands = new ArrayList(2);
+        }
+
+        multiColumnOperands.add(operand);
     }
 
     public boolean visitAnd(EJBQLExpression expression, int finishedChildIndex) {
@@ -50,13 +66,10 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
                 if (expression.isNegated()) {
                     context.append(" NOT");
                 }
-                context.append(" BETWEEN #bind(");
+                context.append(" BETWEEN");
                 break;
             case 1:
-                context.append(") AND #bind(");
-                break;
-            case 2:
-                context.append(")");
+                context.append(" AND");
                 break;
         }
 
@@ -72,19 +85,51 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         setDelegate(null);
         switch (finishedChildIndex) {
             case 0:
-                context.append(" #bindEqual(");
+                context.append(" =");
                 break;
             case 1:
-                context.append(")");
+                // check multicolumn match condition and undo op insertion and append it
+                // from scratch if needed
+                if (multiColumnOperands != null) {
+
+                    if (multiColumnOperands.size() != 2) {
+                        throw new EJBQLException(
+                                "Invalid multi-column equals expression. Expected 2 multi-column operands, got "
+                                        + multiColumnOperands.size());
+                    }
+
+                    context.trim(2);
+
+                    EJBQLMultiColumnOperand lhs = (EJBQLMultiColumnOperand) multiColumnOperands
+                            .get(0);
+                    EJBQLMultiColumnOperand rhs = (EJBQLMultiColumnOperand) multiColumnOperands
+                            .get(1);
+
+                    Iterator it = lhs.getKeys().iterator();
+                    while (it.hasNext()) {
+                        Object key = it.next();
+
+                        lhs.appendValue(key);
+                        context.append(" =");
+                        rhs.appendValue(key);
+
+                        if (it.hasNext()) {
+                            context.append(" AND");
+                        }
+                    }
+
+                    multiColumnOperands = null;
+                }
+
                 break;
         }
 
         return true;
     }
-    
+
     public boolean visitNamedInputParameter(EJBQLExpression expression) {
         String parameter = context.bindNamedParameter(expression.getText());
-        context.append('$').append(parameter);
+        processParameter(parameter);
         return true;
     }
 
@@ -97,25 +142,51 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         setDelegate(null);
         switch (finishedChildIndex) {
             case 0:
-                context.append(" #bindNotEqual(");
+                context.append(" <>");
                 break;
             case 1:
-                context.append(")");
+                // check multicolumn match condition and undo op insertion and append it
+                // from scratch if needed
+                if (multiColumnOperands != null) {
+
+                    if (multiColumnOperands.size() != 2) {
+                        throw new EJBQLException(
+                                "Invalid multi-column equals expression. Expected 2 multi-column operands, got "
+                                        + multiColumnOperands.size());
+                    }
+
+                    context.trim(3);
+
+                    EJBQLMultiColumnOperand lhs = (EJBQLMultiColumnOperand) multiColumnOperands
+                            .get(0);
+                    EJBQLMultiColumnOperand rhs = (EJBQLMultiColumnOperand) multiColumnOperands
+                            .get(1);
+
+                    Iterator it = lhs.getKeys().iterator();
+                    while (it.hasNext()) {
+                        Object key = it.next();
+
+                        lhs.appendValue(key);
+                        context.append(" <>");
+                        rhs.appendValue(key);
+
+                        if (it.hasNext()) {
+                            context.append(" OR");
+                        }
+                    }
+
+                    multiColumnOperands = null;
+                }
+
                 break;
         }
-
         return true;
     }
 
     public boolean visitGreaterThan(EJBQLExpression expression, int finishedChildIndex) {
         setDelegate(null);
-        switch (finishedChildIndex) {
-            case 0:
-                context.append(" > #bind(");
-                break;
-            case 1:
-                context.append(")");
-                break;
+        if (finishedChildIndex == 0) {
+            context.append(" >");
         }
 
         return true;
@@ -123,13 +194,8 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
     public boolean visitGreaterOrEqual(EJBQLExpression expression, int finishedChildIndex) {
         setDelegate(null);
-        switch (finishedChildIndex) {
-            case 0:
-                context.append(" >= #bind(");
-                break;
-            case 1:
-                context.append(")");
-                break;
+        if (finishedChildIndex == 0) {
+            context.append(" >=");
         }
 
         return true;
@@ -137,13 +203,8 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
     public boolean visitLessOrEqual(EJBQLExpression expression, int finishedChildIndex) {
         setDelegate(null);
-        switch (finishedChildIndex) {
-            case 0:
-                context.append(" <= #bind(");
-                break;
-            case 1:
-                context.append(")");
-                break;
+        if (finishedChildIndex == 0) {
+            context.append(" <=");
         }
 
         return true;
@@ -151,13 +212,8 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
     public boolean visitLessThan(EJBQLExpression expression, int finishedChildIndex) {
         setDelegate(null);
-        switch (finishedChildIndex) {
-            case 0:
-                context.append(" < #bind(");
-                break;
-            case 1:
-                context.append(")");
-                break;
+        if (finishedChildIndex == 0) {
+            context.append(" <");
         }
 
         return true;
@@ -165,16 +221,11 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
     public boolean visitLike(EJBQLExpression expression, int finishedChildIndex) {
         setDelegate(null);
-        switch (finishedChildIndex) {
-            case 0:
-                if (expression.isNegated()) {
-                    context.append(" NOT");
-                }
-                context.append(" LIKE #bind(");
-                break;
-            case 1:
-                context.append(")");
-                break;
+        if (finishedChildIndex == 0) {
+            if (expression.isNegated()) {
+                context.append(" NOT");
+            }
+            context.append(" LIKE");
         }
 
         return true;
@@ -193,7 +244,12 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
 
     public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
-            setDelegate(new EJBQLConditionPathTranslator(context));
+            setDelegate(new EJBQLConditionPathTranslator(context) {
+
+                protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
+                    EJBQLConditionTranslator.this.addMultiColumnOperand(operand);
+                }
+            });
             return true;
         }
         else {
@@ -216,7 +272,7 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
             }
 
             String var = context.bindParameter(value);
-            context.append('$').append(var).append(" 'INTEGER'");
+            context.append(" #bind($").append(var).append(" 'INTEGER')");
         }
         return true;
     }
@@ -236,7 +292,7 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
             }
 
             String var = context.bindParameter(value);
-            context.append('$').append(var).append(" 'DECIMAL'");
+            context.append(" #bind($").append(var).append(" 'DECIMAL')");
         }
         return true;
     }
@@ -246,10 +302,18 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         return true;
     }
 
+    public boolean visitIsNull(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex == 0) {
+            context.append(expression.isNegated() ? " IS NOT NULL" : " IS NULL");
+        }
+
+        return true;
+    }
+
     public boolean visitPositionalInputParameter(EJBQLPositionalInputParameter expression) {
 
         String parameter = context.bindPositionalParameter(expression.getPosition());
-        context.append('$').append(parameter);
+        processParameter(parameter);
         return true;
     }
 
@@ -260,8 +324,37 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
         else {
             // note that String Literal text is already wrapped in single quotes, with
             // quotes that are part of the string escaped.
-            context.append(expression.getText()).append(" 'VARCHAR'");
+            context.append(" #bind(").append(expression.getText()).append(" 'VARCHAR')");
         }
         return true;
+    }
+
+    private void processParameter(String boundName) {
+        Object object = context.getBoundParameter(boundName);
+
+        Map map = null;
+        if (object instanceof Persistent) {
+            map = ((Persistent) object).getObjectId().getIdSnapshot();
+        }
+        else if (object instanceof ObjectId) {
+            map = ((ObjectId) object).getIdSnapshot();
+        }
+        else if (object instanceof Map) {
+            map = (Map) object;
+        }
+
+        if (map != null) {
+            if (map.size() == 1) {
+                context.rebindParameter(boundName, map.values().iterator().next());
+            }
+            else {
+                addMultiColumnOperand(EJBQLMultiColumnOperand.getObjectOperand(
+                        context,
+                        map));
+                return;
+            }
+        }
+
+        context.append(" #bind($").append(boundName).append(")");
     }
 }

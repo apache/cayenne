@@ -257,8 +257,10 @@ public class EJBQLDelegatingVisitor implements EJBQLExpressionVisitor {
         return delegate != null ? delegate.visitIsEmpty(expression) : continueFlag;
     }
 
-    public boolean visitIsNull(EJBQLExpression expression) {
-        return delegate != null ? delegate.visitIsNull(expression) : continueFlag;
+    public boolean visitIsNull(EJBQLExpression expression, int finishedChildIndex) {
+        return delegate != null
+                ? delegate.visitIsNull(expression, finishedChildIndex)
+                : continueFlag;
     }
 
     public boolean visitLength(EJBQLExpression expression) {
@@ -339,8 +341,10 @@ public class EJBQLDelegatingVisitor implements EJBQLExpressionVisitor {
                 : continueFlag;
     }
 
-    public boolean visitOrderBy(EJBQLExpression expression) {
-        return delegate != null ? delegate.visitOrderBy(expression) : continueFlag;
+    public boolean visitOrderBy(EJBQLExpression expression, int finishedChildIndex) {
+        return delegate != null
+                ? delegate.visitOrderBy(expression, finishedChildIndex)
+                : continueFlag;
     }
 
     public boolean visitOrderByItem(EJBQLExpression expression) {

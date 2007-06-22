@@ -35,28 +35,25 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
     }
 
     public void testThetaJoins() throws Exception {
-        // createTestData("testThetaJoins");
-        //
-        // String ejbql = "SELECT DISTINCT a "
-        // + "FROM Artist a, Painting b "
-        // + "WHERE a.artistName = b.paintingTitle";
-        //        
-        // EJBQLQuery query = new EJBQLQuery(ejbql);
-        //        
-        // System.out.println(""
-        // + query.getExpression(getDomain().getEntityResolver()).getExpression());
-        // List artists = createDataContext().performQuery(query);
-        // assertEquals(2, artists.size());
-        //        
-        // Set names = new HashSet(2);
-        // Iterator it = artists.iterator();
-        // while (it.hasNext()) {
-        // Artist a = (Artist) it.next();
-        // names.add(a.getArtistName());
-        // }
-        //        
-        // assertTrue(names.contains("AA1"));
-        // assertTrue(names.contains("BB2"));
+        createTestData("testThetaJoins");
+
+        String ejbql = "SELECT DISTINCT a "
+                + "FROM Artist a, Painting b "
+                + "WHERE a.artistName = b.paintingTitle";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List artists = createDataContext().performQuery(query);
+        assertEquals(2, artists.size());
+
+        Set names = new HashSet(2);
+        Iterator it = artists.iterator();
+        while (it.hasNext()) {
+            Artist a = (Artist) it.next();
+            names.add(a.getArtistName());
+        }
+
+        assertTrue(names.contains("AA1"));
+        assertTrue(names.contains("BB2"));
     }
 
     public void testInnerJoins() throws Exception {

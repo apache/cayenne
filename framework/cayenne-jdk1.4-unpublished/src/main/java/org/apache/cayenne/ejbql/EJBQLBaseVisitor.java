@@ -210,7 +210,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitIsNull(EJBQLExpression expression) {
+    public boolean visitIsNull(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -278,7 +278,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitOrderBy(EJBQLExpression expression) {
+    public boolean visitOrderBy(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 

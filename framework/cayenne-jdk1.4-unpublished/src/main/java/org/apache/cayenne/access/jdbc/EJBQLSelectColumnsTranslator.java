@@ -120,11 +120,20 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
         // inheritance/no-inheritance fetch
         descriptor.visitAllProperties(visitor);
 
+        // append id columns ... (some may have been appended already via relationships)
+
+        DbEntity table = descriptor.getEntity().getDbEntity();
+        Iterator it = table.getPrimaryKey().iterator();
+        while (it.hasNext()) {
+            DbAttribute pk = (DbAttribute) it.next();
+            appendColumn(idVar, pk);
+        }
+
         return true;
     }
 
     private void appendColumn(String identifier, DbAttribute column) {
-        appendColumn(identifier, column, TypesMapping.getJavaBySqlType(column.getType()));
+        appendColumn(identifier, column, null);
     }
 
     private void appendColumn(String identifier, DbAttribute column, String javaType) {
@@ -135,6 +144,11 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
         Set columns = getColumns();
 
         if (columns.add(columnName)) {
+
+            if (javaType == null) {
+                javaType = TypesMapping.getJavaBySqlType(column.getType());
+            }
+
             // using #result directive:
             // 1. to ensure that DB default captalization rules won't lead to changing
             // result columns capitalization, as #result() gives SQLTemplate a hint as to

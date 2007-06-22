@@ -32,6 +32,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
+    private int fromCount;
 
     public EJBQLFromTranslator(EJBQLTranslationContext context) {
         super(true);
@@ -40,6 +41,9 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
+            if(fromCount++ > 0) {
+                context.append(',');
+            }
             appendTable(expression.getId());
         }
 
