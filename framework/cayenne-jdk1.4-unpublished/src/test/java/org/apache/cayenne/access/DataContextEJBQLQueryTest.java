@@ -154,6 +154,20 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         assertEquals(new BigDecimal(3000d), p.getEstimatedPrice());
     }
 
+    public void testSelectFromWhereNotBetween() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "select P from Painting P WHERE p.estimatedPrice NOT BETWEEN 2000 AND 3500";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List ps = createDataContext().performQuery(query);
+        assertEquals(1, ps.size());
+
+        Painting p = (Painting) ps.get(0);
+        assertEquals("P2", p.getPaintingTitle());
+        assertEquals(new BigDecimal(5000d), p.getEstimatedPrice());
+    }
+
     public void testSelectFromWhereGreater() throws Exception {
         createTestData("prepare");
 
