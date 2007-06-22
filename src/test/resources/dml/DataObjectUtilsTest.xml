@@ -39,7 +39,16 @@
 	
 	<!-- ======================================= -->
 	<!-- Data Sets -->
-	<!-- ======================================= -->	
+	<!-- ======================================= -->
+	<bean id="testScalarObjectForQuery" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="A2"/>
+			</list>
+		</constructor-arg>
+	</bean>
+		
 	<bean id="testCompoundPKForObject" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>

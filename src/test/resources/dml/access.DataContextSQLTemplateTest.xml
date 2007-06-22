@@ -112,4 +112,15 @@
 			</list>
 		</constructor-arg>
 	</bean>
+	
+	<bean id="testSQLResultSetMappingScalar" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="A2"/>
+				<ref bean="A3"/>
+				<ref bean="A4"/>
+			</list>
+		</constructor-arg>
+	</bean>
 </beans>

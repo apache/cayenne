@@ -30,6 +30,7 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -62,6 +63,10 @@ class IncrementalQuery implements Query {
 
             public String getCacheKey() {
                 return cacheKey;
+            }
+            
+            public SQLResultSetMapping getResultSetMapping() {
+                return metadata.getResultSetMapping();
             }
             
             public String[] getCacheGroups() {

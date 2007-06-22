@@ -61,6 +61,13 @@ class QueryMetadataWrapper implements QueryMetadata {
     boolean overrideExists(String key) {
         return overrides != null && overrides.containsKey(key);
     }
+    
+    /**
+     * @since 3.0
+     */
+    public SQLResultSetMapping getResultSetMapping() {
+        return info.getResultSetMapping();
+    }
 
     public DataMap getDataMap() {
         return info.getDataMap();

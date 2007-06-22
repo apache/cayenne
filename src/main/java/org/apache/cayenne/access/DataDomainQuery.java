@@ -29,6 +29,7 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -46,6 +47,10 @@ class DataDomainQuery implements Query, QueryMetadata {
 
     public QueryMetadata getMetaData(EntityResolver resolver) {
         return this;
+    }
+    
+    public SQLResultSetMapping getResultSetMapping() {
+        return null;
     }
 
     public String getName() {

@@ -48,7 +48,7 @@ import org.apache.commons.collections.Transformer;
  * </p>
  * 
  * <pre>
- *    SELECT ID, NAME FROM SOME_TABLE WHERE NAME LIKE $a
+ *          SELECT ID, NAME FROM SOME_TABLE WHERE NAME LIKE $a
  * </pre>
  * 
  * <p>
@@ -593,5 +593,16 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      */
     public void setColumnNamesCapitalization(String columnNameCapitalization) {
         this.columnNamesCapitalization = columnNameCapitalization;
+    }
+
+    /**
+     * Sets an optional explicit mapping of the result set. If result set mapping is
+     * specified, the result of SQLTemplate may not be a normal list of Persistent objects
+     * or DataRows, instead it will follow the {@link SQLResultSetMapping} rules.
+     * 
+     * @since 3.0
+     */
+    public void setResultSetMapping(SQLResultSetMapping resultSetMapping) {
+        selectInfo.setResultSetMapping(resultSetMapping);
     }
 }

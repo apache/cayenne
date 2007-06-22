@@ -94,7 +94,7 @@ public interface QueryMetadata {
     public static final boolean RESOLVING_INHERITED_DEFAULT = true;
 
     public static final String CACHE_POLICY_PROPERTY = "cayenne.GenericSelectQuery.cachePolicy";
-    
+
     /**
      * @since 3.0
      */
@@ -106,7 +106,7 @@ public interface QueryMetadata {
      * @since 3.0
      */
     ClassDescriptor getClassDescriptor();
-    
+
     /**
      * Returns an ObjEntity associated with a query or null if no such entity exists.
      */
@@ -201,4 +201,12 @@ public interface QueryMetadata {
      * are configured.
      */
     PrefetchTreeNode getPrefetchTree();
+
+    /**
+     * Returns a mapping of the result set data rows. Can be null. If not null overrides
+     * prefetching and data row settings.
+     * 
+     * @since 3.0
+     */
+    SQLResultSetMapping getResultSetMapping();
 }

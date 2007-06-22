@@ -30,6 +30,7 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -67,6 +68,10 @@ class RangeQuery implements Query {
 
     public QueryMetadata getMetaData(EntityResolver resolver) {
         return new QueryMetadata() {
+            
+            public SQLResultSetMapping getResultSetMapping() {
+                return null;
+            }
 
             public String getCacheKey() {
                 return cacheKey;

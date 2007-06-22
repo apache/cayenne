@@ -28,7 +28,10 @@ import org.apache.art.Artist;
 import org.apache.art.CharPkTestEntity;
 import org.apache.art.CompoundPkTestEntity;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.SQLResultSetMapping;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -40,6 +43,26 @@ public class DataObjectUtilsTest extends CayenneCase {
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();
+    }
+
+    public void testScalarObjectForQuery() throws Exception {
+        createTestData("testScalarObjectForQuery");
+        DataContext context = createDataContext();
+
+        String sql = "SELECT count(1) AS C FROM ARTIST";
+
+        DataMap map = getDomain().getMap("testmap");
+        SQLTemplate query = new SQLTemplate(map, sql);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+
+        SQLResultSetMapping rsMap = new SQLResultSetMapping();
+        rsMap.addColumnResult("C");
+        query.setResultSetMapping(rsMap);
+
+        Object object = DataObjectUtils.objectForQuery(context, query);
+        assertNotNull(object);
+        assertTrue(object instanceof Number);
+        assertEquals(2, ((Number) object).intValue());
     }
 
     public void testObjectForQuery() throws Exception {

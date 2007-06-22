@@ -54,6 +54,13 @@ class DefaultQueryMetadata implements QueryMetadata {
 
         return null;
     }
+    
+    /**
+     * @since 3.0
+     */
+    public SQLResultSetMapping getResultSetMapping() {
+        return null;
+    }
 
     public DbEntity getDbEntity() {
         return null;
