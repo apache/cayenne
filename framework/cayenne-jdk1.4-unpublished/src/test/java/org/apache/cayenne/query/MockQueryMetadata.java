@@ -26,6 +26,10 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 public class MockQueryMetadata implements QueryMetadata {
+    
+    public SQLResultSetMapping getResultSetMapping() {
+        return null;
+    }
 
     public ObjEntity getObjEntity() {
         return null;

@@ -48,6 +48,7 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ListResponse;
@@ -121,7 +122,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         if (!noObjectConversion) {
-            interceptObjectConversion();
+
+            if (interceptMappedConversion() != DONE) {
+                interceptObjectConversion();
+            }
         }
 
         return response;
@@ -455,6 +459,66 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 }
             }
         }
+    }
+
+    private boolean interceptMappedConversion() {
+        SQLResultSetMapping rsMapping = metadata.getResultSetMapping();
+
+        if (rsMapping == null) {
+            return !DONE;
+        }
+
+        List mainRows = response.firstList();
+        if (mainRows != null && !mainRows.isEmpty()) {
+
+            Collection columns = rsMapping.getColumnResults();
+            if (columns.isEmpty()) {
+                throw new CayenneRuntimeException(
+                        "Invalid result set mapping, no columns mapped.");
+            }
+
+            Object[] columnsArray = columns.toArray();
+            int rowsLen = mainRows.size();
+            int rowWidth = columnsArray.length;
+
+            List objects = new ArrayList(rowsLen);
+
+            // add scalars to the result
+            if (rowWidth == 1) {
+
+                for (int i = 0; i < rowsLen; i++) {
+                    Map row = (Map) mainRows.get(i);
+                    objects.add(row.get(columnsArray[0]));
+                }
+            }
+            // add Object[]'s to the result
+            else {
+                for (int i = 0; i < rowsLen; i++) {
+                    Map row = (Map) mainRows.get(i);
+                    Object[] rowDecoded = new Object[rowWidth];
+
+                    for (int j = 0; j < rowWidth; j++) {
+                        rowDecoded[j] = row.get(columnsArray[j]);
+                    }
+
+                    objects.add(rowDecoded);
+                }
+            }
+
+            if (response instanceof GenericResponse) {
+                ((GenericResponse) response).replaceResult(mainRows, objects);
+            }
+            else if (response instanceof ListResponse) {
+                this.response = new ListResponse(objects);
+            }
+            else {
+                throw new IllegalStateException("Unknown response object: "
+                        + this.response);
+            }
+
+        }
+
+        return DONE;
     }
 
     public void route(QueryEngine engine, Query query, Query substitutedQuery) {

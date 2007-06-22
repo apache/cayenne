@@ -288,6 +288,15 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     public ClassDescriptor getClassDescriptor() {
         return classDescriptor;
     }
+    
+    /**
+     * Always returns null, as this is not supported for most classic queries.
+     * 
+     * @since 3.0
+     */
+    public SQLResultSetMapping getResultSetMapping() {
+        return null;
+    }
 
     /**
      * @since 1.2

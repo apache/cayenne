@@ -31,6 +31,8 @@ import org.apache.art.Painting;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -46,6 +48,55 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         deleteTestData();
         context = createDataContext();
     }
+
+    public void testSQLResultSetMappingScalar() throws Exception {
+        createTestData("testSQLResultSetMappingScalar");
+        
+        String sql = "SELECT count(1) AS C FROM ARTIST";
+        
+        DataMap map = getDomain().getMap("testmap");
+        SQLTemplate query = new SQLTemplate(map, sql);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        
+        SQLResultSetMapping rsMap = new SQLResultSetMapping();
+        rsMap.addColumnResult("C");
+        query.setResultSetMapping(rsMap);
+        
+        List objects = createDataContext().performQuery(query);
+        assertEquals(1, objects.size());
+        
+        Object o = objects.get(0);
+        assertTrue(o instanceof Number);
+        assertEquals(4, ((Number) o).intValue());
+    }
+    
+    public void testSQLResultSetMappingScalarArray() throws Exception {
+        createTestData("testSQLResultSetMappingScalar");
+        
+        String sql = "SELECT count(1) AS C, 77 AS D FROM ARTIST";
+        
+        DataMap map = getDomain().getMap("testmap");
+        SQLTemplate query = new SQLTemplate(map, sql);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        
+        SQLResultSetMapping rsMap = new SQLResultSetMapping();
+        rsMap.addColumnResult("C");
+        rsMap.addColumnResult("D");
+        query.setResultSetMapping(rsMap);
+        
+        List objects = createDataContext().performQuery(query);
+        assertEquals(1, objects.size());
+        
+        Object o = objects.get(0);
+        assertTrue(o instanceof Object[]);
+        
+        Object[] row = (Object[]) o;
+        assertEquals(2, row.length);
+        
+        assertEquals(4, ((Number) row[0]).intValue());
+        assertEquals(77, ((Number) row[1]).intValue());
+    }
+
 
     public void testColumnNamesCapitalization() throws Exception {
         getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
@@ -197,7 +248,6 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(33002, DataObjectUtils.intPKForObject(p));
     }
 
-    
     public void testBindObjectEqualNull() throws Exception {
         createTestData("prepare");
 
@@ -262,7 +312,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         CompoundFkTestEntity p = (CompoundFkTestEntity) objects.get(0);
         assertEquals(33001, DataObjectUtils.intPKForObject(p));
     }
-    
+
     public void testBindObjectNotEqualCompound() throws Exception {
         createTestData("testBindObjectEqualCompound");
 
@@ -289,7 +339,6 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         CompoundFkTestEntity p = (CompoundFkTestEntity) objects.get(0);
         assertEquals(33002, DataObjectUtils.intPKForObject(p));
     }
-
 
     public void testBindObjectNotEqualNull() throws Exception {
         createTestData("prepare");

@@ -32,6 +32,16 @@ import org.apache.cayenne.map.ObjEntity;
  * @author Andrus Adamchik
  */
 class SQLTemplateMetadata extends BaseQueryMetadata {
+    
+    private SQLResultSetMapping resultSetMapping;
+    
+    void setResultSetMapping(SQLResultSetMapping resultSetMapping) {
+        this.resultSetMapping = resultSetMapping;
+    }
+    
+    public SQLResultSetMapping getResultSetMapping() {
+        return resultSetMapping;
+    }
 
     boolean resolve(Object root, EntityResolver resolver, SQLTemplate query) {
 
