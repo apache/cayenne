@@ -26,6 +26,19 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLIsNullTest extends CayenneCase {
+    
+    public void testCompareToNull() throws Exception {
+        deleteTestData();
+        createTestData("prepare");
+
+        String ejbql1 = "SELECT p FROM Painting p WHERE p.estimatedPrice = :x";
+        EJBQLQuery query1 = new EJBQLQuery(ejbql1);
+        query1.setParameter("x", null);
+
+        // unlike SelectQuery or SQLTemplate, EJBQL nulls are handled just like SQL.
+        List results = createDataContext().performQuery(query1);
+        assertEquals(0, results.size());
+    }
 
     public void testIsNull() throws Exception {
         deleteTestData();

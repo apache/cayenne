@@ -19,6 +19,8 @@
 package org.apache.cayenne.access.jdbc;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLParser;
@@ -29,13 +31,15 @@ import org.apache.cayenne.unit.CayenneCase;
 public class EJBQLSelectTranslatorTest extends CayenneCase {
 
     private SQLTemplate translateSelect(String ejbql) {
+        return translateSelect(ejbql, Collections.EMPTY_MAP);
+    }
+
+    private SQLTemplate translateSelect(String ejbql, Map parameters) {
         EJBQLParser parser = EJBQLParserFactory.getParser();
         EJBQLCompiledExpression select = parser.compile(ejbql, getDomain()
                 .getEntityResolver());
 
-        EJBQLTranslationContext tr = new EJBQLTranslationContext(
-                select,
-                Collections.EMPTY_MAP);
+        EJBQLTranslationContext tr = new EJBQLTranslationContext(select, parameters);
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         return tr.getQuery();
     }
@@ -213,7 +217,12 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
     }
 
     public void testSelectPositionalParameters() {
-        SQLTemplate query = translateSelect("select a from Artist a where a.artistName = ?1 or a.artistName = ?2");
+        Map params = new HashMap();
+        params.put(new Integer(1), "X");
+        params.put(new Integer(2), "Y");
+        SQLTemplate query = translateSelect(
+                "select a from Artist a where a.artistName = ?1 or a.artistName = ?2",
+                params);
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
