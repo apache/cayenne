@@ -355,6 +355,11 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
             }
         }
 
-        context.append(" #bind($").append(boundName).append(")");
+        if (object != null) {
+            context.append(" #bind($").append(boundName).append(")");
+        }
+        else {
+            context.append(" NULL");
+        }
     }
 }
