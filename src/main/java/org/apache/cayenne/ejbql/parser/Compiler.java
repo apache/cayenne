@@ -47,7 +47,7 @@ class Compiler {
     private Map incomingById;
     private EJBQLExpressionVisitor fromItemVisitor;
     private EJBQLExpressionVisitor joinVisitor;
-    private EJBQLExpressionVisitor whereClauseVisitor;
+    private EJBQLExpressionVisitor whereAndOrderByVisitor;
     private EJBQLExpressionVisitor rootDescriptorVisitor;
 
     Compiler(EntityResolver resolver) {
@@ -58,7 +58,7 @@ class Compiler {
         this.rootDescriptorVisitor = new SelectExpressionVisitor();
         this.fromItemVisitor = new FromItemVisitor();
         this.joinVisitor = new JoinVisitor();
-        this.whereClauseVisitor = new WhereClauseVisitor();
+        this.whereAndOrderByVisitor = new WhereAndOrderByVisitor();
     }
 
     CompiledExpression compile(String source, EJBQLExpression parsed) {
@@ -76,9 +76,9 @@ class Compiler {
     }
 
     static String normalizeIdPath(String idPath) {
-        
+
         // per JPA spec, 4.4.2, "Identification variables are case insensitive."
-        
+
         int pathSeparator = idPath.indexOf('.');
         return pathSeparator < 0 ? idPath.toLowerCase() : idPath.substring(
                 0,
@@ -123,7 +123,12 @@ class Compiler {
         }
 
         public boolean visitWhere(EJBQLExpression expression, int finishedChildIndex) {
-            updateSubtreeDelegate(whereClauseVisitor, expression, finishedChildIndex);
+            updateSubtreeDelegate(whereAndOrderByVisitor, expression, finishedChildIndex);
+            return true;
+        }
+
+        public boolean visitOrderBy(EJBQLExpression expression, int finishedChildIndex) {
+            updateSubtreeDelegate(whereAndOrderByVisitor, expression, finishedChildIndex);
             return true;
         }
 
@@ -153,7 +158,7 @@ class Compiler {
         public boolean visitIdentifier(EJBQLExpression expression) {
 
             // per JPA spec, 4.4.2, "Identification variables are case insensitive."
-            rootId = normalizeIdPath(expression.getText());
+            String rootId = normalizeIdPath(expression.getText());
 
             // resolve class descriptor
             ClassDescriptor descriptor = resolver.getClassDescriptor(entityName);
@@ -235,7 +240,7 @@ class Compiler {
         }
     }
 
-    class WhereClauseVisitor extends EJBQLBaseVisitor {
+    class WhereAndOrderByVisitor extends EJBQLBaseVisitor {
 
         public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
             if (finishedChildIndex < 0) {
@@ -276,7 +281,7 @@ class Compiler {
     class SelectExpressionVisitor extends EJBQLBaseVisitor {
 
         public boolean visitIdentifier(EJBQLExpression expression) {
-            rootId = expression.getText();
+            rootId = normalizeIdPath(expression.getText());
             return true;
         }
     }

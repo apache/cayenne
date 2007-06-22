@@ -81,8 +81,9 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.endsWith(" FROM ARTIST AS t0${marker0} WHERE t0.ARTIST_NAME "
-                + "#bindEqual('Dali' 'VARCHAR')"));
+        assertTrue(sql, sql
+                .endsWith(" FROM ARTIST AS t0${marker0} WHERE t0.ARTIST_NAME ="
+                        + " #bind('Dali' 'VARCHAR')"));
     }
 
     public void testSelectFromWhereOrEqual() {
@@ -130,7 +131,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
 
         assertTrue(sql, sql.startsWith("SELECT "));
         assertTrue(sql, sql.endsWith(" WHERE NOT "
-                + "t0.ARTIST_NAME #bindEqual('Dali' 'VARCHAR')"));
+                + "t0.ARTIST_NAME = #bind('Dali' 'VARCHAR')"));
     }
 
     public void testSelectFromWhereGreater() {
@@ -172,8 +173,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql
-                .endsWith(" WHERE t0.ARTIST_NAME #bindNotEqual('Dali' 'VARCHAR')"));
+        assertTrue(sql, sql.endsWith(" WHERE t0.ARTIST_NAME <> #bind('Dali' 'VARCHAR')"));
     }
 
     public void testSelectFromWhereBetween() {
@@ -217,10 +217,8 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(
-                sql,
-                sql
-                        .endsWith("t0.ARTIST_NAME #bindEqual($id1) OR t0.ARTIST_NAME #bindEqual($id2)"));
+        assertTrue(sql, sql
+                .endsWith("t0.ARTIST_NAME = #bind($id1) OR t0.ARTIST_NAME = #bind($id2)"));
     }
 
     private int countDelimiters(String string, String delim, int fromIndex) {

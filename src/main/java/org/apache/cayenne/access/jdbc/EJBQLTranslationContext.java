@@ -135,14 +135,26 @@ class EJBQLTranslationContext {
         return this;
     }
 
+    /**
+     * Deletes a specified number of characters from the end of the current buffer.
+     */
+    EJBQLTranslationContext trim(int n) {
+        int len = currentBuffer.length();
+
+        if (len >= n) {
+            currentBuffer.delete(len - n, len);
+        }
+        return this;
+    }
+
     EJBQLCompiledExpression getCompiledExpression() {
         return compiledExpression;
     }
-    
+
     String bindPositionalParameter(int position) {
         return bindParameter(parameters.get(new Integer(position)));
     }
-    
+
     String bindNamedParameter(String name) {
         return bindParameter(parameters.get(name));
     }
@@ -152,6 +164,10 @@ class EJBQLTranslationContext {
      */
     String bindParameter(Object value) {
         return bindParameter(value, "id");
+    }
+    
+    void rebindParameter(String boundName, Object newValue) {
+        boundParameters.put(boundName, newValue);
     }
 
     /**
@@ -166,6 +182,10 @@ class EJBQLTranslationContext {
         String var = prefix + boundParameters.size();
         boundParameters.put(var, value);
         return var;
+    }
+
+    Object getBoundParameter(String name) {
+        return boundParameters != null ? boundParameters.get(name) : null;
     }
 
     /**

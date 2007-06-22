@@ -52,13 +52,15 @@ class EJBQLSelectTranslator extends EJBQLDelegatingVisitor {
         else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             context.markCurrentPosition(EJBQLTranslationContext.FROM_TAIL_MARKER);
         }
-        
+
         return true;
     }
 
-    public boolean visitOrderBy(EJBQLExpression expression) {
-        context.append(" ORDER BY");
-        setDelegate(new EJBQLSelectOrderByTranslator());
+    public boolean visitOrderBy(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            context.append(" ORDER BY");
+            setDelegate(new EJBQLOrderByTranslator(context));
+        }
         return true;
     }
 
@@ -67,7 +69,6 @@ class EJBQLSelectTranslator extends EJBQLDelegatingVisitor {
             context.append("SELECT");
             setDelegate(new EJBQLSelectColumnsTranslator(context));
         }
-
         return true;
     }
 

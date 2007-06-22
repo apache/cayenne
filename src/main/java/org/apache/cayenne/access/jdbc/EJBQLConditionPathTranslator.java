@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
@@ -26,12 +31,14 @@ import org.apache.cayenne.ejbql.parser.EJBQLIdentifier;
 import org.apache.cayenne.ejbql.parser.EJBQLInnerJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
-class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
+abstract class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     private ObjEntity currentEntity;
@@ -45,6 +52,8 @@ class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
         super(true);
         this.context = context;
     }
+
+    protected abstract void appendMultiColumnPath(EJBQLMultiColumnOperand operand);
 
     public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
 
@@ -187,6 +196,42 @@ class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
         }
         else {
             // match FK against the target object
+
+            // TODO: andrus, 6/21/2007 - flattened support
+            DbRelationship dbRelationship = (DbRelationship) relationship
+                    .getDbRelationships()
+                    .get(0);
+            DbEntity table = (DbEntity) dbRelationship.getSourceEntity();
+
+            String alias = this.lastAlias != null ? lastAlias : context.getAlias(
+                    idPath,
+                    table.getFullyQualifiedName());
+
+            List joins = dbRelationship.getJoins();
+
+            if (joins.size() == 1) {
+                DbJoin join = (DbJoin) joins.get(0);
+                context
+                        .append(' ')
+                        .append(alias)
+                        .append('.')
+                        .append(join.getSourceName());
+            }
+            else {
+                Map multiColumnMatch = new HashMap(joins.size() + 2);
+
+                Iterator it = joins.iterator();
+                while (it.hasNext()) {
+                    DbJoin join = (DbJoin) it.next();
+                    String column = alias + "." + join.getSourceName();
+
+                    multiColumnMatch.put(join.getTargetName(), column);
+                }
+
+                appendMultiColumnPath(EJBQLMultiColumnOperand.getPathOperand(
+                        context,
+                        multiColumnMatch));
+            }
         }
     }
 }

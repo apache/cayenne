@@ -19,13 +19,19 @@
 package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.art.Artist;
+import org.apache.art.CompoundFkTestEntity;
+import org.apache.art.CompoundPkTestEntity;
 import org.apache.art.Painting;
+import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -59,6 +65,17 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         assertEquals("AA2", ((Artist) artists.get(0)).getArtistName());
     }
 
+    public void testSelectFromWhereEqualReverseOrder() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "select a from Artist a where 'AA2' = a.artistName";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List artists = createDataContext().performQuery(query);
+        assertEquals(1, artists.size());
+        assertEquals("AA2", ((Artist) artists.get(0)).getArtistName());
+    }
+
     public void testSelectFromWhereNot() throws Exception {
         createTestData("prepare");
 
@@ -73,7 +90,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
             assertFalse("AA2".equals(a.getArtistName()));
         }
     }
-    
+
     public void testSelectFromWhereNotEquals() throws Exception {
         createTestData("prepare");
 
@@ -123,6 +140,20 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         assertEquals(new BigDecimal(3000d), p.getEstimatedPrice());
     }
 
+    public void testSelectFromWhereBetween() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "select P from Painting P WHERE p.estimatedPrice BETWEEN 2000 AND 3500";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List ps = createDataContext().performQuery(query);
+        assertEquals(1, ps.size());
+
+        Painting p = (Painting) ps.get(0);
+        assertEquals("P1", p.getPaintingTitle());
+        assertEquals(new BigDecimal(3000d), p.getEstimatedPrice());
+    }
+
     public void testSelectFromWhereGreater() throws Exception {
         createTestData("prepare");
 
@@ -158,7 +189,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         Painting p = (Painting) ps.get(0);
         assertEquals("P1", p.getPaintingTitle());
-        assertEquals(new BigDecimal(3000), p.getEstimatedPrice());
+        assertEquals(new BigDecimal(3000d), p.getEstimatedPrice());
     }
 
     public void testSelectFromWhereLessOrEqual() throws Exception {
@@ -180,7 +211,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         List ps = createDataContext().performQuery(query);
         assertEquals(2, ps.size());
     }
-    
+
     public void testSelectFromWhereDecimalNumberPositional() throws Exception {
         createTestData("prepare");
 
@@ -191,7 +222,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         List ps = createDataContext().performQuery(query);
         assertEquals(2, ps.size());
     }
-    
+
     public void testSelectFromWhereDecimalNumberNamed() throws Exception {
         createTestData("prepare");
 
@@ -201,5 +232,110 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         List ps = createDataContext().performQuery(query);
         assertEquals(2, ps.size());
+    }
+
+    public void testSelectFromWhereMatchOnObject() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+
+        String ejbql = "select P from Painting P WHERE p.toArtist = :param";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("param", a);
+
+        List ps = context.performQuery(query);
+        assertEquals(1, ps.size());
+
+        Painting p = (Painting) ps.get(0);
+        assertEquals(33002, DataObjectUtils.intPKForObject(p));
+    }
+
+    public void testSelectFromWhereMatchRelationshipAndScalar() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        String ejbql = "select P from Painting P WHERE p.toArtist = 33002";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List ps = context.performQuery(query);
+        assertEquals(1, ps.size());
+
+        Painting p = (Painting) ps.get(0);
+        assertEquals(33002, DataObjectUtils.intPKForObject(p));
+    }
+
+    public void testSelectFromWhereMatchOnMultiColumnObject() throws Exception {
+        createTestData("prepareCompound");
+
+        ObjectContext context = createDataContext();
+
+        Map key1 = new HashMap();
+        key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
+        key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
+        CompoundPkTestEntity a = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+                context,
+                CompoundPkTestEntity.class,
+                key1);
+
+        String ejbql = "select e from CompoundFkTestEntity e WHERE e.toCompoundPk = :param";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("param", a);
+
+        List ps = context.performQuery(query);
+        assertEquals(1, ps.size());
+
+        CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
+        assertEquals(33002, DataObjectUtils.intPKForObject(o1));
+    }
+
+    public void testSelectFromWhereMatchOnMultiColumnObjectReverse() throws Exception {
+        createTestData("prepareCompound");
+
+        ObjectContext context = createDataContext();
+
+        Map key1 = new HashMap();
+        key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
+        key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
+        CompoundPkTestEntity a = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+                context,
+                CompoundPkTestEntity.class,
+                key1);
+
+        String ejbql = "select e from CompoundFkTestEntity e WHERE :param = e.toCompoundPk";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("param", a);
+
+        List ps = context.performQuery(query);
+        assertEquals(1, ps.size());
+
+        CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
+        assertEquals(33002, DataObjectUtils.intPKForObject(o1));
+    }
+
+    public void testSelectFromWhereNoMatchOnMultiColumnObject() throws Exception {
+        createTestData("prepareCompound");
+
+        ObjectContext context = createDataContext();
+
+        Map key1 = new HashMap();
+        key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
+        key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
+        CompoundPkTestEntity a = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+                context,
+                CompoundPkTestEntity.class,
+                key1);
+
+        String ejbql = "select e from CompoundFkTestEntity e WHERE e.toCompoundPk <> :param";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("param", a);
+
+        List ps = context.performQuery(query);
+        assertEquals(1, ps.size());
+
+        CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
+        assertEquals(33001, DataObjectUtils.intPKForObject(o1));
     }
 }

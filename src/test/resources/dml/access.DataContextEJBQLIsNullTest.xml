@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">
+
+	<bean id="A1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33001, 'A')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="P1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE) VALUES (33001, 'A')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="P2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (33002, 'B', 2000)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="P3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, ARTIST_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (33003, 33001, 'C', 500)
+		</value></constructor-arg>
+	</bean>
+
+
+
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->
+
+	<bean id="prepare" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="P1" />
+				<ref bean="P2" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testToOneIsNull" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1" />
+				<ref bean="P1" />
+				<ref bean="P3" />
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

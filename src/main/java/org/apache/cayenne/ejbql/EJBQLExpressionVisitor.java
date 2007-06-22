@@ -183,7 +183,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitIsEmpty(EJBQLExpression expression);
 
-    boolean visitIsNull(EJBQLExpression expression);
+    boolean visitIsNull(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitLength(EJBQLExpression expression);
 
@@ -266,7 +266,7 @@ public interface EJBQLExpressionVisitor {
      */
     boolean visitOr(EJBQLExpression expression, int finishedChildIndex);
 
-    boolean visitOrderBy(EJBQLExpression expression);
+    boolean visitOrderBy(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitOrderByItem(EJBQLExpression expression);
 

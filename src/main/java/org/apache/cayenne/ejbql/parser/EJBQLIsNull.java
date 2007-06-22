@@ -31,6 +31,11 @@ public class EJBQLIsNull extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitIsNull(this);
+        return visitor.visitIsNull(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitIsNull(this, childIndex);
     }
 }
