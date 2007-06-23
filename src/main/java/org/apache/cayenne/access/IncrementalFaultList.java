@@ -118,7 +118,6 @@ public class IncrementalFaultList implements List {
                             + metadata.getPageSize());
         }
 
-        this.elements = Collections.synchronizedList(new ArrayList());
         this.dataContext = dataContext;
         this.pageSize = metadata.getPageSize();
         this.rootEntity = metadata.getObjEntity();
@@ -153,9 +152,11 @@ public class IncrementalFaultList implements List {
             }
         }
 
-        fillIn(query);
+        List elementsUnsynced = new ArrayList();
+        fillIn(query, elementsUnsynced);
+        this.elements = Collections.synchronizedList(elementsUnsynced);
     }
-    
+
     /**
      * @since 1.2
      */
@@ -176,75 +177,84 @@ public class IncrementalFaultList implements List {
      * Performs initialization of the internal list of objects. Only the first page is
      * fully resolved. For the rest of the list, only ObjectIds are read.
      * 
+     * @deprecated since 3.0 this method is not called and is deprecated in favor of
+     *             {@link #fillIn(Query, List)}, as this method performed unneeded
+     *             synchronization.
      * @since 1.0.6
      */
     protected void fillIn(Query query) {
-        QueryMetadata info = query.getMetaData(dataContext.getEntityResolver());
-
         synchronized (elements) {
-
-            boolean fetchesDataRows = internalQuery.isFetchingDataRows();
-
-            // start fresh
-            elements.clear();
-            rowWidth = 0;
-
-            try {
-                int lastResolved = 0;
-                long t1 = System.currentTimeMillis();
-                ResultIterator it = dataContext.performIteratedQuery(query);
-                try {
-
-                    rowWidth = it.getDataRowWidth();
-
-                    // resolve first page if we can
-                    if (resolvesFirstPage()) {
-                        // read first page completely, the rest as ObjectIds
-                        for (int i = 0; i < pageSize && it.hasNextRow(); i++) {
-                            elements.add(it.nextDataRow());
-                            lastResolved++;
-                        }
-
-                        // defer DataRows -> Objects conversion till we are completely done.
-                    }
-
-                    // continue reading ids
-                    DbEntity entity = rootEntity.getDbEntity();
-                    while (it.hasNextRow()) {
-                        elements.add(it.nextObjectId(entity));
-                    }
-
-                    QueryLogger.logSelectCount(elements.size(), System
-                            .currentTimeMillis()
-                            - t1);
-                }
-                finally {
-                    it.close();
-                }
-                
-                // fill in the first page AFTER the iterator was closed, otherwise we may
-                // cause an (unobvious) deadlock due to connection pool exhaustion 
-                if (!fetchesDataRows && lastResolved > 0) {
-                    List objects = dataContext.objectsFromDataRows(
-                            rootEntity,
-                            elements.subList(0, lastResolved),
-                            info.isRefreshingObjects(),
-                            info.isResolvingInherited());
-                    
-                    for(int i = 0; i < lastResolved; i++) {
-                        elements.set(i, objects.get(i));
-                    }
-                }
-            }
-            catch (CayenneException e) {
-                throw new CayenneRuntimeException("Error performing query.", Util
-                        .unwindException(e));
-            }
-
-            unfetchedObjects = (resolvesFirstPage())
-                    ? elements.size() - pageSize
-                    : elements.size();
+            fillIn(query, elements);
         }
+    }
+
+    /**
+     * Performs initialization of the list of objects. Only the first page is fully
+     * resolved. For the rest of the list, only ObjectIds are read.
+     * 
+     * @since 3.0
+     */
+    protected void fillIn(Query query, List elementsList) {
+        QueryMetadata info = query.getMetaData(dataContext.getEntityResolver());
+        boolean fetchesDataRows = internalQuery.isFetchingDataRows();
+
+        // start fresh
+        elementsList.clear();
+        rowWidth = 0;
+
+        try {
+            int lastResolved = 0;
+            long t1 = System.currentTimeMillis();
+            ResultIterator it = dataContext.performIteratedQuery(query);
+            try {
+
+                rowWidth = it.getDataRowWidth();
+
+                // resolve first page if we can
+                if (resolvesFirstPage()) {
+                    // read first page completely, the rest as ObjectIds
+                    for (int i = 0; i < pageSize && it.hasNextRow(); i++) {
+                        elementsList.add(it.nextDataRow());
+                        lastResolved++;
+                    }
+
+                    // defer DataRows -> Objects conversion till we are completely done.
+                }
+
+                // continue reading ids
+                DbEntity entity = rootEntity.getDbEntity();
+                while (it.hasNextRow()) {
+                    elementsList.add(it.nextObjectId(entity));
+                }
+
+                QueryLogger.logSelectCount(elementsList.size(), System
+                        .currentTimeMillis()
+                        - t1);
+            }
+            finally {
+                it.close();
+            }
+
+            // fill in the first page AFTER the iterator was closed, otherwise we may
+            // cause an (unobvious) deadlock due to connection pool exhaustion
+            if (!fetchesDataRows && lastResolved > 0) {
+                List objects = dataContext.objectsFromDataRows(rootEntity, elementsList
+                        .subList(0, lastResolved), info.isRefreshingObjects(), info
+                        .isResolvingInherited());
+
+                for (int i = 0; i < lastResolved; i++) {
+                    elementsList.set(i, objects.get(i));
+                }
+            }
+        }
+        catch (CayenneException e) {
+            throw new CayenneRuntimeException("Error performing query.", Util
+                    .unwindException(e));
+        }
+
+        unfetchedObjects = (resolvesFirstPage())
+                ? elementsList.size() - pageSize
+                : elementsList.size();
     }
 
     /**
