@@ -61,7 +61,7 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
             appendTable(expression.getId());
         }
 
-        return true;
+        return false;
     }
 
     public boolean visitInnerFetchJoin(EJBQLJoin join, int finishedChildIndex) {
@@ -73,7 +73,7 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
         if (finishedChildIndex < 0) {
             appendJoin(join, "INNER JOIN", true);
         }
-        return true;
+        return false;
     }
 
     public boolean visitOuterFetchJoin(EJBQLJoin join, int finishedChildIndex) {
@@ -85,7 +85,7 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
         if (finishedChildIndex < 0) {
             appendJoin(join, "LEFT OUTER JOIN", false);
         }
-        return true;
+        return false;
     }
 
     private void appendJoin(EJBQLJoin join, String semantics, boolean reusable) {
