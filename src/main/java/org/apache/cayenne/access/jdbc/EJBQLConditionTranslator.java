@@ -233,7 +233,7 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
 
-        expression.visit(new EJBQLConditionPathTranslator(context) {
+        expression.visit(new EJBQLPathTranslator(context) {
 
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
                 EJBQLConditionTranslator.this.addMultiColumnOperand(operand);
