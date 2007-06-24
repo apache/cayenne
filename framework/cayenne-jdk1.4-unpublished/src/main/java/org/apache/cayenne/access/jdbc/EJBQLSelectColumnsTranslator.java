@@ -55,7 +55,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
     public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
 
-        EJBQLConditionPathTranslator pathTranslator = new EJBQLConditionPathTranslator(
+        EJBQLPathTranslator pathTranslator = new EJBQLPathTranslator(
                 context) {
 
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {

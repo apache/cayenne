@@ -52,7 +52,7 @@ class EJBQLOrderByTranslator extends EJBQLBaseVisitor {
 
     public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
 
-        EJBQLExpressionVisitor childVisitor = new EJBQLConditionPathTranslator(context) {
+        EJBQLExpressionVisitor childVisitor = new EJBQLPathTranslator(context) {
 
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
                 throw new EJBQLException("Can't order on multi-column paths or objects");

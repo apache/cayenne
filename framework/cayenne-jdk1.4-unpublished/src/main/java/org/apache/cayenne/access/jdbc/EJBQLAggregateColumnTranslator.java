@@ -82,7 +82,7 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
                 .append("')");
     }
 
-    class FieldPathTranslator extends EJBQLConditionPathTranslator {
+    class FieldPathTranslator extends EJBQLPathTranslator {
 
         FieldPathTranslator() {
             super(EJBQLAggregateColumnTranslator.this.context);

@@ -38,7 +38,13 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
-abstract class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
+/**
+ * A translator that walks the relationship/attribute path, appending joins to the query.
+ * 
+ * @since 3.0
+ * @author Andrus Adamchik
+ */
+abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     protected ObjEntity currentEntity;
@@ -48,7 +54,7 @@ abstract class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
     private String fullPath;
     private EJBQLFromTranslator joinAppender;
 
-    EJBQLConditionPathTranslator(EJBQLTranslationContext context) {
+    EJBQLPathTranslator(EJBQLTranslationContext context) {
         super(true);
         this.context = context;
     }
@@ -113,7 +119,8 @@ abstract class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
 
         if (oldPath != null) {
             this.idPath = oldPath;
-            this.lastAlias = context.getTableAlias(oldPath, currentEntity.getDbEntityName());
+            this.lastAlias = context.getTableAlias(oldPath, currentEntity
+                    .getDbEntityName());
         }
         else {
             // register join
@@ -140,7 +147,8 @@ abstract class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
             context.switchToMainBuffer();
 
             this.idPath = newPath;
-            this.lastAlias = context.getTableAlias(fullPath, currentEntity.getDbEntityName());
+            this.lastAlias = context.getTableAlias(fullPath, currentEntity
+                    .getDbEntityName());
         }
     }
 
