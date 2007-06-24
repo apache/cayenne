@@ -71,7 +71,7 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     public boolean visitInnerJoin(EJBQLJoin join, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
-            appendJoin(join, "INNER JOIN", true);
+            appendJoin(join, "INNER JOIN");
         }
         return false;
     }
@@ -83,12 +83,12 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     public boolean visitOuterJoin(EJBQLJoin join, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
-            appendJoin(join, "LEFT OUTER JOIN", false);
+            appendJoin(join, "LEFT OUTER JOIN");
         }
         return false;
     }
 
-    private void appendJoin(EJBQLJoin join, String semantics, boolean reusable) {
+    private void appendJoin(EJBQLJoin join, String semantics) {
 
         String rhsId = join.getRightHandSideId();
 
@@ -140,10 +140,6 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
         }
 
         context.append(")");
-
-        if (reusable) {
-            context.registerReusableJoin(lhsId, joinRelationship.getName(), rhsId);
-        }
     }
 
     private String appendTable(String id) {

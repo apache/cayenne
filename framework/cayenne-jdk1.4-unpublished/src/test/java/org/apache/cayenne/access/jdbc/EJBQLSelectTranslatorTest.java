@@ -80,6 +80,25 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
                 sql.indexOf("INNER JOIN PAINTING AS t2 ON (t0.ARTIST_ID = t2.ARTIST_ID)") > 0);
     }
 
+    public void testSelectImplicitColumnJoins() throws Exception {
+        SQLTemplate query = translateSelect("SELECT a.paintingArray.toGallery.galleryName "
+                + "FROM Artist a JOIN a.paintingArray b");
+        String sql = query.getDefaultTemplate();
+
+        assertTrue(sql, sql.startsWith("SELECT "));
+
+        // check that overlapping implicit and explicit joins did not result in duplicates
+        StringBuffer fromMarker = (StringBuffer) query.getParameters().get("marker0");
+        assertNotNull(fromMarker);
+        assertTrue(fromMarker.toString(), fromMarker.indexOf("INNER JOIN GALLERY") >= 0);
+        assertTrue(fromMarker.toString(), fromMarker.indexOf("INNER JOIN PAINTING") >= 0);
+
+        int i1 = sql.indexOf("INNER JOIN PAINTING");
+        assertTrue(sql, i1 >= 0);
+        int i2 = sql.indexOf("INNER JOIN PAINTING", i1 + 1);
+        assertTrue(sql, i2 < 0);
+    }
+
     public void testSelectDistinct() {
         SQLTemplate query = translateSelect("select distinct a from Artist a");
         String sql = query.getDefaultTemplate();
