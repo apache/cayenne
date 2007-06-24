@@ -30,7 +30,11 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
-public class EJBQLFromTranslator extends EJBQLBaseVisitor {
+/**
+ * @since 3.0
+ * @author Andrus Adamchik
+ */
+class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     private int fromCount;
