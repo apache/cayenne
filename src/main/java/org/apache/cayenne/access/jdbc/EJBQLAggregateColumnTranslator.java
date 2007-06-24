@@ -27,7 +27,11 @@ import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 
-public class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
+/**
+ * @since 3.0
+ * @author Andrus Adamchik
+ */
+class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     private String attributeType;
@@ -116,7 +120,7 @@ public class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
             context.append('*');
             return false;
         }
-        
+
         public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
             expression.visit(new FieldPathTranslator());
             return false;
