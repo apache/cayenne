@@ -64,27 +64,23 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
-    public boolean visitInnerFetchJoin(EJBQLJoin join, int finishedChildIndex) {
+    public boolean visitInnerFetchJoin(EJBQLJoin join) {
         // TODO: andrus, 4/9/2007 - support for prefetching
-        return visitInnerJoin(join, finishedChildIndex);
+        return visitInnerJoin(join);
     }
 
-    public boolean visitInnerJoin(EJBQLJoin join, int finishedChildIndex) {
-        if (finishedChildIndex < 0) {
-            appendJoin(join, "INNER JOIN");
-        }
+    public boolean visitInnerJoin(EJBQLJoin join) {
+        appendJoin(join, "INNER JOIN");
         return false;
     }
 
-    public boolean visitOuterFetchJoin(EJBQLJoin join, int finishedChildIndex) {
+    public boolean visitOuterFetchJoin(EJBQLJoin join) {
         // TODO: andrus, 4/9/2007 - support for prefetching
-        return visitOuterJoin(join, finishedChildIndex);
+        return visitOuterJoin(join);
     }
 
-    public boolean visitOuterJoin(EJBQLJoin join, int finishedChildIndex) {
-        if (finishedChildIndex < 0) {
-            appendJoin(join, "LEFT OUTER JOIN");
-        }
+    public boolean visitOuterJoin(EJBQLJoin join) {
+        appendJoin(join, "LEFT OUTER JOIN");
         return false;
     }
 

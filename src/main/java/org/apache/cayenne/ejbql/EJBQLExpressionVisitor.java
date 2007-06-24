@@ -166,9 +166,9 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitIn(EJBQLExpression expression);
 
-    boolean visitInnerFetchJoin(EJBQLJoin join, int finishedChildIndex);
+    boolean visitInnerFetchJoin(EJBQLJoin join);
 
-    boolean visitInnerJoin(EJBQLJoin join, int finishedChildIndex);
+    boolean visitInnerJoin(EJBQLJoin join);
 
     boolean visitIntegerLiteral(EJBQLExpression expression);
 
@@ -261,9 +261,9 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitOrderByItem(EJBQLExpression expression);
 
-    boolean visitOuterFetchJoin(EJBQLJoin join, int finishedChildIndex);
+    boolean visitOuterFetchJoin(EJBQLJoin join);
 
-    boolean visitOuterJoin(EJBQLJoin join, int finishedChildIndex);
+    boolean visitOuterJoin(EJBQLJoin join);
 
     /**
      * Called on visiting "path" expression and also after visiting every expression

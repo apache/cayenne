@@ -31,11 +31,6 @@ public class EJBQLOuterFetchJoin extends EJBQLJoin {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitOuterFetchJoin(this, -1);
-    }
-
-    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
-        return super.visitChild(visitor, childIndex)
-                && visitor.visitOuterFetchJoin(this, childIndex);
+        return visitor.visitOuterFetchJoin(this);
     }
 }
