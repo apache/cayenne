@@ -145,22 +145,22 @@ class Compiler {
             return false;
         }
 
-        public boolean visitInnerFetchJoin(EJBQLJoin join, int finishedChildIndex) {
+        public boolean visitInnerFetchJoin(EJBQLJoin join) {
             join.visit(joinVisitor);
             return false;
         }
 
-        public boolean visitInnerJoin(EJBQLJoin join, int finishedChildIndex) {
+        public boolean visitInnerJoin(EJBQLJoin join) {
             join.visit(joinVisitor);
             return false;
         }
 
-        public boolean visitOuterFetchJoin(EJBQLJoin join, int finishedChildIndex) {
+        public boolean visitOuterFetchJoin(EJBQLJoin join) {
             join.visit(joinVisitor);
             return false;
         }
 
-        public boolean visitOuterJoin(EJBQLJoin join, int finishedChildIndex) {
+        public boolean visitOuterJoin(EJBQLJoin join) {
             join.visit(joinVisitor);
             return false;
         }

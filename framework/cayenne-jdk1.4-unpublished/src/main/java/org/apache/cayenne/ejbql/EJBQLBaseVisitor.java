@@ -191,11 +191,11 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitInnerFetchJoin(EJBQLJoin join, int finishedChildIndex) {
+    public boolean visitInnerFetchJoin(EJBQLJoin join) {
         return continueFlag;
     }
 
-    public boolean visitInnerJoin(EJBQLJoin join, int finishedChildIndex) {
+    public boolean visitInnerJoin(EJBQLJoin join) {
         return continueFlag;
     }
 
@@ -283,11 +283,11 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitOuterFetchJoin(EJBQLJoin join, int finishedChildIndex) {
+    public boolean visitOuterFetchJoin(EJBQLJoin join) {
         return continueFlag;
     }
 
-    public boolean visitOuterJoin(EJBQLJoin join, int finishedChildIndex) {
+    public boolean visitOuterJoin(EJBQLJoin join) {
         return continueFlag;
     }
 

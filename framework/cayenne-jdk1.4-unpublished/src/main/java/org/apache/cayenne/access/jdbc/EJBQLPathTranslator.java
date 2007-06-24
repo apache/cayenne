@@ -143,7 +143,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
             context.switchToMarker(EJBQLTranslationContext.FROM_TAIL_MARKER);
 
-            getJoinAppender().visitInnerJoin(join, -1);
+            getJoinAppender().visitInnerJoin(join);
             context.switchToMainBuffer();
 
             this.idPath = newPath;

@@ -31,11 +31,6 @@ public class EJBQLInnerFetchJoin extends EJBQLJoin {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitInnerFetchJoin(this, -1);
-    }
-
-    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
-        return super.visitChild(visitor, childIndex)
-                && visitor.visitInnerFetchJoin(this, childIndex);
+        return visitor.visitInnerFetchJoin(this);
     }
 }
