@@ -211,8 +211,10 @@ class EJBQLTranslationContext {
 
     /**
      * Registers a "reusable" join, returning a preexisting ID if the join is already
-     * registered. Reusable normally means an inner join that can be duplicated implicitly
-     * in the path expressions.
+     * registered. Reusable joins are the implicit inner joins that are added as a result
+     * of processing of path expressions in SELECT or WHERE clauses. Note that if an
+     * implicit INNER join overlaps with an explicit INNER join, both joins are added to
+     * the query.
      */
     String registerReusableJoin(String sourceIdPath, String relationship, String targetId) {
         if (reusableJoins == null) {
