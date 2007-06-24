@@ -18,16 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
-import org.apache.cayenne.ejbql.EJBQLDelegatingVisitor;
+import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
 
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
-class EJBQLOrderByTranslator extends EJBQLDelegatingVisitor {
+class EJBQLOrderByTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     private int itemCount;
@@ -40,7 +41,7 @@ class EJBQLOrderByTranslator extends EJBQLDelegatingVisitor {
         if (itemCount++ > 0) {
             context.append(',');
         }
-        
+
         return true;
     }
 
@@ -50,18 +51,14 @@ class EJBQLOrderByTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
-        if (finishedChildIndex < 0) {
-            setDelegate(new EJBQLConditionPathTranslator(context) {
 
-                protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
-                    throw new EJBQLException(
-                            "Can't order on multi-column paths or objects");
-                }
-            });
-            return true;
-        }
-        else {
-            return super.visitPath(expression, finishedChildIndex);
-        }
+        EJBQLExpressionVisitor childVisitor = new EJBQLConditionPathTranslator(context) {
+
+            protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
+                throw new EJBQLException("Can't order on multi-column paths or objects");
+            }
+        };
+        expression.visit(childVisitor);
+        return false;
     }
 }

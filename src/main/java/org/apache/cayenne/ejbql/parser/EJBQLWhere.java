@@ -31,11 +31,6 @@ public class EJBQLWhere extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitWhere(this, -1);
-    }
-
-    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
-        return super.visitChild(visitor, childIndex)
-                && visitor.visitWhere(this, childIndex);
+        return visitor.visitWhere(this);
     }
 }

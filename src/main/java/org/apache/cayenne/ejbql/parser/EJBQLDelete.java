@@ -31,11 +31,6 @@ public class EJBQLDelete extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitDelete(this, -1);
-    }
-
-    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
-        return super.visitChild(visitor, childIndex)
-                && visitor.visitDelete(this, childIndex);
+        return visitor.visitDelete(this);
     }
 }

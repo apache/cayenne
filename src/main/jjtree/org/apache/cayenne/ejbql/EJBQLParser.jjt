@@ -532,7 +532,7 @@ void aggregate_path() : { }
 }
 
 
-void distinct_path() #DistinctPath : { }
+void distinct_path() #Distinct : { }
 {
 	<DISTINCT> (LOOKAHEAD(path()) path() | identification_variable())
 }

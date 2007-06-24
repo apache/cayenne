@@ -27,11 +27,10 @@ package org.apache.cayenne.ejbql;
 public interface EJBQLExpression {
 
     /**
-     * Accepts a visitor, calling appropriate visit method. If the visit method returns
-     * true, visits all children, otherwise stops. Returns true if self visitor method and
-     * all child methods returned true; false otherwise.
+     * Accepts a visitor, calling appropriate visitor method. If the visitor method
+     * returns true, visits all children, otherwise stops.
      */
-    boolean visit(EJBQLExpressionVisitor visitor);
+    void visit(EJBQLExpressionVisitor visitor);
 
     /**
      * Returns a number of child operands of this expression node.

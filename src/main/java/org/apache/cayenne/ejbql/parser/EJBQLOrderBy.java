@@ -31,11 +31,6 @@ public class EJBQLOrderBy extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitOrderBy(this, -1);
-    }
-
-    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
-        return super.visitChild(visitor, childIndex)
-                && visitor.visitOrderBy(this, childIndex);
+        return visitor.visitOrderBy(this);
     }
 }

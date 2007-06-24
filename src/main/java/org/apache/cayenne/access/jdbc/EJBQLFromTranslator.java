@@ -22,6 +22,7 @@ import java.util.Iterator;
 
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
+import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
 import org.apache.cayenne.map.DbJoin;
@@ -39,9 +40,18 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         this.context = context;
     }
 
+    public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
+
+        if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.markCurrentPosition(EJBQLTranslationContext.FROM_TAIL_MARKER);
+        }
+
+        return true;
+    }
+
     public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
-            if(fromCount++ > 0) {
+            if (fromCount++ > 0) {
                 context.append(',');
             }
             appendTable(expression.getId());
@@ -91,7 +101,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
                 .get(0);
 
         String lhsId = join.getLeftHandSideId();
-        String sourceAlias = context.getAlias(lhsId, incomingDB
+        String sourceAlias = context.getTableAlias(lhsId, incomingDB
                 .getSourceEntity()
                 .getName());
 
@@ -137,7 +147,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
                 id);
 
         String tableName = descriptor.getEntity().getDbEntity().getFullyQualifiedName();
-        String alias = context.getAlias(id, tableName);
+        String alias = context.getTableAlias(id, tableName);
         context.append(' ').append(tableName).append(" AS ").append(alias);
         return alias;
     }

@@ -41,10 +41,10 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 abstract class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
-    private ObjEntity currentEntity;
+    protected ObjEntity currentEntity;
     private String lastPathComponent;
-    private String lastAlias;
-    private String idPath;
+    protected String lastAlias;
+    protected String idPath;
     private String fullPath;
     private EJBQLFromTranslator joinAppender;
 
@@ -113,7 +113,7 @@ abstract class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
 
         if (oldPath != null) {
             this.idPath = oldPath;
-            this.lastAlias = context.getAlias(oldPath, currentEntity.getDbEntityName());
+            this.lastAlias = context.getTableAlias(oldPath, currentEntity.getDbEntityName());
         }
         else {
             // register join
@@ -140,7 +140,7 @@ abstract class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
             context.switchToMainBuffer();
 
             this.idPath = newPath;
-            this.lastAlias = context.getAlias(fullPath, currentEntity.getDbEntityName());
+            this.lastAlias = context.getTableAlias(fullPath, currentEntity.getDbEntityName());
         }
     }
 
@@ -178,10 +178,10 @@ abstract class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
         throw new IllegalStateException("Invalid path component: " + lastPathComponent);
     }
 
-    private void processTerminatingAttribute(ObjAttribute attribute) {
+    protected void processTerminatingAttribute(ObjAttribute attribute) {
 
         DbEntity table = currentEntity.getDbEntity();
-        String alias = this.lastAlias != null ? lastAlias : context.getAlias(
+        String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                 idPath,
                 table.getFullyQualifiedName());
         context.append(' ').append(alias).append('.').append(
@@ -203,7 +203,7 @@ abstract class EJBQLConditionPathTranslator extends EJBQLBaseVisitor {
                     .get(0);
             DbEntity table = (DbEntity) dbRelationship.getSourceEntity();
 
-            String alias = this.lastAlias != null ? lastAlias : context.getAlias(
+            String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
                     table.getFullyQualifiedName());
 

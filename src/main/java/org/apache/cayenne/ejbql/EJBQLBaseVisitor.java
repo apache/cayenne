@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
+import org.apache.cayenne.ejbql.parser.EJBQLAggregateColumn;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
@@ -74,7 +75,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitAverage(EJBQLExpression expression) {
+    public boolean visitAverage(EJBQLAggregateColumn expression) {
         return continueFlag;
     }
 
@@ -106,7 +107,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitCount(EJBQLExpression expression) {
+    public boolean visitCount(EJBQLAggregateColumn expression) {
         return continueFlag;
     }
 
@@ -126,7 +127,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitDelete(EJBQLExpression expression, int finishedChildIndex) {
+    public boolean visitDelete(EJBQLExpression expression) {
         return continueFlag;
     }
 
@@ -135,10 +136,6 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
     }
 
     public boolean visitDistinct(EJBQLExpression expression) {
-        return continueFlag;
-    }
-
-    public boolean visitDistinctPath(EJBQLExpression expression) {
         return continueFlag;
     }
 
@@ -238,7 +235,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitMax(EJBQLExpression expression) {
+    public boolean visitMax(EJBQLAggregateColumn expression) {
         return continueFlag;
     }
 
@@ -246,7 +243,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitMin(EJBQLExpression expression) {
+    public boolean visitMin(EJBQLAggregateColumn expression) {
         return continueFlag;
     }
 
@@ -278,7 +275,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitOrderBy(EJBQLExpression expression, int finishedChildIndex) {
+    public boolean visitOrderBy(EJBQLExpression expression) {
         return continueFlag;
     }
 
@@ -306,11 +303,15 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitSelect(EJBQLExpression expression, int finishedChildIndex) {
+    public boolean visitSelect(EJBQLExpression expression) {
         return continueFlag;
     }
 
     public boolean visitSelectExpression(EJBQLExpression expression) {
+        return continueFlag;
+    }
+
+    public boolean visitSelectExpressions(EJBQLExpression expression) {
         return continueFlag;
     }
 
@@ -338,7 +339,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitSum(EJBQLExpression expression) {
+    public boolean visitSum(EJBQLAggregateColumn expression) {
         return continueFlag;
     }
 
@@ -366,7 +367,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitUpdate(EJBQLExpression expression, int finishedChildIndex) {
+    public boolean visitUpdate(EJBQLExpression expression) {
         return continueFlag;
     }
 
@@ -386,7 +387,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitWhere(EJBQLExpression expression, int finishedChildIndex) {
+    public boolean visitWhere(EJBQLExpression expression) {
         return continueFlag;
     }
 }

@@ -18,13 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
+import org.apache.cayenne.ejbql.parser.EJBQLAggregateColumn;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 
 /**
- * A visitor interface to inspect the EJBQL expression tree.
+ * A visitor interface to inspect the EJBQL expression tree. Visit methods return
+ * booleans, indicating whether the children of a given node should be visited.
  * 
  * @since 3.0
  * @author Andrus Adamchik
@@ -63,7 +65,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitAscending(EJBQLExpression expression);
 
-    boolean visitAverage(EJBQLExpression expression);
+    boolean visitAverage(EJBQLAggregateColumn expression);
 
     /**
      * Called on visiting "between" expression and also after visiting every expression
@@ -88,7 +90,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitConstructorParameters(EJBQLExpression expression);
 
-    boolean visitCount(EJBQLExpression expression);
+    boolean visitCount(EJBQLAggregateColumn expression);
 
     boolean visitCurrentDate(EJBQLExpression expression);
 
@@ -98,22 +100,11 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitDecimalLiteral(EJBQLExpression expression);
 
-    /**
-     * Called on visiting "delete" expression and also after visiting every expression
-     * child.
-     * 
-     * @param expression a "delete" node being visited.
-     * @param finishedChildIndex "-1" when the expression node is visited for the first
-     *            time, before its children; otherwise this is an index of a child just
-     *            visited.
-     */
-    boolean visitDelete(EJBQLExpression expression, int finishedChildIndex);
+    boolean visitDelete(EJBQLExpression expression);
 
     boolean visitDescending(EJBQLExpression expression);
 
     boolean visitDistinct(EJBQLExpression expression);
-
-    boolean visitDistinctPath(EJBQLExpression expression);
 
     /**
      * Called on visiting "divide" expression and also after visiting every expression
@@ -222,11 +213,11 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitLower(EJBQLExpression expression);
 
-    boolean visitMax(EJBQLExpression expression);
+    boolean visitMax(EJBQLAggregateColumn expression);
 
     boolean visitMemberOf(EJBQLExpression expression);
 
-    boolean visitMin(EJBQLExpression expression);
+    boolean visitMin(EJBQLAggregateColumn expression);
 
     boolean visitMod(EJBQLExpression expression);
 
@@ -266,7 +257,7 @@ public interface EJBQLExpressionVisitor {
      */
     boolean visitOr(EJBQLExpression expression, int finishedChildIndex);
 
-    boolean visitOrderBy(EJBQLExpression expression, int finishedChildIndex);
+    boolean visitOrderBy(EJBQLExpression expression);
 
     boolean visitOrderByItem(EJBQLExpression expression);
 
@@ -289,17 +280,11 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitPositionalInputParameter(EJBQLPositionalInputParameter expression);
 
-    /**
-     * Called on visiting "select" and also after visiting every expression child.
-     * 
-     * @param expression a "select" node being visited.
-     * @param finishedChildIndex "-1" when the expression node is visited for the first
-     *            time, before its children; otherwise this is an index of a child just
-     *            visited.
-     */
-    boolean visitSelect(EJBQLExpression expression, int finishedChildIndex);
+    boolean visitSelect(EJBQLExpression expression);
 
     boolean visitSelectExpression(EJBQLExpression expression);
+
+    boolean visitSelectExpressions(EJBQLExpression expression);
 
     boolean visitSize(EJBQLExpression expression);
 
@@ -322,7 +307,7 @@ public interface EJBQLExpressionVisitor {
      */
     boolean visitSubtract(EJBQLExpression expression, int finishedChildIndex);
 
-    boolean visitSum(EJBQLExpression expression);
+    boolean visitSum(EJBQLAggregateColumn expression);
 
     boolean visitTok(EJBQLExpression expression);
 
@@ -336,16 +321,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitTrimTrailing(EJBQLExpression expression);
 
-    /**
-     * Called on visiting "update" expression and also after visiting every expression
-     * child.
-     * 
-     * @param expression a "update" node being visited.
-     * @param finishedChildIndex "-1" when the expression node is visited for the first
-     *            time, before its children; otherwise this is an index of a child just
-     *            visited.
-     */
-    boolean visitUpdate(EJBQLExpression expression, int finishedChildIndex);
+    boolean visitUpdate(EJBQLExpression expression);
 
     boolean visitUpdateField(EJBQLExpression expression);
 
@@ -355,5 +331,5 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitUpper(EJBQLExpression expression);
 
-    boolean visitWhere(EJBQLExpression expression, int finishedChildIndex);
+    boolean visitWhere(EJBQLExpression expression);
 }

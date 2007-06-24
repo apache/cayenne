@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
-import org.apache.cayenne.ejbql.EJBQLDelegatingVisitor;
+import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
  * @since 3.0
  * @author Andrus Adamchik
  */
-class EJBQLSelectTranslator extends EJBQLDelegatingVisitor {
+class EJBQLSelectTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
 
@@ -45,38 +45,30 @@ class EJBQLSelectTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
-        if (finishedChildIndex < 0) {
-            context.append(" FROM");
-            setDelegate(new EJBQLFromTranslator(context));
-        }
-        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
-            context.markCurrentPosition(EJBQLTranslationContext.FROM_TAIL_MARKER);
-        }
+        context.append(" FROM");
+        expression.visit(new EJBQLFromTranslator(context));
+        return false;
+    }
 
+    public boolean visitOrderBy(EJBQLExpression expression) {
+        context.append(" ORDER BY");
+        expression.visit(new EJBQLOrderByTranslator(context));
+        return false;
+    }
+
+    public boolean visitSelect(EJBQLExpression expression) {
+        context.append("SELECT");
         return true;
     }
 
-    public boolean visitOrderBy(EJBQLExpression expression, int finishedChildIndex) {
-        if (finishedChildIndex < 0) {
-            context.append(" ORDER BY");
-            setDelegate(new EJBQLOrderByTranslator(context));
-        }
-        return true;
+    public boolean visitSelectExpressions(EJBQLExpression expression) {
+        expression.visit(new EJBQLSelectColumnsTranslator(context));
+        return false;
     }
 
-    public boolean visitSelect(EJBQLExpression expression, int finishedChildIndex) {
-        if (finishedChildIndex < 0) {
-            context.append("SELECT");
-            setDelegate(new EJBQLSelectColumnsTranslator(context));
-        }
-        return true;
-    }
-
-    public boolean visitWhere(EJBQLExpression expression, int finishedChildIndex) {
-        if (finishedChildIndex < 0) {
-            context.append(" WHERE");
-            setDelegate(new EJBQLConditionTranslator(context));
-        }
-        return true;
+    public boolean visitWhere(EJBQLExpression expression) {
+        context.append(" WHERE");
+        expression.visit(new EJBQLConditionTranslator(context));
+        return false;
     }
 }

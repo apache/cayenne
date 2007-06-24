@@ -24,10 +24,18 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLCount extends SimpleNode {
+public class EJBQLCount extends EJBQLAggregateColumn {
 
     public EJBQLCount(int id) {
         super(id);
+    }
+
+    public String getFunction() {
+        return "COUNT";
+    }
+
+    public String getJavaType(String pathType) {
+        return "java.lang.Long";
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {

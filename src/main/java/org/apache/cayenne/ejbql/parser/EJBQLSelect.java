@@ -31,11 +31,6 @@ public class EJBQLSelect extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitSelect(this, -1);
-    }
-
-    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
-        return super.visitChild(visitor, childIndex)
-                && visitor.visitSelect(this, childIndex);
+        return visitor.visitSelect(this);
     }
 }

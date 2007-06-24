@@ -19,8 +19,8 @@
 package org.apache.cayenne.query;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * A metadata object that defines how a DataRow can be converted to result objects. This
@@ -35,7 +35,7 @@ import java.util.Collections;
 public class SQLResultSetMapping {
 
     protected String name;
-    protected Collection columnResults;
+    protected List columnResults;
 
     public SQLResultSetMapping() {
 
@@ -56,7 +56,7 @@ public class SQLResultSetMapping {
     /**
      * Returns a collection of mapped columns.
      */
-    public Collection getColumnResults() {
+    public List getColumnResults() {
         return columnResults != null ? columnResults : Collections.EMPTY_LIST;
     }
 

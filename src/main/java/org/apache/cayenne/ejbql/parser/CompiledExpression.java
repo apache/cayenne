@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -38,6 +39,7 @@ class CompiledExpression implements EJBQLCompiledExpression {
     private Map descriptorsById;
     private Map incomingById;
     private EJBQLExpression expression;
+    private SQLResultSetMapping resultSetMapping;
 
     public ClassDescriptor getEntityDescriptor(String idVariable) {
         if (idVariable == null) {
@@ -46,6 +48,10 @@ class CompiledExpression implements EJBQLCompiledExpression {
 
         return (ClassDescriptor) descriptorsById
                 .get(Compiler.normalizeIdPath(idVariable));
+    }
+    
+    public SQLResultSetMapping getResultSetMapping() {
+        return resultSetMapping;
     }
 
     public ClassDescriptor getRootDescriptor() {
@@ -82,5 +88,9 @@ class CompiledExpression implements EJBQLCompiledExpression {
 
     void setRootId(String rootId) {
         this.rootId = rootId;
+    }
+    
+    void setResultSetMapping(SQLResultSetMapping resultSetMapping) {
+        this.resultSetMapping = resultSetMapping;
     }
 }

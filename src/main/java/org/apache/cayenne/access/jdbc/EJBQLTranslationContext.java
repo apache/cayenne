@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
+import org.apache.cayenne.ejbql.EJBQLException;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
 
 /**
@@ -34,7 +36,7 @@ class EJBQLTranslationContext {
 
     static final String FROM_TAIL_MARKER = "FROM_TAIL_MARKER";
 
-    private Map aliases;
+    private Map tableAliases;
     private Map boundParameters;
     private StringBuffer mainBuffer;
     private StringBuffer currentBuffer;
@@ -42,6 +44,7 @@ class EJBQLTranslationContext {
     private Map attributes;
     private Map reusableJoins;
     private Map parameters;
+    private int columnAliasPosition;
 
     EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression, Map parameters) {
         this.compiledExpression = compiledExpression;
@@ -64,39 +67,57 @@ class EJBQLTranslationContext {
      * content.
      */
     void markCurrentPosition(String marker) {
+        // ensure buffer is created for the marker
+        findOrCreateMarkedBuffer(marker);
+
+        String internalMarker = (String) getAttribute(marker);
+
         // make sure we mark the main buffer
         StringBuffer current = this.currentBuffer;
 
         try {
             switchToMainBuffer();
-            String internalMarker = bindParameter(new StringBuffer(), "marker");
             append("${").append(internalMarker).append("}");
-
-            // register mapping of internal to external marker
-            setAttribute(marker, internalMarker);
         }
         finally {
             this.currentBuffer = current;
         }
     }
 
+    /**
+     * Switches the current buffer to a marked buffer. Note that this can be done even
+     * before the marker is inserted in the main buffer.
+     */
     void switchToMarker(String marker) {
-        String internalMarker = (String) getAttribute(marker);
-        if (internalMarker == null) {
-            throw new IllegalArgumentException("Invalid marker: " + marker);
-        }
-
-        Object object = boundParameters.get(internalMarker);
-        if (!(object instanceof StringBuffer)) {
-            throw new IllegalArgumentException("Invalid or missing buffer for marker: "
-                    + marker);
-        }
-
-        this.currentBuffer = (StringBuffer) object;
+        this.currentBuffer = (StringBuffer) findOrCreateMarkedBuffer(marker);
     }
 
     void switchToMainBuffer() {
         this.currentBuffer = this.mainBuffer;
+    }
+
+    private StringBuffer findOrCreateMarkedBuffer(String marker) {
+        StringBuffer buffer;
+
+        String internalMarker = (String) getAttribute(marker);
+        if (internalMarker == null) {
+            buffer = new StringBuffer();
+            internalMarker = bindParameter(buffer, "marker");
+
+            // register mapping of internal to external marker
+            setAttribute(marker, internalMarker);
+        }
+        else {
+            Object object = boundParameters.get(internalMarker);
+            if (!(object instanceof StringBuffer)) {
+                throw new IllegalArgumentException(
+                        "Invalid or missing buffer for marker: " + marker);
+            }
+
+            buffer = (StringBuffer) object;
+        }
+
+        return buffer;
     }
 
     /**
@@ -165,7 +186,7 @@ class EJBQLTranslationContext {
     String bindParameter(Object value) {
         return bindParameter(value, "id");
     }
-    
+
     void rebindParameter(String boundName, Object newValue) {
         boundParameters.put(boundName, newValue);
     }
@@ -214,7 +235,7 @@ class EJBQLTranslationContext {
      * Retrieves a SQL alias for the combination of EJBQL id variable and a table name. If
      * such alias hasn't been used, it is created on the fly.
      */
-    String getAlias(String idPath, String tableName) {
+    String getTableAlias(String idPath, String tableName) {
 
         StringBuffer keyBuffer = new StringBuffer();
 
@@ -234,19 +255,33 @@ class EJBQLTranslationContext {
 
         String alias;
 
-        if (aliases != null) {
-            alias = (String) aliases.get(key);
+        if (tableAliases != null) {
+            alias = (String) tableAliases.get(key);
         }
         else {
-            aliases = new HashMap();
+            tableAliases = new HashMap();
             alias = null;
         }
 
         if (alias == null) {
-            alias = "t" + aliases.size();
-            aliases.put(key, alias);
+            alias = "t" + tableAliases.size();
+            tableAliases.put(key, alias);
         }
 
         return alias;
+    }
+
+    /**
+     * Returns a positional column alias, incrementing position index on each call.
+     */
+    String nextColumnAlias() {
+
+        SQLResultSetMapping resultSetMapping = compiledExpression.getResultSetMapping();
+        if (resultSetMapping == null) {
+            throw new EJBQLException(
+                    "No result set mapping exists for expression, can't map column aliases");
+        }
+
+        return (String) resultSetMapping.getColumnResults().get(columnAliasPosition++);
     }
 }
