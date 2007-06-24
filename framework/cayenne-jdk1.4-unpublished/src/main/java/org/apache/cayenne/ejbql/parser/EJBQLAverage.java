@@ -24,7 +24,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLAverage extends SimpleNode {
+public class EJBQLAverage extends EJBQLAggregateColumn {
 
     public EJBQLAverage(int id) {
         super(id);
@@ -32,5 +32,13 @@ public class EJBQLAverage extends SimpleNode {
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitAverage(this);
+    }
+    
+    public String getFunction() {
+        return "AVG";
+    }
+
+    public String getJavaType(String pathType) {
+        return "java.lang.Double";
     }
 }

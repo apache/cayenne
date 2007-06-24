@@ -60,17 +60,17 @@ public class EJBQLAction extends BaseSQLAction {
 
         compiledExpression.getExpression().visit(new EJBQLBaseVisitor(false) {
 
-            public boolean visitSelect(EJBQLExpression expression, int finishedChildIndex) {
+            public boolean visitSelect(EJBQLExpression expression) {
                 EJBQLSelectTranslator visitor = new EJBQLSelectTranslator(context);
                 expression.visit(visitor);
                 return false;
             }
 
-            public boolean visitDelete(EJBQLExpression expression, int finishedChildIndex) {
+            public boolean visitDelete(EJBQLExpression expression) {
                 throw new UnsupportedOperationException("Not yet implemented");
             }
 
-            public boolean visitUpdate(EJBQLExpression expression, int finishedChildIndex) {
+            public boolean visitUpdate(EJBQLExpression expression) {
                 throw new UnsupportedOperationException("Not yet implemented");
             }
         });

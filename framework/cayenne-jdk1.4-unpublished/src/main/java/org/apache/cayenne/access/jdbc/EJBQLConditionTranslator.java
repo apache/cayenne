@@ -26,7 +26,7 @@ import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.ejbql.EJBQLDelegatingVisitor;
+import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
@@ -36,7 +36,7 @@ import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
  * @since 3.0
  * @author Andrus Adamchik
  */
-class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
+class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
 
@@ -60,7 +60,6 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitBetween(EJBQLExpression expression, int finishedChildIndex) {
-        setDelegate(null);
         switch (finishedChildIndex) {
             case 0:
                 if (expression.isNegated()) {
@@ -82,7 +81,6 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitEquals(EJBQLExpression expression, int finishedChildIndex) {
-        setDelegate(null);
         switch (finishedChildIndex) {
             case 0:
                 context.append(" =");
@@ -139,7 +137,6 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitNotEquals(EJBQLExpression expression, int finishedChildIndex) {
-        setDelegate(null);
         switch (finishedChildIndex) {
             case 0:
                 context.append(" <>");
@@ -184,7 +181,6 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitGreaterThan(EJBQLExpression expression, int finishedChildIndex) {
-        setDelegate(null);
         if (finishedChildIndex == 0) {
             context.append(" >");
         }
@@ -193,7 +189,6 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitGreaterOrEqual(EJBQLExpression expression, int finishedChildIndex) {
-        setDelegate(null);
         if (finishedChildIndex == 0) {
             context.append(" >=");
         }
@@ -202,7 +197,6 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitLessOrEqual(EJBQLExpression expression, int finishedChildIndex) {
-        setDelegate(null);
         if (finishedChildIndex == 0) {
             context.append(" <=");
         }
@@ -211,7 +205,6 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitLessThan(EJBQLExpression expression, int finishedChildIndex) {
-        setDelegate(null);
         if (finishedChildIndex == 0) {
             context.append(" <");
         }
@@ -220,7 +213,6 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
     }
 
     public boolean visitLike(EJBQLExpression expression, int finishedChildIndex) {
-        setDelegate(null);
         if (finishedChildIndex == 0) {
             if (expression.isNegated()) {
                 context.append(" NOT");
@@ -236,25 +228,18 @@ class EJBQLConditionTranslator extends EJBQLDelegatingVisitor {
             if (childIndex + 1 < e.getChildrenCount()) {
                 context.append(text);
             }
-
-            // reset child-specific delegate
-            setDelegate(null);
         }
     }
 
     public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
-        if (finishedChildIndex < 0) {
-            setDelegate(new EJBQLConditionPathTranslator(context) {
 
-                protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
-                    EJBQLConditionTranslator.this.addMultiColumnOperand(operand);
-                }
-            });
-            return true;
-        }
-        else {
-            return super.visitPath(expression, finishedChildIndex);
-        }
+        expression.visit(new EJBQLConditionPathTranslator(context) {
+
+            protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
+                EJBQLConditionTranslator.this.addMultiColumnOperand(operand);
+            }
+        });
+        return false;
     }
 
     public boolean visitIntegerLiteral(EJBQLExpression expression) {

@@ -19,6 +19,7 @@
 package org.apache.cayenne.ejbql;
 
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -55,4 +56,10 @@ public interface EJBQLCompiledExpression {
      * Returns EJB QL source of the compiled expression if available.
      */
     String getSource();
+
+    /**
+     * Returns a mapping of the result set columns, or null if this is not a select
+     * expression.
+     */
+    SQLResultSetMapping getResultSetMapping();
 }

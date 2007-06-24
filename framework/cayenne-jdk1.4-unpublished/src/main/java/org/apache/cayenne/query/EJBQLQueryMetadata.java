@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
@@ -29,8 +30,21 @@ import org.apache.cayenne.map.ObjEntity;
  */
 class EJBQLQueryMetadata extends BaseQueryMetadata {
 
+    private SQLResultSetMapping resultSetMapping;
+
+    void setResultSetMapping(SQLResultSetMapping resultSetMapping) {
+        this.resultSetMapping = resultSetMapping;
+    }
+
+    public SQLResultSetMapping getResultSetMapping() {
+        return resultSetMapping;
+    }
+
     boolean resolve(EntityResolver resolver, EJBQLQuery query) {
-        ObjEntity root = query.getExpression(resolver).getRootDescriptor().getEntity();
+        EJBQLCompiledExpression expression = query.getExpression(resolver);
+        setResultSetMapping(expression.getResultSetMapping());
+        
+        ObjEntity root = expression.getRootDescriptor().getEntity();
 
         // TODO: andrus, 4/3/2007 - generate cache key based on EJBQL statement
         return super.resolve(root, resolver, null);

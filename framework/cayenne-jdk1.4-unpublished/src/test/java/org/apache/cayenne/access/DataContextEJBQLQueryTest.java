@@ -42,6 +42,74 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         deleteTestData();
     }
 
+    public void testSelectAggregate() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "select count(p), count(distinct p.estimatedPrice), max(p.estimatedPrice), sum(p.estimatedPrice) from Painting p";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List data = createDataContext().performQuery(query);
+        assertEquals(1, data.size());
+        assertTrue(data.get(0) instanceof Object[]);
+        Object[] aggregates = (Object[]) data.get(0);
+        assertEquals(new Long(2), aggregates[0]);
+        assertEquals(new Long(2), aggregates[1]);
+        assertEquals(new BigDecimal(5000d), aggregates[2]);
+        assertEquals(new BigDecimal(8000d), aggregates[3]);
+    }
+
+    public void testSelectAggregateNull() throws Exception {
+
+        String ejbql = "select count(p), max(p.estimatedPrice), sum(p.estimatedPrice) "
+                + "from Painting p WHERE p.paintingTitle = 'X'";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List data = createDataContext().performQuery(query);
+        assertEquals(1, data.size());
+        assertTrue(data.get(0) instanceof Object[]);
+        Object[] aggregates = (Object[]) data.get(0);
+        assertEquals(new Long(0), aggregates[0]);
+        assertEquals(null, aggregates[1]);
+        assertEquals(null, aggregates[2]);
+    }
+
+    public void testSelectEntityPathsScalarResult() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "select p.paintingTitle"
+                + " from Painting p order by p.paintingTitle DESC";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List data = createDataContext().performQuery(query);
+        assertEquals(2, data.size());
+
+        assertEquals("P2", data.get(0));
+        assertEquals("P1", data.get(1));
+    }
+
+    public void testSelectEntityPathsArrayResult() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "select p.estimatedPrice, p.toArtist.artistName "
+                + "from Painting p order by p.estimatedPrice";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List data = createDataContext().performQuery(query);
+        assertEquals(2, data.size());
+
+        assertTrue(data.get(0) instanceof Object[]);
+        Object[] row0 = (Object[]) data.get(0);
+        assertEquals(2, row0.length);
+        assertEquals(new BigDecimal(3000d), row0[0]);
+        assertEquals("AA1", row0[1]);
+
+        assertTrue(data.get(1) instanceof Object[]);
+        Object[] row1 = (Object[]) data.get(1);
+        assertEquals(2, row1.length);
+        assertEquals(new BigDecimal(5000d), row1[0]);
+        assertEquals("AA2", row1[1]);
+    }
+
     public void testSimpleSelect() throws Exception {
         createTestData("prepare");
 

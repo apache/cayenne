@@ -18,17 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
-import org.apache.cayenne.ejbql.EJBQLDelegatingVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.Property;
@@ -45,10 +48,12 @@ class Compiler {
     private EntityResolver resolver;
     private Map descriptorsById;
     private Map incomingById;
+    private Collection paths;
     private EJBQLExpressionVisitor fromItemVisitor;
     private EJBQLExpressionVisitor joinVisitor;
-    private EJBQLExpressionVisitor whereAndOrderByVisitor;
+    private EJBQLExpressionVisitor pathVisitor;
     private EJBQLExpressionVisitor rootDescriptorVisitor;
+    private SQLResultSetMapping resultSetMapping;
 
     Compiler(EntityResolver resolver) {
         this.resolver = resolver;
@@ -58,11 +63,44 @@ class Compiler {
         this.rootDescriptorVisitor = new SelectExpressionVisitor();
         this.fromItemVisitor = new FromItemVisitor();
         this.joinVisitor = new JoinVisitor();
-        this.whereAndOrderByVisitor = new WhereAndOrderByVisitor();
+        this.pathVisitor = new PathVisitor();
     }
 
     CompiledExpression compile(String source, EJBQLExpression parsed) {
         parsed.visit(new CompilationVisitor());
+
+        // postprocess paths, now that all id vars are resolved
+        if (paths != null) {
+            Iterator it = paths.iterator();
+            while (it.hasNext()) {
+                EJBQLPath path = (EJBQLPath) it.next();
+                String id = normalizeIdPath(path.getId());
+
+                ClassDescriptor descriptor = (ClassDescriptor) descriptorsById.get(id);
+                if (descriptor == null) {
+                    throw new EJBQLException("Unmapped id variable: " + id);
+                }
+
+                StringBuffer buffer = new StringBuffer(id);
+
+                for (int i = 1; i < path.getChildrenCount(); i++) {
+
+                    String pathChunk = path.getChild(i).getText();
+                    buffer.append('.').append(pathChunk);
+
+                    Property property = descriptor.getProperty(pathChunk);
+                    if (property instanceof ArcProperty) {
+                        ObjRelationship incoming = ((ArcProperty) property)
+                                .getRelationship();
+                        descriptor = ((ArcProperty) property).getTargetDescriptor();
+                        String pathString = buffer.substring(0, buffer.length());
+
+                        descriptorsById.put(pathString, descriptor);
+                        incomingById.put(pathString, incoming);
+                    }
+                }
+            }
+        }
 
         CompiledExpression compiled = new CompiledExpression();
         compiled.setExpression(parsed);
@@ -71,8 +109,17 @@ class Compiler {
         compiled.setRootId(rootId);
         compiled.setDescriptorsById(descriptorsById);
         compiled.setIncomingById(incomingById);
+        compiled.setResultSetMapping(resultSetMapping);
 
         return compiled;
+    }
+
+    private void addPath(EJBQLPath path) {
+        if (paths == null) {
+            paths = new ArrayList();
+        }
+
+        paths.add(path);
     }
 
     static String normalizeIdPath(String idPath) {
@@ -86,63 +133,46 @@ class Compiler {
                 + idPath.substring(pathSeparator);
     }
 
-    class CompilationVisitor extends EJBQLDelegatingVisitor {
-
-        CompilationVisitor() {
-            super(true);
-        }
+    class CompilationVisitor extends EJBQLBaseVisitor {
 
         public boolean visitSelectExpression(EJBQLExpression expression) {
-            updateSubtreeDelegate(rootDescriptorVisitor, expression, -1);
-            return true;
+            expression.visit(rootDescriptorVisitor);
+            return false;
         }
 
         public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
-            updateSubtreeDelegate(fromItemVisitor, expression, finishedChildIndex);
-            return true;
+            expression.visit(fromItemVisitor);
+            return false;
         }
 
         public boolean visitInnerFetchJoin(EJBQLJoin join, int finishedChildIndex) {
-            updateSubtreeDelegate(joinVisitor, join, finishedChildIndex);
-            return true;
+            join.visit(joinVisitor);
+            return false;
         }
 
         public boolean visitInnerJoin(EJBQLJoin join, int finishedChildIndex) {
-            updateSubtreeDelegate(joinVisitor, join, finishedChildIndex);
-            return true;
+            join.visit(joinVisitor);
+            return false;
         }
 
         public boolean visitOuterFetchJoin(EJBQLJoin join, int finishedChildIndex) {
-            updateSubtreeDelegate(joinVisitor, join, finishedChildIndex);
-            return true;
+            join.visit(joinVisitor);
+            return false;
         }
 
         public boolean visitOuterJoin(EJBQLJoin join, int finishedChildIndex) {
-            updateSubtreeDelegate(joinVisitor, join, finishedChildIndex);
-            return true;
+            join.visit(joinVisitor);
+            return false;
         }
 
-        public boolean visitWhere(EJBQLExpression expression, int finishedChildIndex) {
-            updateSubtreeDelegate(whereAndOrderByVisitor, expression, finishedChildIndex);
-            return true;
+        public boolean visitWhere(EJBQLExpression expression) {
+            expression.visit(pathVisitor);
+            return false;
         }
 
-        public boolean visitOrderBy(EJBQLExpression expression, int finishedChildIndex) {
-            updateSubtreeDelegate(whereAndOrderByVisitor, expression, finishedChildIndex);
-            return true;
-        }
-
-        private void updateSubtreeDelegate(
-                EJBQLExpressionVisitor delegate,
-                EJBQLExpression expression,
-                int finishedChildIndex) {
-
-            if (finishedChildIndex < 0) {
-                setDelegate(delegate);
-            }
-            else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
-                setDelegate(null);
-            }
+        public boolean visitOrderBy(EJBQLExpression expression) {
+            expression.visit(pathVisitor);
+            return false;
         }
     }
 
@@ -175,6 +205,12 @@ class Compiler {
                         + ", it is already used for "
                         + old.getEntity().getName());
             }
+
+            // if root wasn't detected in the Select Clause, use the first id var as root
+            if (Compiler.this.rootId == null) {
+                Compiler.this.rootId = rootId;
+            }
+
             return true;
         }
     }
@@ -240,49 +276,39 @@ class Compiler {
         }
     }
 
-    class WhereAndOrderByVisitor extends EJBQLBaseVisitor {
+    class PathVisitor extends EJBQLBaseVisitor {
 
         public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
-            if (finishedChildIndex < 0) {
-
-                String id = normalizeIdPath(expression.getId());
-
-                ClassDescriptor descriptor = (ClassDescriptor) descriptorsById.get(id);
-                if (descriptor == null) {
-                    throw new EJBQLException("Unmapped id variable: " + id);
-                }
-
-                StringBuffer buffer = new StringBuffer(id);
-
-                for (int i = 1; i < expression.getChildrenCount(); i++) {
-
-                    String pathChunk = expression.getChild(i).getText();
-                    buffer.append('.').append(pathChunk);
-
-                    Property property = descriptor.getProperty(pathChunk);
-                    if (property instanceof ArcProperty) {
-                        ObjRelationship incoming = ((ArcProperty) property)
-                                .getRelationship();
-                        descriptor = ((ArcProperty) property).getTargetDescriptor();
-                        String path = buffer.substring(0, buffer.length());
-
-                        descriptorsById.put(path, descriptor);
-                        incomingById.put(path, incoming);
-                    }
-                }
-
-            }
-
-            return true;
+            addPath(expression);
+            return false;
         }
-
     }
 
     class SelectExpressionVisitor extends EJBQLBaseVisitor {
 
         public boolean visitIdentifier(EJBQLExpression expression) {
             rootId = normalizeIdPath(expression.getText());
-            return true;
+            return false;
+        }
+
+        public boolean visitAggregate(EJBQLExpression expression) {
+            addResultSetColumn();
+            return false;
+        }
+
+        public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
+            addPath(expression);
+            addResultSetColumn();
+            return false;
+        }
+
+        private void addResultSetColumn() {
+            if (resultSetMapping == null) {
+                resultSetMapping = new SQLResultSetMapping();
+            }
+
+            String column = "sc" + resultSetMapping.getColumnResults().size();
+            resultSetMapping.addColumnResult(column);
         }
     }
 }

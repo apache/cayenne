@@ -18,13 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLSum extends SimpleNode {
+public class EJBQLSum extends EJBQLAggregateColumn {
+
+    // per JPA spec, 4.8.4, SUM type mapping rules are a bit convoluted. Mapping them
+    // here...
+
+    static final Map typeMap;
+
+    static {
+        typeMap = new HashMap();
+        typeMap.put(Integer.class.getName(), Long.class.getName());
+        typeMap.put(Short.class.getName(), Long.class.getName());
+        typeMap.put(Float.class.getName(), Double.class.getName());
+    }
 
     public EJBQLSum(int id) {
         super(id);
@@ -32,5 +47,21 @@ public class EJBQLSum extends SimpleNode {
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitSum(this);
+    }
+
+    public String getFunction() {
+        return "SUM";
+    }
+
+    public String getJavaType(String pathType) {
+
+        if (pathType == null) {
+            return "java.lang.Long";
+        }
+
+        // type map only contains mappings that are different from the attribute path, so
+        // if no mapping exists, return the argument passed to this method.
+        String mappedType = (String) typeMap.get(pathType);
+        return mappedType != null ? mappedType : pathType;
     }
 }

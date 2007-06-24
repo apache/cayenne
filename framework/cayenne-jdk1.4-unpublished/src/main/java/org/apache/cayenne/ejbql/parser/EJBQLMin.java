@@ -24,7 +24,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLMin extends SimpleNode {
+public class EJBQLMin extends EJBQLAggregateColumn {
 
     public EJBQLMin(int id) {
         super(id);
@@ -32,5 +32,13 @@ public class EJBQLMin extends SimpleNode {
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitMin(this);
+    }
+    
+    public String getFunction() {
+        return "MIN";
+    }
+
+    public String getJavaType(String pathType) {
+        return pathType;
     }
 }

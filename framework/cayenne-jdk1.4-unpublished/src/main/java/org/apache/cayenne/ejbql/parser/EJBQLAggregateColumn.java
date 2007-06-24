@@ -18,19 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
-import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
-
 /**
+ * An aggregate column expression.
+ * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLDistinctPath extends SimpleNode {
+public abstract class EJBQLAggregateColumn extends SimpleNode {
 
-    public EJBQLDistinctPath(int id) {
+    public EJBQLAggregateColumn(int id) {
         super(id);
     }
 
-    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitDistinctPath(this);
-    }
+    public abstract String getFunction();
+
+    public abstract String getJavaType(String pathType);
 }

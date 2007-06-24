@@ -24,7 +24,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLMax extends SimpleNode {
+public class EJBQLMax extends EJBQLAggregateColumn {
 
     public EJBQLMax(int id) {
         super(id);
@@ -32,5 +32,13 @@ public class EJBQLMax extends SimpleNode {
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitMax(this);
+    }
+    
+    public String getFunction() {
+        return "MAX";
+    }
+
+    public String getJavaType(String pathType) {
+        return pathType;
     }
 }
