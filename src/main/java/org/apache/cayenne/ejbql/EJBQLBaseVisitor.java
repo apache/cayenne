@@ -159,7 +159,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
+    public boolean visitFromItem(EJBQLFromItem expression) {
         return continueFlag;
     }
 
