@@ -34,8 +34,6 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 class EJBQLTranslationContext {
 
-    static final String FROM_TAIL_MARKER = "FROM_TAIL_MARKER";
-
     private Map tableAliases;
     private Map boundParameters;
     private StringBuffer mainBuffer;

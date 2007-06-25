@@ -51,6 +51,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     private String lastPathComponent;
     protected String lastAlias;
     protected String idPath;
+    protected String joinMarker;
     private String fullPath;
     private EJBQLFromTranslator joinAppender;
 
@@ -86,6 +87,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
         this.currentEntity = descriptor.getEntity();
         this.idPath = expression.getText();
+        this.joinMarker = EJBQLFromTranslator.makeJoinTailMarker(idPath);
         this.fullPath = idPath;
         return true;
     }
@@ -141,7 +143,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
             join.jjtAddChild(path, 0);
             join.jjtAddChild(joinId, 1);
 
-            context.switchToMarker(EJBQLTranslationContext.FROM_TAIL_MARKER);
+            context.switchToMarker(joinMarker);
 
             getJoinAppender().visitInnerJoin(join);
             context.switchToMainBuffer();
