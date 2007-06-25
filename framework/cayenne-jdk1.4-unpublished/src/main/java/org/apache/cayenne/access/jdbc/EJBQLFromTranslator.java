@@ -37,30 +37,38 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
-    private int fromCount;
+    private String lastId;
 
-    public EJBQLFromTranslator(EJBQLTranslationContext context) {
+    static String makeJoinTailMarker(String id) {
+        return "FROM_TAIL" + id;
+    }
+
+    EJBQLFromTranslator(EJBQLTranslationContext context) {
         super(true);
         this.context = context;
     }
 
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
-
         if (finishedChildIndex + 1 == expression.getChildrenCount()) {
-            context.markCurrentPosition(EJBQLTranslationContext.FROM_TAIL_MARKER);
+            if (lastId != null) {
+                context.markCurrentPosition(makeJoinTailMarker(lastId));
+            }
         }
 
         return true;
     }
 
-    public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
-        if (finishedChildIndex < 0) {
-            if (fromCount++ > 0) {
-                context.append(',');
-            }
-            appendTable(expression.getId());
+    public boolean visitFromItem(EJBQLFromItem expression) {
+
+        String id = expression.getId();
+
+        if (lastId != null) {
+            context.append(',');
+            context.markCurrentPosition(makeJoinTailMarker(lastId));
         }
 
+        this.lastId = id;
+        appendTable(id);
         return false;
     }
 
