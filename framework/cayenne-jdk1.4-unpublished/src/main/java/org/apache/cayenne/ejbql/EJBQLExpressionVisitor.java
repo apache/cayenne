@@ -134,7 +134,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitFrom(EJBQLExpression expression, int finishedChildIndex);
 
-    boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex);
+    boolean visitFromItem(EJBQLFromItem expression);
 
     /**
      * Called on visiting ">=" expression and also after visiting every expression child.

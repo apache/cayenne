@@ -140,7 +140,7 @@ class Compiler {
             return false;
         }
 
-        public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
+        public boolean visitFromItem(EJBQLFromItem expression) {
             expression.visit(fromItemVisitor);
             return false;
         }
