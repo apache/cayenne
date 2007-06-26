@@ -362,8 +362,10 @@ public class DataContextTest extends DataContextCase {
         assertNotNull(objects);
         assertTrue(objects instanceof IncrementalFaultList);
 
-        assertTrue(((IncrementalFaultList) objects).elements.get(0) instanceof Artist);
+        assertTrue(((IncrementalFaultList) objects).elements.get(0) instanceof Map);
         assertTrue(((IncrementalFaultList) objects).elements.get(7) instanceof Map);
+        
+        assertTrue(objects.get(0) instanceof Artist);
     }
 
     public void testPerformPaginatedQueryBigPage() throws Exception {

@@ -33,6 +33,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
@@ -136,24 +137,36 @@ public class IncrementalFaultList implements List {
             helper = new PersistentListHelper();
         }
 
+        boolean resolvesFirstPage = true;
+
         if (!metadata.isFetchingDataRows() && (query instanceof SelectQuery)) {
             SelectQuery select = (SelectQuery) query;
 
             this.internalQuery.setPrefetchTree(select.getPrefetchTree());
 
-            if (select.getPrefetchTree() != null) {
-                // prefetching will blow iterated result, so strip prefetches... this is
-                // a bit of a hack
-                SelectQuery clone = select.queryWithParameters(
-                        Collections.EMPTY_MAP,
-                        true);
-                clone.clearPrefetches();
-                query = clone;
+            // optimize SelectQuery:
+            // * just select ID columns - this gives a 5-10x speedup
+            // * strip prefetches as they blow the iterated result, and are actually not
+            // needed
+
+            SelectQuery clone = select.queryWithParameters(Collections.EMPTY_MAP, true);
+            clone.clearPrefetches();
+
+            // I guess this check is redundant, as custom attributes warrant data rows
+            if (!select.isFetchingCustomAttributes()) {
+                Iterator pk = rootEntity.getDbEntity().getPrimaryKey().iterator();
+                while (pk.hasNext()) {
+                    DbAttribute attribute = (DbAttribute) pk.next();
+                    clone.addCustomDbAttribute(attribute.getName());
+                }
             }
+
+            query = clone;
+            resolvesFirstPage = false;
         }
 
         List elementsUnsynced = new ArrayList();
-        fillIn(query, elementsUnsynced);
+        fillIn(query, elementsUnsynced, resolvesFirstPage);
         this.elements = Collections.synchronizedList(elementsUnsynced);
     }
 
@@ -162,15 +175,6 @@ public class IncrementalFaultList implements List {
      */
     SelectQuery getInternalQuery() {
         return internalQuery;
-    }
-
-    /**
-     * Returns true if it is possible to read the first page of inflated objects from the
-     * ResultSet returned from the main query. False is returned for queries with
-     * prefetches as resolving prefetches is not possible in this situation.
-     */
-    private boolean resolvesFirstPage() {
-        return internalQuery.getPrefetchTree() == null;
     }
 
     /**
@@ -184,7 +188,7 @@ public class IncrementalFaultList implements List {
      */
     protected void fillIn(Query query) {
         synchronized (elements) {
-            fillIn(query, elements);
+            fillIn(query, elements, true);
         }
     }
 
@@ -194,7 +198,7 @@ public class IncrementalFaultList implements List {
      * 
      * @since 3.0
      */
-    protected void fillIn(Query query, List elementsList) {
+    protected void fillIn(Query query, List elementsList, boolean resolvesFirstPage) {
         QueryMetadata info = query.getMetaData(dataContext.getEntityResolver());
         boolean fetchesDataRows = internalQuery.isFetchingDataRows();
 
@@ -211,7 +215,7 @@ public class IncrementalFaultList implements List {
                 rowWidth = it.getDataRowWidth();
 
                 // resolve first page if we can
-                if (resolvesFirstPage()) {
+                if (resolvesFirstPage) {
                     // read first page completely, the rest as ObjectIds
                     for (int i = 0; i < pageSize && it.hasNextRow(); i++) {
                         elementsList.add(it.nextDataRow());
@@ -252,7 +256,7 @@ public class IncrementalFaultList implements List {
                     .unwindException(e));
         }
 
-        unfetchedObjects = (resolvesFirstPage())
+        unfetchedObjects = (resolvesFirstPage)
                 ? elementsList.size() - pageSize
                 : elementsList.size();
     }
