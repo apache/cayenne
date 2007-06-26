@@ -20,6 +20,7 @@
 package org.apache.cayenne.unit;
 
 import java.io.File;
+import java.math.BigDecimal;
 
 import junit.framework.TestCase;
 
@@ -30,6 +31,12 @@ import junit.framework.TestCase;
  * @author Andrus Adamchik
  */
 public abstract class BasicCase extends TestCase {
+
+    public static void assertEquals(BigDecimal d1, Object d2, double delta) {
+        assertTrue(d2 instanceof BigDecimal);
+        BigDecimal d3 = d1.subtract((BigDecimal) d2);
+        assertTrue(Math.abs(d3.doubleValue()) < delta);
+    }
 
     /**
      * Returns directory that should be used by all test cases that perform file
