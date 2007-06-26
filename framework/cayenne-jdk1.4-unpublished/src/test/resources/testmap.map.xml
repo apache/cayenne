@@ -40,7 +40,7 @@
 		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="BIGDECIMAL_ENTITY">
-		<db-attribute name="BIGDECIMAL_FIELD" type="NUMERIC"/>
+		<db-attribute name="BIGDECIMAL_FIELD" type="NUMERIC" length="12" scale="2"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="BIGINTEGER_ENTITY">
