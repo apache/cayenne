@@ -34,11 +34,9 @@ import org.apache.art.DecimalPKTestEntity;
 import org.apache.art.LongEntity;
 import org.apache.art.SmallintTestEntity;
 import org.apache.art.TinyintTestEntity;
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -68,11 +66,6 @@ public class NumericTypesTest extends CayenneCase {
         LongEntity testRead = (LongEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getLongField());
         assertEquals(i, testRead.getLongField());
-
-        SQLTemplate q1 = new SQLTemplate(LongEntity.class, "select * from LONG_ENTITY");
-        q1.setFetchingDataRows(true);
-        DataRow row = (DataRow) context.performQuery(q1).get(0);
-        assertEquals(i, row.get("LONG_FIELD"));
 
         test.setLongField(null);
         context.commitChanges();
