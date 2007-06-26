@@ -54,8 +54,8 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         Object[] aggregates = (Object[]) data.get(0);
         assertEquals(new Long(2), aggregates[0]);
         assertEquals(new Long(2), aggregates[1]);
-        assertEquals(new BigDecimal(5000d), aggregates[2]);
-        assertEquals(new BigDecimal(8000d), aggregates[3]);
+        assertEquals(new BigDecimal(5000d), aggregates[2], 0.01);
+        assertEquals(new BigDecimal(8000d), aggregates[3], 0.01);
     }
 
     public void testSelectAggregateNull() throws Exception {
@@ -100,13 +100,13 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         assertTrue(data.get(0) instanceof Object[]);
         Object[] row0 = (Object[]) data.get(0);
         assertEquals(2, row0.length);
-        assertEquals(new BigDecimal(3000d), row0[0]);
+        assertEquals(new BigDecimal(3000d), row0[0], 0.01);
         assertEquals("AA1", row0[1]);
 
         assertTrue(data.get(1) instanceof Object[]);
         Object[] row1 = (Object[]) data.get(1);
         assertEquals(2, row1.length);
-        assertEquals(new BigDecimal(5000d), row1[0]);
+        assertEquals(new BigDecimal(5000d), row1[0], 0.01);
         assertEquals("AA2", row1[1]);
     }
 
@@ -205,7 +205,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         Painting p = (Painting) ps.get(0);
         assertEquals("P1", p.getPaintingTitle());
-        assertEquals(new BigDecimal(3000d), p.getEstimatedPrice());
+        assertEquals(new BigDecimal(3000d), p.getEstimatedPrice(), 0.01);
     }
 
     public void testSelectFromWhereBetween() throws Exception {
@@ -219,7 +219,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         Painting p = (Painting) ps.get(0);
         assertEquals("P1", p.getPaintingTitle());
-        assertEquals(new BigDecimal(3000d), p.getEstimatedPrice());
+        assertEquals(new BigDecimal(3000d), p.getEstimatedPrice(), 0.01);
     }
 
     public void testSelectFromWhereNotBetween() throws Exception {
@@ -233,7 +233,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         Painting p = (Painting) ps.get(0);
         assertEquals("P2", p.getPaintingTitle());
-        assertEquals(new BigDecimal(5000d), p.getEstimatedPrice());
+        assertEquals(new BigDecimal(5000d), p.getEstimatedPrice(), 0.01);
     }
 
     public void testSelectFromWhereGreater() throws Exception {
@@ -247,7 +247,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         Painting p = (Painting) ps.get(0);
         assertEquals("P2", p.getPaintingTitle());
-        assertEquals(new BigDecimal(5000d), p.getEstimatedPrice());
+        assertEquals(new BigDecimal(5000d), p.getEstimatedPrice(), 0.01);
     }
 
     public void testSelectFromWhereGreaterOrEqual() throws Exception {
@@ -271,7 +271,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         Painting p = (Painting) ps.get(0);
         assertEquals("P1", p.getPaintingTitle());
-        assertEquals(new BigDecimal(3000d), p.getEstimatedPrice());
+        assertEquals(new BigDecimal(3000d), p.getEstimatedPrice(), 0.01);
     }
 
     public void testSelectFromWhereLessOrEqual() throws Exception {
