@@ -21,9 +21,10 @@ package org.apache.cayenne.map;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.util.Util;
@@ -38,10 +39,10 @@ import org.apache.cayenne.util.XMLEncoder;
 public class EmbeddedAttribute extends Attribute {
 
     protected String type;
-    protected Map attributeOverrides;
+    protected SortedMap attributeOverrides;
 
     public EmbeddedAttribute() {
-        attributeOverrides = new HashMap();
+        attributeOverrides = new TreeMap();
     }
 
     public EmbeddedAttribute(String name) {
@@ -72,6 +73,9 @@ public class EmbeddedAttribute extends Attribute {
         encoder.println('>');
 
         encoder.indent(1);
+        
+        
+        
         Iterator it = attributeOverrides.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry e = (Map.Entry) it.next();
