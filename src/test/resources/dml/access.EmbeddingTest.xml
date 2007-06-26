@@ -11,7 +11,7 @@
 			<value>org.apache.cayenne.testdo.embeddable.EmbedEntity1</value>
 		</constructor-arg>
 		<constructor-arg>
-			<value>delete from "EMBED_ENTITY1"</value>
+			<value>delete from EMBED_ENTITY1</value>
 		</constructor-arg>
 	</bean>
 
