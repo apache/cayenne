@@ -133,7 +133,7 @@ public class Embeddable implements XMLSerializable, Serializable {
     public void encodeAsXML(XMLEncoder encoder) {
         encoder.print("<embeddable");
         if (getClassName() != null) {
-            encoder.print("\" className=\"");
+            encoder.print(" className=\"");
             encoder.print(getClassName());
             encoder.print("\"");
         }
