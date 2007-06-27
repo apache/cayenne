@@ -62,6 +62,7 @@ CAY-781 Bug in CayenneDataObject.readNestedProperty
 CAY-800 SQLTemplate improvement - API to control the capitalization of the data row labels
 CAY-803 EJBQL Parameters support
 CAY-805 SQLTemplate improvement: new #bindObjectEqual #bindObjectNotEqual directives
+CAY-812 Add ability to drag cayenne.xml to the Modeler from the filesystem
 
 Bug Fixes since 1.2/2.0 final:
 
