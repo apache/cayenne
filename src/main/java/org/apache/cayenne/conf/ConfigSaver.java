@@ -184,8 +184,10 @@ public class ConfigSaver {
                 + attribute("max", String.valueOf(info.getMaxConnections()))
                 + "/>");
 
+        pw.print("\t<login");
+        
         if (info.getUserName() != null) {
-            pw.print("\t<login" + attribute("userName", info.getUserName()));
+            pw.print(attribute("userName", info.getUserName()));
         }
 
         if (info.getPasswordLocation().equals(DataSourceInfo.PASSWORD_LOCATION_MODEL)) {
