@@ -80,6 +80,9 @@ public class OpenProjectAction extends ProjectAction {
             FileMenuItem menu = (FileMenuItem) e.getSource();
             f = menu.getFile();
         }
+        else if(e.getSource() instanceof File) {
+            f = (File) e.getSource();
+        }
 
         if (f == null) {
             try {

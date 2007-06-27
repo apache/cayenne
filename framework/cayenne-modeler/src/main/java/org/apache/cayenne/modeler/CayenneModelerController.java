@@ -20,14 +20,22 @@
 package org.apache.cayenne.modeler;
 
 import java.awt.Component;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.WindowConstants;
 
+import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
@@ -92,10 +100,48 @@ public class CayenneModelerController extends CayenneController {
             }
         });
 
+        new DropTarget(frame, new DropTargetAdapter() {
+
+            public void drop(DropTargetDropEvent dtde) {
+                dtde.acceptDrop(dtde.getDropAction());
+                Transferable transferable = dtde.getTransferable();
+                dtde.dropComplete(processDropAction(transferable));
+            }
+        });
+
         Domain prefDomain = application.getPreferenceDomain().getSubdomain(
                 frame.getClass());
         ComponentGeometry geometry = ComponentGeometry.getPreference(prefDomain);
         geometry.bind(frame, 650, 550, 30);
+    }
+
+    private boolean processDropAction(Transferable transferable) {
+        List fileList;
+        try {
+            fileList = (List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+        }
+        catch (Exception e) {
+            return false;
+        }
+
+        File transferFile = (File) fileList.get(0);
+
+        if (transferFile.isFile()) {
+
+            if (Configuration.DEFAULT_DOMAIN_FILE.equals(transferFile.getName())) {
+                ActionEvent e = new ActionEvent(
+                        transferFile,
+                        ActionEvent.ACTION_PERFORMED,
+                        "OpenProject");
+                Application
+                        .getInstance()
+                        .getAction(OpenProjectAction.getActionName())
+                        .actionPerformed(e);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void startupAction() {
