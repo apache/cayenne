@@ -22,6 +22,7 @@ import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 
@@ -55,8 +56,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
     public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
 
-        EJBQLPathTranslator pathTranslator = new EJBQLPathTranslator(
-                context) {
+        EJBQLPathTranslator pathTranslator = new EJBQLPathTranslator(context) {
 
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
                 throw new EJBQLException("Can't use multi-column paths in column clause");
@@ -67,10 +67,24 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                 String alias = this.lastAlias != null ? lastAlias : context
                         .getTableAlias(idPath, table.getFullyQualifiedName());
 
-                context.append(" #result('").append(alias).append('.').append(
-                        attribute.getDbAttributeName()).append("' '").append(
-                        attribute.getType()).append("' '").append(
-                        context.nextColumnAlias()).append("')");
+                DbAttribute dbAttribute = (DbAttribute) attribute.getDbAttribute();
+
+                // TODO: andrus 6/27/2007 - the last parameter is an unofficial "jdbcType"
+                // pending CAY-813 implementation, switch to #column directive
+                String columnAlias = context.nextColumnAlias();
+                context
+                        .append(" #result('")
+                        .append(alias)
+                        .append('.')
+                        .append(dbAttribute.getName())
+                        .append("' '")
+                        .append(attribute.getType())
+                        .append("' '")
+                        .append(columnAlias)
+                        .append("' '")
+                        .append(columnAlias)
+                        .append("' " + dbAttribute.getType())
+                        .append(")");
             }
         };
 

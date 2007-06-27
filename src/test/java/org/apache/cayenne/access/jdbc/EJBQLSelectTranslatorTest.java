@@ -288,8 +288,8 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "
-                + "#result('t0.ESTIMATED_PRICE' 'java.math.BigDecimal' 'sc0'), "
-                + "#result('t1.ARTIST_NAME' 'java.lang.String' 'sc1') FROM"));
+                + "#result('t0.ESTIMATED_PRICE' 'java.math.BigDecimal' 'sc0' 'sc0' 3), "
+                + "#result('t1.ARTIST_NAME' 'java.lang.String' 'sc1' 'sc1' 1) FROM"));
     }
 
     private int countDelimiters(String string, String delim, int fromIndex) {
