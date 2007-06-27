@@ -29,11 +29,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.commons.collections.comparators.ReverseComparator;
@@ -300,12 +300,19 @@ public class AshwoodEntitySorter implements EntitySorter {
         DbRelationship finalRel = (DbRelationship) toOneRel.getDbRelationships().get(0);
         ObjectContext context = object.getObjectContext();
 
-        // find snapshot
+        // find committed snapshot - so we can't fetch from the context as it will return
+        // dirty snapshot; must go down the stack instead
         ObjectIdQuery query = new ObjectIdQuery(
                 object.getObjectId(),
                 true,
                 ObjectIdQuery.CACHE);
-        DataRow snapshot = (DataRow) DataObjectUtils.objectForQuery(context, query);
+        QueryResponse response = context.getChannel().onQuery(null, query);
+        List result = response.firstList();
+        if(result == null || result.size() == 0) {
+            return null;
+        }
+        
+        DataRow snapshot = (DataRow) result.get(0);
 
         ObjectId id = snapshot.createTargetObjectId(targetEntityName, finalRel);
         return (id != null) ? context.localObject(id, null) : null;
