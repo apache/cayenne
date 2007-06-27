@@ -115,7 +115,7 @@ class ClientServerChannelQueryAction {
                 // cache
                 channel.getQueryCache().put(serverMetadata, list);
 
-                // extract and convert firts page
+                // extract and convert first page
 
                 List sublist = list.subList(0, pageSize);
 
