@@ -155,8 +155,11 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                     javaType = TypesMapping.getJavaBySqlType(column.getType());
                 }
 
+                // TODO: andrus 6/27/2007 - the last parameter is an unofficial "jdbcType"
+                // pending CAY-813 implementation, switch to #column directive
                 context.append("' '").append(javaType).append("' '").append(
-                        column.getName()).append("')");
+                        column.getName()).append("' '").append(column.getName()).append(
+                        "' " + column.getType()).append(")");
             }
         }
     }

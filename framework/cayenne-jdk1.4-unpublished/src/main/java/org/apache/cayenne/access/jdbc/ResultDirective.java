@@ -43,10 +43,10 @@ import org.apache.cayenne.util.Util;
  * possible invocation formats inside the template:
  * 
  * <pre>
- *      #result(column_name) - e.g. #result('ARTIST_ID')
- *      #result(column_name java_type) - e.g. #result('ARTIST_ID' 'String')
- *      #result(column_name java_type column_alias) - e.g. #result('ARTIST_ID' 'String' 'ID')
- *      #result(column_name java_type column_alias data_row_key) - e.g. #result('ARTIST_ID' 'String' 'ID' 'toArtist.ID')
+ *       #result(column_name) - e.g. #result('ARTIST_ID')
+ *       #result(column_name java_type) - e.g. #result('ARTIST_ID' 'String')
+ *       #result(column_name java_type column_alias) - e.g. #result('ARTIST_ID' 'String' 'ID')
+ *       #result(column_name java_type column_alias data_row_key) - e.g. #result('ARTIST_ID' 'String' 'ID' 'toArtist.ID')
  * </pre>
  * 
  * <p>
@@ -132,6 +132,13 @@ public class ResultDirective extends Directive {
         String type = getChildAsString(context, node, 1);
         if (type != null) {
             columnDescriptor.setJavaClass(guessType(type.toString()));
+        }
+
+        // TODO: andrus 6/27/2007 - this is an unofficial jdbcType parameter that is added
+        // temporarily pending CAY-813 implementation for the sake of EJBQL query...
+        Object jdbcType = getChild(context, node, 4);
+        if(jdbcType instanceof Number) {
+            columnDescriptor.setJdbcType(((Number) jdbcType).intValue());
         }
 
         writer.write(column);
