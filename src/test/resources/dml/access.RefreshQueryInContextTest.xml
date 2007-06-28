@@ -38,7 +38,7 @@
 	<bean id="PU1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
 		<constructor-arg><value>
-		UPDATE PAINTING set ARTIST_ID = 33002;
+		UPDATE PAINTING set ARTIST_ID = 33002
 		</value></constructor-arg>
 	</bean>
 	
