@@ -344,7 +344,14 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             context.append(" #bind($").append(boundName).append(")");
         }
         else {
-            context.append(" NULL");
+            // this is a hack to prevent execptions on DB's like Derby for expressions
+            // "X = NULL". The 'VARCHAR' parameter is totally bogus, but seems to work on
+            // all tested DB's... Also note what JPA spec, chapter 4.11 says: "Comparison
+            // or arithmetic operations with a NULL value always yield an unknown value."
+            
+            // TODO: andrus 6/28/2007 Ideally we should track the type of the current
+            // expression to provide a meaningful type.
+            context.append(" #bind($").append(boundName).append(" 'VARCHAR')");
         }
     }
 }
