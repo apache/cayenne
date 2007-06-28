@@ -89,10 +89,6 @@ public abstract class AbstractAccessStack {
                 if (ent instanceof DerivedDbEntity) {
                     continue;
                 }
-                
-                if("SERIALIZABLE_ENTITY".equals(ent.getName())) {
-                    System.out.println("");
-                }
 
                 // check for LOB attributes
                 if (excludeLOB) {
