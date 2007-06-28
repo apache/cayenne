@@ -43,4 +43,8 @@ public class DerbyStackAdapter extends AccessStackAdapter {
     public boolean supportsCaseInsensitiveOrder() {
         return false;
     }
+    
+    public boolean supportsLobs() {
+        return true;
+    }
 }

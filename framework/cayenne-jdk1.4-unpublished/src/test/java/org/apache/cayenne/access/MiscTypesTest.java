@@ -35,6 +35,11 @@ public class MiscTypesTest extends CayenneCase {
     }
 
     public void testSerializable() throws Exception {
+        
+        // this test requires BLOB support
+        if(!getAccessStackAdapter().supportsLobs()) {
+            return;
+        }
 
         DataContext context = createDataContext();
 
