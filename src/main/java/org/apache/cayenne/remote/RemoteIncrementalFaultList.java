@@ -33,6 +33,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.IDUtil;
 import org.apache.cayenne.util.IncrementalListResponse;
 import org.apache.cayenne.util.Util;
@@ -97,11 +98,23 @@ public class RemoteIncrementalFaultList implements List {
         // use provided cache key if possible; this would allow clients to
         // address the same server-side list from multiple queries.
         this.cacheKey = metadata.getCacheKey();
-        if(cacheKey == null) {
+        if (cacheKey == null) {
             cacheKey = generateCacheKey();
         }
 
-        IncrementalQuery query = new IncrementalQuery(paginatedQuery, cacheKey);
+        Query query = paginatedQuery;
+        if (metadata.getCacheKey() == null) {
+
+            // there are some serious pagination optimizations for SelectQuery on the
+            // server-side, so use a special wrapper that is itself a subclass of
+            // SelectQuery
+            if (query instanceof SelectQuery) {
+                query = new IncrementalSelectQuery((SelectQuery) paginatedQuery, cacheKey);
+            }
+            else {
+                query = new IncrementalQuery(paginatedQuery, cacheKey);
+            }
+        }
 
         // select directly from the channel, bypassing the context. Otherwise our query
         // wrapper can be intercepted incorrectly
