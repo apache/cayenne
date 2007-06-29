@@ -64,6 +64,7 @@ CAY-803 EJBQL Parameters support
 CAY-805 SQLTemplate improvement: new #bindObjectEqual #bindObjectNotEqual directives
 CAY-810 IncrementalFaultList performance improvements
 CAY-812 Add ability to drag cayenne.xml to the Modeler from the filesystem
+CAY-817 HSQLDB schema generation may not correctly flush the changes
 
 Bug Fixes since 1.2/2.0 final:
 
