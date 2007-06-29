@@ -76,6 +76,11 @@ public class AccessStackAdapter {
      */
     public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
             throws Exception {
+        dropConstraints(conn, map, tablesToDrop);
+    }
+
+    protected void dropConstraints(Connection conn, DataMap map, Collection tablesToDrop)
+            throws Exception {
 
         if (adapter.supportsFkConstraints()) {
             Map constraintsMap = getConstraints(conn, map, tablesToDrop);
