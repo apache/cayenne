@@ -733,6 +733,23 @@
                                 </dependency>
                         </dependencies>
 		</profile>
+		<profile>
+                        <id>sqlserver</id>
+                        <activation>
+                                <property>
+                                        <name>cayenne.test.connection</name>
+                                        <value>sqlserver</value>
+                                </property>
+                        </activation>
+                        <dependencies>
+                                <dependency>
+                                        <groupId>com.microsoft</groupId>
+                                        <artifactId>sqlserver-driver</artifactId>
+                                        <version>2005</version>
+                                        <scope>test</scope>
+                                </dependency>
+                        </dependencies>
+                </profile>
 	</profiles>
 </project>
 
