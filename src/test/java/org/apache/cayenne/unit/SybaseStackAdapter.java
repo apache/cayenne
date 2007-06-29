@@ -67,6 +67,10 @@ public class SybaseStackAdapter extends AccessStackAdapter {
             dropConstraints(con, (String) it.next());
         }
 
+        dropProcedures(con, map);  
+    }
+    
+    protected void dropProcedures(Connection con, DataMap map) throws Exception {
         Procedure proc = map.getProcedure("cayenne_tst_select_proc");
         if (proc != null && proc.getDataMap() == map) {
             executeDDL(con, "sybase", "drop-select-sp.sql");
