@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.sql.Connection;
@@ -303,8 +302,7 @@ public class DbGenerator {
             }
 
             // create FK
-            if (shouldCreateTables
-                    && shouldCreateFKConstraints) {
+            if (shouldCreateTables && shouldCreateFKConstraints) {
                 Iterator it = dbEntitiesInInsertOrder.iterator();
                 while (it.hasNext()) {
                     DbEntity ent = (DbEntity) it.next();
@@ -339,6 +337,8 @@ public class DbGenerator {
                     safeExecute(connection, (String) it.next());
                 }
             }
+
+            new DbGeneratorPostprocessor().execute(connection);
         }
         finally {
             connection.close();
@@ -383,7 +383,7 @@ public class DbGenerator {
     public List createFkConstraintsQueries(DbEntity table) {
         return createConstraintsQueries(table);
     }
-    
+
     /**
      * Creates FK and UNIQUE constraint statements for a given table.
      * 
