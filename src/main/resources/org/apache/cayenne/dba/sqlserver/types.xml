@@ -24,7 +24,7 @@
 <types>
    <jdbc-type name="ARRAY"/>
    <jdbc-type name="BIGINT">
-       <db-type name="int"/>
+       <db-type name="bigint"/>
    </jdbc-type>
    <jdbc-type name="BINARY">
        <db-type name="binary"/>
