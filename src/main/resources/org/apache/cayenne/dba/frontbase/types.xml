@@ -73,7 +73,7 @@ FrontBase types mapping
 		<db-type name="CHAR VARYING"/>
    </jdbc-type>
    <jdbc-type name="NUMERIC">
-       <db-type name="NUMBERIC"/>
+       <db-type name="NUMERIC"/>
    </jdbc-type>
    <jdbc-type name="OTHER">
    		<db-type name="INTERVAL"/>
