@@ -750,6 +750,23 @@
                                 </dependency>
                         </dependencies>
                 </profile>
+		<profile>
+                        <id>sybase</id>
+                        <activation>
+                                <property>
+                                        <name>cayenne.test.connection</name>
+                                        <value>sybase</value>
+                                </property>
+                        </activation>
+                        <dependencies>
+                                <dependency>
+                                        <groupId>com.sybase</groupId>
+                                        <artifactId>sybase-driver</artifactId>
+                                        <version>12</version>
+                                        <scope>test</scope>
+                                </dependency>
+                        </dependencies>
+                </profile>
 	</profiles>
 </project>
 
