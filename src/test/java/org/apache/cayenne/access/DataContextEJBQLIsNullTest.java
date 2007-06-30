@@ -26,7 +26,7 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLIsNullTest extends CayenneCase {
-    
+
     public void testCompareToNull() throws Exception {
         deleteTestData();
         createTestData("prepare");
@@ -36,8 +36,11 @@ public class DataContextEJBQLIsNullTest extends CayenneCase {
         query1.setParameter("x", null);
 
         // unlike SelectQuery or SQLTemplate, EJBQL nulls are handled just like SQL.
-        List results = createDataContext().performQuery(query1);
-        assertEquals(0, results.size());
+
+        // note that some databases (notable Sybase) actually allow = NULL comparison,
+        // most do not; per JPA spec the result is undefined.. so we can't make any
+        // assertions about the result. Just making sure the query doesn't blow up
+        createDataContext().performQuery(query1);
     }
 
     public void testIsNull() throws Exception {
@@ -63,7 +66,7 @@ public class DataContextEJBQLIsNullTest extends CayenneCase {
         assertEquals(1, results.size());
         assertEquals(33002, DataObjectUtils.intPKForObject((Persistent) results.get(0)));
     }
-    
+
     public void testToOneIsNull() throws Exception {
         deleteTestData();
         createTestData("testToOneIsNull");
@@ -75,7 +78,7 @@ public class DataContextEJBQLIsNullTest extends CayenneCase {
         assertEquals(1, results.size());
         assertEquals(33001, DataObjectUtils.intPKForObject((Persistent) results.get(0)));
     }
-    
+
     public void testToOneIsNotNull() throws Exception {
         deleteTestData();
         createTestData("testToOneIsNull");
