@@ -8,6 +8,12 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
+Release: 2.0.4
+Date: 
+----------------------------------
+CAY-818 Frontbase NUMERIC type mapping typo
+
+----------------------------------
 Release: 2.0.3
 Date: 
 ----------------------------------
