@@ -24,7 +24,8 @@
 <types>
    <jdbc-type name="ARRAY"/>
    <jdbc-type name="BIGINT">
-       <db-type name="int"/>
+   	  <!--  Sybase only introduces bigint in v.15; v.12 requires a workaround -->
+       <db-type name="decimal(19,0)"/>
    </jdbc-type>
    <jdbc-type name="BINARY">
        <db-type name="binary"/>
