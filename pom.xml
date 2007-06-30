@@ -668,6 +668,23 @@
 			</activation>
 		</profile>
 		<profile>
+                        <id>frontbase</id>
+                        <activation>
+                                <property>
+                                        <name>cayenne.test.connection</name>
+                                        <value>frontbase</value>
+                                </property>
+                        </activation>
+                        <dependencies>
+                                <dependency>
+                                        <groupId>com.frontbase</groupId>
+                                        <artifactId>frontbase-driver</artifactId>
+                                        <version>4.1</version>
+                                        <scope>test</scope>
+                                </dependency>
+                        </dependencies>
+                </profile>
+		<profile>
 			<id>mysql</id>
 			<activation>
 				<property>
