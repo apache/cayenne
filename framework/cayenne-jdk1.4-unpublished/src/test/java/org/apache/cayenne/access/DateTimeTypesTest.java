@@ -94,9 +94,11 @@ public class DateTimeTypesTest extends CayenneCase {
         assertNotNull(testRead.getTimeColumn());
 
         // OpenBase fails to store seconds for the time
-        // do an approximate match rounding to minutes
+        // FrontBase returns time with 1 hour offset
+        // so this test is approximate...
 
-        assertTrue(Math.abs(nowTime.getTime() - testRead.getTimeColumn().getTime()) < 1000 * 60);
+        long delta = nowTime.getTime() - testRead.getTimeColumn().getTime();
+        assertTrue("" + delta, Math.abs(delta) <= 1000 * 60 * 60);
     }
 
     public void testTimestamp() throws Exception {
