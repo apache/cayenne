@@ -48,7 +48,7 @@ import org.apache.commons.collections.Transformer;
  * </p>
  * 
  * <pre>
- *          SELECT ID, NAME FROM SOME_TABLE WHERE NAME LIKE $a
+ *                  SELECT ID, NAME FROM SOME_TABLE WHERE NAME LIKE $a
  * </pre>
  * 
  * <p>
@@ -456,7 +456,11 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     }
 
     /**
-     * Adds a SQL template string for a given key.
+     * Adds a SQL template string for a given key. Note the the keys understood by Cayenne
+     * must be fully qualified adapter class names. This way the framework can related
+     * current DataNode to the right template. E.g.
+     * "org.apache.cayenne.dba.oracle.OracleAdapter" is a key that should be used to setup
+     * an Oracle-specific template.
      * 
      * @see #setDefaultTemplate(String)
      */
