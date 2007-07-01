@@ -31,6 +31,7 @@ import org.apache.art.Painting;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
@@ -51,52 +52,57 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
     public void testSQLResultSetMappingScalar() throws Exception {
         createTestData("testSQLResultSetMappingScalar");
-        
-        String sql = "SELECT count(1) AS C FROM ARTIST";
-        
+
+        String sql = "SELECT count(1) AS X FROM ARTIST";
+
         DataMap map = getDomain().getMap("testmap");
         SQLTemplate query = new SQLTemplate(map, sql);
+        query.setTemplate(
+                FrontBaseAdapter.class.getName(),
+                "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
         query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
-        
+
         SQLResultSetMapping rsMap = new SQLResultSetMapping();
-        rsMap.addColumnResult("C");
+        rsMap.addColumnResult("X");
         query.setResultSetMapping(rsMap);
-        
+
         List objects = createDataContext().performQuery(query);
         assertEquals(1, objects.size());
-        
+
         Object o = objects.get(0);
-        assertTrue(o instanceof Number);
+        assertTrue("Expected Number: " + o, o instanceof Number);
         assertEquals(4, ((Number) o).intValue());
     }
-    
+
     public void testSQLResultSetMappingScalarArray() throws Exception {
         createTestData("testSQLResultSetMappingScalar");
-        
-        String sql = "SELECT count(1) AS C, 77 AS D FROM ARTIST";
-        
+
+        String sql = "SELECT count(1) AS X, 77 AS Y FROM ARTIST";
+
         DataMap map = getDomain().getMap("testmap");
         SQLTemplate query = new SQLTemplate(map, sql);
+        query.setTemplate(
+                FrontBaseAdapter.class.getName(),
+                "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY Y");
         query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
-        
+
         SQLResultSetMapping rsMap = new SQLResultSetMapping();
-        rsMap.addColumnResult("C");
-        rsMap.addColumnResult("D");
+        rsMap.addColumnResult("X");
+        rsMap.addColumnResult("Y");
         query.setResultSetMapping(rsMap);
-        
+
         List objects = createDataContext().performQuery(query);
         assertEquals(1, objects.size());
-        
+
         Object o = objects.get(0);
         assertTrue(o instanceof Object[]);
-        
+
         Object[] row = (Object[]) o;
         assertEquals(2, row.length);
-        
+
         assertEquals(4, ((Number) row[0]).intValue());
         assertEquals(77, ((Number) row[1]).intValue());
     }
-
 
     public void testColumnNamesCapitalization() throws Exception {
         getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
