@@ -94,7 +94,8 @@ public class DateTimeTypesTest extends CayenneCase {
         assertNotNull(testRead.getTimeColumn());
 
         // OpenBase fails to store seconds for the time
-        // FrontBase returns time with 1 hour offset
+        // FrontBase returns time with 1 hour offset (I guess "TIME WITH TIMEZONE" may
+        // need to be used as a default FB type?)
         // so this test is approximate...
 
         long delta = nowTime.getTime() - testRead.getTimeColumn().getTime();
