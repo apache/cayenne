@@ -29,6 +29,7 @@ import org.apache.art.CharPkTestEntity;
 import org.apache.art.CompoundPkTestEntity;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
+import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLResultSetMapping;
@@ -55,6 +56,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         DataMap map = getDomain().getMap("testmap");
         SQLTemplate query = new SQLTemplate(map, sql);
         query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
+        query.setTemplate(OpenBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
         query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
 
         SQLResultSetMapping rsMap = new SQLResultSetMapping();
