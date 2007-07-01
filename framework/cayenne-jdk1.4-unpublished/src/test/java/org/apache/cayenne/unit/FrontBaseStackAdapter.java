@@ -41,6 +41,10 @@ public class FrontBaseStackAdapter extends AccessStackAdapter {
     public boolean supportsLobInsertsAsStrings() {
         return false;
     }
+    
+    public boolean supportsEqualNullSyntax() {
+        return false;
+    }
 
     public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
             throws Exception {

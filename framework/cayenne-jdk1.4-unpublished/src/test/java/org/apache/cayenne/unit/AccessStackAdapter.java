@@ -145,6 +145,13 @@ public class AccessStackAdapter {
     }
 
     /**
+     * Returns whether the database supports synatax like "X = NULL".
+     */
+    public boolean supportsEqualNullSyntax() {
+        return true;
+    }
+
+    /**
      * Returns false if stored procedures are not supported or if it is a victim of
      * CAY-148 (column name capitalization).
      */
