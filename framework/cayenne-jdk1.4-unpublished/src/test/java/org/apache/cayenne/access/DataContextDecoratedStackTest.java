@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.art.Artist;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.intercept.DataChannelDecorator;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
@@ -45,11 +46,14 @@ public class DataContextDecoratedStackTest extends CayenneCase {
 
         SQLTemplate query = new SQLTemplate(
                 Artist.class,
-                "select #result('count(1)' 'int' 'c') from ARTIST");
+                "select #result('count(1)' 'int' 'x') from ARTIST");
         query.setFetchingDataRows(true);
+        query.setTemplate(
+                FrontBaseAdapter.class.getName(),
+                "select #result('COUNT(ARTIST_ID)' 'int' 'x') from ARTIST");
         Map count = (Map) DataObjectUtils.objectForQuery(context, query);
         assertNotNull(count);
-        assertEquals(new Integer(1), count.get("c"));
+        assertEquals(new Integer(1), count.get("x"));
     }
 
     public void testGetParentDataDomain() {
