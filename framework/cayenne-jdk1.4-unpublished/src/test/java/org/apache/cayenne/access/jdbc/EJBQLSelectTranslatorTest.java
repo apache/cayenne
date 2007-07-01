@@ -53,7 +53,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         assertTrue(sql, sql.indexOf("t0.ARTIST_ID") > 0);
         assertTrue(sql, sql.indexOf("t0.ARTIST_NAME") > 0);
         assertTrue(sql, sql.indexOf("t0.DATE_OF_BIRTH") > 0);
-        assertTrue(sql, sql.endsWith(" FROM ARTIST AS t0${marker0}"));
+        assertTrue(sql, sql.endsWith(" FROM ARTIST t0${marker0}"));
 
         StringBuffer fromMarker = (StringBuffer) query.getParameters().get("marker0");
         assertNotNull(fromMarker);
@@ -72,12 +72,10 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         assertNotNull(fromMarker);
         assertEquals("", fromMarker.toString());
 
-        assertTrue(
-                sql,
-                sql.indexOf("INNER JOIN PAINTING AS t1 ON (t0.ARTIST_ID = t1.ARTIST_ID)") > 0);
-        assertTrue(
-                sql,
-                sql.indexOf("INNER JOIN PAINTING AS t2 ON (t0.ARTIST_ID = t2.ARTIST_ID)") > 0);
+        assertTrue(sql, sql
+                .indexOf("INNER JOIN PAINTING t1 ON (t0.ARTIST_ID = t1.ARTIST_ID)") > 0);
+        assertTrue(sql, sql
+                .indexOf("INNER JOIN PAINTING t2 ON (t0.ARTIST_ID = t2.ARTIST_ID)") > 0);
     }
 
     public void testSelectImplicitColumnJoins() throws Exception {
@@ -117,9 +115,8 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String from = fromMarker.toString();
         assertEquals("", from);
 
-        assertTrue(sql, sql
-                .endsWith(" FROM ARTIST AS t0${marker0} WHERE t0.ARTIST_NAME ="
-                        + " #bind('Dali' 'VARCHAR')"));
+        assertTrue(sql, sql.endsWith(" FROM ARTIST t0${marker0} WHERE t0.ARTIST_NAME ="
+                + " #bind('Dali' 'VARCHAR')"));
     }
 
     public void testSelectFromWhereOrEqual() {
@@ -133,11 +130,11 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql1 = query1.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT "));
-        assertTrue(sql, sql.indexOf(" FROM ARTIST AS t0${marker0} WHERE ") > 0);
+        assertTrue(sql, sql.indexOf(" FROM ARTIST t0${marker0} WHERE ") > 0);
         assertEquals(1, countDelimiters(sql, " OR ", sql.indexOf("WHERE ")));
 
         assertTrue(sql1, sql1.startsWith("SELECT "));
-        assertTrue(sql1, sql.indexOf(" FROM ARTIST AS t0${marker0} WHERE ") > 0);
+        assertTrue(sql1, sql.indexOf(" FROM ARTIST t0${marker0} WHERE ") > 0);
         assertEquals(2, countDelimiters(sql1, " OR ", sql.indexOf("WHERE ")));
     }
 
@@ -268,7 +265,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
 
         assertTrue(sql, sql.startsWith("SELECT "
                 + "#result('MAX(t0.ESTIMATED_PRICE)' 'java.math.BigDecimal' 'sc0') "
-                + "FROM PAINTING AS t0"));
+                + "FROM PAINTING t0"));
     }
 
     public void testDistinctSum() {
@@ -280,7 +277,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
                 sql
                         .startsWith("SELECT "
                                 + "#result('SUM(DISTINCT t0.ESTIMATED_PRICE)' 'java.math.BigDecimal' 'sc0') "
-                                + "FROM PAINTING AS t0"));
+                                + "FROM PAINTING t0"));
     }
 
     public void testColumnPaths() {

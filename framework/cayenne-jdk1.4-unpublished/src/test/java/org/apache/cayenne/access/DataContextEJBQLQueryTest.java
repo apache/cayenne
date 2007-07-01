@@ -59,6 +59,10 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
     }
 
     public void testSelectAggregateNull() throws Exception {
+        
+        if(!getAccessStackAdapter().supportNullRowForAggregateFunctions()) {
+            return;
+        }
 
         String ejbql = "select count(p), max(p.estimatedPrice), sum(p.estimatedPrice) "
                 + "from Painting p WHERE p.paintingTitle = 'X'";
@@ -134,6 +138,10 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
     }
 
     public void testSelectFromWhereEqualReverseOrder() throws Exception {
+        if (!getAccessStackAdapter().supportsReverseComparison()) {
+            return;
+        }
+
         createTestData("prepare");
 
         String ejbql = "select a from Artist a where 'AA2' = a.artistName";
@@ -374,6 +382,10 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
     }
 
     public void testSelectFromWhereMatchOnMultiColumnObjectReverse() throws Exception {
+        if (!getAccessStackAdapter().supportsReverseComparison()) {
+            return;
+        }
+
         createTestData("prepareCompound");
 
         ObjectContext context = createDataContext();
