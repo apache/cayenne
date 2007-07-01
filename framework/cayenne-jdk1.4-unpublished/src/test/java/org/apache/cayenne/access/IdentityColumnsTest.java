@@ -285,18 +285,4 @@ public class IdentityColumnsTest extends CayenneCase {
                 id1));
         assertNotNull(DataObjectUtils.objectForPK(context, GeneratedColumnDep.class, id2));
     }
-
-    public void testMeaningfulPK() throws Exception {
-        DataContext context = createDataContext();
-
-        MeaningfulGeneratedColumnTestEntity o = (MeaningfulGeneratedColumnTestEntity) context
-                .newObject(MeaningfulGeneratedColumnTestEntity.class);
-        o.setName("o1");
-        o.setGeneratedColumn(new Integer(33333));
-
-        context.commitChanges();
-        assertNotNull(o.getGeneratedColumn());
-        assertEquals(new Integer(33333), o.getObjectId().getIdSnapshot().get(
-                MeaningfulGeneratedColumnTestEntity.GENERATED_COLUMN_PK_COLUMN));
-    }
 }
