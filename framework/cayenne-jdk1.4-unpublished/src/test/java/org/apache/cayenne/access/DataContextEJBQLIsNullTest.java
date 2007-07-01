@@ -41,6 +41,8 @@ public class DataContextEJBQLIsNullTest extends CayenneCase {
         // most do not; per JPA spec the result is undefined.. so we can't make any
         // assertions about the result. Just making sure the query doesn't blow up
         createDataContext().performQuery(query1);
+        
+        // still this query can blow up on FrontBase. See CAY-819 for details.
     }
 
     public void testIsNull() throws Exception {
