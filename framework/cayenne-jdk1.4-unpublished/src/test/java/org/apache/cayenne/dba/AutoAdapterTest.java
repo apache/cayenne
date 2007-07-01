@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.dba;
 
+import org.apache.art.Artist;
+import org.apache.cayenne.access.jdbc.SQLTemplateAction;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
 
 import com.mockrunner.mock.jdbc.MockConnection;
@@ -44,5 +47,20 @@ public class AutoAdapterTest extends CayenneCase {
 
         assertNotNull(detected);
         assertEquals(getNode().getAdapter().getClass(), detected.getClass());
+    }
+
+    public void testCreateSQLTemplateAction() {
+
+        AutoAdapter adapter = new AutoAdapter(getNode().getDataSource());
+        SQLTemplateAction action = (SQLTemplateAction) adapter.getAction(new SQLTemplate(
+                Artist.class,
+                "select * from artist"), getNode());
+
+        // it is important for SQLTemplateAction to be used with unwrapped adapter, as the
+        // adapter class name is used as a key to the correct SQL template.
+        assertNotNull(action);
+        assertNotNull(action.getAdapter());
+        assertFalse(action.getAdapter() instanceof AutoAdapter);
+        assertSame(adapter.getAdapter(), action.getAdapter());
     }
 }
