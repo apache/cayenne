@@ -45,7 +45,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Defines API and a common superclass for testing various database features. Different
  * databases support different feature sets that need to be tested differently. Many
- * things implemented in subclasses may become future candidates for inclusin in the
+ * things implemented in subclasses may become future candidates for inclusion in the
  * corresponding adapter code.
  * 
  * @author Andrus Adamchik
@@ -126,6 +126,22 @@ public class AccessStackAdapter {
 
     public boolean supportsStoredProcedures() {
         return false;
+    }
+
+    /**
+     * Returns whether the target database supports expressions in the WHERE clause in the
+     * form "VALUE = COLUMN".
+     */
+    public boolean supportsReverseComparison() {
+        return true;
+    }
+
+    /**
+     * Returns whether an aggregate query like "SELECT min(X) FROM" returns a NULL row
+     * when no data matched the WHERE clause. Most DB's do.
+     */
+    public boolean supportNullRowForAggregateFunctions() {
+        return true;
     }
 
     /**

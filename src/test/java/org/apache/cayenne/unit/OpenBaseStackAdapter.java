@@ -33,12 +33,23 @@ public class OpenBaseStackAdapter extends AccessStackAdapter {
     public OpenBaseStackAdapter(DbAdapter adapter) {
         super(adapter);
     }
-    
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop) throws Exception {
-        // avoid dropping constraints...  
+
+    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
+            throws Exception {
+        // avoid dropping constraints...
     }
 
     public boolean supportsHaving() {
+        return false;
+    }
+
+    public boolean supportsReverseComparison() {
+        // TODO: andrus, 7/1/2007 I am trying to follow up with openbase on this...
+        return false;
+    }
+
+    public boolean supportNullRowForAggregateFunctions() {
+        // TODO: andrus, 7/1/2007 I am trying to follow up with openbase on this...
         return false;
     }
 }
