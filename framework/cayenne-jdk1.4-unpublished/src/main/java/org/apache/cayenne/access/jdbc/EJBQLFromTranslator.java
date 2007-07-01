@@ -152,7 +152,10 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
         String tableName = descriptor.getEntity().getDbEntity().getFullyQualifiedName();
         String alias = context.getTableAlias(id, tableName);
-        context.append(' ').append(tableName).append(" AS ").append(alias);
+
+        // not using "AS" to separate table name and alias name - OpenBase doesn't support
+        // "AS", and the rest of the databases do not care
+        context.append(' ').append(tableName).append(' ').append(alias);
         return alias;
     }
 }
