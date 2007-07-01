@@ -32,6 +32,7 @@ import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
+import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
@@ -60,6 +61,9 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setTemplate(
                 FrontBaseAdapter.class.getName(),
                 "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
+        query.setTemplate(
+                OpenBaseAdapter.class.getName(),
+                "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
         query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
 
         SQLResultSetMapping rsMap = new SQLResultSetMapping();
@@ -84,6 +88,9 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setTemplate(
                 FrontBaseAdapter.class.getName(),
                 "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY Y");
+        query.setTemplate(
+                OpenBaseAdapter.class.getName(),
+                "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY 77");
         query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
 
         SQLResultSetMapping rsMap = new SQLResultSetMapping();
@@ -208,7 +215,10 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setParameters(Collections.singletonMap("a", a));
 
         List objects = context.performQuery(query);
-        assertEquals(1, objects.size());
+
+        // null comparison is unpredictable across DB's ... some would return true on null
+        // <> value, some - false
+        assertTrue(objects.size() == 1 || objects.size() == 2);
 
         Painting p = (Painting) objects.get(0);
         assertEquals(33001, DataObjectUtils.intPKForObject(p));
@@ -286,7 +296,9 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setParameters(Collections.singletonMap("a", a));
 
         List objects = context.performQuery(query);
-        assertEquals(1, objects.size());
+        // null comparison is unpredictable across DB's ... some would return true on null
+        // <> value, some - false
+        assertTrue(objects.size() == 1 || objects.size() == 2);
 
         Painting p = (Painting) objects.get(0);
         assertEquals(33001, DataObjectUtils.intPKForObject(p));
