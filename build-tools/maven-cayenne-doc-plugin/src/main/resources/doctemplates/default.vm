@@ -23,7 +23,7 @@
   </head>
 <body>
   <div class="header">
-    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="${basePath}images/logo.gif" align="absmiddle" border="0"></a></div>
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="${basePath}images/logo.gif" align="absmiddle" border="0"></a></div>
     <span class="logoSpaceLink"><a href="${basePath}index.html">Cayenne User Documentation</a></span><br />
     <span class="pagetitle">${page.title}</span>
   </div>
