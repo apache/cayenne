@@ -22,8 +22,6 @@ package org.apache.cayenne.maven.plugin.confluence;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Iterator;
 
 import org.objectstyle.confluence.rpc.soap_axis.confluenceservice_v1.ConfluenceSoapService;
@@ -106,10 +104,6 @@ public class DocGenerator {
 
 		login();
 
-		// only works for adminstrators
-		// String url = service.exportSite(token, true);
-
-		// URL foo = new URL(url);
 		createPath(docBase);
 
 		// Build a page hierarchy first..
@@ -119,7 +113,6 @@ public class DocGenerator {
 
 		// Now render the content nodes..
 		renderPage(page, docBase);
-
 	}
 
 	protected void iterateChildren(DocPage parent) throws Exception {
@@ -130,9 +123,7 @@ public class DocGenerator {
 			DocPage child = getPage(parent, children[i].getTitle());
 			parent.addChild(child);
 			iterateChildren(child);
-
 		}
-
 	}
 
 	protected void renderPage(DocPage page, String basePath) throws Exception {

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.maven.plugin.confluence;
 
+import java.io.File;
 import java.net.URL;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -78,21 +79,21 @@ public class ConfluenceExportMojo extends AbstractMojo {
 	 * in your ~/.m2/settings.xml file like this;
 	 * 
 	 * <pre>
-	 *     	 &lt;profiles&gt;
-	 *     	 &lt;profile&gt;
-	 *     	 &lt;properties&gt;
-	 *     	 &lt;property&gt;
-	 *     	 &lt;name&gt;confluence.userName&lt;/name&gt;
-	 *     	 &lt;value&gt;user name&lt;/value&gt;
-	 *     	 &lt;/property&gt;
-	 *     	 &lt;property&gt;
-	 *     	 &lt;name&gt;confluence.password&lt;/name&gt;
-	 *     	 &lt;value&gt;password&lt;/value&gt;
-	 *     	 &lt;/property&gt;
-	 *     	 &lt;/properties&gt;
-	 *     	 &lt;id&gt;confluence&lt;/id&gt;
-	 *     	 &lt;/profile&gt;
-	 *     	 &lt;/profiles&gt;
+	 *      	 &lt;profiles&gt;
+	 *      	 &lt;profile&gt;
+	 *      	 &lt;properties&gt;
+	 *      	 &lt;property&gt;
+	 *      	 &lt;name&gt;confluence.userName&lt;/name&gt;
+	 *      	 &lt;value&gt;user name&lt;/value&gt;
+	 *      	 &lt;/property&gt;
+	 *      	 &lt;property&gt;
+	 *      	 &lt;name&gt;confluence.password&lt;/name&gt;
+	 *      	 &lt;value&gt;password&lt;/value&gt;
+	 *      	 &lt;/property&gt;
+	 *      	 &lt;/properties&gt;
+	 *      	 &lt;id&gt;confluence&lt;/id&gt;
+	 *      	 &lt;/profile&gt;
+	 *      	 &lt;/profiles&gt;
 	 * </pre>
 	 * 
 	 * @parameter expression="${confluence.userName}"
@@ -113,8 +114,11 @@ public class ConfluenceExportMojo extends AbstractMojo {
 	 * Worker method.
 	 */
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		File thisDir = new File(System.getProperty("user.dir"));
+		File output = new File(thisDir, outputDirectory);
 		getLog().info(
-				"Exporting space '" + spaceName + "' to " + outputDirectory);
+				"Exporting space '" + spaceName + "' to "
+						+ output.getAbsolutePath());
 
 		try {
 			DocGenerator generator = new DocGenerator(baseUrl.toString(),
