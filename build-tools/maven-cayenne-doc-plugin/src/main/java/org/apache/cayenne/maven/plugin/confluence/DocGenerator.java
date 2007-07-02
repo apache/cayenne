@@ -100,19 +100,20 @@ public class DocGenerator {
 		}
 	}
 
+	/**
+	 * Main worker method for documentation generation from Wiki.
+	 */
 	public void generateDocs() throws Exception {
 
 		login();
-
 		createPath(docBase);
 
 		// Build a page hierarchy first..
-		DocPage page = getPage(null, startPage);
+		DocPage root = getPage(null, startPage);
 
-		iterateChildren(page);
+		iterateChildren(root);
 
-		// Now render the content nodes..
-		renderPage(page, docBase);
+		renderPage(root, docBase);
 	}
 
 	protected void iterateChildren(DocPage parent) throws Exception {
@@ -141,7 +142,6 @@ public class DocGenerator {
 				.hasNext();) {
 			renderPage((DocPage) childIter.next(), currentPath);
 		}
-
 	}
 
 	protected RemotePageSummary[] getChildren(DocPage page) throws Exception {
@@ -189,7 +189,6 @@ public class DocGenerator {
 
 	protected void createPath(String path) {
 		new File(path).mkdirs();
-
 	}
 
 	public String getBaseUrl() {

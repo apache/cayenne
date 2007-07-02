@@ -31,179 +31,155 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Represents a TOC entry. This has a lot of tree-like search functions, but I
- * did not find a tree implementation that I thought was worth using for this.
+ * Represents a TOC entry. This has a lot of tree-like search functions, but I did not
+ * find a tree implementation that I thought was worth using for this.
  * 
  * @author Cris Daniluk
  */
 public class DocPage {
 
-	private static final Pattern orderingPattern = Pattern
-			.compile("\n?\\{excerpt(.*?)\\}");
+    private static final Pattern TOC_BLOCK = Pattern.compile("\n?\\{excerpt(.*?)\\}");
+    private static final Pattern TOC_LINE = Pattern.compile("\\[([^|]*\\|)?(.+)\\]");
 
-	private static final Map titleMap = new HashMap();
+    private static final Map titleMap = new HashMap();
 
-	private String title = null;
+    private String title;
 
-	private long id;
+    private long id;
+    private String rawContent;
+    private DocPage parentRef;
+    private List children;
+    private Comparator ordering;
+    private int depth;
 
-	private String rawContent;
+    public static DocPage getPageByTitle(String title) {
+        return (DocPage) titleMap.get(title);
+    }
 
-	private DocPage parentRef;
+    DocPage(String title) {
+        this.title = title;
+    }
 
-	private List children = null;
+    public DocPage(DocPage parentRef, String title, long id, String rawContent) {
+        this.parentRef = parentRef;
+        this.title = title;
+        this.id = id;
+        this.rawContent = rawContent;
+        this.children = new ArrayList();
+        this.ordering = createChildOrdering(rawContent);
 
-	private List ordering;
+        titleMap.put(title, this);
 
-	private int depth;
+        if (parentRef == null) {
+            depth = 1;
+        }
+    }
 
-	public static DocPage getPageByTitle(String title) {
-		return (DocPage) titleMap.get(title);
-	}
+    /**
+     * Infers the order of children based on the content "excerpt" tags.
+     */
+    Comparator createChildOrdering(String rawContent) {
+        Matcher matcher = TOC_BLOCK.matcher(rawContent);
+        if (matcher.find()) {
+            int regionStart = matcher.end() + 1;
+            matcher.find();
 
-	public DocPage(DocPage parentRef, String title, long id, String rawContent) {
-		this.parentRef = parentRef;
-		this.title = title;
-		this.id = id;
-		this.rawContent = rawContent;
+            List lines = Arrays.asList(rawContent
+                    .substring(regionStart, matcher.start())
+                    .split("\n"));
 
-		titleMap.put(title, this);
+            List titles = new ArrayList(lines.size());
+            Iterator it = lines.iterator();
+            while (it.hasNext()) {
+                Matcher lineMatcher = TOC_LINE.matcher((String) it.next());
+                if (lineMatcher.find()) {
+                    titles.add(lineMatcher.group(2));
+                }
+            }
 
-		// Look for a page ordering...
-		Matcher matcher = orderingPattern.matcher(rawContent);
-		if (matcher.find()) {
-			int regionStart = matcher.end() + 1;
-			matcher.find();
+            return new PreorderedTitleComparator(titles);
+        }
+        else {
+            return new AlphabeticalTitleComparator();
+        }
+    }
 
-			ordering = Arrays.asList(rawContent.substring(regionStart,
-					matcher.start()).split("\n"));
+    public void addChild(DocPage child) {
+        child.depth = depth + 1;
+        children.add(child);
+    }
 
-		}
+    public String getTitle() {
+        return title;
+    }
 
-		if (parentRef == null) {
-			depth = 1;
-		} else if (ordering == null && parentRef.ordering != null) {
-			ordering = parentRef.ordering;
-		}
+    public int getDepth() {
+        return depth;
+    }
 
-		children = new ArrayList();
-	}
+    public List getChildren() {
+        Collections.sort(children, ordering);
+        return Collections.unmodifiableList(children);
+    }
 
-	public void addChild(DocPage child) {
-		child.depth = depth + 1;
-		children.add(child);
-	}
+    public long getId() {
+        return id;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getRawContent() {
+        return rawContent;
+    }
 
-	public int getDepth() {
-		return depth;
-	}
+    public DocPage getParentRef() {
+        return parentRef;
+    }
 
-	public List getChildren() {
-		// If an ordering is present, sort by it...
-		if (ordering != null) {
+    public DocPage findPageId(long searchId) {
 
-			Collections.sort(children, new Comparator() {
+        return findChild(this, searchId);
+    }
 
-				public int compare(Object arg0, Object arg1) {
-					// we're the only one who modified this list, so we can
-					// trust it
-					// (and live with the consequences if we're wrong)
-					DocPage child0 = (DocPage) arg0;
-					DocPage child1 = (DocPage) arg1;
+    public boolean hasDescendent(DocPage page) {
+        if (findChild(this, page.getId()) != null) {
+            return true;
+        }
+        return false;
+    }
 
-					if (child0.getTitle().equals(child1.getTitle())) {
-						return 0;
-					} else if (ordering.indexOf(child1.getTitle()) == -1) {
-						// if its not on the list, float it to the bottom
-						return 1;
-					}
-					if (ordering.indexOf(child0.getTitle()) < ordering
-							.indexOf(child1.getTitle())) {
-						return -1;
-					} else {
-						return 1;
-					}
-				}
+    /**
+     * Get the "module" root. This returns the next-to-top element in the tree.
+     */
+    public DocPage getRoot() {
+        DocPage base = this;
+        while (base.parentRef != null && base.parentRef.parentRef != null) {
+            base = base.parentRef;
+        }
+        return base;
+    }
 
-			});
-		} else {
+    private DocPage findChild(DocPage page, long searchId) {
 
-			// no beanutils, so do this manually...
-			Collections.sort(children, new Comparator() {
+        if (page.getId() == searchId) {
+            return page;
+        }
+        Iterator pageIter = page.getChildren().iterator();
+        while (pageIter.hasNext()) {
+            DocPage match = findChild((DocPage) pageIter.next(), searchId);
+            if (match != null) {
+                return match;
+            }
+        }
+        return null;
+    }
 
-				public int compare(Object arg0, Object arg1) {
-					DocPage child0 = (DocPage) arg0;
-					DocPage child1 = (DocPage) arg1;
-					return (child0.getTitle().compareTo(child1.getTitle()));
-				}
+    public String getLinkPath() {
+        return buildLinkPath(this);
+    }
 
-			});
-		}
-		return Collections.unmodifiableList(children);
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public String getRawContent() {
-		return rawContent;
-	}
-
-	public DocPage getParentRef() {
-		return parentRef;
-	}
-
-	public DocPage findPageId(long searchId) {
-
-		return findChild(this, searchId);
-	}
-
-	public boolean hasDescendent(DocPage page) {
-		if (findChild(this, page.getId()) != null) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Get the "module" root. This returns the next-to-top element in the tree.
-	 */
-	public DocPage getRoot() {
-		DocPage base = this;
-		while (base.parentRef != null && base.parentRef.parentRef != null) {
-			base = base.parentRef;
-		}
-		return base;
-	}
-
-	private DocPage findChild(DocPage page, long searchId) {
-
-		if (page.getId() == searchId) {
-			return page;
-		}
-		Iterator pageIter = page.getChildren().iterator();
-		while (pageIter.hasNext()) {
-			DocPage match = findChild((DocPage) pageIter.next(), searchId);
-			if (match != null) {
-				return match;
-			}
-		}
-		return null;
-	}
-
-	public String getLinkPath() {
-		return buildLinkPath(this);
-	}
-
-	private String buildLinkPath(DocPage page) {
-		if (page.getParentRef() == null) {
-			return page.getTitle();
-		}
-		return buildLinkPath(page.getParentRef()) + "/" + page.getTitle();
-	}
+    private String buildLinkPath(DocPage page) {
+        if (page.getParentRef() == null) {
+            return page.getTitle();
+        }
+        return buildLinkPath(page.getParentRef()) + "/" + page.getTitle();
+    }
 }
