@@ -29,36 +29,51 @@
   </div>
 <div id="cayenne_toc">
 <ul>
+<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
 <li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
 <li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a><ul>
-<li><a href="../../../../Documentation/User Guide/Installation/Upgrade/index.html">Upgrade</a></li>
 <li><a href="../../../../Documentation/User Guide/Installation/JAR Files and Dependencies/index.html">JAR Files and Dependencies</a><ul>
 </ul>
 </li>
+<li><a href="../../../../Documentation/User Guide/Installation/Upgrade/index.html">Upgrade</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/Cayenne and Maven/index.html">Cayenne and Maven</a></li>
 </ul>
 </li>
-<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
-<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
-<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
-<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
 <li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
-<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
-<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
-<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
-<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
-<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
-<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
-<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
-<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
-<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
-<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
 </ul>
 </div>
 <div id="ConfluenceContent"><p>This sections explains where all the relevant jar files are located. It also lists Cayenne dependencies.</p>
 
 <h3><a name="JARFilesandDependencies-CayenneRuntimeFramework"></a>Cayenne Runtime Framework</h3>
 
-<p>One of two Cayenne jar files, <tt>cayenne.jar</tt> or <tt>cayenne-nodeps.jar</tt>, should be accessible in runtime (i.e. present in the application CLASSPATH). Either one or the other should be used (but not both at the same time). In most cases <tt>cayenne.jar</tt> is the best choice. It has Cayenne classes as well as a minimum set of third-party dependencies. Bundled dependencies include:</p>
+<p>The following runtime jars are included in Cayenne distribution <tt>"lib"</tt> directory:</p>
+
+<ul>
+	<li><b><tt>cayenne-server-x.x.jar</tt></b> - contains full Cayenne runtime WITHOUT dependencies. Most applications will use only this file.</li>
+</ul>
+
+
+<ul>
+	<li><tt>cayenne-client-x.x.jar</tt> - a subset of cayenne-server.jar trimmed for use on the client in an <a href="../../../../Documentation/Remote Object Persistence Guide/index.html" title="Remote Object Persistence Guide">ROP application</a>.</li>
+	<li><tt>cayenne-agent-x.x.jar</tt> - a Java instrumentation agent that is used to enhance POJO persistent classes.</li>
+	<li><tt>cayenne-modeler-x.x.jar</tt> - CayenneModeler runtime library. Most applications won't ever use it. It is only needed for the <a href="../../../../Documentation/User Guide/Deployment/Using JNDI/index.html" title="Using JNDI">local JNDI hack</a>.</li>
+</ul>
+
+
+<p>When using <tt>cayenne-server-x.x.jar</tt> you'll need a few third party jars (all included in <tt>"lib/third-party"</tt> directory of the distribution):</p>
 
 <ul>
 	<li><span class="nobr"><a href="http://objectstyle.org/ashwood/" title="Visit page outside Confluence" rel="nofollow">ObjectStyle Ashwood Graph Library<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.1</li>
@@ -69,7 +84,7 @@
 </ul>
 
 
-<p>If bundled Cayenne dependencies conflict with different versions of the same library, a leaner <tt>cayenne-nodeps.jar</tt> file should be used. In this case all the dependencies above must be provided by the user.</p>
+<p>ROP client dependencies are explained <a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Installation/index.html" title="Remote Object Persistence Installation">here</a>.</p>
 
 <h3><a name="JARFilesandDependencies-OptionalRuntimeDependencies"></a>Optional Runtime Dependencies</h3>
 
@@ -83,32 +98,13 @@
 	<li><span class="nobr"><a href="http://www.jdom.org/" title="Visit page outside Confluence" rel="nofollow">JDOM<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.0. Needed if you use <a href="../../../../Documentation/User Guide/DataViews/index.html" title="DataViews">DataViews</a>.</li>
 </ul>
 
-
-
-<h3><a name="JARFilesandDependencies-CayenneModelerTool"></a>CayenneModeler Tool</h3>
-
-<p>Java classes and resources used exclusively by CayenneModeler and not required by the runtime are located in [cayenne_install_dir]/lib/modeler/ directory:</p>
-
-<ul>
-	<li>cayenne-modeler.jar</li>
-	<li>scope-bin-1.0.1.jar</li>
-	<li>forms-1.0.3.jar</li>
-	<li>looks-1.3.1.jar</li>
-	<li>hsqldb-1.8.0.2.jar</li>
-	<li>ognl-2.6.7.jar</li>
-	<li>commons-dbcp-1.2.1.jar</li>
-	<li>commons-pool-1.2.jar</li>
-</ul>
-
-
-<p>cayenne-modeler.jar implicitly relies on the presence of [cayenne_install_dir]/lib/cayenne.jar. Instructions on how to start modeler can be found <a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/Running CayenneModeler/index.html" title="Running CayenneModeler">here</a>.</p>
 </div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2006 Apache Software Foundation
+    Copyright &copy;2001-2007 Apache Software Foundation
   </div>
 
 </body>

@@ -29,24 +29,23 @@
   </div>
 <div id="cayenne_toc">
 <ul>
+<li><a href="../../../../Documentation/Modeler Guide/ORM Case Study/index.html">ORM Case Study</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Modeling Tips/index.html">Modeling Tips</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Modeling Database Layer/index.html">Modeling Database Layer</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Common Modeling Tasks/index.html">Common Modeling Tasks</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Modeling Queries/index.html">Modeling Queries</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/index.html">Modeling Object Layer</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Preferences Panel/index.html">Preferences Panel</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Configuring Deployment Settings/index.html">Configuring Deployment Settings</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/index.html">Introduction to CayenneModeler</a><ul>
 <li><a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/Running CayenneModeler/index.html">Running CayenneModeler</a><ul>
 </ul>
 </li>
-<li><a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/CayenneModeler and Eclipse/index.html">CayenneModeler and Eclipse</a></li>
-<li><a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/General Navigation/index.html">General Navigation</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/Cayenne User Directory/index.html">Cayenne User Directory</a></li>
+<li><a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/General Navigation/index.html">General Navigation</a></li>
 </ul>
 </li>
-<li><a href="../../../../Documentation/Modeler Guide/ORM Case Study/index.html">ORM Case Study</a></li>
 <li><a href="../../../../Documentation/Modeler Guide/Cayenne Project Structure/index.html">Cayenne Project Structure</a></li>
-<li><a href="../../../../Documentation/Modeler Guide/Common Modeling Tasks/index.html">Common Modeling Tasks</a></li>
-<li><a href="../../../../Documentation/Modeler Guide/Modeling Database Layer/index.html">Modeling Database Layer</a></li>
-<li><a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/index.html">Modeling Object Layer</a></li>
-<li><a href="../../../../Documentation/Modeler Guide/Modeling Queries/index.html">Modeling Queries</a></li>
-<li><a href="../../../../Documentation/Modeler Guide/Configuring Deployment Settings/index.html">Configuring Deployment Settings</a></li>
-<li><a href="../../../../Documentation/Modeler Guide/Preferences Panel/index.html">Preferences Panel</a></li>
-<li><a href="../../../../Documentation/Modeler Guide/Modeling Tips/index.html">Modeling Tips</a></li>
 </ul>
 </div>
 <div id="ConfluenceContent"><p>Follow the instructions below appropriate for the type of OS and Cayenne distribution that you have:</p>
@@ -61,44 +60,17 @@
 
 <h3><a name="RunningCayenneModeler-CrossPlatformModeler%28LinuxoranyotherOS%29"></a>Cross Platform Modeler (Linux or any other OS)</h3>
 
-<p>CayenneModeler is a regular Java application that can be run on JDK 1.4 or newer. It can be started in two different ways:</p>
-
-<p>1. By running <tt>cayenne-modeler.jar</tt>:</p>
+<p>CayenneModeler.jar is a runnable jar that can be executed with JDK 1.4 or newer:</p>
 
 <div class="preformatted"><div class="preformattedContent">
-<pre>cd cayenne_distro_dir/lib/modeler
-java -jar cayenne-modeler.jar</pre>
-</div></div>
-
-<p>2. Or by executing a startup script. </p>
-
-<p>To use one of the scripts, first set the following environment variables:</p>
-
-<ul>
-	<li><tt>JAVA_HOME</tt> - should point to your JSDK 1.4 installation. It may already exist in the environment.</li>
-	<li><tt>CAYENNE_HOME</tt> (optional) - should point to the directory where your unpacked Cayenne (a directory named like <tt>cayenne&#45;[release-suffix]</tt>). If <tt>CAYENNE_HOME</tt> is undefined, scripts will still work in most environments, guessing the right distribution location.</li>
-</ul>
-
-
-<p>And then run the scripts:</p>
-
-<p>Windows:</p>
-
-<div class="preformatted"><div class="preformattedContent">
-<pre>%CAYENNE_HOME%\bin\modeler.bat</pre>
-</div></div>
-
-<p>UNIX:</p>
-
-<div class="preformatted"><div class="preformattedContent">
-<pre>$CAYENNE_HOME/bin/modeler.sh</pre>
+<pre>java -jar cayenne_distro_dir/bin/CayenneModeler.jar</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2006 Apache Software Foundation
+    Copyright &copy;2001-2007 Apache Software Foundation
   </div>
 
 </body>

@@ -29,29 +29,37 @@
   </div>
 <div id="cayenne_toc">
 <ul>
-<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Introduction/index.html">Remote Object Persistence Introduction</a></li>
-<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Features/index.html">Remote Object Persistence Features</a></li>
 <li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Installation/index.html">Remote Object Persistence Installation</a></li>
 <li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Quick Start/index.html">Remote Object Persistence Quick Start</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Client/index.html">Remote Object Persistence Coding Client</a></li>
 <li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Server/index.html">Remote Object Persistence Coding Server</a><ul>
 <li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Server/Remote Object Persistence Lifecycle Callbacks/index.html">Remote Object Persistence Lifecycle Callbacks</a></li>
 </ul>
 </li>
-<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Client/index.html">Remote Object Persistence Coding Client</a></li>
-<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence CWS Deployment/index.html">Remote Object Persistence CWS Deployment</a></li>
-<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Client Deployment/index.html">Remote Object Persistence Client Deployment</a></li>
-<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Security/index.html">Remote Object Persistence Security</a></li>
-<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Comparison/index.html">Remote Object Persistence Comparison</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Features/index.html">Remote Object Persistence Features</a></li>
 <li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Limitations/index.html">Remote Object Persistence Limitations</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Introduction/index.html">Remote Object Persistence Introduction</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Comparison/index.html">Remote Object Persistence Comparison</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Client Deployment/index.html">Remote Object Persistence Client Deployment</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence CWS Deployment/index.html">Remote Object Persistence CWS Deployment</a></li>
+<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Security/index.html">Remote Object Persistence Security</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>In the simplest case, there is no custom code on the server. The server would only contain Cayenne mapping files, persistent classes and web.xml descriptor <a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence CWS Deployment/index.html" title="Remote Object Persistence CWS Deployment">specifying deployment parameters</a> of the service. Customization is done in one of the following ways:</p>
+<div id="ConfluenceContent"><h2><a name="RemoteObjectPersistenceCodingServer-RemoteObjectPersistenceCodingServer"></a>Remote Object Persistence Coding Server</h2>
+
+<p>In the simplest case, there is no custom code on the server. The server would only contain Cayenne mapping files, persistent classes and web.xml descriptor <a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence CWS Deployment/index.html" title="Remote Object Persistence CWS Deployment">specifying deployment parameters</a> of the service. Customization is done in one of the following ways:</p>
 
 <ul>
 	<li>Via subclassing <tt>org.apache.cayenne.remote.hessian.service.HessianServlet</tt></li>
 	<li>Adding business logic via <a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Server/Remote Object Persistence Lifecycle Callbacks/index.html" title="Remote Object Persistence Lifecycle Callbacks">lifecycle callbacks</a>.</li>
 </ul>
 
+
+<h3><a name="RemoteObjectPersistenceCodingServer-Sections"></a>Sections</h3>
+
+<ol>
+	<li><a href="../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Coding Server/Remote Object Persistence Lifecycle Callbacks/index.html" title="Remote Object Persistence Lifecycle Callbacks">Remote Object Persistence Lifecycle Callbacks</a></li>
+</ol>
 
 
 </div>
@@ -60,7 +68,7 @@
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2006 Apache Software Foundation
+    Copyright &copy;2001-2007 Apache Software Foundation
   </div>
 
 </body>

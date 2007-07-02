@@ -29,20 +29,23 @@
   </div>
 <div id="cayenne_toc">
 <ul>
+<li><a href="../../../Documentation/JPA Guide/JPA Cayenne Provider Properties/index.html">JPA Cayenne Provider Properties</a></li>
 <li><a href="../../../Documentation/JPA Guide/JPA Agent/index.html">JPA Agent</a><ul>
 </ul>
 </li>
-<li><a href="../../../Documentation/JPA Guide/JPA Cayenne Provider Properties/index.html">JPA Cayenne Provider Properties</a></li>
+<li><a href="../../../Documentation/JPA Guide/JPA Introduction/index.html">JPA Introduction</a></li>
+<li><a href="../../../Documentation/JPA Guide/JPA persistence.xml/index.html">JPA persistence.xml</a></li>
+<li><a href="../../../Documentation/JPA Guide/Requirements/index.html">Requirements</a></li>
 </ul>
 </div>
 <div id="ConfluenceContent"><p>Cayenne JPA provider requires enhancement of the Entity classes. In J2EE environment container takes care of registering the enhancer classes. In J2SE environment (such as command-line applications, or web containers like Jetty or Tomcat) runtime class enhancement is more tricky.</p>
 
-<p>A common portable approach to integrate enhancer in J2SE environment is via Java instrumentation API (see <tt>java.lang.instrument</tt> package documentation for details). This requires Cayenne "agent" to be specified in the JVM startup options. Cayenne Agent is a special jar file that comes with Cayenne distribution called <tt>"cayenne-jpa-agent-x.x.x.jar"</tt>. It has no external dependencies (not even on Cayenne itself).</p>
+<p>A common portable approach to integrate enhancer in J2SE environment is via Java instrumentation API (see <tt>java.lang.instrument</tt> package documentation for details). This requires Cayenne "agent" to be specified in the JVM startup options. Cayenne Agent is a special jar file that comes with Cayenne distribution called <tt>"cayenne-agent-x.x.x.jar"</tt>. It has no external dependencies (not even on Cayenne itself).</p>
 
 <ul>
 	<li>Command-line example:
 <div class="preformatted"><div class="preformattedContent">
-<pre>java -javaagent:/path/to/cayenne-jpa-agent-xxxx.jar org.example.Main</pre>
+<pre>java -javaagent:/path/to/cayenne-agent-xxxx.jar org.example.Main</pre>
 </div></div></li>
 </ul>
 
@@ -63,7 +66,7 @@
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2006 Apache Software Foundation
+    Copyright &copy;2001-2007 Apache Software Foundation
   </div>
 
 </body>

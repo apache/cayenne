@@ -1,0 +1,120 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Guide to 3.0 Features</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Guide to 3.0 Features</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a><ul>
+<li><a href="../../../../Documentation/User Guide/Introduction/Guide to 3.0 Features/index.html">Guide to 3.0 Features</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Introduction/Guide to 1.1 Features/index.html">Guide to 1.1 Features</a></li>
+<li><a href="../../../../Documentation/User Guide/Introduction/Acknowledgments/index.html">Acknowledgments</a></li>
+<li><a href="../../../../Documentation/User Guide/Introduction/Guide to 1.2 Features/index.html">Guide to 1.2 Features</a></li>
+<li><a href="../../../../Documentation/User Guide/Introduction/License/index.html">License</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
+<li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>This page summarizes the new features introduced in 3.0 release. <em>Since 3.0 is under active development, this list will change pretty often.</em></p>
+
+<h2><a name="Guideto3.0Features-JPAProvider"></a>JPA Provider</h2>
+
+<p>Cayenne 3.0 includes an in-progress partial implementation of a <span class="nobr"><a href="http://jcp.org/en/jsr/detail?id=220" title="Visit page outside Confluence" rel="nofollow">Java Persistence API specification<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> compliant persistence provider, with support for POJO and JPA annotations. Provider can be used in a standalone mode, as well as a part of a J2EE container.</p>
+
+<p><em>(Status as of 06/11/2007)</em></p>
+
+<ul>
+	<li>Provider, EntityManagerFactory, EntityManager API bridge to the current Cayenne stack</li>
+	<li>Loading mapping from annotations</li>
+	<li>Loading mapping from XML</li>
+	<li>Class enhancement</li>
+	<li>Basic selecting EJBQL</li>
+	<li>Entity callbacks</li>
+</ul>
+
+
+<h2><a name="Guideto3.0Features-ObjectContext"></a>ObjectContext</h2>
+
+<ul>
+	<li>ObjectContext wrappers</li>
+	<li><a href="../../../../Documentation/User Guide/DataContext/ObjectContext Memory Management/index.html" title="ObjectContext Memory Management">Leak free ObjectContext</a></li>
+</ul>
+
+
+<h2><a name="Guideto3.0Features-EntityLifecycleCallbacks"></a>Entity Lifecycle Callbacks</h2>
+
+<ul>
+	<li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">Lifecycle Callbacks</a></li>
+</ul>
+
+
+<h2><a name="Guideto3.0Features-EJBQLQueries"></a>EJB QL Queries</h2>
+
+<p>Nevermind the "EJB" in the name. EJBQL queries are a powerful object query mechanism. It is defined in the JPA specification, but Cayenne now supports these queries  in the "classic" non-JPA mode as well. Follow the link below to read more:</p>
+
+<ul>
+	<li><a href="../../../../Documentation/User Guide/Queries/EJBQLQuery/index.html" title="EJBQLQuery">EJBQLQuery</a></li>
+</ul>
+
+
+<h2><a name="Guideto3.0Features-CacheManagement"></a>Cache Management</h2>
+
+<ul>
+	<li>pluggable query cache</li>
+	<li>a notion of Query cache groups</li>
+	<li>automated cache key management for standard queries</li>
+	<li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/RefreshQuery/index.html" title="RefreshQuery">RefreshQuery</a></li>
+</ul>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2007 Apache Software Foundation
+  </div>
+
+</body>
+</html>

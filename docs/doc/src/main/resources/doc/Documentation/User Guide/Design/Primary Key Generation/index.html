@@ -29,37 +29,37 @@
   </div>
 <div id="cayenne_toc">
 <ul>
-<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
 <li><a href="../../../../Documentation/User Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
+<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
 <li><a href="../../../../Documentation/User Guide/Quick Start/index.html">Quick Start</a></li>
 <li><a href="../../../../Documentation/User Guide/Design/index.html">Design</a><ul>
-<li><a href="../../../../Documentation/User Guide/Design/Cayenne Contract/index.html">Cayenne Contract</a></li>
-<li><a href="../../../../Documentation/User Guide/Design/Persistent Object Lifecycle/index.html">Persistent Object Lifecycle</a></li>
 <li><a href="../../../../Documentation/User Guide/Design/Runtime Components/index.html">Runtime Components</a></li>
-<li><a href="../../../../Documentation/User Guide/Design/Understanding Transactions/index.html">Understanding Transactions</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/Persistent Object Lifecycle/index.html">Persistent Object Lifecycle</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/Object Caching/index.html">Object Caching</a></li>
 <li><a href="../../../../Documentation/User Guide/Design/Primary Key Generation/index.html">Primary Key Generation</a><ul>
 <li><a href="../../../../Documentation/User Guide/Design/Primary Key Generation/Generated Columns/index.html">Generated Columns</a></li>
 </ul>
 </li>
-<li><a href="../../../../Documentation/User Guide/Design/Object Caching/index.html">Object Caching</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/Understanding Transactions/index.html">Understanding Transactions</a></li>
+<li><a href="../../../../Documentation/User Guide/Design/Cayenne Contract/index.html">Cayenne Contract</a></li>
 </ul>
 </li>
-<li><a href="../../../../Documentation/User Guide/DataContext/index.html">DataContext</a></li>
-<li><a href="../../../../Documentation/User Guide/Queries/index.html">Queries</a></li>
-<li><a href="../../../../Documentation/User Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/User Guide/Introduction/index.html">Introduction</a></li>
 <li><a href="../../../../Documentation/User Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
 <li><a href="../../../../Documentation/User Guide/Expressions/index.html">Expressions</a></li>
 <li><a href="../../../../Documentation/User Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
-<li><a href="../../../../Documentation/User Guide/Performance Tuning/index.html">Performance Tuning</a></li>
 <li><a href="../../../../Documentation/User Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
-<li><a href="../../../../Documentation/User Guide/Deployment/index.html">Deployment</a></li>
-<li><a href="../../../../Documentation/User Guide/Ant Tasks/index.html">Ant Tasks</a></li>
 <li><a href="../../../../Documentation/User Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
-<li><a href="../../../../Documentation/User Guide/Customizing/index.html">Customizing</a></li>
-<li><a href="../../../../Documentation/User Guide/DataViews/index.html">DataViews</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent">
+<div id="ConfluenceContent"><h2><a name="PrimaryKeyGeneration-PrimaryKeyGeneration"></a>Primary Key Generation</h2>
 <p>Depending on the type of persistent objects and the database design, primary key values can be handled in a few different ways. A decision to use one or another technique will affect how the mapping is done. Here is a summary of possible scenarios. Each one is described below in details.</p>
 <table class='confluenceTable'><tbody>
 <tr>
@@ -124,13 +124,19 @@
 <p>To generate the necessary database objects for the primary key autogeneration, use CayenneModeler and follow the instructions given <a href="../../../../Documentation/Modeler Guide/Common Modeling Tasks/Generate Primary Key Support/index.html" title="Generate Primary Key Support">here</a>.</p>
 
 <table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Cayenne only supports automatic PK generation for a single column per table.</td></tr></table>
+
+<h3><a name="PrimaryKeyGeneration-Sections"></a>Sections</h3>
+
+<ol>
+	<li><a href="../../../../Documentation/User Guide/Design/Primary Key Generation/Generated Columns/index.html" title="Generated Columns">Generated Columns</a></li>
+</ol>
 </div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2006 Apache Software Foundation
+    Copyright &copy;2001-2007 Apache Software Foundation
   </div>
 
 </body>

@@ -1,0 +1,147 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - JPA Introduction</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">JPA Introduction</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/JPA Guide/Requirements/index.html">Requirements</a></li>
+<li><a href="../../../Documentation/JPA Guide/JPA persistence.xml/index.html">JPA persistence.xml</a></li>
+<li><a href="../../../Documentation/JPA Guide/JPA Introduction/index.html">JPA Introduction</a><ul>
+</ul>
+</li>
+<li><a href="../../../Documentation/JPA Guide/JPA Agent/index.html">JPA Agent</a></li>
+<li><a href="../../../Documentation/JPA Guide/JPA Cayenne Provider Properties/index.html">JPA Cayenne Provider Properties</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="JPAIntroduction-Introduction"></a>Introduction</h2>
+
+<p>As of version 3.0 Cayenne includes a Java Persistence API (JPA) provider implementing corresponding parts of the <span class="nobr"><a href="http://jcp.org/en/jsr/detail?id=220" title="Visit page outside Confluence" rel="nofollow">JSR-220<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> specification (aka EJB3).</p>
+
+
+<h2><a name="JPAIntroduction-CurrentImplementationStatus"></a>Current Implementation Status</h2>
+
+<p><em>3.0 is still in development, so certain parts of the spec are not yet fully supported. Our goal is to ensure the final 3.0 release fully passes the Sun Technology Compatibility Kit (TCK), and then Cayenne will be an officially certified JPA provider.</em></p>
+
+<p>The following tasks are currently outstanding on the road toward JPA compliance.</p>
+
+<p><a name="jiraissues">
+    <table  width="100%" cellspacing="0" class="grid">
+        <tr>
+            <th colspan="3" style="text-align: left;">
+                                    <a href="/confluence/rpc/soap-axis/confluenceservice-v1?macro.refresh=true#jiraissues"><img src="../../../images/refresh_16.png" height="16" width="16" border="0" align="right" title="refresh"/></a>
+                                <a href="https://issues.apache.org/cayenne/secure/IssueNavigator.jspa?&fixfor=10060&resolution=-1">Apache Cayenne Issue Tracker</a>
+                <span class="smalltext">(6 issues)</span>
+            </th>
+        </tr>
+        <tr>
+                        <th style="text-align: left;">
+                                Key                                                                                                                                                            </th>
+                        <th style="text-align: left;">
+                                                Summary                                                                                                                                            </th>
+                        <th style="text-align: left;">
+                                                                                                                Status                                                                            </th>
+                    </tr>
+                                            <tr class="rowNormal">
+                                                            <td nowrap="true">
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-626">CAY-626</a>
+                                    </td>
+                                <td >
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-626">JPA Spec Compatibility Tests</a>
+                                    </td>
+                                <td nowrap="true">
+                                            <img src="https://issues.apache.org:443/cayenne/secure/IssueNavigator.jspa?reset=true&resolution=-1&fixfor=10060&sorter/field=issuekey&sorter/order=DESC/images/icons/status_open.gif" alt="Open" border="0" />Open
+                                    </td>
+                            </tr>
+                                    <tr class="rowAlternate">
+                                                            <td nowrap="true">
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-535">CAY-535</a>
+                                    </td>
+                                <td >
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-535">JPA Mapping Defaults processor</a>
+                                    </td>
+                                <td nowrap="true">
+                                            <img src="https://issues.apache.org:443/cayenne/secure/IssueNavigator.jspa?reset=true&resolution=-1&fixfor=10060&sorter/field=issuekey&sorter/order=DESC/images/icons/status_inprogress.gif" alt="In Progress" border="0" />In Progress
+                                    </td>
+                            </tr>
+                                    <tr class="rowNormal">
+                                                            <td nowrap="true">
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-530">CAY-530</a>
+                                    </td>
+                                <td >
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-530">JpaEntityMap -&gt; DataMap converter, PersistenceUnitInfo -&gt; DataDomain converters</a>
+                                    </td>
+                                <td nowrap="true">
+                                            <img src="https://issues.apache.org:443/cayenne/secure/IssueNavigator.jspa?reset=true&resolution=-1&fixfor=10060&sorter/field=issuekey&sorter/order=DESC/images/icons/status_inprogress.gif" alt="In Progress" border="0" />In Progress
+                                    </td>
+                            </tr>
+                                    <tr class="rowAlternate">
+                                                            <td nowrap="true">
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-529">CAY-529</a>
+                                    </td>
+                                <td >
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-529">Algorithm for merging ORM mapping data coming from different sources</a>
+                                    </td>
+                                <td nowrap="true">
+                                            <img src="https://issues.apache.org:443/cayenne/secure/IssueNavigator.jspa?reset=true&resolution=-1&fixfor=10060&sorter/field=issuekey&sorter/order=DESC/images/icons/status_open.gif" alt="Open" border="0" />Open
+                                    </td>
+                            </tr>
+                                    <tr class="rowNormal">
+                                                            <td nowrap="true">
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-468">CAY-468</a>
+                                    </td>
+                                <td >
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-468">JPA POJO class generation template</a>
+                                    </td>
+                                <td nowrap="true">
+                                            <img src="https://issues.apache.org:443/cayenne/secure/IssueNavigator.jspa?reset=true&resolution=-1&fixfor=10060&sorter/field=issuekey&sorter/order=DESC/images/icons/status_open.gif" alt="Open" border="0" />Open
+                                    </td>
+                            </tr>
+                                    <tr class="rowAlternate">
+                                                            <td nowrap="true">
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-453">CAY-453</a>
+                                    </td>
+                                <td >
+                                            <a href="https://issues.apache.org:443/cayenne/browse/CAY-453">Changes to Cayenne stack needed for JPA implementation completeness</a>
+                                    </td>
+                                <td nowrap="true">
+                                            <img src="https://issues.apache.org:443/cayenne/secure/IssueNavigator.jspa?reset=true&resolution=-1&fixfor=10060&sorter/field=issuekey&sorter/order=DESC/images/icons/status_open.gif" alt="Open" border="0" />Open
+                                    </td>
+                            </tr>
+            </table>
+</p>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2007 Apache Software Foundation
+  </div>
+
+</body>
+</html>
