@@ -66,6 +66,7 @@ CAY-810 IncrementalFaultList performance improvements
 CAY-812 Add ability to drag cayenne.xml to the Modeler from the filesystem
 CAY-817 HSQLDB schema generation may not correctly flush the changes
 CAY-818 Frontbase NUMBERIC type mapping typo
+CAY-823 Db-generated PK type mismatch
 
 Bug Fixes since 1.2/2.0 final:
 
