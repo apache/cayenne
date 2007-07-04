@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.art.GeneratedColumnCompKey;
 import org.apache.art.GeneratedColumnCompMaster;
@@ -29,6 +30,8 @@ import org.apache.art.GeneratedColumnTest2;
 import org.apache.art.GeneratedColumnTestEntity;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
@@ -39,6 +42,32 @@ public class IdentityColumnsTest extends CayenneCase {
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();
+    }
+
+    /**
+     * Tests a bug casued by the ID Java type mismatch vs the default JDBC type of the ID
+     * column.
+     */
+    public void testCAY823() throws Exception {
+        DataContext context = createDataContext();
+        GeneratedColumnTestEntity idObject = (GeneratedColumnTestEntity) context
+                .newObject(GeneratedColumnTestEntity.class);
+
+        String name = "n_" + System.currentTimeMillis();
+        idObject.setName(name);
+
+        idObject.getObjectContext().commitChanges();
+
+        ObjectId id = idObject.getObjectId();
+        context.invalidateObjects(Collections.singleton(idObject));
+
+        SelectQuery q = new SelectQuery(GeneratedColumnTestEntity.class);
+        q.setPageSize(10);
+        List results = context.performQuery(q);
+        assertEquals(1, results.size());
+
+        // per CAY-823 an attempt to resolve an object results in an exception
+        assertEquals(id, ((Persistent) results.get(0)).getObjectId());
     }
 
     public void testNewObject() throws Exception {

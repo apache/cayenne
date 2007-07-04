@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -38,6 +39,7 @@ import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
 import org.apache.cayenne.access.trans.InsertBatchQueryBuilder;
 import org.apache.cayenne.access.trans.UpdateBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
@@ -53,6 +55,7 @@ public class BatchAction extends BaseSQLAction {
 
     protected boolean batch;
     protected BatchQuery query;
+    protected RowDescriptor keyRowDescriptor;
 
     public BatchAction(BatchQuery batchQuery, DbAdapter adapter,
             EntityResolver entityResolver) {
@@ -253,13 +256,40 @@ public class BatchAction extends BaseSQLAction {
             throws SQLException, CayenneException {
 
         ResultSet keysRS = statement.getGeneratedKeys();
-        RowDescriptor descriptor = new RowDescriptor(keysRS, getAdapter()
-                .getExtendedTypes());
+
+        // TODO: andrus, 7/4/2007 - (1) get the type of meaningful PK's from their
+        // ObjAttributes; (2) use a different form of Statement.execute -
+        // "execute(String,String[])" to be able to map generated column names (this way
+        // we can support multiple columns.. although need to check how well this works
+        // with most common drivers)
+
+        if (this.keyRowDescriptor == null) {
+            // attempt to figure out the right descriptor from the mapping...
+            Collection generated = query.getDbEntity().getGeneratedAttributes();
+            if (generated.size() == 1) {
+                DbAttribute key = (DbAttribute) generated.iterator().next();
+
+                ColumnDescriptor[] columns = new ColumnDescriptor[1];
+
+                // use column name from result set, but type and Java class from DB
+                // attribute
+                columns[0] = new ColumnDescriptor(keysRS.getMetaData(), 1);
+                columns[0].setJdbcType(key.getType());
+                columns[0].setJavaClass(TypesMapping.getJavaBySqlType(key.getType()));
+                keyRowDescriptor = new RowDescriptor(columns, getAdapter()
+                        .getExtendedTypes());
+            }
+            else {
+                keyRowDescriptor = new RowDescriptor(keysRS, getAdapter()
+                        .getExtendedTypes());
+            }
+        }
+
         ResultIterator iterator = new JDBCResultIterator(
                 null,
                 null,
                 keysRS,
-                descriptor,
+                keyRowDescriptor,
                 0);
 
         observer.nextGeneratedDataRows(query, iterator);
