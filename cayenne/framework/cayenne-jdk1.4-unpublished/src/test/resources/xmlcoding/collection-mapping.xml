@@ -1,0 +1,23 @@
+<!--
+Make sure that "simple" properties surround aggregate ones
+in order to fully test nested element problems found in CAY-597.
+-->
+
+<model>
+    <entity name="org.apache.cayenne.xml.TestObject" xmlTag="Family">
+    	<property name="name" xmlTag="Name"/>
+        <property name="children" xmlTag="Child"/>
+        <property name="age" xmlTag="Age"/>
+    </entity>
+	
+	<entity name="org.apache.cayenne.xml.TestObject" xmlTag="Child">
+		<property name="name" xmlTag="Name"/>
+		<property name="children" xmlTag="Grandchild"/>
+		<property name="age" xmlTag="Age"/>
+	</entity>
+	
+	<entity name="org.apache.cayenne.xml.TestObject" xmlTag="Grandchild">
+		<property name="name" xmlTag="Name"/>
+		<property name="age" xmlTag="Age"/>
+	</entity>
+</model>

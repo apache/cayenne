@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	
+	<bean id="INSERT_MT_TABLE11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (1, 'g1', 's1')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="INSERT_MT_TABLE12" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (2, 'g2', 's2')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="INSERT_MT_TABLE13" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (3, 'g3', 's3')
+		</value></constructor-arg>
+	</bean>
+	
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	<bean id="prepare" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="INSERT_MT_TABLE11"/>
+				<ref bean="INSERT_MT_TABLE12"/>
+				<ref bean="INSERT_MT_TABLE13"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

@@ -1,0 +1,35 @@
+{
+    attributes = (
+        {
+            allowsNull = Y; 
+            columnName = "MASTER_FK"; 
+            externalType = int; 
+            name = masterFK; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            columnName = PK; 
+            externalType = int; 
+            name = pk; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }
+    ); 
+    attributesUsedForLocking = (pk, masterFK); 
+    className = DetailEntityClass; 
+    classProperties = (toMaster); 
+    externalName = "DETAIL_ENTITY"; 
+    fetchSpecificationDictionary = {}; 
+    name = DetailEntity; 
+    primaryKeyAttributes = (pk); 
+    relationships = (
+        {
+            destination = AbstractEntity; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = pk; sourceAttribute = masterFK; }); 
+            name = toMaster; 
+        }
+    ); 
+}

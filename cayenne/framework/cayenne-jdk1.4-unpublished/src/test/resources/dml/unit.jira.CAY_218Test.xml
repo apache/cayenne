@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	<bean id="D1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.Department</value></constructor-arg>
+		<constructor-arg><value>
+		insert into DEPARTMENT (DEPARTMENT_ID, NAME) values (1, 'Accounting')
+		</value></constructor-arg>
+	</bean>
+
+	<bean id="E1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (1, 'John', 1, 'EE', 25000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="E2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (1, 'Susan', 2, 'EE', 50000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="M1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (1, 'Kelly', 3, 'EM', 100000)
+		</value></constructor-arg>
+	</bean>
+
+	<bean id="AE11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.Address</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ADDRESS (ADDRESS_ID, CITY, PERSON_ID) values (1, 'New York', 1)
+		</value></constructor-arg>
+	</bean>
+
+ 	<bean id="AE12" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.Address</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ADDRESS (ADDRESS_ID, CITY, PERSON_ID) values (2, 'San Fran', 1)
+		</value></constructor-arg>
+	</bean>
+
+	<bean id="AE21" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.Address</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ADDRESS (ADDRESS_ID, CITY, PERSON_ID) values (3, 'Boston', 2)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="AM11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.Address</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ADDRESS (ADDRESS_ID, CITY, PERSON_ID) values (4, 'LA', 3)
+		</value></constructor-arg>
+	</bean>
+	
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->
+	<bean id="testPrefetchSuperRel" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="D1"/>
+				<ref bean="E1"/>
+				<ref bean="E2"/>
+				<ref bean="M1"/>
+				<ref bean="AE11"/>
+				<ref bean="AE12"/>
+				<ref bean="AE21"/>
+				<ref bean="AM11"/>
+			</list>
+		</constructor-arg>
+	</bean>
+
+<bean id="testObjectForSuperPK" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="D1"/>
+				<ref bean="M1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

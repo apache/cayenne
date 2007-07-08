@@ -1,0 +1,8 @@
+{
+    EOModelVersion = "2.1"; 
+    adaptorName = None; 
+    entities = (
+        {className = "org.example.Entity1"; name = Entity1; }, 
+        {className = "org.example.Entity2"; name = Entity2; }
+    ); 
+}

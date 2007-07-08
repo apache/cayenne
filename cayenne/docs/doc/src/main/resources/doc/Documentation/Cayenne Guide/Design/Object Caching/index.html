@@ -1,0 +1,133 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Object Caching</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Object Caching</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/Cayenne Contract/index.html">Cayenne Contract</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/Persistent Object Lifecycle/index.html">Persistent Object Lifecycle</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/Runtime Components/index.html">Runtime Components</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/Understanding Transactions/index.html">Understanding Transactions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/Primary Key Generation/index.html">Primary Key Generation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/Object Caching/index.html">Object Caching</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Cayenne implements an advanced caching mechanism that has a goal of improving application performance and ensuring data consistency both across Java applications and sessions within the same application. The following classes participate in the caching mechanism:</p>
+
+<ul>
+	<li><b>Persistent</b><br/>
+      Any persistent object; tracks the version of snapshot it was last updated with.</li>
+	<li><b>DataRow</b><br/>
+      Immutable snapshot of a database row. Has a VM-unique version identifier.</li>
+	<li><b>ObjectStore</b><br/>
+      Stores DataObjects using ObjectIds as keys.</li>
+	<li><b>DataRowStore</b><br/>
+      Stores snapshots as DataRows using ObjectIds as keys.</li>
+</ul>
+
+
+
+<h3><a name="ObjectCaching-LevelsofCaching"></a>Levels of Caching</h3>
+
+<p>Cayenne implements the following levels of caching:</p>
+
+<ul>
+	<li><b>Level 1 - No Cache Sharing</b><br/>
+      The DataContext keeps its own cache - data fetched from the database via a given DataContext is never shared with other local or remote DataContexts. Changes made on commit are not propagated to other DataContexts.<br/>
+      <img src="cache-level1.gif" align="absmiddle" border="0" /></li>
+	<li><b>Level 2 - Local VM Cache Sharing</b><br/>
+      Each DataDomain keeps the cache shared by all DataContexts in the same VM. Changes made via one of the DataContexts are propagated via a SnapshotEvent to other DataContexts in the same VM.<br/>
+      <img src="cache-level2.gif" align="absmiddle" border="0" /></li>
+	<li><b>Level 3 - Cross-VM Cache Sharing</b><br/>
+      Behaves just like Level 2, but also synchronizes caches across JVMs. SnapshotEvents are sent remotely via a preconfigured transport mechanism. Notification channels use the DataDomain name to identify which remote domains should receive the event.<br/>
+      <img src="cache-level3.gif" align="absmiddle" border="0" /></li>
+</ul>
+
+
+<p>Caching properties are configured using CayenneModeler for each application DataDomain. Application code is normally independent from a chosen level, i.e., it does not have to be changed when caching is reconfigured. Details on caching configuration are provided in the <a href="../../../../Documentation/Modeler Guide/Configuring Deployment Settings/Configuring Caching Behavior/index.html" title="Configuring Caching Behavior">Modeler Guide</a>.</p>
+
+<h3><a name="ObjectCaching-SynchronizingObjectStoresusingSnapshotEvents."></a>Synchronizing ObjectStores using SnapshotEvents.</h3>
+
+<p>DataRowStore posts SnapshotEvents for any changes made to the cache. ObjectStore(s) using a given DataRowStore are automatically registered as listeners for SnapshotEvents and update their state accordingly. Application objects can also take advantage of the events by implementing SnapshotEventListener interface and registering with EventManager</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">SnapshotEventListener customListener = ...
+
+DataDomain domain = Configuration.getSharedConfiguration().getDomain();
+DataRowStore cache = domain.getSharedSnapshotCache();
+domain.getEventManager().addListener(
+      customListener, 
+      <span class="code-quote">"snapshotsChanged"</span>, 
+      SnapshotEvent.class, 
+      cache.getSnapshotEventSubject());</pre>
+</div></div>
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Upgrading to Cayenne 1.2 and Newer</b><br /> Cayenne 1.1 used a singleton EventManager accessible via <tt>EventManager.getDefaultManager()</tt>. Note that now EventManager is obtained from DataDomain or DataContext. Make sure that you register your listeners with an appropriate EventManager.</td></tr></table>
+
+
+<h3><a name="ObjectCaching-ConcurrentUpdatesoftheSamePersistentObject."></a>Concurrent Updates of the Same Persistent Object.</h3>
+
+<p>If two or more users update their local copies of the same object, Cayenne implements the following behavior:</p>
+
+<ul>
+	<li>Whenever a local modification of an object is detected, its snapshot is retained by ObjectStore, so that any changes to the underlying DataRowStore could not affect modification process of this object.</li>
+	<li>On commit, an UPDATE query is built based on retained snapshot, not the one currently cached in DataRowStore (this may or may not be the same DataRow). If the changes were made to a different set of attributes, this allows concurrent modification of the same object by different users without overwriting each other's changes.</li>
+	<li>Due to concurrency issues discussed above, if a snapshot version conflict occurs, DataRowStore removes a given snapshot from the cache to avoid dealing with concurrency effects on merging.</li>
+</ul>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2007 Apache Software Foundation
+  </div>
+
+</body>
+</html>

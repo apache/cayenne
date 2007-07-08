@@ -1,0 +1,50 @@
+{
+    FetchAll = {class = EOFetchSpecification; entityName = ExhibitType; fetchLimit = 0; }; 
+    TestQuery = {
+        class = EOFetchSpecification; 
+        entityName = ExhibitType; 
+        fetchLimit = 12; 
+        isDeep = YES; 
+        locksObjects = YES; 
+        promptsAfterFetchLimit = YES; 
+        qualifier = {
+            class = EOAndQualifier; 
+            qualifiers = (
+                {
+                    class = EOKeyValueQualifier; 
+                    key = name; 
+                    selectorName = "isLike:"; 
+                    value = {"_key" = x; class = EOQualifierVariable; }; 
+                }, 
+                {
+                    class = EOOrQualifier; 
+                    qualifiers = (
+                        {
+                            class = EOKeyValueQualifier; 
+                            key = name; 
+                            selectorName = "isEqualTo:"; 
+                            value = {"_key" = y; class = EOQualifierVariable; }; 
+                        }, 
+                        {
+                            class = EOKeyValueQualifier; 
+                            key = exhibitTypeId; 
+                            selectorName = "isNotEqualTo:"; 
+                            value = {"_key" = z; class = EOQualifierVariable; }; 
+                        }, 
+                        {
+                            class = EOKeyValueQualifier; 
+                            key = name; 
+                            selectorName = "isEqualTo:"; 
+                            value = aaa; 
+                        }
+                    ); 
+                }
+            ); 
+        }; 
+        rawRowKeyPaths = (exhibitTypeId, name); 
+        refreshesRefetchedObjects = YES; 
+        requiresAllQualifierBindingVariables = YES; 
+        sortOrderings = ({class = EOSortOrdering; key = name; selectorName = "compareDescending:"; }); 
+        usesDistinct = YES; 
+    }; 
+}

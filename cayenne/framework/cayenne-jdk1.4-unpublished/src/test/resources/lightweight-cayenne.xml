@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="1.0">
+<domain name="d1">
+	<map name="testmap" location="testmap.map.xml"/>
+	<node name="n1"
+		 datasource="n1.driver.xml"
+		 adapter="org.apache.cayenne.dba.mysql.MySQLAdapter"
+		 factory="org.apache.cayenne.conf.DriverDataSourceFactory">
+			<map-ref name="testmap"/>
+	 </node>
+</domain>
+<domain name="d2">
+	<map name="mm" location="mm.map.xml"/>
+        <node name="n1"
+		 datasource="n1.driver.xml"
+		 adapter="org.apache.cayenne.dba.mysql.MySQLAdapter"
+		 factory="org.apache.cayenne.conf.DriverDataSourceFactory">
+			<map-ref name="mm"/>
+	 </node>
+	<node name="n2"
+		 datasource="n1.driver.xml"
+		 adapter="org.apache.cayenne.dba.mysql.MySQLAdapter"
+		 factory="org.apache.cayenne.conf.DriverDataSourceFactory">
+			<map-ref name="testmap"/>
+	 </node>
+</domain>
+</domains>

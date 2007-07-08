@@ -1,0 +1,137 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Tutorial SelectQuery</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Tutorial SelectQuery</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Setup/index.html">Tutorial Setup</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Starting Mapping Project/index.html">Tutorial Starting Mapping Project</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Object Relational Mapping/index.html">Tutorial Object Relational Mapping</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Generate Database and Java Classes/index.html">Tutorial Generate Database and Java Classes</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial DataContext/index.html">Tutorial DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial DataObjects/index.html">Tutorial DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Mapping Query/index.html">Tutorial Mapping Query</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial SelectQuery/index.html">Tutorial SelectQuery</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Delete/index.html">Tutorial Delete</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Webapp/index.html">Tutorial Webapp</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent">
+<p>It was shown before how to <a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial DataObjects/index.html" title="Tutorial DataObjects">persist new objects</a>. Cayenne <a href="../../../../Documentation/Cayenne Guide/Queries/index.html" title="Queries">queries</a> are used to access already saved objects. The primary query type used for selecting objects is <a href="../../../../Documentation/Cayenne Guide/Queries/SelectQuery/index.html" title="SelectQuery">SelectQuery</a>. It can be mapped in CayenneModeler similar to how the SQLTemplate <a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Mapping Query/index.html" title="Tutorial Mapping Query">was mapped</a>, in this chapter however we'll show how to create it using Cayenne API.</p>
+
+<p>We don't have too much data in the database yet, but we can still demonstrate the main principles:</p>
+
+<ul>
+	<li>Select all paintings (the code, and the log output it generates):</li>
+</ul>
+
+
+<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<pre class="code-java">SelectQuery select1 = <span class="code-keyword">new</span> SelectQuery(Painting.class);
+List paintings1 = context.performQuery(select1);</pre>
+</div></div>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>INFO  QueryLogger: SELECT t0.NAME, t0.ARTIST_ID, t0.GALLERY_ID, t0.ID FROM PAINTING t0
+INFO  QueryLogger: === returned 2 rows. - took 20 ms.</pre>
+</div></div>
+
+<ul>
+	<li>Select paintings that start with "gi", ignoring case (read more about qualifier Expressions and ExpressionFactory <a href="../../../../Documentation/Cayenne Guide/Expressions/index.html" title="Expressions">here</a>:</li>
+</ul>
+
+
+<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<pre class="code-java">Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(
+                Painting.NAME_PROPERTY,
+                <span class="code-quote">"gi%"</span>);
+SelectQuery select2 = <span class="code-keyword">new</span> SelectQuery(Painting.class, qualifier2);
+List paintings2 = context.performQuery(select2);</pre>
+</div></div>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>INFO  QueryLogger: SELECT t0.NAME, t0.ARTIST_ID, t0.GALLERY_ID, t0.ID FROM PAINTING t0 
+                             WHERE UPPER(t0.NAME) LIKE UPPER(?) [bind: 'gi%']
+INFO  QueryLogger: === returned 1 row. - took 28 ms.</pre>
+</div></div>
+
+<ul>
+	<li>Select all paintings done by artists who were born more than a 100 years ago (demonstrating using Expression.fromString(..) instead of ExpressionFactory):</li>
+</ul>
+
+
+<div class="code"><div class="codeHeader"><b>Main.java</b></div><div class="codeContent">
+<pre class="code-java">Calendar c = <span class="code-keyword">new</span> GregorianCalendar();
+c.set(c.get(Calendar.YEAR) - 100, 0, 1, 0, 0, 0);
+
+Expression qualifier3 = Expression.fromString(<span class="code-quote">"artist.dateOfBirth &lt; $date"</span>);
+qualifier3 = qualifier3.expWithParameters(Collections.singletonMap(<span class="code-quote">"date"</span>, c.getTime()));
+SelectQuery select3 = <span class="code-keyword">new</span> SelectQuery(Painting.class, qualifier3);
+List paintings3 = context.performQuery(select3);</pre>
+</div></div>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>INFO  QueryLogger: SELECT t0.NAME, t0.ARTIST_ID, t0.GALLERY_ID, t0.ID FROM PAINTING t0, ARTIST t1 
+                             WHERE t0.ARTIST_ID = t1.ID AND (t1.DATE_OF_BIRTH &lt; ?) [bind: '1906-01-01 00:00:00.3']
+INFO  QueryLogger: === returned 2 rows. - took 31 ms.</pre>
+</div></div>
+
+<hr />
+<p><b>Next Step: <a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Delete/index.html" title="Tutorial Delete">Tutorial Delete</a></b></p>
+<hr /></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2007 Apache Software Foundation
+  </div>
+
+</body>
+</html>

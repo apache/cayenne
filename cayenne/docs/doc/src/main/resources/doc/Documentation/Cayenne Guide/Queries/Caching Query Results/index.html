@@ -1,0 +1,189 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Caching Query Results</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Caching Query Results</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/SelectQuery/index.html">SelectQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/index.html">SQLTemplate Query</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/EJBQLQuery/index.html">EJBQLQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/NamedQuery/index.html">NamedQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/ObjectIdQuery/index.html">ObjectIdQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/QueryChain/index.html">QueryChain</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/RelationshipQuery/index.html">RelationshipQuery</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/Queries Stored in DataMap/index.html">Queries Stored in DataMap</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/Caching Query Results/index.html">Caching Query Results</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/Customizing Queries/index.html">Customizing Queries</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>Cayenne provides a way to cache query results, avoiding unneeded database trips for the frequently used queries. Caching policy is configured per query. Policy can be set via the API or in CayenneModeler.</p>
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Upgrading to Cayenne 1.2 and Newer</b><br /><tt>org.apache.cayenne.query.GenericSelectQuery</tt> interface that defined cache policy types is deprecated. Cache policies are now a part of the new <tt>org.apache.cayenne.query.QueryMetadata</tt> interface.</td></tr></table>
+
+<p>The following cache policies are supported:</p>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<th class='confluenceTh'>Policy</th>
+<th class='confluenceTh'>Cache Scope</th>
+<th class='confluenceTh'>Cache Behavior</th>
+</tr>
+<tr>
+<td class='confluenceTd'><em>(default policy)</em> <tt>QueryMetadata.NO_CACHE</tt> </td>
+<td class='confluenceTd'>N/A</td>
+<td class='confluenceTd'>Always fetch, never use cache, never save to cache</td>
+</tr>
+<tr>
+<td class='confluenceTd'><tt>QueryMetadata.LOCAL_CACHE</tt></td>
+<td class='confluenceTd'>DataContext</td>
+<td class='confluenceTd'>If result is previously cached, use it, otherwise do a fetch and store result in cache for future use</td>
+</tr>
+<tr>
+<td class='confluenceTd'><tt>QueryMetadata.LOCAL_CACHE_REFRESH</tt></td>
+<td class='confluenceTd'>DataContext</td>
+<td class='confluenceTd'>Never use cache, alwyas do a fetch and store result in cache for future use</td>
+</tr>
+<tr>
+<td class='confluenceTd'><tt>QueryMetadata.SHARED_CACHE</tt></td>
+<td class='confluenceTd'>DataDomain (usually shared by all contexts in the same JVM)</td>
+<td class='confluenceTd'>If result is previously cached, use it, otherwise do a fetch and store result in cache for future use</td>
+</tr>
+<tr>
+<td class='confluenceTd'><tt>QueryMetadata.SHARED_CACHE_REFRESH</tt></td>
+<td class='confluenceTd'>DataDomain (usually shared by all contexts in the same JVM)</td>
+<td class='confluenceTd'>Never use cache, alwyas do a fetch and store result in cache for future use</td>
+</tr>
+</tbody></table>
+
+<p>It is important to understand that caching of <b>result lists</b> is done independently from caching of <b>individual DataObjects and DataRows</b>. Therefore the API is different as well. Also cached results lists are not synchronized across VMs (even the shared cache).</p>
+
+
+<h3><a name="CachingQueryResults-APIforResultCaching"></a>API for Result Caching</h3>
+
+<p>Users must set two Query parameters to configure caching - query <b>name</b> that is used as a key to result cache and query <b>cache policy</b> (one of the policies above). Note that if two unrelated queries have the same name, they will hit the same cache entry. This is not a bug, this is a feature that should be taken into consideration when naming queries.</p>
+
+<p>Below we will create a query and set its caching policy to LOCAL_CACHE:</p>
+<div class="code"><div class="codeContent">
+<pre class="code-java">SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Artist.class);
+
+<span class="code-comment">// set query name that will be used as a unique key to perform result caching
+</span>query.setName(<span class="code-quote">"MySelect"</span>);
+
+<span class="code-comment">// set local cache policy, meaning the cache will be stored in the DataContext 
+</span><span class="code-comment">// and not shared between different contexts
+</span>query.setCachePolicy(GenericSelectQuery.LOCAL_CACHE);
+
+DataContext context = ... <span class="code-comment">// assume <span class="code-keyword">this</span> exists
+</span>
+<span class="code-comment">// there is probably no cache at <span class="code-keyword">this</span> point, so the query will hit the database
+</span>List objects = context.performQuery(query);</pre>
+</div></div>
+
+<p>Reruning the query in the same DataContext at a later time will be much faster as it will be hitting the cache:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">List objects1 = context.performQuery(query);</pre>
+</div></div>
+
+<p>Here we want to refresh the cache, but still keep caching the fresh result:</p>
+<div class="code"><div class="codeContent">
+<pre class="code-java">query.setCachePolicy(GenericSelectQuery.LOCAL_CACHE_REFRESH);
+
+List objects2 = context.performQuery(query);</pre>
+</div></div>
+
+<p>The example above shows caching with <tt>SelectQuery</tt>, but it works exactly the same way for <tt>SQLTemplate</tt> and <tt>ProcedureQuery</tt>. Similarly <tt>SHARED_CACHE</tt> and <tt>SHARED_CACHE_REFRESH</tt> cache policies create cache shared by all DataDontexts that work with a given DataDomain. </p>
+
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Upgrading to Cayenne 1.2 and Newer</b><br /><br/>
+Cache refreshing API has changed in 1.2. Cayenne 1.1 relied on the use of <tt>SelectQuery.setRefreshingObjects(..)</tt> to determine whether to expire cached result lists. This is no longer the case (setting this flag only refreshes <b>individual objects</b> as it should, and has no effect whatsoever on list caching). Instead caching and cache refreshing is controlled by the cache policy as described above.</td></tr></table>
+
+
+<h3><a name="CachingQueryResults-QueriesMappedinCayenneModeler"></a>Queries Mapped in CayenneModeler</h3>
+
+<p>The easiest way to set up caching is by creating a named query in CayenneModeler with the appropriate caching type.</p>
+
+<p><img src="caching.jpg" align="absmiddle" border="0" /></p>
+
+<p>Then it can be executed via DataContext:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">List objects1 = context.performQuery(<span class="code-quote">"MyQuery"</span>, <span class="code-keyword">false</span>);</pre>
+</div></div>
+
+<p>The second "false" parameter above indicated that if possible, cached result should be used. Now if we want to force refresh, it can be changed to true (for just this invocation - this does not affect the underlying saved query)</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">List objects2 = context.performQuery(<span class="code-quote">"MyQuery"</span>, <span class="code-keyword">true</span>);</pre>
+</div></div>
+
+<p>Note that parameterized named queries will still work correctly with the cache. We've already mentioned that the users must ensure that two queries must have different names if they fetch logically different data. This is NOT the case with queries stored in the DataMap. If you run the same named query with different sets of parameters, Cayenne will internally generate unique cache keys for each distinct parameter set.</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">Map parameters = Collections.singletonMap(<span class="code-quote">"key"</span>, <span class="code-quote">"value1"</span>);
+List objects1 = context.performQuery(<span class="code-quote">"MyQuery"</span>, parameters, <span class="code-keyword">false</span>);</pre>
+</div></div>
+
+<p>Now if we run the same query with a different set of parameters, Cayenne will do the right thing and create a separate entry in the cache:</p>
+<div class="code"><div class="codeContent">
+<pre class="code-java">Map parameters = Collections.singletonMap(<span class="code-quote">"key"</span>, <span class="code-quote">"value2"</span>);
+List objects2 = context.performQuery(<span class="code-quote">"MyQuery"</span>, parameters, <span class="code-keyword">false</span>);</pre>
+</div></div>
+
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2007 Apache Software Foundation
+  </div>
+
+</body>
+</html>

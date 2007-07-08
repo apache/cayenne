@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	
+	<!-- ARTIST -->
+	<bean id="A1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33001, 'artist1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33002, 'artist2')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33003, 'artist3')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33004, 'artist4')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A5" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33005, 'artist5')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A6" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33006, 'artist6')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A7" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33007, 'artist7')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A8" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33008, 'artist8')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A9" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33009, 'artist9')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A10" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33010, 'artist10')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33011, 'artist11')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A12" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33012, 'artist12')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A13" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33013, 'artist13')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A14" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33014, 'artist14')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A15" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33015, 'artist15')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A16" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33016, 'artist16')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A17" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33017, 'artist17')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A18" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33018, 'artist18')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A19" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33019, 'artist19')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A20" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33020, 'artist20')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A21" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33021, 'artist21')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A22" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33022, 'artist22')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A23" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33023, 'artist23')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A24" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33024, 'artist24')
+		</value></constructor-arg>
+	</bean>
+	<bean id="A25" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33025, 'artist25')
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- GALLERY -->
+	<bean id="G1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33001, 'gallery1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="G2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33002, 'gallery2')
+		</value></constructor-arg>
+	</bean>
+	<bean id="G3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33003, 'gallery3')
+		</value></constructor-arg>
+	</bean>
+	<bean id="G4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33004, 'gallery4')
+		</value></constructor-arg>
+	</bean>
+	<bean id="G5" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33005, 'gallery5')
+		</value></constructor-arg>
+	</bean>
+	<bean id="G6" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33006, 'gallery6')
+		</value></constructor-arg>
+	</bean>
+	<bean id="G7" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33007, 'gallery7')
+		</value></constructor-arg>
+	</bean>
+	<bean id="G8" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33008, 'gallery8')
+		</value></constructor-arg>
+	</bean>
+	<bean id="G9" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33009, 'gallery9')
+		</value></constructor-arg>
+	</bean>
+	<bean id="G10" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Gallery</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO GALLERY (GALLERY_ID, GALLERY_NAME) VALUES (33010, 'gallery10')
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- PAINTING -->
+	<bean id="P1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33001, 'P_artist1', 33001, 1000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33002, 'P_artist2', 33002, 2000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33003, 'P_artist3', 33003, 3000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33004, 'P_artist4', 33004, 4000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P5" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33005, 'P_artist5', 33005, 5000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P6" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33006, 'P_artist6', 33006, 6000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P7" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33007, 'P_artist7', 33007, 7000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P8" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33008, 'P_artist8', 33008, 8000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P9" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33009, 'P_artist9', 33009, 9000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P10" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33010, 'P_artist10', 33010, 10000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33011, 'P_artist11', 33011, 11000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P12" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33012, 'P_artist12', 33012, 12000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P13" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33013, 'P_artist13', 33013, 13000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P14" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33014, 'P_artist14', 33014, 14000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P15" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33015, 'P_artist15', 33015, 15000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P16" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33016, 'P_artist16', 33016, 16000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P17" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33017, 'P_artist17', 33017, 17000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P18" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33018, 'P_artist18', 33018, 18000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P19" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33019, 'P_artist19', 33019, 19000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P20" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33020, 'P_artist20', 33020, 20000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P21" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33021, 'P_artist21', 33021, 21000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P22" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33022, 'P_artist22', 33022, 22000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P23" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33023, 'P_artist23', 33023, 23000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P24" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33024, 'P_artist24', 33024, 24000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="P25" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33025, 'P_artist25', 33025, 25000)
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- ARTIST_EXHIBIT -->
+	<bean id="AE1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.ArtistExhibit</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO ARTIST_EXHIBIT (ARTIST_ID, EXHIBIT_ID) VALUES (33001, 1)
+		</value></constructor-arg>
+	</bean>
+	<bean id="AE2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.ArtistExhibit</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO ARTIST_EXHIBIT (ARTIST_ID, EXHIBIT_ID) VALUES (33001, 2)
+		</value></constructor-arg>
+	</bean>
+	<bean id="AE3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.ArtistExhibit</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO ARTIST_EXHIBIT (ARTIST_ID, EXHIBIT_ID) VALUES (33002, 1)
+		</value></constructor-arg>
+	</bean>
+	<bean id="AE4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.ArtistExhibit</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO ARTIST_EXHIBIT (ARTIST_ID, EXHIBIT_ID) VALUES (33003, 2)
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- PAINTING_INFO -->
+	<bean id="PI1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING_INFO (PAINTING_ID) VALUES (33001)
+		</value></constructor-arg>
+	</bean>
+	<bean id="PI2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING_INFO (PAINTING_ID) VALUES (33002)
+		</value></constructor-arg>
+	</bean>
+	<bean id="PI3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING_INFO (PAINTING_ID) VALUES (33003)
+		</value></constructor-arg>
+	</bean>
+	
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	<bean id="testArtists" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="A2"/>
+				<ref bean="A3"/>
+				<ref bean="A4"/>
+				<ref bean="A5"/>
+				<ref bean="A6"/>
+				<ref bean="A7"/>
+				<ref bean="A8"/>
+				<ref bean="A9"/>
+				<ref bean="A10"/>
+				<ref bean="A11"/>
+				<ref bean="A12"/>
+				<ref bean="A13"/>
+				<ref bean="A14"/>
+				<ref bean="A15"/>
+				<ref bean="A16"/>
+				<ref bean="A17"/>
+				<ref bean="A18"/>
+				<ref bean="A19"/>
+				<ref bean="A20"/>
+				<ref bean="A21"/>
+				<ref bean="A22"/>
+				<ref bean="A23"/>
+				<ref bean="A24"/>
+				<ref bean="A25"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="testArtistExhibits" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="AE1"/>
+				<ref bean="AE2"/>
+				<ref bean="AE3"/>
+				<ref bean="AE4"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="testGalleries" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="G1"/>
+				<ref bean="G2"/>
+				<ref bean="G3"/>
+				<ref bean="G4"/>
+				<ref bean="G5"/>
+				<ref bean="G6"/>
+				<ref bean="G7"/>
+				<ref bean="G8"/>
+				<ref bean="G9"/>
+				<ref bean="G10"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="testPaintings" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="P1"/>
+				<ref bean="P2"/>
+				<ref bean="P3"/>
+				<ref bean="P4"/>
+				<ref bean="P5"/>
+				<ref bean="P6"/>
+				<ref bean="P7"/>
+				<ref bean="P8"/>
+				<ref bean="P9"/>
+				<ref bean="P10"/>
+				<ref bean="P11"/>
+				<ref bean="P12"/>
+				<ref bean="P13"/>
+				<ref bean="P14"/>
+				<ref bean="P15"/>
+				<ref bean="P16"/>
+				<ref bean="P17"/>
+				<ref bean="P18"/>
+				<ref bean="P19"/>
+				<ref bean="P20"/>
+				<ref bean="P21"/>
+				<ref bean="P22"/>
+				<ref bean="P23"/>
+				<ref bean="P24"/>
+				<ref bean="P25"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="testPaintingInfos" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="P1"/>
+				<ref bean="P2"/>
+				<ref bean="P3"/>
+				<ref bean="P4"/>
+				<ref bean="PI1"/>
+				<ref bean="PI2"/>
+				<ref bean="PI3"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

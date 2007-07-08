@@ -1,0 +1,1 @@
+DROP PROCEDURE IF EXISTS cayenne_tst_upd_proc2;

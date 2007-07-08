@@ -1,0 +1,143 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+
+package org.apache.cayenne.access.trans;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.query.BatchQuery;
+
+/**
+ * Translator of InsertBatchQueries.
+ * 
+ * @author Andriy Shapochka
+ * @author Andrus Adamchik
+ */
+public class InsertBatchQueryBuilder extends BatchQueryBuilder {
+
+    public InsertBatchQueryBuilder(DbAdapter adapter) {
+        super.setAdapter(adapter);
+    }
+
+    /**
+     * Binds parameters for the current batch iteration to the PreparedStatement. Performs
+     * filtering of attributes based on column generation rules.
+     * 
+     * @since 1.2
+     */
+    public void bindParameters(PreparedStatement statement, BatchQuery query)
+            throws SQLException, Exception {
+
+        List dbAttributes = query.getDbAttributes();
+        int attributeCount = dbAttributes.size();
+
+        // must use an independent counter "j" for prepared statement index
+        for (int i = 0, j = 0; i < attributeCount; i++) {
+            DbAttribute attribute = (DbAttribute) dbAttributes.get(i);
+            if (includeInBatch(attribute)) {
+                j++;
+                Object value = query.getValue(i);
+                adapter.bindParameter(statement, value, j, attribute.getType(), attribute
+                        .getScale());
+            }
+        }
+    }
+
+    /**
+     * Returns a list of values for the current batch iteration. Performs filtering of
+     * attributes based on column generation rules. Used primarily for logging.
+     * 
+     * @since 1.2
+     */
+    public List getParameterValues(BatchQuery query) {
+        List attributes = query.getDbAttributes();
+        int len = attributes.size();
+        List values = new ArrayList(len);
+        for (int i = 0; i < len; i++) {
+            DbAttribute attribute = (DbAttribute) attributes.get(i);
+            if (includeInBatch(attribute)) {
+                values.add(query.getValue(i));
+            }
+        }
+        return values;
+    }
+
+    public String createSqlString(BatchQuery batch) {
+        String table = batch.getDbEntity().getFullyQualifiedName();
+        List dbAttributes = batch.getDbAttributes();
+
+        StringBuffer query = new StringBuffer("INSERT INTO ");
+        query.append(table).append(" (");
+
+        int columnCount = 0;
+        Iterator it = dbAttributes.iterator();
+
+        while (it.hasNext()) {
+            DbAttribute attribute = (DbAttribute) it.next();
+
+            // attribute inclusion rule - one of the rules below must be true:
+            // (1) attribute not generated
+            // (2) attribute is generated and PK and adapter does not support generated
+            // keys
+
+            if (includeInBatch(attribute)) {
+
+                if (columnCount > 0) {
+                    query.append(", ");
+                }
+                query.append(attribute.getName());
+                columnCount++;
+            }
+        }
+
+        query.append(") VALUES (");
+
+        for (int i = 0; i < columnCount; i++) {
+            if (i > 0) {
+                query.append(", ");
+            }
+
+            query.append('?');
+        }
+        query.append(')');
+        return query.toString();
+    }
+
+    /**
+     * Returns true if an attribute should be included in the batch.
+     * 
+     * @since 1.2
+     */
+    protected boolean includeInBatch(DbAttribute attribute) {
+        // attribute inclusion rule - one of the rules below must be true:
+        // (1) attribute not generated
+        // (2) attribute is generated and PK and adapter does not support generated
+        // keys
+
+        return !attribute.isGenerated()
+                || (attribute.isPrimaryKey() && !adapter.supportsGeneratedKeys());
+    }
+}

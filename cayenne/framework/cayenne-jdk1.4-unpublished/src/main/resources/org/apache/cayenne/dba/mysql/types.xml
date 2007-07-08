@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+
+<!-- 
+MySQL types mapping
+-->
+
+<types>
+   <jdbc-type name="ARRAY"/>
+   <jdbc-type name="BIGINT">
+       <db-type name="BIGINT"/>
+       <db-type name="INT UNSIGNED"/>
+       <db-type name="INTEGER UNSIGNED"/>
+       <db-type name="MEDIUMINT UNSIGNED"/>
+   </jdbc-type>
+   <jdbc-type name="BINARY">
+       <db-type name="BINARY"/>
+   </jdbc-type>
+   <jdbc-type name="BIT">
+       <db-type name="BIT"/>
+   </jdbc-type>
+   <jdbc-type name="BLOB">
+       <db-type name="LONGBLOB"/>
+   </jdbc-type>
+   <jdbc-type name="BOOLEAN">
+       <db-type name="BOOL"/>
+   </jdbc-type>
+   <jdbc-type name="CHAR">
+       <db-type name="CHAR"/>
+   </jdbc-type>
+   <jdbc-type name="CLOB">
+       <db-type name="LONGTEXT"/>
+   </jdbc-type>
+   <jdbc-type name="DATALINK"/>
+   <jdbc-type name="DATE">
+       <db-type name="DATE"/>
+   </jdbc-type>
+   <jdbc-type name="DECIMAL">
+       <db-type name="DECIMAL"/>
+   </jdbc-type>
+   <jdbc-type name="DOUBLE">
+       <db-type name="DOUBLE"/>
+   </jdbc-type>
+   <jdbc-type name="FLOAT">
+       <db-type name="FLOAT"/>
+   </jdbc-type>
+   <jdbc-type name="INTEGER">
+       <db-type name="INT"/>
+       <db-type name="INTEGER"/>
+   </jdbc-type>
+   <jdbc-type name="JAVA_OBJECT"/>
+   <jdbc-type name="LONGVARBINARY">
+       <db-type name="LONGBLOB"/>
+   </jdbc-type>
+   <jdbc-type name="LONGVARCHAR">
+       <db-type name="LONGTEXT"/>
+   </jdbc-type>
+   <jdbc-type name="NUMERIC">
+       <db-type name="DECIMAL"/>
+       <db-type name="NUMERIC"/>
+   </jdbc-type>
+   <jdbc-type name="OTHER"/>
+   <jdbc-type name="REAL">
+       <db-type name="DOUBLE"/>
+       <db-type name="REAL"/>
+   </jdbc-type>
+   <jdbc-type name="REF"/>
+   <jdbc-type name="SMALLINT">
+       <db-type name="SMALLINT"/>
+   </jdbc-type>
+   <jdbc-type name="STRUCT"/>
+   <jdbc-type name="TIME">
+       <db-type name="TIME"/>
+   </jdbc-type>
+   <jdbc-type name="TIMESTAMP">
+	   <db-type name="DATETIME"/>
+       <db-type name="TIMESTAMP"/>
+   </jdbc-type>
+   <jdbc-type name="TINYINT">
+       <db-type name="TINYINT"/>
+   </jdbc-type>
+   <jdbc-type name="VARBINARY">
+       <db-type name="VARBINARY"/>
+   </jdbc-type>
+   <jdbc-type name="VARCHAR">
+       <db-type name="VARCHAR"/>
+   </jdbc-type>
+</types>

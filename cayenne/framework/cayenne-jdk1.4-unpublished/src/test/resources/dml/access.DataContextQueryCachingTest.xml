@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+
+	<bean id="INSERT" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33001, 'aaa')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="INSERTP" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33001, 'P', 33001, 4000)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="UPDATE1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		update ARTIST set ARTIST_NAME = 'bbb' where ARTIST_ID = 33001
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="UPDATE2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		update ARTIST set ARTIST_NAME = 'ccc' where ARTIST_ID = 33001
+		</value></constructor-arg>
+	</bean>
+
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	
+	<bean id="testLocalCacheRefreshObjectsRefresh_Insert" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="INSERT"/>
+				<ref bean="INSERTP"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testLocalCacheRefreshObjectsRefresh_Update1" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="UPDATE1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testLocalCacheRefreshObjectsRefresh_Update2" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="UPDATE2"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>
