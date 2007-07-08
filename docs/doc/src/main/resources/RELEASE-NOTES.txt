@@ -16,6 +16,7 @@ Date:
 Changes/New Features:
 ----------------------------------
 - Removed all API deprecated as of 1.2 and 2.0.
+CAY-460 javax.persistence.spi.ClassTransformer to turn POJO into DataObject
 CAY-540	extended type and subclasses
 CAY-576 Support for cached lists invalidation
 CAY-586 Implement commit validation hooks in CayenneContext
@@ -52,8 +53,10 @@ CAY-688	Change signatures of ObjectContext.deleteObject/registerNewObject/localO
 CAY-689	DataObjectUtils must return "Object" instead of "DataObject" from all pk lookup methods
 CAY-692	Extra argument needed in ObjectContext.prepareForAccess - whether the property is a fault or not.
 CAY-693	DataContext should not return HOLLOW objects in response to ObjectIdQuery()
+CAY-694 Support for serialization of enhanced serializable POJO's that do not declare 'serialVersionUID'
 CAY-696	true/false in expression
 CAY-700	where in () with empty collection
+CAY-701	"property" package refactoring
 CAY-702	Improve DBCPDataSourceFactory to use it for a JettyPlus DataSource
 CAY-703	Cache EntityResolver in the ClientChannel
 CAY-713	Improved Meaningful PK support
@@ -98,7 +101,6 @@ CAY-664	Simplify EntityResolver serialization
 CAY-671	custom exception class for ROP missing session
 CAY-675	compound primary key change
 CAY-690 Exception in the Modeler when changing schema on derived entities
-CAY-701	"property" package refactoring
 CAY-707	SelectQuery automatic cache key build mechanism produces wrong results when DO's are used in qualifier
 CAY-710	XMLDecoder decodes Dates wrong
 CAY-711	SQLTemplate data row query of PostgreSQL Blob
