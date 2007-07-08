@@ -21,6 +21,7 @@ CAY-576 Support for cached lists invalidation
 CAY-586 Implement commit validation hooks in CayenneContext
 CAY-598 JPA patches
 CAY-600 Add support for ordering property list serialization in a consistent way
+CAY-613 Pluggable Query Cache
 CAY-623 Removing broken FireBird adapter
 CAY-625	Implement correct "scale" and "precision" for DbAttribute
 CAY-632	RefreshQuery - a common mechanism for object and object list invalidation
