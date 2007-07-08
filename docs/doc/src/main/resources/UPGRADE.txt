@@ -23,6 +23,12 @@ UPGRADING FROM 2.0 AND OTHER APACHE RELEASES
   and can be run either by double-clicking the jar (on platforms that support that)
   or by running "java -jar CayenneModeler.jar".
   
+* Note that FireBird adapter is no longer distributed with Cayenne. The one we had was half-working
+  and we could not support it anymore.
+  
+* DataContextTransactionEventListener, DataObjectTransactionEventListener, DataContextEvent all were deprecated
+  favor of callbacks. NOTE THAT THIS API WILL BE REMOVED IN THE FOLLOWING 3.0 MILESTONES.
+  
 
 UPGRADING FROM 1.2 AND OTHER OBJECTSTYLE RELEASES
 
