@@ -23,7 +23,7 @@
   </head>
 <body>
   <div class="header">
-    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
     <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
     <span class="pagetitle">Remote Object Persistence Tutorial Setup</span>
   </div>
@@ -51,15 +51,15 @@
 <li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Limitations/index.html">Remote Object Persistence Limitations</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>This tutorial starts where the <a href="../../../../Documentation/User Guide/Quick Start/index.html" title="Quick Start">Quick Start</a> left off. All the code that is required however is in this tutorial so you don't have to have finished that tutorial to do this one. If you'd like to start here you are able to without reference to the other tutorial.</p>
+<div id="ConfluenceContent"><p>This tutorial starts where the <a href="../../../../Documentation/Cayenne Guide/Quick Start/index.html" title="Quick Start">Quick Start</a> left off. All the code that is required however is in this tutorial so you don't have to have finished that tutorial to do this one. If you'd like to start here you are able to without reference to the other tutorial.</p>
 
 <h3><a name="RemoteObjectPersistenceTutorialSetup-SetupfromScratch"></a>Setup from Scratch</h3>
 
 <ul>
 	<li>Install Maven 2 (<span class="nobr"><a href="http://maven.apache.org" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>)</li>
-	<li>Get the code from <span class="nobr"><a href="https://svn.apache.org/repos/asf/incubator/cayenne/main/trunk/tutorials/quick-start-rop" title="Visit page outside Confluence" rel="nofollow">https://svn.apache.org/repos/asf/incubator/cayenne/main/trunk/tutorials/quick-start-rop<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> with svn, i.e.
+	<li>Get the code from <span class="nobr"><a href="http://svn.apache.org/repos/asf/cayenne/main/trunk/docs/quick-start-rop/" title="Visit page outside Confluence" rel="nofollow">http://svn.apache.org/repos/asf/cayenne/main/trunk/docs/quick-start-rop/<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> with svn, i.e.
 	<ul>
-		<li>svn co <span class="nobr"><a href="https://svn.apache.org/repos/asf/incubator/cayenne/main/trunk/tutorials/quick-start-rop" title="Visit page outside Confluence" rel="nofollow">https://svn.apache.org/repos/asf/incubator/cayenne/main/trunk/tutorials/quick-start-rop<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></li>
+		<li>svn co <span class="nobr"><a href="http://svn.apache.org/repos/asf/cayenne/main/trunk/docs/quick-start-rop/" title="Visit page outside Confluence" rel="nofollow">http://svn.apache.org/repos/asf/cayenne/main/trunk/docs/quick-start-rop/<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></li>
 	</ul>
 	</li>
 	<li>Build Eclipse config files (or your favorite IDE)
@@ -74,7 +74,7 @@
 		</li>
 	</ul>
 	</li>
-	<li><a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/Running CayenneModeler/index.html" title="Running CayenneModeler">Start CayenneModeler</a> and <a href="../../../../Documentation/User Guide/Quick Start/Tutorial Starting Mapping Project/index.html" title="Tutorial Starting Mapping Project">add <tt>derby.jar</tt> to the modeler CLASSPATH</a>. Open <tt>"cayenne-rop-server-tutorial/src/main/resources/cayenne.xml"</tt> in CayenneModeler and <a href="../../../../Documentation/User Guide/Quick Start/Tutorial Generate Database and Java Classes/index.html" title="Tutorial Generate Database and Java Classes">generate a database schema</a> (skip the Java class generation part, just do the database).
+	<li><a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/Running CayenneModeler/index.html" title="Running CayenneModeler">Start CayenneModeler</a> and <a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Starting Mapping Project/index.html" title="Tutorial Starting Mapping Project">add <tt>derby.jar</tt> to the modeler CLASSPATH</a>. Open <tt>"cayenne-rop-server-tutorial/src/main/resources/cayenne.xml"</tt> in CayenneModeler and <a href="../../../../Documentation/Cayenne Guide/Quick Start/Tutorial Generate Database and Java Classes/index.html" title="Tutorial Generate Database and Java Classes">generate a database schema</a> (skip the Java class generation part, just do the database).
 	<ul>
 		<li>You might also want to change the path to the db, its currently set to /tmp/testdb, which works fine on *nix but not so nicely on Windows.</li>
 	</ul>
@@ -96,7 +96,7 @@
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2006 Apache Software Foundation
+    Copyright &copy;2001-2007 Apache Software Foundation
   </div>
 
 </body>

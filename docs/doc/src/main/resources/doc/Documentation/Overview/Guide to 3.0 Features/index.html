@@ -1,0 +1,192 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Guide to 3.0 Features</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Guide to 3.0 Features</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/Overview/License/index.html">License</a></li>
+<li><a href="../../../Documentation/Overview/Guide to 3.0 Features/index.html">Guide to 3.0 Features</a><ul>
+</ul>
+</li>
+<li><a href="../../../Documentation/Overview/Guide to 1.2 Features/index.html">Guide to 1.2 Features</a></li>
+<li><a href="../../../Documentation/Overview/Guide to 1.1 Features/index.html">Guide to 1.1 Features</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>This page summarizes the new features and changes introduced in 3.0 release, roughly corresponding to the latest released milestone. Consult RELEASE-NOTES.txt file bundled with each release for the full list of changes, fixes and improvements.</p>
+
+<h2><a name="Guideto3.0Features-DistributionContentsStructure"></a>Distribution Contents Structure</h2>
+
+<ul>
+	<li>There are a few changes in the contents of the distribution "lib" folder. For details see <a href="../../../Documentation/Cayenne Guide/Installation/JAR Files and Dependencies/index.html" title="JAR Files and Dependencies">this page</a>. Main Cayenne JAR is now called <tt>"cayenne-server-x.x.x.jar"</tt>. We no longer ship the "fat" jar with dependencies. Instead dependencies are included in the separate jars in <tt>"lib/third-party"</tt> distribution folder.</li>
+	<li>CayenneModeler is located in the "bin" folder. Never mind the <tt>"lib/cayenne-modeler-x.x.x.jar"</tt> - this is just an underlying Modeler <b>library</b>, used in "local JNDI" configuration for instance, not the runnable application.</li>
+</ul>
+
+
+<h2><a name="Guideto3.0Features-CayenneJPAProvider"></a>Cayenne JPA Provider</h2>
+<p><em>(status: preview)</em></p>
+
+<p>Cayenne 3.0 includes an in-progress partial implementation of a <span class="nobr"><a href="http://jcp.org/en/jsr/detail?id=220" title="Visit page outside Confluence" rel="nofollow">Java Persistence API specification<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> compliant persistence provider, with support for POJO and JPA annotations. Provider can be used in a standalone mode, as well as a part of a J2EE container.</p>
+
+<p>Currently implemented features:</p>
+
+<ul>
+	<li>Provider, EntityManagerFactory, EntityManager API bridge to the current Cayenne stack</li>
+	<li>Loading mapping from annotations</li>
+	<li>Loading mapping from XML</li>
+	<li>Class enhancement</li>
+	<li>Basic selecting EJBQL</li>
+	<li>Entity callbacks</li>
+</ul>
+
+
+
+
+
+
+<h2><a name="Guideto3.0Features-CayennePersistenceAPI"></a>Cayenne Persistence API</h2>
+
+<p>Many of the improvements below were done to support the JPA provider, still Cayenne applications can take advantage from all of these things without using JPA.</p>
+
+<h3><a name="Guideto3.0Features-ObjectContext"></a>ObjectContext</h3>
+
+<p>While you can still use DataContext directly, we encourage you to avoid direct dependency on DataContext throughout your code, and instead use <tt>org.apache.cayenne.ObjectContext</tt> interface. E.g.:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">ObjectContext context = DataContext.createDataContext();</pre>
+</div></div>
+
+<p>This protects your code from the actual implementation evolution, allows you to customize context behavior by using interface wrappers, and would also allow you to use <a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">lifecycle callbacks</a> feature (although we may enable callbacks directly on the DataContext at some point). There are plans to update all Cayenne API to return ObjectContext everywhere DataContext might be returned.</p>
+
+<h3><a name="Guideto3.0Features-EJBQLQueries"></a>EJB QL Queries</h3>
+<p><em>(status: in progress, only selecting queries are supported)</em></p>
+
+<p>Never mind the "EJB" in the name. EJBQL queries are a powerful object query mechanism borrowed from the JPA specification and added to Cayenne API. <a href="../../../Documentation/Cayenne Guide/Queries/EJBQLQuery/index.html" title="EJBQLQuery">EJBQLQuery</a> is a first-class citizen, just like SelectQuery.</p>
+
+<h3><a name="Guideto3.0Features-EntityLifecycleCallbacks"></a>Entity Lifecycle Callbacks</h3>
+
+<p>Just like EJBQL, lifecycle callbacks is a JPA-inspired feature that allows to perform custom operations at certain points in the object lifecycle. For more details see <a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">this page</a>.</p>
+
+<h3><a name="Guideto3.0Features-CacheManagement"></a>Cache Management</h3>
+
+<ul>
+	<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html" title="Caching and Fresh Data">pluggable query cache</a></li>
+	<li>a notion of Query cache groups</li>
+	<li>automated cache key management for standard queries</li>
+	<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/RefreshQuery/index.html" title="RefreshQuery">RefreshQuery</a></li>
+</ul>
+
+
+<h3><a name="Guideto3.0Features-ExpressionImprovements"></a>Expression Improvements</h3>
+
+<ul>
+	<li>Added missing DB expressions to ExpressionFactory.</li>
+	<li>Added support for matching against TRUE and FALSE.</li>
+</ul>
+
+
+<h3><a name="Guideto3.0Features-DatabaseIntegrationChanges%2FImprovements"></a>Database Integration Changes/Improvements</h3>
+
+<ul>
+	<li>Added stored procedure support on MySQL.</li>
+	<li>Changed default table type on MySQL to InnoDB, added MySQL FK constraints support in the Modeler.</li>
+	<li>Turned on update query batching on SQL Server and Derby.</li>
+</ul>
+
+
+<h3><a name="Guideto3.0Features-POJOPersistence"></a>POJO Persistence</h3>
+<p><em>(status: preview)</em></p>
+
+<ul>
+	<li>Implemented class enhancer to enhance POJO's into org.apache.cayenne.Persistent</li>
+</ul>
+
+
+
+<h2><a name="Guideto3.0Features-RemoteObjectPersistence"></a>Remote Object Persistence</h2>
+
+<ul>
+	<li>Validation callbacks support for ROP ObjectContext. Now object validation works the same way on the ROP client as it did on the server.</li>
+</ul>
+
+
+<h3><a name="Guideto3.0Features-DbAttributeScaleandPrecision"></a>DbAttribute Scale and Precision</h3>
+
+<p>Changed DbAttribute "precision" property to "scale" (as it meant scale all along) and added a separate "precision" attribute to track precision.</p>
+
+<h3><a name="Guideto3.0Features-SupportforPersistingaNumberofExtraSimplePropertyTypes"></a>Support for Persisting a Number of Extra Simple Property Types</h3>
+
+<p>Cayenne can now persist the following extra simple property types: java.util.Calendar, java.math.BigInteger, java.io.Serializable, char[], java.lang.Character, java.lang.Character[], java.lang.Byte[]. <em>(Note that until <span class="nobr"><a href="https://issues.apache.org/cayenne/browse/CAY-826" title="Visit page outside Confluence" rel="nofollow">CAY-826<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> is fixed, these types do not show up in the Modeler, still users can enter them directly).</em></p>
+
+
+
+<h2><a name="Guideto3.0Features-CayenneModeler"></a>CayenneModeler</h2>
+
+<ul>
+	<li>Added ability to specify password encryption mechanism</li>
+	<li>Added ability to drag and drop cayenne.xml from the filesystem to the Modeler window to open the project.</li>
+</ul>
+
+
+
+
+<h2><a name="Guideto3.0Features-DeploymentandRuntime"></a>Deployment and Runtime</h2>
+
+<h3><a name="Guideto3.0Features-ImprovedPerformance"></a>Improved Performance</h3>
+
+<ul>
+	<li>Paginated query algorithm is changed, resulting in very significant performance improvements on large data sets (this also improves ROP paginated query performance).</li>
+	<li>ROP new context creation speed is improved, as EntityResolver is cached on the client after first retrieval.</li>
+	<li>Reduced the scope of lock on a shared cache during commit, that should result in improved concurrency.</li>
+</ul>
+
+
+<h3><a name="Guideto3.0Features-ImprovedMemoryManagement"></a>Improved Memory Management</h3>
+
+<ul>
+	<li><a href="../../../Documentation/Cayenne Guide/DataContext/ObjectContext Memory Management/index.html" title="ObjectContext Memory Management">Leak free ObjectContext</a></li>
+	<li>Query lists are cached in an LRU map, so there's no indefinite memory growth when using query caching.</li>
+</ul>
+
+
+<h3><a name="Guideto3.0Features-LoggingSwitchedtocommonsloggingfromLog4J"></a>Logging Switched to commons-logging from Log4J</h3>
+
+<p>Cayenne no longer has a Log4J dependency. Instead it uses Jakarta commons-logging, as described <a href="../../../Documentation/Cayenne Guide/Deployment/Configuring Logging/index.html" title="Configuring Logging">here</a>. Note that 2.0 Log4J configurations should continue to work, although now it is a user responsibility to bootstrap Log4J - Cayenne will no longer do it for you. E.g. you can do this on startup:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">org.apache.log4j.PropertyConfigurator.configure(<span class="code-quote">"cayenne-log.properties"</span>);</pre>
+</div></div></div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2007 Apache Software Foundation
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Prefetching</title>
+    <style type="text/css">@import "../../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Prefetching</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Prefetching/index.html">Prefetching</a><ul>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Data Rows/index.html">Data Rows</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Iterating Through Data Rows/index.html">Iterating Through Data Rows</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Paginated Queries/index.html">Paginated Queries</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Caching Lookup Tables/index.html">Caching Lookup Tables</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Performance Tuning/Turning off Context Synchronization/index.html">Turning off Context Synchronization</a></li>
+</ul>
+</li>
+<li><a href="../../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h3><a name="Prefetching-IntroductiontoPrefetching"></a>Introduction to Prefetching</h3>
+
+<p>Prefetching is a performance optimization technique that allows to bring back more than one type of objects in a single query. Prefetches are configured in terms of relationship paths from the query root entity to the "prefetched" entity. E.g.:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java"><span class="code-comment">// configure query with prefetches
+</span>SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Artist.class);
+query.addPrefetch(<span class="code-quote">"paintingArray"</span>); 
+...
+<span class="code-comment">// execute query and <span class="code-keyword">do</span> something with results
+</span>List artists = context.performQuery(query);
+Iterator it = artists.iterator();
+<span class="code-keyword">while</span>(it.hasNext()) {
+  Artist a = (Artist) it.next();
+  <span class="code-object">System</span>.out.println(<span class="code-quote">"paintings: "</span> + a.getPaintingArray().size());
+}</pre>
+</div></div>
+
+<p>When prefetching is set, corresponding relationships are "inflated" with database objects within a single <tt>performQuery</tt> run, leaving it up to Cayenne to optimize retrieval of multiple entities. For instance the example above results in just two SQL queries issued to the database internally, while running the same query without a prefetch and later iterating over artists will result in <tt>1 + N</tt> queries, where <tt>N</tt> is the number of artists returned. </p>
+
+<h3><a name="Prefetching-PrefetchingHints"></a>Prefetching Hints</h3>
+
+<ul>
+	<li>All types of relationships can be prefetched - to-one, to-many, flattened.</li>
+	<li>A prefetch can span more than one relationship:
+<div class="code"><div class="codeContent">
+<pre class="code-java">query.addPrefetch(<span class="code-quote">"paintingArray.toGallery"</span>);</pre>
+</div></div></li>
+	<li>A query can have more than one prefetch path at the same time:
+<div class="code"><div class="codeContent">
+<pre class="code-java">query.addPrefetch(<span class="code-quote">"paintingArray"</span>); 
+query.addPrefetch(<span class="code-quote">"paintingArray.toGallery"</span>);</pre>
+</div></div></li>
+	<li><font color="red">PREFETCH LIMITATION:</font> To-many relationships should not be prefetched if a query qualifier can potentially reduce a number of related objects, resulting in incorrect relationship list. E.g.:
+<div class="code"><div class="codeContent">
+<pre class="code-java">SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Artist.class);
+
+Expression exp = ExpressionFactory.matchExp(<span class="code-quote">"paintingArray.paintingTitle"</span>, <span class="code-quote">"Some Painting"</span>);
+
+<span class="code-comment">// INVALID!! since there can be more than one painting per artist, <span class="code-keyword">this</span> prefetch
+</span><span class="code-comment">// wouldn't work.
+</span>query.addPrefetch(<span class="code-quote">"paintingArray"</span>);</pre>
+</div></div>
+<p>In the future versions of Cayenne this will be addressed by using SQL subqueries. For now it is programmer's responsibility to avoid such prefetches.</p></li>
+	<li>If SelectQuery is fetching data rows, all default prefetches are ignored, though custom joint prefetches (see below) will be included.</li>
+	<li>When you customize SelectQuery prefetches to use joint semantics (see below how customization can be done), be aware that joint prefetch adds an extra inner join to the main query. This may result in fewer objects returned than expected. If you are SQL-savvy it may be helpful to think of disjoint prefetches as analogous to SQL outer joins and joint prefetches - to SQL inner joins.</li>
+</ul>
+
+
+<p><em>The rest of this page describes advanced use and can be skipped.</em></p>
+
+
+<h3><a name="Prefetching-PrefetchSemantics"></a>Prefetch Semantics</h3>
+
+<p><em>(semantics flavors were introduced in 1.2M3, with some changes in 1.2M8)</em></p>
+
+<p>Queries store prefetching information as trees of <tt>PrefetchTreeNode</tt> objects:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">PrefetchTreeNode treeRoot = query.getPrefetchTree();
+<span class="code-keyword">if</span>(treeRoot != <span class="code-keyword">null</span>) {
+  <span class="code-comment">// <span class="code-keyword">do</span> something with tree nodes
+</span>}</pre>
+</div></div>
+
+<p>Each node specifies the name of prefetch path segment and execution semantics. There are two flavors of prefetch semantics - <b>joint</b> and <b>disjoint</b>. Semantics of each node is initially determined by Cayenne when a new prefetch path is added, and can be later customized by the user (e.g., see joint example below).</p>
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>
+<p>In most cases prefetch semantics is of no concern to the users. Cayenne will do its best to configure the right semantics on the fly. Don't tweak semantics unless you understand the implications and have some proof that different semantics would result in better select performance on your database. </p></td></tr></table>
+
+<p>Some internal semantics rules:</p>
+
+<ul>
+	<li>SelectQuery uses disjoint prefetches by default.</li>
+	<li>SQLTemplate and ProcedureQuery use joint prefetches and can not use disjoint semantics due to their nature.</li>
+	<li>Prefetches with different semantics can be mixed freely within a query, as long as there is no conflict with other rules.</li>
+</ul>
+
+
+
+<h3><a name="Prefetching-DisjointPrefetches"></a>Disjoint Prefetches</h3>
+
+<p><em>(available since 1.0)</em></p>
+
+<p>"Disjoint" prefetches (aka "normal prefetches", as this is how Cayenne implemented prefetching since 1.0) internally result in a separate SQL statement per prefetch path.</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">SelectQuery query = <span class="code-keyword">new</span> SelectQuery(Artist.class);
+
+<span class="code-comment">// <span class="code-quote">"disjoint"</span> is <span class="code-keyword">default</span> semantics of SelectQuery
+</span>query.addPrefetch(<span class="code-quote">"paintingArray"</span>); 
+query.addPrefetch(<span class="code-quote">"paintingArray.toGallery"</span>);
+
+<span class="code-comment">// <span class="code-keyword">this</span> will result in 1 main SQL query plus 2 extra prefetch queries
+</span>context.performQuery(query);</pre>
+</div></div>
+
+<h3><a name="Prefetching-JointPrefetches"></a>Joint Prefetches</h3>
+
+<p><em>(available since 1.2M3, with significant API changes in 1.2M8)</em></p>
+
+<p>"Joint" is prefetch type that issues a single SQL statement for multiple prefetch paths. Cayenne processes in memory a cartesian product of the entities involved, converting it to an object tree. SQLTemplate and ProcedureQuery create joint prefetches by default. SelectQuery needs to be told to use joint prefetch:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java"><span class="code-comment">// after adding a <span class="code-keyword">new</span> prefetch, change its semantics to joint
+</span>query.addPrefetch(<span class="code-quote">"paintingArray"</span>).setSemantics(
+                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+
+context.performQuery(query);</pre>
+</div></div>
+
+<p>Code above will result in a single SQL statement issued.</p>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2007 Apache Software Foundation
+  </div>
+
+</body>
+</html>

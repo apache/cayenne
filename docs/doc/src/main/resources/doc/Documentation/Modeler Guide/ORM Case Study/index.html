@@ -23,7 +23,7 @@
   </head>
 <body>
   <div class="header">
-    <div style="float: left;"><a href="http://incubator.apache.org/cayenne/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
     <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
     <span class="pagetitle">ORM Case Study</span>
   </div>
@@ -46,7 +46,8 @@
 <li><a href="../../../Documentation/Modeler Guide/Modeling Tips/index.html">Modeling Tips</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent">
+<div id="ConfluenceContent"><h2><a name="ORMCaseStudy-ORMCaseStudy"></a>ORM Case Study</h2>
+
 <p>This chapter shows how ORM (Object Relational Modeling) approach should be chosen based on the project requirements and other factors. It contains links to technical aspects of modeling that are discussed elsewhere. A few scenarios are shown below that describe the most common cases that a development team may encounter on a typical O/R project. Lets assume an imaginary company called "Some Company" that sells services to consumers as its main business, but also sells consumer products, and works with business customers. There are a number of project teams working on a set of Object/Relational projects. </p>
 
 <h3><a name="ORMCaseStudy-Project1%3AJavaInterfacetoanExistingDatabase"></a>Project 1: Java Interface to an Existing Database</h3>
@@ -61,13 +62,21 @@
 
 <p>Before getting into O/R technology, "Some Company" created a set of Java applications for its sales and marketing teams working with business customers. These applications use a custom persistence framework based on Data Access Objects (DAO - a term for objects that encapsulate the handcoded SQL for their persistence operations). The goal of the project is to convert DAO to Cayenne-based Object/Relational business framework, preserving all business rules, and using the existing database.</p>
 
+<h3><a name="ORMCaseStudy-Sections"></a>Sections</h3>
+
+<ol>
+	<li><a href="../../../Documentation/Modeler Guide/ORM Case Study/Java Interface to an Existing Database/index.html" title="Java Interface to an Existing Database">Java Interface to an Existing Database</a></li>
+	<li><a href="../../../Documentation/Modeler Guide/ORM Case Study/New System/index.html" title="New System">New System</a></li>
+	<li><a href="../../../Documentation/Modeler Guide/ORM Case Study/Converting an Existing Business Framework/index.html" title="Converting an Existing Business Framework">Converting an Existing Business Framework</a></li>
+</ol>
+
 </div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2006 Apache Software Foundation
+    Copyright &copy;2001-2007 Apache Software Foundation
   </div>
 
 </body>
