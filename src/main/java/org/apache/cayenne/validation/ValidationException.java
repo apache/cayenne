@@ -34,9 +34,9 @@ public class ValidationException extends CayenneRuntimeException {
     public ValidationException(String message) {
         super(message);
     }
-    
+
     public ValidationException(ValidationResult result) {
-        this("Validation has failed.", result);
+        this("Validation failures: " + result.toString(), result);
     }
 
     public ValidationException(String message, ValidationResult result) {
