@@ -158,15 +158,16 @@ public abstract class BaseRemoteService implements RemoteService {
             // recast the exception to a guaranteed serializable form
 
             StringBuffer buffer = new StringBuffer();
-            buffer.append("Exception processing message ").append(
-                    message.getClass().getName());
+            buffer.append("Exception processing message ")
+                .append(message.getClass().getName())
+                .append(" of type ").append(message.toString());
 
             String exceptionText = th.getLocalizedMessage();
             if (exceptionText != null) {
                 buffer.append(". Root cause: ").append(exceptionText);
             }
 
-            throw new CayenneRuntimeException(buffer.toString());
+            throw new CayenneRuntimeException(buffer.toString(), th);
         }
     }
 

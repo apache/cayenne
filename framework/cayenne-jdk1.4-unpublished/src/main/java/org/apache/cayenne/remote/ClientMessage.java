@@ -29,4 +29,9 @@ import java.io.Serializable;
  */
 public interface ClientMessage extends Serializable {
 
+    /**
+     * Returns a description of the type of message.
+     */
+    public String toString();
+    
 }

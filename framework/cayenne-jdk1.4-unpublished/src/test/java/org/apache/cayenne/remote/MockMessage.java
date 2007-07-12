@@ -39,4 +39,8 @@ public class MockMessage implements ClientMessage {
     public DataChannel getLastChannel() {
         return lastChannel;
     }
+    
+    public String toString() {
+        return "Mock message";
+    }
 } 
