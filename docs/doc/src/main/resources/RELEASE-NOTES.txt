@@ -128,6 +128,7 @@ CAY-792	Date has issues with different locales when using XMLEncoder/XMLDecoder
 CAY-817 HSQLDB schema generation may not correctly flush the changes
 CAY-818 Frontbase NUMBERIC type mapping typo
 CAY-823 Db-generated PK type mismatch
+CAY-830 DataChannelCallbackInterceptor.onQuery NPE
 
 API Changes
 ----------------------------------
