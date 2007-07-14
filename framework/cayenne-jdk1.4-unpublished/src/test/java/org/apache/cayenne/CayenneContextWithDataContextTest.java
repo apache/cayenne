@@ -25,12 +25,15 @@ import java.util.List;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.RemoteIncrementalFaultList;
 import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.testdo.mt.ClientMtReflexive;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
+import org.apache.cayenne.testdo.mt.MtReflexive;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
@@ -40,9 +43,70 @@ import org.apache.cayenne.unit.UnitLocalConnection;
 public class CayenneContextWithDataContextTest extends CayenneCase {
 
     protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
+        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
+    }
+
+    public void testCAY830() throws Exception {
+
+        deleteTestData();
+
+        // must enable callbacks
+        ClientServerChannel csChannel = new ClientServerChannel(getDomain());
+        csChannel.setLifecycleCallbacksEnabled(true);
+
+        // an exception was triggered within POST_LOAD callback
+        LifecycleCallbackRegistry callbackRegistry = csChannel
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        try {
+            callbackRegistry.addListener(MtReflexive.class, new LifecycleListener() {
+
+                public void postLoad(Object entity) {
+                }
+
+                public void postPersist(Object entity) {
+                }
+
+                public void postRemove(Object entity) {
+                }
+
+                public void postUpdate(Object entity) {
+                }
+
+                public void prePersist(Object entity) {
+                }
+
+                public void preRemove(Object entity) {
+                }
+
+                public void preUpdate(Object entity) {
+                }
+            });
+
+            ClientConnection connection = new LocalConnection(csChannel);
+            ClientChannel channel = new ClientChannel(connection);
+
+            CayenneContext context = new CayenneContext(channel);
+
+            ClientMtReflexive o1 = (ClientMtReflexive) context
+                    .newObject(ClientMtReflexive.class);
+            o1.setName("parent");
+
+            ClientMtReflexive o2 = (ClientMtReflexive) context
+                    .newObject(ClientMtReflexive.class);
+            o2.setName("child");
+            o2.setToParent(o1);
+            context.commitChanges();
+
+            context.deleteObject(o1);
+            context.deleteObject(o2);
+            context.commitChanges();
+            // per CAY-830 an exception is thrown here
+        }
+        finally {
+            callbackRegistry.clear();
+        }
     }
 
     public void testCreateFault() throws Exception {
