@@ -81,7 +81,7 @@ public class DataChannelCallbackInterceptor extends DataChannelDecorator {
             List list = response.firstList();
             if (list != null
                     && !list.isEmpty()
-                    && !(query.getMetaData(originatingContext.getEntityResolver()))
+                    && !(query.getMetaData(channel.getEntityResolver()))
                             .isFetchingDataRows()) {
                 callbackRegistry.performCallbacks(LifecycleListener.POST_LOAD, list);
             }
