@@ -2,8 +2,8 @@ Apache Cayenne Upgrade Information
 ==================================
 
 ----------------------------------
-Release: 3.0-incubating-SNAPSHOT
-Date:
+Release: 3.0M1
+Date: 07/17/2007
 ----------------------------------
 
 UPGRADING FROM 2.0 AND OTHER APACHE RELEASES
