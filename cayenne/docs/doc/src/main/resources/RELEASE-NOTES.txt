@@ -9,8 +9,8 @@ http://issues.apache.org/cayenne/
 
 
 ----------------------------------
-Release: 3.0-incubating-SNAPSHOT
-Date:
+Release: 3.0M1
+Date: 07/17/2007
 ----------------------------------
 
 Changes/New Features:
