@@ -40,6 +40,8 @@ import org.apache.cayenne.reflect.pojo.EnhancedPojoDescriptorFactory;
 import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.collection.CompositeCollection;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Represents a virtual shared namespace for zero or more DataMaps. Unlike DataMap,
@@ -55,6 +57,8 @@ import org.apache.commons.collections.collection.CompositeCollection;
 public class EntityResolver implements MappingNamespace, Serializable {
 
     static final Object DUPLICATE_MARKER = new Object();
+    
+    protected static final Log logger = LogFactory.getLog(EntityResolver.class);
 
     protected boolean indexedByClass;
 
@@ -511,10 +515,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
                             entityInheritanceCache.put(superOEName, superNode);
                         }
                         else {
-                            // bad mapping?
-                            // TODO (Andrus, 10/18/2005) it would be nice to log something
-                            // here, but since EntityResolver is used on the client, log4J
-                            // is a no-go...
+                            // bad mapping? Or most likely some classloader issue
+                            logger.warn("No super entity mapping for '" + superOEName + "'");
                             continue;
                         }
                     }
