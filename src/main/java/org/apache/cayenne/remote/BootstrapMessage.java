@@ -27,6 +27,9 @@ package org.apache.cayenne.remote;
  */
 public class BootstrapMessage implements ClientMessage {
 
+    /**
+     * Returns a description of the type of message. In this case always "Bootstrap".
+     */
     public String toString() {
         return "Bootstrap";
     }
