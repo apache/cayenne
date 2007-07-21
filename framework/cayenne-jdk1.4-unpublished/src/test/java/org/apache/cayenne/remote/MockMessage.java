@@ -40,6 +40,9 @@ public class MockMessage implements ClientMessage {
         return lastChannel;
     }
     
+    /**
+     * Returns a description of the type of message. In this case always "Mock message".
+     */
     public String toString() {
         return "Mock message";
     }

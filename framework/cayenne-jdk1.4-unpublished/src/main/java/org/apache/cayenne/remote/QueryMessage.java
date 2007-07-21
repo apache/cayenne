@@ -45,6 +45,9 @@ public class QueryMessage implements ClientMessage {
         return query;
     }
 
+    /**
+     * Returns a description of the type of message. In this case always "Query".
+     */
     public String toString() {
         return "Query";
     }

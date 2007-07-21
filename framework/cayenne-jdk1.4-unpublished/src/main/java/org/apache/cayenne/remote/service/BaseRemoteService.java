@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.remote.service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -154,20 +156,26 @@ public abstract class BaseRemoteService implements RemoteService {
             th = Util.unwindException(th);
             logObj.info("error processing message", th);
 
-            // throw exception that will likely be propagated to the client...
-            // recast the exception to a guaranteed serializable form
-
-            StringBuffer buffer = new StringBuffer();
-            buffer.append("Exception processing message ")
-                .append(message.getClass().getName())
-                .append(" of type ").append(message.toString());
-
+            // This exception will probably be propagated to the client.
+            // Recast the exception to a serializable form.
+            ByteArrayOutputStream causeMessageStream = new ByteArrayOutputStream();
+            PrintWriter causeMessage = new PrintWriter(causeMessageStream);
+            
             String exceptionText = th.getLocalizedMessage();
             if (exceptionText != null) {
-                buffer.append(". Root cause: ").append(exceptionText);
+                causeMessage.print(exceptionText);
+                causeMessage.print(System.getProperty("line.separator"));
             }
 
-            throw new CayenneRuntimeException(buffer.toString(), th);
+            th.printStackTrace(causeMessage);
+            Exception cause = new Exception(causeMessageStream.toString());
+            
+            StringBuffer wrapperMessage = new StringBuffer();
+            wrapperMessage.append("Exception processing message ")
+                .append(message.getClass().getName())
+                .append(" of type ").append(message.toString());
+            
+            throw new CayenneRuntimeException(wrapperMessage.toString(), cause);
         }
     }
 
