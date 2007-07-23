@@ -31,6 +31,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
@@ -63,6 +64,18 @@ public class DataObjectUtilsTest extends CayenneCase {
         rsMap.addColumnResult("X");
         query.setResultSetMapping(rsMap);
 
+        Object object = DataObjectUtils.objectForQuery(context, query);
+        assertNotNull(object);
+        assertTrue(object instanceof Number);
+        assertEquals(2, ((Number) object).intValue());
+    }
+    
+    public void testScalarObjectForQuery2() throws Exception {
+        createTestData("testScalarObjectForQuery");
+        DataContext context = createDataContext();
+        
+        String ejbql = "SELECT count(a) from Artist a";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
         Object object = DataObjectUtils.objectForQuery(context, query);
         assertNotNull(object);
         assertTrue(object instanceof Number);
