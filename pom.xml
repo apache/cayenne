@@ -521,18 +521,6 @@
 
 	<repositories>
 		<repository>
-			<id>apache-releases</id>
-			<name>Apache Snapshots Repository</name>
-			<url>http://people.apache.org/repo/m2-ibiblio-rsync-repository/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-		<repository>
 			<id>apache-snapshots</id>
 			<name>Apache Snapshots Repository</name>
 			<url>http://people.apache.org/repo/m2-snapshot-repository/</url>
@@ -582,6 +570,11 @@
 	</build>
 
 	<distributionManagement>
+		<repository>
+                        <id>apache-releases</id>
+                        <name>Apache Snapshots Repository</name>
+                        <url>scp://people.apache.org/www/people.apache.org/repo/m2-ibiblio-rsync-repository</url>
+                </repository>
 		<snapshotRepository>
 			<id>apache-snapshots</id>
 			<name>Apache Snapshots Repository</name>
