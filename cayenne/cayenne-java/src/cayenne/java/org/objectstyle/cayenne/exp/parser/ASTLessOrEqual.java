@@ -81,6 +81,7 @@ public class ASTLessOrEqual extends ConditionNode {
         super(ExpressionParserTreeConstants.JJTLESSOREQUAL);
         jjtAddChild(path, 0);
         jjtAddChild(new ASTScalar(value), 1);
+        connectChildren();
     }
 
     protected Object evaluateNode(Object o) throws Exception {

@@ -82,6 +82,7 @@ public class ASTOr extends AggregateConditionNode {
         for (int i = 0; i < len; i++) {
             jjtAddChild((Node) nodes[i], i);
         }
+        connectChildren();
     }
 
     public ASTOr(Collection nodes) {
@@ -91,6 +92,7 @@ public class ASTOr extends AggregateConditionNode {
         for (int i = 0; i < len; i++) {
             jjtAddChild((Node) it.next(), i);
         }
+        connectChildren();
     }
 
     protected Object evaluateNode(Object o) throws Exception {

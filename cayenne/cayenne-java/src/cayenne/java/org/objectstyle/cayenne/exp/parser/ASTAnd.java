@@ -85,6 +85,8 @@ public class ASTAnd extends AggregateConditionNode {
         for (int i = 0; i < len; i++) {
             jjtAddChild((Node) nodes[i], i);
         }
+        
+        connectChildren();
     }
 
     public ASTAnd(Collection nodes) {
@@ -94,6 +96,8 @@ public class ASTAnd extends AggregateConditionNode {
         for (int i = 0; i < len; i++) {
             jjtAddChild((Node) it.next(), i);
         }
+        
+        connectChildren();
     }
 
     protected Object evaluateNode(Object o) throws Exception {

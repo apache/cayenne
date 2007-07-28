@@ -63,6 +63,7 @@ import org.objectstyle.cayenne.CayenneRuntimeException;
 import org.objectstyle.cayenne.DataObject;
 import org.objectstyle.cayenne.ObjectId;
 import org.objectstyle.cayenne.exp.Expression;
+import org.objectstyle.cayenne.exp.parser.SimpleNode;
 import org.objectstyle.cayenne.map.DbAttribute;
 import org.objectstyle.cayenne.map.DbEntity;
 import org.objectstyle.cayenne.map.DbJoin;
@@ -321,8 +322,18 @@ public abstract class QueryAssemblerHelper {
      */
     protected DbAttribute paramsDbType(Expression e) {
         int len = e.getOperandCount();
-        // ignore unary expressions
+        
+        // for unary expressions, find parent binary - this is a hack mainly to support
+        // ASTList
         if (len < 2) {
+
+            if (e instanceof SimpleNode) {
+                Expression parent = (Expression) ((SimpleNode) e).jjtGetParent();
+                if (parent != null) {
+                    return paramsDbType(parent);
+                }
+            }
+
             return null;
         }
 

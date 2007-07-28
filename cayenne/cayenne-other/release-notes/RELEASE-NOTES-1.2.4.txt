@@ -11,3 +11,4 @@ http://issues.apache.org/cayenne/
 Bug Fixes:
 
 CAY-818 Frontbase NUMBERIC type mapping typo
+CAY-832 enum-mapped columns improperly handled in in expressions
