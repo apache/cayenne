@@ -43,6 +43,8 @@ public class ASTBetween extends ConditionNode {
         jjtAddChild(path, 0);
         jjtAddChild(new ASTScalar(value1), 1);
         jjtAddChild(new ASTScalar(value2), 2);
+        
+        connectChildren();
     }
 
     protected Object evaluateNode(Object o) throws Exception {

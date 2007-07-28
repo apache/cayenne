@@ -12,6 +12,7 @@ Release: 2.0.4
 Date: 
 ----------------------------------
 CAY-818 Frontbase NUMERIC type mapping typo
+CAY-832 enum-mapped columns improperly handled in in expressions
 
 ----------------------------------
 Release: 2.0.3

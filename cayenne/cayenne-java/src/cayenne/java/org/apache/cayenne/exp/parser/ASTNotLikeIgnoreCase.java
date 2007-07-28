@@ -41,6 +41,7 @@ public class ASTNotLikeIgnoreCase extends PatternMatchNode {
         super(ExpressionParserTreeConstants.JJTNOTLIKEIGNORECASE, true);
         jjtAddChild(path, 0);
         jjtAddChild(new ASTScalar(value), 1);
+        connectChildren();
     }
 
     protected Object evaluateNode(Object o) throws Exception {

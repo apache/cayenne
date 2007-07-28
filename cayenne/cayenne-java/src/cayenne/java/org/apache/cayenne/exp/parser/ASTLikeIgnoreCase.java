@@ -40,6 +40,7 @@ public class ASTLikeIgnoreCase extends PatternMatchNode {
         super(ExpressionParserTreeConstants.JJTLIKEIGNORECASE, true);
         jjtAddChild(path, 0);
         jjtAddChild(wrapChild(pattern), 1);
+        connectChildren();
     }
 
     protected Object evaluateNode(Object o) throws Exception {
