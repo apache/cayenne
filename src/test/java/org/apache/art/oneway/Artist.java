@@ -18,10 +18,8 @@
  ****************************************************************/
 package org.apache.art.oneway;
 
-import org.apache.cayenne.access.event.DataContextEvent;
-import org.apache.cayenne.access.event.DataObjectTransactionEventListener;
 
-public class Artist extends org.apache.art.oneway.auto._Artist implements DataObjectTransactionEventListener {
+public class Artist extends org.apache.art.oneway.auto._Artist {
     private boolean _receivedWillCommit = false;
     private boolean _receivedDidCommit = false;
 
@@ -30,14 +28,6 @@ public class Artist extends org.apache.art.oneway.auto._Artist implements DataOb
 
     public Artist() {
         super();
-    }
-
-    public void didCommit(DataContextEvent event) {
-        _receivedDidCommit = true;
-    }
-
-    public void willCommit(DataContextEvent event) {
-        _receivedWillCommit = true;
     }
 
     public boolean receivedDidCommit() {
@@ -68,5 +58,4 @@ public class Artist extends org.apache.art.oneway.auto._Artist implements DataOb
     public void setSomeOtherObjectProperty(Object object) {
         someOtherObjectProperty = object;
     }
-
 }

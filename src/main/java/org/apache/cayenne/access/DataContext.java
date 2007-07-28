@@ -39,19 +39,16 @@ import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.Fault;
-import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.access.event.DataContextEvent;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheFactory;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
@@ -102,17 +99,6 @@ import org.apache.cayenne.util.Util;
  */
 public class DataContext extends BaseContext implements DataChannel {
 
-    // DataContext events
-    public static final EventSubject WILL_COMMIT = EventSubject.getSubject(
-            DataContext.class,
-            "DataContextWillCommit");
-    public static final EventSubject DID_COMMIT = EventSubject.getSubject(
-            DataContext.class,
-            "DataContextDidCommit");
-    public static final EventSubject DID_ROLLBACK = EventSubject.getSubject(
-            DataContext.class,
-            "DataContextDidRollback");
-
     /**
      * A holder of a DataContext bound to the current thread.
      * 
@@ -120,12 +106,6 @@ public class DataContext extends BaseContext implements DataChannel {
      */
     // TODO: Andrus, 11/7/2005 - should we use InheritableThreadLocal instead?
     protected static final ThreadLocal threadDataContext = new ThreadLocal();
-
-    // event posting default for new DataContexts
-    private static boolean transactionEventsEnabledDefault;
-
-    // enable/disable event handling for individual instances
-    private boolean transactionEventsEnabled;
 
     // Set of DataContextDelegates to be notified.
     private DataContextDelegate delegate;
@@ -256,8 +236,6 @@ public class DataContext extends BaseContext implements DataChannel {
     public DataContext(DataChannel channel, ObjectStore objectStore) {
         // use a setter to properly initialize EntityResolver
         setChannel(channel);
-
-        this.setTransactionEventsEnabled(transactionEventsEnabledDefault);
 
         // inject self as parent context
         if (objectStore != null) {
@@ -968,7 +946,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @throws CayenneRuntimeException if object id doesn't match any records, or if there
      *             is more than one object is fetched.
-     * @deprecated since 3.0 use {@link ObjectIdQuery} with appropraite refresh settings.
+     * @deprecated since 3.0 use {@link ObjectIdQuery} with appropriate refresh settings.
      */
     public DataObject refetchObject(ObjectId oid) {
 
@@ -1134,8 +1112,6 @@ public class DataContext extends BaseContext implements DataChannel {
         // prevent multiple commits occuring simulteneously
         synchronized (objectStore) {
 
-            DataContextFlushEventHandler eventHandler = null;
-
             ObjectStoreGraphDiff changes = objectStore.getChanges();
             boolean noop = isValidatingObjectsOnCommit()
                     ? changes.validateAndCheckNoop()
@@ -1145,12 +1121,6 @@ public class DataContext extends BaseContext implements DataChannel {
                 // need to clear phantom changes
                 objectStore.postprocessAfterPhantomCommit();
                 return new CompoundDiff();
-            }
-
-            if (isTransactionEventsEnabled()) {
-                eventHandler = new DataContextFlushEventHandler(this);
-                eventHandler.registerForDataContextEvents();
-                fireWillCommit();
             }
 
             try {
@@ -1166,9 +1136,6 @@ public class DataContext extends BaseContext implements DataChannel {
                     objectStore.postprocessAfterCommit(returnChanges);
                 }
 
-                // this is a legacy event ... will deprecate in 2.0
-                fireTransactionCommitted();
-
                 // this event is caught by peer nested DataContexts to synchronize the
                 // state
                 fireDataChannelCommitted(this, changes);
@@ -1183,8 +1150,6 @@ public class DataContext extends BaseContext implements DataChannel {
             }
             // "catch" is needed to unwrap OptimisticLockExceptions
             catch (CayenneRuntimeException ex) {
-                fireTransactionRolledback();
-
                 Throwable unwound = Util.unwindException(ex);
 
                 if (unwound instanceof CayenneRuntimeException) {
@@ -1192,12 +1157,6 @@ public class DataContext extends BaseContext implements DataChannel {
                 }
                 else {
                     throw new CayenneRuntimeException("Commit Exception", unwound);
-                }
-            }
-            finally {
-
-                if (isTransactionEventsEnabled()) {
-                    eventHandler.unregisterFromDataContextEvents();
                 }
             }
         }
@@ -1397,34 +1356,6 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * Sets default for posting transaction events by new DataContexts.
-     * 
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
-     *             later 3.0 milestones.
-     */
-    public static void setTransactionEventsEnabledDefault(boolean flag) {
-        transactionEventsEnabledDefault = flag;
-    }
-
-    /**
-     * Enables or disables posting of transaction events by this DataContext.
-     * 
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
-     *             later 3.0 milestones.
-     */
-    public void setTransactionEventsEnabled(boolean flag) {
-        this.transactionEventsEnabled = flag;
-    }
-
-    /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
-     *             later 3.0 milestones.
-     */
-    public boolean isTransactionEventsEnabled() {
-        return this.transactionEventsEnabled;
-    }
-
-    /**
      * Returns <code>true</code> if the ObjectStore uses shared cache of a parent
      * DataDomain.
      * 
@@ -1452,43 +1383,6 @@ public class DataContext extends BaseContext implements DataChannel {
      */
     public void setValidatingObjectsOnCommit(boolean flag) {
         this.validatingObjectsOnCommit = flag;
-    }
-
-    /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
-     *             later 3.0 milestones.
-     */
-    void fireWillCommit() {
-        // post event: WILL_COMMIT
-        if (this.transactionEventsEnabled) {
-            DataContextEvent commitChangesEvent = new DataContextEvent(this);
-            getEventManager().postEvent(commitChangesEvent, DataContext.WILL_COMMIT);
-        }
-    }
-
-    /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
-     *             later 3.0 milestones.
-     */
-    void fireTransactionRolledback() {
-        // post event: DID_ROLLBACK
-        if ((this.transactionEventsEnabled)) {
-            DataContextEvent commitChangesEvent = new DataContextEvent(this);
-            getEventManager().postEvent(commitChangesEvent, DataContext.DID_ROLLBACK);
-        }
-    }
-
-    /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be removed in
-     *             later 3.0 milestones.
-     */
-    void fireTransactionCommitted() {
-        // old-style event
-        if ((this.transactionEventsEnabled)) {
-            DataContextEvent commitChangesEvent = new DataContextEvent(this);
-            getEventManager().postEvent(commitChangesEvent, DataContext.DID_COMMIT);
-        }
-
     }
 
     /**
