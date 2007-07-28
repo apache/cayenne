@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="2.0">
+	<property name="defaultPackage" value="org.apache.cayenne.itest.cpa"/>
+	<db-entity name="entity1">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="name" type="VARCHAR" length="100"/>
+	</db-entity>
+	<obj-entity name="Entity1" className="org.apache.cayenne.itest.cpa.Entity1" dbEntityName="entity1">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+</data-map>
