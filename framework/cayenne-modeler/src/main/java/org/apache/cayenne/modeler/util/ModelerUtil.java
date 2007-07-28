@@ -19,10 +19,14 @@
 
 package org.apache.cayenne.modeler.util;
 
+import java.io.Serializable;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -97,11 +101,26 @@ public final class ModelerUtil {
     }
 
     public static String[] getRegisteredTypeNames() {
-        String[] srcList = new ExtendedTypeMap().getRegisteredTypeNames();
-        Arrays.sort(srcList);
+        String[] explicitList = new ExtendedTypeMap().getRegisteredTypeNames();
+        Set allNamesSet = new HashSet(Arrays.asList(explicitList));
 
-        String[] finalList = new String[srcList.length + 1];
-        System.arraycopy(srcList, 0, finalList, 1, srcList.length);
+        // add types that are not mapped explicitly, but nevertheless supported by Cayenne
+        allNamesSet.add(Calendar.class.getName());
+        allNamesSet.add(BigInteger.class.getName());
+        allNamesSet.add(Serializable.class.getName());
+        allNamesSet.add(Character.class.getName());
+        allNamesSet.add("char[]");
+        allNamesSet.add("java.lang.Character[]");
+        allNamesSet.add("java.lang.Byte[]");
+        allNamesSet.add("java.util.Date");
+        allNamesSet.remove(Void.TYPE.getName());
+
+        String[] allNames = new String[allNamesSet.size()];
+        allNamesSet.toArray(allNames);
+        Arrays.sort(allNames);
+
+        String[] finalList = new String[allNames.length + 1];
+        System.arraycopy(allNames, 0, finalList, 1, allNames.length);
         finalList[0] = "";
 
         return finalList;
