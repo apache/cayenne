@@ -7,6 +7,17 @@ http://cayenne.apache.org/
 To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
+----------------------------------
+Release: 3.0M2
+Date: 
+----------------------------------
+
+Changes/New Features Since M1:
+
+Bug Fixes Since M1:
+
+CAY-832 enum-mapped columns improperly handled in in expressions
+
 
 ----------------------------------
 Release: 3.0M1
