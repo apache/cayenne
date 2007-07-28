@@ -30,7 +30,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -119,18 +118,6 @@ public class DataContextExtrasTest extends CayenneCase {
 
         context.setUserProperty("ABC", object);
         assertSame(object, context.getUserProperty("ABC"));
-    }
-
-    /**
-     * @deprecated since 3.0M1 in favor of {@link LifecycleListener}. Will be
-     *             removed in later 3.0 milestones.
-     */
-    public void testTransactionEventsEnabled() {
-        DataContext context = createDataContext();
-        context.setTransactionEventsEnabled(false);
-        assertFalse(context.isTransactionEventsEnabled());
-        context.setTransactionEventsEnabled(true);
-        assertTrue(context.isTransactionEventsEnabled());
     }
 
     public void testHasChangesNew() {
