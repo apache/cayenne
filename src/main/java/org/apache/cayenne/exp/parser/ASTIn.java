@@ -44,6 +44,7 @@ public class ASTIn extends ConditionNode {
         super(ExpressionParserTreeConstants.JJTIN);
         jjtAddChild(path, 0);
         jjtAddChild(list, 1);
+        connectChildren();
     }
 
     protected Object evaluateNode(Object o) throws Exception {

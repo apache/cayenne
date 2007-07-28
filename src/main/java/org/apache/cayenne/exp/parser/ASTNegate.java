@@ -44,6 +44,7 @@ public class ASTNegate extends SimpleNode {
     public ASTNegate(Object node) {
         super(ExpressionParserTreeConstants.JJTNEGATE);
         jjtAddChild(wrapChild(node), 0);
+        connectChildren();
     }
 
     /**

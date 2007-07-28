@@ -48,6 +48,8 @@ public class ASTMultiply extends SimpleNode {
         for (int i = 0; i < len; i++) {
             jjtAddChild(wrapChild(nodes[i]), i);
         }
+        
+        connectChildren();
     }
 
     public ASTMultiply(Collection nodes) {

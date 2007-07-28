@@ -264,6 +264,19 @@ public abstract class SimpleNode extends Expression implements Node {
      * Evaluates itself with object, pushing result on the stack.
      */
     protected abstract Object evaluateNode(Object o) throws Exception;
+    
+    /** 
+     * Sets the parent to this for all children.
+     * 
+     * @since 3.0 
+     */
+    protected void connectChildren() {
+        if (children != null) {
+            for (int i = 0; i < children.length; i++) {
+                children[i].jjtSetParent(this);
+            }
+        }
+    }
 
     protected Object evaluateChild(int index, Object o) throws Exception {
         return ((SimpleNode) jjtGetChild(index)).evaluate(o);

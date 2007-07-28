@@ -46,6 +46,8 @@ public class ASTAdd extends SimpleNode {
         for (int i = 0; i < len; i++) {
             jjtAddChild(wrapChild(nodes[i]), i);
         }
+        
+        connectChildren();
     }
 
     public ASTAdd(Collection nodes) {
@@ -55,6 +57,8 @@ public class ASTAdd extends SimpleNode {
         for (int i = 0; i < len; i++) {
             jjtAddChild(wrapChild(it.next()), i);
         }
+        
+        connectChildren();
     }
 
     protected Object evaluateNode(Object o) throws Exception {

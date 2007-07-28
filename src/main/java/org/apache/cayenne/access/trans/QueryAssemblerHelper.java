@@ -27,6 +27,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -285,8 +286,18 @@ public abstract class QueryAssemblerHelper {
      */
     protected DbAttribute paramsDbType(Expression e) {
         int len = e.getOperandCount();
-        // ignore unary expressions
+        
+        // for unary expressions, find parent binary - this is a hack mainly to support
+        // ASTList
         if (len < 2) {
+
+            if (e instanceof SimpleNode) {
+                Expression parent = (Expression) ((SimpleNode) e).jjtGetParent();
+                if (parent != null) {
+                    return paramsDbType(parent);
+                }
+            }
+
             return null;
         }
 
