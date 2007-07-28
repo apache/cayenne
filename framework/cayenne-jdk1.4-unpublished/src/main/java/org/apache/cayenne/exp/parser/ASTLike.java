@@ -40,6 +40,7 @@ public class ASTLike extends PatternMatchNode {
         super(ExpressionParserTreeConstants.JJTLIKE, false);
         jjtAddChild(path, 0);
         jjtAddChild(wrapChild(pattern), 1);
+        connectChildren();
     }
 
     protected Object evaluateNode(Object o) throws Exception {

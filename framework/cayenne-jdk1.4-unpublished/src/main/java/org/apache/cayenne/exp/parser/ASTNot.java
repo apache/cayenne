@@ -43,6 +43,7 @@ public class ASTNot extends AggregateConditionNode {
     public ASTNot(Node expression) {
         super(ExpressionParserTreeConstants.JJTNOT);
         jjtAddChild(expression, 0);
+        connectChildren();
     }
 
     protected Object evaluateNode(Object o) throws Exception {
