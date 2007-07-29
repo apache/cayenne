@@ -19,20 +19,16 @@
 
 package org.apache.cayenne.conf;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.dataview.DataView;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.util.CayenneMap;
 import org.apache.cayenne.util.ResourceLocator;
@@ -432,51 +428,6 @@ public abstract class Configuration {
      */
     public Map getDataViewLocations() {
         return dataViewLocations;
-    }
-
-    /**
-     * @since 1.1
-     */
-    public boolean loadDataView(DataView dataView) throws IOException {
-        return loadDataView(dataView, Configuration.ACCEPT_ALL_DATAVIEWS);
-    }
-
-    /**
-     * @since 1.1
-     */
-    public boolean loadDataView(DataView dataView, Predicate dataViewNameFilter)
-            throws IOException {
-
-        if (dataView == null) {
-            throw new IllegalArgumentException("DataView cannot be null.");
-        }
-
-        if (dataViewLocations.size() == 0 || dataViewLocations.size() > 512) {
-            return false;
-        }
-
-        if (dataViewNameFilter == null)
-            dataViewNameFilter = Configuration.ACCEPT_ALL_DATAVIEWS;
-
-        List viewXMLSources = new ArrayList(dataViewLocations.size());
-        int index = 0;
-        for (Iterator i = dataViewLocations.entrySet().iterator(); i.hasNext(); index++) {
-            Map.Entry entry = (Map.Entry) i.next();
-            String name = (String) entry.getKey();
-            if (!dataViewNameFilter.evaluate(name))
-                continue;
-            String location = (String) entry.getValue();
-            InputStream in = getViewConfiguration(location);
-            if (in != null)
-                viewXMLSources.add(in);
-        }
-
-        if (viewXMLSources.isEmpty())
-            return false;
-
-        dataView.load((InputStream[]) viewXMLSources
-                .toArray(new InputStream[viewXMLSources.size()]));
-        return true;
     }
 
     /**
