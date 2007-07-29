@@ -32,7 +32,6 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.util.CayenneMap;
 import org.apache.cayenne.util.ResourceLocator;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -57,14 +56,7 @@ public abstract class Configuration {
     public static final String DEFAULT_DOMAIN_FILE = "cayenne.xml";
     public static final Class DEFAULT_CONFIGURATION_CLASS = DefaultConfiguration.class;
 
-    protected static Configuration sharedConfiguration = null;
-
-    public static final Predicate ACCEPT_ALL_DATAVIEWS = new Predicate() {
-
-        public boolean evaluate(Object dataViewName) {
-            return true;
-        }
-    };
+    protected static Configuration sharedConfiguration;
 
     /**
      * Lookup map that stores DataDomains with names as keys.
@@ -233,6 +225,10 @@ public abstract class Configuration {
      */
     protected abstract InputStream getMapConfiguration(String name);
 
+    /**
+     * See 'https://svn.apache.org/repos/asf/cayenne/dataviews/trunk' for DataViews code,
+     * which is not a part of Cayenne since 3.0.
+     */
     protected abstract InputStream getViewConfiguration(String location);
 
     /**
@@ -424,6 +420,9 @@ public abstract class Configuration {
     }
 
     /**
+     * See 'https://svn.apache.org/repos/asf/cayenne/dataviews/trunk' for DataViews code,
+     * which is not a part of Cayenne since 3.0.
+     * 
      * @since 1.1
      */
     public Map getDataViewLocations() {
