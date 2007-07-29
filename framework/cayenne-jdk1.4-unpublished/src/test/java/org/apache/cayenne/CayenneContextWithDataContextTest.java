@@ -50,9 +50,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
         deleteTestData();
 
-        // must enable callbacks
         ClientServerChannel csChannel = new ClientServerChannel(getDomain());
-        csChannel.setLifecycleCallbacksEnabled(true);
 
         // an exception was triggered within POST_LOAD callback
         LifecycleCallbackRegistry callbackRegistry = csChannel
