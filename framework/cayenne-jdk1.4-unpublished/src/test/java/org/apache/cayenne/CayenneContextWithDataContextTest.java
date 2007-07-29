@@ -46,6 +46,117 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
         return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
     }
 
+    public void testPrePersistCallback() throws Exception {
+
+        ClientServerChannel csChannel = new ClientServerChannel(getDomain());
+
+        // an exception was triggered within POST_LOAD callback
+        LifecycleCallbackRegistry callbackRegistry = csChannel
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        final boolean[] flag = new boolean[1];
+
+        try {
+            callbackRegistry.addListener(MtTable1.class, new LifecycleListener() {
+
+                public void postLoad(Object entity) {
+                }
+
+                public void postPersist(Object entity) {
+                }
+
+                public void postRemove(Object entity) {
+                }
+
+                public void postUpdate(Object entity) {
+                }
+
+                public void prePersist(Object entity) {
+                    flag[0] = true;
+                }
+
+                public void preRemove(Object entity) {
+                }
+
+                public void preUpdate(Object entity) {
+                }
+            });
+
+            ClientConnection connection = new LocalConnection(csChannel);
+            ClientChannel channel = new ClientChannel(connection);
+
+            CayenneContext context = new CayenneContext(channel);
+
+            context.newObject(ClientMtTable1.class);
+
+            assertFalse(flag[0]);
+            context.commitChanges();
+            assertTrue(flag[0]);
+        }
+        finally {
+            callbackRegistry.clear();
+        }
+    }
+
+    public void testPreRemoveCallback() throws Exception {
+
+        ClientServerChannel csChannel = new ClientServerChannel(getDomain());
+
+        // an exception was triggered within POST_LOAD callback
+        LifecycleCallbackRegistry callbackRegistry = csChannel
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        final boolean[] flag = new boolean[1];
+
+        try {
+            callbackRegistry.addListener(MtTable1.class, new LifecycleListener() {
+
+                public void postLoad(Object entity) {
+                }
+
+                public void postPersist(Object entity) {
+                }
+
+                public void postRemove(Object entity) {
+                }
+
+                public void postUpdate(Object entity) {
+                }
+
+                public void prePersist(Object entity) {
+                }
+
+                public void preRemove(Object entity) {
+                    flag[0] = true;
+                }
+
+                public void preUpdate(Object entity) {
+                }
+            });
+
+            ClientConnection connection = new LocalConnection(csChannel);
+            ClientChannel channel = new ClientChannel(connection);
+
+            CayenneContext context = new CayenneContext(channel);
+
+            ClientMtTable1 object = (ClientMtTable1) context
+                    .newObject(ClientMtTable1.class);
+
+            assertFalse(flag[0]);
+            context.commitChanges();
+            assertFalse(flag[0]);
+
+            context.deleteObject(object);
+            context.commitChanges();
+            assertTrue(flag[0]);
+        }
+        finally {
+            callbackRegistry.clear();
+        }
+    }
+
     public void testCAY830() throws Exception {
 
         deleteTestData();
