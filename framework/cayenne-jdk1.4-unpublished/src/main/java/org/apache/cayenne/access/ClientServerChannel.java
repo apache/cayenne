@@ -46,11 +46,8 @@ public class ClientServerChannel implements DataChannel {
 
     ClientServerChannel(DataContext serverContext) {
         this.serverContext = serverContext;
-        
-        DataChannelCallbackInterceptor interceptor = new DataChannelCallbackInterceptor();
 
-        // must call pre-persist and pre-remove on commit
-        interceptor.setContextCallbacksEnabled(true);
+        DataChannelCallbackInterceptor interceptor = new DataChannelCallbackInterceptor();
         interceptor.setChannel(serverContext.getChannel());
 
         serverContext.setChannel(interceptor);
