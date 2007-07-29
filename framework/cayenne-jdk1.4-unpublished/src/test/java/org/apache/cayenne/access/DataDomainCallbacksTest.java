@@ -16,21 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.intercept;
+package org.apache.cayenne.access;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.unit.CayenneCase;
 
-public class DataChannelCallbackInterceptorTest extends CayenneCase {
+public class DataDomainCallbacksTest extends CayenneCase {
 
     protected void setUp() throws Exception {
         deleteTestData();
@@ -46,11 +44,7 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
                 .getEntityResolver()
                 .getCallbackRegistry();
 
-        DataChannelCallbackInterceptor i = new DataChannelCallbackInterceptor();
-        i.setChannel(getDomain());
-
-        ObjectContext context = new DataContext(i, new ObjectStore(getDomain()
-                .getSharedSnapshotCache()));
+        ObjectContext context = createDataContext();
 
         registry.addListener(
                 LifecycleListener.POST_LOAD,
@@ -121,11 +115,7 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
                 .getEntityResolver()
                 .getCallbackRegistry();
 
-        DataChannelCallbackInterceptor i = new DataChannelCallbackInterceptor();
-        i.setChannel(getDomain());
-
-        ObjectContext context = new DataContext(i, new ObjectStore(getDomain()
-                .getSharedSnapshotCache()));
+        ObjectContext context = createDataContext();
 
         Artist a1 = (Artist) context.newObject(Artist.class);
         a1.setArtistName("XX");
@@ -167,11 +157,7 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
                 .getEntityResolver()
                 .getCallbackRegistry();
 
-        DataChannelCallbackInterceptor i = new DataChannelCallbackInterceptor();
-        i.setChannel(getDomain());
-
-        ObjectContext context = new DataContext(i, new ObjectStore(getDomain()
-                .getSharedSnapshotCache()));
+        ObjectContext context = createDataContext();
 
         Artist a1 = (Artist) context.newObject(Artist.class);
         a1.setArtistName("XX");
@@ -213,11 +199,7 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
                 .getEntityResolver()
                 .getCallbackRegistry();
 
-        DataChannelCallbackInterceptor i = new DataChannelCallbackInterceptor();
-        i.setChannel(getDomain());
-
-        ObjectContext context = new DataContext(i, new ObjectStore(getDomain()
-                .getSharedSnapshotCache()));
+        ObjectContext context = createDataContext();
 
         Artist a1 = (Artist) context.newObject(Artist.class);
         a1.setArtistName("XX");
@@ -246,13 +228,8 @@ public class DataChannelCallbackInterceptorTest extends CayenneCase {
         LifecycleCallbackRegistry registry = getDomain()
                 .getEntityResolver()
                 .getCallbackRegistry();
-
-        DataChannelCallbackInterceptor i = new DataChannelCallbackInterceptor();
-        i.setChannel(getDomain());
-
-        ObjectContext context = new DataContext(i, new ObjectStore(getDomain()
-                .getSharedSnapshotCache()));
-
+        
+        ObjectContext context = createDataContext();
         Artist a1 = (Artist) context.newObject(Artist.class);
         a1.setArtistName("XX");
         context.commitChanges();

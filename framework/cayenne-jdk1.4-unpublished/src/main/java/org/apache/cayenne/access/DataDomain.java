@@ -402,7 +402,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         return sharedSnapshotCache;
     }
-    
+
     /**
      * Returns a guaranteed non-null shared snapshot cache regardless of the
      * 'sharedCacheEnabled' flag setting. This allows to build DataContexts that do not
@@ -743,24 +743,37 @@ public class DataDomain implements QueryEngine, DataChannel {
             final GraphDiff changes,
             int syncType) {
 
+        DataChannelSyncCallbackAction callbackAction = new DataChannelSyncCallbackAction(
+                this,
+                originatingContext.getGraphManager(),
+                changes);
+
+        callbackAction.applyPreCommit(syncType);
+
+        GraphDiff result;
         switch (syncType) {
             case DataChannel.ROLLBACK_CASCADE_SYNC:
-                return onSyncRollback(originatingContext);
-                // "cascade" and "no_cascade" are the same from the DataDomain
-                // perspective,
-                // including transaction handling logic
+                result = onSyncRollback(originatingContext);
+                break;
+            // "cascade" and "no_cascade" are the same from the DataDomain
+            // perspective,
+            // including transaction handling logic
             case DataChannel.FLUSH_NOCASCADE_SYNC:
             case DataChannel.FLUSH_CASCADE_SYNC:
-                return (GraphDiff) runInTransaction(new Transformer() {
+                result = (GraphDiff) runInTransaction(new Transformer() {
 
                     public Object transform(Object input) {
                         return onSyncFlush(originatingContext, changes);
                     }
                 });
+                break;
             default:
                 throw new CayenneRuntimeException("Invalid synchronization type: "
                         + syncType);
         }
+
+        callbackAction.applyPostCommit(syncType);
+        return result;
     }
 
     GraphDiff onSyncRollback(ObjectContext originatingContext) {

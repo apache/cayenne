@@ -25,7 +25,6 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.intercept.DataChannelCallbackInterceptor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
@@ -46,11 +45,6 @@ public class ClientServerChannel implements DataChannel {
 
     ClientServerChannel(DataContext serverContext) {
         this.serverContext = serverContext;
-
-        DataChannelCallbackInterceptor interceptor = new DataChannelCallbackInterceptor();
-        interceptor.setChannel(serverContext.getChannel());
-
-        serverContext.setChannel(interceptor);
     }
 
     /**

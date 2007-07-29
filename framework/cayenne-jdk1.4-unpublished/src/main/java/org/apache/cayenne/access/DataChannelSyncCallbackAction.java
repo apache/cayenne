@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.intercept;
+package org.apache.cayenne.access;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,18 +29,22 @@ import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
 
-class SyncCallbackProcessor implements GraphChangeHandler {
+/**
+ * @since 3.0
+ * @author Andrus Adamchik
+ */
+class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
-    final DataChannelCallbackInterceptor interceptor;
+    private DataChannel channel;
     private GraphManager graphManager;
     Collection updated;
     Collection persisted;
     Collection removed;
     private Set seenIds;
 
-    SyncCallbackProcessor(DataChannelCallbackInterceptor interceptor,
-            GraphManager graphManager, GraphDiff changes) {
-        this.interceptor = interceptor;
+    DataChannelSyncCallbackAction(DataChannel channel, GraphManager graphManager,
+            GraphDiff changes) {
+        this.channel = channel;
         this.seenIds = new HashSet();
         this.graphManager = graphManager;
         changes.apply(this);
@@ -70,7 +74,9 @@ class SyncCallbackProcessor implements GraphChangeHandler {
 
     void apply(int callbackType, Collection objects) {
         if (objects != null) {
-            interceptor.getCallbackRegistry().performCallbacks(callbackType, objects);
+            channel.getEntityResolver().getCallbackRegistry().performCallbacks(
+                    callbackType,
+                    objects);
         }
     }
 
