@@ -47,7 +47,6 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 public class DataChannelCallbackInterceptor extends DataChannelDecorator {
 
     protected LifecycleCallbackRegistry callbackRegistry;
-    protected boolean contextCallbacksEnabled;
 
     public void setChannel(DataChannel channel) {
         this.channel = channel;
@@ -66,8 +65,7 @@ public class DataChannelCallbackInterceptor extends DataChannelDecorator {
             return false;
         }
 
-        return contextCallbacksEnabled ? callbackRegistry.isEmpty(LifecycleListener.PRE_REMOVE)
-                && callbackRegistry.isEmpty(LifecycleListener.PRE_PERSIST) : true;
+        return true;
     }
 
     public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
@@ -111,19 +109,6 @@ public class DataChannelCallbackInterceptor extends DataChannelDecorator {
 
     SyncCallbackProcessor createSyncProcessor(GraphManager graphManager, GraphDiff changes) {
         return new SyncCallbackProcessor(this, graphManager, changes);
-    }
-
-    /**
-     * Returns whether "PrePersist" and "PreRemove" callbacks should be executed during
-     * sync. By default this is false, as they are executed by the parent ObjectContext.
-     * This can be changed by calling {@link #setContextCallbacksEnabled(boolean)}.
-     */
-    public boolean isContextCallbacksEnabled() {
-        return contextCallbacksEnabled;
-    }
-
-    public void setContextCallbacksEnabled(boolean contextCallbacksEnabled) {
-        this.contextCallbacksEnabled = contextCallbacksEnabled;
     }
 
     public LifecycleCallbackRegistry getCallbackRegistry() {

@@ -51,11 +51,6 @@ class SyncCallbackProcessor implements GraphChangeHandler {
             case DataChannel.FLUSH_CASCADE_SYNC:
             case DataChannel.FLUSH_NOCASCADE_SYNC:
                 apply(LifecycleListener.PRE_UPDATE, updated);
-
-                if (interceptor.isContextCallbacksEnabled()) {
-                    apply(LifecycleListener.PRE_PERSIST, persisted);
-                    apply(LifecycleListener.PRE_REMOVE, removed);
-                }
         }
     }
 
