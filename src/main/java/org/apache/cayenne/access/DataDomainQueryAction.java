@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -50,6 +51,7 @@ import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.Util;
@@ -126,9 +128,31 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             if (interceptMappedConversion() != DONE) {
                 interceptObjectConversion();
             }
+
+            invokePostLoad();
         }
 
         return response;
+    }
+
+    private void invokePostLoad() {
+        // TODO: andrus, 9/21/2006 - this method incorrectly calls "postLoad" when query
+        // refresh flag is set to false and object is already there.
+
+        LifecycleCallbackRegistry callbackRegistry = domain
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        if (!callbackRegistry.isEmpty(LifecycleListener.POST_LOAD)) {
+
+            List list = response.firstList();
+            if (list != null
+                    && !list.isEmpty()
+                    && !(query.getMetaData(domain.getEntityResolver()))
+                            .isFetchingDataRows()) {
+                callbackRegistry.performCallbacks(LifecycleListener.POST_LOAD, list);
+            }
+        }
     }
 
     private boolean interceptDataDomainQuery() {
@@ -456,6 +480,17 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 else {
                     throw new IllegalStateException("Unknown response object: "
                             + this.response);
+                }
+
+                // apply POST_LOAD callback
+                LifecycleCallbackRegistry callbackRegistry = context
+                        .getEntityResolver()
+                        .getCallbackRegistry();
+
+                if (!callbackRegistry.isEmpty(LifecycleListener.POST_LOAD)) {
+                    callbackRegistry.performCallbacks(
+                            LifecycleListener.POST_LOAD,
+                            objects);
                 }
             }
         }

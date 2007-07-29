@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.cayenne.LifecycleListener;
-import org.apache.cayenne.intercept.MockCallingBackListener;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.unit.CayenneCase;

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.intercept.MockCallingBackListener;
+import org.apache.cayenne.access.MockCallingBackListener;
 import org.apache.cayenne.map.MockCallingBackEntity;
 import org.apache.cayenne.reflect.CallbackOnListener;
 
