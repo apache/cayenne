@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DeleteDenyException;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DeleteRule;
@@ -97,6 +98,10 @@ class DataContextDeleteAction {
 
     private void deletePersistent(Persistent object, int oldState)
             throws DeleteDenyException {
+
+        dataContext.getEntityResolver().getCallbackRegistry().performCallbacks(
+                LifecycleListener.PRE_REMOVE,
+                object);
 
         object.setPersistenceState(PersistenceState.DELETED);
         dataContext.getObjectStore().nodeRemoved(object.getObjectId());

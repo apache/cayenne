@@ -39,6 +39,7 @@ import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.Fault;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -746,6 +747,11 @@ public class DataContext extends BaseContext implements DataChannel {
         getObjectStore().registerNode(id, object);
         getObjectStore().nodeCreated(id);
 
+        // invoke callbacks
+        getEntityResolver().getCallbackRegistry().performCallbacks(
+                LifecycleListener.PRE_PERSIST,
+                object);
+
         return object;
     }
 
@@ -871,6 +877,11 @@ public class DataContext extends BaseContext implements DataChannel {
                 return true;
             }
         });
+        
+        // invoke callbacks
+        getEntityResolver().getCallbackRegistry().performCallbacks(
+                LifecycleListener.PRE_PERSIST,
+                object);
     }
 
     /**
