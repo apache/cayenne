@@ -21,6 +21,7 @@ CAY-833 Remove API for flipping callbacks state in the ClientServerChannel - thi
 
 Bug Fixes Since M1:
 
+CAY-797 Lifecycle callbacks *CallbackInterceptor concept introduces problems for testing equality of contexts
 CAY-832 enum-mapped columns improperly handled in in expressions
 
 
