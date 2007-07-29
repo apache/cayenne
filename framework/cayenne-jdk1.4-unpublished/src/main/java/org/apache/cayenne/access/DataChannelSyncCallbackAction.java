@@ -28,55 +28,59 @@ import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
+import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
-class DataChannelSyncCallbackAction implements GraphChangeHandler {
+abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
-    private DataChannel channel;
-    private GraphManager graphManager;
+    static DataChannelSyncCallbackAction getCallbackAction(
+            LifecycleCallbackRegistry callbackRegistry,
+            GraphManager graphManager,
+            GraphDiff changes,
+            int syncType) {
+
+        switch (syncType) {
+            case DataChannel.FLUSH_CASCADE_SYNC:
+            case DataChannel.FLUSH_NOCASCADE_SYNC:
+                return new FlushCallbackAction(callbackRegistry, graphManager, changes);
+            case DataChannel.ROLLBACK_CASCADE_SYNC:
+                return new RollbackCallbackAction(callbackRegistry, graphManager, changes);
+            default:
+                throw new IllegalArgumentException("Unsupported sync type: " + syncType);
+        }
+    }
+
+    LifecycleCallbackRegistry callbackRegistry;
     Collection updated;
     Collection persisted;
     Collection removed;
     private Set seenIds;
+    private GraphManager graphManager;
 
-    DataChannelSyncCallbackAction(DataChannel channel, GraphManager graphManager,
-            GraphDiff changes) {
-        this.channel = channel;
-        this.seenIds = new HashSet();
+    DataChannelSyncCallbackAction(LifecycleCallbackRegistry callbackRegistry,
+            GraphManager graphManager, GraphDiff changes) {
+
+        this.callbackRegistry = callbackRegistry;
         this.graphManager = graphManager;
-        changes.apply(this);
-    }
 
-    void applyPreCommit(int syncType) {
-        switch (syncType) {
-            case DataChannel.FLUSH_CASCADE_SYNC:
-            case DataChannel.FLUSH_NOCASCADE_SYNC:
-                apply(LifecycleListener.PRE_UPDATE, updated);
+        if (hasListeners()) {
+            this.seenIds = new HashSet();
+            changes.apply(this);
         }
     }
 
-    void applyPostCommit(int syncType) {
-        switch (syncType) {
-            case DataChannel.FLUSH_CASCADE_SYNC:
-            case DataChannel.FLUSH_NOCASCADE_SYNC:
-                apply(LifecycleListener.POST_UPDATE, updated);
-                apply(LifecycleListener.POST_REMOVE, removed);
-                apply(LifecycleListener.POST_PERSIST, persisted);
-                break;
-            case DataChannel.ROLLBACK_CASCADE_SYNC:
-                apply(LifecycleListener.POST_LOAD, updated);
-                apply(LifecycleListener.POST_LOAD, removed);
-        }
-    }
+    protected abstract boolean hasListeners();
+
+    abstract void applyPreCommit();
+
+    abstract void applyPostCommit();
 
     void apply(int callbackType, Collection objects) {
-        if (objects != null) {
-            channel.getEntityResolver().getCallbackRegistry().performCallbacks(
-                    callbackType,
-                    objects);
+        if (seenIds != null && objects != null) {
+            callbackRegistry.performCallbacks(callbackType, objects);
         }
     }
 
@@ -143,6 +147,52 @@ class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
                 updated.add(node);
             }
+        }
+    }
+
+    static class FlushCallbackAction extends DataChannelSyncCallbackAction {
+
+        FlushCallbackAction(LifecycleCallbackRegistry callbackRegistry,
+                GraphManager graphManager, GraphDiff changes) {
+            super(callbackRegistry, graphManager, changes);
+        }
+
+        protected boolean hasListeners() {
+            return !(callbackRegistry.isEmpty(LifecycleListener.PRE_UPDATE)
+                    && callbackRegistry.isEmpty(LifecycleListener.POST_UPDATE)
+                    && callbackRegistry.isEmpty(LifecycleListener.POST_REMOVE) && callbackRegistry
+                    .isEmpty(LifecycleListener.POST_PERSIST));
+        }
+
+        void applyPreCommit() {
+            apply(LifecycleListener.PRE_UPDATE, updated);
+        }
+
+        void applyPostCommit() {
+            apply(LifecycleListener.POST_UPDATE, updated);
+            apply(LifecycleListener.POST_REMOVE, removed);
+            apply(LifecycleListener.POST_PERSIST, persisted);
+        }
+    }
+
+    static class RollbackCallbackAction extends DataChannelSyncCallbackAction {
+
+        RollbackCallbackAction(LifecycleCallbackRegistry callbackRegistry,
+                GraphManager graphManager, GraphDiff changes) {
+            super(callbackRegistry, graphManager, changes);
+        }
+
+        protected boolean hasListeners() {
+            return !callbackRegistry.isEmpty(LifecycleListener.POST_LOAD);
+        }
+
+        void applyPreCommit() {
+            // noop
+        }
+
+        void applyPostCommit() {
+            apply(LifecycleListener.POST_LOAD, updated);
+            apply(LifecycleListener.POST_LOAD, removed);
         }
     }
 }
