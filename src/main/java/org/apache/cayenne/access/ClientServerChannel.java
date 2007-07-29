@@ -39,7 +39,6 @@ import org.apache.cayenne.query.Query;
 public class ClientServerChannel implements DataChannel {
 
     protected DataContext serverContext;
-    protected boolean lifecycleCallbacksEnabled;
 
     public ClientServerChannel(DataDomain domain) {
         this(domain.createDataContext());
@@ -47,6 +46,14 @@ public class ClientServerChannel implements DataChannel {
 
     ClientServerChannel(DataContext serverContext) {
         this.serverContext = serverContext;
+        
+        DataChannelCallbackInterceptor interceptor = new DataChannelCallbackInterceptor();
+
+        // must call pre-persist and pre-remove on commit
+        interceptor.setContextCallbacksEnabled(true);
+        interceptor.setChannel(serverContext.getChannel());
+
+        serverContext.setChannel(interceptor);
     }
 
     /**
@@ -101,46 +108,5 @@ public class ClientServerChannel implements DataChannel {
             int syncType) {
 
         return getParentChannel().onSync(null, changes, syncType);
-    }
-
-    /**
-     * @since 3.0
-     */
-    public boolean isLifecycleCallbacksEnabled() {
-        return lifecycleCallbacksEnabled;
-    }
-
-    /**
-     * Enables or disables lifecycle event callbacks for the underlying ObjectContext used
-     * by this channel. Enabling callbacks allows server side logic to be applied to the
-     * persistent objects during select and commit operations.
-     * 
-     * @since 3.0
-     */
-    public void setLifecycleCallbacksEnabled(boolean lifecycleCallbacksEnabled) {
-        if (lifecycleCallbacksEnabled != this.lifecycleCallbacksEnabled) {
-            this.lifecycleCallbacksEnabled = lifecycleCallbacksEnabled;
-
-            if (lifecycleCallbacksEnabled) {
-                enableCallbacks();
-            }
-            else {
-                disableCallbacks();
-            }
-        }
-    }
-
-    void enableCallbacks() {
-        DataChannelCallbackInterceptor interceptor = new DataChannelCallbackInterceptor();
-
-        // must call pre-persist and pre-remove on commit
-        interceptor.setContextCallbacksEnabled(true);
-        interceptor.setChannel(serverContext.getParentDataDomain());
-
-        serverContext.setChannel(interceptor);
-    }
-
-    void disableCallbacks() {
-        serverContext.setChannel(serverContext.getParentDataDomain());
     }
 }
