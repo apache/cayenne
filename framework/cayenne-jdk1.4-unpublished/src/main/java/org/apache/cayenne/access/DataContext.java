@@ -881,7 +881,7 @@ public class DataContext extends BaseContext implements DataChannel {
         // invoke callbacks
         getEntityResolver().getCallbackRegistry().performCallbacks(
                 LifecycleListener.PRE_PERSIST,
-                object);
+                persistent);
     }
 
     /**
