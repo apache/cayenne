@@ -14,6 +14,7 @@ Date:
 
 Changes/New Features Since M1:
 
+CAY-824 Extract all DataView related code in a separate module
 CAY-826 Modeler support for the extra simple property types that Cayenne now supports
 CAY-828 Remove DataContextTransactionEventListener, DataObjectTransactionEventListener, DataContextEvent
 
