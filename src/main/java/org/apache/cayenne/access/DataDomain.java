@@ -743,12 +743,14 @@ public class DataDomain implements QueryEngine, DataChannel {
             final GraphDiff changes,
             int syncType) {
 
-        DataChannelSyncCallbackAction callbackAction = new DataChannelSyncCallbackAction(
-                this,
-                originatingContext.getGraphManager(),
-                changes);
+        DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction
+                .getCallbackAction(
+                        getEntityResolver().getCallbackRegistry(),
+                        originatingContext.getGraphManager(),
+                        changes,
+                        syncType);
 
-        callbackAction.applyPreCommit(syncType);
+        callbackAction.applyPreCommit();
 
         GraphDiff result;
         switch (syncType) {
@@ -772,7 +774,7 @@ public class DataDomain implements QueryEngine, DataChannel {
                         + syncType);
         }
 
-        callbackAction.applyPostCommit(syncType);
+        callbackAction.applyPostCommit();
         return result;
     }
 
