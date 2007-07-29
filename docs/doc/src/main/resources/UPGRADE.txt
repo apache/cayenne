@@ -1,10 +1,15 @@
 Apache Cayenne Upgrade Information
 ==================================
 
-----------------------------------
-Release: 3.0M1
-Date: 07/17/2007
-----------------------------------
+UPGRADING FROM 3.0M1
+
+* Lifecycle Callbacks require no setup:
+  Per CAY-843, lifecycle callback functionality is now built into DataContext and DataDomain, 
+  so all the custom code to set them up is no longer needed. Also as a result of this change
+  'org.apache.cayenne.intercept' package is removed from Cayenne. 
+
+* 'org.apache.cayenne.intercept' package is removed
+  Another result of the CAY-843 change - 'org.apache.cayenne.intercept' package is removed from Cayenne.
 
 UPGRADING FROM 2.0 AND OTHER APACHE RELEASES
 
