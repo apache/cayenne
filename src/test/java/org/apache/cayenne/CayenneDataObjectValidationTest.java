@@ -90,7 +90,7 @@ public class CayenneDataObjectValidationTest extends CayenneCase {
         DataContext context = createDataContext();
         Artist artist = (Artist) context.newObject("Artist");
 
-        DbEntity entity = context.getEntityResolver().lookupDbEntity(artist);
+        DbEntity entity = context.getEntityResolver().lookupObjEntity(artist).getDbEntity();
         int len = ((DbAttribute) entity.getAttribute("ARTIST_NAME")).getMaxLength();
         StringBuffer buf = new StringBuffer(len);
         for (int i = 0; i < len + 1; i++) {
