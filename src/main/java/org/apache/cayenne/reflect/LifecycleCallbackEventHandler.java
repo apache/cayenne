@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
@@ -45,13 +46,13 @@ class LifecycleCallbackEventHandler {
         this.defaultListeners = new ArrayList();
     }
 
-    private boolean excludingDefaultListeners(Class objectClass) {
-        ObjEntity entity = resolver.lookupObjEntity(objectClass);
+    private boolean excludingDefaultListeners(String entityName) {
+        ObjEntity entity = resolver.getObjEntity(entityName);
         return entity != null && entity.isExcludingDefaultListeners();
     }
 
-    private boolean excludingSuperclassListeners(Class objectClass) {
-        ObjEntity entity = resolver.lookupObjEntity(objectClass);
+    private boolean excludingSuperclassListeners(String entityName) {
+        ObjEntity entity = resolver.getObjEntity(entityName);
         return entity != null && entity.isExcludingSuperclassListeners();
     }
 
@@ -120,10 +121,11 @@ class LifecycleCallbackEventHandler {
     /**
      * Invokes callbacks for a given entity object.
      */
-    void performCallbacks(Object object) {
+    void performCallbacks(Persistent object) {
 
         // default listeners are invoked first
-        if (!defaultListeners.isEmpty() && !excludingDefaultListeners(object.getClass())) {
+        if (!defaultListeners.isEmpty()
+                && !excludingDefaultListeners(object.getObjectId().getEntityName())) {
             Iterator it = (Iterator) defaultListeners.iterator();
             while (it.hasNext()) {
                 ((AbstractCallback) it.next()).performCallback(object);
@@ -140,7 +142,7 @@ class LifecycleCallbackEventHandler {
     void performCallbacks(Collection objects) {
         Iterator it = objects.iterator();
         while (it.hasNext()) {
-            Object object = it.next();
+            Persistent object = (Persistent) it.next();
             performCallbacks(object);
         }
     }
@@ -149,13 +151,14 @@ class LifecycleCallbackEventHandler {
      * Invokes callbacks for the class hierarchy, starting from the most generic
      * superclass.
      */
-    private void performCallbacks(Object object, Class callbackEntityClass) {
-        if (Object.class.equals(callbackEntityClass) || callbackEntityClass == null) {
+    private void performCallbacks(Persistent object, Class callbackEntityClass) {
+
+        if (callbackEntityClass == null || Object.class.equals(callbackEntityClass)) {
             return;
         }
 
         // recursively perform super callbacks first
-        if (!excludingSuperclassListeners(callbackEntityClass)) {
+        if (!excludingSuperclassListeners(object.getObjectId().getEntityName())) {
             performCallbacks(object, callbackEntityClass.getSuperclass());
         }
 

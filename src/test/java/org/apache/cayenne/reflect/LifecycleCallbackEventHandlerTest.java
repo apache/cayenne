@@ -23,6 +23,8 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.map.EntityResolver;
 
 public class LifecycleCallbackEventHandlerTest extends TestCase {
@@ -35,6 +37,7 @@ public class LifecycleCallbackEventHandlerTest extends TestCase {
         map.addDefaultListener(l1, "callback");
 
         C1 c1 = new C1();
+        c1.setObjectId(new ObjectId("bogus"));
 
         assertEquals(0, l1.entities.size());
         map.performCallbacks(c1);
@@ -53,6 +56,7 @@ public class LifecycleCallbackEventHandlerTest extends TestCase {
         map.addDefaultListener(l2, "callback");
 
         C1 c1 = new C1();
+        c1.setObjectId(new ObjectId("bogus"));
 
         map.performCallbacks(c1);
         assertEquals(1, l1.callbackTimes.size());
@@ -70,6 +74,7 @@ public class LifecycleCallbackEventHandlerTest extends TestCase {
         map.addListener(C1.class, "c1Callback");
 
         C3 subclass = new C3();
+        subclass.setObjectId(new ObjectId("bogusSubclass"));
 
         assertEquals(0, subclass.callbacks.size());
         map.performCallbacks(subclass);
@@ -83,6 +88,7 @@ public class LifecycleCallbackEventHandlerTest extends TestCase {
         map.addListener(C1.class, "c1Callback");
 
         C4 subclass = new C4();
+        subclass.setObjectId(new ObjectId("bogus"));
 
         assertEquals(0, subclass.callbacks.size());
         map.performCallbacks(subclass);
@@ -98,6 +104,7 @@ public class LifecycleCallbackEventHandlerTest extends TestCase {
         map.addListener(C1.class, "c1Callback");
 
         C2 c = new C2();
+        c.setObjectId(new ObjectId("bogus"));
 
         assertTrue(c.callbacks.isEmpty());
         map.performCallbacks(c);
@@ -108,7 +115,7 @@ public class LifecycleCallbackEventHandlerTest extends TestCase {
         assertEquals("c2Callback", c.callbacks.get(1));
     }
 
-    static class C1 {
+    static class C1 extends PersistentObject {
 
         protected List callbacks = new ArrayList();
 

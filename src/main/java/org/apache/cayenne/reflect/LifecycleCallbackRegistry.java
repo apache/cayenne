@@ -21,6 +21,7 @@ package org.apache.cayenne.reflect;
 import java.util.Collection;
 
 import org.apache.cayenne.LifecycleListener;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.EntityResolver;
 
@@ -132,7 +133,7 @@ public class LifecycleCallbackRegistry {
     /**
      * Invokes callbacks of a specific type for a given entity object.
      */
-    public void performCallbacks(int type, Object object) {
+    public void performCallbacks(int type, Persistent object) {
         eventCallbacks[type].performCallbacks(object);
     }
 
