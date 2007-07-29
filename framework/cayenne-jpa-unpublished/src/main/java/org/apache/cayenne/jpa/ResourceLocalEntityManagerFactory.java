@@ -27,11 +27,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.ObjectStore;
-import org.apache.cayenne.intercept.DataChannelCallbackInterceptor;
-import org.apache.cayenne.intercept.ObjectContextCallbackInterceptor;
 
 /**
  * A Cayenne EntityManagerFactory that supports resource-local transactions.
@@ -110,7 +106,9 @@ public class ResourceLocalEntityManagerFactory implements EntityManagerFactory {
      */
     public EntityManager createEntityManager(Map map) {
         checkClosed();
-        CayenneEntityManager em = new ResourceLocalEntityManager(createObjectContext(), this);
+        CayenneEntityManager em = new ResourceLocalEntityManager(
+                createObjectContext(),
+                this);
         return new TypeCheckingEntityManager(em);
     }
 
@@ -120,14 +118,7 @@ public class ResourceLocalEntityManagerFactory implements EntityManagerFactory {
      * environment.
      */
     protected ObjectContext createObjectContext() {
-        DataChannelCallbackInterceptor postInterceptor = new DataChannelCallbackInterceptor();
-        postInterceptor.setChannel(domain);
-        ObjectStore objectStore = new ObjectStore(domain.getSharedSnapshotCache());
-
-        ObjectContextCallbackInterceptor preInterceptor = new ObjectContextCallbackInterceptor();
-        preInterceptor.setContext(new DataContext(postInterceptor, objectStore));
-
-        return preInterceptor;
+        return domain.createDataContext();
     }
 
     /**
