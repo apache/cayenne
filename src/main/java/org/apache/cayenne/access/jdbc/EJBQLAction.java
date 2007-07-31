@@ -67,7 +67,9 @@ public class EJBQLAction extends BaseSQLAction {
             }
 
             public boolean visitDelete(EJBQLExpression expression) {
-                throw new UnsupportedOperationException("Not yet implemented");
+                EJBQLDeleteTranslator visitor = new EJBQLDeleteTranslator(context);
+                expression.visit(visitor);
+                return false;
             }
 
             public boolean visitUpdate(EJBQLExpression expression) {
