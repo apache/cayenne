@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.art.BooleanTestEntity;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
@@ -30,7 +31,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         deleteTestData();
     }
 
-    public void testUpdateNoQualifier() throws Exception {
+    public void testUpdateNoQualifierString() throws Exception {
         createTestData("prepare");
 
         ObjectContext context = createDataContext();
@@ -103,5 +104,40 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
 
         notUpdated = DataObjectUtils.objectForQuery(context, check);
         assertEquals(new Long(0l), notUpdated);
+    }
+    
+    public void testUpdateNoQualifierBoolean() throws Exception {
+       
+
+        ObjectContext context = createDataContext();
+        BooleanTestEntity o1 = (BooleanTestEntity) context.newObject(BooleanTestEntity.class);
+        o1.setBooleanColumn(Boolean.TRUE);
+        
+        BooleanTestEntity o2 = (BooleanTestEntity) context.newObject(BooleanTestEntity.class);
+        o2.setBooleanColumn(Boolean.FALSE);
+        
+        BooleanTestEntity o3 = (BooleanTestEntity) context.newObject(BooleanTestEntity.class);
+        o3.setBooleanColumn(Boolean.FALSE);
+        
+        context.commitChanges();
+
+        EJBQLQuery check = new EJBQLQuery("select count(p) from BooleanTestEntity p "
+                + "WHERE p.booleanColumn = true");
+
+        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        assertEquals(new Long(1l), notUpdated);
+
+        String ejbql = "UPDATE BooleanTestEntity AS p SET p.booleanColumn = true";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        QueryResponse result = context.performGenericQuery(query);
+
+        int[] count = result.firstUpdateCount();
+        assertNotNull(count);
+        assertEquals(1, count.length);
+        assertEquals(3, count[0]);
+
+        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        assertEquals(new Long(3l), notUpdated);
     }
 }

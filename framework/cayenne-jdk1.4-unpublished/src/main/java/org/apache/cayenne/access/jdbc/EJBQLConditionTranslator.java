@@ -300,6 +300,19 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         processParameter(parameter);
         return true;
     }
+    
+    public boolean visitBooleanLiteral(EJBQLExpression expression) {
+        if (expression.getText() == null) {
+            context.append("null");
+        }
+        else {
+            Object value = new Boolean(expression.getText());
+            String var = context.bindParameter(value);
+            context.append(" #bind($").append(var).append(" 'BOOLEAN')");
+        }
+
+        return true;
+    }
 
     public boolean visitStringLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
