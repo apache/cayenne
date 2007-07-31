@@ -22,16 +22,16 @@ import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 
 /**
- * A translator of EJBQL SELECT statements into SQL.
+ * A translator of EJBQL DELETE statements into SQL.
  * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-class EJBQLSelectTranslator extends EJBQLBaseVisitor {
+class EJBQLDeleteTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
 
-    EJBQLSelectTranslator(EJBQLTranslationContext context) {
+    EJBQLDeleteTranslator(EJBQLTranslationContext context) {
         this.context = context;
     }
 
@@ -39,36 +39,14 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         return context;
     }
 
-    public boolean visitDistinct(EJBQLExpression expression) {
-        context.append(" DISTINCT");
+    public boolean visitDelete(EJBQLExpression expression) {
+        context.append("DELETE");
         return true;
     }
-
+    
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
         context.append(" FROM");
         expression.visit(new EJBQLFromTranslator(context));
-        return false;
-    }
-
-    public boolean visitOrderBy(EJBQLExpression expression) {
-        context.append(" ORDER BY");
-        expression.visit(new EJBQLOrderByTranslator(context));
-        return false;
-    }
-
-    public boolean visitSelect(EJBQLExpression expression) {
-        context.append("SELECT");
-        return true;
-    }
-
-    public boolean visitSelectExpressions(EJBQLExpression expression) {
-        expression.visit(new EJBQLSelectColumnsTranslator(context));
-        return false;
-    }
-
-    public boolean visitWhere(EJBQLExpression expression) {
-        context.append(" WHERE");
-        expression.visit(new EJBQLConditionTranslator(context));
         return false;
     }
 }
