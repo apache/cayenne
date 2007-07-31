@@ -19,6 +19,7 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
+import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 
 /**
@@ -62,18 +63,25 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
-    public boolean visitUpdateField(EJBQLExpression expression) {
+    public boolean visitUpdateField(EJBQLExpression expression, int finishedChildIndex) {
+
         EJBQLPathTranslator pathTranslator = new EJBQLPathTranslator(context) {
 
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
-                throw new UnsupportedOperationException();
+                throw new EJBQLException("Multi-column paths are unsupported in UPDATEs");
+            }
+            
+            public boolean visitUpdateField(EJBQLExpression expression, int finishedChildIndex) {
+                return visitPath(expression, finishedChildIndex);
             }
         };
+
         expression.visit(pathTranslator);
         return false;
     }
 
     public boolean visitUpdateValue(EJBQLExpression expression) {
+        context.append(" =");
         return true;
     }
 }

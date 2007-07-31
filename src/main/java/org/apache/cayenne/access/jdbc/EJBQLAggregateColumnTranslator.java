@@ -23,7 +23,6 @@ import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.ejbql.parser.EJBQLAggregateColumn;
-import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 
@@ -121,7 +120,7 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
             return false;
         }
 
-        public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
+        public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             expression.visit(new FieldPathTranslator());
             return false;
         }

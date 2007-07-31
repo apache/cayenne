@@ -29,7 +29,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
-import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 
 /**
@@ -231,7 +230,7 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         }
     }
 
-    public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
+    public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
 
         expression.visit(new EJBQLPathTranslator(context) {
 
