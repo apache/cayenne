@@ -73,7 +73,9 @@ public class EJBQLAction extends BaseSQLAction {
             }
 
             public boolean visitUpdate(EJBQLExpression expression) {
-                throw new UnsupportedOperationException("Not yet implemented");
+                EJBQLUpdateTranslator visitor = new EJBQLUpdateTranslator(context);
+                expression.visit(visitor);
+                return false;
             }
         });
 
