@@ -70,8 +70,10 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
                 throw new EJBQLException("Multi-column paths are unsupported in UPDATEs");
             }
-            
-            public boolean visitUpdateField(EJBQLExpression expression, int finishedChildIndex) {
+
+            public boolean visitUpdateField(
+                    EJBQLExpression expression,
+                    int finishedChildIndex) {
                 return visitPath(expression, finishedChildIndex);
             }
         };
@@ -82,6 +84,39 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
 
     public boolean visitUpdateValue(EJBQLExpression expression) {
         context.append(" =");
+        return true;
+    }
+
+    public boolean visitStringLiteral(EJBQLExpression expression) {
+        if (expression.getText() == null) {
+            context.append("null");
+        }
+        else {
+            // note that String Literal text is already wrapped in single quotes, with
+            // quotes that are part of the string escaped.
+            context.append(" #bind(").append(expression.getText()).append(" 'VARCHAR')");
+        }
+        
+        return true;
+    }
+    
+    public boolean visitIntegerLiteral(EJBQLExpression expression) {
+        if (expression.getText() == null) {
+            context.append("null");
+        }
+        else {
+            Object value;
+
+            try {
+                value = new Integer(expression.getText());
+            }
+            catch (NumberFormatException nfex) {
+                throw new EJBQLException("Invalid integer: " + expression.getText());
+            }
+
+            String var = context.bindParameter(value);
+            context.append(" #bind($").append(var).append(" 'INTEGER')");
+        }
         return true;
     }
 }
