@@ -18,13 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.art.Painting;
+import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLDeleteTest extends CayenneCase {
+    
+    protected void setUp() throws Exception {
+        deleteTestData();
+    }
 
-    public void testDelete() throws Exception {
+    public void testDeleteNoQualifier() throws Exception {
         createTestData("prepare");
 
         String ejbql = "delete from Painting AS p";
@@ -36,5 +42,24 @@ public class DataContextEJBQLDeleteTest extends CayenneCase {
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
+    }
+
+    public void testDeleteSameEntityQualifier() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "delete from Painting AS p WHERE p.paintingTitle = 'P2'";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        QueryResponse result = createDataContext().performGenericQuery(query);
+
+        int[] count = result.firstUpdateCount();
+        assertNotNull(count);
+        assertEquals(1, count.length);
+        assertEquals(1, count[0]);
+
+        assertNotNull(DataObjectUtils
+                .objectForPK(createDataContext(), Painting.class, 33001));
+        assertNull(DataObjectUtils
+                .objectForPK(createDataContext(), Painting.class, 33002));
     }
 }
