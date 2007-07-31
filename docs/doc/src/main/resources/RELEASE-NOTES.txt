@@ -19,6 +19,7 @@ CAY-826 Modeler support for the extra simple property types that Cayenne now sup
 CAY-828 Remove DataContextTransactionEventListener, DataObjectTransactionEventListener, DataContextEvent
 CAY-833 Remove API for flipping callbacks state in the ClientServerChannel - this is a non-feature
 CAY-834 DataContext and DataDomain must support lifecycle callbacks out of the box without wrapping
+CAY-836 EJBQL Delete Statement Support
 
 Bug Fixes Since M1:
 

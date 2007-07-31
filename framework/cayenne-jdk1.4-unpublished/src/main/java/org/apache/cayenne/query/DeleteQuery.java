@@ -22,6 +22,10 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjEntity;
 
+/**
+ * @deprecated since 3.0 in favor of EJBQL delete query.
+ * @author Andrus Adamchik
+ */
 public class DeleteQuery extends QualifiedQuery {
 
     /** Creates empty DeleteQuery. */
