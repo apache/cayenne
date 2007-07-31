@@ -90,7 +90,7 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
     }
 
     // TODO: andrus, 7/31/2007 - all literal processing (visitStringLiteral,
-    // visitIntegerLiteral, visitDecimalLiteral) is duplicated in
+    // visitIntegerLiteral, visitDecimalLiteral, visitBooleanLiteral) is duplicated in
     // EJBQLConditionalTranslator - may need to refactor
     public boolean visitStringLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
@@ -100,6 +100,19 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
             // note that String Literal text is already wrapped in single quotes, with
             // quotes that are part of the string escaped.
             context.append(" #bind(").append(expression.getText()).append(" 'VARCHAR')");
+        }
+
+        return true;
+    }
+
+    public boolean visitBooleanLiteral(EJBQLExpression expression) {
+        if (expression.getText() == null) {
+            context.append("null");
+        }
+        else {
+            Object value = new Boolean(expression.getText());
+            String var = context.bindParameter(value);
+            context.append(" #bind($").append(var).append(" 'BOOLEAN')");
         }
 
         return true;
