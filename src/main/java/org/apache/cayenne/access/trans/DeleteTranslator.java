@@ -21,11 +21,13 @@ package org.apache.cayenne.access.trans;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.query.DeleteQuery;
 
 /** Class implements default translation mechanism of org.apache.cayenne.query.DeleteQuery
  *  objects to SQL DELETE statements.
  *
  *  @author Andrus Adamchik
+ *  @deprecated since 3.0 since {@link DeleteQuery} is deprecacted.
  */
 public class DeleteTranslator extends QueryAssembler {
 
