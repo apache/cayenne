@@ -83,7 +83,7 @@ public class DataContextCompoundOETest extends CayenneCase {
                 stmt.setInt(1, i);
                 stmt.setString(2, "painting" + i);
                 stmt.setInt(3, (i - 1) % artistCount + 1);
-                stmt.setBigDecimal(4, new BigDecimal(1000));
+                stmt.setBigDecimal(4, new BigDecimal(1000d));
                 if (i == 3)
                     stmt.setNull(5, Types.INTEGER);
                 else

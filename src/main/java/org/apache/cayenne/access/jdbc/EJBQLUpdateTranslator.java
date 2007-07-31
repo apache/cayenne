@@ -47,6 +47,12 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
         context.append("UPDATE");
         return true;
     }
+    
+    public boolean visitWhere(EJBQLExpression expression) {
+        context.append(" WHERE");
+        expression.visit(new EJBQLConditionTranslator(context));
+        return false;
+    }
 
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
         expression.visit(new EJBQLFromTranslator(context));

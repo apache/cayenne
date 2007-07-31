@@ -30,6 +30,31 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
     protected void setUp() throws Exception {
         deleteTestData();
     }
+    
+    public void testUpdateQualifier() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
+                + "WHERE p.paintingTitle is NULL or p.paintingTitle <> 'XX'");
+
+        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        assertEquals(new Long(2l), notUpdated);
+
+        String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX' WHERE p.paintingTitle = 'P1'";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        QueryResponse result = context.performGenericQuery(query);
+
+        int[] count = result.firstUpdateCount();
+        assertNotNull(count);
+        assertEquals(1, count.length);
+        assertEquals(1, count[0]);
+
+        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        assertEquals(new Long(1l), notUpdated);
+    }
 
     public void testUpdateNoQualifierString() throws Exception {
         createTestData("prepare");

@@ -114,7 +114,7 @@ class Compiler {
         return compiled;
     }
 
-    private void addPath(EJBQLPath path) {
+    private void addPath(EJBQLExpression path) {
         if (paths == null) {
             paths = new ArrayList();
         }
@@ -221,9 +221,9 @@ class Compiler {
         private ObjRelationship incoming;
         private ClassDescriptor descriptor;
 
-        public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
+        public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             if (finishedChildIndex + 1 < expression.getChildrenCount()) {
-                this.id = expression.getId();
+                this.id = ((EJBQLPath) expression).getId();
                 this.descriptor = (ClassDescriptor) descriptorsById.get(id);
 
                 if (descriptor == null) {
@@ -278,7 +278,7 @@ class Compiler {
 
     class PathVisitor extends EJBQLBaseVisitor {
 
-        public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
+        public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             addPath(expression);
             return false;
         }
@@ -296,7 +296,7 @@ class Compiler {
             return false;
         }
 
-        public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
+        public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             addPath(expression);
             addResultSetColumn();
             return false;
