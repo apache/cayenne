@@ -25,11 +25,17 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public class EJBQLUpdateField extends SimpleNode {
-	public EJBQLUpdateField(int id) {
-		super(id);
-	}
-   
+
+    public EJBQLUpdateField(int id) {
+        super(id);
+    }
+
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitUpdateField(this);
+        return visitor.visitUpdateField(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitUpdateField(this, childIndex);
     }
 }

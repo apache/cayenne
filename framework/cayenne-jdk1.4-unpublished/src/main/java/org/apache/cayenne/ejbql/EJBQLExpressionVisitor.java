@@ -21,7 +21,6 @@ package org.apache.cayenne.ejbql;
 import org.apache.cayenne.ejbql.parser.EJBQLAggregateColumn;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
-import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 
 /**
@@ -274,7 +273,7 @@ public interface EJBQLExpressionVisitor {
      *            time, before its children; otherwise this is an index of a child just
      *            visited.
      */
-    boolean visitPath(EJBQLPath expression, int finishedChildIndex);
+    boolean visitPath(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitPatternValue(EJBQLExpression expression);
 
@@ -323,7 +322,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitUpdate(EJBQLExpression expression);
 
-    boolean visitUpdateField(EJBQLExpression expression);
+    boolean visitUpdateField(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitUpdateItem(EJBQLExpression expression);
 

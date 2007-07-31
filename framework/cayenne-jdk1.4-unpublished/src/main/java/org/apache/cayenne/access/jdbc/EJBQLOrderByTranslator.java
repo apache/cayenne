@@ -22,7 +22,6 @@ import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
-import org.apache.cayenne.ejbql.parser.EJBQLPath;
 
 /**
  * @since 3.0
@@ -50,7 +49,7 @@ class EJBQLOrderByTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
-    public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
+    public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
 
         EJBQLExpressionVisitor childVisitor = new EJBQLPathTranslator(context) {
 

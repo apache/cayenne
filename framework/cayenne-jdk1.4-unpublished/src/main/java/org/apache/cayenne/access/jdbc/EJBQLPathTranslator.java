@@ -62,7 +62,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
     protected abstract void appendMultiColumnPath(EJBQLMultiColumnOperand operand);
 
-    public boolean visitPath(EJBQLPath expression, int finishedChildIndex) {
+    public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
 
         if (finishedChildIndex > 0) {
 
