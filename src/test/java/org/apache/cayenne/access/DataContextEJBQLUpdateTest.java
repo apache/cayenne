@@ -79,4 +79,29 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         notUpdated = DataObjectUtils.objectForQuery(context, check);
         assertEquals(new Long(0l), notUpdated);
     }
+    
+    public void testUpdateNoQualifierDecimal() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+
+        EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
+                + "WHERE p.estimatedPrice is NULL or p.estimatedPrice <> 1.1");
+
+        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        assertEquals(new Long(2l), notUpdated);
+
+        String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = 1.1";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        QueryResponse result = context.performGenericQuery(query);
+
+        int[] count = result.firstUpdateCount();
+        assertNotNull(count);
+        assertEquals(1, count.length);
+        assertEquals(2, count[0]);
+
+        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        assertEquals(new Long(0l), notUpdated);
+    }
 }

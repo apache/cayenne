@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.math.BigDecimal;
+
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
@@ -87,6 +89,9 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    // TODO: andrus, 7/31/2007 - all literal processing (visitStringLiteral,
+    // visitIntegerLiteral, visitDecimalLiteral) is duplicated in
+    // EJBQLConditionalTranslator - may need to refactor
     public boolean visitStringLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
             context.append("null");
@@ -96,10 +101,10 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
             // quotes that are part of the string escaped.
             context.append(" #bind(").append(expression.getText()).append(" 'VARCHAR')");
         }
-        
+
         return true;
     }
-    
+
     public boolean visitIntegerLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
             context.append("null");
@@ -116,6 +121,26 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
 
             String var = context.bindParameter(value);
             context.append(" #bind($").append(var).append(" 'INTEGER')");
+        }
+        return true;
+    }
+
+    public boolean visitDecimalLiteral(EJBQLExpression expression) {
+        if (expression.getText() == null) {
+            context.append("null");
+        }
+        else {
+            Object value;
+
+            try {
+                value = new BigDecimal(expression.getText());
+            }
+            catch (NumberFormatException nfex) {
+                throw new EJBQLException("Invalid decimal: " + expression.getText());
+            }
+
+            String var = context.bindParameter(value);
+            context.append(" #bind($").append(var).append(" 'DECIMAL')");
         }
         return true;
     }
