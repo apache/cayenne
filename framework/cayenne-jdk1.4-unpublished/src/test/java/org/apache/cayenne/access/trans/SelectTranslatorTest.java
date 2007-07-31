@@ -141,8 +141,8 @@ public class SelectTranslatorTest extends CayenneCase {
         q.setParentQualifier(ExpressionFactory.matchExp("toArtist.artistName", "abc"));
         q.andParentQualifier(ExpressionFactory.greaterOrEqualExp(
                 "estimatedPrice",
-                new BigDecimal(1)));
-        q.setQualifier(ExpressionFactory.matchExp("estimatedPrice", new BigDecimal(3)));
+                new BigDecimal(1d)));
+        q.setQualifier(ExpressionFactory.matchExp("estimatedPrice", new BigDecimal(3d)));
 
         Template test = new Template() {
 

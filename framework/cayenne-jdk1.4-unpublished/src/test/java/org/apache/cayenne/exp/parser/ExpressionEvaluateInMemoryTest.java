@@ -213,7 +213,7 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
     public void testEvaluateLESS_THAN() throws Exception {
         Expression e = new ASTLess(
                 new ASTObjPath("estimatedPrice"),
-                new BigDecimal(10000));
+                new BigDecimal(10000d));
 
         Painting noMatch = new Painting();
         noMatch.setEstimatedPrice(new BigDecimal(10001));
@@ -231,7 +231,7 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
     public void testEvaluateLESS_THAN_EQUAL_TO() throws Exception {
         Expression e = new ASTLessOrEqual(
                 new ASTObjPath("estimatedPrice"),
-                new BigDecimal(10000));
+                new BigDecimal(10000d));
 
         Painting noMatch = new Painting();
         noMatch.setEstimatedPrice(new BigDecimal(10001));
@@ -248,7 +248,7 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
 
     public void testEvaluateGREATER_THAN() throws Exception {
         Expression e = new ASTGreater(new ASTObjPath("estimatedPrice"), new BigDecimal(
-                10000));
+                10000d));
 
         Painting noMatch = new Painting();
         noMatch.setEstimatedPrice(new BigDecimal(9999));
@@ -266,7 +266,7 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
     public void testEvaluateGREATER_THAN_EQUAL_TO() throws Exception {
         Expression e = new ASTGreaterOrEqual(
                 new ASTObjPath("estimatedPrice"),
-                new BigDecimal(10000));
+                new BigDecimal(10000d));
 
         Painting noMatch = new Painting();
         noMatch.setEstimatedPrice(new BigDecimal(9999));
@@ -285,12 +285,12 @@ public class ExpressionEvaluateInMemoryTest extends CayenneCase {
         // evaluate both BETWEEN and NOT_BETWEEN
         Expression between = new ASTBetween(
                 new ASTObjPath("estimatedPrice"),
-                new BigDecimal(10),
-                new BigDecimal(20));
+                new BigDecimal(10d),
+                new BigDecimal(20d));
         Expression notBetween = new ASTNotBetween(
                 new ASTObjPath("estimatedPrice"),
-                new BigDecimal(10),
-                new BigDecimal(20));
+                new BigDecimal(10d),
+                new BigDecimal(20d));
 
         Painting noMatch = new Painting();
         noMatch.setEstimatedPrice(new BigDecimal(21));
