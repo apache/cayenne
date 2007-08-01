@@ -104,6 +104,8 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
     // visitIntegerLiteral, visitDecimalLiteral, visitBooleanLiteral,
     // visitPositionalInputParameter, visitnamedInputParameter) is duplicated in
     // EJBQLConditionalTranslator - may need to refactor
+    // one current difference is support of multi-column matching by
+    // EJBQLConditionalTranslator/
     public boolean visitStringLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
             context.append("null");
