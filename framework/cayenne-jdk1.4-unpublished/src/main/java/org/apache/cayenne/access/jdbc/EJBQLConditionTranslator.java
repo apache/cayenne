@@ -37,7 +37,7 @@ import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
  */
 class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
-    private EJBQLTranslationContext context;
+    protected EJBQLTranslationContext context;
 
     private List multiColumnOperands;
 
