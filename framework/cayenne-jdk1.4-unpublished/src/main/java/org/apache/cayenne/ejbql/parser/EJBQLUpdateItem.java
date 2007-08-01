@@ -31,6 +31,11 @@ public class EJBQLUpdateItem extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitUpdateItem(this);
+        return visitor.visitUpdateItem(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitUpdateItem(this, childIndex);
     }
 }

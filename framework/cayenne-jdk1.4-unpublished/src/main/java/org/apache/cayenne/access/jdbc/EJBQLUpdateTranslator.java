@@ -57,7 +57,7 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
-    public boolean visitUpdateItem(EJBQLExpression expression) {
+    public boolean visitUpdateItem(EJBQLExpression expression, int finishedChildIndex) {
         if (itemCount++ > 0) {
             context.append(',');
         }
@@ -65,7 +65,7 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
             context.append(" SET");
         }
 
-        expression.visit(new EJBQLUpdateFieldTranslator(context));
+        expression.visit(new EJBQLUpdateItemTranslator(context));
         return false;
     }
 }
