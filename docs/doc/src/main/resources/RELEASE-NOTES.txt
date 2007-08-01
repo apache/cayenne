@@ -20,6 +20,7 @@ CAY-828 Remove DataContextTransactionEventListener, DataObjectTransactionEventLi
 CAY-833 Remove API for flipping callbacks state in the ClientServerChannel - this is a non-feature
 CAY-834 DataContext and DataDomain must support lifecycle callbacks out of the box without wrapping
 CAY-836 EJBQL Delete Statement Support
+CAY-837 EJBQL Update Statement Support
 
 Bug Fixes Since M1:
 
