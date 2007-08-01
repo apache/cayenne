@@ -75,7 +75,7 @@ class EJBQLUpdateItemTranslator extends EJBQLConditionTranslator {
                 multiColumnOperands = null;
             }
         }
-        
+
         return true;
     }
 
@@ -102,5 +102,16 @@ class EJBQLUpdateItemTranslator extends EJBQLConditionTranslator {
         // unlike super, Equals here has no children and is itself a child of UpdateItem
         context.append(" =");
         return false;
+    }
+
+    public boolean visitUpdateValue(EJBQLExpression expression) {
+
+        // a criteria for NULL is UpdateValue with no children
+        if (expression.getChildrenCount() == 0) {
+            context.append(" NULL");
+            return false;
+        }
+        
+        return true;
     }
 }
