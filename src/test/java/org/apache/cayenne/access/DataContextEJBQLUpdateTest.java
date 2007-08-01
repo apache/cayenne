@@ -18,8 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.art.Artist;
 import org.apache.art.BooleanTestEntity;
+import org.apache.art.CompoundPkTestEntity;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
@@ -186,6 +190,40 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         String ejbql = "UPDATE Painting AS p SET p.toArtist = :artist";
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("artist", object);
+
+        QueryResponse result = context.performGenericQuery(query);
+
+        int[] count = result.firstUpdateCount();
+        assertNotNull(count);
+        assertEquals(1, count.length);
+        assertEquals(2, count[0]);
+
+        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        assertEquals(new Long(0l), notUpdated);
+    }
+
+    public void testUpdateNoQualifierToOneCompoundPK() throws Exception {
+        createTestData("prepareCompound");
+
+        ObjectContext context = createDataContext();
+        Map key1 = new HashMap();
+        key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
+        key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
+        CompoundPkTestEntity object = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+                context,
+                CompoundPkTestEntity.class,
+                key1);
+
+        EJBQLQuery check = new EJBQLQuery(
+                "select count(e) from CompoundFkTestEntity e WHERE e.toCompoundPk <> :param");
+        check.setParameter("param", object);
+
+        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        assertEquals(new Long(1l), notUpdated);
+
+        String ejbql = "UPDATE CompoundFkTestEntity e SET e.toCompoundPk = :param";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("param", object);
 
         QueryResponse result = context.performGenericQuery(query);
 

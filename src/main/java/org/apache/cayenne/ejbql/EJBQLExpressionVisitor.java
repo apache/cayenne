@@ -324,7 +324,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitUpdateField(EJBQLExpression expression, int finishedChildIndex);
 
-    boolean visitUpdateItem(EJBQLExpression expression);
+    boolean visitUpdateItem(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitUpdateValue(EJBQLExpression expression);
 
