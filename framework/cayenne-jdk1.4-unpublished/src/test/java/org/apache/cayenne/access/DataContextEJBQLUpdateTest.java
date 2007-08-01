@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.art.Artist;
 import org.apache.art.BooleanTestEntity;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
@@ -30,7 +31,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
     protected void setUp() throws Exception {
         deleteTestData();
     }
-    
+
     public void testUpdateQualifier() throws Exception {
         createTestData("prepare");
 
@@ -80,7 +81,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         notUpdated = DataObjectUtils.objectForQuery(context, check);
         assertEquals(new Long(0l), notUpdated);
     }
-    
+
     public void testUpdateNoQualifierMultipleItems() throws Exception {
         createTestData("prepare");
 
@@ -105,7 +106,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         notUpdated = DataObjectUtils.objectForQuery(context, check);
         assertEquals(new Long(0l), notUpdated);
     }
-    
+
     public void testUpdateNoQualifierDecimal() throws Exception {
         createTestData("prepare");
 
@@ -130,20 +131,22 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         notUpdated = DataObjectUtils.objectForQuery(context, check);
         assertEquals(new Long(0l), notUpdated);
     }
-    
+
     public void testUpdateNoQualifierBoolean() throws Exception {
-       
 
         ObjectContext context = createDataContext();
-        BooleanTestEntity o1 = (BooleanTestEntity) context.newObject(BooleanTestEntity.class);
+        BooleanTestEntity o1 = (BooleanTestEntity) context
+                .newObject(BooleanTestEntity.class);
         o1.setBooleanColumn(Boolean.TRUE);
-        
-        BooleanTestEntity o2 = (BooleanTestEntity) context.newObject(BooleanTestEntity.class);
+
+        BooleanTestEntity o2 = (BooleanTestEntity) context
+                .newObject(BooleanTestEntity.class);
         o2.setBooleanColumn(Boolean.FALSE);
-        
-        BooleanTestEntity o3 = (BooleanTestEntity) context.newObject(BooleanTestEntity.class);
+
+        BooleanTestEntity o3 = (BooleanTestEntity) context
+                .newObject(BooleanTestEntity.class);
         o3.setBooleanColumn(Boolean.FALSE);
-        
+
         context.commitChanges();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from BooleanTestEntity p "
@@ -164,5 +167,34 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
 
         notUpdated = DataObjectUtils.objectForQuery(context, check);
         assertEquals(new Long(3l), notUpdated);
+    }
+
+    public void testUpdateNoQualifierToOne() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createDataContext();
+        Artist object = (Artist) DataObjectUtils
+                .objectForPK(context, Artist.class, 33003);
+
+        EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
+                + "WHERE p.toArtist <> :artist");
+        check.setParameter("artist", object);
+
+        Object notUpdated = DataObjectUtils.objectForQuery(context, check);
+        assertEquals(new Long(2l), notUpdated);
+
+        String ejbql = "UPDATE Painting AS p SET p.toArtist = :artist";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("artist", object);
+
+        QueryResponse result = context.performGenericQuery(query);
+
+        int[] count = result.firstUpdateCount();
+        assertNotNull(count);
+        assertEquals(1, count.length);
+        assertEquals(2, count[0]);
+
+        notUpdated = DataObjectUtils.objectForQuery(context, check);
+        assertEquals(new Long(0l), notUpdated);
     }
 }
