@@ -98,4 +98,38 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
         // assertEquals(new Long(1), row[0]);
         // }
     }
+
+    public void testGroupByHavingOnColumn() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "SELECT p.estimatedPrice, count(p) FROM Painting p"
+                + " GROUP BY p.estimatedPrice"
+                + " HAVING p.estimatedPrice > 1";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List data = createDataContext().performQuery(query);
+        assertEquals(1, data.size());
+        assertTrue(data.get(0) instanceof Object[]);
+
+        Object[] row0 = (Object[]) data.get(0);
+        assertEquals(new BigDecimal(2), row0[0]);
+        assertEquals(new Long(2), row0[1]);
+    }
+
+    public void testGroupByHavingOnAggregate() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "SELECT p.estimatedPrice, count(p) FROM Painting p"
+                + " GROUP BY p.estimatedPrice"
+                + " HAVING count(p) > 2";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+//        List data = createDataContext().performQuery(query);
+//        assertEquals(1, data.size());
+//        assertTrue(data.get(0) instanceof Object[]);
+//
+//        Object[] row0 = (Object[]) data.get(0);
+//        assertEquals(new BigDecimal(1), row0[0]);
+//        assertEquals(new Long(3), row0[1]);
+    }
 }
