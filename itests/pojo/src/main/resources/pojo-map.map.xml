@@ -21,7 +21,7 @@
 	</obj-entity>
 	<obj-entity name="ExposedPkEntity1" className="org.apache.cayenne.itest.pojo.ExposedPkEntity1" dbEntityName="exposed_pk_entity1">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
-		<obj-attribute name="pk" type="java.lang.Integer" db-attribute-path="pk"/>
+		<obj-attribute name="pk" type="int" db-attribute-path="pk"/>
 	</obj-entity>
 	<obj-entity name="ManyToOneEntity1" className="org.apache.cayenne.itest.pojo.ManyToOneEntity1" dbEntityName="many_to_one_entity1">
 	</obj-entity>
