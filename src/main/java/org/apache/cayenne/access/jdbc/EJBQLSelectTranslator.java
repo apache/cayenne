@@ -50,6 +50,12 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    public boolean visitGroupBy(EJBQLExpression expression) {
+        context.append(" GROUP BY");
+        expression.visit(new EJBQLGroupByTranslator(context));
+        return false;
+    }
+
     public boolean visitOrderBy(EJBQLExpression expression) {
         context.append(" ORDER BY");
         expression.visit(new EJBQLOrderByTranslator(context));
