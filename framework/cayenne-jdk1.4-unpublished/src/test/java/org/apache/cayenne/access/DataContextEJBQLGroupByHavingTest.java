@@ -25,7 +25,7 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
-    
+
     protected void setUp() throws Exception {
         deleteTestData();
     }
@@ -45,12 +45,12 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
         Object[] row0 = (Object[]) data.get(0);
         assertEquals(new BigDecimal(1), row0[0]);
         assertEquals(new Long(3), row0[1]);
-        
+
         Object[] row1 = (Object[]) data.get(1);
         assertEquals(new BigDecimal(2), row1[0]);
         assertEquals(new Long(2), row1[1]);
     }
-    
+
     public void testGroupByMultipleItems() throws Exception {
         createTestData("prepare");
 
@@ -67,15 +67,35 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
         assertEquals(new BigDecimal(1), row0[0]);
         assertEquals("PX", row0[1]);
         assertEquals(new Long(1), row0[2]);
-        
+
         Object[] row1 = (Object[]) data.get(1);
         assertEquals(new BigDecimal(1), row1[0]);
         assertEquals("PZ", row1[1]);
         assertEquals(new Long(2), row1[2]);
-        
+
         Object[] row2 = (Object[]) data.get(2);
         assertEquals(new BigDecimal(2), row2[0]);
         assertEquals("PY", row2[1]);
         assertEquals(new Long(2), row2[2]);
+    }
+
+    public void testGroupByIdVariable() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "SELECT count(p), p FROM Painting p GROUP BY p";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List data = createDataContext().performQuery(query);
+        assertEquals(5, data.size());
+
+        // TODO: andrus, 8/3/2007 the rest of the unit test fails as currently Cayenne
+        // does not allow mixed object and scalar results (see CAY-839)
+
+        // assertTrue(data.get(0) instanceof Object[]);
+        //
+        // for(int i = 0; i < data.size(); i++) {
+        // Object[] row = (Object[]) data.get(i);
+        // assertEquals(new Long(1), row[0]);
+        // }
     }
 }
