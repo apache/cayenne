@@ -144,8 +144,15 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                             .readPropertyDirectly(object);
 
                     if (value != null) {
-                        // treat numeric zero values as nulls requiring generation
-                        if (!(value instanceof Number && ((Number) value).intValue() == 0)) {
+                        Class javaClass = objAttr.getJavaClass();
+                        if (javaClass.isPrimitive()
+                                && value instanceof Number
+                                && ((Number) value).intValue() == 0) {
+                            // primitive 0 has to be treated as NULL, or otherwise we
+                            // can't generate PK for POJO's
+                        }
+                        else {
+
                             idMap.put(dbAttrName, value);
                             continue;
                         }
