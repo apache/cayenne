@@ -124,12 +124,29 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
                 + " HAVING count(p) > 2";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-//        List data = createDataContext().performQuery(query);
-//        assertEquals(1, data.size());
-//        assertTrue(data.get(0) instanceof Object[]);
-//
-//        Object[] row0 = (Object[]) data.get(0);
-//        assertEquals(new BigDecimal(1), row0[0]);
-//        assertEquals(new Long(3), row0[1]);
+        List data = createDataContext().performQuery(query);
+        assertEquals(1, data.size());
+        assertTrue(data.get(0) instanceof Object[]);
+
+        Object[] row0 = (Object[]) data.get(0);
+        assertEquals(new BigDecimal(1), row0[0]);
+        assertEquals(new Long(3), row0[1]);
+    }
+
+    public void testGroupByHavingOnAggregateMultipleConditions() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "SELECT p.estimatedPrice, count(p) FROM Painting p"
+                + " GROUP BY p.estimatedPrice"
+                + " HAVING count(p) > 2 AND p.estimatedPrice < 10";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List data = createDataContext().performQuery(query);
+        assertEquals(1, data.size());
+        assertTrue(data.get(0) instanceof Object[]);
+
+        Object[] row0 = (Object[]) data.get(0);
+        assertEquals(new BigDecimal(1), row0[0]);
+        assertEquals(new Long(3), row0[1]);
     }
 }

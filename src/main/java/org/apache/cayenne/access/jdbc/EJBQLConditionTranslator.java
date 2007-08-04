@@ -52,6 +52,11 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         multiColumnOperands.add(operand);
     }
 
+    public boolean visitAggregate(EJBQLExpression expression) {
+        expression.visit(new EJBQLAggregateColumnTranslator(context, false));
+        return false;
+    }
+
     public boolean visitAnd(EJBQLExpression expression, int finishedChildIndex) {
         afterChild(expression, " AND", finishedChildIndex);
         return true;
@@ -299,7 +304,7 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         processParameter(parameter);
         return true;
     }
-    
+
     public boolean visitBooleanLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
             context.append("null");
@@ -359,7 +364,7 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             // "X = NULL". The 'VARCHAR' parameter is totally bogus, but seems to work on
             // all tested DB's... Also note what JPA spec, chapter 4.11 says: "Comparison
             // or arithmetic operations with a NULL value always yield an unknown value."
-            
+
             // TODO: andrus 6/28/2007 Ideally we should track the type of the current
             // expression to provide a meaningful type.
             context.append(" #bind($").append(boundName).append(" 'VARCHAR')");

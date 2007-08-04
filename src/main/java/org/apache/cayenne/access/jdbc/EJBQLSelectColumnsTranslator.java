@@ -49,7 +49,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitAggregate(EJBQLExpression expression) {
-        expression.visit(new EJBQLAggregateColumnTranslator(context));
+        expression.visit(new EJBQLAggregateColumnTranslator(context, true));
         return false;
     }
 
