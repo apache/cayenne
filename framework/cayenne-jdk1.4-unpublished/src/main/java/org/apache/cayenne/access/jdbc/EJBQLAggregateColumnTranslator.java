@@ -34,9 +34,11 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     private String attributeType;
+    private boolean resultColumns;
 
-    EJBQLAggregateColumnTranslator(EJBQLTranslationContext context) {
+    EJBQLAggregateColumnTranslator(EJBQLTranslationContext context, boolean resultColumns) {
         this.context = context;
+        this.resultColumns = resultColumns;
     }
 
     public boolean visitCount(EJBQLAggregateColumn expression) {
@@ -68,17 +70,27 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
             EJBQLAggregateColumn column,
             EJBQLExpressionVisitor pathVisitor) {
 
-        context.append(" #result('").append(column.getFunction()).append('(');
+        if (resultColumns) {
+            context.append(" #result('");
+        }
+        else {
+            context.append(' ');
+        }
+
+        context.append(column.getFunction()).append('(');
 
         // path visitor must set attributeType ivar
         column.visit(pathVisitor);
+        context.append(')');
 
-        context
-                .append(")' '")
-                .append(column.getJavaType(attributeType))
-                .append("' '")
-                .append(context.nextColumnAlias())
-                .append("')");
+        if (resultColumns) {
+            context
+                    .append("' '")
+                    .append(column.getJavaType(attributeType))
+                    .append("' '")
+                    .append(context.nextColumnAlias())
+                    .append("')");
+        }
     }
 
     class FieldPathTranslator extends EJBQLPathTranslator {
