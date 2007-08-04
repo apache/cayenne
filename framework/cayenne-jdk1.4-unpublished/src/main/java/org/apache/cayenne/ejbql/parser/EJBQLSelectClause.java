@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
 /**
  * @since 3.0
  * @author Andrus Adamchik
@@ -28,6 +30,7 @@ public class EJBQLSelectClause extends SimpleNode {
         super(id);
     }
 
-    // no visitor method for now, as this node is semantical and not important in
-    // analyzing the query
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitSelectClause(this);
+    }
 }

@@ -280,6 +280,8 @@ public interface EJBQLExpressionVisitor {
     boolean visitPositionalInputParameter(EJBQLPositionalInputParameter expression);
 
     boolean visitSelect(EJBQLExpression expression);
+    
+    boolean visitSelectClause(EJBQLExpression expression);
 
     boolean visitSelectExpression(EJBQLExpression expression);
 

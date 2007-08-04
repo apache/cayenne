@@ -305,6 +305,10 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
     public boolean visitSelect(EJBQLExpression expression) {
         return continueFlag;
     }
+    
+    public boolean visitSelectClause(EJBQLExpression expression) {
+        return continueFlag;
+    }
 
     public boolean visitSelectExpression(EJBQLExpression expression) {
         return continueFlag;

@@ -78,6 +78,11 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    public boolean visitExists(EJBQLExpression expression) {
+        context.append(" EXISTS");
+        return true;
+    }
+
     public boolean visitOr(EJBQLExpression expression, int finishedChildIndex) {
         afterChild(expression, " OR", finishedChildIndex);
         return true;
@@ -328,6 +333,13 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             context.append(" #bind(").append(expression.getText()).append(" 'VARCHAR')");
         }
         return true;
+    }
+    
+    public boolean visitSubselect(EJBQLExpression expression) {
+        context.append('(');
+        expression.visit(new EJBQLSelectTranslator(context));
+        context.append(')');
+        return false;
     }
 
     private void processParameter(String boundName) {
