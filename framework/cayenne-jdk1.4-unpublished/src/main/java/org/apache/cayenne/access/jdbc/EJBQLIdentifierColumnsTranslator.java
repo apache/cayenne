@@ -48,12 +48,9 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     private Set columns;
-    private boolean resultColumns;
 
-    EJBQLIdentifierColumnsTranslator(EJBQLTranslationContext context,
-            boolean resultColumns) {
+    EJBQLIdentifierColumnsTranslator(EJBQLTranslationContext context) {
         this.context = context;
-        this.resultColumns = resultColumns;
     }
 
     public boolean visitIdentifier(EJBQLExpression expression) {
@@ -144,13 +141,13 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
             context.append(columns.size() > 1 ? ", " : " ");
 
-            if (resultColumns) {
+            if (context.isAppendingResultColumns()) {
                 context.append("#result('");
             }
 
             context.append(columnName);
 
-            if (resultColumns) {
+            if (context.isAppendingResultColumns()) {
                 if (javaType == null) {
                     javaType = TypesMapping.getJavaBySqlType(column.getType());
                 }

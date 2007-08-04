@@ -49,7 +49,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitAggregate(EJBQLExpression expression) {
-        expression.visit(new EJBQLAggregateColumnTranslator(context, true));
+        expression.visit(new EJBQLAggregateColumnTranslator(context));
         return false;
     }
 
@@ -71,19 +71,24 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                 // TODO: andrus 6/27/2007 - the last parameter is an unofficial "jdbcType"
                 // pending CAY-813 implementation, switch to #column directive
                 String columnAlias = context.nextColumnAlias();
-                context
-                        .append(" #result('")
-                        .append(alias)
-                        .append('.')
-                        .append(dbAttribute.getName())
-                        .append("' '")
-                        .append(attribute.getType())
-                        .append("' '")
-                        .append(columnAlias)
-                        .append("' '")
-                        .append(columnAlias)
-                        .append("' " + dbAttribute.getType())
-                        .append(")");
+
+                if (context.isAppendingResultColumns()) {
+                    context.append(" #result('");
+                }
+
+                context.append(alias).append('.').append(dbAttribute.getName());
+
+                if (context.isAppendingResultColumns()) {
+                    context
+                            .append("' '")
+                            .append(attribute.getType())
+                            .append("' '")
+                            .append(columnAlias)
+                            .append("' '")
+                            .append(columnAlias)
+                            .append("' " + dbAttribute.getType())
+                            .append(")");
+                }
             }
         };
 
@@ -92,7 +97,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitIdentifier(EJBQLExpression expression) {
-        expression.visit(new EJBQLIdentifierColumnsTranslator(context, true));
+        expression.visit(new EJBQLIdentifierColumnsTranslator(context));
         return false;
     }
 }

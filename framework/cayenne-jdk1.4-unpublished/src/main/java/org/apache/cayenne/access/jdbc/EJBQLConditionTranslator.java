@@ -53,7 +53,7 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitAggregate(EJBQLExpression expression) {
-        expression.visit(new EJBQLAggregateColumnTranslator(context, false));
+        expression.visit(new EJBQLAggregateColumnTranslator(context));
         return false;
     }
 
@@ -336,7 +336,7 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     }
     
     public boolean visitSubselect(EJBQLExpression expression) {
-        context.append('(');
+        context.append(" (");
         expression.visit(new EJBQLSelectTranslator(context));
         context.append(')');
         return false;
