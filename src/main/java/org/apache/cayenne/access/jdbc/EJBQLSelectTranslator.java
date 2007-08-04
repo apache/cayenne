@@ -46,6 +46,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
 
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
         context.append(" FROM");
+        context.setAppendingResultColumns(false);
         expression.visit(new EJBQLFromTranslator(context));
         return false;
     }
@@ -55,7 +56,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         expression.visit(new EJBQLGroupByTranslator(context));
         return false;
     }
-    
+
     public boolean visitHaving(EJBQLExpression expression) {
         context.append(" HAVING");
         expression.visit(new EJBQLConditionTranslator(context));
@@ -66,6 +67,13 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         context.append(" ORDER BY");
         expression.visit(new EJBQLOrderByTranslator(context));
         return false;
+    }
+
+    public boolean visitSelect(EJBQLExpression expression) {
+        // this ensures that result columns are appeneded only in top-level select, but
+        // not subselect (as 'visitSelect' is not called on subselect)
+        context.setAppendingResultColumns(true);
+        return true;
     }
 
     public boolean visitSelectClause(EJBQLExpression expression) {

@@ -44,6 +44,10 @@ class EJBQLTranslationContext {
     private Map parameters;
     private int columnAliasPosition;
 
+    // a flag indicating whether column expressions should be treated as result columns or
+    // not.
+    private boolean appendingResultColumns;
+
     EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression, Map parameters) {
         this.compiledExpression = compiledExpression;
         this.mainBuffer = new StringBuffer();
@@ -283,5 +287,13 @@ class EJBQLTranslationContext {
         }
 
         return (String) resultSetMapping.getColumnResults().get(columnAliasPosition++);
+    }
+
+    boolean isAppendingResultColumns() {
+        return appendingResultColumns;
+    }
+
+    void setAppendingResultColumns(boolean appendingResultColumns) {
+        this.appendingResultColumns = appendingResultColumns;
     }
 }

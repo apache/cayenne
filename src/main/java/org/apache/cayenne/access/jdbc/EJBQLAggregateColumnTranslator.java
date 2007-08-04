@@ -34,11 +34,9 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     private String attributeType;
-    private boolean resultColumns;
 
-    EJBQLAggregateColumnTranslator(EJBQLTranslationContext context, boolean resultColumns) {
+    EJBQLAggregateColumnTranslator(EJBQLTranslationContext context) {
         this.context = context;
-        this.resultColumns = resultColumns;
     }
 
     public boolean visitCount(EJBQLAggregateColumn expression) {
@@ -70,7 +68,7 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
             EJBQLAggregateColumn column,
             EJBQLExpressionVisitor pathVisitor) {
 
-        if (resultColumns) {
+        if (context.isAppendingResultColumns()) {
             context.append(" #result('");
         }
         else {
@@ -83,7 +81,7 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
         column.visit(pathVisitor);
         context.append(')');
 
-        if (resultColumns) {
+        if (context.isAppendingResultColumns()) {
             context
                     .append("' '")
                     .append(column.getJavaType(attributeType))

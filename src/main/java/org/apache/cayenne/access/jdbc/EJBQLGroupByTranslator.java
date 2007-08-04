@@ -37,7 +37,7 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitIdentifier(EJBQLExpression expression) {
-        expression.visit(new EJBQLIdentifierColumnsTranslator(context, false));
+        expression.visit(new EJBQLIdentifierColumnsTranslator(context));
         return false;
     }
 
