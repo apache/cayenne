@@ -167,12 +167,19 @@ class Compiler {
 
         public boolean visitWhere(EJBQLExpression expression) {
             expression.visit(pathVisitor);
-            return false;
+
+            // continue with children as there may be subselects with their own id
+            // variable declarations
+            return true;
         }
 
         public boolean visitOrderBy(EJBQLExpression expression) {
             expression.visit(pathVisitor);
             return false;
+        }
+
+        public boolean visitSubselect(EJBQLExpression expression) {
+            return super.visitSubselect(expression);
         }
     }
 

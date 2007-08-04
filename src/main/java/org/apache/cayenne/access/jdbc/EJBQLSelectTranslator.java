@@ -68,7 +68,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
-    public boolean visitSelect(EJBQLExpression expression) {
+    public boolean visitSelectClause(EJBQLExpression expression) {
         context.append("SELECT");
         return true;
     }
