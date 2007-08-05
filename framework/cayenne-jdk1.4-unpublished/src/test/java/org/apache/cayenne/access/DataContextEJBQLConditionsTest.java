@@ -23,7 +23,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.art.Painting;
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -231,4 +233,76 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         assertTrue(ids.contains(new Integer(33001)));
         assertTrue(ids.contains(new Integer(33002)));
     }
+
+    public void testCollectionMemberOfParameter() throws Exception {
+        createTestData("prepareCollection");
+
+        String ejbql = "SELECT a FROM Artist a " + "WHERE :x MEMBER OF a.paintingArray";
+
+        ObjectContext context = createDataContext();
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("x", DataObjectUtils.objectForPK(
+                context,
+                Painting.class,
+                33010));
+        List objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(new Integer(33001)));
+    }
+    
+//    public void testCollectionNotMemberOfParameter() throws Exception {
+//        createTestData("prepareCollection");
+//
+//        String ejbql = "SELECT a FROM Artist a " + "WHERE :x NOT MEMBER a.paintingArray";
+//
+//        ObjectContext context = createDataContext();
+//
+//        EJBQLQuery query = new EJBQLQuery(ejbql);
+//        query.setParameter("x", DataObjectUtils.objectForPK(
+//                context,
+//                Painting.class,
+//                33010));
+//        List objects = context.performQuery(query);
+//        assertEquals(2, objects.size());
+//
+//        Set ids = new HashSet();
+//        Iterator it = objects.iterator();
+//        while (it.hasNext()) {
+//            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+//            ids.add(id);
+//        }
+//        
+//        assertTrue(ids.contains(new Integer(33002)));
+//        assertTrue(ids.contains(new Integer(33003)));
+//    }
+
+//    public void testCollectionMemberOfThetaJoin() throws Exception {
+//        createTestData("prepareCollection");
+//
+//        String ejbql = "SELECT p FROM Painting p, Artist a "
+//                + "WHERE p MEMBER OF a.paintingArray AND a.artistName = 'B'";
+//
+//        EJBQLQuery query = new EJBQLQuery(ejbql);
+//        List objects = createDataContext().performQuery(query);
+//        assertEquals(2, objects.size());
+//
+//        Set ids = new HashSet();
+//        Iterator it = objects.iterator();
+//        while (it.hasNext()) {
+//            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+//            ids.add(id);
+//        }
+//
+//        assertTrue(ids.contains(new Integer(33009)));
+//        assertTrue(ids.contains(new Integer(33010)));
+//    }
 }
