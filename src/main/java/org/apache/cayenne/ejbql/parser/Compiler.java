@@ -44,6 +44,10 @@ import org.apache.cayenne.reflect.Property;
  */
 class Compiler {
 
+    // a flag indicating whether column expressions should be treated as result columns or
+    // not.
+    private boolean appendingResultColumns;
+
     private String rootId;
     private EntityResolver resolver;
     private Map descriptorsById;
@@ -134,6 +138,16 @@ class Compiler {
     }
 
     class CompilationVisitor extends EJBQLBaseVisitor {
+
+        public boolean visitSelect(EJBQLExpression expression) {
+            appendingResultColumns = true;
+            return true;
+        }
+
+        public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
+            appendingResultColumns = false;
+            return true;
+        }
 
         public boolean visitSelectExpression(EJBQLExpression expression) {
             expression.visit(rootDescriptorVisitor);
@@ -310,12 +324,14 @@ class Compiler {
         }
 
         private void addResultSetColumn() {
-            if (resultSetMapping == null) {
-                resultSetMapping = new SQLResultSetMapping();
-            }
+            if (appendingResultColumns) {
+                if (resultSetMapping == null) {
+                    resultSetMapping = new SQLResultSetMapping();
+                }
 
-            String column = "sc" + resultSetMapping.getColumnResults().size();
-            resultSetMapping.addColumnResult(column);
+                String column = "sc" + resultSetMapping.getColumnResults().size();
+                resultSetMapping.addColumnResult(column);
+            }
         }
     }
 }
