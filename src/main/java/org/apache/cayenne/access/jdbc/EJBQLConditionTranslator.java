@@ -241,6 +241,23 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    public boolean visitIn(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex == 0) {
+            if (expression.isNegated()) {
+                context.append(" NOT");
+            }
+            context.append(" IN (");
+        }
+        else if(finishedChildIndex == expression.getChildrenCount() - 1) {
+            context.append(")");
+        }
+        else if(finishedChildIndex > 0) {
+            context.append(',');
+        }
+
+        return true;
+    }
+
     protected void afterChild(EJBQLExpression e, String text, int childIndex) {
         if (childIndex >= 0) {
             if (childIndex + 1 < e.getChildrenCount()) {
