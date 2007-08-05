@@ -29,13 +29,13 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLConditionsTest extends CayenneCase {
-    
+
     protected void setUp() throws Exception {
         deleteTestData();
     }
 
     public void testLike1() throws Exception {
-        createTestData("prepare");
+        createTestData("prepareLike");
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE 'A%C'";
 
@@ -52,9 +52,28 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
 
         assertTrue(ids.contains(new Integer(33001)));
     }
-    
+
+    public void testNotLike() throws Exception {
+        createTestData("prepareLike");
+
+        String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle NOT LIKE 'A%C'";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List objects = createDataContext().performQuery(query);
+        assertEquals(4, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertFalse(ids.contains(new Integer(33001)));
+    }
+
     public void testLike2() throws Exception {
-        createTestData("prepare");
+        createTestData("prepareLike");
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE '_DDDD'";
 
@@ -73,9 +92,9 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         assertTrue(ids.contains(new Integer(33003)));
         assertTrue(ids.contains(new Integer(33005)));
     }
-    
+
     public void testLikeEscape() throws Exception {
-        createTestData("prepare");
+        createTestData("prepareLike");
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE 'X_DDDD' ESCAPE 'X'";
 
@@ -92,4 +111,5 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
 
         assertTrue(ids.contains(new Integer(33005)));
     }
+
 }
