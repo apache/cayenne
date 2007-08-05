@@ -82,4 +82,54 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
         assertTrue(ids.contains(new Integer(33003)));
         assertTrue(ids.contains(new Integer(33004)));
     }
+    
+    public void testAny() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "SELECT p FROM Painting p"
+                + " WHERE p.estimatedPrice > ANY ("
+                + " SELECT p1.estimatedPrice FROM Painting p1"
+                + " WHERE p1.paintingTitle = 'P1'"
+                + ")";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List objects = createDataContext().performQuery(query);
+        assertEquals(3, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(new Integer(33002)));
+        assertTrue(ids.contains(new Integer(33003)));
+        assertTrue(ids.contains(new Integer(33004)));
+    }
+    
+    public void testSome() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "SELECT p FROM Painting p"
+                + " WHERE p.estimatedPrice > SOME ("
+                + " SELECT p1.estimatedPrice FROM Painting p1"
+                + " WHERE p1.paintingTitle = 'P1'"
+                + ")";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List objects = createDataContext().performQuery(query);
+        assertEquals(3, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(new Integer(33002)));
+        assertTrue(ids.contains(new Integer(33003)));
+        assertTrue(ids.contains(new Integer(33004)));
+    }
 }
