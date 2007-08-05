@@ -23,6 +23,7 @@ CAY-836 EJBQL Delete Statement Support
 CAY-837 EJBQL Update Statement Support
 CAY-838 EJBQL GROUP BY and HAVING support
 CAY-840 EJBQL Subquery Support
+CAY-841 EJBQL Support for LIKE/ESCAPE and IN conditions
 
 Bug Fixes Since M1:
 
