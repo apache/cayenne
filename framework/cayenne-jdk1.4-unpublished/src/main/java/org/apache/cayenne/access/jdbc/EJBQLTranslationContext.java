@@ -88,10 +88,14 @@ class EJBQLTranslationContext {
 
     /**
      * Switches the current buffer to a marked buffer. Note that this can be done even
-     * before the marker is inserted in the main buffer.
+     * before the marker is inserted in the main buffer. If "reset" is true, any previous
+     * contents of the marker are cleared.
      */
-    void switchToMarker(String marker) {
+    void switchToMarker(String marker, boolean reset) {
         this.currentBuffer = (StringBuffer) findOrCreateMarkedBuffer(marker);
+        if (reset) {
+            this.currentBuffer.delete(0, this.currentBuffer.length());
+        }
     }
 
     void switchToMainBuffer() {

@@ -31,6 +31,10 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
 
+    static String makeDistinctMarker() {
+        return "DISTINCT_MARKER";
+    }
+
     EJBQLSelectTranslator(EJBQLTranslationContext context) {
         this.context = context;
     }
@@ -40,7 +44,11 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitDistinct(EJBQLExpression expression) {
+        // "distinct" is appended via a marker as sometimes a later match on to-many would
+        // require a DISTINCT insertion.
+        context.switchToMarker(makeDistinctMarker(), true);
         context.append(" DISTINCT");
+        context.switchToMainBuffer();
         return true;
     }
 
@@ -78,6 +86,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
 
     public boolean visitSelectClause(EJBQLExpression expression) {
         context.append("SELECT");
+        context.markCurrentPosition(makeDistinctMarker());
         return true;
     }
 

@@ -173,4 +173,62 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         assertTrue(ids.contains(new Integer(33007)));
     }
 
+    public void testCollectionEmpty() throws Exception {
+        createTestData("prepareCollection");
+
+        String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray IS EMPTY";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List objects = createDataContext().performQuery(query);
+        assertEquals(1, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(new Integer(33003)));
+    }
+
+    public void testCollectionNotEmpty() throws Exception {
+        createTestData("prepareCollection");
+
+        String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray IS NOT EMPTY";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List objects = createDataContext().performQuery(query);
+        assertEquals(2, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(new Integer(33001)));
+        assertTrue(ids.contains(new Integer(33002)));
+    }
+
+    public void testCollectionNotEmptyExplicitDistinct() throws Exception {
+        createTestData("prepareCollection");
+
+        String ejbql = "SELECT DISTINCT a FROM Artist a WHERE a.paintingArray IS NOT EMPTY";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List objects = createDataContext().performQuery(query);
+        assertEquals(2, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(new Integer(33001)));
+        assertTrue(ids.contains(new Integer(33002)));
+    }
 }
