@@ -62,6 +62,43 @@
 			</value>
 		</constructor-arg>
 	</bean>
+	
+	<bean id="P6" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.art.Painting</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
+				VALUES (33006, 'A', 5000)
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="P7" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.art.Painting</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
+				VALUES (33007, 'B', 5000)
+			</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="P8" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class">
+			<value>org.apache.art.Painting</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>
+				INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
+				VALUES (33008, 'C', 5000)
+			</value>
+		</constructor-arg>
+	</bean>
+	
 
 
 	<!-- ======================================= -->
@@ -76,6 +113,16 @@
 				<ref bean="P3" />
 				<ref bean="P4" />
 				<ref bean="P5" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="prepareIn" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="P6" />
+				<ref bean="P7" />
+				<ref bean="P8" />
 			</list>
 		</constructor-arg>
 	</bean>

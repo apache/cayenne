@@ -163,7 +163,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitIdentifier(EJBQLExpression expression);
 
-    boolean visitIn(EJBQLExpression expression);
+    boolean visitIn(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitInnerFetchJoin(EJBQLJoin join);
 

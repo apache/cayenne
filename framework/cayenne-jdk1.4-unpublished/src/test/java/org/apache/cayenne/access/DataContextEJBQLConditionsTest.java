@@ -112,4 +112,43 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         assertTrue(ids.contains(new Integer(33005)));
     }
 
+    public void testIn() throws Exception {
+        createTestData("prepareIn");
+
+        String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle IN ('A', 'B')";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List objects = createDataContext().performQuery(query);
+        assertEquals(2, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(new Integer(33006)));
+        assertTrue(ids.contains(new Integer(33007)));
+    }
+    
+    public void testNotIn() throws Exception {
+        createTestData("prepareIn");
+
+        String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle NOT IN ('A', 'B')";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List objects = createDataContext().performQuery(query);
+        assertEquals(1, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(new Integer(33008)));
+    }
+
 }
