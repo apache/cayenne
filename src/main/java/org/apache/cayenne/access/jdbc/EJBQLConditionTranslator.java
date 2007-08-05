@@ -30,6 +30,7 @@ import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
+import org.apache.cayenne.ejbql.parser.EJBQLSubselect;
 
 /**
  * @since 3.0
@@ -246,12 +247,22 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             if (expression.isNegated()) {
                 context.append(" NOT");
             }
-            context.append(" IN (");
+            context.append(" IN");
+
+            // a cosmetic hack for preventing extra pair of parenthesis from being
+            // appended in 'visitSubselect'
+            if (expression.getChildrenCount() == 2
+                    && expression.getChild(1) instanceof EJBQLSubselect) {
+                visitSubselect(expression.getChild(1));
+                return false;
+            }
+            
+            context.append(" (");
         }
-        else if(finishedChildIndex == expression.getChildrenCount() - 1) {
+        else if (finishedChildIndex == expression.getChildrenCount() - 1) {
             context.append(")");
         }
-        else if(finishedChildIndex > 0) {
+        else if (finishedChildIndex > 0) {
             context.append(',');
         }
 
