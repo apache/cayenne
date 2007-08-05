@@ -68,7 +68,7 @@
 	<!-- Data Sets -->
 	<!-- ======================================= -->
 
-	<bean id="prepare" class="java.util.ArrayList">
+	<bean id="prepareLike" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
 				<ref bean="P1" />
