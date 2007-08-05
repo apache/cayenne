@@ -32,6 +32,7 @@ import org.apache.cayenne.ejbql.parser.EJBQLInnerJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLOuterJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -234,19 +235,19 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                     idPath,
                     table.getFullyQualifiedName());
 
-            List joins = dbRelationship.getJoins();
+            List pks = table.getPrimaryKey();
 
-            if (joins.size() == 1) {
-                DbJoin join = (DbJoin) joins.get(0);
+            if (pks.size() == 1) {
+                DbAttribute pk = (DbAttribute) pks.get(0);
                 context
                         .append(' ')
                         .append(alias)
                         .append('.')
-                        .append(join.getTargetName());
+                        .append(pk.getName());
             }
             else {
                 throw new EJBQLException(
-                        "Multi-column to-many matches are not yet supported.");
+                        "Multi-column PK to-many matches are not yet supported.");
             }
         }
         else {

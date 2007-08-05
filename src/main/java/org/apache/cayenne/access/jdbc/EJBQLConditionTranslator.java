@@ -104,6 +104,32 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    public boolean visitMemberOf(EJBQLExpression expression) {
+        // handle as "? =|<> path" (an alt. way would've been a correlated subquery
+        // on the target entity)...
+
+        if (expression.isNegated()) {
+            context.switchToMarker(EJBQLSelectTranslator.makeDistinctMarker(), true);
+            context.append(" DISTINCT");
+            context.switchToMainBuffer();
+
+            visitNotEquals(expression, -1);
+            for (int i = 0; i < expression.getChildrenCount(); i++) {
+                expression.getChild(i).visit(this);
+                visitNotEquals(expression, i);
+            }
+        }
+        else {
+            visitEquals(expression, -1);
+            for (int i = 0; i < expression.getChildrenCount(); i++) {
+                expression.getChild(i).visit(this);
+                visitEquals(expression, i);
+            }
+        }
+
+        return false;
+    }
+
     public boolean visitAll(EJBQLExpression expression) {
         context.append(" ALL");
         return true;
