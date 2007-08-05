@@ -75,6 +75,9 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                 if (context.isAppendingResultColumns()) {
                     context.append(" #result('");
                 }
+                else {
+                    context.append(' ');
+                }
 
                 context.append(alias).append('.').append(dbAttribute.getName());
 
