@@ -68,10 +68,6 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
                 DbAttribute dbAttribute = (DbAttribute) attribute.getDbAttribute();
 
-                // TODO: andrus 6/27/2007 - the last parameter is an unofficial "jdbcType"
-                // pending CAY-813 implementation, switch to #column directive
-                String columnAlias = context.nextColumnAlias();
-
                 if (context.isAppendingResultColumns()) {
                     context.append(" #result('");
                 }
@@ -82,6 +78,11 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                 context.append(alias).append('.').append(dbAttribute.getName());
 
                 if (context.isAppendingResultColumns()) {
+                    String columnAlias = context.nextColumnAlias();
+                    
+                    // TODO: andrus 6/27/2007 - the last parameter is an unofficial
+                    // "jdbcType"
+                    // pending CAY-813 implementation, switch to #column directive
                     context
                             .append("' '")
                             .append(attribute.getType())

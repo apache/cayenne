@@ -82,6 +82,11 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         context.append(" EXISTS");
         return true;
     }
+    
+    public boolean visitAll(EJBQLExpression expression) {
+        context.append(" ALL");
+        return true;
+    }
 
     public boolean visitOr(EJBQLExpression expression, int finishedChildIndex) {
         afterChild(expression, " OR", finishedChildIndex);
