@@ -1193,7 +1193,7 @@ void positional_input_parameter() #PositionalInputParameter :
 void pattern_value() #PatternValue : { }
 {
 	input_parameter() | string_literal()
-	[(<ESCAPE> escape_character() #EscapeCharacter)]
+	[(<ESCAPE> escape_character())]
 }
 
 

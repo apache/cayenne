@@ -82,12 +82,12 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         context.append(" EXISTS");
         return true;
     }
-    
+
     public boolean visitAll(EJBQLExpression expression) {
         context.append(" ALL");
         return true;
     }
-    
+
     public boolean visitAny(EJBQLExpression expression) {
         context.append(" ANY");
         return true;
@@ -300,9 +300,10 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
-    public boolean visitPatternValue(EJBQLExpression expression) {
-        // TODO: andrus 3/25/2007 - implement me
-        return true;
+    public boolean visitEscapeCharacter(EJBQLExpression expression) {
+        // note that EscapeChar text is already wrapped in single quotes
+        context.append(" ESCAPE ").append(expression.getText());
+        return false;
     }
 
     public boolean visitIsNull(EJBQLExpression expression, int finishedChildIndex) {
@@ -344,7 +345,7 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         }
         return true;
     }
-    
+
     public boolean visitSubselect(EJBQLExpression expression) {
         context.append(" (");
         expression.visit(new EJBQLSelectTranslator(context));
