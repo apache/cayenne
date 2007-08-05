@@ -84,6 +84,26 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    public boolean visitIsEmpty(EJBQLExpression expression) {
+
+        // handle as "path is [not] null" (an alt. way would've been a correlated subquery
+        // on the target entity)...
+
+        if (expression.isNegated()) {
+            context.switchToMarker(EJBQLSelectTranslator.makeDistinctMarker(), true);
+            context.append(" DISTINCT");
+            context.switchToMainBuffer();
+        }
+
+        visitIsNull(expression, -1);
+        for (int i = 0; i < expression.getChildrenCount(); i++) {
+            expression.getChild(i).visit(this);
+            visitIsNull(expression, i);
+        }
+
+        return false;
+    }
+
     public boolean visitAll(EJBQLExpression expression) {
         context.append(" ALL");
         return true;
@@ -256,7 +276,7 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
                 visitSubselect(expression.getChild(1));
                 return false;
             }
-            
+
             context.append(" (");
         }
         else if (finishedChildIndex == expression.getChildrenCount() - 1) {

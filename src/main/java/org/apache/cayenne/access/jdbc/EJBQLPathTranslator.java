@@ -29,6 +29,8 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.parser.EJBQLIdentificationVariable;
 import org.apache.cayenne.ejbql.parser.EJBQLIdentifier;
 import org.apache.cayenne.ejbql.parser.EJBQLInnerJoin;
+import org.apache.cayenne.ejbql.parser.EJBQLJoin;
+import org.apache.cayenne.ejbql.parser.EJBQLOuterJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -36,6 +38,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -97,7 +100,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         // TODO: andrus 6/11/2007 - if the path ends with relationship, the last join will
         // get lost...
         if (lastPathComponent != null) {
-            resolveJoin();
+            resolveJoin(true);
         }
 
         this.lastPathComponent = expression.getText();
@@ -112,7 +115,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         return joinAppender;
     }
 
-    private void resolveJoin() {
+    private void resolveJoin(boolean inner) {
 
         String newPath = idPath + '.' + lastPathComponent;
         String oldPath = context.registerReusableJoin(idPath, lastPathComponent, newPath);
@@ -139,18 +142,34 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
             EJBQLIdentifier joinId = new EJBQLIdentifier(-1);
             joinId.setText(fullPath);
 
-            EJBQLInnerJoin join = new EJBQLInnerJoin(-1);
-            join.jjtAddChild(path, 0);
-            join.jjtAddChild(joinId, 1);
+            context.switchToMarker(joinMarker, false);
 
-            context.switchToMarker(joinMarker);
+            if (inner) {
+                EJBQLJoin join = new EJBQLInnerJoin(-1);
+                join.jjtAddChild(path, 0);
+                join.jjtAddChild(joinId, 1);
+                getJoinAppender().visitInnerJoin(join);
+                
+                this.lastAlias = context.getTableAlias(fullPath, currentEntity
+                        .getDbEntityName());
+            }
+            else {
+                EJBQLJoin join = new EJBQLOuterJoin(-1);
+                join.jjtAddChild(path, 0);
+                join.jjtAddChild(joinId, 1);
+                getJoinAppender().visitOuterJoin(join);
+                
+                Relationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
+                ObjEntity targetEntity = (ObjEntity) lastRelationship.getTargetEntity();
+                
+                this.lastAlias = context.getTableAlias(fullPath, targetEntity
+                        .getDbEntityName());
+            }
 
-            getJoinAppender().visitInnerJoin(join);
             context.switchToMainBuffer();
 
             this.idPath = newPath;
-            this.lastAlias = context.getTableAlias(fullPath, currentEntity
-                    .getDbEntityName());
+
         }
     }
 
@@ -200,9 +219,35 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
     private void processTerminatingRelationship(ObjRelationship relationship) {
 
-        // check whether we need a join
         if (relationship.isSourceIndependentFromTargetChange()) {
-            // TODO: andrus, 6/13/2007 - implement
+
+            // use an outer join for to-many matches
+            resolveJoin(false);
+
+            // TODO: andrus, 6/21/2007 - flattened support
+            DbRelationship dbRelationship = (DbRelationship) relationship
+                    .getDbRelationships()
+                    .get(0);
+            DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
+
+            String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
+                    idPath,
+                    table.getFullyQualifiedName());
+
+            List joins = dbRelationship.getJoins();
+
+            if (joins.size() == 1) {
+                DbJoin join = (DbJoin) joins.get(0);
+                context
+                        .append(' ')
+                        .append(alias)
+                        .append('.')
+                        .append(join.getTargetName());
+            }
+            else {
+                throw new EJBQLException(
+                        "Multi-column to-many matches are not yet supported.");
+            }
         }
         else {
             // match FK against the target object
