@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
@@ -93,6 +94,52 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
             assertFalse(flag[0]);
             context.commitChanges();
             assertTrue(flag[0]);
+        }
+        finally {
+            callbackRegistry.clear();
+        }
+    }
+
+    class TestClientServerChannel extends ClientServerChannel {
+
+        TestClientServerChannel(DataDomain domain) {
+            super(domain);
+        }
+
+        public ObjectContext getServerContext() {
+            return serverContext;
+        }
+    }
+
+    public void testPrePersistOnObjectCallback() throws Exception {
+
+        TestClientServerChannel csChannel = new TestClientServerChannel(getDomain());
+
+        // an exception was triggered within POST_LOAD callback
+        LifecycleCallbackRegistry callbackRegistry = csChannel
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        try {
+            callbackRegistry.addListener(
+                    LifecycleListener.PRE_PERSIST,
+                    MtTable1.class,
+                    "prePersistMethod");
+
+            ClientConnection connection = new LocalConnection(csChannel);
+            ClientChannel channel = new ClientChannel(connection);
+
+            CayenneContext context = new CayenneContext(channel);
+
+            Persistent clientObject = context.newObject(ClientMtTable1.class);
+
+            context.commitChanges();
+
+            // find peer
+            MtTable1 peer = (MtTable1) csChannel.getServerContext().getGraphManager().getNode(
+                    clientObject.getObjectId());
+
+            assertTrue(peer.isPrePersisted());
         }
         finally {
             callbackRegistry.clear();
