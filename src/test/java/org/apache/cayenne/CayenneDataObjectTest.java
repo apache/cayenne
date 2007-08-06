@@ -21,7 +21,7 @@ package org.apache.cayenne;
 
 import junit.framework.TestCase;
 
-import org.apache.art.oneway.Artist;
+import org.apache.art.Artist;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.unit.util.TestBean;
 

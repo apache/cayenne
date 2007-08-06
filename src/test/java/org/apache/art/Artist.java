@@ -33,6 +33,9 @@ public class Artist extends _Artist {
     protected boolean postRemoved;
     protected boolean postPersisted;
     protected boolean postLoaded;
+    
+    protected String someOtherProperty;
+    protected Object someOtherObjectProperty;
 
     public boolean isValidateForSaveCalled() {
         return validateForSaveCalled;
@@ -118,5 +121,21 @@ public class Artist extends _Artist {
 
     public boolean isPostLoaded() {
         return postLoaded;
+    }
+    
+    public String getSomeOtherProperty() {
+        return someOtherProperty;
+    }
+
+    public void setSomeOtherProperty(String string) {
+        someOtherProperty = string;
+    }
+
+    public Object getSomeOtherObjectProperty() {
+        return someOtherObjectProperty;
+    }
+
+    public void setSomeOtherObjectProperty(Object object) {
+        someOtherObjectProperty = object;
     }
 }
