@@ -41,6 +41,14 @@ public abstract class Relationship implements CayenneMapEntry, XMLSerializable,
     protected boolean toMany;
 
     /**
+     * A flag that specifies whether a Relationship was mapped by the user or added
+     * dynamically by Cayenne runtime.
+     * 
+     * @since 3.0
+     */
+    protected boolean runtime;
+
+    /**
      * Creates an unnamed relationship.
      */
     public Relationship() {
@@ -153,5 +161,13 @@ public abstract class Relationship implements CayenneMapEntry, XMLSerializable,
         return new ToStringBuilder(this).append("name", getName()).append(
                 "toMany",
                 isToMany()).toString();
+    }
+
+    public boolean isRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(boolean synthetic) {
+        this.runtime = synthetic;
     }
 }

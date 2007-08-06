@@ -323,7 +323,15 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
             Entity entity = (Entity) entry.getValue();
-            encoder.print(entity.getRelationships());
+
+            // filter out synthetic
+            Iterator relationships = entity.getRelationships().iterator();
+            while (relationships.hasNext()) {
+                Relationship relationship = (Relationship) relationships.next();
+                if (!relationship.isRuntime()) {
+                    relationship.encodeAsXML(encoder);
+                }
+            }
         }
     }
 
@@ -333,7 +341,15 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
             ObjEntity entity = (ObjEntity) entry.getValue();
-            encoder.print(entity.getDeclaredRelationships());
+            
+            // filter out synthetic
+            Iterator relationships = entity.getDeclaredRelationships().iterator();
+            while (relationships.hasNext()) {
+                Relationship relationship = (Relationship) relationships.next();
+                if (!relationship.isRuntime()) {
+                    relationship.encodeAsXML(encoder);
+                }
+            }
         }
     }
 
