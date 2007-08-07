@@ -24,12 +24,21 @@ import org.apache.cayenne.testdo.mt.auto._MtTable1;
 public class MtTable1 extends _MtTable1 {
 
     protected ObjEntity entity;
+    protected transient boolean prePersisted;
 
     public ObjEntity getObjEntity() {
         return (entity != null) ? entity : super.getObjEntity();
     }
-    
+
     public void setObjEntity(ObjEntity entity) {
         this.entity = entity;
+    }
+
+    public void prePersistMethod() {
+        prePersisted = true;
+    }
+
+    public boolean isPrePersisted() {
+        return prePersisted;
     }
 }
