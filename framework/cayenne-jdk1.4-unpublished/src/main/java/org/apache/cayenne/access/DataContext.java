@@ -877,7 +877,7 @@ public class DataContext extends BaseContext implements DataChannel {
                 return true;
             }
         });
-        
+
         // invoke callbacks
         getEntityResolver().getCallbackRegistry().performCallbacks(
                 LifecycleListener.PRE_PERSIST,
@@ -1117,7 +1117,7 @@ public class DataContext extends BaseContext implements DataChannel {
         int syncType = cascade
                 ? DataChannel.FLUSH_CASCADE_SYNC
                 : DataChannel.FLUSH_NOCASCADE_SYNC;
-        
+
         ObjectStore objectStore = getObjectStore();
 
         // prevent multiple commits occuring simulteneously
@@ -1569,58 +1569,62 @@ public class DataContext extends BaseContext implements DataChannel {
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
                 id.getEntityName());
 
-        Persistent cachedObject = (Persistent) getGraphManager().getNode(id);
+        // have to synchronize almost the entire method to prevent multiple threads from
+        // messing up dataobjects per CAY-845. Originally only parts of "else" were
+        // synchronized, but we had to expand the lock scope to ensure consistent
+        // behavior.
+        synchronized (getGraphManager()) {
+            Persistent cachedObject = (Persistent) getGraphManager().getNode(id);
 
-        // merge into an existing object
-        if (cachedObject != null) {
+            // merge into an existing object
+            if (cachedObject != null) {
 
-            int state = cachedObject.getPersistenceState();
+                int state = cachedObject.getPersistenceState();
 
-            // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
-            if (cachedObject != prototype
-                    && state != PersistenceState.MODIFIED
-                    && state != PersistenceState.DELETED) {
+                // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
+                if (cachedObject != prototype
+                        && state != PersistenceState.MODIFIED
+                        && state != PersistenceState.DELETED) {
 
-                descriptor.injectValueHolders(cachedObject);
+                    descriptor.injectValueHolders(cachedObject);
 
-                if (prototype != null
-                        && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
+                    if (prototype != null
+                            && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
 
-                    descriptor.shallowMerge(prototype, cachedObject);
+                        descriptor.shallowMerge(prototype, cachedObject);
 
-                    if (state == PersistenceState.HOLLOW) {
-                        cachedObject.setPersistenceState(PersistenceState.COMMITTED);
+                        if (state == PersistenceState.HOLLOW) {
+                            cachedObject.setPersistenceState(PersistenceState.COMMITTED);
+                        }
                     }
                 }
+
+                return cachedObject;
             }
+            // create and merge into a new object
+            else {
 
-            return cachedObject;
-        }
-        // create and merge into a new object
-        else {
+                Persistent localObject;
 
-            Persistent localObject;
-
-            synchronized (getGraphManager()) {
                 localObject = (Persistent) descriptor.createObject();
 
                 localObject.setObjectContext(this);
                 localObject.setObjectId(id);
 
                 getGraphManager().registerNode(id, localObject);
-            }
 
-            if (prototype != null
-                    && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
-                localObject.setPersistenceState(PersistenceState.COMMITTED);
-                descriptor.injectValueHolders(localObject);
-                descriptor.shallowMerge(prototype, localObject);
-            }
-            else {
-                localObject.setPersistenceState(PersistenceState.HOLLOW);
-            }
+                if (prototype != null
+                        && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
+                    localObject.setPersistenceState(PersistenceState.COMMITTED);
+                    descriptor.injectValueHolders(localObject);
+                    descriptor.shallowMerge(prototype, localObject);
+                }
+                else {
+                    localObject.setPersistenceState(PersistenceState.HOLLOW);
+                }
 
-            return localObject;
+                return localObject;
+            }
         }
     }
 }
