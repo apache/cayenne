@@ -189,6 +189,7 @@ public class EntityMergeSupport {
         List missing = new ArrayList();
         Iterator it = objEntity.getDbEntity().getAttributes().iterator();
         Collection rels = objEntity.getDbEntity().getRelationships();
+        Collection incomingRels = getIncomingRelationships(objEntity.getDbEntity());
 
         while (it.hasNext()) {
             DbAttribute dba = (DbAttribute) it.next();
@@ -220,11 +221,48 @@ public class EntityMergeSupport {
             if (isFK) {
                 continue;
             }
+            
+            // check incoming relationships
+            rit = incomingRels.iterator();
+            while (!isFK && rit.hasNext()) {
+                DbRelationship rel = (DbRelationship) rit.next();
+                Iterator jit = rel.getJoins().iterator();
+                while (jit.hasNext()) {
+                    DbJoin join = (DbJoin) jit.next();
+                    if (join.getTarget() == dba) {
+                        isFK = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (isFK) {
+                continue;
+            }
 
             missing.add(dba);
         }
 
         return missing;
+    }
+    
+    private Collection getIncomingRelationships(DbEntity entity) {
+        
+        Collection incoming = new ArrayList();
+        Iterator entities = entity.getDataMap().getDbEntities().iterator();
+        while(entities.hasNext()) {
+            DbEntity nextEntity = (DbEntity) entities.next();
+            
+            Iterator relationships = nextEntity.getRelationships().iterator();
+            while(relationships.hasNext()) {
+                DbRelationship relationship = (DbRelationship) relationships.next();
+                if(entity == relationship.getTargetEntity()) {
+                    incoming.add(relationship);
+                }
+            }
+        }
+        
+        return incoming;
     }
 
     protected List getRelationshipsToAdd(ObjEntity objEntity) {
