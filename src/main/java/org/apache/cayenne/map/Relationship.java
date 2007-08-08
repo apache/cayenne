@@ -163,10 +163,16 @@ public abstract class Relationship implements CayenneMapEntry, XMLSerializable,
                 isToMany()).toString();
     }
 
+    /**
+     * @since 3.0
+     */
     public boolean isRuntime() {
         return runtime;
     }
 
+    /**
+     * @since 3.0
+     */
     public void setRuntime(boolean synthetic) {
         this.runtime = synthetic;
     }

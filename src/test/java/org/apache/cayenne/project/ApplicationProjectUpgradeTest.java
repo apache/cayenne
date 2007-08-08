@@ -124,7 +124,7 @@ public class ApplicationProjectUpgradeTest extends CayenneCase {
         assertNotNull(dn.getAdapter());
         assertEquals(MySQLAdapter.class.getName(), dn.getAdapter().getClass().getName());
         assertEquals(DriverDataSourceFactory.class.getName(), dn.getDataSourceFactory());
-        
+
         DataMap testmap = dd.getMap("testmap");
         assertNotNull(testmap);
         SQLTemplate query = (SQLTemplate) testmap.getQuery("NonSelectingQuery");
@@ -137,6 +137,10 @@ public class ApplicationProjectUpgradeTest extends CayenneCase {
     protected Configuration buildProjectConfiguration(File projectFile) {
         ProjectConfiguration config = new ProjectConfiguration(projectFile);
         config.setLoaderDelegate(new RuntimeLoadDelegate(config, new ConfigStatus()) {
+
+            protected void updateDefaults(DataDomain domain) {
+                // do nothing...
+            }
 
             protected DataNode createDataNode(String nodeName) {
                 return new DataNode(nodeName) {
