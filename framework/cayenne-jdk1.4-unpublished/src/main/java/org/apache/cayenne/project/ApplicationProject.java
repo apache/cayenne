@@ -213,6 +213,10 @@ public class ApplicationProject extends Project {
         public ProjectLoader(Configuration config) {
             super(config, config.getLoadStatus());
         }
+        
+        protected void updateDefaults(DataDomain domain) {
+            // do nothing...
+        }
 
         public void shouldLoadDataDomain(String domainName) {
             super.shouldLoadDataDomain(domainName);

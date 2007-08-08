@@ -26,13 +26,19 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.MapLoader;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.InputSource;
@@ -458,10 +464,12 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
             }
         }
 
-        // update configuration object
+        // load missing relationships and update configuration object
         Iterator it = getDomains().values().iterator();
         while (it.hasNext()) {
-            config.addDomain((DataDomain) it.next());
+            DataDomain domain = (DataDomain) it.next();
+            updateDefaults(domain);
+            config.addDomain(domain);
         }
 
         config.setDataViewLocations(views);
@@ -469,6 +477,81 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         logger.info("finished configuration loading in "
                 + (System.currentTimeMillis() - startTime)
                 + " ms.");
+    }
+
+    /**
+     * Updates missing mapping artefacts that can be guessed from other mapping
+     * information. This implementation creates missing reverse relationships, marking
+     * newly created relationships as "runtime".
+     * 
+     * @since 3.0
+     */
+    protected void updateDefaults(DataDomain domain) {
+
+        // connect DB layer
+        Iterator maps = domain.getDataMaps().iterator();
+        while (maps.hasNext()) {
+            DataMap map = (DataMap) maps.next();
+
+            Iterator entities = map.getDbEntities().iterator();
+            while (entities.hasNext()) {
+                DbEntity entity = (DbEntity) entities.next();
+
+                // iterate by copy to avoid concurrency modification errors on reflexive
+                // relationships
+                Object[] relationships = entity.getRelationships().toArray();
+                for (int i = 0; i < relationships.length; i++) {
+                    DbRelationship relationship = (DbRelationship) relationships[i];
+                    if (relationship.getReverseRelationship() == null) {
+                        DbRelationship reverse = relationship.createReverseRelationship();
+
+                        Entity targetEntity = reverse.getSourceEntity();
+                        reverse.setName(makeUniqueRelationshipName(targetEntity));
+                        reverse.setRuntime(true);
+                        targetEntity.addRelationship(reverse);
+                    }
+                }
+            }
+        }
+
+        // connect object layer
+        maps = domain.getDataMaps().iterator();
+        while (maps.hasNext()) {
+            DataMap map = (DataMap) maps.next();
+
+            Iterator entities = map.getObjEntities().iterator();
+            while (entities.hasNext()) {
+                ObjEntity entity = (ObjEntity) entities.next();
+
+                // iterate by copy to avoid concurrency modification errors on reflexive
+                // relationships
+                Object[] relationships = entity.getRelationships().toArray();
+                for (int i = 0; i < relationships.length; i++) {
+                    ObjRelationship relationship = (ObjRelationship) relationships[i];
+                    if (relationship.getReverseRelationship() == null) {
+                        ObjRelationship reverse = relationship
+                                .createReverseRelationship();
+
+                        Entity targetEntity = reverse.getSourceEntity();
+                        reverse.setName(makeUniqueRelationshipName(targetEntity));
+                        reverse.setRuntime(true);
+                        targetEntity.addRelationship(reverse);
+                    }
+                }
+            }
+        }
+    }
+
+    private String makeUniqueRelationshipName(Entity entity) {
+        for (int i = 0; i < 1000; i++) {
+            String name = "runtimeRelationship" + i;
+            if(entity.getRelationship(name) == null) {
+                return name;
+            }
+        }
+
+        throw new CayenneRuntimeException(
+                "Could not come up with a unique relationship name");
     }
 
     /**
