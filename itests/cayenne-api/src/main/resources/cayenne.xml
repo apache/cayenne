@@ -2,10 +2,12 @@
 <domains project-version="2.0">
 <domain name="cayenne-api-domain">
 	<map name="cayenne-api-map" location="cayenne-api-map.map.xml"/>
+	<map name="defaults-mapping-map" location="defaults-mapping-map.map.xml"/>
 
 	<node name="cayenne-api-node"
 		 datasource="cayenne-api-node.driver.xml"
 		 factory="org.apache.cayenne.conf.DriverDataSourceFactory">
+			<map-ref name="defaults-mapping-map"/>
 			<map-ref name="cayenne-api-map"/>
 	 </node>
 </domain>
