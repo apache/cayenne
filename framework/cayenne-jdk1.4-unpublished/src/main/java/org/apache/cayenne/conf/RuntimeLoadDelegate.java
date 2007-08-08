@@ -509,6 +509,11 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
                         reverse.setName(makeUniqueRelationshipName(targetEntity));
                         reverse.setRuntime(true);
                         targetEntity.addRelationship(reverse);
+
+                        logger.info("added runtime complimentary DbRelationship from "
+                                + targetEntity.getName()
+                                + " to "
+                                + reverse.getTargetEntityName());
                     }
                 }
             }
@@ -536,6 +541,11 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
                         reverse.setName(makeUniqueRelationshipName(targetEntity));
                         reverse.setRuntime(true);
                         targetEntity.addRelationship(reverse);
+                        
+                        logger.info("added runtime complimentary ObjRelationship from "
+                                + targetEntity.getName()
+                                + " to "
+                                + reverse.getTargetEntityName());
                     }
                 }
             }
