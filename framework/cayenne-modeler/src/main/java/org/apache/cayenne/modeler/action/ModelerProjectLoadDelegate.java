@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.action;
 
 import java.util.HashMap;
@@ -42,6 +41,10 @@ class ModelerProjectLoadDelegate extends RuntimeLoadDelegate {
 
     public ModelerProjectLoadDelegate(Configuration configuration) {
         super(configuration, configuration.getLoadStatus());
+    }
+
+    protected void updateDefaults(DataDomain domain) {
+        // do nothing...
     }
 
     protected void initAdapter(DataNode node, String adapterName) {
