@@ -23,7 +23,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * @deprecated since 3.0 in favor of EJBQL delete query.
+ * @deprecated since 3.0. Should be replaced either with EJBQL update query or SQLTemplate.
  * @author Andrus Adamchik
  */
 public class DeleteQuery extends QualifiedQuery {

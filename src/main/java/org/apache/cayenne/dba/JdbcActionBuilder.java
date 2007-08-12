@@ -27,6 +27,7 @@ import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.jdbc.UpdateAction;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.DeleteQuery;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
@@ -34,6 +35,7 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.UpdateQuery;
 
 /**
  * A factory of default SQLActions. Adapters usually subclass JdbcActionBuilder to provide
@@ -76,6 +78,10 @@ public class JdbcActionBuilder implements SQLActionVisitor {
         return new SQLTemplateAction(query, adapter);
     }
 
+    /**
+     * @deprecated since 3.0 as the corresponding {@link UpdateQuery} and
+     *             {@link DeleteQuery} queries are deprecated.
+     */
     public SQLAction updateAction(Query query) {
         if (query instanceof SQLTemplate) {
             return new SQLTemplateAction((SQLTemplate) query, adapter);
