@@ -120,6 +120,9 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         // run as a correlated subquery.
         // see "visitMemberOf" for correlated subquery logic
+        // also note that the code below is mostly copy/paste from MEMBER OF method ...
+        // maybe there's enough commonality in building correlated subqueries to make it
+        // reusable???
 
         if (expression.getChildrenCount() != 1) {
             throw new EJBQLException("SIZE must have exactly one child, got: "
@@ -133,7 +136,7 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         }
 
         EJBQLPath path = (EJBQLPath) expression.getChild(0);
-        
+
         String id = path.getAbsolutePath();
 
         String correlatedEntityId = path.getId();
