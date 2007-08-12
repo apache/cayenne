@@ -23,8 +23,10 @@ import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * A context used for translating of EJBQL to SQL.
@@ -42,6 +44,7 @@ class EJBQLTranslationContext {
     private Map attributes;
     private Map reusableJoins;
     private Map parameters;
+    private Map idAliases;
     private int columnAliasPosition;
 
     // a flag indicating whether column expressions should be treated as result columns or
@@ -62,6 +65,57 @@ class EJBQLTranslationContext {
                 .getObjectClass(), sql);
         query.setParameters(boundParameters);
         return query;
+    }
+
+    private String resolveId(String id) {
+        if (idAliases == null) {
+            return id;
+        }
+
+        String resolvedAlias = (String) idAliases.get(id);
+        if (resolvedAlias != null) {
+            return resolvedAlias;
+        }
+
+        return id;
+    }
+
+    /**
+     * Looks up entity descriptor for an identifier that can be a compiled expression id
+     * or one of the aliases.
+     */
+    ClassDescriptor getEntityDescriptor(String id) {
+        return compiledExpression.getEntityDescriptor(resolveId(id));
+    }
+
+    ObjRelationship getIncomingRelationship(String id) {
+        return compiledExpression.getIncomingRelationship(resolveId(id));
+    }
+
+    /**
+     * Creates a previously unused id alias for an entity identified by an id.
+     */
+    String createIdAlias(String id) {
+
+        if (idAliases == null) {
+            idAliases = new HashMap();
+        }
+
+        for (int i = 0; i < 1000; i++) {
+            String alias = id + "_alias" + i;
+            if (idAliases.containsKey(alias)) {
+                continue;
+            }
+
+            if (compiledExpression.getEntityDescriptor(alias) != null) {
+                continue;
+            }
+
+            idAliases.put(alias, id);
+            return alias;
+        }
+
+        throw new EJBQLException("Failed to create id alias");
     }
 
     /**

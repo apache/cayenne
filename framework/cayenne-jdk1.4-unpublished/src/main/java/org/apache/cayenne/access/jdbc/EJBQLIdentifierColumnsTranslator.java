@@ -58,8 +58,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
         final String idVar = expression.getText();
 
         // append all table columns
-        ClassDescriptor descriptor = context.getCompiledExpression().getEntityDescriptor(
-                idVar);
+        ClassDescriptor descriptor = context.getEntityDescriptor(idVar);
 
         PropertyVisitor visitor = new PropertyVisitor() {
 
