@@ -27,6 +27,7 @@ import org.apache.art.Artist;
 import org.apache.art.BigDecimalEntity;
 import org.apache.art.BigIntegerEntity;
 import org.apache.art.DateTestEntity;
+import org.apache.art.Painting;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -168,36 +169,36 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
         assertTrue(objects.contains(o2));
     }
 
-    // public void testSIZE() {
-    // ObjectContext context = createDataContext();
-    //
-    // Artist a1 = (Artist) context.newObject(Artist.class);
-    // a1.setArtistName("a1");
-    //
-    // Artist a2 = (Artist) context.newObject(Artist.class);
-    // a2.setArtistName("a2");
-    //
-    // Painting p12 = (Painting) context.newObject(Painting.class);
-    // p12.setPaintingTitle("p12");
-    // a2.addToPaintingArray(p12);
-    // Painting p22 = (Painting) context.newObject(Painting.class);
-    // p22.setPaintingTitle("p22");
-    // a2.addToPaintingArray(p22);
-    //
-    // context.commitChanges();
-    //
-    // EJBQLQuery query = new EJBQLQuery(
-    // "SELECT d FROM Artist d WHERE SIZE(d.paintingArray) = 2");
-    // List objects = context.performQuery(query);
-    // assertEquals(1, objects.size());
-    // assertTrue(objects.contains(a2));
-    //
-    // EJBQLQuery query2 = new EJBQLQuery(
-    // "SELECT d FROM Artist d WHERE SIZE(d.paintingArray) = 0");
-    // List objects2 = context.performQuery(query2);
-    // assertEquals(1, objects2.size());
-    // assertTrue(objects2.contains(a1));
-    // }
+     public void testSIZE() {
+        ObjectContext context = createDataContext();
+
+        Artist a1 = (Artist) context.newObject(Artist.class);
+        a1.setArtistName("a1");
+
+        Artist a2 = (Artist) context.newObject(Artist.class);
+        a2.setArtistName("a2");
+
+        Painting p12 = (Painting) context.newObject(Painting.class);
+        p12.setPaintingTitle("p12");
+        a2.addToPaintingArray(p12);
+        Painting p22 = (Painting) context.newObject(Painting.class);
+        p22.setPaintingTitle("p22");
+        a2.addToPaintingArray(p22);
+
+        context.commitChanges();
+
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT d FROM Artist d WHERE SIZE(d.paintingArray) = 2");
+        List objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+        assertTrue(objects.contains(a2));
+
+        EJBQLQuery query2 = new EJBQLQuery(
+                "SELECT d FROM Artist d WHERE SIZE(d.paintingArray) = 0");
+        List objects2 = context.performQuery(query2);
+        assertEquals(1, objects2.size());
+        assertTrue(objects2.contains(a1));
+    }
 
     public void testCONCAT() {
         ObjectContext context = createDataContext();

@@ -116,6 +116,73 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    public boolean visitSize(EJBQLExpression expression) {
+
+        // run as a correlated subquery.
+        // see "visitMemberOf" for correlated subquery logic
+
+        if (expression.getChildrenCount() != 1) {
+            throw new EJBQLException("SIZE must have exactly one child, got: "
+                    + expression.getChildrenCount());
+        }
+
+        if (!(expression.getChild(0) instanceof EJBQLPath)) {
+            throw new EJBQLException(
+                    "First child of SIZE must be a collection path, got: "
+                            + expression.getChild(1));
+        }
+
+        EJBQLPath path = (EJBQLPath) expression.getChild(0);
+        
+        String id = path.getAbsolutePath();
+
+        String correlatedEntityId = path.getId();
+        ClassDescriptor correlatedEntityDescriptor = context
+                .getEntityDescriptor(correlatedEntityId);
+        String correlatedTableName = correlatedEntityDescriptor
+                .getEntity()
+                .getDbEntity()
+                .getFullyQualifiedName();
+        String correlatedTableAlias = context.getTableAlias(
+                correlatedEntityId,
+                correlatedTableName);
+
+        String subqueryId = context.createIdAlias(id);
+        ClassDescriptor targetDescriptor = context.getEntityDescriptor(subqueryId);
+        String subqueryTableName = targetDescriptor
+                .getEntity()
+                .getDbEntity()
+                .getFullyQualifiedName();
+        String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
+
+        context.append(" (SELECT COUNT(1) FROM ");
+        // not using "AS" to separate table name and alias name - OpenBase doesn't
+        // support "AS", and the rest of the databases do not care
+        context.append(subqueryTableName).append(' ').append(subqueryRootAlias);
+        context.append(" WHERE");
+
+        ObjRelationship relationship = context.getIncomingRelationship(id);
+        // TODO: andrus, 8/11/2007 flattened?
+        DbRelationship correlatedJoinRelationship = (DbRelationship) relationship
+                .getDbRelationships()
+                .get(0);
+        Iterator it = correlatedJoinRelationship.getJoins().iterator();
+        while (it.hasNext()) {
+            DbJoin join = (DbJoin) it.next();
+            context.append(' ').append(subqueryRootAlias).append('.').append(
+                    join.getTargetName()).append(" = ");
+            context.append(correlatedTableAlias).append('.').append(join.getSourceName());
+
+            if (it.hasNext()) {
+                context.append(" AND");
+            }
+        }
+
+        context.append(")");
+
+        return false;
+    }
+
     public boolean visitMemberOf(EJBQLExpression expression) {
 
         // create a correlated subquery, using the following transformation:
