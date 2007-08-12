@@ -38,6 +38,7 @@ import org.apache.cayenne.query.UpdateQuery;
 /**
  * @since 1.2
  * @author Andrus Adamchik
+ * @deprecated since 3.0 as corresponding delete and update queries are deprecated.
  */
 public class UpdateAction extends BaseSQLAction {
 

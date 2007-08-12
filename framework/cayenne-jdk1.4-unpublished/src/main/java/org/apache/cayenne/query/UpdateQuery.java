@@ -28,6 +28,8 @@ import org.apache.cayenne.map.ObjEntity;
 /**
  * Object encapsulating an UPDATE statement. Note that updated attributes are expressed in
  * terms of DbAttribute names.
+ * 
+ * @deprecated since 3.0. Should be replaced either with EJBQL update query or SQLTemplate.
  */
 public class UpdateQuery extends QualifiedQuery {
 
