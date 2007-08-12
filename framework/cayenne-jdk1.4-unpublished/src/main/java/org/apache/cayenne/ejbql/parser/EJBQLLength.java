@@ -31,6 +31,11 @@ public class EJBQLLength extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitLength(this);
+        return visitor.visitLength(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitLength(this, childIndex);
     }
 }

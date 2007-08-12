@@ -31,6 +31,11 @@ public class EJBQLUpper extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitUpper(this);
+        return visitor.visitUpper(this, -1);
+    }
+    
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitUpper(this, childIndex);
     }
 }

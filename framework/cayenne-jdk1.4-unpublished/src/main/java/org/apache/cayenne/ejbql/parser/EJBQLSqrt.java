@@ -31,6 +31,11 @@ public class EJBQLSqrt extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitSqrt(this);
+        return visitor.visitSqrt(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitSqrt(this, childIndex);
     }
 }

@@ -31,6 +31,11 @@ public class EJBQLLower extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitLower(this);
+        return visitor.visitLower(this, -1);
+    }
+    
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitLower(this, childIndex);
     }
 }

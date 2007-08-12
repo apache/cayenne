@@ -31,6 +31,11 @@ public class EJBQLMod extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitMod(this);
+        return visitor.visitMod(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitMod(this, childIndex);
     }
 }

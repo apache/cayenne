@@ -32,7 +32,7 @@ import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
  */
 public interface EJBQLExpressionVisitor {
 
-    boolean visitAbs(EJBQLExpression expression);
+    boolean visitAbs(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitAbstractSchemaName(EJBQLExpression expression);
 
@@ -81,7 +81,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitClassName(EJBQLExpression expression);
 
-    boolean visitConcat(EJBQLExpression expression);
+    boolean visitConcat(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitConstructor(EJBQLExpression expression);
 
@@ -175,7 +175,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitIsNull(EJBQLExpression expression, int finishedChildIndex);
 
-    boolean visitLength(EJBQLExpression expression);
+    boolean visitLength(EJBQLExpression expression, int finishedChildIndex);
 
     /**
      * Called on visiting "<=" expression and also after visiting every expression child.
@@ -208,9 +208,9 @@ public interface EJBQLExpressionVisitor {
      */
     boolean visitLike(EJBQLExpression expression, int finishedChildIndex);
 
-    boolean visitLocate(EJBQLExpression expression);
+    boolean visitLocate(EJBQLExpression expression, int finishedChildIndex);
 
-    boolean visitLower(EJBQLExpression expression);
+    boolean visitLower(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitMax(EJBQLAggregateColumn expression);
 
@@ -218,7 +218,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitMin(EJBQLAggregateColumn expression);
 
-    boolean visitMod(EJBQLExpression expression);
+    boolean visitMod(EJBQLExpression expression, int finishedChildIndex);
 
     /**
      * Called on visiting "*" expression and also after visiting every expression child.
@@ -289,13 +289,13 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitSize(EJBQLExpression expression);
 
-    boolean visitSqrt(EJBQLExpression expression);
+    boolean visitSqrt(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitStringLiteral(EJBQLExpression expression);
 
     boolean visitSubselect(EJBQLExpression expression);
 
-    boolean visitSubstring(EJBQLExpression expression);
+    boolean visitSubstring(EJBQLExpression expression, int finishedChildIndex);
 
     /**
      * Called on visiting "subtract" expression and also after visiting every expression
@@ -312,7 +312,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitTok(EJBQLExpression expression);
 
-    boolean visitTrim(EJBQLExpression expression);
+    boolean visitTrim(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitTrimBoth(EJBQLExpression expression);
 
@@ -330,7 +330,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitUpdateValue(EJBQLExpression expression);
 
-    boolean visitUpper(EJBQLExpression expression);
+    boolean visitUpper(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitWhere(EJBQLExpression expression);
 }

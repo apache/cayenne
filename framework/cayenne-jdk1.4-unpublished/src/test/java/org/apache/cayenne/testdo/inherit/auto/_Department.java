@@ -34,15 +34,13 @@ public class _Department extends org.apache.cayenne.CayenneDataObject {
     }
     
     
-    public void addToToManager(org.apache.cayenne.testdo.inherit.Manager obj) {
-        addToManyTarget("toManager", obj, true);
+    public void setToManager(org.apache.cayenne.testdo.inherit.Manager toManager) {
+        setToOneTarget("toManager", toManager, true);
     }
-    public void removeFromToManager(org.apache.cayenne.testdo.inherit.Manager obj) {
-        removeToManyTarget("toManager", obj, true);
-    }
-    public List getToManager() {
-        return (List)readProperty("toManager");
-    }
+
+    public org.apache.cayenne.testdo.inherit.Manager getToManager() {
+        return (org.apache.cayenne.testdo.inherit.Manager)readProperty("toManager");
+    } 
     
     
 }

@@ -31,6 +31,8 @@ import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 import org.apache.cayenne.ejbql.parser.EJBQLSubselect;
+import org.apache.cayenne.ejbql.parser.EJBQLTrimBoth;
+import org.apache.cayenne.ejbql.parser.EJBQLTrimSpecification;
 
 /**
  * @since 3.0
@@ -466,5 +468,171 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             // expression to provide a meaningful type.
             context.append(" #bind($").append(boundName).append(" 'VARCHAR')");
         }
+    }
+
+    public boolean visitCurrentDate(EJBQLExpression expression) {
+        context.append(" {fn CURDATE()}");
+        return false;
+    }
+
+    public boolean visitCurrentTime(EJBQLExpression expression) {
+        context.append(" {fn CURTIME()}");
+        return false;
+    }
+
+    public boolean visitCurrentTimestamp(EJBQLExpression expression) {
+        context.append(" {fn NOW()}");
+        return false;
+    }
+
+    public boolean visitAbs(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            context.append(" {fn ABS(");
+        }
+        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.append(")}");
+        }
+
+        return true;
+    }
+
+    public boolean visitSqrt(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            context.append(" {fn SQRT(");
+        }
+        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.append(")}");
+        }
+
+        return true;
+    }
+
+    public boolean visitMod(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            context.append(" {fn MOD(");
+        }
+        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.append(")}");
+        }
+        else {
+            context.append(',');
+        }
+
+        return true;
+    }
+
+    public boolean visitConcat(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            context.append(" {fn CONCAT(");
+        }
+        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.append(")}");
+        }
+        else {
+            context.append(',');
+        }
+
+        return true;
+    }
+
+    public boolean visitSubstring(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            context.append(" {fn SUBSTRING(");
+        }
+        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.append(")}");
+        }
+        else {
+            context.append(',');
+        }
+
+        return true;
+    }
+
+    public boolean visitLower(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            context.append(" {fn LCASE(");
+        }
+        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.append(")}");
+        }
+
+        return true;
+    }
+
+    public boolean visitUpper(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            context.append(" {fn UCASE(");
+        }
+        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.append(")}");
+        }
+
+        return true;
+    }
+
+    public boolean visitLength(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            context.append(" {fn LENGTH(");
+        }
+        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.append(")}");
+        }
+
+        return true;
+    }
+
+    public boolean visitLocate(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+            context.append(" {fn LOCATE(");
+        }
+        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.append(")}");
+        }
+        else {
+            context.append(',');
+        }
+
+        return true;
+    }
+
+    public boolean visitTrim(EJBQLExpression expression, int finishedChildIndex) {
+        if (finishedChildIndex < 0) {
+
+            if (!(expression.getChild(0) instanceof EJBQLTrimSpecification)) {
+                context.append(" {fn LTRIM({fn RTRIM(");
+            }
+        }
+        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            if (!(expression.getChild(0) instanceof EJBQLTrimSpecification)
+                    || expression.getChild(0) instanceof EJBQLTrimBoth) {
+                context.append(")})}");
+            }
+            else {
+                context.append(")}");
+            }
+        }
+
+        return true;
+    }
+
+    public boolean visitTrimCharacter(EJBQLExpression expression) {
+        // this is expected to be overwritten in adapter-specific translators
+        throw new UnsupportedOperationException("Not implemented in a generic translator");
+    }
+
+    public boolean visitTrimLeading(EJBQLExpression expression) {
+        context.append(" {fn LTRIM(");
+        return false;
+    }
+
+    public boolean visitTrimTrailing(EJBQLExpression expression) {
+        context.append(" {fn RTRIM(");
+        return false;
+    }
+
+    public boolean visitTrimBoth(EJBQLExpression expression) {
+        context.append(" {fn LTRIM({fn RTRIM(");
+        return false;
     }
 }

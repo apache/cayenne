@@ -18,24 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
-import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
-
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLAbs extends SimpleNode {
+public class EJBQLTrimSpecification extends SimpleNode {
 
-    public EJBQLAbs(int id) {
+    public EJBQLTrimSpecification(int id) {
         super(id);
     }
 
-    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitAbs(this, -1);
-    }
-
-    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
-        return super.visitChild(visitor, childIndex)
-                && visitor.visitAbs(this, childIndex);
-    }
 }

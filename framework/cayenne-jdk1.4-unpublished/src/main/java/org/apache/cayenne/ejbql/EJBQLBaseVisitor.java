@@ -42,7 +42,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         this.continueFlag = continueFlag;
     }
 
-    public boolean visitAbs(EJBQLExpression expression) {
+    public boolean visitAbs(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -90,7 +90,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitConcat(EJBQLExpression expression) {
+    public boolean visitConcat(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -210,7 +210,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitLength(EJBQLExpression expression) {
+    public boolean visitLength(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -226,11 +226,11 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitLocate(EJBQLExpression expression) {
+    public boolean visitLocate(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
-    public boolean visitLower(EJBQLExpression expression) {
+    public boolean visitLower(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -246,7 +246,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitMod(EJBQLExpression expression) {
+    public boolean visitMod(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -322,7 +322,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitSqrt(EJBQLExpression expression) {
+    public boolean visitSqrt(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -334,7 +334,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitSubstring(EJBQLExpression expression) {
+    public boolean visitSubstring(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -350,7 +350,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitTrim(EJBQLExpression expression) {
+    public boolean visitTrim(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
@@ -386,7 +386,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitUpper(EJBQLExpression expression) {
+    public boolean visitUpper(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 

@@ -76,7 +76,7 @@
 	<obj-relationship name="representatives" source="ClientCompany" target="CustomerRepresentative" db-relationship-path="representatives"/>
 	<obj-relationship name="toClientCompany" source="CustomerRepresentative" target="ClientCompany" db-relationship-path="toClientCompany"/>
 	<obj-relationship name="employees" source="Department" target="Employee" db-relationship-path="employees"/>
-	<obj-relationship name="toManager" source="Department" target="Manager" db-relationship-path="employees"/>
+	<obj-relationship name="toManager" source="Department" target="Manager" db-relationship-path="toManager"/>
 	<obj-relationship name="addresses" source="Employee" target="Address" db-relationship-path="employeeAddresses"/>
 	<obj-relationship name="toDepartment" source="Employee" target="Department" db-relationship-path="toDepartment"/>
 	<obj-relationship name="managedDepartments" source="Manager" target="Department" db-relationship-path="managedDepartments"/>
