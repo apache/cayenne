@@ -24,7 +24,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLTrimBoth extends SimpleNode {
+public class EJBQLTrimBoth extends EJBQLTrimSpecification {
 
     public EJBQLTrimBoth(int id) {
         super(id);

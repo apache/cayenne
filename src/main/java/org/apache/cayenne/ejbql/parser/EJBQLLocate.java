@@ -31,6 +31,11 @@ public class EJBQLLocate extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitLocate(this);
+        return visitor.visitLocate(this, -1);
+    }
+
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitLocate(this, childIndex);
     }
 }

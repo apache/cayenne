@@ -24,7 +24,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EJBQLTrimTrailing extends SimpleNode {
+public class EJBQLTrimTrailing extends EJBQLTrimSpecification {
 
     public EJBQLTrimTrailing(int id) {
         super(id);

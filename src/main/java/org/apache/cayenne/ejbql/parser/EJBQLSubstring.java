@@ -31,6 +31,11 @@ public class EJBQLSubstring extends SimpleNode {
     }
 
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitSubstring(this);
+        return visitor.visitSubstring(this, -1);
+    }
+    
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitSubstring(this, childIndex);
     }
 }
