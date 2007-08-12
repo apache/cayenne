@@ -29,10 +29,20 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.parser.EJBQLEquals;
+import org.apache.cayenne.ejbql.parser.EJBQLIdentificationVariable;
+import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 import org.apache.cayenne.ejbql.parser.EJBQLSubselect;
 import org.apache.cayenne.ejbql.parser.EJBQLTrimBoth;
 import org.apache.cayenne.ejbql.parser.EJBQLTrimSpecification;
+import org.apache.cayenne.ejbql.parser.Node;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 3.0
@@ -107,27 +117,85 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitMemberOf(EJBQLExpression expression) {
-        // handle as "? =|<> path" (an alt. way would've been a correlated subquery
-        // on the target entity)...
+
+        // create a correlated subquery, using the following transformation:
+
+        // * Subquery Root is always an entity that is a target of relationship
+        // * A subquery has a join based on reverse relationship, pointing to the
+        // original ID.
+        // * Join must be transled as a part of the subquery WHERE clause instead of
+        // FROM.
+        // * A condition is added: subquery_root_id = LHS_memberof
+
+        if (expression.getChildrenCount() != 2) {
+            throw new EJBQLException("MEMBER OF must have exactly two children, got: "
+                    + expression.getChildrenCount());
+        }
+
+        if (!(expression.getChild(1) instanceof EJBQLPath)) {
+            throw new EJBQLException(
+                    "Second child of the MEMBER OF must be a collection path, got: "
+                            + expression.getChild(1));
+        }
+
+        EJBQLPath path = (EJBQLPath) expression.getChild(1);
+
+        // make sure the ID for the path does not overlap with other condition
+        // joins...
+        String id = path.getAbsolutePath();
+
+        String correlatedEntityId = path.getId();
+        ClassDescriptor correlatedEntityDescriptor = context
+                .getEntityDescriptor(correlatedEntityId);
+        String correlatedTableName = correlatedEntityDescriptor
+                .getEntity()
+                .getDbEntity()
+                .getFullyQualifiedName();
+        String correlatedTableAlias = context.getTableAlias(
+                correlatedEntityId,
+                correlatedTableName);
+
+        String subqueryId = context.createIdAlias(id);
+        ClassDescriptor targetDescriptor = context.getEntityDescriptor(subqueryId);
+        String subqueryTableName = targetDescriptor
+                .getEntity()
+                .getDbEntity()
+                .getFullyQualifiedName();
+        String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
 
         if (expression.isNegated()) {
-            context.switchToMarker(EJBQLSelectTranslator.makeDistinctMarker(), true);
-            context.append(" DISTINCT");
-            context.switchToMainBuffer();
+            context.append(" NOT");
+        }
 
-            visitNotEquals(expression, -1);
-            for (int i = 0; i < expression.getChildrenCount(); i++) {
-                expression.getChild(i).visit(this);
-                visitNotEquals(expression, i);
-            }
+        context.append(" EXISTS (SELECT 1 FROM ");
+        // not using "AS" to separate table name and alias name - OpenBase doesn't
+        // support "AS", and the rest of the databases do not care
+        context.append(subqueryTableName).append(' ').append(subqueryRootAlias);
+        context.append(" WHERE");
+
+        ObjRelationship relationship = context.getIncomingRelationship(id);
+        // TODO: andrus, 8/11/2007 flattened?
+        DbRelationship correlatedJoinRelationship = (DbRelationship) relationship
+                .getDbRelationships()
+                .get(0);
+        Iterator it = correlatedJoinRelationship.getJoins().iterator();
+        while (it.hasNext()) {
+            DbJoin join = (DbJoin) it.next();
+            context.append(' ').append(subqueryRootAlias).append('.').append(
+                    join.getTargetName()).append(" = ");
+            context.append(correlatedTableAlias).append('.').append(join.getSourceName());
+            context.append(" AND");
         }
-        else {
-            visitEquals(expression, -1);
-            for (int i = 0; i < expression.getChildrenCount(); i++) {
-                expression.getChild(i).visit(this);
-                visitEquals(expression, i);
-            }
-        }
+
+        // translate subquery_root_id = LHS_of_memberof
+        EJBQLEquals equals = new EJBQLEquals(-1);
+        EJBQLIdentificationVariable identifier = new EJBQLIdentificationVariable(-1);
+        identifier.setText(subqueryId);
+        equals.jjtAddChild(identifier, 0);
+        equals.jjtAddChild((Node) expression.getChild(0), 1);
+        equals.visit(this);
+
+        context.append(")");
 
         return false;
     }
@@ -323,6 +391,32 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
                 context.append(text);
             }
         }
+    }
+
+    public boolean visitIdentificationVariable(EJBQLExpression expression) {
+        // this is a match on a variable, like "x = :x"
+
+        ClassDescriptor descriptor = context.getEntityDescriptor(expression.getText());
+        if (descriptor == null) {
+            throw new EJBQLException("Invalid identification variable: "
+                    + expression.getText());
+        }
+
+        DbEntity table = descriptor.getEntity().getDbEntity();
+        String alias = context.getTableAlias(expression.getText(), table
+                .getFullyQualifiedName());
+
+        List pks = table.getPrimaryKey();
+
+        if (pks.size() == 1) {
+            DbAttribute pk = (DbAttribute) pks.get(0);
+            context.append(' ').append(alias).append('.').append(pk.getName());
+        }
+        else {
+            throw new EJBQLException(
+                    "Multi-column PK to-many matches are not yet supported.");
+        }
+        return false;
     }
 
     public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {

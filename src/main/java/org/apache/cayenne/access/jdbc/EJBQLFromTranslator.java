@@ -96,9 +96,7 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
         String rhsId = join.getRightHandSideId();
 
-        ObjRelationship joinRelationship = context
-                .getCompiledExpression()
-                .getIncomingRelationship(rhsId);
+        ObjRelationship joinRelationship = context.getIncomingRelationship(rhsId);
         if (joinRelationship == null) {
             throw new EJBQLException("No join configured for id " + rhsId);
         }
@@ -147,8 +145,7 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
     }
 
     private String appendTable(String id) {
-        ClassDescriptor descriptor = context.getCompiledExpression().getEntityDescriptor(
-                id);
+        ClassDescriptor descriptor = context.getEntityDescriptor(id);
 
         String tableName = descriptor.getEntity().getDbEntity().getFullyQualifiedName();
         String alias = context.getTableAlias(id, tableName);

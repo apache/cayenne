@@ -82,8 +82,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitIdentifier(EJBQLExpression expression) {
-        ClassDescriptor descriptor = context.getCompiledExpression().getEntityDescriptor(
-                expression.getText());
+        ClassDescriptor descriptor = context.getEntityDescriptor(expression.getText());
         if (descriptor == null) {
             throw new EJBQLException("Invalid identification variable: "
                     + expression.getText());
@@ -150,7 +149,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 join.jjtAddChild(path, 0);
                 join.jjtAddChild(joinId, 1);
                 getJoinAppender().visitInnerJoin(join);
-                
+
                 this.lastAlias = context.getTableAlias(fullPath, currentEntity
                         .getDbEntityName());
             }
@@ -159,10 +158,11 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 join.jjtAddChild(path, 0);
                 join.jjtAddChild(joinId, 1);
                 getJoinAppender().visitOuterJoin(join);
-                
-                Relationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
+
+                Relationship lastRelationship = currentEntity
+                        .getRelationship(lastPathComponent);
                 ObjEntity targetEntity = (ObjEntity) lastRelationship.getTargetEntity();
-                
+
                 this.lastAlias = context.getTableAlias(fullPath, targetEntity
                         .getDbEntityName());
             }
@@ -239,11 +239,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
             if (pks.size() == 1) {
                 DbAttribute pk = (DbAttribute) pks.get(0);
-                context
-                        .append(' ')
-                        .append(alias)
-                        .append('.')
-                        .append(pk.getName());
+                context.append(' ').append(alias).append('.').append(pk.getName());
             }
             else {
                 throw new EJBQLException(

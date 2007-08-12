@@ -237,7 +237,7 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     public void testCollectionMemberOfParameter() throws Exception {
         createTestData("prepareCollection");
 
-        String ejbql = "SELECT a FROM Artist a " + "WHERE :x MEMBER OF a.paintingArray";
+        String ejbql = "SELECT a FROM Artist a WHERE :x MEMBER OF a.paintingArray";
 
         ObjectContext context = createDataContext();
 
@@ -259,50 +259,50 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         assertTrue(ids.contains(new Integer(33001)));
     }
     
-//    public void testCollectionNotMemberOfParameter() throws Exception {
-//        createTestData("prepareCollection");
-//
-//        String ejbql = "SELECT a FROM Artist a " + "WHERE :x NOT MEMBER a.paintingArray";
-//
-//        ObjectContext context = createDataContext();
-//
-//        EJBQLQuery query = new EJBQLQuery(ejbql);
-//        query.setParameter("x", DataObjectUtils.objectForPK(
-//                context,
-//                Painting.class,
-//                33010));
-//        List objects = context.performQuery(query);
-//        assertEquals(2, objects.size());
-//
-//        Set ids = new HashSet();
-//        Iterator it = objects.iterator();
-//        while (it.hasNext()) {
-//            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
-//            ids.add(id);
-//        }
-//        
-//        assertTrue(ids.contains(new Integer(33002)));
-//        assertTrue(ids.contains(new Integer(33003)));
-//    }
+    public void testCollectionNotMemberOfParameter() throws Exception {
+        createTestData("prepareCollection");
 
-//    public void testCollectionMemberOfThetaJoin() throws Exception {
-//        createTestData("prepareCollection");
-//
-//        String ejbql = "SELECT p FROM Painting p, Artist a "
-//                + "WHERE p MEMBER OF a.paintingArray AND a.artistName = 'B'";
-//
-//        EJBQLQuery query = new EJBQLQuery(ejbql);
-//        List objects = createDataContext().performQuery(query);
-//        assertEquals(2, objects.size());
-//
-//        Set ids = new HashSet();
-//        Iterator it = objects.iterator();
-//        while (it.hasNext()) {
-//            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
-//            ids.add(id);
-//        }
-//
-//        assertTrue(ids.contains(new Integer(33009)));
-//        assertTrue(ids.contains(new Integer(33010)));
-//    }
+        String ejbql = "SELECT a FROM Artist a WHERE :x NOT MEMBER a.paintingArray";
+
+        ObjectContext context = createDataContext();
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("x", DataObjectUtils.objectForPK(
+                context,
+                Painting.class,
+                33010));
+        List objects = context.performQuery(query);
+        assertEquals(2, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+        
+        assertTrue(ids.contains(new Integer(33002)));
+        assertTrue(ids.contains(new Integer(33003)));
+    }
+
+    public void testCollectionMemberOfThetaJoin() throws Exception {
+        createTestData("prepareCollection");
+
+        String ejbql = "SELECT p FROM Painting p, Artist a "
+                + "WHERE p MEMBER OF a.paintingArray AND a.artistName = 'B'";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List objects = createDataContext().performQuery(query);
+        assertEquals(2, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(new Integer(33009)));
+        assertTrue(ids.contains(new Integer(33010)));
+    }
 }
