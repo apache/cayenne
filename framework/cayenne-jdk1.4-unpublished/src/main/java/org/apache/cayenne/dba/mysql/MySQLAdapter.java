@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -168,6 +169,13 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     protected PkGenerator createPkGenerator() {
         return new MySQLPkGenerator();
+    }
+    
+    /**
+     * @since 3.0
+     */
+    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
+        return new MySQLEJBQLTranslatorFactory();
     }
 
     /**

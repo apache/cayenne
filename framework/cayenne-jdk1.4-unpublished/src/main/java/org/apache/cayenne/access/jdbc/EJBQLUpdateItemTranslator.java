@@ -29,7 +29,7 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
  */
 class EJBQLUpdateItemTranslator extends EJBQLConditionTranslator {
 
-    public EJBQLUpdateItemTranslator(EJBQLTranslationContext context) {
+    EJBQLUpdateItemTranslator(EJBQLTranslationContext context) {
         super(context);
     }
 
@@ -111,7 +111,7 @@ class EJBQLUpdateItemTranslator extends EJBQLConditionTranslator {
             context.append(" NULL");
             return false;
         }
-        
+
         return true;
     }
 }

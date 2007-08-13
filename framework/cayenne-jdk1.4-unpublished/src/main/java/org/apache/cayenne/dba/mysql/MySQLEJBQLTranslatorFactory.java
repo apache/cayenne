@@ -16,27 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.dba.mysql;
 
-package org.apache.cayenne.dba.oracle;
-
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
 
 /**
- * An action builder for Oracle8Adapter.
- * 
- * @since 1.2
+ * @since 3.0
  * @author Andrus Adamchik
  */
-class Oracle8ActionBuilder extends OracleActionBuilder {
+class MySQLEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
 
-    Oracle8ActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
-        super(adapter, resolver);
-    }
-
-    public SQLAction sqlAction(SQLTemplate query) {
-        return new Oracle8SQLTemplateAction(query, adapter);
-    }
+    // TODO: andrus 8/13/2007 - implement TRIM CHAR translation
 }

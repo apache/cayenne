@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.ejbql.parser.EJBQLIdentificationVariable;
 import org.apache.cayenne.ejbql.parser.EJBQLIdentifier;
 import org.apache.cayenne.ejbql.parser.EJBQLInnerJoin;
@@ -57,7 +58,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     protected String idPath;
     protected String joinMarker;
     private String fullPath;
-    private EJBQLFromTranslator joinAppender;
+    private EJBQLExpressionVisitor joinAppender;
 
     EJBQLPathTranslator(EJBQLTranslationContext context) {
         super(true);
@@ -107,9 +108,9 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
-    private EJBQLFromTranslator getJoinAppender() {
+    private EJBQLExpressionVisitor getJoinAppender() {
         if (joinAppender == null) {
-            joinAppender = new EJBQLFromTranslator(context);
+            joinAppender = context.getTranslatorFactory().getFromTranslator(context);
         }
 
         return joinAppender;

@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.dba;
 
 import java.net.URL;
@@ -30,6 +29,8 @@ import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.BigIntegerType;
@@ -65,6 +66,7 @@ public class JdbcAdapter implements DbAdapter {
     protected boolean supportsFkConstraints;
     protected boolean supportsUniqueConstraints;
     protected boolean supportsGeneratedKeys;
+    protected EJBQLTranslatorFactory ejbqlTranslatorFactory;
 
     /**
      * Creates new JdbcAdapter with a set of default parameters.
@@ -75,10 +77,11 @@ public class JdbcAdapter implements DbAdapter {
         this.setSupportsUniqueConstraints(true);
         this.setSupportsFkConstraints(true);
 
-        this.pkGenerator = this.createPkGenerator();
+        this.pkGenerator = createPkGenerator();
         this.typesHandler = TypesHandler.getHandler(findAdapterResource("/types.xml"));
         this.extendedTypes = new ExtendedTypeMap();
         this.configureExtendedTypes(extendedTypes);
+        this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
     }
 
     /**
@@ -137,13 +140,13 @@ public class JdbcAdapter implements DbAdapter {
 
         // enable "small" BLOBs
         map.registerType(new ByteArrayType(false, true));
-        
+
         // enable Calendar
         // TODO: andrus 9/1/2006 - maybe use ExtendedTypeFactory to handle all calendar
         // subclasses at once
         map.registerType(new CalendarType(GregorianCalendar.class));
         map.registerType(new CalendarType(Calendar.class));
-        
+
         map.registerType(new BigIntegerType());
     }
 
@@ -154,6 +157,17 @@ public class JdbcAdapter implements DbAdapter {
      */
     protected PkGenerator createPkGenerator() {
         return new JdbcPkGenerator();
+    }
+
+    /**
+     * Creates and returns an {@link EJBQLTranslatorFactory} used to generate visitors for
+     * EJBQL to SQL translations. This method should be overriden by subclasses that need
+     * to customize EJBQL generation.
+     * 
+     * @since 3.0
+     */
+    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
+        return new JdbcEJBQLTranslatorFactory();
     }
 
     /**
@@ -250,7 +264,6 @@ public class JdbcAdapter implements DbAdapter {
                 createTableAppendColumn(sqlBuffer, column);
             }
 
-            
             createTableAppendPKClause(sqlBuffer, entity);
         }
 
@@ -303,9 +316,7 @@ public class JdbcAdapter implements DbAdapter {
         // append size and precision (if applicable)
         if (TypesMapping.supportsLength(column.getType())) {
             int len = column.getMaxLength();
-            int scale = TypesMapping.isDecimal(column.getType())
-                    ? column.getScale()
-                    : -1;
+            int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
 
             // sanity check
             if (scale > len) {
@@ -487,5 +498,28 @@ public class JdbcAdapter implements DbAdapter {
      */
     public void setSupportsGeneratedKeys(boolean flag) {
         this.supportsGeneratedKeys = flag;
+    }
+
+    /**
+     * Returns a translator factory for EJBQL to SQL translation. This property is
+     * normally initialized in constructor by calling
+     * {@link #createEJBQLTranslatorFactory()}, and can be overriden by calling
+     * {@link #setEjbqlTranslatorFactory(EJBQLTranslatorFactory)}.
+     * 
+     * @since 3.0
+     */
+    public EJBQLTranslatorFactory getEjbqlTranslatorFactory() {
+        return ejbqlTranslatorFactory;
+    }
+
+    /**
+     * Sets a translator factory for EJBQL to SQL translation. This property is normally
+     * initialized in constructor by calling {@link #createEJBQLTranslatorFactory()}, so
+     * users would only override it if they need to customize EJBQL translation.
+     * 
+     * @since 3.0
+     */
+    public void setEjbqlTranslatorFactory(EJBQLTranslatorFactory ejbqlTranslatorFactory) {
+        this.ejbqlTranslatorFactory = ejbqlTranslatorFactory;
     }
 }

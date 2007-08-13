@@ -55,25 +55,25 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
         context.append(" FROM");
         context.setAppendingResultColumns(false);
-        expression.visit(new EJBQLFromTranslator(context));
+        expression.visit(context.getTranslatorFactory().getFromTranslator(context));
         return false;
     }
 
     public boolean visitGroupBy(EJBQLExpression expression) {
         context.append(" GROUP BY");
-        expression.visit(new EJBQLGroupByTranslator(context));
+        expression.visit(context.getTranslatorFactory().getGroupByTranslator(context));
         return false;
     }
 
     public boolean visitHaving(EJBQLExpression expression) {
         context.append(" HAVING");
-        expression.visit(new EJBQLConditionTranslator(context));
+        expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
         return false;
     }
 
     public boolean visitOrderBy(EJBQLExpression expression) {
         context.append(" ORDER BY");
-        expression.visit(new EJBQLOrderByTranslator(context));
+        expression.visit(context.getTranslatorFactory().getOrderByTranslator(context));
         return false;
     }
 
@@ -91,13 +91,14 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitSelectExpressions(EJBQLExpression expression) {
-        expression.visit(new EJBQLSelectColumnsTranslator(context));
+        expression.visit(context.getTranslatorFactory().getSelectColumnsTranslator(
+                context));
         return false;
     }
 
     public boolean visitWhere(EJBQLExpression expression) {
         context.append(" WHERE");
-        expression.visit(new EJBQLConditionTranslator(context));
+        expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
         return false;
     }
 }

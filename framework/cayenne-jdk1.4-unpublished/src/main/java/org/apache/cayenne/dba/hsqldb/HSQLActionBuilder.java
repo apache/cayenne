@@ -25,8 +25,8 @@ import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcActionBuilder;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
@@ -34,7 +34,7 @@ import org.apache.cayenne.query.SelectQuery;
 
 class HSQLActionBuilder extends JdbcActionBuilder {
 
-    HSQLActionBuilder(DbAdapter adapter, EntityResolver resolver) {
+    HSQLActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
         super(adapter, resolver);
     }
 

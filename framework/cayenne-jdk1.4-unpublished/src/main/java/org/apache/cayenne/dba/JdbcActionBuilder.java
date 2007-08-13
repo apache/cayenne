@@ -46,10 +46,23 @@ import org.apache.cayenne.query.UpdateQuery;
  */
 public class JdbcActionBuilder implements SQLActionVisitor {
 
-    protected DbAdapter adapter;
+    protected JdbcAdapter adapter;
     protected EntityResolver entityResolver;
 
+    /**
+     * @deprecated since 3.0 use "JdbcActionBuilder(JdbcAdapter,EntityResolver)"
+     *             constructor instead.
+     */
     public JdbcActionBuilder(DbAdapter adapter, EntityResolver resolver) {
+        if (!(adapter instanceof JdbcAdapter)) {
+            throw new IllegalArgumentException("Expected a non-null JdbcAdapter, got: "
+                    + adapter);
+        }
+        this.adapter = (JdbcAdapter) adapter;
+        this.entityResolver = resolver;
+    }
+
+    public JdbcActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
         this.adapter = adapter;
         this.entityResolver = resolver;
     }

@@ -49,7 +49,8 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitAggregate(EJBQLExpression expression) {
-        expression.visit(new EJBQLAggregateColumnTranslator(context));
+        expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(
+                context));
         return false;
     }
 
@@ -79,7 +80,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
                 if (context.isAppendingResultColumns()) {
                     String columnAlias = context.nextColumnAlias();
-                    
+
                     // TODO: andrus 6/27/2007 - the last parameter is an unofficial
                     // "jdbcType"
                     // pending CAY-813 implementation, switch to #column directive
@@ -101,7 +102,8 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitIdentifier(EJBQLExpression expression) {
-        expression.visit(new EJBQLIdentifierColumnsTranslator(context));
+        expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(
+                context));
         return false;
     }
 }
