@@ -23,8 +23,8 @@ import java.sql.Connection;
 
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcActionBuilder;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
@@ -35,7 +35,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class OpenBaseActionBuilder extends JdbcActionBuilder {
 
-    OpenBaseActionBuilder(DbAdapter adapter, EntityResolver resolver) {
+    OpenBaseActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
         super(adapter, resolver);
     }
 

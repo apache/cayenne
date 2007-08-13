@@ -20,8 +20,8 @@
 package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.access.jdbc.BatchAction;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcActionBuilder;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -33,7 +33,7 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class SQLServerActionBuilder extends JdbcActionBuilder {
 
-    public SQLServerActionBuilder(DbAdapter adapter, EntityResolver resolver) {
+    public SQLServerActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
         super(adapter, resolver);
     }
 

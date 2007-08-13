@@ -46,13 +46,13 @@ class EJBQLDeleteTranslator extends EJBQLBaseVisitor {
 
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
         context.append(" FROM");
-        expression.visit(new EJBQLFromTranslator(context));
+        expression.visit(context.getTranslatorFactory().getFromTranslator(context));
         return false;
     }
 
     public boolean visitWhere(EJBQLExpression expression) {
         context.append(" WHERE");
-        expression.visit(new EJBQLConditionTranslator(context));
+        expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
         return false;
     }
 }

@@ -39,7 +39,10 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         EJBQLCompiledExpression select = parser.compile(ejbql, getDomain()
                 .getEntityResolver());
 
-        EJBQLTranslationContext tr = new EJBQLTranslationContext(select, parameters);
+        EJBQLTranslationContext tr = new EJBQLTranslationContext(
+                select,
+                parameters,
+                new JdbcEJBQLTranslatorFactory());
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         return tr.getQuery();
     }

@@ -34,7 +34,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-class EJBQLTranslationContext {
+public class EJBQLTranslationContext {
 
     private Map tableAliases;
     private Map boundParameters;
@@ -46,16 +46,19 @@ class EJBQLTranslationContext {
     private Map parameters;
     private Map idAliases;
     private int columnAliasPosition;
+    private EJBQLTranslatorFactory translatorFactory;
 
     // a flag indicating whether column expressions should be treated as result columns or
     // not.
     private boolean appendingResultColumns;
 
-    EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression, Map parameters) {
+    public EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression, Map parameters,
+            EJBQLTranslatorFactory translatorFactory) {
         this.compiledExpression = compiledExpression;
         this.mainBuffer = new StringBuffer();
         this.currentBuffer = mainBuffer;
         this.parameters = parameters;
+        this.translatorFactory = translatorFactory;
     }
 
     SQLTemplate getQuery() {
@@ -78,6 +81,10 @@ class EJBQLTranslationContext {
         }
 
         return id;
+    }
+
+    EJBQLTranslatorFactory getTranslatorFactory() {
+        return translatorFactory;
     }
 
     /**

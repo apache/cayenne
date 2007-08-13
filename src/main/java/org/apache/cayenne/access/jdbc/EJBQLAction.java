@@ -22,10 +22,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLActionVisitor;
@@ -43,7 +44,7 @@ public class EJBQLAction extends BaseSQLAction {
     protected EJBQLQuery query;
 
     public EJBQLAction(EJBQLQuery query, SQLActionVisitor actionFactory,
-            DbAdapter adapter, EntityResolver entityResolver) {
+            JdbcAdapter adapter, EntityResolver entityResolver) {
         super(adapter, entityResolver);
 
         this.query = query;
@@ -54,26 +55,32 @@ public class EJBQLAction extends BaseSQLAction {
             throws SQLException, Exception {
         EJBQLCompiledExpression compiledExpression = query
                 .getExpression(getEntityResolver());
+        final EJBQLTranslatorFactory translatorFactory = ((JdbcAdapter) getAdapter())
+                .getEjbqlTranslatorFactory();
         final EJBQLTranslationContext context = new EJBQLTranslationContext(
                 compiledExpression,
-                query.getParameters());
+                query.getParameters(),
+                translatorFactory);
 
         compiledExpression.getExpression().visit(new EJBQLBaseVisitor(false) {
 
             public boolean visitSelect(EJBQLExpression expression) {
-                EJBQLSelectTranslator visitor = new EJBQLSelectTranslator(context);
+                EJBQLExpressionVisitor visitor = translatorFactory
+                        .getSelectTranslator(context);
                 expression.visit(visitor);
                 return false;
             }
 
             public boolean visitDelete(EJBQLExpression expression) {
-                EJBQLDeleteTranslator visitor = new EJBQLDeleteTranslator(context);
+                EJBQLExpressionVisitor visitor = translatorFactory
+                        .getDeleteTranslator(context);
                 expression.visit(visitor);
                 return false;
             }
 
             public boolean visitUpdate(EJBQLExpression expression) {
-                EJBQLUpdateTranslator visitor = new EJBQLUpdateTranslator(context);
+                EJBQLExpressionVisitor visitor = translatorFactory
+                        .getUpdateTranslator(context);
                 expression.visit(visitor);
                 return false;
             }

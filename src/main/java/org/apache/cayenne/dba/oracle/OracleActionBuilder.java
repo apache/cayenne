@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcActionBuilder;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -33,7 +33,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class OracleActionBuilder extends JdbcActionBuilder {
 
-    OracleActionBuilder(DbAdapter adapter, EntityResolver resolver) {
+    OracleActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
         super(adapter, resolver);
     }
 
