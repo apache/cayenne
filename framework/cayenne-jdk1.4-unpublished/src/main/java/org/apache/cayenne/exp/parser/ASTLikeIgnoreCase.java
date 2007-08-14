@@ -39,7 +39,7 @@ public class ASTLikeIgnoreCase extends PatternMatchNode {
     public ASTLikeIgnoreCase(ASTPath path, Object pattern) {
         super(ExpressionParserTreeConstants.JJTLIKEIGNORECASE, true);
         jjtAddChild(path, 0);
-        jjtAddChild(wrapChild(pattern), 1);
+        jjtAddChild(new ASTScalar(pattern), 1);
         connectChildren();
     }
 
