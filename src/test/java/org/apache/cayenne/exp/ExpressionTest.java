@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp;
 
+import java.util.Collections;
+
 import junit.framework.TestCase;
 
 /**
@@ -29,5 +31,12 @@ public class ExpressionTest extends TestCase {
     public void testFromStringLong() {
         Expression e = Expression.fromString("216201000180L");
         assertEquals(new Long(216201000180L), e.evaluate(new Object()));
+    }
+
+    public void testExpWithParametersNullHandling_CAY847() {
+        Expression e = Expression.fromString("X = $x");
+
+        e = e.expWithParameters(Collections.singletonMap("x", null));
+        assertEquals("X = null", e.toString());
     }
 }

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.Transformer;
+import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ExpressionParser;
 import org.apache.cayenne.exp.parser.ParseException;
 import org.apache.cayenne.util.ConversionUtil;
@@ -277,9 +278,11 @@ public abstract class Expression implements Serializable, XMLSerializable {
                     Object value = parameters.get(name);
 
                     // wrap lists (for now); also support null parameters
+                    // TODO: andrus 8/14/2007 - shouldn't we also wrap non-null object
+                    // values in ASTScalars?
                     return (value != null)
                             ? ExpressionFactory.wrapPathOperand(value)
-                            : null;
+                            : new ASTScalar(null);
                 }
             }
         };
