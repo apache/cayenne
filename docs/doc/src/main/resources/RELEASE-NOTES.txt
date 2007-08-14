@@ -24,8 +24,9 @@ CAY-837 EJBQL Update Statement Support
 CAY-838 EJBQL GROUP BY and HAVING support
 CAY-840 EJBQL Subquery Support
 CAY-841 EJBQL Support for LIKE/ESCAPE and IN conditions
+CAY-842 EJBQL Collections condition support
 CAY-843 Remove arbitrary reverse relationship mapping limitations
-CAY-846 EJBQL Collections condition support
+CAY-846 EJBQL Support for Functional Expressions
 
 Bug Fixes Since M1:
 
