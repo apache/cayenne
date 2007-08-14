@@ -168,10 +168,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         if (query instanceof ObjectIdQuery) {
 
             ObjectIdQuery oidQuery = (ObjectIdQuery) query;
-
             DataRow row = null;
 
-            if (!oidQuery.isFetchMandatory()) {
+            if (cache != null
+                    && !oidQuery.isFetchMandatory()) {
                 row = cache.getCachedSnapshot(oidQuery.getObjectId());
             }
 
@@ -214,8 +214,11 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return !DONE;
             }
 
+            if(cache == null) {
+                return !DONE;
+            }
+            
             DataRow sourceRow = cache.getCachedSnapshot(relationshipQuery.getObjectId());
-
             if (sourceRow == null) {
                 return !DONE;
             }

@@ -302,16 +302,22 @@ public class AshwoodEntitySorter implements EntitySorter {
 
         // find committed snapshot - so we can't fetch from the context as it will return
         // dirty snapshot; must go down the stack instead
+
+        // how do we handle this for NEW objects correctly? For now bail from the method
+        if (object.getObjectId().isTemporary()) {
+            return null;
+        }
+
         ObjectIdQuery query = new ObjectIdQuery(
                 object.getObjectId(),
                 true,
                 ObjectIdQuery.CACHE);
         QueryResponse response = context.getChannel().onQuery(null, query);
         List result = response.firstList();
-        if(result == null || result.size() == 0) {
+        if (result == null || result.size() == 0) {
             return null;
         }
-        
+
         DataRow snapshot = (DataRow) result.get(0);
 
         ObjectId id = snapshot.createTargetObjectId(targetEntityName, finalRel);
