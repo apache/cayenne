@@ -18,19 +18,53 @@
  ****************************************************************/
 package org.apache.cayenne.itest.cpa;
 
+import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.remote.ClientChannel;
+import org.apache.cayenne.remote.service.LocalConnection;
 
 public class CPAContextCase extends CPATestCase {
 
-    protected DataContext context;
-
-    @Override
-    protected void setUp() throws Exception {
-        this.context = ItestSetup.getInstance().createDataContext();
-    }
+    private DataContext context;
+    private ObjectContext clientContext;
 
     public ObjectContext getContext() {
+        if (context == null) {
+            this.context = ItestSetup.getInstance().createDataContext();
+        }
         return context;
+    }
+
+    public ObjectContext getContext(boolean reset) {
+        if (reset) {
+            this.context = null;
+        }
+
+        return getContext();
+    }
+
+    protected ObjectContext getClientContext() {
+        if (clientContext == null) {
+
+            // create with this test case DataContext to allow callers to poke on the
+            // server side as well as the client
+            ClientServerChannel clientServerChannel = new ClientServerChannel(
+                    (DataContext) getContext());
+            LocalConnection connection = new LocalConnection(clientServerChannel);
+            ClientChannel channel = new ClientChannel(connection);
+            clientContext = new CayenneContext(channel);
+        }
+
+        return clientContext;
+    }
+
+    protected ObjectContext getClientContext(boolean reset) {
+        if (reset) {
+            clientContext = null;
+        }
+
+        return getClientContext();
     }
 }
