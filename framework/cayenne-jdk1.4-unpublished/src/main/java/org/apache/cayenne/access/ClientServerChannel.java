@@ -43,7 +43,12 @@ public class ClientServerChannel implements DataChannel {
         this(domain.createDataContext());
     }
 
-    ClientServerChannel(DataContext serverContext) {
+    /**
+     * Creates a ClientServerChannel that wraps a specified DataContext.
+     * 
+     * @since 3.0
+     */
+    public ClientServerChannel(DataContext serverContext) {
         this.serverContext = serverContext;
     }
 
