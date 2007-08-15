@@ -13,9 +13,9 @@ public class RuntimeLoaderDelegateDefaultsLoadingTest extends CPAContextCase {
 
 	public void testLoadedReverseDb() {
 
-		DbEntity table1 = context.getEntityResolver().getDbEntity(
+		DbEntity table1 = getContext().getEntityResolver().getDbEntity(
 				"defaults_table1");
-		DbEntity table2 = context.getEntityResolver().getDbEntity(
+		DbEntity table2 = getContext().getEntityResolver().getDbEntity(
 				"defaults_table2");
 		assertNotNull(table1.getAnyRelationship(table2));
 		assertTrue(table1.getAnyRelationship(table2).isRuntime());
@@ -24,9 +24,9 @@ public class RuntimeLoaderDelegateDefaultsLoadingTest extends CPAContextCase {
 
 	public void testLoadedReverseObj() {
 
-		ObjEntity class1 = context.getEntityResolver().getObjEntity(
+		ObjEntity class1 = getContext().getEntityResolver().getObjEntity(
 				"DefaultsTable1");
-		ObjEntity class2 = context.getEntityResolver().getObjEntity(
+		ObjEntity class2 = getContext().getEntityResolver().getObjEntity(
 				"DefaultsTable2");
 		assertNotNull(class1.getAnyRelationship(class2));
 		assertTrue(class1.getAnyRelationship(class2).isRuntime());
@@ -43,12 +43,12 @@ public class RuntimeLoaderDelegateDefaultsLoadingTest extends CPAContextCase {
 				new Object[] { 1, 1 });
 
 		DefaultsTable2 o = (DefaultsTable2) DataObjectUtils.objectForPK(
-				context, DefaultsTable2.class, 1);
+				getContext(), DefaultsTable2.class, 1);
 		assertNotNull(o.getToTable1());
 		assertEquals("X", o.getToTable1().getName());
 	}
 
-	public void testUpdateImplicitToMany() throws Exception {
+	public void testUpdateImplicitToOne() throws Exception {
 		getDbHelper().deleteAll("defaults_table4");
 		getDbHelper().deleteAll("defaults_table3");
 		getDbHelper().insert("defaults_table3", new String[] { "id", "name" },
@@ -60,11 +60,11 @@ public class RuntimeLoaderDelegateDefaultsLoadingTest extends CPAContextCase {
 				new Object[] { 1, 1 });
 
 		DefaultsTable4 o = (DefaultsTable4) DataObjectUtils.objectForPK(
-				context, DefaultsTable4.class, 1);
+				getContext(), DefaultsTable4.class, 1);
 		DefaultsTable3 o1 = (DefaultsTable3) DataObjectUtils.objectForPK(
-				context, DefaultsTable3.class, 1);
+				getContext(), DefaultsTable3.class, 1);
 		DefaultsTable3 o2 = (DefaultsTable3) DataObjectUtils.objectForPK(
-				context, DefaultsTable3.class, 2);
+				getContext(), DefaultsTable3.class, 2);
 
 		assertEquals(1, o1.getDefaultTable4s().size());
 		assertEquals(0, o2.getDefaultTable4s().size());
@@ -72,10 +72,10 @@ public class RuntimeLoaderDelegateDefaultsLoadingTest extends CPAContextCase {
 		o2.addToDefaultTable4s(o);
 
 		assertEquals(1, o2.getDefaultTable4s().size());
-		context.commitChanges();
+		getContext().commitChanges();
 		assertEquals(1, o2.getDefaultTable4s().size());
 
-		context.performQuery(new RefreshQuery());
+		getContext().performQuery(new RefreshQuery());
 
 		// note that the old to-many is only refreshed after invalidation with
 		// RefreshQuery... should this be treated as a bug?
