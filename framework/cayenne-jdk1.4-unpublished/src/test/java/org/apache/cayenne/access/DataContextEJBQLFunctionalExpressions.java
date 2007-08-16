@@ -365,40 +365,45 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
 
     }
 
-    // public void testTRIMChar() {
-    // ObjectContext context = createDataContext();
-    //
-    // Artist a1 = (Artist) context.newObject(Artist.class);
-    // a1.setArtistName("XXXA");
-    //
-    // Artist a2 = (Artist) context.newObject(Artist.class);
-    // a2.setArtistName("AXXX");
-    // context.commitChanges();
-    //
-    // EJBQLQuery query = new EJBQLQuery(
-    // "SELECT a FROM Artist a WHERE TRIM('X' FROM a.artistName) = 'A'");
-    // List objects = context.performQuery(query);
-    // assertEquals(2, objects.size());
-    // assertTrue(objects.contains(a1));
-    // assertTrue(objects.contains(a2));
-    //
-    // query = new EJBQLQuery(
-    // "SELECT a FROM Artist a WHERE TRIM(LEADING 'X' FROM a.artistName) = 'A'");
-    // objects = context.performQuery(query);
-    // assertEquals(1, objects.size());
-    // assertTrue(objects.contains(a1));
-    //
-    // query = new EJBQLQuery(
-    // "SELECT a FROM Artist a WHERE TRIM(TRAILING 'X' FROM a.artistName) = 'A'");
-    // objects = context.performQuery(query);
-    // assertEquals(1, objects.size());
-    // assertTrue(objects.contains(a2));
-    //
-    // query = new EJBQLQuery(
-    // "SELECT a FROM Artist a WHERE TRIM(BOTH 'X' FROM a.artistName) = 'A'");
-    // objects = context.performQuery(query);
-    // assertEquals(2, objects.size());
-    // assertTrue(objects.contains(a1));
-    // assertTrue(objects.contains(a2));
-    // }
+    public void testTRIMChar() {
+
+        if (!getAccessStackAdapter().supportsTrimChar()) {
+            return;
+        }
+        
+        ObjectContext context = createDataContext();
+
+        Artist a1 = (Artist) context.newObject(Artist.class);
+        a1.setArtistName("XXXA");
+
+        Artist a2 = (Artist) context.newObject(Artist.class);
+        a2.setArtistName("AXXX");
+        context.commitChanges();
+
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT a FROM Artist a WHERE TRIM('X' FROM a.artistName) = 'A'");
+        List objects = context.performQuery(query);
+        assertEquals(2, objects.size());
+        assertTrue(objects.contains(a1));
+        assertTrue(objects.contains(a2));
+
+        query = new EJBQLQuery(
+                "SELECT a FROM Artist a WHERE TRIM(LEADING 'X' FROM a.artistName) = 'A'");
+        objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+        assertTrue(objects.contains(a1));
+
+        query = new EJBQLQuery(
+                "SELECT a FROM Artist a WHERE TRIM(TRAILING 'X' FROM a.artistName) = 'A'");
+        objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+        assertTrue(objects.contains(a2));
+
+        query = new EJBQLQuery(
+                "SELECT a FROM Artist a WHERE TRIM(BOTH 'X' FROM a.artistName) = 'A'");
+        objects = context.performQuery(query);
+        assertEquals(2, objects.size());
+        assertTrue(objects.contains(a1));
+        assertTrue(objects.contains(a2));
+    }
 }

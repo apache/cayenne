@@ -54,6 +54,10 @@ public class MySQLStackAdapter extends AccessStackAdapter {
     public boolean supportsStoredProcedures() {
         return true;
     }
+    
+    public boolean supportsTrimChar() {
+        return true;
+    }
 
     public void createdTables(Connection con, DataMap map) throws Exception {
         if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
