@@ -210,7 +210,7 @@ public class EJBQLTranslationContext {
     /**
      * Appends a piece of SQL to the internal buffer.
      */
-    EJBQLTranslationContext append(String chunk) {
+    public EJBQLTranslationContext append(String chunk) {
         currentBuffer.append(chunk);
         return this;
     }
@@ -218,7 +218,7 @@ public class EJBQLTranslationContext {
     /**
      * Appends a piece of SQL to the internal buffer.
      */
-    EJBQLTranslationContext append(char chunk) {
+    public EJBQLTranslationContext append(char chunk) {
         currentBuffer.append(chunk);
         return this;
     }

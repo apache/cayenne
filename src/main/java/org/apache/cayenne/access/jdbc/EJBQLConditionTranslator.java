@@ -48,12 +48,12 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-class EJBQLConditionTranslator extends EJBQLBaseVisitor {
+public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     protected EJBQLTranslationContext context;
     protected List multiColumnOperands;
 
-    EJBQLConditionTranslator(EJBQLTranslationContext context) {
+    public EJBQLConditionTranslator(EJBQLTranslationContext context) {
         this.context = context;
     }
 
@@ -66,7 +66,8 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitAggregate(EJBQLExpression expression) {
-        expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(context));
+        expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(
+                context));
         return false;
     }
 
@@ -782,7 +783,13 @@ class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     public boolean visitTrimCharacter(EJBQLExpression expression) {
         // this is expected to be overwritten in adapter-specific translators
-        throw new UnsupportedOperationException("Not implemented in a generic translator");
+        if (!"' '".equals(expression.getText())) {
+            throw new UnsupportedOperationException(
+                    "TRIM character other than space is not supported by a generic adapter: "
+                            + expression.getText());
+        }
+
+        return false;
     }
 
     public boolean visitTrimLeading(EJBQLExpression expression) {

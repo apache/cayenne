@@ -18,7 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.dba.mysql;
 
+import org.apache.cayenne.access.jdbc.EJBQLTranslationContext;
 import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
  * @since 3.0
@@ -26,5 +28,7 @@ import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
  */
 class MySQLEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
 
-    // TODO: andrus 8/13/2007 - implement TRIM CHAR translation
+    public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
+        return new MySQLEJBQLConditionTranslator(context);
+    }
 }
