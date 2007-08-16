@@ -28,8 +28,11 @@ import org.apache.art.BigDecimalEntity;
 import org.apache.art.BigIntegerEntity;
 import org.apache.art.DateTestEntity;
 import org.apache.art.Painting;
+import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.QueryChain;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
@@ -169,7 +172,7 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
         assertTrue(objects.contains(o2));
     }
 
-     public void testSIZE() {
+    public void testSIZE() {
         ObjectContext context = createDataContext();
 
         Artist a1 = (Artist) context.newObject(Artist.class);
@@ -317,14 +320,21 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
     }
 
     public void testTRIM() {
+
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
-        a1.setArtistName("  A");
+        // insert via a SQL template to prevent adapter trimming and such...
+        QueryChain inserts = new QueryChain();
+        inserts.addQuery(new SQLTemplate(
+                Artist.class,
+                "INSERT INTO ARTIST (ARTIST_ID,ARTIST_NAME) VALUES(1, '  A')"));
+        inserts.addQuery(new SQLTemplate(
+                Artist.class,
+                "INSERT INTO ARTIST (ARTIST_ID,ARTIST_NAME) VALUES(2, 'A  ')"));
+        context.performGenericQuery(inserts);
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
-        a2.setArtistName("A  ");
-        context.commitChanges();
+        Artist a1 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist a2 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 2);
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(a.artistName) = 'A'");
@@ -336,7 +346,8 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(LEADING FROM a.artistName) = 'A'");
         objects = context.performQuery(query);
-        assertEquals(1, objects.size());
+        // this is fuzzy cause some DB trim trailing data by default
+        assertTrue(objects.size() == 1 || objects.size() == 2);
         assertTrue(objects.contains(a1));
 
         query = new EJBQLQuery(
@@ -353,41 +364,41 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
         assertTrue(objects.contains(a2));
 
     }
-    
-//    public void testTRIMChar() {
-//        ObjectContext context = createDataContext();
-//
-//        Artist a1 = (Artist) context.newObject(Artist.class);
-//        a1.setArtistName("XXXA");
-//
-//        Artist a2 = (Artist) context.newObject(Artist.class);
-//        a2.setArtistName("AXXX");
-//        context.commitChanges();
-//
-//        EJBQLQuery query = new EJBQLQuery(
-//                "SELECT a FROM Artist a WHERE TRIM('X' FROM a.artistName) = 'A'");
-//        List objects = context.performQuery(query);
-//        assertEquals(2, objects.size());
-//        assertTrue(objects.contains(a1));
-//        assertTrue(objects.contains(a2));
-//
-//        query = new EJBQLQuery(
-//                "SELECT a FROM Artist a WHERE TRIM(LEADING 'X' FROM a.artistName) = 'A'");
-//        objects = context.performQuery(query);
-//        assertEquals(1, objects.size());
-//        assertTrue(objects.contains(a1));
-//
-//        query = new EJBQLQuery(
-//                "SELECT a FROM Artist a WHERE TRIM(TRAILING 'X' FROM a.artistName) = 'A'");
-//        objects = context.performQuery(query);
-//        assertEquals(1, objects.size());
-//        assertTrue(objects.contains(a2));
-//
-//        query = new EJBQLQuery(
-//                "SELECT a FROM Artist a WHERE TRIM(BOTH 'X' FROM a.artistName) = 'A'");
-//        objects = context.performQuery(query);
-//        assertEquals(2, objects.size());
-//        assertTrue(objects.contains(a1));
-//        assertTrue(objects.contains(a2));
-//    }
+
+    // public void testTRIMChar() {
+    // ObjectContext context = createDataContext();
+    //
+    // Artist a1 = (Artist) context.newObject(Artist.class);
+    // a1.setArtistName("XXXA");
+    //
+    // Artist a2 = (Artist) context.newObject(Artist.class);
+    // a2.setArtistName("AXXX");
+    // context.commitChanges();
+    //
+    // EJBQLQuery query = new EJBQLQuery(
+    // "SELECT a FROM Artist a WHERE TRIM('X' FROM a.artistName) = 'A'");
+    // List objects = context.performQuery(query);
+    // assertEquals(2, objects.size());
+    // assertTrue(objects.contains(a1));
+    // assertTrue(objects.contains(a2));
+    //
+    // query = new EJBQLQuery(
+    // "SELECT a FROM Artist a WHERE TRIM(LEADING 'X' FROM a.artistName) = 'A'");
+    // objects = context.performQuery(query);
+    // assertEquals(1, objects.size());
+    // assertTrue(objects.contains(a1));
+    //
+    // query = new EJBQLQuery(
+    // "SELECT a FROM Artist a WHERE TRIM(TRAILING 'X' FROM a.artistName) = 'A'");
+    // objects = context.performQuery(query);
+    // assertEquals(1, objects.size());
+    // assertTrue(objects.contains(a2));
+    //
+    // query = new EJBQLQuery(
+    // "SELECT a FROM Artist a WHERE TRIM(BOTH 'X' FROM a.artistName) = 'A'");
+    // objects = context.performQuery(query);
+    // assertEquals(2, objects.size());
+    // assertTrue(objects.contains(a1));
+    // assertTrue(objects.contains(a2));
+    // }
 }
