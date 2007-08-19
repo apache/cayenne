@@ -30,6 +30,7 @@ import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.Property;
@@ -110,7 +111,7 @@ class ChildDiffLoader implements GraphChangeHandler {
 
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 ((ObjectId) nodeId).getEntityName());
-        Property property = descriptor.getProperty(arcId.toString());
+        ArcProperty property = (ArcProperty) descriptor.getProperty(arcId.toString());
 
         property.visit(new PropertyVisitor() {
 
@@ -119,7 +120,12 @@ class ChildDiffLoader implements GraphChangeHandler {
             }
 
             public boolean visitToMany(ToManyProperty property) {
-                property.addTarget(source, target, false);
+                // connect reverse arc if the relationship is marked as "runtime"
+                ArcProperty reverseArc = property.getComplimentaryReverseArc();
+                boolean autoConnectReverse = reverseArc != null
+                        && reverseArc.getRelationship().isRuntime();
+
+                property.addTarget(source, target, autoConnectReverse);
                 return false;
             }
 
@@ -143,8 +149,13 @@ class ChildDiffLoader implements GraphChangeHandler {
             }
 
             public boolean visitToMany(ToManyProperty property) {
+                // connect reverse arc if the relationship is marked as "runtime"
+                ArcProperty reverseArc = property.getComplimentaryReverseArc();
+                boolean autoConnectReverse = reverseArc != null
+                        && reverseArc.getRelationship().isRuntime();
+
                 Persistent target = findObject(targetNodeId);
-                property.removeTarget(source, target, false);
+                property.removeTarget(source, target, autoConnectReverse);
                 return false;
             }
 
