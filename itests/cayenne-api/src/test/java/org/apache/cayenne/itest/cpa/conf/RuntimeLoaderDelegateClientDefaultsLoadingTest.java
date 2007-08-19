@@ -59,8 +59,7 @@ public class RuntimeLoaderDelegateClientDefaultsLoadingTest extends
 		o2 = (DefaultsTable3) DataObjectUtils.objectForPK(clientContext,
 				DefaultsTable3.class, Collections.singletonMap("id", 2));
 
-		// TODO: andrus 8/15/2007 this fails
-		// assertEquals(1, o2.getDefaultTable4s().size());
-		// assertEquals(0, o1.getDefaultTable4s().size());
+		assertEquals(1, o2.getDefaultTable4s().size());
+		assertEquals(0, o1.getDefaultTable4s().size());
 	}
 }
