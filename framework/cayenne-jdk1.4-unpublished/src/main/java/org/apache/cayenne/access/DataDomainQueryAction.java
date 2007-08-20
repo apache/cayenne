@@ -272,7 +272,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             if (refreshQuery.isRefreshAll()) {
 
                 // not sending any events - peer contexts will not get refreshed
-                domain.getSharedSnapshotCache().clear();
+                if (domain.getSharedSnapshotCache() != null) {
+                    domain.getSharedSnapshotCache().clear();
+                }
                 context.getQueryCache().clear();
 
                 GenericResponse response = new GenericResponse();
