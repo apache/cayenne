@@ -33,7 +33,7 @@ import org.apache.cayenne.conf.Configuration;
 // saves what's been already loaded.
 abstract class ApplicationUpgradeHandler {
 
-    private static final ApplicationUpgradeHandler sharedInstance = new UpgradeHandler_2_0();
+    private static final ApplicationUpgradeHandler sharedInstance = new UpgradeHandler_3_0();
 
     static ApplicationUpgradeHandler sharedHandler() {
         return sharedInstance;
@@ -74,10 +74,14 @@ abstract class ApplicationUpgradeHandler {
         return Double.parseDouble(buffer.toString());
     }
 
-    static class UpgradeHandler_2_0 extends UpgradeHandler_1_1 {
+    static class UpgradeHandler_3_0 extends UpgradeHandler_2_0 {
 
-        final static String _1_2_PACKAGE_PREFIX = "org.objectstyle.cayenne.";
-        final static String _2_0_PACKAGE_PREFIX = "org.apache.cayenne.";
+        String supportedVersion() {
+            return "3.0";
+        }
+    }
+
+    static class UpgradeHandler_2_0 extends UpgradeHandler_1_1 {
 
         String supportedVersion() {
             return "2.0";

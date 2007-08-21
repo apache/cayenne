@@ -38,11 +38,14 @@ class DataObjectToOneProperty extends DataObjectBaseProperty implements ToOnePro
     protected ObjRelationship relationship;
     protected String reverseName;
     protected ClassDescriptor targetDescriptor;
+    protected Fault fault;
 
-    DataObjectToOneProperty(ObjRelationship relationship, ClassDescriptor targetDescriptor) {
+    DataObjectToOneProperty(ObjRelationship relationship,
+            ClassDescriptor targetDescriptor, Fault fault) {
         this.relationship = relationship;
         this.targetDescriptor = targetDescriptor;
         this.reverseName = relationship.getReverseRelationshipName();
+        this.fault = fault;
     }
 
     public ArcProperty getComplimentaryReverseArc() {
@@ -87,6 +90,6 @@ class DataObjectToOneProperty extends DataObjectBaseProperty implements ToOnePro
     }
 
     public void invalidate(Object object) {
-        writePropertyDirectly(object, null, Fault.getToOneFault());
+        writePropertyDirectly(object, null, fault);
     }
 }

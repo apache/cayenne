@@ -30,17 +30,32 @@ import java.io.Serializable;
  * @since 1.1
  * @author Andrus Adamchik
  */
-// TODO: serialization of faults should take into account the fact that
-// they are used as singletons to avoid duplicate creation on deserialization
 public abstract class Fault implements Serializable {
 
+    /**
+     * @deprecated since 3.0 as the fault singletons are no longer static and are managed
+     *             by the Cayenne configuration.
+     */
     protected static Fault toOneFault;
+
+    /**
+     * @deprecated since 3.0 as the fault singletons are no longer static and are managed
+     *             by the Cayenne configuration.
+     */
     protected static Fault toManyFault;
 
+    /**
+     * @deprecated since 3.0 as the fault singletons are no longer static and are managed
+     *             by the Cayenne configuration.
+     */
     public static Fault getToOneFault() {
         return toOneFault;
     }
 
+    /**
+     * @deprecated since 3.0 as the fault singletons are no longer static and are managed
+     *             by the Cayenne configuration.
+     */
     public static Fault getToManyFault() {
         return toManyFault;
     }

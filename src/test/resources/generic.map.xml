@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map project-version="2.0">
+<data-map project-version="3.0">
 	<db-entity name="GENERIC1">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="200"/>

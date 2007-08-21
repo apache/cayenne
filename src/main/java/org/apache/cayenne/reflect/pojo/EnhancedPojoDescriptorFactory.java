@@ -26,6 +26,7 @@ import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorFactory;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
+import org.apache.cayenne.reflect.FaultFactory;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.reflect.PersistentDescriptorFactory;
 
@@ -39,8 +40,12 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
 
     static final String PERSISTENCE_STATE_FIELD = "$cay_persistenceState";
 
-    public EnhancedPojoDescriptorFactory(ClassDescriptorMap descriptorMap) {
+    protected FaultFactory faultFactory;
+
+    public EnhancedPojoDescriptorFactory(ClassDescriptorMap descriptorMap,
+            FaultFactory faultFactory) {
         super(descriptorMap);
+        this.faultFactory = faultFactory;
     }
 
     protected ClassDescriptor getDescriptor(ObjEntity entity, Class entityClass) {
@@ -92,6 +97,7 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
                 descriptor,
                 targetDescriptor,
                 accessor,
-                reverseName));
+                reverseName,
+                faultFactory.getToOneFault()));
     }
 }

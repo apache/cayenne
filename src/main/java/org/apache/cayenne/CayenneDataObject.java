@@ -234,13 +234,19 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
 
         // Now do the rest of the normal handling (regardless of whether it was
         // flattened or not)
-        List relList = (List) readProperty(relName);
+        Object holder = readProperty(relName);
 
         // call 'propertyChanged' AFTER readProperty as readProperty ensures that this
         // object fault is resolved
         getObjectContext().propertyChanged(this, relName, value, null);
 
-        relList.remove(value);
+        // TODO: andrus 8/20/2007 - can we optimize this somehow, avoiding type checking??
+        if (holder instanceof Collection) {
+            ((Collection) holder).remove(value);
+        }
+        else if (holder instanceof Map) {
+            ((Map) holder).remove(getMapKey(relName, value));
+        }
 
         if (value != null && setReverse) {
             unsetReverseRelationship(relName, value);
@@ -256,13 +262,19 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
 
         // Now do the rest of the normal handling (regardless of whether it was
         // flattened or not)
-        List list = (List) readProperty(relName);
+        Object holder = readProperty(relName);
 
         // call 'propertyChanged' AFTER readProperty as readProperty ensures that this
         // object fault is resolved
         getObjectContext().propertyChanged(this, relName, null, value);
 
-        list.add(value);
+        // TODO: andrus 8/20/2007 - can we optimize this somehow, avoiding type checking??
+        if (holder instanceof Collection) {
+            ((Collection) holder).add(value);
+        }
+        else if (holder instanceof Map) {
+            ((Map) holder).put(getMapKey(relName, value), value);
+        }
 
         if (value != null && setReverse) {
             setReverseRelationship(relName, value);
@@ -344,6 +356,25 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
             else
                 val.setToOneTarget(revRel.getName(), this, false);
         }
+    }
+
+    /**
+     * Returns a map key for a given object and relationship.
+     * 
+     * @since 3.0
+     */
+    protected Object getMapKey(String relationshipName, Object value) {
+
+        EntityResolver resolver = objectContext.getEntityResolver();
+        ObjEntity entity = resolver.getObjEntity(objectId.getEntityName());
+
+        if (entity == null) {
+            throw new IllegalStateException("DataObject's entity is unmapped, objectId: "
+                    + objectId);
+        }
+
+        ObjRelationship rel = (ObjRelationship) entity.getRelationship(relationshipName);
+        return rel.getMapKeyExpression().evaluate(value);
     }
 
     /**

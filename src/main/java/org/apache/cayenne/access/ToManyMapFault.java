@@ -16,37 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.util.PersistentObjectMap;
 
 /**
- * A helper class that initializes server-side fault singletons.
- * 
- * @since 1.2
- * @deprecated since 3.0 as the fault singletons are no longer static and are managed by
- *             the Cayenne configuration.
+ * @since 3.0
  * @author Andrus Adamchik
  */
-class DataContextFaults extends Fault {
+public class ToManyMapFault extends Fault {
 
-    /**
-     * Resets super singletons.
-     */
-    static void init() {
-        if (Fault.toManyFault == null) {
-            Fault.toManyFault = new ToManyListFault();
-        }
+    protected Expression mapKeyExpression;
 
-        if (Fault.toOneFault == null) {
-            Fault.toOneFault = new ToOneFault();
-        }
+    public ToManyMapFault(Expression mapKeyExpression) {
+        this.mapKeyExpression = mapKeyExpression;
     }
 
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
-        throw new UnsupportedOperationException();
+        return new PersistentObjectMap(sourceObject, relationshipName, mapKeyExpression);
     }
-
 }

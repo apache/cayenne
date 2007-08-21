@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map project-version="2.0">
+<data-map project-version="3.0">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.db1"/>
 	<db-entity name="CROSSDB_M1E1">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>

@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.generic;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Fault;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -26,6 +29,7 @@ import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorFactory;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
+import org.apache.cayenne.reflect.FaultFactory;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.reflect.PersistentDescriptorFactory;
 import org.apache.cayenne.reflect.PropertyException;
@@ -39,8 +43,12 @@ import org.apache.cayenne.reflect.PropertyException;
  */
 public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
 
-    public DataObjectDescriptorFactory(ClassDescriptorMap descriptorMap) {
+    protected FaultFactory faultFactory;
+
+    public DataObjectDescriptorFactory(ClassDescriptorMap descriptorMap,
+            FaultFactory faultFactory) {
         super(descriptorMap);
+        this.faultFactory = faultFactory;
     }
 
     protected ClassDescriptor getDescriptor(ObjEntity entity, Class entityClass) {
@@ -67,9 +75,37 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
 
         ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
                 .getTargetEntityName());
+
+        Fault fault;
+
+        String collectionType = relationship.getCollectionType();
+        if (collectionType == null
+                || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
+            fault = faultFactory.getListFault();
+        }
+        else if (collectionType.equals("java.util.Map")) {
+            Expression mapKey = relationship.getMapKeyExpression();
+            if (mapKey == null) {
+                throw new CayenneRuntimeException("Null map key for map relationship: "
+                        + relationship.getName());
+            }
+            fault = faultFactory.getMapFault(mapKey);
+        }
+        else if (collectionType.equals("java.util.Set")) {
+            fault = faultFactory.getSetFault();
+        }
+        else if (collectionType.equals("java.util.Collection")) {
+            fault = faultFactory.getCollectionFault();
+        }
+        else {
+            throw new IllegalArgumentException("Unsupported to many collection type: "
+                    + collectionType);
+        }
+
         descriptor.addDeclaredProperty(new DataObjectToManyProperty(
                 relationship,
-                targetDescriptor));
+                targetDescriptor,
+                fault));
     }
 
     protected void createToOneProperty(
@@ -80,7 +116,8 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
                 .getTargetEntityName());
         descriptor.addDeclaredProperty(new DataObjectToOneProperty(
                 relationship,
-                targetDescriptor));
+                targetDescriptor,
+                faultFactory.getToOneFault()));
     }
 
     protected Accessor createAccessor(

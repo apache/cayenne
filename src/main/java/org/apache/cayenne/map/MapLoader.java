@@ -810,6 +810,9 @@ public class MapLoader extends DefaultHandler {
                     + " Unable to parse target. Attributes:\n"
                     + printAttributes(atts).toString());
         }
+        
+        String collectionType = atts.getValue("", "collection-type");
+        String mapKey = atts.getValue("", "map-key");
 
         String sourceName = atts.getValue("", "source");
         if (sourceName == null) {
@@ -837,6 +840,8 @@ public class MapLoader extends DefaultHandler {
                 .equalsIgnoreCase(atts.getValue("", "lock")));
         objRelationship
                 .setDbRelationshipPath((atts.getValue("", "db-relationship-path")));
+        objRelationship.setCollectionType(collectionType);
+        objRelationship.setMapKey(mapKey);
         source.addRelationship(objRelationship);
     }
 

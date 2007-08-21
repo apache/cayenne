@@ -88,8 +88,8 @@ public class ${entityUtils.superClassName} extends ${entityUtils.baseClassName} 
         removeToManyTarget("${rel.name}", obj, true);
     }
 #end
-    public List get${stringUtils.capitalized($rel.Name)}() {
-        return (List)readProperty("${rel.name}");
+    public $rel.CollectionType get${stringUtils.capitalized($rel.Name)}() {
+        return ($rel.CollectionType)readProperty("${rel.name}");
     }
 #else
 #if ( !${objEntity.isReadOnly()} && !$rel.ReadOnly )

@@ -36,13 +36,15 @@ import org.apache.cayenne.reflect.PropertyException;
 class EnhancedPojoToOneProperty extends BaseToOneProperty {
 
     protected EnhancedPojoPropertyFaultHandler faultHandler;
+    protected Fault fault;
 
     EnhancedPojoToOneProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
-            Accessor accessor, String reverseName) {
+            Accessor accessor, String reverseName, Fault fault) {
         super(owner, targetDescriptor, accessor, reverseName);
         this.faultHandler = new EnhancedPojoPropertyFaultHandler(
                 owner.getObjectClass(),
                 getName());
+        this.fault = fault;
     }
 
     public boolean isFault(Object source) {
@@ -55,9 +57,7 @@ class EnhancedPojoToOneProperty extends BaseToOneProperty {
 
     void resolveFault(Object object) {
         if (isFault(object)) {
-            Object target = Fault.getToOneFault().resolveFault(
-                    (Persistent) object,
-                    getName());
+            Object target = fault.resolveFault((Persistent) object, getName());
             writePropertyDirectly(object, null, target);
             faultHandler.setFaultProperty(object, false);
         }
