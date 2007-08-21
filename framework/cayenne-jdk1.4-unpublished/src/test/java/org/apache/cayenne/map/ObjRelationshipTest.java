@@ -19,12 +19,15 @@
 
 package org.apache.cayenne.map;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class ObjRelationshipTest extends CayenneCase {
 
@@ -33,6 +36,37 @@ public class ObjRelationshipTest extends CayenneCase {
     protected DbEntity exhibitDBEntity = getDbEntity("EXHIBIT");
     protected DbEntity paintingDbEntity = getDbEntity("PAINTING");
     protected DbEntity galleryDBEntity = getDbEntity("GALLERY");
+
+    public void testEncodeAsXML() {
+        StringWriter buffer = new StringWriter();
+        PrintWriter out = new PrintWriter(buffer);
+        XMLEncoder encoder = new XMLEncoder(out);
+
+        DataMap map = new DataMap("M");
+        ObjEntity source = new ObjEntity("S");
+        ObjEntity target = new ObjEntity("T");
+        map.addObjEntity(source);
+        map.addObjEntity(target);
+
+        ObjRelationship r = new ObjRelationship("X");
+        r.setSourceEntity(source);
+        r.setTargetEntityName("T");
+        r.setCollectionType("java.util.Map");
+        r.setMapKey("bla");
+
+        r.encodeAsXML(encoder);
+        out.close();
+
+        assertEquals("<obj-relationship name=\"X\" source=\"S\" target=\"T\" "
+                + "collection-type=\"java.util.Map\" map-key=\"bla\"/>\n", buffer.getBuffer().toString());
+    }
+
+    public void testCollectionType() {
+        ObjRelationship r = new ObjRelationship("X");
+        assertNull(r.getCollectionType());
+        r.setCollectionType("java.util.Map");
+        assertEquals("java.util.Map", r.getCollectionType());
+    }
 
     public void testSerializability() throws Exception {
         ObjRelationship r1 = new ObjRelationship("r1");

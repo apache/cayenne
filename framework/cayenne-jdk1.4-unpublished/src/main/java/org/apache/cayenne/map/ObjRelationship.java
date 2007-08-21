@@ -29,6 +29,7 @@ import java.util.ListIterator;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.map.event.RelationshipEvent;
@@ -43,6 +44,13 @@ import org.apache.cayenne.util.XMLEncoder;
  */
 public class ObjRelationship extends Relationship implements EventListener {
 
+    /**
+     * Denotes a default type of to-many relationship collection which is a Java List.
+     * 
+     * @since 3.0
+     */
+    public static final String DEFAULT_COLLECTION_TYPE = "java.util.List";
+
     boolean readOnly;
     boolean dbRelationshipsRefreshNeeded = true;
 
@@ -51,6 +59,24 @@ public class ObjRelationship extends Relationship implements EventListener {
     protected String dbRelationshipPath;
 
     protected List dbRelationships = new ArrayList();
+
+    /**
+     * Stores the type of collection mapped by a to-many relationship. Null for to-one
+     * relationships.
+     * 
+     * @since 3.0
+     */
+    protected String collectionType;
+
+    /**
+     * Stores a property name of a target entity used to create a relationship map. Only
+     * has effect if collectionType property is set to "java.util.Map".
+     * 
+     * @since 3.0
+     */
+    protected String mapKey;
+
+    protected transient Expression mapKeyExpression;
 
     public ObjRelationship() {
         this(null);
@@ -74,9 +100,21 @@ public class ObjRelationship extends Relationship implements EventListener {
         encoder.print("<obj-relationship name=\"" + getName());
         encoder.print("\" source=\"" + source.getName());
 
+        // looking up a target entity ensures that bogus names are not saved... whether
+        // this is good or bad is debatable, as users may want to point to non-existent
+        // entities on purpose.
         ObjEntity target = (ObjEntity) getTargetEntity();
         if (target != null) {
             encoder.print("\" target=\"" + target.getName());
+        }
+
+        if (getCollectionType() != null
+                && !DEFAULT_COLLECTION_TYPE.equals(getCollectionType())) {
+            encoder.print("\" collection-type=\"" + getCollectionType());
+        }
+
+        if (getMapKey() != null) {
+            encoder.print("\" map-key=\"" + getMapKey());
         }
 
         if (isUsedForLocking()) {
@@ -645,9 +683,64 @@ public class ObjRelationship extends Relationship implements EventListener {
 
         relationship.setTargetEntityName(getTargetEntityName());
         relationship.setDeleteRule(getDeleteRule());
+        relationship.setCollectionType(getCollectionType());
 
         // TODO: copy locking flag...
 
         return relationship;
+    }
+
+    /**
+     * Returns the interface of collection mapped by a to-many relationship. Returns null
+     * for to-one relationships. Default for to-many is "java.util.List". Other possible
+     * values are "java.util.Set", "java.util.Collection", "java.util.Map".
+     * 
+     * @since 3.0
+     */
+    public String getCollectionType() {
+        if (collectionType != null) {
+            return collectionType;
+        }
+
+        return isToMany() ? DEFAULT_COLLECTION_TYPE : null;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setCollectionType(String collectionType) {
+        this.collectionType = collectionType;
+    }
+
+    /**
+     * Returns a property name of a target entity used to create a relationship map. Only
+     * has effect if collectionType property is set to "java.util.Map".
+     * 
+     * @since 3.0
+     */
+    public String getMapKey() {
+        return mapKey;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setMapKey(String mapKey) {
+        this.mapKey = mapKey;
+
+        // reset
+        this.mapKeyExpression = null;
+    }
+
+    public Expression getMapKeyExpression() {
+        if (mapKey == null) {
+            return null;
+        }
+
+        if (mapKeyExpression == null) {
+            mapKeyExpression = Expression.fromString(mapKey);
+        }
+
+        return mapKeyExpression;
     }
 }

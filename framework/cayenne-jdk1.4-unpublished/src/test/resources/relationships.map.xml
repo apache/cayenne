@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map project-version="2.0">
+<data-map project-version="3.0">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationship"/>
 	<db-entity name="CLOB_DETAIL">
 		<db-attribute name="CLOB_DETAIL_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -10,6 +10,13 @@
 		<db-attribute name="CLOB_COLUMN" type="CLOB"/>
 		<db-attribute name="CLOB_MASTER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="254"/>
+	</db-entity>
+	<db-entity name="COLLECTION_TO_MANY">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="COLLECTION_TO_MANY_TARGET">
+		<db-attribute name="COLLECTION_TO_MANY_ID" type="INTEGER"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="COMPLEX_JOIN">
 		<db-attribute name="EXTRA_COLUMN" type="VARCHAR" length="50"/>
@@ -56,6 +63,14 @@
 		<db-attribute name="FT3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
 	</db-entity>
+	<db-entity name="MAP_TO_MANY">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MAP_TO_MANY_TARGET">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
 	<db-entity name="MEANINGFUL_FK">
 		<db-attribute name="MEANIGNFUL_FK_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="RELATIONSHIP_HELPER_ID" type="INTEGER" isMandatory="true"/>
@@ -69,6 +84,13 @@
 	<db-entity name="RELATIONSHIP_HELPER">
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 		<db-attribute name="RELATIONSHIP_HELPER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="SET_TO_MANY">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="SET_TO_MANY_TARGET">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="SET_TO_MANY_ID" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="TO_MANY_FKDEP">
 		<db-attribute name="DEP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -98,6 +120,10 @@
 		<obj-attribute name="clobColumn" type="java.lang.String" db-attribute-path="CLOB_COLUMN"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
+	<obj-entity name="CollectionToMany" className="org.apache.cayenne.testdo.relationship.CollectionToMany" dbEntityName="COLLECTION_TO_MANY">
+	</obj-entity>
+	<obj-entity name="CollectionToManyTarget" className="org.apache.cayenne.testdo.relationship.CollectionToManyTarget" dbEntityName="COLLECTION_TO_MANY_TARGET">
+	</obj-entity>
 	<obj-entity name="DeleteRuleFlatA" className="org.apache.cayenne.testdo.relationship.DeleteRuleFlatA" dbEntityName="DELETE_RULE_FLATA">
 	</obj-entity>
 	<obj-entity name="DeleteRuleFlatB" className="org.apache.cayenne.testdo.relationship.DeleteRuleFlatB" dbEntityName="DELETE_RULE_FLATB">
@@ -119,6 +145,11 @@
 	<obj-entity name="FlattenedTest3" className="org.apache.cayenne.testdo.relationship.FlattenedTest3" dbEntityName="FLATTENED_TEST_3">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
+	<obj-entity name="MapToMany" className="org.apache.cayenne.testdo.relationship.MapToMany" dbEntityName="MAP_TO_MANY">
+	</obj-entity>
+	<obj-entity name="MapToManyTarget" className="org.apache.cayenne.testdo.relationship.MapToManyTarget" dbEntityName="MAP_TO_MANY_TARGET">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
 	<obj-entity name="MeaningfulFK" className="org.apache.cayenne.testdo.relationship.MeaningfulFK" dbEntityName="MEANINGFUL_FK">
 		<obj-attribute name="relationshipHelperID" type="java.lang.Integer" db-attribute-path="RELATIONSHIP_HELPER_ID"/>
 	</obj-entity>
@@ -127,6 +158,10 @@
 	</obj-entity>
 	<obj-entity name="RelationshipHelper" className="org.apache.cayenne.testdo.relationship.RelationshipHelper" dbEntityName="RELATIONSHIP_HELPER">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="SetToMany" className="org.apache.cayenne.testdo.relationship.SetToMany" dbEntityName="SET_TO_MANY">
+	</obj-entity>
+	<obj-entity name="SetToManyTarget" className="org.apache.cayenne.testdo.relationship.SetToManyTarget" dbEntityName="SET_TO_MANY_TARGET">
 	</obj-entity>
 	<obj-entity name="ToManyFkDep" className="org.apache.cayenne.testdo.relationship.ToManyFkDep" dbEntityName="TO_MANY_FKDEP">
 		<obj-attribute name="depId" type="java.lang.Integer" db-attribute-path="DEP_ID"/>
@@ -148,6 +183,12 @@
 	</db-relationship>
 	<db-relationship name="details" source="CLOB_MASTER" target="CLOB_DETAIL" toMany="true">
 		<db-attribute-pair source="CLOB_MASTER_ID" target="CLOB_MASTER_ID"/>
+	</db-relationship>
+	<db-relationship name="targets" source="COLLECTION_TO_MANY" target="COLLECTION_TO_MANY_TARGET" toMany="true">
+		<db-attribute-pair source="ID" target="COLLECTION_TO_MANY_ID"/>
+	</db-relationship>
+	<db-relationship name="collectionToMany" source="COLLECTION_TO_MANY_TARGET" target="COLLECTION_TO_MANY" toMany="false">
+		<db-attribute-pair source="COLLECTION_TO_MANY_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="toFT1" source="COMPLEX_JOIN" target="FLATTENED_TEST_1" toMany="false">
 		<db-attribute-pair source="FT1_FK" target="FT1_ID"/>
@@ -203,6 +244,12 @@
 	<db-relationship name="toFT2" source="FLATTENED_TEST_3" target="FLATTENED_TEST_2" toMany="false">
 		<db-attribute-pair source="FT2_ID" target="FT2_ID"/>
 	</db-relationship>
+	<db-relationship name="targets" source="MAP_TO_MANY" target="MAP_TO_MANY_TARGET" toMany="true">
+		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
+	</db-relationship>
+	<db-relationship name="mapToMany" source="MAP_TO_MANY_TARGET" target="MAP_TO_MANY" toMany="false">
+		<db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
+	</db-relationship>
 	<db-relationship name="toRelationshipHelper" source="MEANINGFUL_FK" target="RELATIONSHIP_HELPER" toMany="false">
 		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</db-relationship>
@@ -224,6 +271,12 @@
 	<db-relationship name="reflexiveAndToOneArray" source="RELATIONSHIP_HELPER" target="REFLEXIVE_AND_TO_ONE" toMany="true">
 		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</db-relationship>
+	<db-relationship name="targets" source="SET_TO_MANY" target="SET_TO_MANY_TARGET" toMany="true">
+		<db-attribute-pair source="ID" target="SET_TO_MANY_ID"/>
+	</db-relationship>
+	<db-relationship name="setToMany" source="SET_TO_MANY_TARGET" target="SET_TO_MANY" toMany="false">
+		<db-attribute-pair source="SET_TO_MANY_ID" target="ID"/>
+	</db-relationship>
 	<db-relationship name="root" source="TO_MANY_FKDEP" target="TO_MANY_FKROOT" toMany="false">
 		<db-attribute-pair source="DEP_ID" target="FK_ID"/>
 	</db-relationship>
@@ -244,6 +297,8 @@
 	</db-relationship>
 	<obj-relationship name="master" source="ClobDetail" target="ClobMaster" db-relationship-path="master"/>
 	<obj-relationship name="details" source="ClobMaster" target="ClobDetail" db-relationship-path="details"/>
+	<obj-relationship name="targets" source="CollectionToMany" target="CollectionToManyTarget" collection-type="java.util.Collection" db-relationship-path="targets"/>
+	<obj-relationship name="collectionToMany" source="CollectionToManyTarget" target="CollectionToMany" db-relationship-path="collectionToMany"/>
 	<obj-relationship name="flatB" source="DeleteRuleFlatA" target="DeleteRuleFlatB" db-relationship-path="joins.toFlatB"/>
 	<obj-relationship name="untitledRel" source="DeleteRuleFlatB" target="DeleteRuleFlatA" db-relationship-path="joins.toFlatA"/>
 	<obj-relationship name="test2" source="DeleteRuleTest1" target="DeleteRuleTest2" deleteRule="Deny" db-relationship-path="test2"/>
@@ -258,6 +313,8 @@
 	<obj-relationship name="toFT1" source="FlattenedTest2" target="FlattenedTest1" db-relationship-path="toFT1"/>
 	<obj-relationship name="toFT1" source="FlattenedTest3" target="FlattenedTest1" db-relationship-path="toFT2.toFT1"/>
 	<obj-relationship name="toFT2" source="FlattenedTest3" target="FlattenedTest2" db-relationship-path="toFT2"/>
+	<obj-relationship name="targets" source="MapToMany" target="MapToManyTarget" collection-type="java.util.Map" map-key="name" db-relationship-path="targets"/>
+	<obj-relationship name="mapToMany" source="MapToManyTarget" target="MapToMany" db-relationship-path="mapToMany"/>
 	<obj-relationship name="toRelationshipHelper" source="MeaningfulFK" target="RelationshipHelper" db-relationship-path="toRelationshipHelper"/>
 	<obj-relationship name="children" source="ReflexiveAndToOne" target="ReflexiveAndToOne" db-relationship-path="children"/>
 	<obj-relationship name="toHelper" source="ReflexiveAndToOne" target="RelationshipHelper" db-relationship-path="toHelper"/>
@@ -265,6 +322,8 @@
 	<obj-relationship name="fksOfDifferentType" source="RelationshipHelper" target="FkOfDifferentType" db-relationship-path="fksOfDifferentType"/>
 	<obj-relationship name="meanigfulFKs" source="RelationshipHelper" target="MeaningfulFK" db-relationship-path="meanigfulFKs"/>
 	<obj-relationship name="reflexiveAndToOneArray" source="RelationshipHelper" target="ReflexiveAndToOne" db-relationship-path="reflexiveAndToOneArray"/>
+	<obj-relationship name="targets" source="SetToMany" target="SetToManyTarget" collection-type="java.util.Set" db-relationship-path="targets"/>
+	<obj-relationship name="setToMany" source="SetToManyTarget" target="SetToMany" db-relationship-path="setToMany"/>
 	<obj-relationship name="root" source="ToManyFkDep" target="ToManyFkRoot" db-relationship-path="root"/>
 	<obj-relationship name="root2" source="ToManyFkDep" target="ToManyRoot2" db-relationship-path="root2"/>
 	<obj-relationship name="deps" source="ToManyFkRoot" target="ToManyFkDep" db-relationship-path="deps"/>

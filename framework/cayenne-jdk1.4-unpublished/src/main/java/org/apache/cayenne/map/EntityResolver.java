@@ -34,7 +34,9 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
+import org.apache.cayenne.reflect.FaultFactory;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.generic.DataObjectDescriptorFactory;
 import org.apache.cayenne.reflect.pojo.EnhancedPojoDescriptorFactory;
 import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
@@ -57,7 +59,7 @@ import org.apache.commons.logging.LogFactory;
 public class EntityResolver implements MappingNamespace, Serializable {
 
     static final Object DUPLICATE_MARKER = new Object();
-    
+
     protected static final Log logger = LogFactory.getLog(EntityResolver.class);
 
     protected boolean indexedByClass;
@@ -516,7 +518,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
                         }
                         else {
                             // bad mapping? Or most likely some classloader issue
-                            logger.warn("No super entity mapping for '" + superOEName + "'");
+                            logger.warn("No super entity mapping for '"
+                                    + superOEName
+                                    + "'");
                             continue;
                         }
                     }
@@ -780,14 +784,17 @@ public class EntityResolver implements MappingNamespace, Serializable {
     public ClassDescriptorMap getClassDescriptorMap() {
         if (classDescriptorMap == null) {
             ClassDescriptorMap classDescriptorMap = new ClassDescriptorMap(this);
+            FaultFactory faultFactory = new SingletonFaultFactory();
 
             // add factories in reverse of the desired chain order
             classDescriptorMap.addFactory(new ValueHolderDescriptorFactory(
                     classDescriptorMap));
             classDescriptorMap.addFactory(new EnhancedPojoDescriptorFactory(
-                    classDescriptorMap));
+                    classDescriptorMap,
+                    faultFactory));
             classDescriptorMap.addFactory(new DataObjectDescriptorFactory(
-                    classDescriptorMap));
+                    classDescriptorMap,
+                    faultFactory));
 
             this.classDescriptorMap = classDescriptorMap;
         }

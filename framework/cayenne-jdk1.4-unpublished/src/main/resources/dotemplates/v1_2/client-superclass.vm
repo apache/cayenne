@@ -36,9 +36,6 @@ $importUtils.addType(${attr.Type})##
 #foreach( $rel in ${objEntity.DeclaredRelationships} )
 $importUtils.addType(${rel.TargetEntity.ClientClassName})##
 #end
-#if( ${entityUtils.hasToManyDeclaredRelationships()} )
-${importUtils.addType('java.util.List')}##
-#end
 #if( ${entityUtils.hasToOneDeclaredRelationships()} )
 ${importUtils.addType('org.apache.cayenne.ValueHolder')}##
 #end
@@ -65,7 +62,7 @@ public class ${entityUtils.superClassName} extends ${entityUtils.baseClassName} 
 #end
 #foreach( $rel in ${objEntity.DeclaredRelationships} )
 #if( $rel.ToMany )
-    protected List ${rel.Name};
+    protected ${rel.CollectionType} ${rel.Name};
 #else
     protected ValueHolder ${rel.Name};
 #end
@@ -103,7 +100,7 @@ public class ${entityUtils.superClassName} extends ${entityUtils.baseClassName} 
 ## Create list add/remove/get methods
 #foreach( $rel in ${objEntity.DeclaredRelationships} )
 #if( $rel.ToMany )
-    public List get${stringUtils.capitalized($rel.Name)}() {
+    public ${rel.CollectionType} get${stringUtils.capitalized($rel.Name)}() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
         }

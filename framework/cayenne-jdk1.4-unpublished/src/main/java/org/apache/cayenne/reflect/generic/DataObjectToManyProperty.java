@@ -41,12 +41,14 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
     protected ObjRelationship relationship;
     protected String reverseName;
     protected ClassDescriptor targetDescriptor;
+    protected Fault fault;
 
     DataObjectToManyProperty(ObjRelationship relationship,
-            ClassDescriptor targetDescriptor) {
+            ClassDescriptor targetDescriptor, Fault fault) {
         this.relationship = relationship;
         this.targetDescriptor = targetDescriptor;
         this.reverseName = relationship.getReverseRelationshipName();
+        this.fault = fault;
     }
 
     public ArcProperty getComplimentaryReverseArc() {
@@ -96,7 +98,7 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
 
     public void injectValueHolder(Object object) throws PropertyException {
         if (readPropertyDirectly(object) == null) {
-            writePropertyDirectly(object, null, Fault.getToManyFault().resolveFault(
+            writePropertyDirectly(object, null, fault.resolveFault(
                     (Persistent) object,
                     getName()));
         }
@@ -119,7 +121,7 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
             ((ValueHolder) value).invalidate();
         }
         else {
-            writePropertyDirectly(object, null, Fault.getToManyFault());
+            writePropertyDirectly(object, null, fault);
         }
     }
 }
