@@ -29,6 +29,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
@@ -49,6 +50,8 @@ import org.scopemvc.model.collection.ListModel;
  */
 public class ObjRelationshipInfoModel extends BasicModel {
 
+    static final String COLLECTION_TYPE_MAP = "java.util.Map";
+
     public static final Selector DB_RELATIONSHIP_PATH_SELECTOR = Selector
             .fromString("dbRelationshipPath");
     public static final Selector SOURCE_ENTITY_NAME_SELECTOR = Selector
@@ -61,19 +64,34 @@ public class ObjRelationshipInfoModel extends BasicModel {
             .fromString("objectTargets");
     public static final Selector RELATIONSHIP_NAME_SELECTOR = Selector
             .fromString("relationshipName");
+    public static final Selector TARGET_COLLECTIONS_SELECTOR = Selector
+            .fromString("targetCollections");
+    public static final Selector TARGET_COLLECTION_SELECTOR = Selector
+            .fromString("targetCollection");
+    public static final Selector MAP_KEYS_SELECTOR = Selector.fromString("mapKeys");
+    public static final Selector MAP_KEY_SELECTOR = Selector.fromString("mapKey");
 
     protected ObjRelationship relationship;
     protected ListModel dbRelationshipPath;
     protected EntityRelationshipsModel selectedPathComponent;
     protected ObjEntity objectTarget;
     protected List objectTargets;
+    protected List targetCollections;
+    protected List mapKeys;
     protected String relationshipName;
+    protected String targetCollection;
+    protected String mapKey;
 
     public ObjRelationshipInfoModel(ObjRelationship relationship, Collection objEntities) {
 
         this.relationship = relationship;
         this.relationshipName = relationship.getName();
         this.objectTarget = (ObjEntity) relationship.getTargetEntity();
+        this.mapKey = relationship.getMapKey();
+        this.targetCollection = relationship.getCollectionType();
+        if (targetCollection == null) {
+            targetCollection = ObjRelationship.DEFAULT_COLLECTION_TYPE;
+        }
 
         // prepare entities - copy those that have DbEntities mapped, and then sort
 
@@ -93,6 +111,15 @@ public class ObjRelationshipInfoModel extends BasicModel {
         // and target entities present, with DbEntities chosen.
         validateCanMap();
 
+        this.targetCollections = new ArrayList(4);
+        targetCollections.add("java.util.Collection");
+        targetCollections.add(ObjRelationship.DEFAULT_COLLECTION_TYPE);
+        targetCollections.add(COLLECTION_TYPE_MAP);
+        targetCollections.add("java.util.Set");
+
+        this.mapKeys = new ArrayList();
+        initMapKeys();
+
         // wrap path
         this.dbRelationshipPath = new ListModel();
         Iterator it = relationship.getDbRelationships().iterator();
@@ -100,6 +127,9 @@ public class ObjRelationshipInfoModel extends BasicModel {
             DbRelationship dbRelationship = (DbRelationship) it.next();
             this.dbRelationshipPath.add(new EntityRelationshipsModel(dbRelationship));
         }
+
+        // this sets the right enabled state of collection type selectors
+        fireModelChange(ModelChangeTypes.VALUE_CHANGED, DB_RELATIONSHIP_PATH_SELECTOR);
 
         // add dummy last relationship if we are not connected
         connectEnds();
@@ -150,6 +180,26 @@ public class ObjRelationshipInfoModel extends BasicModel {
             breakChain(-1);
             connectEnds();
             fireModelChange(ModelChangeTypes.VALUE_CHANGED, DB_RELATIONSHIP_PATH_SELECTOR);
+
+            // init available map keys
+            initMapKeys();
+        }
+    }
+
+    private void initMapKeys() {
+        this.mapKeys.clear();
+
+        Iterator attributes = this.objectTarget.getAttributes().iterator();
+        while (attributes.hasNext()) {
+            ObjAttribute attribute = (ObjAttribute) attributes.next();
+            mapKeys.add(attribute.getName());
+        }
+
+        fireModelChange(ModelChangeTypes.VALUE_CHANGED, MAP_KEYS_SELECTOR);
+
+        if (mapKey != null && !mapKeys.contains(mapKey)) {
+            mapKey = mapKeys.size() > 0 ? (String) mapKeys.get(0) : null;
+            fireModelChange(ModelChangeTypes.VALUE_CHANGED, MAP_KEY_SELECTOR);
         }
     }
 
@@ -199,40 +249,82 @@ public class ObjRelationshipInfoModel extends BasicModel {
         dbRelationshipPath.fireModelChange(VALUE_CHANGED, null);
     }
 
+    public boolean isToMany() {
+        // copied algorithm from ObjRelationship.calculateToMany(), only iterating through
+        // the unsaved dbrels selection.
+
+        Iterator dbRelIterator = dbRelationshipPath.iterator();
+        while (dbRelIterator.hasNext()) {
+            EntityRelationshipsModel next = (EntityRelationshipsModel) dbRelIterator
+                    .next();
+            Relationship relationship = next.getSelectedRelationship();
+            if (relationship != null && relationship.isToMany()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Stores current state of the model in the internal ObjRelationship.
      */
     public synchronized boolean savePath() {
-        // check for modifications
-        if (relationship.getTargetEntity() == objectTarget) {
-            if (Util.nullSafeEquals(relationship.getName(), relationshipName)) {
-                List oldPath = relationship.getDbRelationships();
-                if (oldPath.size() == dbRelationshipPath.size()) {
-                    boolean hasChanges = false;
-                    for (int i = 0; i < oldPath.size(); i++) {
-                        EntityRelationshipsModel next = (EntityRelationshipsModel) dbRelationshipPath
-                                .get(i);
-                        if (oldPath.get(i) != next.getSelectedRelationship()) {
-                            hasChanges = true;
-                            break;
-                        }
-                    }
+        boolean hasChanges = false;
 
-                    if (!hasChanges) {
-                        return false;
-                    }
+        if (!Util.nullSafeEquals(relationship.getName(), relationshipName)) {
+            hasChanges = true;
+            relationship.setName(relationshipName);
+        }
+
+        if (!Util.nullSafeEquals(objectTarget.getName(), relationship
+                .getTargetEntityName())) {
+            hasChanges = true;
+
+            // note on events notification - this needs to be propagated
+            // via old modeler events, but we leave this to the controller
+            // since model knows nothing about Modeler mediator.
+            relationship.setTargetEntity(objectTarget);
+        }
+
+        // check for path modifications
+        List oldPath = relationship.getDbRelationships();
+        if (oldPath.size() != dbRelationshipPath.size()) {
+            hasChanges = true;
+            updatePath();
+        }
+        else {
+            for (int i = 0; i < oldPath.size(); i++) {
+                EntityRelationshipsModel next = (EntityRelationshipsModel) dbRelationshipPath
+                        .get(i);
+                if (oldPath.get(i) != next.getSelectedRelationship()) {
+                    hasChanges = true;
+                    updatePath();
+                    break;
                 }
             }
         }
 
-        // detected modifications, save...
-        relationship.clearDbRelationships();
+        String collectionType = ObjRelationship.DEFAULT_COLLECTION_TYPE
+                .equals(targetCollection)
+                || !relationship.isToMany() ? null : targetCollection;
+        if (!Util.nullSafeEquals(collectionType, relationship.getCollectionType())) {
+            hasChanges = true;
+            relationship.setCollectionType(collectionType);
+        }
 
-        // note on events notification - this needs to be propagated
-        // via old modeler events, but we leave this to the controller
-        // since model knows nothing about Modeler mediator.
-        relationship.setTargetEntity(objectTarget);
-        relationship.setName(relationshipName);
+        // map key only makes sense for Map relationships
+        String mapKey = COLLECTION_TYPE_MAP.equals(collectionType) ? this.mapKey : null;
+        if (!Util.nullSafeEquals(mapKey, relationship.getMapKey())) {
+            hasChanges = true;
+            relationship.setMapKey(mapKey);
+        }
+
+        return hasChanges;
+    }
+
+    private void updatePath() {
+        relationship.clearDbRelationships();
 
         Iterator it = dbRelationshipPath.iterator();
         while (it.hasNext()) {
@@ -244,8 +336,6 @@ public class ObjRelationshipInfoModel extends BasicModel {
 
             relationship.addDbRelationship((DbRelationship) nextPathComponent);
         }
-
-        return true;
     }
 
     private void breakChain(int index) {
@@ -327,5 +417,29 @@ public class ObjRelationshipInfoModel extends BasicModel {
 
     public DbEntity getEndEntity() {
         return objectTarget.getDbEntity();
+    }
+
+    public String getMapKey() {
+        return mapKey;
+    }
+
+    public void setMapKey(String mapKey) {
+        this.mapKey = mapKey;
+    }
+
+    public String getTargetCollection() {
+        return targetCollection;
+    }
+
+    public void setTargetCollection(String targetCollection) {
+        this.targetCollection = targetCollection;
+    }
+
+    public List getMapKeys() {
+        return mapKeys;
+    }
+
+    public List getTargetCollections() {
+        return targetCollections;
     }
 }

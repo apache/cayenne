@@ -35,13 +35,14 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.util.Util;
 
-/** 
- * Table model to display ObjRelationships. 
+/**
+ * Table model to display ObjRelationships.
  * 
  * @author Misha Shengaout
  * @author Andrus Adamchik
  */
 public class ObjRelationshipTableModel extends CayenneTableModel {
+
     // Columns
     static final int REL_NAME = 0;
     static final int REL_TARGET = 1;
@@ -51,10 +52,8 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
 
     protected ObjEntity entity;
 
-    public ObjRelationshipTableModel(
-        ObjEntity entity,
-        ProjectController mediator,
-        Object eventSource) {
+    public ObjRelationshipTableModel(ObjEntity entity, ProjectController mediator,
+            Object eventSource) {
         super(mediator, eventSource, new ArrayList(entity.getRelationships()));
         this.entity = entity;
 
@@ -83,37 +82,36 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
 
     public String getColumnName(int column) {
         switch (column) {
-            case REL_NAME :
+            case REL_NAME:
                 return "Name";
-            case REL_TARGET :
+            case REL_TARGET:
                 return "Target";
-            case REL_LOCKING :
+            case REL_LOCKING:
                 return "Used for Locking";
-            case REL_SEMANTICS :
+            case REL_SEMANTICS:
                 return "Semantics";
-            case REL_DELETERULE :
+            case REL_DELETERULE:
                 return "Delete Rule";
 
-            default :
+            default:
                 return null;
         }
     }
 
     public Class getColumnClass(int col) {
         switch (col) {
-            case REL_TARGET :
+            case REL_TARGET:
                 return ObjEntity.class;
-            case REL_LOCKING :
+            case REL_LOCKING:
                 return Boolean.class;
-            default :
+            default:
                 return String.class;
         }
     }
 
     public ObjRelationship getRelationship(int row) {
-        return (row >= 0 && row < objectList.size())
-            ? (ObjRelationship) objectList.get(row)
-            : null;
+        return (row >= 0 && row < objectList.size()) ? (ObjRelationship) objectList
+                .get(row) : null;
     }
 
     public Object getValueAt(int row, int column) {
@@ -130,9 +128,21 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         }
         else if (column == REL_SEMANTICS) {
             String semantics = relationship.isToMany() ? "to many" : "to one";
-            if(relationship.isReadOnly()) {
+            if (relationship.isReadOnly()) {
                 semantics += ", read-only";
             }
+
+            String collection = "list";
+            if (relationship.getCollectionType() != null) {
+                int dot = relationship.getCollectionType().lastIndexOf('.');
+                collection = relationship
+                        .getCollectionType()
+                        .substring(dot + 1)
+                        .toLowerCase();
+            }
+
+            semantics += ", " + collection;
+
             return semantics;
         }
         else if (column == REL_DELETERULE) {
@@ -145,8 +155,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
 
     public void setUpdatedValueAt(Object value, int row, int column) {
         ObjRelationship relationship = getRelationship(row);
-        RelationshipEvent event =
-            new RelationshipEvent(eventSource, relationship, entity);
+        RelationshipEvent event = new RelationshipEvent(eventSource, relationship, entity);
 
         if (column == REL_NAME) {
             String text = (String) value;
@@ -160,8 +169,8 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
 
             // now try to connect DbEntities if we can do it in one step
             if (target != null) {
-                DbEntity srcDB =
-                    ((ObjEntity) relationship.getSourceEntity()).getDbEntity();
+                DbEntity srcDB = ((ObjEntity) relationship.getSourceEntity())
+                        .getDbEntity();
                 DbEntity targetDB = target.getDbEntity();
                 if (srcDB != null && targetDB != null) {
                     Relationship anyConnector = srcDB.getAnyRelationship(targetDB);
@@ -178,8 +187,8 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
             fireTableCellUpdated(row, column);
         }
         else if (column == REL_LOCKING) {
-            relationship.setUsedForLocking(
-                (value instanceof Boolean) && ((Boolean) value).booleanValue());
+            relationship.setUsedForLocking((value instanceof Boolean)
+                    && ((Boolean) value).booleanValue());
             fireTableCellUpdated(row, column);
         }
 
@@ -208,15 +217,15 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
     }
 
     final class RelationshipComparator implements Comparator {
+
         public int compare(Object o1, Object o2) {
             ObjRelationship r1 = (ObjRelationship) o1;
             ObjRelationship r2 = (ObjRelationship) o2;
 
             int delta = getWeight(r1) - getWeight(r2);
 
-            return (delta != 0)
-                ? delta
-                : Util.nullSafeCompare(true, r1.getName(), r2.getName());
+            return (delta != 0) ? delta : Util.nullSafeCompare(true, r1.getName(), r2
+                    .getName());
         }
 
         private int getWeight(ObjRelationship r) {

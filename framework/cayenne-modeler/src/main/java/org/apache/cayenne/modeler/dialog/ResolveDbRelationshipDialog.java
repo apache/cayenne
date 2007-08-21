@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.dialog;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -112,7 +114,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
-                        "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, fill:min(150dlu;pref)",
+                        "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, fill:min(50dlu;pref)",
                         "p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
         builder.setDefaultDialogBorder();
 
@@ -124,8 +126,12 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
 
         builder.addSeparator("Joins", cc.xywh(1, 7, 5, 1));
         builder.add(new JScrollPane(table), cc.xywh(1, 9, 3, 3, "fill, fill"));
-        builder.add(addButton, cc.xywh(5, 9, 1, 1));
-        builder.add(removeButton, cc.xywh(5, 11, 1, 1));
+
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        buttons.add(addButton);
+        buttons.add(removeButton);
+
+        builder.add(buttons, cc.xywh(5, 9, 1, 3));
 
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
         getContentPane().add(PanelFactory.createButtonPanel(new JButton[] {
@@ -148,9 +154,9 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
                     + aRelationship.getSourceEntity());
         }
 
-        // Once assigned, can reference relationship directly.  Would it be
+        // Once assigned, can reference relationship directly. Would it be
         // OK to assign relationship at the very top of this method?
-        relationship        = aRelationship;
+        relationship = aRelationship;
         reverseRelationship = relationship.getReverseRelationship();
 
         // init UI components
@@ -243,9 +249,9 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         }
 
         if (sourceEntityName == null) {
-            sourceEntityName =
-                NamedObjectFactory.createName(DbRelationship.class,
-                                             relationship.getSourceEntity());
+            sourceEntityName = NamedObjectFactory.createName(
+                    DbRelationship.class,
+                    relationship.getSourceEntity());
         }
 
         if (!validateName(relationship.getSourceEntity(), relationship, sourceEntityName)) {
@@ -258,9 +264,9 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         }
 
         if (targetEntityName == null) {
-            targetEntityName =
-                NamedObjectFactory.createName(DbRelationship.class,
-                                              relationship.getTargetEntity());
+            targetEntityName = NamedObjectFactory.createName(
+                    DbRelationship.class,
+                    relationship.getTargetEntity());
         }
 
         // check if reverse name is valid
@@ -319,7 +325,8 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
                                     MapEvent.ADD));
                 }
             }
-            else if (!Util.nullSafeEquals(targetEntityName, reverseRelationship.getName())) {
+            else if (!Util
+                    .nullSafeEquals(targetEntityName, reverseRelationship.getName())) {
                 String oldName = reverseRelationship.getName();
                 ProjectUtil.setRelationshipName(
                         reverseRelationship.getSourceEntity(),

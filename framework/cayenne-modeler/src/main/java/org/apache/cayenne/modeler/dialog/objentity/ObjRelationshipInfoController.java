@@ -61,7 +61,9 @@ public class ObjRelationshipInfoController extends BasicController {
      * Creates and runs the classpath dialog.
      */
     public void startup() {
-        setView(new ObjRelationshipInfoDialog());
+        ObjRelationshipInfoDialog view = new ObjRelationshipInfoDialog();
+        setView(view);
+        view.initFromModel();
         super.startup();
     }
 
