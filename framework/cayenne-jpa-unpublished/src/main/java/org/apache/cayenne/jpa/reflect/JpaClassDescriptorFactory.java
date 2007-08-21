@@ -23,13 +23,15 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
+import org.apache.cayenne.reflect.FaultFactory;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.reflect.pojo.EnhancedPojoDescriptorFactory;
 
 public class JpaClassDescriptorFactory extends EnhancedPojoDescriptorFactory {
 
-    public JpaClassDescriptorFactory(ClassDescriptorMap descriptorMap) {
-        super(descriptorMap);
+    public JpaClassDescriptorFactory(ClassDescriptorMap descriptorMap,
+            FaultFactory faultFactory) {
+        super(descriptorMap, faultFactory);
     }
 
     @Override

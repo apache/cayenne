@@ -55,6 +55,8 @@ import org.apache.cayenne.jpa.reflect.JpaClassDescriptorFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
+import org.apache.cayenne.reflect.FaultFactory;
+import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.SimpleValidationFailure;
@@ -215,8 +217,8 @@ public class Provider implements PersistenceProvider {
             ClassDescriptorMap descriptors = domain
                     .getEntityResolver()
                     .getClassDescriptorMap();
-
-            descriptors.addFactory(new JpaClassDescriptorFactory(descriptors));
+            FaultFactory faultFactory = new SingletonFaultFactory();
+            descriptors.addFactory(new JpaClassDescriptorFactory(descriptors, faultFactory));
             configuration.addDomain(domain);
 
             EntityMapLoader loader = new EntityMapLoader(unit);
