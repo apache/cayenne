@@ -58,7 +58,7 @@ import org.apache.cayenne.query.UpdateBatchQuery;
  *          test-oracle.cayenne.adapter = org.apache.cayenne.dba.oracle.OracleAdapter
  *          test-oracle.jdbc.username = test
  *          test-oracle.jdbc.password = secret
- *          test-oracle.jdbc.url = jdbc:oracle:thin:@192.168.0.20:1521:ora1 
+ *          test-oracle.jdbc.url = jdbc:oracle:thin:@//192.168.0.20:1521/ora1 
  *          test-oracle.jdbc.driver = oracle.jdbc.driver.OracleDriver
  *          
  *         
