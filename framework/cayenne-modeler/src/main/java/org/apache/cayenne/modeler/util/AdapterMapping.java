@@ -87,7 +87,7 @@ public class AdapterMapping {
         // urls
         adapterToJDBCURLMap.put(
                 OracleAdapter.class.getName(),
-                "jdbc:oracle:thin:@localhost:1521:database");
+                "jdbc:oracle:thin:@//localhost:1521/database");
         adapterToJDBCURLMap.put(
                 SybaseAdapter.class.getName(),
                 "jdbc:sybase:Tds:localhost:port/database");
