@@ -59,12 +59,28 @@ class DispatchQueue {
     }
 
     synchronized void addInvocation(Invocation invocation, Object sender) {
+        Collection invocations;
+
         if (sender == null) {
-            subjectInvocations.add(invocation);
+            invocations = subjectInvocations;
         }
         else {
-            invocationsForSender(sender, true).add(invocation);
+            invocations = invocationsForSender(sender, true);
         }
+
+        // perform maintenance of the given invocations set, as failure to do taht can
+        // result in a memory leak per CAY-770. This seemed to happen when lots of
+        // invocations got registered, but no events where dispatched (hence the stale
+        // inocation removal during dispatch did not happen)
+        Iterator it = invocations.iterator();
+        while (it.hasNext()) {
+            Invocation i = (Invocation) it.next();
+            if (i.getTarget() == null) {
+                it.remove();
+            }
+        }
+
+        invocations.add(invocation);
     }
 
     synchronized boolean removeInvocations(Object listener, Object sender) {
