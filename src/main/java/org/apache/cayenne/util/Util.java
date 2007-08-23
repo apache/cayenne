@@ -201,9 +201,13 @@ public class Util {
             return file.delete();
 
         String[] list = file.list();
-        for (int i = 0; i < list.length; i++) {
-            if (!delete(filePath + File.separator + list[i], true))
-                return false;
+        
+        // list can be null if directory doesn't have an 'x' permission bit set for the user
+        if (list != null) {
+            for (int i = 0; i < list.length; i++) {
+                if (!delete(filePath + File.separator + list[i], true))
+                    return false;
+            }
         }
 
         return file.delete();
