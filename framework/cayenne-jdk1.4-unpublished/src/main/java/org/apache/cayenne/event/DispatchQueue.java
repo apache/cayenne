@@ -70,7 +70,7 @@ class DispatchQueue {
 
         // perform maintenance of the given invocations set, as failure to do that can
         // result in a memory leak per CAY-770. This seemed to happen when lots of
-        // invocations got registered, but no events where dispatched (hence the stale
+        // invocations got registered, but no events were dispatched (hence the stale
         // inocation removal during dispatch did not happen)
         Iterator it = invocations.iterator();
         while (it.hasNext()) {
