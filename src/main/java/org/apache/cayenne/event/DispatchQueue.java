@@ -68,7 +68,7 @@ class DispatchQueue {
             invocations = invocationsForSender(sender, true);
         }
 
-        // perform maintenance of the given invocations set, as failure to do taht can
+        // perform maintenance of the given invocations set, as failure to do that can
         // result in a memory leak per CAY-770. This seemed to happen when lots of
         // invocations got registered, but no events where dispatched (hence the stale
         // inocation removal during dispatch did not happen)
