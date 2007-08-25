@@ -58,7 +58,7 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
-    public boolean visitFromItem(EJBQLFromItem expression) {
+    public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
 
         String id = expression.getId();
 

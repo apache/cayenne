@@ -154,7 +154,7 @@ class Compiler {
             return false;
         }
 
-        public boolean visitFromItem(EJBQLFromItem expression) {
+        public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
             expression.visit(fromItemVisitor);
             return false;
         }
@@ -201,37 +201,45 @@ class Compiler {
 
         private String entityName;
 
-        public boolean visitIdentificationVariable(EJBQLExpression expression) {
-            entityName = expression.getText();
+        public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
+
+            if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+
+                // resolve class descriptor
+                ClassDescriptor descriptor = resolver.getClassDescriptor(entityName);
+                if (descriptor == null) {
+                    throw new EJBQLException("Unmapped abstract schema name: "
+                            + entityName);
+                }
+
+                // per JPA spec, 4.4.2, "Identification variables are case insensitive."
+                String id = normalizeIdPath(expression.getId());
+
+                ClassDescriptor old = (ClassDescriptor) descriptorsById.put(
+                        id,
+                        descriptor);
+                if (old != null && old != descriptor) {
+                    throw new EJBQLException(
+                            "Duplicate identification variable definition: "
+                                    + id
+                                    + ", it is already used for "
+                                    + old.getEntity().getName());
+                }
+
+                // if root wasn't detected in the Select Clause, use the first id var as
+                // root
+                if (Compiler.this.rootId == null) {
+                    Compiler.this.rootId = id;
+                }
+
+                this.entityName = null;
+            }
+
             return true;
         }
 
-        public boolean visitIdentifier(EJBQLExpression expression) {
-
-            // per JPA spec, 4.4.2, "Identification variables are case insensitive."
-            String rootId = normalizeIdPath(expression.getText());
-
-            // resolve class descriptor
-            ClassDescriptor descriptor = resolver.getClassDescriptor(entityName);
-            if (descriptor == null) {
-                throw new EJBQLException("Unmapped abstract schema name: " + entityName);
-            }
-
-            ClassDescriptor old = (ClassDescriptor) descriptorsById.put(
-                    rootId,
-                    descriptor);
-            if (old != null && old != descriptor) {
-                throw new EJBQLException("Duplicate identification variable definition: "
-                        + rootId
-                        + ", it is already used for "
-                        + old.getEntity().getName());
-            }
-
-            // if root wasn't detected in the Select Clause, use the first id var as root
-            if (Compiler.this.rootId == null) {
-                Compiler.this.rootId = rootId;
-            }
-
+        public boolean visitIdentificationVariable(EJBQLExpression expression) {
+            entityName = expression.getText();
             return true;
         }
     }

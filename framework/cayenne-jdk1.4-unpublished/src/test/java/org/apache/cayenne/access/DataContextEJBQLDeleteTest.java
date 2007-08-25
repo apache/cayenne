@@ -29,6 +29,20 @@ public class DataContextEJBQLDeleteTest extends CayenneCase {
     protected void setUp() throws Exception {
         deleteTestData();
     }
+    
+    public void testDeleteNoIdVar() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "delete from Painting";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        QueryResponse result = createDataContext().performGenericQuery(query);
+
+        int[] count = result.firstUpdateCount();
+        assertNotNull(count);
+        assertEquals(1, count.length);
+        assertEquals(2, count[0]);
+    }
 
     public void testDeleteNoQualifier() throws Exception {
         createTestData("prepare");
