@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domains project-version="1.1">
+<domains project-version="2.0">
 <domain name="UntitledDomain">
 	<map name="UntitledDomainMap" location="UntitledDomainMap.map.xml"/>
 
