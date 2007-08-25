@@ -33,7 +33,6 @@ import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.Transaction;
 import org.apache.cayenne.query.EJBQLQuery;
 
 public class ResourceLocalEntityManager implements EntityManager, CayenneEntityManager {
@@ -348,9 +347,7 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      */
     public EntityTransaction getTransaction() { // note - allowed to be called on a closed
         if (transaction == null) {
-            this.transaction = new JpaTransaction(
-                    Transaction.internalTransaction(null),
-                    this);
+            this.transaction = new JpaTransaction(this);
         }
 
         return transaction;

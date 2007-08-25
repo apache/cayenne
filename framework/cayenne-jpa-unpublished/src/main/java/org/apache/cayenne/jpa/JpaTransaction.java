@@ -37,9 +37,16 @@ public class JpaTransaction implements EntityTransaction {
     protected Transaction transaction;
     protected boolean rollbackOnly;
 
-    public JpaTransaction(Transaction transaction, EntityManager entityManager) {
+    public JpaTransaction(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.transaction = transaction;
+        reset();
+    }
+    
+    /**
+     * Creates a new internal Cayenne transaction.
+     */
+    protected void reset() {
+        this.transaction = Transaction.internalTransaction(null);
     }
 
     /**
@@ -76,6 +83,8 @@ public class JpaTransaction implements EntityTransaction {
         catch (CayenneException e) {
             throw new PersistenceException(e.getMessage(), e);
         }
+        
+        reset();
     }
 
     /**
@@ -98,6 +107,8 @@ public class JpaTransaction implements EntityTransaction {
         catch (CayenneException e) {
             throw new PersistenceException(e.getMessage(), e);
         }
+        
+        reset();
     }
 
     /**
