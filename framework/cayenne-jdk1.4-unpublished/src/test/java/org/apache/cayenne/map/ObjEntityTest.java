@@ -75,13 +75,19 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testGetClientEntity() {
+        
+        DataMap map = new DataMap();
+        map.setClientSupported(true);
+        
         final ObjEntity target = new ObjEntity("te1");
+        map.addObjEntity(target);
 
         ObjEntity e1 = new ObjEntity("entity");
         e1.setClassName("x.y.z");
         e1.setClientClassName("a.b.c");
         e1.addAttribute(new ObjAttribute("A1"));
         e1.addAttribute(new ObjAttribute("A2"));
+        map.addObjEntity(e1);
 
         ObjRelationship r1 = new ObjRelationship("r1") {
 
