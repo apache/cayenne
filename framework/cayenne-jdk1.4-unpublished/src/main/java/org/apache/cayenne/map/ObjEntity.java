@@ -198,6 +198,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
             }
             
             ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
+            // note that 'isClientAllowed' also checks parent DataMap client policy 
+            // that can be handy in case of cross-map relationships
             if(targetEntity == null || !targetEntity.isClientAllowed()) {
                 continue;
             }
