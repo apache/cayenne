@@ -193,9 +193,16 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         while (relationships.hasNext()) {
             ObjRelationship relationship = (ObjRelationship) relationships.next();
 
-            if (!relationship.isRuntime()) {
-                entity.addRelationship(relationship.getClientRelationship());
+            if (relationship.isRuntime()) {
+                continue;
             }
+            
+            ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
+            if(targetEntity == null || !targetEntity.isClientAllowed()) {
+                continue;
+            }
+
+            entity.addRelationship(relationship.getClientRelationship());
         }
 
         // TODO: andrus 2/5/2007 - copy embeddables
