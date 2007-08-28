@@ -28,6 +28,7 @@ CAY-841 EJBQL Support for LIKE/ESCAPE and IN conditions
 CAY-842 EJBQL Collections condition support
 CAY-843 Remove arbitrary reverse relationship mapping limitations
 CAY-846 EJBQL Support for Functional Expressions
+CAY-855 Add DataContext.objectFromDataRow variety for generic classes
 
 Bug Fixes Since M1:
 
