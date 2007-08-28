@@ -685,6 +685,27 @@ public class DataContext extends BaseContext implements DataChannel {
                 true);
         return (DataObject) list.get(0);
     }
+    
+    /**
+     * Creates a DataObject from DataRow. This variety of the 'objectFromDataRow' method is normally used for generic classes.
+     * 
+     * @see DataRow
+     * @since 3.0
+     */
+    public DataObject objectFromDataRow(
+            String entityName,
+            DataRow dataRow,
+            boolean refresh) {
+
+        ObjEntity entity = getEntityResolver().getObjEntity(entityName);
+
+        List list = objectsFromDataRows(
+                entity,
+                Collections.singletonList(dataRow),
+                refresh,
+                true);
+        return (DataObject) list.get(0);
+    }
 
     /**
      * @deprecated since 3.0, use {@link #newObject(String)} instead.
