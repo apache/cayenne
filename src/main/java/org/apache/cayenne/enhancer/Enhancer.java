@@ -53,7 +53,7 @@ public class Enhancer implements ClassFileTransformer {
             byte[] classfileBuffer) throws IllegalClassFormatException {
 
         ClassReader reader = new ClassReader(classfileBuffer);
-        ClassWriter writer = new ClassWriter(reader, true);
+        ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
 
         ClassVisitor visitor = visitorFactory.createVisitor(className, writer);
         if (visitor == null) {
@@ -62,7 +62,7 @@ public class Enhancer implements ClassFileTransformer {
         }
 
         logger.info("enhancing class " + className);
-        reader.accept(visitor, true);
+        reader.accept(visitor, 0);
         return writer.toByteArray();
     }
 }
