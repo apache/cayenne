@@ -53,6 +53,9 @@ public class Enhancer implements ClassFileTransformer {
             byte[] classfileBuffer) throws IllegalClassFormatException {
 
         ClassReader reader = new ClassReader(classfileBuffer);
+
+        // optimization note: per ASM docs COMPUTE_FRAMES makes code generation 2x slower,
+        // so we may investigate manual computation options, although that's likely a pain.
         ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
 
         ClassVisitor visitor = visitorFactory.createVisitor(className, writer);
