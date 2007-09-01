@@ -54,7 +54,14 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     protected List orderings;
     protected boolean distinct;
 
+    /**
+     * since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
+     */
     protected Expression parentQualifier;
+    
+    /**
+     * since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
+     */
     protected String parentObjEntityName;
 
     SelectQueryMetadata selectInfo = new SelectQueryMetadata();
@@ -589,12 +596,20 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         this.selectInfo.setFetchLimit(fetchLimit);
     }
 
-    /** Setter for query's parent entity qualifier. */
+    /** 
+     * Setter for query's parent entity qualifier. 
+     * 
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
+     */
     public void setParentQualifier(Expression parentQualifier) {
         this.parentQualifier = parentQualifier;
     }
 
-    /** Getter for query parent entity qualifier. */
+    /** 
+     * Getter for query parent entity qualifier. 
+     * 
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
+     */
     public Expression getParentQualifier() {
         return parentQualifier;
     }
@@ -602,6 +617,8 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Adds specified parent entity qualifier to the existing parent entity qualifier
      * joining it using "AND".
+     * 
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
      */
     public void andParentQualifier(Expression e) {
         parentQualifier = (parentQualifier != null) ? parentQualifier.andExp(e) : e;
@@ -610,6 +627,8 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Adds specified parent entity qualifier to the existing qualifier joining it using
      * "OR".
+     * 
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
      */
     public void orParentQualifier(Expression e) {
         parentQualifier = (parentQualifier != null) ? parentQualifier.orExp(e) : e;
@@ -618,7 +637,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Returns the name of parent ObjEntity.
      * 
-     * @return String
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
      */
     public String getParentObjEntityName() {
         return parentObjEntityName;
@@ -636,6 +655,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * </p>
      * 
      * @param parentObjEntityName The parentObjEntityName to set
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
      */
     public void setParentObjEntityName(String parentObjEntityName) {
         this.parentObjEntityName = parentObjEntityName;
@@ -644,6 +664,8 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Returns <code>true</code> if this query has an extra qualifier that uses a parent
      * entity of the query root entity for additional result filtering.
+     * 
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
      */
     public boolean isQualifiedOnParent() {
         return getParentObjEntityName() != null && parentQualifier != null;

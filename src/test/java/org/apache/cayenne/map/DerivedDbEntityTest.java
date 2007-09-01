@@ -23,6 +23,7 @@ import org.apache.cayenne.unit.CayenneCase;
 
 /**
  * @author Andrus Adamchik
+ * @deprecated since 3.0M2 (scheduled for removal in 3.0M3)
  */
 public class DerivedDbEntityTest extends CayenneCase {
     protected DerivedDbEntity ent;

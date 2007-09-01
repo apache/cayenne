@@ -33,6 +33,7 @@ import org.apache.cayenne.util.XMLEncoder;
  * like GROUP BY and aggregate functions.
  * 
  * @author Andrus Adamchik
+ * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) this type of mapping is no longer supported.
  */
 public class DerivedDbEntity extends DbEntity {
     protected String parentEntityName;
