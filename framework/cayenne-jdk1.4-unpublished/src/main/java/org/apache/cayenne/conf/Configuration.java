@@ -25,12 +25,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.util.CayenneMap;
 import org.apache.cayenne.util.ResourceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,7 +62,7 @@ public abstract class Configuration {
     /**
      * Lookup map that stores DataDomains with names as keys.
      */
-    protected CayenneMap dataDomains = new CayenneMap(this);
+    protected SortedMap dataDomains = new TreeMap();
     protected DataSourceFactory overrideFactory;
     protected ConfigStatus loadStatus = new ConfigStatus();
     protected String domainConfigurationName = DEFAULT_DOMAIN_FILE;
@@ -282,7 +283,16 @@ public abstract class Configuration {
      * this configuration into the domain.
      */
     public void addDomain(DataDomain domain) {
-        this.dataDomains.put(domain.getName(), domain);
+        if (domain.getName() == null) {
+            throw new NullPointerException("Attempt to add DataDomain with no name.");
+        }
+        
+        Object old = dataDomains.put(domain.getName(), domain);
+        if (old != null && old != domain) {
+            dataDomains.put(domain.getName(), old);
+            throw new IllegalArgumentException("Attempt to overwrite domain with name "
+                    + domain.getName());
+        }
 
         // inject EventManager
         if (domain != null) {
@@ -297,7 +307,7 @@ public abstract class Configuration {
      * such domain is found.
      */
     public DataDomain getDomain(String name) {
-        return (DataDomain) this.dataDomains.get(name);
+        return (DataDomain) dataDomains.get(name);
     }
 
     /**
@@ -308,12 +318,12 @@ public abstract class Configuration {
      * used instead.
      */
     public DataDomain getDomain() {
-        int size = this.dataDomains.size();
+        int size = dataDomains.size();
         if (size == 0) {
             return null;
         }
         else if (size == 1) {
-            return (DataDomain) this.dataDomains.values().iterator().next();
+            return (DataDomain) dataDomains.values().iterator().next();
         }
         else {
             throw new CayenneRuntimeException(
@@ -333,12 +343,10 @@ public abstract class Configuration {
         if (domain != null) {
             domain.setEventManager(null);
         }
-
-        logObj.debug("removed domain: " + name);
     }
 
     /**
-     * Returns an unmodifiable collection of registered {@link DataDomain}objects.
+     * Returns an unmodifiable collection of registered DataDomains sorted by domain name.
      */
     public Collection getDomains() {
         return Collections.unmodifiableCollection(dataDomains.values());
