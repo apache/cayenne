@@ -26,6 +26,7 @@ import junit.framework.TestCase;
 
 /**
  * @author Andrus Adamchik
+ * @deprecated since 3.0
  */
 public class CayenneMapTest extends TestCase {
 
