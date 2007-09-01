@@ -56,7 +56,11 @@ public class PersistentInterfaceVisitor extends ClassAdapter {
         interfaces = helper.addInterface(interfaces, Persistent.class);
 
         super.visit(version, access, name, signature, superName, interfaces);
-
+    }
+    
+    @Override
+    public void visitEnd() {
+        // per ASM docs, 'visitEnd' is the only correct place to add class members
         helper.createProperty(ObjectId.class, "objectId");
         helper.createProperty(ObjectContext.class, "objectContext", true);
         helper.createProperty(Integer.TYPE, "persistenceState");
