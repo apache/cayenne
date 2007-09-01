@@ -28,6 +28,7 @@ import org.apache.cayenne.modeler.ProjectController;
  * Table model for derived DbAttributes.
  * 
  * @author Andrus Adamchik
+ * @deprecated since 3.0M2 (scheduled for removal in 3.0M3)
  */
 public class DerivedDbAttributeTableModel extends DbAttributeTableModel {
 	// Column indices

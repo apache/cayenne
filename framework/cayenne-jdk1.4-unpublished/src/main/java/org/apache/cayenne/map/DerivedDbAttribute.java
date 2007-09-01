@@ -42,6 +42,7 @@ import org.apache.cayenne.util.XMLEncoder;
  * </p>
  * 
  * @author Andrus Adamchik
+ * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) this type of mapping is no longer supported.
  */
 public class DerivedDbAttribute extends DbAttribute {
 

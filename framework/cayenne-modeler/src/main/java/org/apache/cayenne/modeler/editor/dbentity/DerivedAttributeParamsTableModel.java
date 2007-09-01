@@ -29,6 +29,7 @@ import org.apache.cayenne.modeler.ProjectController;
 
 /**
  * @author Andrus Adamchik
+ * @deprecated since 3.0M2 (scheduled for removal in 3.0M3)
  */
 public class DerivedAttributeParamsTableModel extends DbAttributeTableModel {
 	private static final int DB_ATTRIBUTE_NAME = 0;

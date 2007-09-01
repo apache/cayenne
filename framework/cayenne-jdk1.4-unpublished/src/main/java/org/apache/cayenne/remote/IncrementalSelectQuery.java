@@ -164,6 +164,9 @@ class IncrementalSelectQuery extends SelectQuery {
         return query.addPrefetch(prefetchPath);
     }
 
+    /**
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
+     */
     public void andParentQualifier(Expression e) {
         query.andParentQualifier(e);
     }
@@ -224,10 +227,16 @@ class IncrementalSelectQuery extends SelectQuery {
         return query.getPageSize();
     }
 
+    /**
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
+     */
     public String getParentObjEntityName() {
         return query.getParentObjEntityName();
     }
 
+    /**
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
+     */
     public Expression getParentQualifier() {
         return query.getParentQualifier();
     }
@@ -264,6 +273,9 @@ class IncrementalSelectQuery extends SelectQuery {
         return query.isFetchingDataRows();
     }
 
+    /**
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
+     */
     public boolean isQualifiedOnParent() {
         return query.isQualifiedOnParent();
     }
@@ -276,6 +288,9 @@ class IncrementalSelectQuery extends SelectQuery {
         return query.isResolvingInherited();
     }
 
+    /**
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
+     */
     public void orParentQualifier(Expression e) {
         query.orParentQualifier(e);
     }
@@ -332,10 +347,16 @@ class IncrementalSelectQuery extends SelectQuery {
         query.setPageSize(pageSize);
     }
 
+    /**
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
+     */
     public void setParentObjEntityName(String parentObjEntityName) {
         query.setParentObjEntityName(parentObjEntityName);
     }
 
+    /**
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
+     */
     public void setParentQualifier(Expression parentQualifier) {
         query.setParentQualifier(parentQualifier);
     }

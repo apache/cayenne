@@ -348,6 +348,9 @@ public abstract class NamedObjectFactory {
         }
     }
 
+    /**
+     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3)
+     */
     static class DerivedDbAttributeFactory extends ObjAttributeFactory {
         protected Object create(String name, Object namingContext) {
             return new DerivedDbAttribute(

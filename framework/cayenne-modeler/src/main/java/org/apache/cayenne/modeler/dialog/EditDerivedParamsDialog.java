@@ -53,6 +53,7 @@ import org.apache.cayenne.modeler.util.PanelFactory;
  * for derived attribute expression.
  *  
  * @author Andrus Adamchik
+ * @deprecated since 3.0M2 (scheduled for removal in 3.0M3).
  */
 public class EditDerivedParamsDialog extends CayenneDialog implements ActionListener {
 
