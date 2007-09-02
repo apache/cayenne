@@ -152,21 +152,27 @@ public class JpaQuery implements Query {
             throw new IllegalArgumentException("Invalid max results value: " + maxResult);
         }
 
-        // TODO: use QueryMetadata?
-        if (getQuery() instanceof EJBQLQuery) {
-            ((EJBQLQuery) getQuery()).setFetchLimit(maxResult);
-        }
-        else if (getQuery() instanceof SelectQuery) {
-            ((SelectQuery) getQuery()).setFetchLimit(maxResult);
-        }
-        else if (getQuery() instanceof SQLTemplate) {
-            ((SQLTemplate) getQuery()).setFetchLimit(maxResult);
-        }
-        else if (getQuery() instanceof ProcedureQuery) {
-            ((ProcedureQuery) getQuery()).setFetchLimit(maxResult);
-        }
+        Object query = getQuery();
 
-        throw new IllegalArgumentException("query does not support maxResult");
+        // the first two types are probably the only queries anyone would run via JPA
+        if (query instanceof EJBQLQuery) {
+            ((EJBQLQuery) query).setFetchLimit(maxResult);
+        }
+        else if (query instanceof SQLTemplate) {
+            ((SQLTemplate) query).setFetchLimit(maxResult);
+        }
+        else if (query instanceof SelectQuery) {
+            ((SelectQuery) query).setFetchLimit(maxResult);
+        }
+        else if (query instanceof ProcedureQuery) {
+            ((ProcedureQuery) query).setFetchLimit(maxResult);
+        }
+        else {
+            throw new IllegalArgumentException("query does not support maxResult: "
+                    + query);
+        }
+        
+        return this;
     }
 
     public Query setFlushMode(FlushModeType flushModeType) {
