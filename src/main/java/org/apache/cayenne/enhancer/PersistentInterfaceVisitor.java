@@ -23,6 +23,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Type;
 
 /**
  * Enhances classes passed through the visitor to add {@link Persistent} interface to
@@ -32,6 +33,8 @@ import org.objectweb.asm.ClassVisitor;
  * @author Andrus Adamchik
  */
 public class PersistentInterfaceVisitor extends ClassAdapter {
+
+    static String ENHANCED_INTERFACE_SIG = Type.getInternalName(Persistent.class);
 
     protected EnhancementHelper helper;
 
@@ -52,12 +55,20 @@ public class PersistentInterfaceVisitor extends ClassAdapter {
             String superName,
             String[] interfaces) {
 
+        for (int i = 0; i < interfaces.length; i++) {
+            if (ENHANCED_INTERFACE_SIG.equals(interfaces[i])) {
+                throw new DoubleEnhanceException(name
+                        + " already implements "
+                        + ENHANCED_INTERFACE_SIG);
+            }
+        }
+
         helper.reset(name);
         interfaces = helper.addInterface(interfaces, Persistent.class);
 
         super.visit(version, access, name, signature, superName, interfaces);
     }
-    
+
     @Override
     public void visitEnd() {
         // per ASM docs, 'visitEnd' is the only correct place to add class members
