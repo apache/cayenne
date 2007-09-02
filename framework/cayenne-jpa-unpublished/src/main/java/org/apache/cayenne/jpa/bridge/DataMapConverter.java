@@ -414,6 +414,13 @@ public class DataMapConverter {
             JpaId jpaTargetId = targetEntity.getAttributes().getId(
                     jpaJoin.getReferencedColumnName());
 
+            if (jpaTargetId == null) {
+                throw new IllegalArgumentException("Null id "
+                        + targetEntity.getName()
+                        + "."
+                        + jpaJoin.getReferencedColumnName());
+            }
+
             ObjRelationship objRelationship = (ObjRelationship) targetPath.getObject();
             DataMap dataMap = objRelationship.getSourceEntity().getDataMap();
 
