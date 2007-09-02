@@ -218,7 +218,9 @@ public class Provider implements PersistenceProvider {
                     .getEntityResolver()
                     .getClassDescriptorMap();
             FaultFactory faultFactory = new SingletonFaultFactory();
-            descriptors.addFactory(new JpaClassDescriptorFactory(descriptors, faultFactory));
+            descriptors.addFactory(new JpaClassDescriptorFactory(
+                    descriptors,
+                    faultFactory));
             configuration.addDomain(domain);
 
             EntityMapLoader loader = new EntityMapLoader(unit);
@@ -241,6 +243,13 @@ public class Provider implements PersistenceProvider {
             // JTA DS?
             DataSource dataSource = isJTA ? unit.getJtaDataSource() : unit
                     .getNonJtaDataSource();
+
+            if (dataSource == null) {
+                String jta = isJTA ? "JTA" : "non-JTA";
+                logger.warn("NULL "
+                        + jta
+                        + " DataSource returned from PersistenceUnitInfo");
+            }
 
             DbAdapter adapter = createCustomAdapter(loader.getContext(), unit);
             DataNode node = new DataNode(name);
@@ -424,6 +433,10 @@ public class Provider implements PersistenceProvider {
         return unitLoader;
     }
 
+    protected String getDefaultProperty(String key) {
+        return defaultProperties.getProperty(key);
+    }
+
     // TODO: andrus, 4/29/2006 - this is copied from non-public conf.NodeDataSource. In
     // Cayenne > 1.2 make it public.
     class NodeDataSource implements DataSource {
@@ -434,34 +447,40 @@ public class Provider implements PersistenceProvider {
             this.node = node;
         }
 
+        private DataSource getDataSource() {
+            DataSource ds = node.getDataSource();
+
+            if (ds == null) {
+                throw new IllegalStateException("DataNode has null DataSource");
+            }
+
+            return ds;
+        }
+
         public Connection getConnection() throws SQLException {
-            return node.getDataSource().getConnection();
+            return getDataSource().getConnection();
         }
 
         public Connection getConnection(String username, String password)
                 throws SQLException {
-            return node.getDataSource().getConnection(username, password);
+            return getDataSource().getConnection(username, password);
         }
 
         public PrintWriter getLogWriter() throws SQLException {
-            return node.getDataSource().getLogWriter();
+            return getDataSource().getLogWriter();
         }
 
         public void setLogWriter(PrintWriter out) throws SQLException {
-            node.getDataSource().setLogWriter(out);
+            getDataSource().setLogWriter(out);
         }
 
         public void setLoginTimeout(int seconds) throws SQLException {
-            node.getDataSource().setLoginTimeout(seconds);
+            getDataSource().setLoginTimeout(seconds);
         }
 
         public int getLoginTimeout() throws SQLException {
-            return node.getDataSource().getLoginTimeout();
+            return getDataSource().getLoginTimeout();
         }
-    }
-
-    protected String getDefaultProperty(String key) {
-        return defaultProperties.getProperty(key);
     }
 
     class LazyConfiguration extends Configuration {
