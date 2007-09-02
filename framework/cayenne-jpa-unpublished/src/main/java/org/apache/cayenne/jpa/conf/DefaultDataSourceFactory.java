@@ -33,8 +33,6 @@ import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.Provider;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * A {@link JpaDataSourceFactory} that attempts to create a DataSource based on Cayenne
@@ -56,8 +54,6 @@ import org.apache.commons.logging.LogFactory;
  * @author Andrus Adamchik
  */
 public class DefaultDataSourceFactory implements JpaDataSourceFactory {
-
-    static final Log logger = LogFactory.getLog(DefaultDataSourceFactory.class);
 
     public DataSource getJtaDataSource(String name, PersistenceUnitInfo info) {
         return getDataSource(name, info);
@@ -100,13 +96,11 @@ public class DefaultDataSourceFactory implements JpaDataSourceFactory {
 
         String driverName = properties.getProperty(Provider.DATA_SOURCE_DRIVER_PROPERTY);
         if (Util.isEmptyString(driverName)) {
-            logger.info("Null DataSource driver");
             return null;
         }
 
         String url = properties.getProperty(Provider.DATA_SOURCE_URL_PROPERTY);
         if (Util.isEmptyString(url)) {
-            logger.info("Null DataSource URL");
             return null;
         }
 
