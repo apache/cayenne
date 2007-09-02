@@ -211,25 +211,27 @@ public class EntityMapLoader {
         }
 
         // now detect potential managed classes from PU root and extra jars
-        Collection<String> implicitClasses = listImplicitClasses(persistenceUnit);
-        for (String className : implicitClasses) {
+        if (!persistenceUnit.excludeUnlistedClasses()) {
+            Collection<String> implicitClasses = listImplicitClasses(persistenceUnit);
+            for (String className : implicitClasses) {
 
-            if (managedClassMap.containsKey(className)) {
-                continue;
-            }
+                if (managedClassMap.containsKey(className)) {
+                    continue;
+                }
 
-            Class managedClass;
-            try {
-                managedClass = Class.forName(className, true, loader);
-            }
-            catch (ClassNotFoundException e) {
-                throw new JpaProviderException("Class not found: " + className, e);
-            }
+                Class managedClass;
+                try {
+                    managedClass = Class.forName(className, true, loader);
+                }
+                catch (ClassNotFoundException e) {
+                    throw new JpaProviderException("Class not found: " + className, e);
+                }
 
-            if (managedClass.getAnnotation(Entity.class) != null
-                    || managedClass.getAnnotation(MappedSuperclass.class) != null
-                    || managedClass.getAnnotation(Embeddable.class) != null) {
-                managedClassMap.put(className, managedClass);
+                if (managedClass.getAnnotation(Entity.class) != null
+                        || managedClass.getAnnotation(MappedSuperclass.class) != null
+                        || managedClass.getAnnotation(Embeddable.class) != null) {
+                    managedClassMap.put(className, managedClass);
+                }
             }
         }
 
