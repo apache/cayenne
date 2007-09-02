@@ -430,27 +430,21 @@ public class EntityMapDefaultsProcessor {
             }
 
             Object relationship = path.getObject();
-            Collection<JpaJoinColumn> joinColumns = null;
-            String mappedBy = null;
 
             if (relationship instanceof JpaOneToOne) {
-                joinColumns = ((JpaOneToOne) relationship).getJoinColumns();
-                mappedBy = ((JpaOneToOne) relationship).getMappedBy();
-                if (joinColumns.isEmpty() && mappedBy != null) {
-                    joinColumns.add(new JpaJoinColumn(AnnotationPrototypes
-                            .getJoinColumn()));
-                }
-            }
-            else if (relationship instanceof JpaOneToMany) {
-                joinColumns = ((JpaOneToMany) relationship).getJoinColumns();
-                mappedBy = ((JpaOneToMany) relationship).getMappedBy();
-                if (joinColumns.isEmpty() && mappedBy != null) {
+
+                JpaOneToOne oneToOne = (JpaOneToOne) relationship;
+                Collection<JpaJoinColumn> joinColumns = oneToOne.getJoinColumns();
+                String mappedBy = oneToOne.getMappedBy();
+                if (joinColumns.isEmpty() && mappedBy == null) {
                     joinColumns.add(new JpaJoinColumn(AnnotationPrototypes
                             .getJoinColumn()));
                 }
             }
             else if (relationship instanceof JpaManyToOne) {
-                joinColumns = ((JpaManyToOne) relationship).getJoinColumns();
+
+                JpaManyToOne manyToOne = (JpaManyToOne) relationship;
+                Collection<JpaJoinColumn> joinColumns = manyToOne.getJoinColumns();
                 if (joinColumns.isEmpty()) {
                     joinColumns.add(new JpaJoinColumn(AnnotationPrototypes
                             .getJoinColumn()));
