@@ -126,7 +126,8 @@ public class EntityMapDefaultsProcessor {
                     JpaTable table = new JpaTable(AnnotationPrototypes.getTable());
 
                     // unclear whether we need to apply any other name transformations ...
-                    // or even if we need to uppercase the name. Per default examples looks
+                    // or even if we need to uppercase the name. Per default examples
+                    // looks
                     // like we need. table.setName(entity.getName().toUpperCase());
                     table.setName(entity.getName());
                     entity.setTable(table);
@@ -207,7 +208,8 @@ public class EntityMapDefaultsProcessor {
                 jpaBasic.setColumn(column);
             }
 
-            JpaEntity entity = (JpaEntity) path.firstInstanceOf(JpaEntity.class);
+            JpaAbstractEntity entity = (JpaAbstractEntity) path
+                    .firstInstanceOf(JpaAbstractEntity.class);
 
             // process temporal type defaults
             if (jpaBasic.getTemporal() == null && jpaBasic.getEnumerated() == null) {
@@ -282,7 +284,11 @@ public class EntityMapDefaultsProcessor {
 
             if (column.getTable() == null) {
                 JpaEntity entity = (JpaEntity) path.firstInstanceOf(JpaEntity.class);
-                column.setTable(entity.getTable().getName());
+
+                // parent can be a mapped superclass
+                if (entity != null) {
+                    column.setTable(entity.getTable().getName());
+                }
             }
 
             if (parent.getPropertyDescriptor().isStringType()) {
