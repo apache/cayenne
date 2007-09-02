@@ -260,8 +260,6 @@ public class EntityMapLoader {
             }
         }
 
-        System.out.println("*** Found under ROOT: " + classes);
-
         for (URL jarURL : persistenceUnit.getJarFileUrls()) {
             if (jarURL != null) {
                 // that's unlikely ... but we can handle it just in case...
@@ -273,8 +271,6 @@ public class EntityMapLoader {
                 }
             }
         }
-
-        System.out.println("*** + Found in jars: " + classes);
 
         return classes;
     }
