@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.security.SecureClassLoader;
 
 /**
- * A special class loader that uses parent loader to get resoirces, but does not load any
+ * A special class loader that uses parent loader to get resources, but does not load any
  * classes though the parent to avoid parent pollution with un-enhanced classes.
  * 
  * @author Andrus Adamchik
