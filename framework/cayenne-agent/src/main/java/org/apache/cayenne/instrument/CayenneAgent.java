@@ -20,6 +20,10 @@
 package org.apache.cayenne.instrument;
 
 import java.lang.instrument.Instrumentation;
+import java.util.Collection;
+import java.util.StringTokenizer;
+
+import javax.persistence.Persistence;
 
 /**
  * An agent that provides access to {@link Instrumentation} instance
@@ -27,20 +31,67 @@ import java.lang.instrument.Instrumentation;
  * To enable CayenneAgent (and hence class enhancers in the Java SE environment), start
  * the JVM with the "-javaagent:" option. E.g.:
  * 
- * <pre>java -javaagent:/path/to/cayenne-agent-xxxx.jar org.example.Main</pre>
+ * <pre>
+ *           java -javaagent:/path/to/cayenne-agent-xxxx.jar org.example.Main
+ *           java -javaagent:/path/to/cayenne-agent-xxxx.jar=arg1,arg2 org.example.Main
+ * </pre>
+ * 
+ * Supported arguments:
+ * <ul>
+ * <li>jpa-eager-load: loads all JPA units available on CLASSPATH. This option ensures
+ * correct enhancement of all persistent classes, regardless of the provider loading
+ * order. Without this option, classes loaded before their persistence unit was
+ * instantiated will not be properly enhanced. However use with caution as this option can
+ * slow down the application significantly.</li>
+ * </ul>
  * 
  * @author Andrus Adamchik
  */
 public class CayenneAgent {
 
+    private static final String JPA_EAGER_LOAD_ARG = "jpa-eager-load";
+    
     static Instrumentation instrumentation;
 
     public static void premain(String agentArgs, Instrumentation instrumentation) {
-        System.out.println("*** CayenneAgent starting...");
+
+        if (agentArgs != null) {
+            System.out.println("*** CayenneAgent starting with arguments: " + agentArgs);
+        }
+        else {
+            System.out.println("*** CayenneAgent starting...");
+        }
+
         CayenneAgent.instrumentation = instrumentation;
+
+        AgentOptions options = new AgentOptions(agentArgs);
+
+        if (options.jpaEagerLoad) {
+            Collection<String> jpaUnitNames = new JpaUnitNameParser().getUnitNames();
+            for (String unit : jpaUnitNames) {
+                Persistence.createEntityManagerFactory(unit).close();
+            }
+        }
     }
 
     public static Instrumentation getInstrumentation() {
         return instrumentation;
+    }
+
+    static final class AgentOptions {
+
+        boolean jpaEagerLoad;
+
+        AgentOptions(String args) {
+            if (args != null) {
+                StringTokenizer toks = new StringTokenizer(args, ",");
+                while(toks.hasMoreTokens()) {
+                    String option = toks.nextToken();
+                    if(JPA_EAGER_LOAD_ARG.equals(option)) {
+                        jpaEagerLoad = true;
+                    }
+                }
+            }
+        }
     }
 }
