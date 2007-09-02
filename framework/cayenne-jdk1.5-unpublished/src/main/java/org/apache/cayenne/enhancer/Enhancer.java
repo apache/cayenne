@@ -55,7 +55,8 @@ public class Enhancer implements ClassFileTransformer {
         ClassReader reader = new ClassReader(classfileBuffer);
 
         // optimization note: per ASM docs COMPUTE_FRAMES makes code generation 2x slower,
-        // so we may investigate manual computation options, although that's likely a pain.
+        // so we may investigate manual computation options, although that's likely a
+        // pain.
         ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
 
         ClassVisitor visitor = visitorFactory.createVisitor(className, writer);
@@ -65,7 +66,15 @@ public class Enhancer implements ClassFileTransformer {
         }
 
         logger.info("enhancing class " + className);
-        reader.accept(visitor, 0);
+
+        try {
+            reader.accept(visitor, 0);
+        }
+        catch (DoubleEnhanceException e) {
+            logger.info("class already enhanced, skipping: " + className);
+            return null;
+        }
+        
         return writer.toByteArray();
     }
 }
