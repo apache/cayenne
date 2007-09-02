@@ -27,7 +27,7 @@ import javax.persistence.Persistence;
 
 import org.apache.cayenne.itest.jpa.JpaTestCase;
 
-public class _5_4_EntityMnagerFactoryTest extends JpaTestCase {
+public class _5_4_EntityMangerFactoryTest extends JpaTestCase {
 
     public void testCreateEntityManager() {
         EntityManagerFactory factory = Persistence
