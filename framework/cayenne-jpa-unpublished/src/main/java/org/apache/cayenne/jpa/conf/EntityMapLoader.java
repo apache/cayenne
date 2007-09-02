@@ -19,14 +19,25 @@
 
 package org.apache.cayenne.jpa.conf;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.MappedSuperclass;
 
 import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
@@ -82,6 +93,10 @@ public class EntityMapLoader {
      */
     public JpaEntityMap getEntityMap() {
         return context.getEntityMap();
+    }
+
+    public EntityMapLoaderContext getContext() {
+        return context;
     }
 
     /**
@@ -172,15 +187,16 @@ public class EntityMapLoader {
      */
     protected void loadFromAnnotations(PersistenceUnitInfo persistenceUnit) {
 
-        if (!persistenceUnit.getManagedClassNames().isEmpty()) {
+        Map<String, Class> managedClassMap = new HashMap<String, Class>();
 
-            // must use Unit class loader to prevent loading an un-enahnced class in the
-            // app ClassLoader.
-            ClassLoader loader = context.getTempClassLoader();
-            EntityMapAnnotationLoader annotationLoader = new EntityMapAnnotationLoader(
-                    context);
+        // must use Unit class loader to prevent loading an un-enahnced class in the
+        // app ClassLoader
+        ClassLoader loader = context.getTempClassLoader();
 
-            for (String className : persistenceUnit.getManagedClassNames()) {
+        // load explicitly mentioned classes
+        Collection<String> explicitClasses = persistenceUnit.getManagedClassNames();
+        if (explicitClasses != null) {
+            for (String className : explicitClasses) {
 
                 Class managedClass;
                 try {
@@ -190,12 +206,143 @@ public class EntityMapLoader {
                     throw new JpaProviderException("Class not found: " + className, e);
                 }
 
+                managedClassMap.put(className, managedClass);
+            }
+        }
+
+        // now detect potential managed classes from PU root and extra jars
+        Collection<String> implicitClasses = listImplicitClasses(persistenceUnit);
+        for (String className : implicitClasses) {
+
+            if (managedClassMap.containsKey(className)) {
+                continue;
+            }
+
+            Class managedClass;
+            try {
+                managedClass = Class.forName(className, true, loader);
+            }
+            catch (ClassNotFoundException e) {
+                throw new JpaProviderException("Class not found: " + className, e);
+            }
+
+            if (managedClass.getAnnotation(Entity.class) != null
+                    || managedClass.getAnnotation(MappedSuperclass.class) != null
+                    || managedClass.getAnnotation(Embeddable.class) != null) {
+                managedClassMap.put(className, managedClass);
+            }
+        }
+
+        if (!managedClassMap.isEmpty()) {
+
+            EntityMapAnnotationLoader annotationLoader = new EntityMapAnnotationLoader(
+                    context);
+            for (Class managedClass : managedClassMap.values()) {
                 annotationLoader.loadClassMapping(managedClass);
             }
         }
     }
 
-    public EntityMapLoaderContext getContext() {
-        return context;
+    /**
+     * Returns a collection of all classes that are located in the unit root and unit
+     * extra jars.
+     */
+    protected Collection<String> listImplicitClasses(PersistenceUnitInfo persistenceUnit) {
+
+        Collection<String> classes = new ArrayList<String>();
+        URL rootURL = persistenceUnit.getPersistenceUnitRootUrl();
+        if (rootURL != null) {
+            if ("file".equals(rootURL.getProtocol())) {
+                locateClassesInFolder(rootURL, classes);
+            }
+            else {
+                locateClassesInJar(rootURL, classes);
+            }
+        }
+
+        System.out.println("*** Found under ROOT: " + classes);
+
+        for (URL jarURL : persistenceUnit.getJarFileUrls()) {
+            if (jarURL != null) {
+                // that's unlikely ... but we can handle it just in case...
+                if ("file".equals(jarURL.getProtocol())) {
+                    locateClassesInFolder(jarURL, classes);
+                }
+                else {
+                    locateClassesInJar(jarURL, classes);
+                }
+            }
+        }
+
+        System.out.println("*** + Found in jars: " + classes);
+
+        return classes;
+    }
+
+    private void locateClassesInFolder(URL dirURL, Collection<String> classes) {
+        File root;
+        try {
+            root = new File(dirURL.toURI());
+        }
+        catch (URISyntaxException e) {
+            throw new JpaProviderException("Error converting url to file: " + dirURL, e);
+        }
+
+        locateClassesInFolder(root, root.getAbsolutePath().length() + 1, classes);
+    }
+
+    private void locateClassesInFolder(
+            File folder,
+            int rootPathLength,
+            Collection<String> classes) {
+
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+                    locateClassesInFolder(files[i], rootPathLength, classes);
+                }
+                else {
+                    String name = files[i].getName();
+                    if (name.endsWith(".class")) {
+
+                        int suffixLen = ".class".length();
+
+                        String absPath = files[i].getAbsolutePath();
+                        if (absPath.length() > rootPathLength + suffixLen) {
+                            classes.add(absPath.substring(
+                                    rootPathLength,
+                                    absPath.length() - suffixLen).replace('/', '.'));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void locateClassesInJar(URL jarURL, Collection<String> classes) {
+
+        try {
+            JarURLConnection connection = (JarURLConnection) jarURL.openConnection();
+            JarFile jar = connection.getJarFile();
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry e = entries.nextElement();
+                if (e.isDirectory()) {
+                    continue;
+                }
+
+                String name = e.getName();
+                if (name.endsWith(".class")) {
+                    int suffixLen = ".class".length();
+                    classes.add(name.substring(0, name.length() - suffixLen).replace(
+                            '/',
+                            '.'));
+                }
+            }
+        }
+        catch (Exception e) {
+            throw new JpaProviderException("Error reading jar contents: " + jarURL, e);
+        }
     }
 }
