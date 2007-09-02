@@ -166,6 +166,10 @@ public class Provider implements PersistenceProvider {
             return null;
         }
 
+        if (logger.isInfoEnabled()) {
+            logger.info("Extra PersistenceUnitInfo properties: " + map);
+        }
+
         // override properties
         if (map != null) {
             ui.addProperties(map);
@@ -199,6 +203,10 @@ public class Provider implements PersistenceProvider {
     public synchronized EntityManagerFactory createContainerEntityManagerFactory(
             PersistenceUnitInfo unit,
             Map map) {
+        
+        if (logger.isInfoEnabled() && map != null) {
+            logger.info("Extra container PersistenceUnitInfo properties: " + map);
+        }
 
         String name = unit.getPersistenceUnitName();
         DataDomain domain = configuration.getDomain(name);
