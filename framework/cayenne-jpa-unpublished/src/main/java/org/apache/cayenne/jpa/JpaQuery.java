@@ -33,6 +33,7 @@ import javax.persistence.TransactionRequiredException;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ParameterizedQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLTemplate;
@@ -152,7 +153,10 @@ public class JpaQuery implements Query {
         }
 
         // TODO: use QueryMetadata?
-        if (getQuery() instanceof SelectQuery) {
+        if (getQuery() instanceof EJBQLQuery) {
+            ((EJBQLQuery) getQuery()).setFetchLimit(maxResult);
+        }
+        else if (getQuery() instanceof SelectQuery) {
             ((SelectQuery) getQuery()).setFetchLimit(maxResult);
         }
         else if (getQuery() instanceof SQLTemplate) {
