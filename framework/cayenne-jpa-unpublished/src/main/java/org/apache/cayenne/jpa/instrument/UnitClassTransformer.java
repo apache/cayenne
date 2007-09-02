@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.persistence.spi.ClassTransformer;
 
+import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,14 +64,25 @@ public class UnitClassTransformer implements ClassTransformer {
         }
 
         if (isManagedClass(className)) {
-            logger.warn("Will transform: " + className);
 
-            return transformer.transform(
-                    loader,
-                    className,
-                    classBeingRedefined,
-                    protectionDomain,
-                    classfileBuffer);
+            logger.info("Will transform managed class: " + className);
+
+            try {
+                return transformer.transform(
+                        loader,
+                        className,
+                        classBeingRedefined,
+                        protectionDomain,
+                        classfileBuffer);
+            }
+            catch (IllegalClassFormatException e) {
+                logger.warn("Error transforming class " + className, e);
+                throw e;
+            }
+            catch (Throwable th) {
+                logger.warn("Error transforming class " + className, th);
+                throw new JpaProviderException("Error transforming class " + className, th);
+            }
         }
         else {
             return null;
