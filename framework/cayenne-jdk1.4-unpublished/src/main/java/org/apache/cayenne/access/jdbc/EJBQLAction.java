@@ -29,6 +29,7 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SQLTemplate;
 
@@ -87,6 +88,11 @@ public class EJBQLAction extends BaseSQLAction {
         });
 
         SQLTemplate sqlQuery = context.getQuery();
+
+        // update with metadata
+        QueryMetadata md = query.getMetaData(getEntityResolver());
+        sqlQuery.setFetchLimit(md.getFetchLimit());
+
         actionFactory.sqlAction(sqlQuery).performAction(connection, observer);
     }
 }

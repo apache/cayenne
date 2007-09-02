@@ -147,4 +147,20 @@ public class EJBQLQuery implements Query {
 
         parameters.put(new Integer(position), object);
     }
+
+    /**
+     * Returns the fetchLimit property indicating the maximum number of rows this query
+     * would return.
+     */
+    public int getFetchLimit() {
+        return metadata.getFetchLimit();
+    }
+
+    /**
+     * Sets the fetchLimit property indicating the maximum number of rows this query would
+     * return.
+     */
+    public void setFetchLimit(int fetchLimit) {
+        this.metadata.setFetchLimit(fetchLimit);
+    }
 }

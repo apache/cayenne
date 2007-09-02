@@ -125,6 +125,17 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         assertTrue(artists.get(0) instanceof Artist);
         assertTrue(((Artist) artists.get(0)).getPersistenceState() == PersistenceState.COMMITTED);
     }
+    
+    public void testFetchLimit() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "select a FROM Artist a";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setFetchLimit(2);
+
+        List artists = createDataContext().performQuery(query);
+        assertEquals(2, artists.size());
+    }
 
     public void testSelectFromWhereEqual() throws Exception {
         createTestData("prepare");
