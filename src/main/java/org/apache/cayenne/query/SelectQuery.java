@@ -580,8 +580,6 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Returns the fetchLimit.
-     * 
-     * @return int
      */
     public int getFetchLimit() {
         return selectInfo.getFetchLimit();
@@ -589,8 +587,6 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Sets the fetchLimit.
-     * 
-     * @param fetchLimit The fetchLimit to set
      */
     public void setFetchLimit(int fetchLimit) {
         this.selectInfo.setFetchLimit(fetchLimit);
