@@ -29,6 +29,7 @@ import javax.persistence.TemporalType;
 
 import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.map.AccessType;
+import org.apache.cayenne.jpa.map.JpaAbstractEntity;
 import org.apache.cayenne.jpa.map.JpaAttribute;
 import org.apache.cayenne.jpa.map.JpaAttributes;
 import org.apache.cayenne.jpa.map.JpaBasic;
@@ -104,64 +105,65 @@ public class EntityMapDefaultsProcessor {
 
         @Override
         public boolean onStartNode(ProjectPath path) {
-            JpaEntity entity = (JpaEntity) path.getObject();
+            JpaAbstractEntity abstractEntity = (JpaAbstractEntity) path.getObject();
 
             // * entity name
-            if (entity.getClassName() == null) {
+            if (abstractEntity.getClassName() == null) {
                 return false;
             }
 
-            if (entity.getName() == null) {
+            if (abstractEntity instanceof JpaEntity) {
+                JpaEntity entity = (JpaEntity) abstractEntity;
+                if (entity.getName() == null) {
+                    // use unqualified class name
+                    String fqName = abstractEntity.getClassName();
+                    int split = fqName.lastIndexOf('.');
+                    entity.setName(split > 0 ? fqName.substring(split + 1) : fqName);
+                }
 
-                // use unqualified class name
-                String fqName = entity.getClassName();
-                int split = fqName.lastIndexOf('.');
-                entity.setName(split > 0 ? fqName.substring(split + 1) : fqName);
+                // * default table (see @Table annotation defaults, JPA spec 9.1.1)
+                if (entity.getTable() == null) {
+                    JpaTable table = new JpaTable(AnnotationPrototypes.getTable());
+
+                    // unclear whether we need to apply any other name transformations ...
+                    // or even if we need to uppercase the name. Per default examples looks
+                    // like we need. table.setName(entity.getName().toUpperCase());
+                    table.setName(entity.getName());
+                    entity.setTable(table);
+                }
             }
 
-            if (entity.getAttributes() == null) {
-                entity.setAttributes(new JpaAttributes());
+            if (abstractEntity.getAttributes() == null) {
+                abstractEntity.setAttributes(new JpaAttributes());
             }
 
             // * default persistent fields
-            JpaClassDescriptor descriptor = entity.getClassDescriptor();
+            JpaClassDescriptor descriptor = abstractEntity.getClassDescriptor();
 
-            AccessType access = entity.getAccess();
+            AccessType access = abstractEntity.getAccess();
             if (access == null) {
                 access = ((JpaEntityMap) path.getRoot()).getAccess();
-                entity.setAccess(access);
+                abstractEntity.setAccess(access);
             }
 
             if (access == AccessType.PROPERTY) {
                 for (JpaPropertyDescriptor candidate : descriptor
                         .getPropertyDescriptors()) {
-                    processProperty(entity, descriptor, candidate);
+                    processProperty(abstractEntity, descriptor, candidate);
                 }
             }
             // field is default...
             else {
                 for (JpaPropertyDescriptor candidate : descriptor.getFieldDescriptors()) {
-                    processProperty(entity, descriptor, candidate);
+                    processProperty(abstractEntity, descriptor, candidate);
                 }
-            }
-
-            // * default table (see @Table annotation defaults, JPA spec 9.1.1)
-            if (entity.getTable() == null) {
-                JpaTable table = new JpaTable(AnnotationPrototypes.getTable());
-
-                // unclear whether we need to apply any other name transformations ... or
-                // even if we need to upperclas the name. Per default examples looks like
-                // we need.
-                // table.setName(entity.getName().toUpperCase());
-                table.setName(entity.getName());
-                entity.setTable(table);
             }
 
             return true;
         }
 
         void processProperty(
-                JpaEntity entity,
+                JpaAbstractEntity entity,
                 JpaClassDescriptor descriptor,
                 JpaPropertyDescriptor property) {
 
