@@ -1,4 +1,4 @@
-package org.pache.cayenne.jpa.itest.ch6.entity;
+package org.apache.cayenne.jpa.itest.ch6.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
