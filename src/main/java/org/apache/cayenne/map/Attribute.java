@@ -25,6 +25,7 @@ import java.io.Serializable;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Defines a property descriptor that is a part of an Entity. Two examples of things that
@@ -48,6 +49,10 @@ public abstract class Attribute implements CayenneMapEntry, XMLSerializable, Ser
      */
     public Attribute(String name) {
         this.name = name;
+    }
+    
+    public String toString() {
+        return new ToStringBuilder(this).append("name", getName()).toString();
     }
     
     public abstract void encodeAsXML(XMLEncoder encoder);
