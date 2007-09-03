@@ -39,6 +39,7 @@ import org.apache.cayenne.jpa.map.JpaEntity;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
 import org.apache.cayenne.jpa.map.JpaId;
 import org.apache.cayenne.jpa.map.JpaJoinColumn;
+import org.apache.cayenne.jpa.map.JpaManagedClass;
 import org.apache.cayenne.jpa.map.JpaManyToMany;
 import org.apache.cayenne.jpa.map.JpaManyToOne;
 import org.apache.cayenne.jpa.map.JpaMappedSuperclass;
@@ -90,13 +91,13 @@ public class EntityMapDefaultsProcessor {
             attributeVisitor.addChildVisitor(JpaId.class, new IdVisitor());
             attributeVisitor.addChildVisitor(JpaBasic.class, new BasicVisitor());
             attributeVisitor.addChildVisitor(JpaVersion.class, new VersionVisitor());
-            attributeVisitor.addChildVisitor(JpaManyToOne.class, new FKVisitor());
-            attributeVisitor.addChildVisitor(JpaOneToOne.class, new FKVisitor());
-            attributeVisitor.addChildVisitor(
-                    JpaManyToMany.class,
-                    new RelationshipVisitor());
+            attributeVisitor.addChildVisitor(JpaManyToOne.class, new ManyToOneVisitor());
+            attributeVisitor.addChildVisitor(JpaOneToOne.class, new OneToOneVisitor());
             attributeVisitor.addChildVisitor(
                     JpaOneToMany.class,
+                    new RelationshipVisitor());
+            attributeVisitor.addChildVisitor(
+                    JpaManyToMany.class,
                     new RelationshipVisitor());
 
             addChildVisitor(JpaAttributes.class, attributeVisitor);
@@ -416,9 +417,9 @@ public class EntityMapDefaultsProcessor {
 
     }
 
-    final class FKVisitor extends RelationshipVisitor {
+    final class ManyToOneVisitor extends RelationshipVisitor {
 
-        FKVisitor() {
+        ManyToOneVisitor() {
             addChildVisitor(JpaJoinColumn.class, new JoinColumnVisitor());
         }
 
@@ -429,26 +430,34 @@ public class EntityMapDefaultsProcessor {
                 return false;
             }
 
-            Object relationship = path.getObject();
-
-            if (relationship instanceof JpaOneToOne) {
-
-                JpaOneToOne oneToOne = (JpaOneToOne) relationship;
-                Collection<JpaJoinColumn> joinColumns = oneToOne.getJoinColumns();
-                String mappedBy = oneToOne.getMappedBy();
-                if (joinColumns.isEmpty() && mappedBy == null) {
-                    joinColumns.add(new JpaJoinColumn(AnnotationPrototypes
-                            .getJoinColumn()));
-                }
+            JpaManyToOne manyToOne = (JpaManyToOne) path.getObject();
+            Collection<JpaJoinColumn> joinColumns = manyToOne.getJoinColumns();
+            if (joinColumns.isEmpty()) {
+                joinColumns.add(new JpaJoinColumn(AnnotationPrototypes.getJoinColumn()));
             }
-            else if (relationship instanceof JpaManyToOne) {
 
-                JpaManyToOne manyToOne = (JpaManyToOne) relationship;
-                Collection<JpaJoinColumn> joinColumns = manyToOne.getJoinColumns();
-                if (joinColumns.isEmpty()) {
-                    joinColumns.add(new JpaJoinColumn(AnnotationPrototypes
-                            .getJoinColumn()));
-                }
+            return true;
+        }
+    }
+
+    final class OneToOneVisitor extends RelationshipVisitor {
+
+        OneToOneVisitor() {
+            addChildVisitor(JpaJoinColumn.class, new JoinColumnVisitor());
+        }
+
+        @Override
+        public boolean onStartNode(ProjectPath path) {
+
+            if (!super.onStartNode(path)) {
+                return false;
+            }
+
+            JpaOneToOne oneToOne = (JpaOneToOne) path.getObject();
+            Collection<JpaJoinColumn> joinColumns = oneToOne.getJoinColumns();
+            String mappedBy = oneToOne.getMappedBy();
+            if (joinColumns.isEmpty() && mappedBy == null) {
+                joinColumns.add(new JpaJoinColumn(AnnotationPrototypes.getJoinColumn()));
             }
 
             return true;
@@ -463,11 +472,12 @@ public class EntityMapDefaultsProcessor {
             JpaRelationship relationship = (JpaRelationship) path.getObject();
             if (Util.isEmptyString(relationship.getTargetEntityName())) {
 
-                JpaEntity entity = (JpaEntity) path.firstInstanceOf(JpaEntity.class);
+                JpaManagedClass relationshipOwner = (JpaManagedClass) path
+                        .firstInstanceOf(JpaManagedClass.class);
 
                 String name = relationship.getName();
 
-                JpaClassDescriptor srcDescriptor = entity.getClassDescriptor();
+                JpaClassDescriptor srcDescriptor = relationshipOwner.getClassDescriptor();
                 JpaPropertyDescriptor property = srcDescriptor.getProperty(name);
 
                 Class targetEntityType = property.getTargetEntityType();
