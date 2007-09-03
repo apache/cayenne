@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.jpa.reflect;
 
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.cayenne.Fault;
+import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ListProperty;
@@ -37,5 +42,33 @@ class JpaToManyProperty extends ListProperty {
     public void writePropertyDirectly(Object object, Object oldValue, Object newValue)
             throws PropertyException {
         accessor.setValue(object, newValue);
+    }
+
+    /**
+     * Overrides super to replace user-provided Collections with Cayenne-enabled
+     * collections.
+     */
+    @Override
+    protected ValueHolder ensureCollectionValueHolderSet(Object object)
+            throws PropertyException {
+
+        Object value = accessor.getValue(object);
+
+        if (value == null || value instanceof Fault) {
+            value = createCollectionValueHolder(object);
+            accessor.setValue(object, value);
+        }
+        else if (!(value instanceof ValueHolder)) {
+
+            if (value instanceof Collection || value instanceof Map) {
+                ValueHolder valueHolder = createCollectionValueHolder(object);
+                valueHolder.setValueDirectly(value);
+
+                accessor.setValue(object, valueHolder);
+                value = valueHolder;
+            }
+        }
+
+        return (ValueHolder) value;
     }
 }
