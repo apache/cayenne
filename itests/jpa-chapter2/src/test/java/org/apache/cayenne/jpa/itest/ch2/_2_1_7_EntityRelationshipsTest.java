@@ -41,8 +41,7 @@ public class _2_1_7_EntityRelationshipsTest extends EntityManagerCase {
         assertTrue(o1.getCollection().isEmpty());
     }
 
-    // TODO: andrus 8/10/2006 - fails because of pk handling issues
-     public void testNonEmptyCollection() throws Exception {
+    public void testNonEmptyCollection() throws Exception {
         getDbHelper().deleteAll("HelperEntity1");
         getDbHelper().deleteAll("CollectionFieldPersistenceEntity");
 
