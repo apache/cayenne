@@ -32,6 +32,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLSerializable;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * An Entity is an abstract descriptor for an entity mapping concept. Entity can represent
@@ -64,6 +65,10 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
         this.relationships = new TreeMap();
 
         setName(name);
+    }
+    
+    public String toString() {
+        return new ToStringBuilder(this).append("name", getName()).toString();
     }
 
     /**
