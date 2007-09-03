@@ -330,7 +330,7 @@ public class ObjRelationshipTest extends CayenneCase {
 
     public void testSingleDbRelationship() {
         ObjRelationship relationship = new ObjRelationship();
-        DbRelationship r1 = new DbRelationship();
+        DbRelationship r1 = new DbRelationship("X");
         relationship.addDbRelationship(r1);
         assertEquals(1, relationship.getDbRelationships().size());
         assertEquals(r1, relationship.getDbRelationships().get(0));
@@ -342,8 +342,8 @@ public class ObjRelationshipTest extends CayenneCase {
     }
 
     public void testFlattenedRelationship() {
-        DbRelationship r1 = new DbRelationship();
-        DbRelationship r2 = new DbRelationship();
+        DbRelationship r1 = new DbRelationship("X");
+        DbRelationship r2 = new DbRelationship("Y");
 
         r1.setSourceEntity(artistDBEntity);
         r1.setTargetEntity(artistExhibitDBEntity);
@@ -375,9 +375,9 @@ public class ObjRelationshipTest extends CayenneCase {
     public void testReadOnlyMoreThan3DbRelsRelationship() {
         // Readonly is a flattened relationship that isn't over a single many->many link
         // table
-        DbRelationship r1 = new DbRelationship();
-        DbRelationship r2 = new DbRelationship();
-        DbRelationship r3 = new DbRelationship();
+        DbRelationship r1 = new DbRelationship("X");
+        DbRelationship r2 = new DbRelationship("Y");
+        DbRelationship r3 = new DbRelationship("Z");
 
         r1.setSourceEntity(artistDBEntity);
         r1.setTargetEntity(artistExhibitDBEntity);
@@ -403,8 +403,8 @@ public class ObjRelationshipTest extends CayenneCase {
     // Test for a read-only flattened relationship that is readonly because it's dbrel
     // sequence is "incorrect" (or rather, unsupported)
     public void testIncorrectSequenceReadOnlyRelationship() {
-        DbRelationship r1 = new DbRelationship();
-        DbRelationship r2 = new DbRelationship();
+        DbRelationship r1 = new DbRelationship("X");
+        DbRelationship r2 = new DbRelationship("Y");
 
         r1.setSourceEntity(artistDBEntity);
         r1.setTargetEntity(paintingDbEntity);
@@ -459,7 +459,7 @@ public class ObjRelationshipTest extends CayenneCase {
 
     public void testWatchesDbRelChanges() {
         ObjRelationship relationship = new ObjRelationship();
-        DbRelationship r1 = new DbRelationship();
+        DbRelationship r1 = new DbRelationship("X");
         r1.setToMany(true);
         relationship.addDbRelationship(r1);
         assertTrue(relationship.isToMany());
