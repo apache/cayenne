@@ -234,9 +234,15 @@ public class ObjRelationship extends Relationship implements EventListener {
         return Collections.unmodifiableList(dbRelationships);
     }
 
-    /** Appends a DbRelationship to the existing list of DbRelationships. */
+    /**
+     * Appends a DbRelationship to the existing list of DbRelationships.
+     */
     public void addDbRelationship(DbRelationship dbRel) {
         refreshFromPath(true);
+
+        if (dbRel.getName() == null) {
+            throw new IllegalArgumentException("DbRelationship has no name");
+        }
 
         // Adding a second is creating a flattened relationship.
         // Ensure that the new relationship properly continues
@@ -265,6 +271,13 @@ public class ObjRelationship extends Relationship implements EventListener {
 
         dbRelationships.add(dbRel);
 
+        if (dbRelationshipPath == null) {
+            dbRelationshipPath = dbRel.getName();
+        }
+        else {
+            dbRelationshipPath += '.' + dbRel.getName();
+        }
+
         this.calculateReadOnlyValue();
         this.calculateToManyValue();
     }
@@ -275,15 +288,36 @@ public class ObjRelationship extends Relationship implements EventListener {
     public void removeDbRelationship(DbRelationship dbRel) {
         refreshFromPath(true);
 
-        dbRelationships.remove(dbRel);
-        // Do not listen any more
-        EventManager.getDefaultManager().removeListener(
-                this,
-                DbRelationship.PROPERTY_DID_CHANGE,
-                dbRel);
+        if (dbRelationships.remove(dbRel)) {
 
-        this.calculateReadOnlyValue();
-        this.calculateToManyValue();
+            if (dbRelationships.isEmpty()) {
+                dbRelationshipPath = null;
+            }
+            else {
+                StringBuffer path = new StringBuffer();
+
+                for (int i = 0; i < dbRelationships.size(); i++) {
+                    DbRelationship r = (DbRelationship) dbRelationships.get(i);
+                    if (i > 0) {
+                        path.append('.');
+                    }
+
+                    path.append(r.getName());
+                }
+
+                dbRelationshipPath = path.toString();
+            }
+
+            // Do not listen any more
+            EventManager.getDefaultManager().removeListener(
+                    this,
+                    DbRelationship.PROPERTY_DID_CHANGE,
+                    dbRel);
+
+            this.calculateReadOnlyValue();
+            this.calculateToManyValue();
+
+        }
     }
 
     public void clearDbRelationships() {
