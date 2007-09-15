@@ -594,7 +594,10 @@ public class DataRowStore implements Serializable {
     }
 
     void stopListeners() {
-        eventManager.removeListener(this);
+        if (eventManager != null) {
+            eventManager.removeListener(this);
+        }
+
         if (remoteNotificationsHandler != null) {
             try {
                 remoteNotificationsHandler.shutdown();
@@ -607,29 +610,36 @@ public class DataRowStore implements Serializable {
     }
 
     void startListeners() {
-        if (remoteNotificationsHandler != null) {
-            try {
-                // listen to EventBridge ... must add itself as non-blocking listener
-                // otherwise a deadlock can occur as "processRemoteEvent" will attempt to
-                // obtain a lock on this object when the dispatch queue is locked... And
-                // another commit thread may have this object locked and attempt to lock
-                // dispatch queue
+        if (eventManager != null) {
+            if (remoteNotificationsHandler != null) {
+                try {
+                    // listen to EventBridge ... must add itself as non-blocking listener
+                    // otherwise a deadlock can occur as "processRemoteEvent" will attempt
+                    // to
+                    // obtain a lock on this object when the dispatch queue is locked...
+                    // And
+                    // another commit thread may have this object locked and attempt to
+                    // lock
+                    // dispatch queue
 
-                eventManager.addNonBlockingListener(
-                        this,
-                        "processRemoteEvent",
-                        SnapshotEvent.class,
-                        getSnapshotEventSubject(),
-                        remoteNotificationsHandler);
+                    eventManager.addNonBlockingListener(
+                            this,
+                            "processRemoteEvent",
+                            SnapshotEvent.class,
+                            getSnapshotEventSubject(),
+                            remoteNotificationsHandler);
 
-                // start EventBridge - it will listen to all event sources for this
-                // subject
-                remoteNotificationsHandler.startup(
-                        eventManager,
-                        EventBridge.RECEIVE_LOCAL_EXTERNAL);
-            }
-            catch (Exception ex) {
-                throw new CayenneRuntimeException("Error initializing DataRowStore.", ex);
+                    // start EventBridge - it will listen to all event sources for this
+                    // subject
+                    remoteNotificationsHandler.startup(
+                            eventManager,
+                            EventBridge.RECEIVE_LOCAL_EXTERNAL);
+                }
+                catch (Exception ex) {
+                    throw new CayenneRuntimeException(
+                            "Error initializing DataRowStore.",
+                            ex);
+                }
             }
         }
     }
