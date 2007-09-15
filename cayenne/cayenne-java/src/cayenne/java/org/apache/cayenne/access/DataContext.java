@@ -417,6 +417,14 @@ public class DataContext implements ObjectContext, DataChannel, QueryEngine, Ser
                     // guarantee that a new channel uses the same EventManager.
                     EventUtil.listenForChannelEvents(channel, mergeHandler);
                 }
+                
+                if (!usingSharedSnaphsotCache && getObjectStore() != null) {
+                    DataRowStore cache = getObjectStore().getDataRowCache();
+
+                    if (cache != null) {
+                        cache.setEventManager(eventManager);
+                    }
+                }
             }
         }
     }
