@@ -22,6 +22,7 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.unit.CayenneCase;
@@ -34,6 +35,7 @@ public class DataContextSerializationTest extends CayenneCase {
 
     protected void setUp() throws Exception {
         fixSharedConfiguration();
+        deleteTestData();
     }
 
     protected void fixSharedConfiguration() {
@@ -71,6 +73,8 @@ public class DataContextSerializationTest extends CayenneCase {
     }
 
     public void testSerializeWithSharedCache() throws Exception {
+        
+        createTestData("prepare");
 
         DataContext context = createDataContextWithSharedCache();
 
@@ -90,9 +94,16 @@ public class DataContextSerializationTest extends CayenneCase {
 
         assertNotNull(deserializedContext.getEntityResolver());
         assertSame(context.getEntityResolver(), deserializedContext.getEntityResolver());
+        
+        Artist a = (Artist) DataObjectUtils.objectForPK(deserializedContext, Artist.class, 33001);
+        assertNotNull(a);
+        a.setArtistName(a.getArtistName() + "___");
+        deserializedContext.commitChanges();
     }
 
     public void testSerializeWithLocalCache() throws Exception {
+        
+        createTestData("prepare");
 
         DataContext context = createDataContextWithDedicatedCache();
 
@@ -114,6 +125,13 @@ public class DataContextSerializationTest extends CayenneCase {
         assertNotSame(
                 deserializedContext.getParentDataDomain().getSharedSnapshotCache(),
                 deserializedContext.getObjectStore().getDataRowCache());
+        
+        Artist a = (Artist) DataObjectUtils.objectForPK(deserializedContext, Artist.class, 33001);
+        assertNotNull(a);
+        a.setArtistName(a.getArtistName() + "___");
+        
+        // this blows per CAY-796
+        deserializedContext.commitChanges();
     }
 
     public void testSerializeNew() throws Exception {
