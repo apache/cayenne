@@ -9,7 +9,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
  * avoid changing this class manually, since it will be overwritten next time code is
  * regenerated. If you need to make any customizations, put them in a subclass.
  */
-public class _ClientMtTable2 extends PersistentObject {
+public abstract class _ClientMtTable2 extends PersistentObject {
 
     public static final String GLOBAL_ATTRIBUTE_PROPERTY = "globalAttribute";
     public static final String TABLE1_PROPERTY = "table1";

@@ -5,7 +5,7 @@ package org.apache.cayenne.testdo.mt.auto;
   * since it may be overwritten next time code is regenerated. 
   * If you need to make any customizations, please use subclass. 
   */
-public class _MtDeleteDeny extends org.apache.cayenne.CayenneDataObject {
+public abstract class _MtDeleteDeny extends org.apache.cayenne.CayenneDataObject {
 
     public static final String NAME_PROPERTY = "name";
     public static final String DENY_PROPERTY = "deny";

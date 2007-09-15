@@ -1,7 +1,5 @@
 package org.apache.cayenne.testdo.mt.auto;
 
-import java.util.List;
-
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.testdo.mt.ClientMtTable5;
 
@@ -10,13 +8,13 @@ import org.apache.cayenne.testdo.mt.ClientMtTable5;
  * avoid changing this class manually, since it will be overwritten next time code is
  * regenerated. If you need to make any customizations, put them in a subclass.
  */
-public class _ClientMtTable4 extends PersistentObject {
+public abstract class _ClientMtTable4 extends PersistentObject {
 
     public static final String TABLE5S_PROPERTY = "table5s";
 
-    protected List table5s;
+    protected java.util.List table5s;
 
-    public List getTable5s() {
+    public java.util.List getTable5s() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table5s", true);
         }

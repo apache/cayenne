@@ -1,7 +1,5 @@
 package org.apache.cayenne.testdo.mt.auto;
 
-import java.util.List;
-
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.testdo.mt.ClientMtDeleteCascade;
 import org.apache.cayenne.testdo.mt.ClientMtDeleteDeny;
@@ -12,7 +10,7 @@ import org.apache.cayenne.testdo.mt.ClientMtDeleteNullify;
  * avoid changing this class manually, since it will be overwritten next time code is
  * regenerated. If you need to make any customizations, put them in a subclass.
  */
-public class _ClientMtDeleteRule extends PersistentObject {
+public abstract class _ClientMtDeleteRule extends PersistentObject {
 
     public static final String NAME_PROPERTY = "name";
     public static final String FROM_CASCADE_PROPERTY = "fromCascade";
@@ -20,9 +18,9 @@ public class _ClientMtDeleteRule extends PersistentObject {
     public static final String FROM_NULLIFY_PROPERTY = "fromNullify";
 
     protected String name;
-    protected List fromCascade;
-    protected List fromDeny;
-    protected List fromNullify;
+    protected java.util.List fromCascade;
+    protected java.util.List fromDeny;
+    protected java.util.List fromNullify;
 
     public String getName() {
         if(objectContext != null) {
@@ -46,7 +44,7 @@ public class _ClientMtDeleteRule extends PersistentObject {
     }
     
     
-    public List getFromCascade() {
+    public java.util.List getFromCascade() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "fromCascade", true);
         }
@@ -68,7 +66,7 @@ public class _ClientMtDeleteRule extends PersistentObject {
         this.fromCascade.remove(object);
     }
     
-    public List getFromDeny() {
+    public java.util.List getFromDeny() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "fromDeny", true);
         }
@@ -90,7 +88,7 @@ public class _ClientMtDeleteRule extends PersistentObject {
         this.fromDeny.remove(object);
     }
     
-    public List getFromNullify() {
+    public java.util.List getFromNullify() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "fromNullify", true);
         }

@@ -5,7 +5,7 @@ package org.apache.art.auto;
   * since it may be overwritten next time code is regenerated. 
   * If you need to make any customizations, please use subclass. 
   */
-public class _ArtistExhibit extends org.apache.cayenne.CayenneDataObject {
+public abstract class _ArtistExhibit extends org.apache.cayenne.CayenneDataObject {
 
     public static final String TO_ARTIST_PROPERTY = "toArtist";
     public static final String TO_EXHIBIT_PROPERTY = "toExhibit";

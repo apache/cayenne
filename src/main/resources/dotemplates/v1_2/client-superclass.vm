@@ -46,7 +46,7 @@ ${importUtils.generate()}
  * avoid changing this class manually, since it will be overwritten next time code is
  * regenerated. If you need to make any customizations, put them in a subclass.
  */
-public class ${entityUtils.superClassName} extends ${entityUtils.baseClassName} {
+public abstract class ${entityUtils.superClassName} extends ${entityUtils.baseClassName} {
 
 ## Create ivars names
 #foreach( $attr in ${objEntity.DeclaredAttributes} )

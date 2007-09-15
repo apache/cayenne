@@ -5,7 +5,7 @@ package org.apache.art.auto;
   * since it may be overwritten next time code is regenerated. 
   * If you need to make any customizations, please use subclass. 
   */
-public class _DateTestEntity extends org.apache.cayenne.CayenneDataObject {
+public abstract class _DateTestEntity extends org.apache.cayenne.CayenneDataObject {
 
     public static final String DATE_COLUMN_PROPERTY = "dateColumn";
     public static final String TIME_COLUMN_PROPERTY = "timeColumn";

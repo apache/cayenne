@@ -5,7 +5,7 @@ package org.apache.cayenne.testdo.mt.auto;
   * since it may be overwritten next time code is regenerated. 
   * If you need to make any customizations, please use subclass. 
   */
-public class _MtTable2 extends org.apache.cayenne.CayenneDataObject {
+public abstract class _MtTable2 extends org.apache.cayenne.CayenneDataObject {
 
     public static final String GLOBAL_ATTRIBUTE_PROPERTY = "globalAttribute";
     public static final String TABLE1_PROPERTY = "table1";

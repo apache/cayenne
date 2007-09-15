@@ -23,7 +23,7 @@ package ${classGen.packageName};
   * since it may be overwritten next time code is regenerated. 
   * If you need to make any customizations, please use subclass. 
   */
-public class ${classGen.superPrefix}${classGen.className} extends $classGen.superClassName {
+public abstract class ${classGen.superPrefix}${classGen.className} extends $classGen.superClassName {
 
 ## Create property names
 #foreach( $attr in ${classGen.Entity.DeclaredAttributes} )
