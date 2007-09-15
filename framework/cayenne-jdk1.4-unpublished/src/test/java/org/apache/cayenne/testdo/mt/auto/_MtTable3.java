@@ -5,7 +5,7 @@ package org.apache.cayenne.testdo.mt.auto;
   * since it may be overwritten next time code is regenerated. 
   * If you need to make any customizations, please use subclass. 
   */
-public class _MtTable3 extends org.apache.cayenne.CayenneDataObject {
+public abstract class _MtTable3 extends org.apache.cayenne.CayenneDataObject {
 
     public static final String BINARY_COLUMN_PROPERTY = "binaryColumn";
     public static final String CHAR_COLUMN_PROPERTY = "charColumn";

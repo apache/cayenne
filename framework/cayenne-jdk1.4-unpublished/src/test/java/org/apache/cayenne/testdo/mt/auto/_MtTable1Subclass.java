@@ -5,7 +5,7 @@ package org.apache.cayenne.testdo.mt.auto;
   * since it may be overwritten next time code is regenerated. 
   * If you need to make any customizations, please use subclass. 
   */
-public class _MtTable1Subclass extends org.apache.cayenne.testdo.mt.MtTable1 {
+public abstract class _MtTable1Subclass extends org.apache.cayenne.testdo.mt.MtTable1 {
 
 
     public static final String TABLE1_ID_PK_COLUMN = "TABLE1_ID";

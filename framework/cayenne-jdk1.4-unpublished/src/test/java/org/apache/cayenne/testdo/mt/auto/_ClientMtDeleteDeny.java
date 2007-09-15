@@ -9,7 +9,7 @@ import org.apache.cayenne.testdo.mt.ClientMtDeleteRule;
  * avoid changing this class manually, since it will be overwritten next time code is
  * regenerated. If you need to make any customizations, put them in a subclass.
  */
-public class _ClientMtDeleteDeny extends PersistentObject {
+public abstract class _ClientMtDeleteDeny extends PersistentObject {
 
     public static final String NAME_PROPERTY = "name";
     public static final String DENY_PROPERTY = "deny";

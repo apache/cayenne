@@ -5,7 +5,7 @@ package org.apache.art.auto;
   * since it may be overwritten next time code is regenerated. 
   * If you need to make any customizations, please use subclass. 
   */
-public class _MeaningfulGeneratedColumnTestEntity extends org.apache.cayenne.CayenneDataObject {
+public abstract class _MeaningfulGeneratedColumnTestEntity extends org.apache.cayenne.CayenneDataObject {
 
     public static final String GENERATED_COLUMN_PROPERTY = "generatedColumn";
     public static final String NAME_PROPERTY = "name";

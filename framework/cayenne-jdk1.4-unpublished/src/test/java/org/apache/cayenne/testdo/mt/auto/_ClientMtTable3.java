@@ -7,7 +7,7 @@ import org.apache.cayenne.PersistentObject;
  * avoid changing this class manually, since it will be overwritten next time code is
  * regenerated. If you need to make any customizations, put them in a subclass.
  */
-public class _ClientMtTable3 extends PersistentObject {
+public abstract class _ClientMtTable3 extends PersistentObject {
 
     public static final String BINARY_COLUMN_PROPERTY = "binaryColumn";
     public static final String CHAR_COLUMN_PROPERTY = "charColumn";

@@ -5,7 +5,7 @@ package org.apache.art.auto;
   * since it may be overwritten next time code is regenerated. 
   * If you need to make any customizations, please use subclass. 
   */
-public class _Painting extends org.apache.art.ArtDataObject {
+public abstract class _Painting extends org.apache.art.ArtDataObject {
 
     public static final String ESTIMATED_PRICE_PROPERTY = "estimatedPrice";
     public static final String PAINTING_DESCRIPTION_PROPERTY = "paintingDescription";

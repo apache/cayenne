@@ -5,7 +5,7 @@ package org.apache.art.auto;
   * since it may be overwritten next time code is regenerated. 
   * If you need to make any customizations, please use subclass. 
   */
-public class _SerializableEntity extends org.apache.cayenne.CayenneDataObject {
+public abstract class _SerializableEntity extends org.apache.cayenne.CayenneDataObject {
 
     public static final String SERIALIZABLE_FIELD_PROPERTY = "serializableField";
 

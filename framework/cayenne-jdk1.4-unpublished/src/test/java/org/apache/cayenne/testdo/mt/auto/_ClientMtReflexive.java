@@ -1,7 +1,5 @@
 package org.apache.cayenne.testdo.mt.auto;
 
-import java.util.List;
-
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.testdo.mt.ClientMtReflexive;
@@ -11,14 +9,14 @@ import org.apache.cayenne.testdo.mt.ClientMtReflexive;
  * avoid changing this class manually, since it will be overwritten next time code is
  * regenerated. If you need to make any customizations, put them in a subclass.
  */
-public class _ClientMtReflexive extends PersistentObject {
+public abstract class _ClientMtReflexive extends PersistentObject {
 
     public static final String NAME_PROPERTY = "name";
     public static final String CHILDREN_PROPERTY = "children";
     public static final String TO_PARENT_PROPERTY = "toParent";
 
     protected String name;
-    protected List children;
+    protected java.util.List children;
     protected ValueHolder toParent;
 
     public String getName() {
@@ -43,7 +41,7 @@ public class _ClientMtReflexive extends PersistentObject {
     }
     
     
-    public List getChildren() {
+    public java.util.List getChildren() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "children", true);
         }
