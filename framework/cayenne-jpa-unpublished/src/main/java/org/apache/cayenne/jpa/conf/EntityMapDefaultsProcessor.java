@@ -293,8 +293,8 @@ public class EntityMapDefaultsProcessor {
             }
 
             if (parent.getPropertyDescriptor().isStringType()) {
-                if (column.getLength() < 0) {
-                    column.setLength(255);
+                if (column.getLength() <= 0) {
+                    column.setLength(JpaColumn.DEFAULT_LENGTH);
                 }
             }
             else {

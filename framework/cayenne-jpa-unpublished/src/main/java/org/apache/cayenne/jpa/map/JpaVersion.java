@@ -24,6 +24,7 @@ import javax.persistence.TemporalType;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class JpaVersion extends JpaAttribute {
 
@@ -33,6 +34,27 @@ public class JpaVersion extends JpaAttribute {
     @TreeNodeChild
     public JpaColumn getColumn() {
         return column;
+    }
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<version");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+        encoder.println('>');
+        encoder.indent(1);
+
+        if (column != null) {
+            column.encodeAsXML(encoder);
+        }
+
+        if (temporal != null) {
+            encoder.println("<temporal>" + temporal.name() + "</temporal>");
+        }
+
+        encoder.indent(-1);
+        encoder.println("</version>");
     }
 
     /**

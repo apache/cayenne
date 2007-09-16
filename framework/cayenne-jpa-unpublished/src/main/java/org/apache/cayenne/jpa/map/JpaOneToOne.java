@@ -22,9 +22,11 @@ package org.apache.cayenne.jpa.map;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class JpaOneToOne extends JpaRelationship {
 
@@ -54,6 +56,53 @@ public class JpaOneToOne extends JpaRelationship {
         fetch = annotation.fetch();
         optional = annotation.optional();
         mappedBy = annotation.mappedBy();
+    }
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder) {
+
+        encoder.print("<one-to-one");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        if (targetEntityName != null) {
+            encoder.print(" target-entity=\"" + targetEntityName + "\"");
+        }
+
+        if (fetch != null && fetch != FetchType.EAGER) {
+            encoder.print(" fetch=\"" + fetch.name() + "\"");
+        }
+
+        if (!optional) {
+            encoder.print(" optional=\"false\"");
+        }
+        
+        if (mappedBy != null) {
+            encoder.print(" mapped-by=\"" + mappedBy + "\"");
+        }
+
+        encoder.println('>');
+        encoder.indent(1);
+        
+        for(JpaPrimaryKeyJoinColumn c : getPrimaryKeyJoinColumns()) {
+            c.encodeAsXML(encoder);
+        }
+
+        for (JpaJoinColumn c : getJoinColumns()) {
+            c.encodeAsXML(encoder);
+        }
+
+        if (joinTable != null) {
+            joinTable.encodeAsXML(encoder);
+        }
+
+        if (cascade != null) {
+            cascade.encodeAsXML(encoder);
+        }
+
+        encoder.indent(-1);
+        encoder.println("</one-to-one>");
     }
 
     @Override

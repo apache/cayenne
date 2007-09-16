@@ -22,9 +22,11 @@ package org.apache.cayenne.jpa.map;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class JpaManyToOne extends JpaRelationship {
 
@@ -50,6 +52,44 @@ public class JpaManyToOne extends JpaRelationship {
 
         fetch = annotation.fetch();
         optional = annotation.optional();
+    }
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<many-to-one");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        if (targetEntityName != null) {
+            encoder.print(" target-entity=\"" + targetEntityName + "\"");
+        }
+
+        if (fetch != null && fetch != FetchType.EAGER) {
+            encoder.print(" fetch=\"" + fetch.name() + "\"");
+        }
+
+        if (!optional) {
+            encoder.print(" optional=\"false\"");
+        }
+
+        encoder.println('>');
+        encoder.indent(1);
+
+        for (JpaJoinColumn c : getJoinColumns()) {
+            c.encodeAsXML(encoder);
+        }
+
+        if (joinTable != null) {
+            joinTable.encodeAsXML(encoder);
+        }
+
+        if (cascade != null) {
+            cascade.encodeAsXML(encoder);
+        }
+
+        encoder.indent(-1);
+        encoder.println("</many-to-one>");
     }
 
     @Override

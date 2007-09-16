@@ -19,14 +19,19 @@
 package org.apache.cayenne.jpa.map;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * @author Andrus Adamchik
  */
-public class JpaPersistenceUnitMetadata {
+public class JpaPersistenceUnitMetadata implements XMLSerializable {
 
     protected boolean xmlMappingMetadataComplete;
     protected JpaPersistenceUnitDefaults persistenceUnitDefaults;
+
+    public void encodeAsXML(XMLEncoder encoder) {
+    }
 
     public boolean isXmlMappingMetadataComplete() {
         return xmlMappingMetadataComplete;

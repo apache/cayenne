@@ -17,13 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * A collection of entity listener descriptors.
@@ -32,7 +33,7 @@ import org.apache.cayenne.util.TreeNodeChild;
  */
 // andrus: I'd rather we flatten this object into JpaEntity, but since we have to follow
 // the schema structure, we need this meaningless object.
-public class JpaEntityListeners {
+public class JpaEntityListeners implements XMLSerializable {
 
     protected Collection<JpaEntityListener> entityListeners;
 
@@ -42,5 +43,15 @@ public class JpaEntityListeners {
             entityListeners = new ArrayList<JpaEntityListener>();
         }
         return entityListeners;
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.println("<entity-listeners>");
+        encoder.indent(1);
+
+        encoder.print(entityListeners);
+
+        encoder.indent(-1);
+        encoder.print("</entity-listeners>");
     }
 }

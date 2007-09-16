@@ -22,6 +22,7 @@ package org.apache.cayenne.jpa.map;
 import javax.persistence.AttributeOverride;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class JpaAttributeOverride extends JpaAttribute {
 
@@ -37,6 +38,23 @@ public class JpaAttributeOverride extends JpaAttribute {
         if (annotation.column() != null) {
             column = new JpaColumn(annotation.column());
         }
+    }
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<attribute-override");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        encoder.println(">");
+        encoder.indent(1);
+        if (column != null) {
+            column.encodeAsXML(encoder);
+        }
+
+        encoder.indent(-1);
+        encoder.println("</attribute-override>");
     }
 
     @TreeNodeChild

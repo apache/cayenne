@@ -23,7 +23,10 @@ package org.apache.cayenne.jpa.map;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 
-public class JpaGeneratedValue {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaGeneratedValue implements XMLSerializable {
 
     protected String generator;
     protected GenerationType strategy = GenerationType.AUTO;
@@ -35,6 +38,9 @@ public class JpaGeneratedValue {
     public JpaGeneratedValue(GeneratedValue annotation) {
         this.generator = annotation.generator();
         this.strategy = annotation.strategy();
+    }
+    
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 
     public String getGenerator() {

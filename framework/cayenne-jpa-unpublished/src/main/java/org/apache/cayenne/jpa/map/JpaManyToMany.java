@@ -19,9 +19,11 @@
 
 package org.apache.cayenne.jpa.map;
 
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class JpaManyToMany extends JpaRelationship {
 
@@ -48,6 +50,48 @@ public class JpaManyToMany extends JpaRelationship {
 
         fetch = annotation.fetch();
         mappedBy = annotation.mappedBy();
+    }
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<many-to-many");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        if (targetEntityName != null) {
+            encoder.print(" target-entity=\"" + targetEntityName + "\"");
+        }
+
+        if (fetch != null && fetch != FetchType.LAZY) {
+            encoder.print(" fetch=\"" + fetch.name() + "\"");
+        }
+
+        if (mappedBy != null) {
+            encoder.print(" mapped-by=\"" + mappedBy + "\"");
+        }
+
+        encoder.println('>');
+        encoder.indent(1);
+
+        if (orderBy != null) {
+            encoder.print("<order-by>" + orderBy + "</order-by>");
+        }
+
+        if (mapKey != null) {
+            encoder.print("<map-key name=\"" + mapKey + "\"/>");
+        }
+
+        if (joinTable != null) {
+            joinTable.encodeAsXML(encoder);
+        }
+
+        if (cascade != null) {
+            cascade.encodeAsXML(encoder);
+        }
+
+        encoder.indent(-1);
+        encoder.println("</many-to-many>");
     }
 
     @Override

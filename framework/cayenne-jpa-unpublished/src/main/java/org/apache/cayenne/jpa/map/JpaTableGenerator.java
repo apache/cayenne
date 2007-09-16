@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import java.util.ArrayList;
@@ -25,12 +24,15 @@ import java.util.Collection;
 
 import javax.persistence.TableGenerator;
 
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
 /**
  * A primary key generator based on a database table.
  * 
  * @author Andrus Adamchik
  */
-public class JpaTableGenerator {
+public class JpaTableGenerator implements XMLSerializable {
 
     protected String name;
     protected String table;
@@ -64,6 +66,9 @@ public class JpaTableGenerator {
             uniqueConstraints.add(new JpaUniqueConstraint(
                     annotation.uniqueConstraints()[i]));
         }
+    }
+    
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 
     public int getAllocationSize() {

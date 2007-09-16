@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import java.util.ArrayList;
@@ -26,8 +25,10 @@ import java.util.Collection;
 import javax.persistence.JoinTable;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
-public class JpaJoinTable {
+public class JpaJoinTable implements XMLSerializable {
 
     protected String name;
     protected String catalog;
@@ -61,6 +62,9 @@ public class JpaJoinTable {
             uniqueConstraints.add(new JpaUniqueConstraint(
                     annotation.uniqueConstraints()[i]));
         }
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 
     public String getCatalog() {

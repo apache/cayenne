@@ -17,12 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import javax.persistence.ColumnResult;
 
-public class JpaColumnResult {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaColumnResult implements XMLSerializable {
 
     protected String name;
 
@@ -32,6 +34,14 @@ public class JpaColumnResult {
 
     public JpaColumnResult(ColumnResult annotation) {
         name = annotation.name();
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<column-result");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+        encoder.println("/>");
     }
 
     public String getName() {

@@ -23,7 +23,10 @@ import java.util.Collection;
 
 import javax.persistence.AssociationOverride;
 
-public class JpaAssociationOverride {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaAssociationOverride implements XMLSerializable {
 
     protected String name;
     protected Collection<JpaJoinColumn> joinColumns;
@@ -40,6 +43,22 @@ public class JpaAssociationOverride {
                 getJoinColumns().add(new JpaJoinColumn(annotation.joinColumns()[i]));
             }
         }
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<association-override");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+        encoder.println('>');
+        encoder.indent(1);
+
+        for (JpaJoinColumn c : getJoinColumns()) {
+            c.encodeAsXML(encoder);
+        }
+
+        encoder.indent(-1);
+        encoder.print("</association-override>");
     }
 
     public Collection<JpaJoinColumn> getJoinColumns() {

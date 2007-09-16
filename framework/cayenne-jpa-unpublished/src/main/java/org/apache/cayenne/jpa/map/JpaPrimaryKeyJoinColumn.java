@@ -17,12 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import javax.persistence.PrimaryKeyJoinColumn;
 
-public class JpaPrimaryKeyJoinColumn {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaPrimaryKeyJoinColumn implements XMLSerializable {
 
     protected String name;
     protected String referencedColumnName;
@@ -36,6 +38,9 @@ public class JpaPrimaryKeyJoinColumn {
         name = annotation.name();
         referencedColumnName = annotation.referencedColumnName();
         columnDefinition = annotation.columnDefinition();
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 
     /**

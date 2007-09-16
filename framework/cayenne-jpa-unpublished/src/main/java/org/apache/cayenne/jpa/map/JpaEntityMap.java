@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * An object that stores JPA mapping information. This is a root object in the hierarchy
@@ -32,7 +34,7 @@ import org.apache.cayenne.util.TreeNodeChild;
  * 
  * @author Andrus Adamchik
  */
-public class JpaEntityMap {
+public class JpaEntityMap implements XMLSerializable {
 
     // mapped properties
     protected String version;
@@ -51,6 +53,74 @@ public class JpaEntityMap {
     protected Collection<JpaSqlResultSetMapping> sqlResultSetMappings;
     protected Collection<JpaSequenceGenerator> sequenceGenerators;
     protected Collection<JpaTableGenerator> tableGenerators;
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<entity-mappings");
+        if (version != null) {
+            encoder.print(" version=\"" + version + "\"");
+        }
+        encoder.println('>');
+        encoder.indent(1);
+
+        if (description != null) {
+            encoder.println("<description>" + description + "</description>");
+        }
+
+        if (persistenceUnitMetadata != null) {
+            persistenceUnitMetadata.encodeAsXML(encoder);
+        }
+
+        if (packageName != null) {
+            encoder.println("<package>" + packageName + "</package>");
+        }
+
+        if (schema != null) {
+            encoder.println("<schema>" + schema + "</schema>");
+        }
+
+        if (catalog != null) {
+            encoder.println("<catalog>" + catalog + "</catalog>");
+        }
+
+        if (access != null) {
+            encoder.println("<access>" + access.name() + "</access>");
+        }
+
+        if (sequenceGenerators != null) {
+            encoder.print(sequenceGenerators);
+        }
+
+        if (tableGenerators != null) {
+            encoder.print(tableGenerators);
+        }
+
+        if (namedQueries != null) {
+            encoder.print(namedQueries);
+        }
+
+        if (namedNativeQueries != null) {
+            encoder.print(namedNativeQueries);
+        }
+
+        if (sqlResultSetMappings != null) {
+            encoder.print(sqlResultSetMappings);
+        }
+
+        if (mappedSuperclasses != null) {
+            encoder.print(mappedSuperclasses);
+        }
+        
+        if(entities != null) {
+            encoder.print(entities);
+        }
+        
+        if(embeddables != null) {
+            encoder.print(embeddables);
+        }
+
+        encoder.indent(-1);
+        encoder.print("</entity-mappings>");
+    }
 
     /**
      * Returns true if a given managed class is already loaded.

@@ -17,10 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
-public class JpaLifecycleCallback {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaLifecycleCallback implements XMLSerializable {
 
     protected String methodName;
 
@@ -30,6 +32,9 @@ public class JpaLifecycleCallback {
 
     public JpaLifecycleCallback(String methodName) {
         this.methodName = methodName;
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 
     public String getMethodName() {

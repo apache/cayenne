@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.jpa.map;
 
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * A descriptor of a persistent class whose instances are stored as an intrinsic part of
@@ -26,6 +28,32 @@ package org.apache.cayenne.jpa.map;
  * 
  * @author Andrus Adamchik
  */
-public class JpaEmbeddable extends JpaManagedClass {
+public class JpaEmbeddable extends JpaManagedClass implements XMLSerializable {
 
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<embeddable");
+        if (className != null) {
+            encoder.print(" class=\"" + className + "\"");
+        }
+
+        if (access != null) {
+            encoder.print(" access=\"" + access.name() + "\"");
+        }
+
+        encoder.print(" metadata-complete=\"" + metadataComplete + "\"");
+
+        encoder.println('>');
+        encoder.indent(1);
+
+        if (description != null) {
+            encoder.println("<description>" + description + "</description>");
+        }
+        
+        if(attributes != null) {
+            attributes.encodeAsXML(encoder);
+        }
+
+        encoder.indent(-1);
+        encoder.println("</embeddable>");
+    }
 }

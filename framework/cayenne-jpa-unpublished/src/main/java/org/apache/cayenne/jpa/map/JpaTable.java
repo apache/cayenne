@@ -26,8 +26,10 @@ import java.util.Collection;
 import javax.persistence.Table;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
-public class JpaTable {
+public class JpaTable implements XMLSerializable {
 
     protected String name;
     protected String catalog;
@@ -58,6 +60,9 @@ public class JpaTable {
             uniqueConstraints.add(new JpaUniqueConstraint(
                     annotation.uniqueConstraints()[i]));
         }
+    }
+    
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 
     public String getCatalog() {

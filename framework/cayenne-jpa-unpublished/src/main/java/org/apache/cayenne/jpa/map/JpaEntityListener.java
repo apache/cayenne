@@ -19,7 +19,10 @@
 
 package org.apache.cayenne.jpa.map;
 
-public class JpaEntityListener {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaEntityListener implements XMLSerializable {
 
     protected String className;
     protected JpaLifecycleCallback prePersist;
@@ -29,6 +32,9 @@ public class JpaEntityListener {
     protected JpaLifecycleCallback preUpdate;
     protected JpaLifecycleCallback postUpdate;
     protected JpaLifecycleCallback postLoad;
+    
+    public void encodeAsXML(XMLEncoder encoder) {
+    }
 
     public JpaLifecycleCallback getPostLoad() {
         return postLoad;

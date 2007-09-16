@@ -23,7 +23,10 @@ import java.util.LinkedHashSet;
 
 import javax.persistence.CascadeType;
 
-public class JpaCascade {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaCascade implements XMLSerializable {
 
     protected Collection<CascadeType> cascades;
 
@@ -33,6 +36,34 @@ public class JpaCascade {
         }
 
         return cascades;
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        if (cascades != null) {
+            encoder.println("<cascades>");
+            encoder.indent(1);
+            for (CascadeType t : cascades) {
+                switch (t) {
+                    case ALL:
+                        encoder.println("<cascade-all/>");
+                        break;
+                    case MERGE:
+                        encoder.println("<cascade-merge/>");
+                        break;
+                    case PERSIST:
+                        encoder.println("<cascade-persist/>");
+                        break;
+                    case REFRESH:
+                        encoder.println("<cascade-refresh/>");
+                        break;
+                    case REMOVE:
+                        encoder.println("<cascade-remove/>");
+                        break;
+                }
+            }
+            encoder.indent(-1);
+            encoder.println("</cascades>");
+        }
     }
 
     public void setCascadeAll(Object value) {

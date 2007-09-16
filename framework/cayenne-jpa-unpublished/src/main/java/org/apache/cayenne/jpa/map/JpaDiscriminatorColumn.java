@@ -17,13 +17,17 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 
-public class JpaDiscriminatorColumn {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaDiscriminatorColumn implements XMLSerializable {
+
+    public static final int DEFAULT_LENGTH = 31;
 
     protected String name;
     protected DiscriminatorType discriminatorType = DiscriminatorType.STRING;
@@ -39,6 +43,27 @@ public class JpaDiscriminatorColumn {
         discriminatorType = annotation.discriminatorType();
         columnDefinition = annotation.columnDefinition();
         length = annotation.length();
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<discriminator-column");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        if (discriminatorType != null && discriminatorType != DiscriminatorType.STRING) {
+            encoder.print(" discriminator-type=\"" + discriminatorType.name() + "\"");
+        }
+
+        if (columnDefinition != null) {
+            encoder.print(" column-definition=\"" + columnDefinition + "\"");
+        }
+
+        if (length > 0 && length != DEFAULT_LENGTH) {
+            encoder.print(" length=\"" + length + "\"");
+        }
+
+        encoder.println("/>");
     }
 
     public String getColumnDefinition() {

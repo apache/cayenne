@@ -22,9 +22,11 @@ package org.apache.cayenne.jpa.map;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class JpaOneToMany extends JpaRelationship {
 
@@ -52,6 +54,53 @@ public class JpaOneToMany extends JpaRelationship {
 
         fetch = annotation.fetch();
         mappedBy = annotation.mappedBy();
+    }
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder) {
+
+        encoder.print("<one-to-many");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        if (targetEntityName != null) {
+            encoder.print(" target-entity=\"" + targetEntityName + "\"");
+        }
+
+        if (fetch != null && fetch != FetchType.LAZY) {
+            encoder.print(" fetch=\"" + fetch.name() + "\"");
+        }
+
+        if (mappedBy != null) {
+            encoder.print(" mapped-by=\"" + mappedBy + "\"");
+        }
+
+        encoder.println('>');
+        encoder.indent(1);
+
+        if (orderBy != null) {
+            encoder.print("<order-by>" + orderBy + "</order-by>");
+        }
+
+        if (mapKey != null) {
+            encoder.print("<map-key name=\"" + mapKey + "\"/>");
+        }
+
+        if (joinTable != null) {
+            joinTable.encodeAsXML(encoder);
+        }
+
+        for (JpaJoinColumn c : getJoinColumns()) {
+            c.encodeAsXML(encoder);
+        }
+
+        if (cascade != null) {
+            cascade.encodeAsXML(encoder);
+        }
+
+        encoder.indent(-1);
+        encoder.println("</one-to-many>");
     }
 
     @Override
@@ -91,12 +140,10 @@ public class JpaOneToMany extends JpaRelationship {
         this.mappedBy = mappedBy;
     }
 
-    
     public String getMapKey() {
         return mapKey;
     }
 
-    
     public void setMapKey(String mapKey) {
         this.mapKey = mapKey;
     }

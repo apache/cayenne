@@ -22,13 +22,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * An attribute container.
  * 
  * @author Andrus Adamchik
  */
-public class JpaAttributes {
+public class JpaAttributes implements XMLSerializable {
 
     protected Collection<JpaId> ids;
     protected JpaEmbeddedId embeddedId;
@@ -40,6 +42,54 @@ public class JpaAttributes {
     protected Collection<JpaManyToMany> manyToManyRelationships;
     protected Collection<JpaEmbedded> embeddedAttributes;
     protected Collection<JpaTransient> transientAttributes;
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.println("<attributes>");
+        encoder.indent(1);
+        
+        if(ids != null) {
+            encoder.print(ids);
+        }
+        
+        if(embeddedId != null) {
+            embeddedId.encodeAsXML(encoder);
+        }
+        
+        if(basicAttributes != null) {
+            encoder.print(basicAttributes);
+        }
+        
+        if(versionAttributes != null) {
+            encoder.print(versionAttributes);
+        }
+        
+        if(manyToOneRelationships != null) {
+            encoder.print(manyToOneRelationships);
+        }
+        
+        if(oneToManyRelationships != null) {
+            encoder.print(oneToManyRelationships);
+        }
+        
+        if(oneToOneRelationships != null) {
+            encoder.print(oneToOneRelationships);
+        }
+        
+        if(manyToManyRelationships != null) {
+            encoder.print(manyToManyRelationships);
+        }
+        
+        if(embeddedAttributes != null) {
+            encoder.print(embeddedAttributes);
+        }
+        
+        if(transientAttributes != null) {
+            encoder.print(transientAttributes);
+        }
+        
+        encoder.indent(-1);
+        encoder.println("</attributes>");
+    }
 
     public JpaAttribute getAttribute(String name) {
         if (name == null) {

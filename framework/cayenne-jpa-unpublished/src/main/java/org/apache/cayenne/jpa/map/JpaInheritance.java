@@ -23,7 +23,10 @@ package org.apache.cayenne.jpa.map;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
-public class JpaInheritance {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaInheritance implements XMLSerializable {
 
     protected InheritanceType strategy;
 
@@ -33,6 +36,9 @@ public class JpaInheritance {
 
     public JpaInheritance(Inheritance annotation) {
         strategy = annotation.strategy();
+    }
+    
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 
     public InheritanceType getStrategy() {

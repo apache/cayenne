@@ -18,9 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.jpa.map;
 
-public class JpaIdClass {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaIdClass implements XMLSerializable {
 
     protected String className;
+
+    public void encodeAsXML(XMLEncoder encoder) {
+    }
 
     public String getClassName() {
         return className;

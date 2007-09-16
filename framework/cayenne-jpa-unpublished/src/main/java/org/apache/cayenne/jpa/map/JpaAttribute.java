@@ -19,7 +19,10 @@
 
 package org.apache.cayenne.jpa.map;
 
-public abstract class JpaAttribute {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public abstract class JpaAttribute implements XMLSerializable {
 
     protected String name;
     protected JpaPropertyDescriptor propertyDescriptor;
@@ -45,4 +48,6 @@ public abstract class JpaAttribute {
         String className = getClass().getName();
         return className.substring(className.lastIndexOf('.') + 1) + ":" + name;
     }
+    
+    public abstract void encodeAsXML(XMLEncoder encoder);
 }

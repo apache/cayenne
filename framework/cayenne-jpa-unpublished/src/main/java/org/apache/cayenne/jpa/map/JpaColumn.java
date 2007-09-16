@@ -17,12 +17,16 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import javax.persistence.Column;
 
-public class JpaColumn {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaColumn implements XMLSerializable {
+
+    public static final int DEFAULT_LENGTH = 255;
 
     protected String name;
     protected boolean unique;
@@ -60,6 +64,51 @@ public class JpaColumn {
         length = annotation.length();
         precision = annotation.precision();
         scale = annotation.scale();
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<column");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        if (unique) {
+            encoder.print(" unique=\"true\"");
+        }
+
+        if (!nullable) {
+            encoder.print(" unique=\"false\"");
+        }
+
+        if (!insertable) {
+            encoder.print(" insertable=\"false\"");
+        }
+
+        if (!updatable) {
+            encoder.print(" updatable=\"false\"");
+        }
+
+        if (columnDefinition != null) {
+            encoder.print(" column-definition=\"" + columnDefinition + "\"");
+        }
+
+        if (table != null) {
+            encoder.print(" table=\"" + table + "\"");
+        }
+
+        if (length > 0 && length != DEFAULT_LENGTH) {
+            encoder.print(" length=\"" + length + "\"");
+        }
+
+        if (precision > 0) {
+            encoder.print(" precision=\"" + precision + "\"");
+        }
+
+        if (scale > 0) {
+            encoder.print(" scale=\"" + scale + "\"");
+        }
+
+        encoder.println("/>");
     }
 
     public String getColumnDefinition() {
@@ -141,7 +190,7 @@ public class JpaColumn {
     public void setUpdatable(boolean updateable) {
         this.updatable = updateable;
     }
-    
+
     @Override
     public String toString() {
         String className = getClass().getName();

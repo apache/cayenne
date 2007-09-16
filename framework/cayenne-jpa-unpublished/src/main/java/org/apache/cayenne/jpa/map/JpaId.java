@@ -25,6 +25,7 @@ import javax.persistence.TemporalType;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class JpaId extends JpaAttribute {
 
@@ -33,6 +34,39 @@ public class JpaId extends JpaAttribute {
     protected TemporalType temporal;
     protected JpaTableGenerator tableGenerator;
     protected JpaSequenceGenerator sequenceGenerator;
+    
+    @Override
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<id");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+        encoder.println('>');
+        encoder.indent(1);
+        
+        if(column != null) {
+            column.encodeAsXML(encoder);
+        }
+        
+        if(generatedValue != null) {
+            generatedValue.encodeAsXML(encoder);
+        }
+        
+        if(temporal != null) {
+            encoder.println("<temporal>" + temporal.name() + "</temporal>");
+        }
+        
+        if(tableGenerator != null) {
+            tableGenerator.encodeAsXML(encoder);
+        }
+        
+        if(sequenceGenerator != null) {
+            sequenceGenerator.encodeAsXML(encoder);
+        }
+        
+        encoder.indent(-1);
+        encoder.println("</id>");
+    }
 
     /**
      * Returns default JDBC mapping for this basic attribute.

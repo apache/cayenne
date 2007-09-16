@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import java.util.ArrayList;
@@ -26,8 +25,10 @@ import java.util.Collection;
 import javax.persistence.SqlResultSetMapping;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
-public class JpaSqlResultSetMapping {
+public class JpaSqlResultSetMapping implements XMLSerializable {
 
     protected String name;
     protected Collection<JpaEntityResult> entityResults;
@@ -50,6 +51,9 @@ public class JpaSqlResultSetMapping {
             columnResults.add(new JpaColumnResult(annotation.columns()[i]));
         }
     }
+    
+    public void encodeAsXML(XMLEncoder encoder) {
+    }
 
     public String getName() {
         return name;
@@ -59,7 +63,7 @@ public class JpaSqlResultSetMapping {
         this.name = name;
     }
 
-    @TreeNodeChild(type=JpaColumnResult.class)
+    @TreeNodeChild(type = JpaColumnResult.class)
     public Collection<JpaColumnResult> getColumnResults() {
         if (columnResults == null) {
             columnResults = new ArrayList<JpaColumnResult>(5);
@@ -67,7 +71,7 @@ public class JpaSqlResultSetMapping {
         return columnResults;
     }
 
-    @TreeNodeChild(type=JpaEntityResult.class)
+    @TreeNodeChild(type = JpaEntityResult.class)
     public Collection<JpaEntityResult> getEntityResults() {
         if (entityResults == null) {
             entityResults = new ArrayList<JpaEntityResult>(5);

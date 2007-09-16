@@ -17,12 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import javax.persistence.SequenceGenerator;
 
-public class JpaSequenceGenerator {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaSequenceGenerator implements XMLSerializable {
 
     protected String name;
     protected String sequenceName;
@@ -38,6 +40,9 @@ public class JpaSequenceGenerator {
         sequenceName = annotation.sequenceName();
         initialValue = annotation.initialValue();
         allocationSize = annotation.allocationSize();
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 
     public int getAllocationSize() {

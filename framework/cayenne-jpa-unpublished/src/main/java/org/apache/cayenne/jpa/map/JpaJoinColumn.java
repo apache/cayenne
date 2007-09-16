@@ -17,10 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import javax.persistence.JoinColumn;
+
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * Join column specifies a mapped column for joining an entity association, aka flattened
@@ -28,7 +30,7 @@ import javax.persistence.JoinColumn;
  * 
  * @author Andrus Adamchik
  */
-public class JpaJoinColumn {
+public class JpaJoinColumn implements XMLSerializable {
 
     protected String name;
     protected String referencedColumnName;
@@ -64,6 +66,9 @@ public class JpaJoinColumn {
         nullable = annotation.nullable();
         insertable = annotation.insertable();
         updatable = annotation.updatable();
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 
     public String getColumnDefinition() {

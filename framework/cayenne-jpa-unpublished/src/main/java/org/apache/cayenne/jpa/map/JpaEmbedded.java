@@ -22,10 +22,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class JpaEmbedded extends JpaAttribute {
 
     protected Collection<JpaAttributeOverride> attributeOverrides;
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<embedded");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+        encoder.println('>');
+        encoder.indent(1);
+
+        for (JpaAttributeOverride a : getAttributeOverrides()) {
+            a.encodeAsXML(encoder);
+        }
+
+        encoder.indent(-1);
+        encoder.println("</embedded>");
+    }
 
     @TreeNodeChild(type = JpaAttributeOverride.class)
     public Collection<JpaAttributeOverride> getAttributeOverrides() {

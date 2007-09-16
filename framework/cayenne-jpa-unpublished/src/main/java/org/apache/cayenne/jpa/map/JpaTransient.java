@@ -18,6 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.jpa.map;
 
+import org.apache.cayenne.util.XMLEncoder;
+
 public class JpaTransient extends JpaAttribute {
 
+    @Override
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<transient");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+        encoder.println("/>");
+    }
 }

@@ -23,13 +23,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * A JPA-compliant entity.
  * 
  * @author Andrus Adamchik
  */
-public class JpaEntity extends JpaAbstractEntity {
+public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
 
     protected String name;
     protected JpaTable table;
@@ -50,6 +52,134 @@ public class JpaEntity extends JpaAbstractEntity {
 
     protected Collection<JpaSecondaryTable> secondaryTables;
     protected Collection<JpaPrimaryKeyJoinColumn> primaryKeyJoinColumns;
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<entity");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        if (className != null) {
+            encoder.print(" class=\"" + className + "\"");
+        }
+
+        if (access != null) {
+            encoder.print(" access=\"" + access.name() + "\"");
+        }
+
+        encoder.print(" metadata-complete=\"" + metadataComplete + "\"");
+        encoder.println('>');
+        encoder.indent(1);
+
+        if (description != null) {
+            encoder.println("<description>" + description + "</description>");
+        }
+
+        if (table != null) {
+            table.encodeAsXML(encoder);
+        }
+
+        if (secondaryTables != null) {
+            encoder.print(secondaryTables);
+        }
+
+        if (primaryKeyJoinColumns != null) {
+            encoder.print(primaryKeyJoinColumns);
+        }
+
+        if (idClass != null) {
+            idClass.encodeAsXML(encoder);
+        }
+
+        if (inheritance != null) {
+            inheritance.encodeAsXML(encoder);
+        }
+
+        if (discriminatorValue != null) {
+            encoder.println("<discriminator-value>"
+                    + discriminatorValue
+                    + "</discriminator-value>");
+        }
+
+        if (discriminatorColumn != null) {
+            discriminatorColumn.encodeAsXML(encoder);
+        }
+
+        if (sequenceGenerator != null) {
+            sequenceGenerator.encodeAsXML(encoder);
+        }
+
+        if (tableGenerator != null) {
+            tableGenerator.encodeAsXML(encoder);
+        }
+
+        if (namedQueries != null) {
+            encoder.print(namedQueries);
+        }
+
+        if (namedNativeQueries != null) {
+            encoder.print(namedNativeQueries);
+        }
+
+        if (sqlResultSetMapping != null) {
+            sqlResultSetMapping.encodeAsXML(encoder);
+        }
+
+        if (excludeDefaultListeners) {
+            encoder.println("<exclude-default-listeners/>");
+        }
+
+        if (excludeSuperclassListeners) {
+            encoder.println("<exclude-superclass-listeners/>");
+        }
+
+        if (entityListeners != null) {
+            entityListeners.encodeAsXML(encoder);
+        }
+
+        if (prePersist != null) {
+            prePersist.encodeAsXML(encoder);
+        }
+
+        if (postPersist != null) {
+            postPersist.encodeAsXML(encoder);
+        }
+
+        if (preRemove != null) {
+            preRemove.encodeAsXML(encoder);
+        }
+
+        if (postRemove != null) {
+            postRemove.encodeAsXML(encoder);
+        }
+
+        if (preUpdate != null) {
+            preUpdate.encodeAsXML(encoder);
+        }
+
+        if (postUpdate != null) {
+            postUpdate.encodeAsXML(encoder);
+        }
+
+        if (postLoad != null) {
+            postLoad.encodeAsXML(encoder);
+        }
+
+        if (attributeOverrides != null) {
+            encoder.print(attributeOverrides);
+        }
+
+        if (associationOverrides != null) {
+            encoder.print(associationOverrides);
+        }
+
+        if (attributes != null) {
+            attributes.encodeAsXML(encoder);
+        }
+
+        encoder.indent(-1);
+        encoder.print("</entity>");
+    }
 
     public String getName() {
         return name;

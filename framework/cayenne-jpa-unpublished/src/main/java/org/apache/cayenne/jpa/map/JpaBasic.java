@@ -28,6 +28,7 @@ import javax.persistence.TemporalType;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class JpaBasic extends JpaAttribute {
 
@@ -45,6 +46,37 @@ public class JpaBasic extends JpaAttribute {
     public JpaBasic(Basic basic) {
         this.fetch = basic.fetch();
         this.optional = basic.optional();
+    }
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<basic");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        if (fetch != null) {
+            encoder.print(" fetch=\"" + fetch.name() + "\"");
+        }
+
+        encoder.print(" optional=\"" + optional + "\"");
+        encoder.println('>');
+        encoder.indent(1);
+
+        if (lob) {
+            encoder.println("<lob/>");
+        }
+
+        if (temporal != null) {
+            encoder.println("<temporal>" + temporal.name() + "</temporal>");
+        }
+
+        if (enumerated != null) {
+            encoder.println("<enumerated>" + enumerated.name() + "</enumerated>");
+        }
+
+        encoder.indent(-1);
+        encoder.print("</basic>");
     }
 
     /**
