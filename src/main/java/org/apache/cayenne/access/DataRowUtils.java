@@ -19,10 +19,14 @@
 
 package org.apache.cayenne.access;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -177,29 +181,35 @@ class DataRowUtils {
                                 .getDbRelationships()
                                 .get(0);
 
-                        ObjectId id = snapshot.createTargetObjectId(relationship
-                                .getTargetEntityName(), dbRelationship);
+                        // must check before creating ObjectId because of partial
+                        // snapshots
+                        if (hasFK(dbRelationship, snapshot)) {
+                            ObjectId id = snapshot.createTargetObjectId(relationship
+                                    .getTargetEntityName(), dbRelationship);
 
-                        if (diff == null
-                                || !diff.containsArcSnapshot(relationship.getName())
-                                || !Util.nullSafeEquals(id, diff
-                                        .getArcSnapshotValue(relationship.getName()))) {
+                            if (diff == null
+                                    || !diff.containsArcSnapshot(relationship.getName())
+                                    || !Util.nullSafeEquals(id, diff
+                                            .getArcSnapshotValue(relationship.getName()))) {
 
-                            if (id == null) {
-                                property.writeProperty(object, null, null);
-                            }
-                            else {
-                                // if inheritance is involved, we can't use 'localObject'
-                                // .. must turn to fault instead
-                                ObjEntity targetEntity = (ObjEntity) relationship
-                                        .getTargetEntity();
-                                if (context.getEntityResolver().lookupInheritanceTree(
-                                        targetEntity) != null) {
-                                    property.invalidate(object);
+                                if (id == null) {
+                                    property.writeProperty(object, null, null);
                                 }
                                 else {
-                                    property.writeProperty(object, null, context
-                                            .localObject(id, null));
+                                    // if inheritance is involved, we can't use
+                                    // 'localObject'
+                                    // .. must turn to fault instead
+                                    ObjEntity targetEntity = (ObjEntity) relationship
+                                            .getTargetEntity();
+                                    if (context
+                                            .getEntityResolver()
+                                            .lookupInheritanceTree(targetEntity) != null) {
+                                        property.invalidate(object);
+                                    }
+                                    else {
+                                        property.writeProperty(object, null, context
+                                                .localObject(id, null));
+                                    }
                                 }
                             }
                         }
@@ -208,6 +218,18 @@ class DataRowUtils {
                 return true;
             }
         });
+    }
+
+    static boolean hasFK(DbRelationship relationship, Map snapshot) {
+        Iterator joins = relationship.getJoins().iterator();
+        while (joins.hasNext()) {
+            DbJoin join = (DbJoin) joins.next();
+            if (!snapshot.containsKey(join.getSourceName())) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
