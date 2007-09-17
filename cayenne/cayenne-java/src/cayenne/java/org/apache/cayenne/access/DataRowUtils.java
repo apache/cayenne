@@ -29,6 +29,7 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -197,7 +198,7 @@ class DataRowUtils {
             // TODO: will this work for flattened, how do we save snapshots for
             // them?
 
-            // if value not modified, update it from snapshot,
+            // if value not modified and snapshot contains an FK, update it from snapshot,
             // otherwise leave it alone
             if (!isToOneTargetModified(rel, object, diff)) {
 
@@ -205,36 +206,53 @@ class DataRowUtils {
                         .getDbRelationships()
                         .get(0);
 
-                ObjectId id = snapshot.createTargetObjectId(
-                        rel.getTargetEntityName(),
-                        dbRelationship);
+                // must check before creating ObjectId because of partial snapshots
+                if (hasFK(dbRelationship, snapshot)) {
 
-                if (diff == null
-                        || !diff.containsArcSnapshot(rel.getName())
-                        || !Util.nullSafeEquals(id, diff.getArcSnapshotValue(rel
-                                .getName()))) {
+                    ObjectId id = snapshot.createTargetObjectId(
+                            rel.getTargetEntityName(),
+                            dbRelationship);
 
-                    Object target;
-                    if (id == null) {
-                        target = null;
-                    }
-                    else {
-                        // if inheritance is involved, we can't use 'localObject' .. must
-                        // turn to fault instead
-                        ObjEntity targetEntity = (ObjEntity) rel.getTargetEntity();
-                        if (context.getEntityResolver().lookupInheritanceTree(
-                                targetEntity) != null) {
-                            target = Fault.getToOneFault();
+                    if (diff == null
+                            || !diff.containsArcSnapshot(rel.getName())
+                            || !Util.nullSafeEquals(id, diff.getArcSnapshotValue(rel
+                                    .getName()))) {
+
+                        Object target;
+                        if (id == null) {
+                            target = null;
                         }
                         else {
-                            target = context.localObject(id, null);
+                            // if inheritance is involved, we can't use 'localObject' ..
+                            // must
+                            // turn to fault instead
+                            ObjEntity targetEntity = (ObjEntity) rel.getTargetEntity();
+                            if (context.getEntityResolver().lookupInheritanceTree(
+                                    targetEntity) != null) {
+                                target = Fault.getToOneFault();
+                            }
+                            else {
+                                target = context.localObject(id, null);
+                            }
                         }
-                    }
 
-                    object.writeProperty(rel.getName(), target);
+                        object.writeProperty(rel.getName(), target);
+                    }
                 }
             }
         }
+    }
+    
+    static boolean hasFK(DbRelationship relationship, Map snapshot) {
+        Iterator joins = relationship.getJoins().iterator();
+        while(joins.hasNext()) {
+            DbJoin join = (DbJoin) joins.next();
+            if(!snapshot.containsKey(join.getSourceName())) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     /**
