@@ -58,7 +58,7 @@ public class JpaAssociationOverride implements XMLSerializable {
         }
 
         encoder.indent(-1);
-        encoder.print("</association-override>");
+        encoder.println("</association-override>");
     }
 
     public Collection<JpaJoinColumn> getJoinColumns() {

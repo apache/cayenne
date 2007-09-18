@@ -76,7 +76,7 @@ public class JpaBasic extends JpaAttribute {
         }
 
         encoder.indent(-1);
-        encoder.print("</basic>");
+        encoder.println("</basic>");
     }
 
     /**

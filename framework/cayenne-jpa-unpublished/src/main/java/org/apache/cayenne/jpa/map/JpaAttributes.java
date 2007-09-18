@@ -44,49 +44,54 @@ public class JpaAttributes implements XMLSerializable {
     protected Collection<JpaTransient> transientAttributes;
 
     public void encodeAsXML(XMLEncoder encoder) {
+
+        if (size() == 0) {
+            return;
+        }
+
         encoder.println("<attributes>");
         encoder.indent(1);
-        
-        if(ids != null) {
+
+        if (ids != null) {
             encoder.print(ids);
         }
-        
-        if(embeddedId != null) {
+
+        if (embeddedId != null) {
             embeddedId.encodeAsXML(encoder);
         }
-        
-        if(basicAttributes != null) {
+
+        if (basicAttributes != null) {
             encoder.print(basicAttributes);
         }
-        
-        if(versionAttributes != null) {
+
+        if (versionAttributes != null) {
             encoder.print(versionAttributes);
         }
-        
-        if(manyToOneRelationships != null) {
+
+        if (manyToOneRelationships != null) {
             encoder.print(manyToOneRelationships);
         }
-        
-        if(oneToManyRelationships != null) {
+
+        if (oneToManyRelationships != null) {
             encoder.print(oneToManyRelationships);
         }
-        
-        if(oneToOneRelationships != null) {
+
+        if (oneToOneRelationships != null) {
             encoder.print(oneToOneRelationships);
         }
-        
-        if(manyToManyRelationships != null) {
+
+        if (manyToManyRelationships != null) {
             encoder.print(manyToManyRelationships);
         }
-        
-        if(embeddedAttributes != null) {
+
+        if (embeddedAttributes != null) {
             encoder.print(embeddedAttributes);
         }
-        
-        if(transientAttributes != null) {
+
+        if (transientAttributes != null) {
             encoder.print(transientAttributes);
         }
-        
+
         encoder.indent(-1);
         encoder.println("</attributes>");
     }
