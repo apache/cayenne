@@ -60,23 +60,34 @@ public class JpaBasic extends JpaAttribute {
         }
 
         encoder.print(" optional=\"" + optional + "\"");
-        encoder.println('>');
-        encoder.indent(1);
 
-        if (lob) {
-            encoder.println("<lob/>");
+        if (!lob && temporal == null && enumerated == null && column == null) {
+            encoder.println("/>");
         }
+        else {
 
-        if (temporal != null) {
-            encoder.println("<temporal>" + temporal.name() + "</temporal>");
+            encoder.println('>');
+            encoder.indent(1);
+            
+            if(column != null) {
+                column.encodeAsXML(encoder);
+            }
+
+            if (lob) {
+                encoder.println("<lob/>");
+            }
+
+            if (temporal != null) {
+                encoder.println("<temporal>" + temporal.name() + "</temporal>");
+            }
+
+            if (enumerated != null) {
+                encoder.println("<enumerated>" + enumerated.name() + "</enumerated>");
+            }
+
+            encoder.indent(-1);
+            encoder.println("</basic>");
         }
-
-        if (enumerated != null) {
-            encoder.println("<enumerated>" + enumerated.name() + "</enumerated>");
-        }
-
-        encoder.indent(-1);
-        encoder.println("</basic>");
     }
 
     /**
