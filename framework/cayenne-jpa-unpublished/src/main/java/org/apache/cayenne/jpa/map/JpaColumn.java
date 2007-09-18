@@ -77,7 +77,7 @@ public class JpaColumn implements XMLSerializable {
         }
 
         if (!nullable) {
-            encoder.print(" unique=\"false\"");
+            encoder.print(" nullable=\"false\"");
         }
 
         if (!insertable) {

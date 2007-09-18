@@ -69,6 +69,40 @@ public class JpaJoinColumn implements XMLSerializable {
     }
 
     public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<join-column");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        if (referencedColumnName != null) {
+            encoder.print(" referenced-column-name=\"" + referencedColumnName + "\"");
+        }
+        
+        if (unique) {
+            encoder.print(" unique=\"true\"");
+        }
+
+        if (!nullable) {
+            encoder.print(" nullable=\"false\"");
+        }
+
+        if (!insertable) {
+            encoder.print(" insertable=\"false\"");
+        }
+
+        if (!updatable) {
+            encoder.print(" updatable=\"false\"");
+        }
+
+        if (columnDefinition != null) {
+            encoder.print(" column-definition=\"" + columnDefinition + "\"");
+        }
+
+        if (table != null) {
+            encoder.print(" table=\"" + table + "\"");
+        }
+
+        encoder.println("/>");
     }
 
     public String getColumnDefinition() {
