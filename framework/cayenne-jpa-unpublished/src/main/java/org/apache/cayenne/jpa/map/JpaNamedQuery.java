@@ -26,8 +26,10 @@ import java.util.Collection;
 import javax.persistence.NamedQuery;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
-public class JpaNamedQuery {
+public class JpaNamedQuery implements XMLSerializable {
 
     protected String name;
     protected String query;
@@ -45,6 +47,9 @@ public class JpaNamedQuery {
         for (int i = 0; i < annotation.hints().length; i++) {
             hints.add(new JpaQueryHint(annotation.hints()[i]));
         }
+    }
+    
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 
     public String getName() {

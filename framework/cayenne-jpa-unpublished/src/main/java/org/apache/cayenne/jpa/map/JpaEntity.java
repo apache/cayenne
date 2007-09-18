@@ -178,7 +178,7 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
         }
 
         encoder.indent(-1);
-        encoder.print("</entity>");
+        encoder.println("</entity>");
     }
 
     public String getName() {
