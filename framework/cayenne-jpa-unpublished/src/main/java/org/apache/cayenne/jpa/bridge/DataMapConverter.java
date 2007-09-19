@@ -21,6 +21,7 @@ package org.apache.cayenne.jpa.bridge;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.util.Iterator;
 
 import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
@@ -92,7 +93,41 @@ public class DataMapConverter {
         }
 
         TraversalUtil.traverse(context.getEntityMap(), visitor);
+        postprocess(dataMap);
         return dataMap;
+    }
+
+    /**
+     * Connects missing reverse relationships.
+     */
+    protected void postprocess(DataMap dataMap) {
+
+        // connect relationships paired via "mappedBy"; if any other reverse relationships
+        // are missing, Cayenne runtime downstream should take care of it
+        Iterator entities = dataMap.getDbEntities().iterator();
+        while (entities.hasNext()) {
+
+            DbEntity entity = (DbEntity) entities.next();
+            Iterator it = entity.getRelationships().iterator();
+            while (it.hasNext()) {
+                JpaDbRelationship relationship = (JpaDbRelationship) it.next();
+                if (relationship.getMappedBy() != null) {
+                    DbRelationship owner = (DbRelationship) relationship
+                            .getTargetEntity()
+                            .getRelationship(relationship.getMappedBy());
+
+                    if (owner != null) {
+                        Iterator joins = owner.getJoins().iterator();
+                        while (joins.hasNext()) {
+                            DbJoin join = (DbJoin) joins.next();
+                            DbJoin reverse = join.createReverseJoin();
+                            reverse.setRelationship(relationship);
+                            relationship.addJoin(reverse);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     protected void recordConflict(ProjectPath path, String message) {
@@ -429,7 +464,6 @@ public class DataMapConverter {
 
             // TODO: andrus, 5/2/2006 - infer this from Jpa relationship
             src.setMandatory(false);
-
             src.setMaxLength(jpaTargetId.getColumn().getLength());
             src.setType(jpaTargetId.getDefaultJdbcType());
 
@@ -437,20 +471,11 @@ public class DataMapConverter {
             srcEntity.addAttribute(src);
 
             // add join
-            DbRelationship reverseRelationship = dbRelationship.getReverseRelationship();
-            if (reverseRelationship == null) {
-                reverseRelationship = dbRelationship.createReverseRelationship();
-            }
-
             DbJoin join = new DbJoin(dbRelationship, src.getName(), jpaTargetId
                     .getColumn()
                     .getName());
-            DbJoin reverseJoin = join.createReverseJoin();
-            reverseJoin.setRelationship(reverseRelationship);
-
             dbRelationship.addJoin(join);
-            reverseRelationship.addJoin(reverseJoin);
-            
+
             return false;
         }
     }
@@ -468,15 +493,13 @@ public class DataMapConverter {
             attributeVisitor.addChildVisitor(
                     JpaManyToOne.class,
                     new JpaRelationshipVisitor());
-            attributeVisitor.addChildVisitor(
-                    JpaOneToOne.class,
-                    new JpaRelationshipVisitor());
+            attributeVisitor.addChildVisitor(JpaOneToOne.class, new JpaOneToOneVisitor());
             attributeVisitor.addChildVisitor(
                     JpaOneToMany.class,
-                    new JpaRelationshipVisitor());
+                    new JpaOneToManyVisitor());
             attributeVisitor.addChildVisitor(
                     JpaManyToMany.class,
-                    new JpaRelationshipVisitor());
+                    new JpaManyToManyVisitor());
 
             JpaBasicVisitor basicVisitor = new JpaBasicVisitor();
             basicVisitor.addChildVisitor(JpaColumn.class, new JpaColumnVisitor());
@@ -548,6 +571,48 @@ public class DataMapConverter {
         }
     }
 
+    class JpaOneToManyVisitor extends JpaRelationshipVisitor {
+
+        @Override
+        Object createObject(ProjectPath path) {
+            JpaDbRelationship relationship = (JpaDbRelationship) super.createObject(path);
+
+            if (relationship != null) {
+                JpaOneToMany jpaRelationship = (JpaOneToMany) path.getObject();
+                relationship.setMappedBy(jpaRelationship.getMappedBy());
+            }
+            return relationship;
+        }
+    }
+
+    class JpaOneToOneVisitor extends JpaRelationshipVisitor {
+
+        @Override
+        Object createObject(ProjectPath path) {
+            JpaDbRelationship relationship = (JpaDbRelationship) super.createObject(path);
+
+            if (relationship != null) {
+                JpaOneToOne jpaRelationship = (JpaOneToOne) path.getObject();
+                relationship.setMappedBy(jpaRelationship.getMappedBy());
+            }
+            return relationship;
+        }
+    }
+
+    class JpaManyToManyVisitor extends JpaRelationshipVisitor {
+
+        @Override
+        Object createObject(ProjectPath path) {
+            JpaDbRelationship relationship = (JpaDbRelationship) super.createObject(path);
+
+            if (relationship != null) {
+                JpaManyToMany jpaRelationship = (JpaManyToMany) path.getObject();
+                relationship.setMappedBy(jpaRelationship.getMappedBy());
+            }
+            return relationship;
+        }
+    }
+
     class JpaRelationshipVisitor extends NestedVisitor {
 
         JpaRelationshipVisitor() {
@@ -584,7 +649,7 @@ public class DataMapConverter {
                 cayenneSrcEntity.getDataMap().addDbEntity(cayenneTargetDbEntity);
             }
 
-            DbRelationship dbRelationship = new DbRelationship(cayenneRelationship
+            JpaDbRelationship dbRelationship = new JpaDbRelationship(cayenneRelationship
                     .getName());
             dbRelationship.setTargetEntity(cayenneTargetDbEntity);
             dbRelationship.setToMany(relationship.isToMany());
