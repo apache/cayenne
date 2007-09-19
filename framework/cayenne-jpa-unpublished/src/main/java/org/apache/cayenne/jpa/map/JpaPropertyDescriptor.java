@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.cayenne.jpa.JpaProviderException;
 
@@ -69,12 +70,22 @@ public class JpaPropertyDescriptor {
         if (Collection.class.isAssignableFrom(type)) {
             if (genericType instanceof ParameterizedType) {
                 ParameterizedType pType = (ParameterizedType) genericType;
-                Type[] bounds = pType.getActualTypeArguments();
-                for (int i = bounds.length - 1; i >= 0; i--) {
-                    if (bounds[i] instanceof Class) {
-                        this.targetEntityType = (Class) bounds[i];
-                        return;
-                    }
+                Type[] types = pType.getActualTypeArguments();
+
+                if (types.length == 1 && types[0] instanceof Class) {
+                    this.targetEntityType = (Class) types[0];
+                    return;
+                }
+            }
+        }
+        else if (Map.class.isAssignableFrom(type)) {
+            if (genericType instanceof ParameterizedType) {
+                ParameterizedType pType = (ParameterizedType) genericType;
+                Type[] types = pType.getActualTypeArguments();
+
+                if (types.length == 2 && types[1] instanceof Class) {
+                    this.targetEntityType = (Class) types[1];
+                    return;
                 }
             }
         }
@@ -123,7 +134,7 @@ public class JpaPropertyDescriptor {
     }
 
     boolean isDefaultNonRelationalType(Class type) {
-        
+
         if (type.isPrimitive() || type.isEnum()) {
             return true;
         }

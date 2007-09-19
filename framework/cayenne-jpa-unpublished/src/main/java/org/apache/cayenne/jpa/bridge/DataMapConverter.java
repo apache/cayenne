@@ -580,6 +580,11 @@ public class DataMapConverter {
             if (relationship != null) {
                 JpaOneToMany jpaRelationship = (JpaOneToMany) path.getObject();
                 relationship.setMappedBy(jpaRelationship.getMappedBy());
+                
+                
+                if(jpaRelationship.getMapKey() != null) {
+                    
+                }
             }
             return relationship;
         }
