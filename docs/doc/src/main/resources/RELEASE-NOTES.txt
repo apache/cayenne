@@ -46,6 +46,7 @@ CAY-847 Expression NULL handling
 CAY-852 NPE in Util.delete for read-protected directories
 CAY-853 JPA EntityTransaction must allow multiple begin/commit cycles
 CAY-854 the relationships to entities which are "not for client use" are being returned by ${objEntity.DeclaredRelationships} tag in superclass template
+CAY-860 JPA no joins created for to-many relationship
 CAY-861 ObjRelationship 'addDbRelationship()' and 'removeDbRelationship' leave object in an inconsistent state
 CAY-863 Object property unexpectedly set to null through forceMergeWithSnapshot
 
