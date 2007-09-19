@@ -32,13 +32,13 @@ public class CollectionFieldPersistenceEntity {
     @Id
     protected int id;
 
-    @OneToMany
+    @OneToMany(mappedBy="entity")
     protected Collection<HelperEntity1> collection;
 
-    @OneToMany
+    @OneToMany(mappedBy="entity")
     protected Set<HelperEntity2> set;
 
-    @OneToMany
+    @OneToMany(mappedBy="entity")
     protected List<HelperEntity3> list;
 
     public Collection<HelperEntity1> getCollection() {
