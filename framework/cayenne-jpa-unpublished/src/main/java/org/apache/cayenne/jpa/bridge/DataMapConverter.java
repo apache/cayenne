@@ -52,6 +52,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.EntityListener;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -421,8 +422,7 @@ public class DataMapConverter {
                         + jpaJoin.getReferencedColumnName());
             }
 
-            ObjRelationship objRelationship = (ObjRelationship) targetPath.getObject();
-            DataMap dataMap = objRelationship.getSourceEntity().getDataMap();
+            DbRelationship dbRelationship = (DbRelationship) targetPath.getObject();
 
             // add FK
             DbAttribute src = new DbAttribute(jpaJoin.getName());
@@ -433,14 +433,10 @@ public class DataMapConverter {
             src.setMaxLength(jpaTargetId.getColumn().getLength());
             src.setType(jpaTargetId.getDefaultJdbcType());
 
-            DbEntity srcEntity = dataMap.getDbEntity(jpaJoin.getTable());
+            Entity srcEntity = dbRelationship.getSourceEntity();
             srcEntity.addAttribute(src);
 
             // add join
-            DbRelationship dbRelationship = (DbRelationship) objRelationship
-                    .getDbRelationships()
-                    .get(0);
-
             DbRelationship reverseRelationship = dbRelationship.getReverseRelationship();
             if (reverseRelationship == null) {
                 reverseRelationship = dbRelationship.createReverseRelationship();
@@ -454,7 +450,7 @@ public class DataMapConverter {
 
             dbRelationship.addJoin(join);
             reverseRelationship.addJoin(reverseJoin);
-
+            
             return false;
         }
     }
@@ -580,10 +576,7 @@ public class DataMapConverter {
 
             cayenneRelationship.setTargetEntityName(jpaTargetEntity.getName());
 
-            // TODO: db relationship should probably be created when the first join is
-            // created...
             DbEntity cayenneSrcDbEntity = cayenneSrcEntity.getDbEntity();
-
             DbEntity cayenneTargetDbEntity = cayenneSrcEntity.getDataMap().getDbEntity(
                     jpaTargetEntity.getTable().getName());
             if (cayenneTargetDbEntity == null) {
@@ -599,7 +592,7 @@ public class DataMapConverter {
             cayenneSrcDbEntity.addRelationship(dbRelationship);
             cayenneRelationship.addDbRelationship(dbRelationship);
 
-            return cayenneRelationship;
+            return dbRelationship;
         }
     }
 
