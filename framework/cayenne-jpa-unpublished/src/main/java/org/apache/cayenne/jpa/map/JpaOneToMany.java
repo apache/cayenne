@@ -76,31 +76,41 @@ public class JpaOneToMany extends JpaRelationship {
             encoder.print(" mapped-by=\"" + mappedBy + "\"");
         }
 
-        encoder.println('>');
-        encoder.indent(1);
+        if (orderBy != null
+                || mapKey != null
+                || joinTable != null
+                || (joinColumns != null && joinColumns.size() > 0)
+                || cascade != null) {
 
-        if (orderBy != null) {
-            encoder.print("<order-by>" + orderBy + "</order-by>");
+            encoder.println('>');
+            encoder.indent(1);
+
+            if (orderBy != null) {
+                encoder.print("<order-by>" + orderBy + "</order-by>");
+            }
+
+            if (mapKey != null) {
+                encoder.print("<map-key name=\"" + mapKey + "\"/>");
+            }
+
+            if (joinTable != null) {
+                joinTable.encodeAsXML(encoder);
+            }
+
+            for (JpaJoinColumn c : getJoinColumns()) {
+                c.encodeAsXML(encoder);
+            }
+
+            if (cascade != null) {
+                cascade.encodeAsXML(encoder);
+            }
+
+            encoder.indent(-1);
+            encoder.println("</one-to-many>");
         }
-
-        if (mapKey != null) {
-            encoder.print("<map-key name=\"" + mapKey + "\"/>");
+        else {
+            encoder.println("/>");
         }
-
-        if (joinTable != null) {
-            joinTable.encodeAsXML(encoder);
-        }
-
-        for (JpaJoinColumn c : getJoinColumns()) {
-            c.encodeAsXML(encoder);
-        }
-
-        if (cascade != null) {
-            cascade.encodeAsXML(encoder);
-        }
-
-        encoder.indent(-1);
-        encoder.println("</one-to-many>");
     }
 
     @Override
