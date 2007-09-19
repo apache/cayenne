@@ -492,7 +492,7 @@ public class DataMapConverter {
             BaseTreeVisitor attributeVisitor = new BaseTreeVisitor();
             attributeVisitor.addChildVisitor(
                     JpaManyToOne.class,
-                    new JpaRelationshipVisitor());
+                    new JpaManyToOneVisitor());
             attributeVisitor.addChildVisitor(JpaOneToOne.class, new JpaOneToOneVisitor());
             attributeVisitor.addChildVisitor(
                     JpaOneToMany.class,
@@ -571,20 +571,32 @@ public class DataMapConverter {
         }
     }
 
+    class JpaManyToOneVisitor extends JpaRelationshipVisitor {
+
+        @Override
+        Object createObject(ProjectPath path) {
+            ObjRelationship objRelationship = (ObjRelationship) super.createObject(path);
+            return objRelationship.getDbRelationships().get(0);
+        }
+    }
+
     class JpaOneToManyVisitor extends JpaRelationshipVisitor {
 
         @Override
         Object createObject(ProjectPath path) {
-            JpaDbRelationship relationship = (JpaDbRelationship) super.createObject(path);
+            ObjRelationship objRelationship = (ObjRelationship) super.createObject(path);
+            JpaDbRelationship relationship = (JpaDbRelationship) objRelationship
+                    .getDbRelationships()
+                    .get(0);
 
             if (relationship != null) {
                 JpaOneToMany jpaRelationship = (JpaOneToMany) path.getObject();
                 relationship.setMappedBy(jpaRelationship.getMappedBy());
-                
-                
-                if(jpaRelationship.getMapKey() != null) {
-                    
-                }
+                objRelationship.setMapKey(jpaRelationship.getMapKey());
+
+                objRelationship.setCollectionType(jpaRelationship
+                        .getPropertyDescriptor()
+                        .getType().getName());
             }
             return relationship;
         }
@@ -594,7 +606,10 @@ public class DataMapConverter {
 
         @Override
         Object createObject(ProjectPath path) {
-            JpaDbRelationship relationship = (JpaDbRelationship) super.createObject(path);
+            ObjRelationship objRelationship = (ObjRelationship) super.createObject(path);
+            JpaDbRelationship relationship = (JpaDbRelationship) objRelationship
+                    .getDbRelationships()
+                    .get(0);
 
             if (relationship != null) {
                 JpaOneToOne jpaRelationship = (JpaOneToOne) path.getObject();
@@ -608,7 +623,10 @@ public class DataMapConverter {
 
         @Override
         Object createObject(ProjectPath path) {
-            JpaDbRelationship relationship = (JpaDbRelationship) super.createObject(path);
+            ObjRelationship objRelationship = (ObjRelationship) super.createObject(path);
+            JpaDbRelationship relationship = (JpaDbRelationship) objRelationship
+                    .getDbRelationships()
+                    .get(0);
 
             if (relationship != null) {
                 JpaManyToMany jpaRelationship = (JpaManyToMany) path.getObject();
@@ -618,7 +636,7 @@ public class DataMapConverter {
         }
     }
 
-    class JpaRelationshipVisitor extends NestedVisitor {
+    abstract class JpaRelationshipVisitor extends NestedVisitor {
 
         JpaRelationshipVisitor() {
             addChildVisitor(JpaJoinColumn.class, new JpaJoinColumnVisitor());
@@ -662,7 +680,7 @@ public class DataMapConverter {
             cayenneSrcDbEntity.addRelationship(dbRelationship);
             cayenneRelationship.addDbRelationship(dbRelationship);
 
-            return dbRelationship;
+            return cayenneRelationship;
         }
     }
 

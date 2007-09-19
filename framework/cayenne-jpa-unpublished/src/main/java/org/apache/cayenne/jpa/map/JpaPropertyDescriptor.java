@@ -47,7 +47,7 @@ public class JpaPropertyDescriptor {
         this.member = field;
         this.name = field.getName();
         this.type = field.getType();
-        this.genericType = field.getGenericType();
+        initTargetEntityType(field.getGenericType());
     }
 
     public JpaPropertyDescriptor(Method getter, String name) {
@@ -60,10 +60,10 @@ public class JpaPropertyDescriptor {
         this.member = getter;
         this.name = name;
         this.type = getter.getReturnType();
-        this.genericType = getter.getGenericReturnType();
+        initTargetEntityType(getter.getGenericReturnType());
     }
 
-    protected void processTargetEntityType() {
+    protected void initTargetEntityType(Type genericType) {
 
         this.targetEntityType = Void.TYPE;
 
@@ -79,6 +79,7 @@ public class JpaPropertyDescriptor {
             }
         }
         else if (Map.class.isAssignableFrom(type)) {
+
             if (genericType instanceof ParameterizedType) {
                 ParameterizedType pType = (ParameterizedType) genericType;
                 Type[] types = pType.getActualTypeArguments();
@@ -107,10 +108,6 @@ public class JpaPropertyDescriptor {
     }
 
     public Class getTargetEntityType() {
-        if (targetEntityType == null) {
-            processTargetEntityType();
-        }
-
         return Void.TYPE.equals(targetEntityType) ? null : targetEntityType;
     }
 

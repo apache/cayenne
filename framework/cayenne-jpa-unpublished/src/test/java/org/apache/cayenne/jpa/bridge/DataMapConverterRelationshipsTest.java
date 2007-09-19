@@ -54,18 +54,19 @@ public class DataMapConverterRelationshipsTest extends TestCase {
 
         assertEquals(1, e3.getRelationships().size());
         assertEquals(1, e4.getRelationships().size());
-        
+
         ObjRelationship or3 = (ObjRelationship) e3.getRelationship("entity4");
         ObjRelationship or4 = (ObjRelationship) e4.getRelationship("entity3s");
-        
+
         assertEquals("entity4", or3.getDbRelationshipPath());
         assertEquals("entity3s", or4.getDbRelationshipPath());
-        
+
         assertEquals("Entity4", or3.getTargetEntityName());
         assertEquals("Entity3", or4.getTargetEntityName());
-        
-       // assertEquals("key", or4.getMapKey());
-        
+
+        assertEquals("key", or4.getMapKey());
+        assertEquals("java.util.Map", or4.getCollectionType());
+
         DbEntity db3 = dataMap.getDbEntity("Entity3");
         DbEntity db4 = dataMap.getDbEntity("Entity4");
 
