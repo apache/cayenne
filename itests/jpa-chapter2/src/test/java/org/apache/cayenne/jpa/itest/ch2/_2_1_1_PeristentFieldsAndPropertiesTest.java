@@ -73,7 +73,7 @@ public class _2_1_1_PeristentFieldsAndPropertiesTest extends EntityManagerCase {
     }
 
     // TODO: andrus 8/30/2006 - fails
-    public void _testMapProperties() {
+    public void testMapProperties() {
         MapFieldPersistenceEntity o1 = new MapFieldPersistenceEntity();
         o1.setMap(Collections.singletonMap(new Object(), new HelperEntity4()));
 

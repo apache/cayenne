@@ -93,7 +93,25 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
 
             ObjRelationship relationship = (ObjRelationship) it.next();
             if (relationship.isToMany()) {
-                createToManyProperty(descriptor, relationship);
+
+                String collectionType = relationship.getCollectionType();
+                if (collectionType == null
+                        || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
+                    createToManyListProperty(descriptor, relationship);
+                }
+                else if (collectionType.equals("java.util.Map")) {
+                    createToManyMapProperty(descriptor, relationship);
+                }
+                else if (collectionType.equals("java.util.Set")) {
+                    createToManySetProperty(descriptor, relationship);
+                }
+                else if (collectionType.equals("java.util.Collection")) {
+                    createToManyCollectionProperty(descriptor, relationship);
+                }
+                else {
+                    throw new IllegalArgumentException(
+                            "Unsupported to-many collection type: " + collectionType);
+                }
             }
             else {
                 createToOneProperty(descriptor, relationship);
@@ -159,7 +177,19 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             PersistentDescriptor descriptor,
             ObjRelationship relationship);
 
-    protected abstract void createToManyProperty(
+    protected abstract void createToManySetProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship);
+
+    protected abstract void createToManyMapProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship);
+
+    protected abstract void createToManyListProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship);
+
+    protected abstract void createToManyCollectionProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship);
 

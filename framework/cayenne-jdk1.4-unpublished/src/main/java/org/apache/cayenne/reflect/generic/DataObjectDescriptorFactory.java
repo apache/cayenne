@@ -20,7 +20,6 @@ package org.apache.cayenne.reflect.generic;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
-import org.apache.cayenne.Fault;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -69,43 +68,54 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
         descriptor.addDeclaredProperty(new DataObjectAttributeProperty(attribute));
     }
 
-    protected void createToManyProperty(
+    protected void createToManyListProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
 
         ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
                 .getTargetEntityName());
-
-        Fault fault;
-
-        String collectionType = relationship.getCollectionType();
-        if (collectionType == null
-                || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
-            fault = faultFactory.getListFault();
-        }
-        else if (collectionType.equals("java.util.Map")) {
-            Expression mapKey = relationship.getMapKeyExpression();
-            if (mapKey == null) {
-                throw new CayenneRuntimeException("Null map key for map relationship: "
-                        + relationship.getName());
-            }
-            fault = faultFactory.getMapFault(mapKey);
-        }
-        else if (collectionType.equals("java.util.Set")) {
-            fault = faultFactory.getSetFault();
-        }
-        else if (collectionType.equals("java.util.Collection")) {
-            fault = faultFactory.getCollectionFault();
-        }
-        else {
-            throw new IllegalArgumentException("Unsupported to many collection type: "
-                    + collectionType);
-        }
-
         descriptor.addDeclaredProperty(new DataObjectToManyProperty(
                 relationship,
                 targetDescriptor,
-                fault));
+                faultFactory.getListFault()));
+    }
+
+    protected void createToManyMapProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        Expression mapKey = relationship.getMapKeyExpression();
+        if (mapKey == null) {
+            throw new CayenneRuntimeException("Null map key for map relationship: "
+                    + relationship.getName());
+        }
+        descriptor.addDeclaredProperty(new DataObjectToManyProperty(
+                relationship,
+                targetDescriptor,
+                faultFactory.getMapFault(mapKey)));
+    }
+
+    protected void createToManySetProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        descriptor.addDeclaredProperty(new DataObjectToManyProperty(
+                relationship,
+                targetDescriptor,
+                faultFactory.getSetFault()));
+    }
+
+    protected void createToManyCollectionProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        descriptor.addDeclaredProperty(new DataObjectToManyProperty(
+                relationship,
+                targetDescriptor,
+                faultFactory.getCollectionFault()));
     }
 
     protected void createToOneProperty(

@@ -30,9 +30,9 @@ public class MapFieldPersistenceEntity {
     @Id
     protected int id;
 
-    @OneToMany
+    @OneToMany(mappedBy = "entity")
     protected Map<Object, HelperEntity4> map;
-    
+
     public Map<Object, HelperEntity4> getMap() {
         return map;
     }

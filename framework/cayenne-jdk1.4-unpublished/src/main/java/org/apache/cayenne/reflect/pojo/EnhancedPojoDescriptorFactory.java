@@ -19,6 +19,9 @@
 package org.apache.cayenne.reflect.pojo;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -63,55 +66,70 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
         return super.getDescriptor(entity, entityClass);
     }
 
-    protected void createToManyProperty(
+    protected void createToManyListProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
-
         ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
                 .getTargetEntityName());
         String reverseName = relationship.getReverseRelationshipName();
 
+        Accessor accessor = createAccessor(descriptor, relationship.getName(), List.class);
+        Property property = new EnhancedPojoListProperty(
+                descriptor,
+                targetDescriptor,
+                accessor,
+                reverseName);
+
+        descriptor.addDeclaredProperty(property);
+    }
+
+    protected void createToManyMapProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        String reverseName = relationship.getReverseRelationshipName();
+        Accessor accessor = createAccessor(descriptor, relationship.getName(), Map.class);
+        Property property = new EnhancedPojoMapProperty(
+                descriptor,
+                targetDescriptor,
+                accessor,
+                reverseName);
+
+        descriptor.addDeclaredProperty(property);
+    }
+
+    protected void createToManySetProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        String reverseName = relationship.getReverseRelationshipName();
+        Accessor accessor = createAccessor(descriptor, relationship.getName(), Set.class);
+        Property property = new EnhancedPojoSetProperty(
+                descriptor,
+                targetDescriptor,
+                accessor,
+                reverseName);
+
+        descriptor.addDeclaredProperty(property);
+    }
+
+    protected void createToManyCollectionProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        String reverseName = relationship.getReverseRelationshipName();
         Accessor accessor = createAccessor(
                 descriptor,
                 relationship.getName(),
                 Collection.class);
-
-        String collectionType = relationship.getCollectionType();
-        Property property;
-
-        if (collectionType == null
-                || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
-            property = new EnhancedPojoListProperty(
-                    descriptor,
-                    targetDescriptor,
-                    accessor,
-                    reverseName);
-        }
-        else if (collectionType.equals("java.util.Map")) {
-            property = new EnhancedPojoMapProperty(
-                    descriptor,
-                    targetDescriptor,
-                    accessor,
-                    reverseName);
-        }
-        else if (collectionType.equals("java.util.Set")) {
-            property = new EnhancedPojoSetProperty(
-                    descriptor,
-                    targetDescriptor,
-                    accessor,
-                    reverseName);
-        }
-        else if (collectionType.equals("java.util.Collection")) {
-            property = new EnhancedPojoListProperty(
-                    descriptor,
-                    targetDescriptor,
-                    accessor,
-                    reverseName);
-        }
-        else {
-            throw new IllegalArgumentException("Unsupported to many collection type: "
-                    + collectionType);
-        }
+        Property property = new EnhancedPojoListProperty(
+                descriptor,
+                targetDescriptor,
+                accessor,
+                reverseName);
 
         descriptor.addDeclaredProperty(property);
     }

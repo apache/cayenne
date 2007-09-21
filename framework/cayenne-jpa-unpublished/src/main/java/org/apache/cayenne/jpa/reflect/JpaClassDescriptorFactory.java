@@ -40,60 +40,80 @@ public class JpaClassDescriptorFactory extends EnhancedPojoDescriptorFactory {
         super(descriptorMap, faultFactory);
     }
 
-    @Override
-    protected void createToManyProperty(
+    protected void createToManyListProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
         ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
                 .getTargetEntityName());
         String reverseName = relationship.getReverseRelationshipName();
 
-        String collectionType = relationship.getCollectionType();
-        Property property;
+        Accessor accessor = new JpaCollectionFieldAccessor(
+                descriptor.getObjectClass(),
+                relationship.getName(),
+                List.class);
+        Property property = new JpaListProperty(
+                descriptor,
+                targetDescriptor,
+                accessor,
+                reverseName);
 
-        if (collectionType == null
-                || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
+        descriptor.addDeclaredProperty(property);
+    }
 
-            Accessor accessor = new JpaCollectionFieldAccessor(descriptor
-                    .getObjectClass(), relationship.getName(), List.class);
+    protected void createToManyMapProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        String reverseName = relationship.getReverseRelationshipName();
+        Accessor accessor = new JpaCollectionFieldAccessor(
+                descriptor.getObjectClass(),
+                relationship.getName(),
+                Map.class);
+        Property property = new JpaMapProperty(
+                descriptor,
+                targetDescriptor,
+                accessor,
+                reverseName);
 
-            property = new JpaListProperty(
-                    descriptor,
-                    targetDescriptor,
-                    accessor,
-                    reverseName);
-        }
-        else if (collectionType.equals("java.util.Map")) {
-            Accessor accessor = new JpaCollectionFieldAccessor(descriptor
-                    .getObjectClass(), relationship.getName(), Map.class);
-            property = new JpaMapProperty(
-                    descriptor,
-                    targetDescriptor,
-                    accessor,
-                    reverseName);
-        }
-        else if (collectionType.equals("java.util.Set")) {
-            Accessor accessor = new JpaCollectionFieldAccessor(descriptor
-                    .getObjectClass(), relationship.getName(), Set.class);
-            property = new JpaSetProperty(
-                    descriptor,
-                    targetDescriptor,
-                    accessor,
-                    reverseName);
-        }
-        else if (collectionType.equals("java.util.Collection")) {
-            Accessor accessor = new JpaCollectionFieldAccessor(descriptor
-                    .getObjectClass(), relationship.getName(), Collection.class);
-            property = new JpaListProperty(
-                    descriptor,
-                    targetDescriptor,
-                    accessor,
-                    reverseName);
-        }
-        else {
-            throw new IllegalArgumentException("Unsupported to many collection type: "
-                    + collectionType);
-        }
+        descriptor.addDeclaredProperty(property);
+    }
+
+    protected void createToManySetProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        String reverseName = relationship.getReverseRelationshipName();
+        Accessor accessor = new JpaCollectionFieldAccessor(
+                descriptor.getObjectClass(),
+                relationship.getName(),
+                Set.class);
+        Property property = new JpaSetProperty(
+                descriptor,
+                targetDescriptor,
+                accessor,
+                reverseName);
+
+        descriptor.addDeclaredProperty(property);
+    }
+
+    protected void createToManyCollectionProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        String reverseName = relationship.getReverseRelationshipName();
+
+        Accessor accessor = new JpaCollectionFieldAccessor(
+                descriptor.getObjectClass(),
+                relationship.getName(),
+                Collection.class);
+        Property property = new JpaListProperty(
+                descriptor,
+                targetDescriptor,
+                accessor,
+                reverseName);
 
         descriptor.addDeclaredProperty(property);
     }
