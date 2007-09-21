@@ -821,7 +821,7 @@ public class DataContext extends BaseContext implements DataChannel {
         ObjEntity entity = getEntityResolver().lookupObjEntity(object);
         if (entity == null) {
             throw new IllegalArgumentException(
-                    "Can't find ObjEntity for DataObject class: "
+                    "Can't find ObjEntity for Persistent class: "
                             + object.getClass().getName()
                             + ", class is likely not mapped.");
         }
@@ -836,7 +836,7 @@ public class DataContext extends BaseContext implements DataChannel {
             }
             else if (persistent.getObjectContext() != null) {
                 throw new IllegalStateException(
-                        "DataObject is already registered with another DataContext. "
+                        "Persistent is already registered with another DataContext. "
                                 + "Try using 'localObjects()' instead.");
             }
         }
@@ -865,8 +865,12 @@ public class DataContext extends BaseContext implements DataChannel {
                 property.injectValueHolder(persistent);
 
                 if (!property.isFault(persistent)) {
-                    Iterator it = ((Collection) property.readProperty(persistent))
-                            .iterator();
+
+                    Object value = property.readProperty(persistent);
+                    Collection collection = (value instanceof Map) ? ((Map) value)
+                            .entrySet() : (Collection) value;
+
+                    Iterator it = collection.iterator();
                     while (it.hasNext()) {
                         Object target = it.next();
 
