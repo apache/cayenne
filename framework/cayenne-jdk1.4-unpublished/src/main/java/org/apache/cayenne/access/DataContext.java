@@ -870,8 +870,8 @@ public class DataContext extends BaseContext implements DataChannel {
                     while (it.hasNext()) {
                         Object target = it.next();
 
-                        if (target instanceof DataObject) {
-                            DataObject targetDO = (DataObject) target;
+                        if (target instanceof Persistent) {
+                            Persistent targetDO = (Persistent) target;
 
                             // make sure it is registered
                             registerNewObject(targetDO);
@@ -888,9 +888,9 @@ public class DataContext extends BaseContext implements DataChannel {
             public boolean visitToOne(ToOneProperty property) {
                 Object target = property.readPropertyDirectly(persistent);
 
-                if (target instanceof DataObject) {
+                if (target instanceof Persistent) {
 
-                    DataObject targetDO = (DataObject) target;
+                    Persistent targetDO = (Persistent) target;
 
                     // make sure it is registered
                     registerNewObject(targetDO);
