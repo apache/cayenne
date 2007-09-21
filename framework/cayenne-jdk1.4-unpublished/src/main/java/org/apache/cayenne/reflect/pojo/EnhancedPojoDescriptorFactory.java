@@ -29,6 +29,7 @@ import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.reflect.PersistentDescriptorFactory;
+import org.apache.cayenne.reflect.Property;
 
 /**
  * A {@link ClassDescriptorFactory} used to create descriptors for the enhanced POJO's.
@@ -74,11 +75,45 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
                 descriptor,
                 relationship.getName(),
                 Collection.class);
-        descriptor.addDeclaredProperty(new EnhancedPojoToManyProperty(
-                descriptor,
-                targetDescriptor,
-                accessor,
-                reverseName));
+
+        String collectionType = relationship.getCollectionType();
+        Property property;
+
+        if (collectionType == null
+                || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
+            property = new EnhancedPojoListProperty(
+                    descriptor,
+                    targetDescriptor,
+                    accessor,
+                    reverseName);
+        }
+        else if (collectionType.equals("java.util.Map")) {
+            property = new EnhancedPojoMapProperty(
+                    descriptor,
+                    targetDescriptor,
+                    accessor,
+                    reverseName);
+        }
+        else if (collectionType.equals("java.util.Set")) {
+            property = new EnhancedPojoSetProperty(
+                    descriptor,
+                    targetDescriptor,
+                    accessor,
+                    reverseName);
+        }
+        else if (collectionType.equals("java.util.Collection")) {
+            property = new EnhancedPojoListProperty(
+                    descriptor,
+                    targetDescriptor,
+                    accessor,
+                    reverseName);
+        }
+        else {
+            throw new IllegalArgumentException("Unsupported to many collection type: "
+                    + collectionType);
+        }
+
+        descriptor.addDeclaredProperty(property);
     }
 
     protected void createToOneProperty(
