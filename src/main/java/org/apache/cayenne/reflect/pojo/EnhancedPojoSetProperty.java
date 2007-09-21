@@ -21,49 +21,22 @@ package org.apache.cayenne.reflect.pojo;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.reflect.Accessor;
-import org.apache.cayenne.reflect.BaseToManyProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyException;
+import org.apache.cayenne.util.PersistentObjectSet;
 
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
-abstract class EnhancedPojoToManyProperty extends BaseToManyProperty {
+class EnhancedPojoSetProperty extends EnhancedPojoToManyProperty {
 
-    private EnhancedPojoPropertyFaultHandler faultHandler;
-
-    EnhancedPojoToManyProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
+    EnhancedPojoSetProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
             Accessor accessor, String reverseName) {
         super(owner, targetDescriptor, accessor, reverseName);
-        this.faultHandler = new EnhancedPojoPropertyFaultHandler(
-                owner.getObjectClass(),
-                getName());
     }
 
-    protected ValueHolder createCollectionValueHolder(Object object)
-            throws PropertyException {
-
-        if (!(object instanceof Persistent)) {
-
-            throw new PropertyException(
-                    "ValueHolders for non-persistent objects are not supported.",
-                    this,
-                    object);
-        }
-
-        ValueHolder holder = createValueHolder((Persistent) object);
-        faultHandler.setFaultProperty(object, false);
-        return holder;
+    protected ValueHolder createValueHolder(Persistent relationshipOwner) {
+        return new PersistentObjectSet(relationshipOwner, getName());
     }
 
-    protected abstract ValueHolder createValueHolder(Persistent relationshipOwner);
-
-    public void invalidate(Object object) {
-        faultHandler.setFaultProperty(object, true);
-    }
-
-    public boolean isFault(Object object) {
-        return faultHandler.isFaultProperty(object);
-    }
 }
