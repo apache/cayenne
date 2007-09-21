@@ -23,17 +23,16 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.cayenne.Fault;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.reflect.Accessor;
+import org.apache.cayenne.reflect.BaseToManyProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.ListProperty;
 import org.apache.cayenne.reflect.PropertyException;
 
-// TODO: andrus 11/25/2006 - this should be modeled after EnhancedPojo instead of
-// DataObject to-many property.
-class JpaToManyProperty extends ListProperty {
+abstract class JpaToManyProperty extends BaseToManyProperty {
 
-    public JpaToManyProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
+    JpaToManyProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
             Accessor accessor, String reverseName) {
         super(owner, targetDescriptor, accessor, reverseName);
     }
@@ -70,5 +69,36 @@ class JpaToManyProperty extends ListProperty {
         }
 
         return (ValueHolder) value;
+    }
+
+    /**
+     * Creates a List for an object. Expects an object to be an instance of Persistent.
+     */
+    protected ValueHolder createCollectionValueHolder(Object object)
+            throws PropertyException {
+        if (!(object instanceof Persistent)) {
+            throw new PropertyException(
+                    "ValueHolders for non-persistent objects are not supported.",
+                    this,
+                    object);
+        }
+
+        return createValueHolder((Persistent) object);
+    }
+
+    protected abstract ValueHolder createValueHolder(Persistent relationshipOwner);
+
+    public boolean isFault(Object object) {
+        Object target = accessor.getValue(object);
+        return target == null
+                || target instanceof Fault
+                || ((ValueHolder) target).isFault();
+    }
+
+    public void invalidate(Object object) {
+        ValueHolder list = (ValueHolder) readPropertyDirectly(object);
+        if (list != null) {
+            list.invalidate();
+        }
     }
 }

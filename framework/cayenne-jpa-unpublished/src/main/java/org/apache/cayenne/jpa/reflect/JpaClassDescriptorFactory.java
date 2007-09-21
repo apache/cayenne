@@ -19,12 +19,18 @@
 
 package org.apache.cayenne.jpa.reflect;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
 import org.apache.cayenne.reflect.PersistentDescriptor;
+import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.pojo.EnhancedPojoDescriptorFactory;
 
 public class JpaClassDescriptorFactory extends EnhancedPojoDescriptorFactory {
@@ -42,14 +48,53 @@ public class JpaClassDescriptorFactory extends EnhancedPojoDescriptorFactory {
                 .getTargetEntityName());
         String reverseName = relationship.getReverseRelationshipName();
 
-        Accessor accessor = new JpaCollectionFieldAccessor(
-                descriptor.getObjectClass(),
-                relationship.getName(),
-                null);
-        descriptor.addDeclaredProperty(new JpaToManyProperty(
-                descriptor,
-                targetDescriptor,
-                accessor,
-                reverseName));
+        String collectionType = relationship.getCollectionType();
+        Property property;
+
+        if (collectionType == null
+                || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
+
+            Accessor accessor = new JpaCollectionFieldAccessor(descriptor
+                    .getObjectClass(), relationship.getName(), List.class);
+
+            property = new JpaListProperty(
+                    descriptor,
+                    targetDescriptor,
+                    accessor,
+                    reverseName);
+        }
+        else if (collectionType.equals("java.util.Map")) {
+            Accessor accessor = new JpaCollectionFieldAccessor(descriptor
+                    .getObjectClass(), relationship.getName(), Map.class);
+            property = new JpaMapProperty(
+                    descriptor,
+                    targetDescriptor,
+                    accessor,
+                    reverseName);
+        }
+        else if (collectionType.equals("java.util.Set")) {
+            Accessor accessor = new JpaCollectionFieldAccessor(descriptor
+                    .getObjectClass(), relationship.getName(), Set.class);
+            property = new JpaSetProperty(
+                    descriptor,
+                    targetDescriptor,
+                    accessor,
+                    reverseName);
+        }
+        else if (collectionType.equals("java.util.Collection")) {
+            Accessor accessor = new JpaCollectionFieldAccessor(descriptor
+                    .getObjectClass(), relationship.getName(), Collection.class);
+            property = new JpaListProperty(
+                    descriptor,
+                    targetDescriptor,
+                    accessor,
+                    reverseName);
+        }
+        else {
+            throw new IllegalArgumentException("Unsupported to many collection type: "
+                    + collectionType);
+        }
+
+        descriptor.addDeclaredProperty(property);
     }
 }
