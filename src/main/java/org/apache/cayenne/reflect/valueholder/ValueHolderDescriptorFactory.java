@@ -44,10 +44,15 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
         super(descriptorMap);
     }
 
-    protected void createToManyProperty(
+    protected void createToManyCollectionProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
+        throw new UnsupportedOperationException("Implement me");
+    }
 
+    protected void createToManyListProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
         ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
                 .getTargetEntityName());
         String reverseName = relationship.getReverseRelationshipName();
@@ -58,6 +63,18 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
                 targetDescriptor,
                 accessor,
                 reverseName));
+    }
+
+    protected void createToManyMapProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
+        throw new UnsupportedOperationException("Implement me");
+    }
+
+    protected void createToManySetProperty(
+            PersistentDescriptor descriptor,
+            ObjRelationship relationship) {
+        throw new UnsupportedOperationException("Implement me");
     }
 
     protected void createToOneProperty(
