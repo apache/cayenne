@@ -10,6 +10,7 @@ http://issues.apache.org/cayenne/
 
 Bug Fixes:
 
+CAY-770 bug / memory leak in DispatchQueue and EventManager
 CAY-796 Deserialization of DataContext fails when useSharedCache is false
 CAY-818 Frontbase NUMBERIC type mapping typo
 CAY-832 enum-mapped columns improperly handled in in expressions
