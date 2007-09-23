@@ -446,6 +446,10 @@ public abstract class Configuration {
             DataDomain domain = (DataDomain) i.next();
             domain.shutdown();
         }
+        
+        if(eventManager != null) {
+            eventManager.shutdown();
+        }
     }
 
     private class ConfigurationShutdownHook extends Thread {

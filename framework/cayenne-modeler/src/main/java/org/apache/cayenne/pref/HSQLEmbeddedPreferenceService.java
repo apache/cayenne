@@ -49,6 +49,8 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
     protected String masterBaseName;
     protected String cayenneConfigPackage;
 
+    protected Configuration configuration;
+    
     /**
      * Creates a new PreferenceService that stores preferences using Cayenne and embedded
      * HSQLDB engine.
@@ -92,22 +94,24 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
         // use custom DataSourceFactory to prepare the DB...
         HSQLDataSourceFactory dataSourceFactory = new HSQLDataSourceFactory();
 
-        DefaultConfiguration config = new DefaultConfiguration();
-        config.setDataSourceFactory(dataSourceFactory);
+        DefaultConfiguration configuration = new DefaultConfiguration();
+        configuration.setDataSourceFactory(dataSourceFactory);
 
         if (cayenneConfigPackage != null) {
-            config.addClassPath(cayenneConfigPackage);
+            configuration.addClassPath(cayenneConfigPackage);
         }
 
         try {
-            config.initialize();
+            configuration.initialize();
         }
         catch (Exception ex) {
             throw new CayenneRuntimeException("Error connecting to preference DB.", ex);
         }
 
-        config.didInitialize();
-        dataContext = config.getDomain().createDataContext();
+        configuration.didInitialize();
+        
+        this.configuration = configuration;
+        this.dataContext = configuration.getDomain().createDataContext();
 
         // create DB if it does not exist...
         if (dataSourceFactory.needSchemaUpdate && !upgradeDB()) {
@@ -135,9 +139,11 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
             // shutdown HSQL
             dataContext
                     .performNonSelectingQuery(new SQLTemplate(Domain.class, "SHUTDOWN"));
-
-            // shutdown Cayenne
-            dataContext.getParentDataDomain().shutdown();
+        }
+        
+        // shutdown Cayenne
+        if(configuration != null) {
+            configuration.shutdown();
         }
 
         // attempt to sync primary DB...

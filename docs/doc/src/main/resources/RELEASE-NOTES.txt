@@ -14,6 +14,7 @@ Date:
 
 Changes/New Features Since M1:
 
+CAY-610 A way to shutdown EventManager
 CAY-757 JPA should handle managed classes not listed in persistence.xml
 CAY-819 Support for per-adapter customization of EJBQL translator
 CAY-824 Extract all DataView related code in a separate module

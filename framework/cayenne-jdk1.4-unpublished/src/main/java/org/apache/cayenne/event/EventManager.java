@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.event;
 
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ import org.apache.cayenne.util.Invocation;
  * @author Holger Hoffstaette
  * @author Andrus Adamchik
  */
-public class EventManager extends Object {
+public class EventManager {
 
     private static volatile EventManager defaultManager;
 
@@ -51,6 +50,7 @@ public class EventManager extends Object {
     protected Map subjects;
     protected List eventQueue;
     protected boolean singleThread;
+    protected boolean stopped;
 
     /**
      * Returns the shared EventManager. It is created on demand on the first call to this
@@ -115,6 +115,18 @@ public class EventManager extends Object {
         synchronized (eventQueue) {
             return new ArrayList(eventQueue);
         }
+    }
+
+    /**
+     * Stops event threads. After the EventManager is stopped, it can not be restarted and
+     * should be discarded. Note that dispath threads may still run for a few more minutes
+     * after this method call until they time out.
+     * 
+     * @since 3.0
+     */
+    public void shutdown() {
+        this.stopped = true;
+        // threads will time out eventually...
     }
 
     /**
@@ -435,7 +447,7 @@ public class EventManager extends Object {
         }
 
         public void run() {
-            while (true) {
+            while (!stopped) {
 
                 // get event from the queue, if the queue
                 // is empty, just wait
@@ -447,7 +459,8 @@ public class EventManager extends Object {
                     }
                     else {
                         try {
-                            EventManager.this.eventQueue.wait();
+                            // wake up occasionally to check whether EM has been stopped
+                            EventManager.this.eventQueue.wait(3 * 60 * 10000);
                         }
                         catch (InterruptedException e) {
                             // ignore interrupts...
@@ -456,7 +469,7 @@ public class EventManager extends Object {
                 }
 
                 // dispatch outside of synchronized block
-                if (dispatch != null) {
+                if (!stopped && dispatch != null) {
                     // this try/catch is needed to prevent DispatchThread
                     // from dying on dispatch errors
                     try {
