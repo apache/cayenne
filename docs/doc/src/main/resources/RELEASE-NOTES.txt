@@ -35,6 +35,7 @@ CAY-855 Add DataContext.objectFromDataRow variety for generic classes
 CAY-856 Deprecate CayenneMap and replace all references to it with standard java.util package Maps
 CAY-857 Deprecate derived DbEntity and all associated API's - schedule for removal in 3.0M3
 CAY-859 Cayenne agent misses JPA entity classes that were loaded before their PersistenceUnits
+CAY-867 Special exception for accessing previously shutdown domain
 
 Bug Fixes Since M1:
 

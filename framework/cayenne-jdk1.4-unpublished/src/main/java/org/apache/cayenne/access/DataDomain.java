@@ -116,6 +116,8 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     protected QueryCache queryCache;
 
+    protected boolean stopped;
+
     /**
      * Creates a DataDomain and assigns it a name.
      */
@@ -138,6 +140,19 @@ public class DataDomain implements QueryEngine, DataChannel {
         DataContextFaults.init();
         setName(name);
         initWithProperties(properties);
+    }
+
+    /**
+     * Checks that Domain is not stopped. Throws DomainStoppedException otherwise.
+     * 
+     * @since 3.0
+     */
+    protected void checkStopped() throws DomainStoppedException {
+        if (stopped) {
+            throw new DomainStoppedException("Domain "
+                    + name
+                    + " was shutdown and can no longer be used to access the database");
+        }
     }
 
     /**
@@ -674,21 +689,25 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Shutdowns all owned data nodes. Invokes DataNode.shutdown().
+     * Shutdowns all owned data nodes and marks this domain as stopped.
      */
     public void shutdown() {
-        if (sharedSnapshotCache != null) {
-            this.sharedSnapshotCache.shutdown();
-        }
+        if (!stopped) {
+            if (sharedSnapshotCache != null) {
+                this.sharedSnapshotCache.shutdown();
+            }
 
-        Collection dataNodes = getDataNodes();
-        for (Iterator i = dataNodes.iterator(); i.hasNext();) {
-            DataNode node = (DataNode) i.next();
-            try {
-                node.shutdown();
+            Collection dataNodes = getDataNodes();
+            for (Iterator i = dataNodes.iterator(); i.hasNext();) {
+                DataNode node = (DataNode) i.next();
+                try {
+                    node.shutdown();
+                }
+                catch (Exception ex) {
+                }
             }
-            catch (Exception ex) {
-            }
+
+            stopped = true;
         }
     }
 
@@ -717,6 +736,8 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 1.2
      */
     public QueryResponse onQuery(final ObjectContext context, final Query query) {
+        checkStopped();
+        
         // transaction note:
         // we don't wrap this code in transaction to reduce transaction scope to
         // just the DB operation for better performance ... query action will start a
@@ -745,6 +766,8 @@ public class DataDomain implements QueryEngine, DataChannel {
             final GraphDiff changes,
             int syncType) {
 
+        checkStopped();
+        
         DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction
                 .getCallbackAction(
                         getEntityResolver().getCallbackRegistry(),
