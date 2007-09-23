@@ -460,7 +460,7 @@ public class EventManager {
                     else {
                         try {
                             // wake up occasionally to check whether EM has been stopped
-                            EventManager.this.eventQueue.wait(3 * 60 * 10000);
+                            EventManager.this.eventQueue.wait(3 * 60 * 1000);
                         }
                         catch (InterruptedException e) {
                             // ignore interrupts...
