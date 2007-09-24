@@ -31,6 +31,7 @@ CAY-842 EJBQL Collections condition support
 CAY-843 Remove arbitrary reverse relationship mapping limitations
 CAY-844 _Auto classes should be "abstract"
 CAY-846 EJBQL Support for Functional Expressions
+CAY-848 Support for mapping to-many as Maps and Sets and Collections
 CAY-855 Add DataContext.objectFromDataRow variety for generic classes
 CAY-856 Deprecate CayenneMap and replace all references to it with standard java.util package Maps
 CAY-857 Deprecate derived DbEntity and all associated API's - schedule for removal in 3.0M3
