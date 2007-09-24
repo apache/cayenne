@@ -26,7 +26,6 @@ import org.apache.cayenne.access.ToManyListFault;
 import org.apache.cayenne.access.ToManyMapFault;
 import org.apache.cayenne.access.ToManySetFault;
 import org.apache.cayenne.access.ToOneFault;
-import org.apache.cayenne.exp.Expression;
 
 /**
  * @since 3.0
@@ -46,14 +45,14 @@ public class SingletonFaultFactory implements FaultFactory {
     public Fault getListFault() {
         return listFault;
     }
-
-    public Fault getMapFault(Expression mapKeyExpression) {
+    
+    public Fault getMapFault(Accessor mapKeyAccessor) {
         synchronized (mapFaults) {
-            Fault fault = (Fault) mapFaults.get(mapKeyExpression.toString());
+            Fault fault = (Fault) mapFaults.get(mapKeyAccessor);
 
             if (fault == null) {
-                fault = new ToManyMapFault(mapKeyExpression);
-                mapFaults.put(mapKeyExpression, fault);
+                fault = new ToManyMapFault(mapKeyAccessor);
+                mapFaults.put(mapKeyAccessor, fault);
             }
 
             return fault;

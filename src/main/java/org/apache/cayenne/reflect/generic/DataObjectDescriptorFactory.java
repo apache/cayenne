@@ -18,9 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.generic;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -85,16 +83,13 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
             ObjRelationship relationship) {
         ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
                 .getTargetEntityName());
-        Expression mapKey = relationship.getMapKeyExpression();
-        if (mapKey == null) {
-            throw new CayenneRuntimeException("Null map key for map relationship: "
-                    + relationship.getName());
-        }
+
+        Accessor mapKeyAccessor = createMapKeyAccessor(relationship, targetDescriptor);
         descriptor.addDeclaredProperty(new DataObjectToManyMapProperty(
                 relationship,
                 targetDescriptor,
-                faultFactory.getMapFault(mapKey),
-                mapKey));
+                faultFactory.getMapFault(mapKeyAccessor),
+                mapKeyAccessor));
     }
 
     protected void createToManySetProperty(

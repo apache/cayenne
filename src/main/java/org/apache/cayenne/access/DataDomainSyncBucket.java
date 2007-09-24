@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.Factory;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
@@ -40,7 +39,9 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.ToManyMapProperty;
+import org.apache.commons.collections.Factory;
 
 /**
  * A superclass of batch query wrappers.
@@ -243,12 +244,43 @@ abstract class DataDomainSyncBucket {
 
                         Object source = arc.readPropertyDirectly(object);
                         if (source != null && !reverseArc.isFault(source)) {
-                            reverseArc.remapTarget(source, object);
+                            remapTarget(reverseArc, source, object);
                         }
                     }
                 }
             }
         }
+    }
+
+    private final void remapTarget(
+            ToManyMapProperty property,
+            Object source,
+            Object target) throws PropertyException {
+
+        Map map = (Map) property.readProperty(source);
+        Object newKey = property.getMapKey(target);
+        Object currentValue = map.get(newKey);
+
+        if (currentValue == target) {
+            // nothing to do
+            return;
+        }
+        // else - do not check for conflicts here (i.e. another object mapped for the same
+        // key), as we have no control of the order in which this method is called, so
+        // another object may be remapped later by the caller
+
+        // must do a slow map scan to ensure the object is not mapped under a different
+        // key...
+        Iterator it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry e = (Map.Entry) it.next();
+            if (e.getValue() == target) {
+                it.remove();
+                break;
+            }
+        }
+
+        map.put(newKey, target);
     }
 
     // a factory for extracting PKs generated on commit.

@@ -18,12 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.pojo;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
@@ -37,52 +33,19 @@ import org.apache.cayenne.util.PersistentObjectMap;
 class EnhancedPojoMapProperty extends EnhancedPojoToManyProperty implements
         ToManyMapProperty {
 
-    private Expression mapKey;
+    private Accessor mapKeyAccessor;
 
     EnhancedPojoMapProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
-            Accessor accessor, String reverseName) {
+            Accessor accessor, String reverseName, Accessor mapKeyAccessor) {
         super(owner, targetDescriptor, accessor, reverseName);
-
-        this.mapKey = getRelationship().getMapKeyExpression();
+        this.mapKeyAccessor = mapKeyAccessor;
     }
 
     protected ValueHolder createValueHolder(Persistent relationshipOwner) {
-        return new PersistentObjectMap(relationshipOwner, getName(), mapKey);
+        return new PersistentObjectMap(relationshipOwner, getName(), mapKeyAccessor);
     }
 
-    public void remapTarget(Object source, Object target) throws PropertyException {
-        // TODO: andrus, 9/24/2007 - this is an clone of the remapTarget method in
-        // DataObjectToManyMapProperty that is a part of a different inheritance
-        // hierarchy... need to reconcile that somehow...
-
-        if (target == null) {
-            throw new NullPointerException("Null target");
-        }
-
-        Map map = (Map) readProperty(source);
-
-        Object newKey = mapKey.evaluate(target);
-        Object currentValue = map.get(newKey);
-
-        if (currentValue == target) {
-            // nothing to do
-            return;
-        }
-        // else - do not check for conflicts here (i.e. another object mapped for the same
-        // key), as we have no control of the order in which this method is called, so
-        // another object may be remapped later by the caller
-
-        // must do a slow map scan to ensure the object is not mapped under a different
-        // key...
-        Iterator it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry e = (Map.Entry) it.next();
-            if (e.getValue() == target) {
-                it.remove();
-                break;
-            }
-        }
-
-        map.put(newKey, target);
+    public Object getMapKey(Object target) throws PropertyException {
+        return mapKeyAccessor.getValue(target);
     }
 }

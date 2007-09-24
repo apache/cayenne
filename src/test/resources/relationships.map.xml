@@ -63,6 +63,13 @@
 		<db-attribute name="FT3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
 	</db-entity>
+	<db-entity name="ID_MAP_TO_MANY">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="ID_MAP_TO_MANY_TARGET">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
+	</db-entity>
 	<db-entity name="MAP_TO_MANY">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
@@ -144,6 +151,10 @@
 	</obj-entity>
 	<obj-entity name="FlattenedTest3" className="org.apache.cayenne.testdo.relationship.FlattenedTest3" dbEntityName="FLATTENED_TEST_3">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="IdMapToMany" className="org.apache.cayenne.testdo.relationship.IdMapToMany" dbEntityName="ID_MAP_TO_MANY">
+	</obj-entity>
+	<obj-entity name="IdMapToManyTarget" className="org.apache.cayenne.testdo.relationship.IdMapToManyTarget" dbEntityName="ID_MAP_TO_MANY_TARGET">
 	</obj-entity>
 	<obj-entity name="MapToMany" className="org.apache.cayenne.testdo.relationship.MapToMany" dbEntityName="MAP_TO_MANY">
 	</obj-entity>
@@ -244,6 +255,12 @@
 	<db-relationship name="toFT2" source="FLATTENED_TEST_3" target="FLATTENED_TEST_2" toMany="false">
 		<db-attribute-pair source="FT2_ID" target="FT2_ID"/>
 	</db-relationship>
+	<db-relationship name="targets" source="ID_MAP_TO_MANY" target="ID_MAP_TO_MANY_TARGET" toMany="true">
+		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
+	</db-relationship>
+	<db-relationship name="mapToMany" source="ID_MAP_TO_MANY_TARGET" target="ID_MAP_TO_MANY" toMany="false">
+		<db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
+	</db-relationship>
 	<db-relationship name="targets" source="MAP_TO_MANY" target="MAP_TO_MANY_TARGET" toMany="true">
 		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
 	</db-relationship>
@@ -313,6 +330,8 @@
 	<obj-relationship name="toFT1" source="FlattenedTest2" target="FlattenedTest1" db-relationship-path="toFT1"/>
 	<obj-relationship name="toFT1" source="FlattenedTest3" target="FlattenedTest1" db-relationship-path="toFT2.toFT1"/>
 	<obj-relationship name="toFT2" source="FlattenedTest3" target="FlattenedTest2" db-relationship-path="toFT2"/>
+	<obj-relationship name="targets" source="IdMapToMany" target="IdMapToManyTarget" collection-type="java.util.Map" db-relationship-path="targets"/>
+	<obj-relationship name="mapToMany" source="IdMapToManyTarget" target="IdMapToMany" db-relationship-path="mapToMany"/>
 	<obj-relationship name="targets" source="MapToMany" target="MapToManyTarget" collection-type="java.util.Map" map-key="name" db-relationship-path="targets"/>
 	<obj-relationship name="mapToMany" source="MapToManyTarget" target="MapToMany" db-relationship-path="mapToMany"/>
 	<obj-relationship name="toRelationshipHelper" source="MeaningfulFK" target="RelationshipHelper" db-relationship-path="toRelationshipHelper"/>

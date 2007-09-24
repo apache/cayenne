@@ -28,7 +28,7 @@ import java.util.Set;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.reflect.Accessor;
 
 /**
  * @since 3.0
@@ -37,25 +37,24 @@ import org.apache.cayenne.exp.Expression;
 public class PersistentObjectMap extends RelationshipFault implements Map, ValueHolder {
 
     protected Map objectMap;
-    protected Expression mapKeyExpression;
+    protected Accessor mapKeyAccessor;
 
     // exists for the benefit of manual serialization schemes such as the one in Hessian.
     private PersistentObjectMap() {
     }
-    
+
     /**
      * Creates PersistentObjectList initializing it with list owner persistent object and
      * relationship name that this list maps to.
      * 
      * @param relationshipOwner persistent object that owns this list.
      * @param relationshipName a query used to resolve the list
-     * @param mapKeyExpression a Cayenne expression that resolves to a map key for the
-     *            target entity.
+     * @param mapKeyAccessor an accessor that can read a map key from an object.
      */
     public PersistentObjectMap(Persistent relationshipOwner, String relationshipName,
-            Expression mapKeyExpression) {
+            Accessor mapKeyAccessor) {
         super(relationshipOwner, relationshipName);
-        this.mapKeyExpression = mapKeyExpression;
+        this.mapKeyAccessor = mapKeyAccessor;
     }
 
     public Object getValue() throws CayenneRuntimeException {
@@ -162,7 +161,7 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
             Iterator it = collection.iterator();
             while (it.hasNext()) {
                 Object next = it.next();
-                Object key = mapKeyExpression.evaluate(next);
+                Object key = mapKeyAccessor.getValue(next);
                 Object previous = map.put(key, next);
                 if (previous != null && previous != next) {
                     throw new CayenneRuntimeException("Duplicate key '"

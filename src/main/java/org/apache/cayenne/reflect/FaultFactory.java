@@ -19,7 +19,6 @@
 package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.Fault;
-import org.apache.cayenne.exp.Expression;
 
 /**
  * @since 3.0
@@ -32,8 +31,8 @@ public interface FaultFactory {
     Fault getListFault();
 
     Fault getCollectionFault();
-    
+
     Fault getSetFault();
-    
-    Fault getMapFault(Expression mapKeyExpression);
+
+    Fault getMapFault(Accessor mapKeyAccessor);
 }

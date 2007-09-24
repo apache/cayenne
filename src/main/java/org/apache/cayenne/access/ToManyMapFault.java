@@ -20,7 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.util.PersistentObjectMap;
 
 /**
@@ -29,13 +29,13 @@ import org.apache.cayenne.util.PersistentObjectMap;
  */
 public class ToManyMapFault extends Fault {
 
-    protected Expression mapKeyExpression;
+    protected Accessor mapKeyAccessor;
 
-    public ToManyMapFault(Expression mapKeyExpression) {
-        this.mapKeyExpression = mapKeyExpression;
+    public ToManyMapFault(Accessor mapKeyAccessor) {
+        this.mapKeyAccessor = mapKeyAccessor;
     }
 
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
-        return new PersistentObjectMap(sourceObject, relationshipName, mapKeyExpression);
+        return new PersistentObjectMap(sourceObject, relationshipName, mapKeyAccessor);
     }
 }

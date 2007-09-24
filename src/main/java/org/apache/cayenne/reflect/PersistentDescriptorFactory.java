@@ -222,6 +222,29 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     }
 
     /**
+     * Creates an accessor to read a map key for a given relationship.
+     */
+    protected Accessor createMapKeyAccessor(
+            ObjRelationship relationship,
+            ClassDescriptor targetDescriptor) {
+
+        String mapKey = relationship.getMapKey();
+        if (mapKey != null) {
+            return new PropertyAccessor(targetDescriptor.getProperty(mapKey));
+        }
+
+        // do not use 'targetDescriptor' to resolve target entity, as it leads to an
+        // endless loop during the phase when descriptos are not fully initialized
+        ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
+        if (targetEntity.getDbEntity().getPrimaryKey().size() > 1) {
+            return MultiColumnIdMapKeyAccessor.SHARED_ACCESSOR;
+        }
+        else {
+            return SingleColumnIdMapKeyAccessor.SHARED_ACCESSOR;
+        }
+    }
+
+    /**
      * Creates an accessor for the property of the embeddable class.
      */
     protected Accessor createEmbeddableAccessor(
