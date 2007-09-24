@@ -30,9 +30,6 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 
 /**
- * A list property that is intended to work with
- * {@link org.apache.cayenne.access.ToManyList}.
- * 
  * @since 3.0
  * @author Andrus Adamchik
  */

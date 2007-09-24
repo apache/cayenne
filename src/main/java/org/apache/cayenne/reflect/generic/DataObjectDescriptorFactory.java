@@ -90,10 +90,11 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
             throw new CayenneRuntimeException("Null map key for map relationship: "
                     + relationship.getName());
         }
-        descriptor.addDeclaredProperty(new DataObjectToManyProperty(
+        descriptor.addDeclaredProperty(new DataObjectToManyMapProperty(
                 relationship,
                 targetDescriptor,
-                faultFactory.getMapFault(mapKey)));
+                faultFactory.getMapFault(mapKey),
+                mapKey));
     }
 
     protected void createToManySetProperty(

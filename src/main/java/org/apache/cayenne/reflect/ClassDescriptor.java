@@ -108,6 +108,18 @@ public interface ClassDescriptor {
     Iterator getIdProperties();
 
     /**
+     * Returns an iterator over the arc properties whose reverse arcs are to-many maps.
+     * I.e. for each ArcProperty in the iterator, the following is true:
+     * 
+     * <pre>
+     * arc.getComplimentaryReverseArc() instanceof ToManyMapProperty
+     * </pre>
+     * 
+     * @since 3.0
+     */
+    Iterator getMapArcProperties();
+
+    /**
      * Passes the visitor to all properties "visit" method, terminating properties
      * walkthrough in case one of the properties returns false. Returns true if all
      * visited properties returned true, false - if one property returned false.

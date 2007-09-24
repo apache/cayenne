@@ -28,6 +28,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.commons.collections.IteratorUtils;
 
 /**
@@ -53,6 +54,7 @@ public class PersistentDescriptor implements ClassDescriptor {
     protected ObjEntity entity;
 
     protected Collection declaredIdProperties;
+    protected Collection declaredMapArcProperties;
 
     /**
      * Creates a PersistentDescriptor.
@@ -81,6 +83,19 @@ public class PersistentDescriptor implements ClassDescriptor {
                 declaredIdProperties.add(property);
             }
         }
+        else if (property instanceof ArcProperty) {
+            ObjRelationship relationship = ((ArcProperty) property).getRelationship();
+            if ("java.util.Map".equals(relationship
+                    .getReverseRelationship()
+                    .getCollectionType())) {
+
+                if (declaredMapArcProperties == null) {
+                    declaredMapArcProperties = new ArrayList(2);
+                }
+
+                declaredMapArcProperties.add(property);
+            }
+        }
     }
 
     /**
@@ -90,8 +105,14 @@ public class PersistentDescriptor implements ClassDescriptor {
     public void removeDeclaredProperty(String propertyName) {
         Object removed = declaredProperties.remove(propertyName);
 
-        if (declaredIdProperties != null && removed != null) {
-            declaredIdProperties.remove(removed);
+        if (removed != null) {
+            if (declaredIdProperties != null) {
+                declaredIdProperties.remove(removed);
+            }
+
+            if (declaredMapArcProperties != null) {
+                declaredMapArcProperties.remove(removed);
+            }
         }
     }
 
@@ -180,6 +201,23 @@ public class PersistentDescriptor implements ClassDescriptor {
         if (declaredIdProperties != null) {
             it = (it != null) ? IteratorUtils.chainedIterator(it, declaredIdProperties
                     .iterator()) : declaredIdProperties.iterator();
+        }
+
+        return it != null ? it : IteratorUtils.EMPTY_ITERATOR;
+    }
+
+    public Iterator getMapArcProperties() {
+        Iterator it = null;
+
+        if (getSuperclassDescriptor() != null) {
+            it = getSuperclassDescriptor().getMapArcProperties();
+        }
+
+        if (declaredMapArcProperties != null) {
+            it = (it != null) ? IteratorUtils.chainedIterator(
+                    it,
+                    declaredMapArcProperties.iterator()) : declaredMapArcProperties
+                    .iterator();
         }
 
         return it != null ? it : IteratorUtils.EMPTY_ITERATOR;

@@ -37,8 +37,10 @@ import org.apache.cayenne.graph.NodeIdChangeOperation;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.ToManyMapProperty;
 
 /**
  * A superclass of batch query wrappers.
@@ -231,6 +233,19 @@ abstract class DataDomainSyncBucket {
                     }
 
                     modifiedSnapshots.put(finalId, dataRow);
+
+                    // update Map reverse relationships
+                    Iterator mapArcProperties = descriptor.getMapArcProperties();
+                    while (mapArcProperties.hasNext()) {
+                        ArcProperty arc = (ArcProperty) mapArcProperties.next();
+                        ToManyMapProperty reverseArc = (ToManyMapProperty) arc
+                                .getComplimentaryReverseArc();
+
+                        Object source = arc.readPropertyDirectly(object);
+                        if (source != null && !reverseArc.isFault(source)) {
+                            reverseArc.remapTarget(source, object);
+                        }
+                    }
                 }
             }
         }

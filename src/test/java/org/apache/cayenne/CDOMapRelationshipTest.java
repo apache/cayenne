@@ -156,4 +156,22 @@ public class CDOMapRelationshipTest extends RelationshipCase {
         o1.getObjectContext().performGenericQuery(new RefreshQuery());
         assertEquals(4, o1.getTargets().size());
     }
+
+    public void testModifyToManyKey() throws Exception {
+        createTestData("prepare");
+
+        MapToMany o1 = (MapToMany) DataObjectUtils.objectForPK(
+                createDataContext(),
+                MapToMany.class,
+                1);
+
+        Map targets = o1.getTargets();
+        MapToManyTarget target = (MapToManyTarget) targets.get("B");
+        target.setName("B1");
+
+        o1.getObjectContext().commitChanges();
+
+        assertNull(o1.getTargets().get("B"));
+        assertSame(target, o1.getTargets().get("B1"));
+    }
 }
