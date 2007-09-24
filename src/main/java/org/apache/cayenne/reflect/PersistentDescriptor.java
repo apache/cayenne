@@ -85,9 +85,9 @@ public class PersistentDescriptor implements ClassDescriptor {
         }
         else if (property instanceof ArcProperty) {
             ObjRelationship relationship = ((ArcProperty) property).getRelationship();
-            if ("java.util.Map".equals(relationship
-                    .getReverseRelationship()
-                    .getCollectionType())) {
+            ObjRelationship reverseRelationship = relationship.getReverseRelationship();
+            if (reverseRelationship != null
+                    && "java.util.Map".equals(reverseRelationship.getCollectionType())) {
 
                 if (declaredMapArcProperties == null) {
                     declaredMapArcProperties = new ArrayList(2);
