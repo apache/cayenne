@@ -92,6 +92,11 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         checkDescriptorInitialized();
         return descriptor.getIdProperties();
     }
+    
+    public Iterator getMapArcProperties() {
+        checkDescriptorInitialized();
+        return descriptor.getMapArcProperties();
+    }
 
     public Property getProperty(String propertyName) {
         checkDescriptorInitialized();

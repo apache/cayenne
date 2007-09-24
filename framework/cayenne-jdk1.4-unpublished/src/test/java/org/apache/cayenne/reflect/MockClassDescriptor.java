@@ -54,6 +54,10 @@ public class MockClassDescriptor implements ClassDescriptor {
         return null;
     }
 
+    public Iterator getMapArcProperties() {
+        return null;
+    }
+    
     public ClassDescriptor getSubclassDescriptor(Class objectClass) {
         return this;
     }
