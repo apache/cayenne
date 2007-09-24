@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.relationship.IdMapToMany;
 import org.apache.cayenne.testdo.relationship.MapToMany;
 import org.apache.cayenne.testdo.relationship.MapToManyTarget;
 import org.apache.cayenne.unit.RelationshipCase;
@@ -54,6 +55,29 @@ public class CDOMapRelationshipTest extends RelationshipCase {
         assertEquals(1, DataObjectUtils.intPKForObject((Persistent) targets.get("A")));
         assertEquals(2, DataObjectUtils.intPKForObject((Persistent) targets.get("B")));
         assertEquals(3, DataObjectUtils.intPKForObject((Persistent) targets.get("C")));
+    }
+    
+    public void testReadToManyId() throws Exception {
+        createTestData("prepare-id");
+
+        IdMapToMany o1 = (IdMapToMany) DataObjectUtils.objectForPK(
+                createDataContext(),
+                IdMapToMany.class,
+                1);
+
+        Map targets = o1.getTargets();
+
+        assertTrue(((ValueHolder) targets).isFault());
+
+        assertNotNull(targets);
+        assertEquals(3, targets.size());
+        assertNotNull(targets.get(new Integer(1)));
+        assertNotNull(targets.get(new Integer(2)));
+        assertNotNull(targets.get(new Integer(3)));
+
+        assertEquals(1, DataObjectUtils.intPKForObject((Persistent) targets.get(new Integer(1))));
+        assertEquals(2, DataObjectUtils.intPKForObject((Persistent) targets.get(new Integer(2))));
+        assertEquals(3, DataObjectUtils.intPKForObject((Persistent) targets.get(new Integer(3))));
     }
 
     public void testReadToManyPrefetching() throws Exception {

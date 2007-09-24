@@ -19,15 +19,31 @@
 package org.apache.cayenne.reflect;
 
 /**
- * A property representing a map of objects keyed by one of the object properties.
+ * A utility accessor class that wraps a simple property.
  * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-public interface ToManyMapProperty extends ToManyProperty {
+public class PropertyAccessor implements Accessor {
 
-    /**
-     * Extracts the map key of the target object.
-     */
-    Object getMapKey(Object target) throws PropertyException;
+    protected Property property;
+
+    public PropertyAccessor(Property property) {
+        if (property == null) {
+            throw new NullPointerException("Null property");
+        }
+        this.property = property;
+    }
+
+    public String getName() {
+        return property.getName();
+    }
+
+    public Object getValue(Object object) throws PropertyException {
+        return property.readProperty(object);
+    }
+
+    public void setValue(Object object, Object newValue) throws PropertyException {
+        property.writeProperty(object, null, newValue);
+    }
 }

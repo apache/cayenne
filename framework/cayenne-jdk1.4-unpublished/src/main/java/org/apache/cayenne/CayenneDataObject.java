@@ -39,7 +39,10 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
@@ -363,18 +366,25 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
      * 
      * @since 3.0
      */
-    protected Object getMapKey(String relationshipName, Object value) {
+    private Object getMapKey(String relationshipName, Object value) {
 
         EntityResolver resolver = objectContext.getEntityResolver();
-        ObjEntity entity = resolver.getObjEntity(objectId.getEntityName());
+        ClassDescriptor descriptor = resolver
+                .getClassDescriptor(objectId.getEntityName());
 
-        if (entity == null) {
+        if (descriptor == null) {
             throw new IllegalStateException("DataObject's entity is unmapped, objectId: "
                     + objectId);
         }
 
-        ObjRelationship rel = (ObjRelationship) entity.getRelationship(relationshipName);
-        return rel.getMapKeyExpression().evaluate(value);
+        Property property = descriptor.getProperty(relationshipName);
+        if (property instanceof ToManyMapProperty) {
+            return ((ToManyMapProperty) property).getMapKey(value);
+        }
+
+        throw new IllegalArgumentException("Relationship '"
+                + relationshipName
+                + "' is not a to-many Map");
     }
 
     /**

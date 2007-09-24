@@ -90,11 +90,13 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
                 .getTargetEntityName());
         String reverseName = relationship.getReverseRelationshipName();
         Accessor accessor = createAccessor(descriptor, relationship.getName(), Map.class);
+        Accessor mapKeyAccessor = createMapKeyAccessor(relationship, targetDescriptor);
         Property property = new EnhancedPojoMapProperty(
                 descriptor,
                 targetDescriptor,
                 accessor,
-                reverseName);
+                reverseName,
+                mapKeyAccessor);
 
         descriptor.addDeclaredProperty(property);
     }

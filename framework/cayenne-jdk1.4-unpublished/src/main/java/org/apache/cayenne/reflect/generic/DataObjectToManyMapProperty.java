@@ -18,12 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.generic;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.cayenne.Fault;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.ToManyMapProperty;
@@ -35,44 +32,15 @@ import org.apache.cayenne.reflect.ToManyMapProperty;
 class DataObjectToManyMapProperty extends DataObjectToManyProperty implements
         ToManyMapProperty {
 
-    private Expression mapKey;
+    private Accessor mapKeyAccessor;
 
     DataObjectToManyMapProperty(ObjRelationship relationship,
-            ClassDescriptor targetDescriptor, Fault fault, Expression mapKey) {
+            ClassDescriptor targetDescriptor, Fault fault, Accessor mapKeyAccessor) {
         super(relationship, targetDescriptor, fault);
-        this.mapKey = mapKey;
+        this.mapKeyAccessor = mapKeyAccessor;
     }
 
-    public void remapTarget(Object source, Object target) throws PropertyException {
-
-        if (target == null) {
-            throw new NullPointerException("Null target");
-        }
-
-        Map map = (Map) readProperty(source);
-
-        Object newKey = mapKey.evaluate(target);
-        Object currentValue = map.get(newKey);
-
-        if (currentValue == target) {
-            // nothing to do
-            return;
-        }
-        // else - do not check for conflicts here (i.e. another object mapped for the same
-        // key), as we have no control of the order in which this method is called, so
-        // another object may be remapped later by the caller
-
-        // must do a slow map scan to ensure the object is not mapped under a different
-        // key...
-        Iterator it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry e = (Map.Entry) it.next();
-            if (e.getValue() == target) {
-                it.remove();
-                break;
-            }
-        }
-
-        map.put(newKey, target);
+    public Object getMapKey(Object target) throws PropertyException {
+        return mapKeyAccessor.getValue(target);
     }
 }

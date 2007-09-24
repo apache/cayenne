@@ -26,15 +26,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Describes navigational association between two Java classes, represented as source and
@@ -75,8 +74,6 @@ public class ObjRelationship extends Relationship implements EventListener {
      * @since 3.0
      */
     protected String mapKey;
-
-    protected transient Expression mapKeyExpression;
 
     public ObjRelationship() {
         this(null);
@@ -761,20 +758,5 @@ public class ObjRelationship extends Relationship implements EventListener {
      */
     public void setMapKey(String mapKey) {
         this.mapKey = mapKey;
-
-        // reset
-        this.mapKeyExpression = null;
-    }
-
-    public Expression getMapKeyExpression() {
-        if (mapKey == null) {
-            return null;
-        }
-
-        if (mapKeyExpression == null) {
-            mapKeyExpression = Expression.fromString(mapKey);
-        }
-
-        return mapKeyExpression;
     }
 }
