@@ -51,6 +51,7 @@ import org.scopemvc.model.collection.ListModel;
 public class ObjRelationshipInfoModel extends BasicModel {
 
     static final String COLLECTION_TYPE_MAP = "java.util.Map";
+    static final String DEFAULT_MAP_KEY = "ID (default)";
 
     public static final Selector DB_RELATIONSHIP_PATH_SELECTOR = Selector
             .fromString("dbRelationshipPath");
@@ -189,6 +190,8 @@ public class ObjRelationshipInfoModel extends BasicModel {
     private void initMapKeys() {
         this.mapKeys.clear();
 
+        mapKeys.add(DEFAULT_MAP_KEY);
+
         Iterator attributes = this.objectTarget.getAttributes().iterator();
         while (attributes.hasNext()) {
             ObjAttribute attribute = (ObjAttribute) attributes.next();
@@ -198,7 +201,7 @@ public class ObjRelationshipInfoModel extends BasicModel {
         fireModelChange(ModelChangeTypes.VALUE_CHANGED, MAP_KEYS_SELECTOR);
 
         if (mapKey != null && !mapKeys.contains(mapKey)) {
-            mapKey = mapKeys.size() > 0 ? (String) mapKeys.get(0) : null;
+            mapKey = DEFAULT_MAP_KEY;
             fireModelChange(ModelChangeTypes.VALUE_CHANGED, MAP_KEY_SELECTOR);
         }
     }
@@ -314,7 +317,8 @@ public class ObjRelationshipInfoModel extends BasicModel {
         }
 
         // map key only makes sense for Map relationships
-        String mapKey = COLLECTION_TYPE_MAP.equals(collectionType) ? this.mapKey : null;
+        String mapKey = COLLECTION_TYPE_MAP.equals(collectionType)
+                && !DEFAULT_MAP_KEY.equals(this.mapKey) ? this.mapKey : null;
         if (!Util.nullSafeEquals(mapKey, relationship.getMapKey())) {
             hasChanges = true;
             relationship.setMapKey(mapKey);
