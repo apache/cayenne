@@ -70,11 +70,13 @@ public class JpaClassDescriptorFactory extends EnhancedPojoDescriptorFactory {
                 descriptor.getObjectClass(),
                 relationship.getName(),
                 Map.class);
+        Accessor mapKeyAccessor = createMapKeyAccessor(relationship, targetDescriptor);
         Property property = new JpaMapProperty(
                 descriptor,
                 targetDescriptor,
                 accessor,
-                reverseName);
+                reverseName,
+                mapKeyAccessor);
 
         descriptor.addDeclaredProperty(property);
     }
