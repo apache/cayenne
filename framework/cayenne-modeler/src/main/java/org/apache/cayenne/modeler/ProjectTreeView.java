@@ -806,4 +806,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             addTreeSelectionListener(treeSelectionListener);
         }
     }
+
+    public TreeSelectionListener getTreeSelectionListener() {
+        return treeSelectionListener;
+    }
 }

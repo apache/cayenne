@@ -22,12 +22,7 @@ package org.apache.cayenne.modeler.util;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -179,6 +174,16 @@ public abstract class CayenneAction extends AbstractAction {
      */
     public JButton buildButton() {
         return new CayenneToolbarButton(this);
+    }
+
+    /**
+     * Factory method that creates a text field hooked up to this action
+     */
+    public JTextField buildTextField(int size) {
+        JTextField field = new JTextField(size);
+        field.setAction(this);
+
+        return field;
     }
 
     /**

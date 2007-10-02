@@ -78,6 +78,11 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
     protected CardLayout detailLayout;
 
+    ProjectTreeView treePanel;
+    public ProjectTreeView getProjectTreeView() {
+        return treePanel;
+    }
+
     public EditorView(ProjectController eventController) {
         this.eventController = eventController;
         initView();
@@ -87,7 +92,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     private void initView() {
 
         // init widgets
-        ProjectTreeView treePanel = new ProjectTreeView(eventController);
+        treePanel = new ProjectTreeView(eventController);
         treePanel.setMinimumSize(new Dimension(50, 200));
 
         this.detailPanel = new JPanel();

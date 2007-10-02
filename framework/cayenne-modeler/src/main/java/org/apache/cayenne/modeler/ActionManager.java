@@ -29,41 +29,7 @@ import java.util.Map;
 
 import javax.swing.Action;
 
-import org.apache.cayenne.modeler.action.AboutAction;
-import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
-import org.apache.cayenne.modeler.action.CreateAttributeAction;
-import org.apache.cayenne.modeler.action.CreateDataMapAction;
-import org.apache.cayenne.modeler.action.CreateDbEntityAction;
-import org.apache.cayenne.modeler.action.CreateDerivedDbEntityAction;
-import org.apache.cayenne.modeler.action.CreateDomainAction;
-import org.apache.cayenne.modeler.action.CreateNodeAction;
-import org.apache.cayenne.modeler.action.CreateObjEntityAction;
-import org.apache.cayenne.modeler.action.CreateProcedureAction;
-import org.apache.cayenne.modeler.action.CreateProcedureParameterAction;
-import org.apache.cayenne.modeler.action.CreateQueryAction;
-import org.apache.cayenne.modeler.action.CreateRelationshipAction;
-import org.apache.cayenne.modeler.action.DbEntitySyncAction;
-import org.apache.cayenne.modeler.action.DerivedEntitySyncAction;
-import org.apache.cayenne.modeler.action.ExitAction;
-import org.apache.cayenne.modeler.action.GenerateCodeAction;
-import org.apache.cayenne.modeler.action.GenerateDBAction;
-import org.apache.cayenne.modeler.action.ImportDBAction;
-import org.apache.cayenne.modeler.action.ImportDataMapAction;
-import org.apache.cayenne.modeler.action.ImportEOModelAction;
-import org.apache.cayenne.modeler.action.NavigateBackwardAction;
-import org.apache.cayenne.modeler.action.NavigateForwardAction;
-import org.apache.cayenne.modeler.action.NewProjectAction;
-import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
-import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.action.ProjectAction;
-import org.apache.cayenne.modeler.action.RemoveAction;
-import org.apache.cayenne.modeler.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
-import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.action.RevertAction;
-import org.apache.cayenne.modeler.action.SaveAction;
-import org.apache.cayenne.modeler.action.SaveAsAction;
-import org.apache.cayenne.modeler.action.ValidateAction;
+import org.apache.cayenne.modeler.action.*;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
@@ -77,9 +43,11 @@ public class ActionManager {
             SaveAction.getActionName(), RevertAction.getActionName()
     }));
 
+    // search action added to project actions
     static final Collection PROJECT_ACTIONS = Arrays.asList(new String[] {
             CreateDomainAction.getActionName(), ProjectAction.getActionName(),
-            ValidateAction.getActionName(), SaveAsAction.getActionName()
+            ValidateAction.getActionName(), SaveAsAction.getActionName(),
+            FindAction.getActionName()
     });
 
     static final Collection DOMAIN_ACTIONS = new HashSet(PROJECT_ACTIONS);
@@ -168,6 +136,8 @@ public class ActionManager {
         registerAction(new ExitAction(application)).setAlwaysOn(true);
         registerAction(new NavigateBackwardAction(application)).setAlwaysOn(true);
         registerAction(new NavigateForwardAction(application)).setAlwaysOn(true);
+        // search action registered
+        registerAction(new FindAction(application));
     }
 
     private CayenneAction registerAction(CayenneAction action) {
