@@ -53,6 +53,7 @@ CAY-854 the relationships to entities which are "not for client use" are being r
 CAY-860 JPA no joins created for to-many relationship
 CAY-861 ObjRelationship 'addDbRelationship()' and 'removeDbRelationship' leave object in an inconsistent state
 CAY-863 Object property unexpectedly set to null through forceMergeWithSnapshot
+CAY-870 Race condition in ClassDescriptorMap
 
 ----------------------------------
 Release: 3.0M1
