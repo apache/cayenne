@@ -796,6 +796,17 @@ public class EntityResolver implements MappingNamespace, Serializable {
                     classDescriptorMap,
                     faultFactory));
 
+            // since ClassDescriptorMap is not synchronized, we need to prefill it with
+            // entity proxies here.
+            Iterator maps = this.maps.iterator();
+            while (maps.hasNext()) {
+                DataMap map = (DataMap) maps.next();
+                Iterator entities = map.getObjEntityMap().keySet().iterator();
+                while (entities.hasNext()) {
+                    classDescriptorMap.getDescriptor((String) entities.next());
+                }
+            }
+
             this.classDescriptorMap = classDescriptorMap;
         }
 

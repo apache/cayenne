@@ -29,7 +29,9 @@ import org.apache.cayenne.map.EntityResolver;
 
 /**
  * An object that holds class descriptors for mapped entities, compiling new descriptors
- * on demand using an internal chain of descriptor factories.
+ * on demand using an internal chain of descriptor factories. Note that the object is ot
+ * synchronized internally, so it has to be prefilled with descriptors by the caller on
+ * initialization via calling 'getDescriptor' for all mapped entities.
  * 
  * @since 3.0
  * @author Andrus Adamchik
@@ -89,10 +91,10 @@ public class ClassDescriptorMap {
     }
 
     public ClassDescriptor getDescriptor(String entityName) {
-        if(entityName == null) {
+        if (entityName == null) {
             throw new NullPointerException("Null 'entityName'");
         }
-        
+
         ClassDescriptor cached = (ClassDescriptor) descriptors.get(entityName);
         if (cached != null) {
             return cached;
