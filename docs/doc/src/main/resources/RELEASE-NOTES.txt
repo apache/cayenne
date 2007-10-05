@@ -54,6 +54,7 @@ CAY-860 JPA no joins created for to-many relationship
 CAY-861 ObjRelationship 'addDbRelationship()' and 'removeDbRelationship' leave object in an inconsistent state
 CAY-863 Object property unexpectedly set to null through forceMergeWithSnapshot
 CAY-870 Race condition in ClassDescriptorMap
+CAY-872 Potential bug deleting uncommited objects from a nested DataContext
 
 ----------------------------------
 Release: 3.0M1
