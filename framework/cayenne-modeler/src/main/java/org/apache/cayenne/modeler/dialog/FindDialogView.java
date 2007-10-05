@@ -22,38 +22,48 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultButtonModel;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.modeler.util.CellRenderers;
+
 /**
  * Swing component displaying results produced by search feature.
  */
+// TODO: render the output, add scroll pane
 public class FindDialogView extends JDialog {
     private JButton okButton;
     private java.util.List entityButtons;
 
-    public FindDialogView(java.util.List names) {
+    public FindDialogView(Map objEntityNames, Map dbEntityNames, Map attrNames, Map relatNames) {
         entityButtons = new ArrayList();
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        Iterator it = names.iterator();
-        
-        while(it.hasNext()) {
-            String name = (String) it.next();
-            JButton b = new JButton(name);
-            b.setBorder(new EmptyBorder(2, 10, 2, 10));       // top, left, bottom, right
-            panel.add(b);
-
-            entityButtons.add(b);
-        }
-        if(entityButtons.isEmpty())
+        if (objEntityNames.isEmpty() && dbEntityNames.isEmpty() && attrNames.isEmpty() && relatNames.isEmpty()) {
             panel.add(new JLabel("No matched entities found!"));
+        } else {
+            panel.add(createResultPanel(
+                    objEntityNames, CellRenderers.iconForObject(new ObjEntity())));
+            panel.add(createResultPanel(
+                    dbEntityNames, CellRenderers.iconForObject(new DbEntity())));
+            panel.add(createResultPanel(
+                    attrNames, CellRenderers.iconForObject(new ObjAttribute())));
+            panel.add(createResultPanel(
+                    relatNames, CellRenderers.iconForObject(new ObjRelationship())));
+        }
 
         JPanel okPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         okButton = new JButton("OK");
@@ -66,11 +76,42 @@ public class FindDialogView extends JDialog {
         setTitle("Found entities");
     }
 
+    private JPanel createResultPanel(Map names, Icon icon) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        Iterator it = names.keySet().iterator();
+        while(it.hasNext()) {
+            Integer index = (Integer) it.next();
+            JButton b = new JButton((String) names.get(index), icon);
+            b.setBorder(new EmptyBorder(2, 10, 2, 10));       // top, left, bottom, right
+            b.setModel(new EntityButtonModel(index));
+            panel.add(b);
+
+            entityButtons.add(b);
+        }
+
+        return panel;
+    }
+
     public JButton getOkButton() {
         return okButton;
     }
 
     public java.util.List getEntityButtons() {
         return entityButtons;
+    }
+
+    public class EntityButtonModel extends DefaultButtonModel {
+        private Integer index;
+
+        EntityButtonModel(Integer index) {
+            super();
+            this.index = index;
+        }
+
+        public Integer getIndex() {
+            return index;
+        }
     }
 }

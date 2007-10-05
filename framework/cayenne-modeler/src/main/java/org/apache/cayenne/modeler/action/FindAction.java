@@ -22,10 +22,12 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.FindDialog;
 import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -47,7 +49,11 @@ public class FindAction extends CayenneAction {
      * @param e
      */
     public void performAction(ActionEvent e) {
-        String pattern = ((JTextField) e.getSource()).getText();
+        JTextField source = (JTextField) e.getSource();
+
+        Pattern pattern = null;
+        if (!source.getText().trim().equals(""))
+            pattern = Pattern.compile(source.getText().trim(), Pattern.CASE_INSENSITIVE);
 
         paths = new ArrayList();
 
@@ -56,19 +62,21 @@ public class FindAction extends CayenneAction {
             ProjectPath path = (ProjectPath) it.next();
 
             Object o = path.getObject();
-            if(o instanceof ObjEntity && matchFound(((ObjEntity) o).getName(), pattern)) {
-                 paths.add(path.getPath());
-            }
+            if ((o instanceof ObjEntity || o instanceof DbEntity) && matchFound(((Entity) o).getName(), pattern))
+                paths.add(path.getPath());
+            else if (o instanceof Attribute && matchFound(((Attribute) o).getName(), pattern))
+                paths.add(path.getPath());
+            else if (o instanceof Relationship && matchFound(((Relationship) o).getName(), pattern))
+                paths.add(path.getPath());
         }
+
+        source.setText("");
 
         new FindDialog(getApplication().getFrameController(), paths).startupAction();
     }
 
-    private boolean matchFound(String entityName, String pattern) {
-        if(pattern.trim().equals(""))
-            return false;
-        Pattern p = Pattern.compile(pattern.trim(), Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(entityName);
+    private boolean matchFound(String entityName, Pattern pattern) {
+        Matcher m = pattern.matcher(entityName);
 
         return m.find();
     }

@@ -21,6 +21,9 @@
 package org.apache.cayenne.modeler.util;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
+import java.awt.*;
 
 import javax.swing.*;
 
@@ -179,11 +182,11 @@ public abstract class CayenneAction extends AbstractAction {
     /**
      * Factory method that creates a text field hooked up to this action
      */
-    public JTextField buildTextField(int size) {
-        JTextField field = new JTextField(size);
-        field.setAction(this);
+    public JTextField buildTextField() {
+        CayenneTextField ctf = new CayenneTextField(this);
+        Toolkit.getDefaultToolkit().addAWTEventListener(ctf, AWTEvent.KEY_EVENT_MASK);
 
-        return field;
+        return ctf;
     }
 
     /**
@@ -216,6 +219,25 @@ public abstract class CayenneAction extends AbstractAction {
             super.setEnabled(b);
         }
     }
+
+    /**
+     * A text field that gains focus when some predefined combonation if keys is pressed.
+     */
+    final class CayenneTextField extends JTextField implements AWTEventListener {
+
+        public CayenneTextField(Action a) {
+            super();
+            setAction(a);
+        }
+
+        public void eventDispatched(AWTEvent event) {
+            if (event instanceof KeyEvent) {
+                if (((KeyEvent) event).isControlDown() && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F)
+                    this.requestFocus();
+            }
+        }
+    }
+
 
     /**
      * On changes in action text, will update toolbar tip instead.

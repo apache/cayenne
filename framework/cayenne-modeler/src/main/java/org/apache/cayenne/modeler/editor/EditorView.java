@@ -78,9 +78,19 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
     protected CardLayout detailLayout;
 
-    ProjectTreeView treePanel;
+    private ProjectTreeView treePanel;
     public ProjectTreeView getProjectTreeView() {
         return treePanel;
+    }
+
+    private DbEntityTabbedView dbDetailView;
+    public DbEntityTabbedView getDbDetailView() {
+        return dbDetailView;
+    }
+
+    private ObjEntityTabbedView objDetailView;
+    public ObjEntityTabbedView getObjDetailView() {
+        return objDetailView;
     }
 
     public EditorView(ProjectController eventController) {
@@ -130,10 +140,10 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         Component procedureQueryView = new ProcedureQueryView(eventController);
         detailPanel.add(new JScrollPane(procedureQueryView), PROCEDURE_QUERY_VIEW);
 
-        Component objDetailView = new ObjEntityTabbedView(eventController);
+        objDetailView = new ObjEntityTabbedView(eventController);
         detailPanel.add(objDetailView, OBJ_VIEW);
 
-        Component dbDetailView = new DbEntityTabbedView(eventController);
+        dbDetailView = new DbEntityTabbedView(eventController);
         detailPanel.add(dbDetailView, DB_VIEW);
 
         splitPane.setLeftComponent(new JScrollPane(treePanel));

@@ -20,7 +20,10 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 
 import javax.swing.Box;
@@ -31,9 +34,36 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
-import org.apache.commons.lang.SystemUtils;
 import org.apache.cayenne.map.DerivedDbEntity;
-import org.apache.cayenne.modeler.action.*;
+import org.apache.cayenne.modeler.action.AboutAction;
+import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
+import org.apache.cayenne.modeler.action.CreateDataMapAction;
+import org.apache.cayenne.modeler.action.CreateDbEntityAction;
+import org.apache.cayenne.modeler.action.CreateDerivedDbEntityAction;
+import org.apache.cayenne.modeler.action.CreateDomainAction;
+import org.apache.cayenne.modeler.action.CreateNodeAction;
+import org.apache.cayenne.modeler.action.CreateObjEntityAction;
+import org.apache.cayenne.modeler.action.CreateProcedureAction;
+import org.apache.cayenne.modeler.action.CreateQueryAction;
+import org.apache.cayenne.modeler.action.DerivedEntitySyncAction;
+import org.apache.cayenne.modeler.action.ExitAction;
+import org.apache.cayenne.modeler.action.FindAction;
+import org.apache.cayenne.modeler.action.GenerateCodeAction;
+import org.apache.cayenne.modeler.action.GenerateDBAction;
+import org.apache.cayenne.modeler.action.ImportDBAction;
+import org.apache.cayenne.modeler.action.ImportDataMapAction;
+import org.apache.cayenne.modeler.action.ImportEOModelAction;
+import org.apache.cayenne.modeler.action.NavigateBackwardAction;
+import org.apache.cayenne.modeler.action.NavigateForwardAction;
+import org.apache.cayenne.modeler.action.NewProjectAction;
+import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
+import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.action.ProjectAction;
+import org.apache.cayenne.modeler.action.RemoveAction;
+import org.apache.cayenne.modeler.action.RevertAction;
+import org.apache.cayenne.modeler.action.SaveAction;
+import org.apache.cayenne.modeler.action.SaveAsAction;
+import org.apache.cayenne.modeler.action.ValidateAction;
 import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.DataMapDisplayListener;
@@ -48,6 +78,7 @@ import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
+import org.apache.commons.lang.SystemUtils;
 
 /**
  * Main frame of CayenneModeler. Responsibilities include coordination of
@@ -191,23 +222,15 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolBar.add(getAction(NavigateBackwardAction.getActionName()).buildButton());
         toolBar.add(getAction(NavigateForwardAction.getActionName()).buildButton());
 
+        toolBar.addSeparator();
 
-        Component c = getAction(FindAction.getActionName()).buildTextField(10);
-
+        Component c = getAction(FindAction.getActionName()).buildTextField();
         JLabel findLabel = new JLabel("Find entity:");
-        findLabel.setDisplayedMnemonic('e');
         findLabel.setLabelFor(c);
+        toolBar.add(findLabel);
+        toolBar.add(c);
 
-        JToolBar findToolBar = new JToolBar();
-        findToolBar.add(findLabel);
-        findToolBar.add(c);
-
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(toolBar, BorderLayout.WEST);
-        panel.add(findToolBar, BorderLayout.EAST);
-
-        getContentPane().add(panel, BorderLayout.NORTH);
+        getContentPane().add(toolBar, BorderLayout.NORTH);
     }
 
     public void currentDataNodeChanged(DataNodeDisplayEvent e) {
