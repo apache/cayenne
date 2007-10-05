@@ -16,3 +16,4 @@ CAY-796 Deserialization of DataContext fails when useSharedCache is false
 CAY-818 Frontbase NUMBERIC type mapping typo
 CAY-832 enum-mapped columns improperly handled in in expressions
 CAY-863 Object property unexpectedly set to null through forceMergeWithSnapshot
+CAY-872 Potential bug deleting uncommited objects from a nested DataContext

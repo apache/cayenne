@@ -55,6 +55,9 @@
  */
 package org.objectstyle.cayenne.access;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.objectstyle.cayenne.CayenneRuntimeException;
 import org.objectstyle.cayenne.DataObject;
 import org.objectstyle.cayenne.ObjectId;
@@ -136,6 +139,10 @@ class ChildDiffLoader implements GraphChangeHandler {
     public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
 
         DataObject source = findObject(nodeId);
+        
+        if(source == null) {
+            return;
+        }
 
         // find whether this is to-one or to-many
         ObjEntity sourceEntity = context.getEntityResolver().lookupObjEntity(source);
@@ -168,5 +175,17 @@ class ChildDiffLoader implements GraphChangeHandler {
 
     DataObject findObject(Object nodeId) {
         return (DataObject) graphManager.getNode(nodeId);
+    }
+    
+    Persistent findObjectInCollection(Object nodeId, Collection toManyHolder) {
+        Iterator it = toManyHolder.iterator();
+        while (it.hasNext()) {
+            Persistent o = (Persistent) it.next();
+            if (nodeId.equals(o.getObjectId())) {
+                return o;
+            }
+        }
+
+        return null;
     }
 }
