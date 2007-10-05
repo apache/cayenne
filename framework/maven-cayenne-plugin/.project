@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>cayenne-maven-plugin</name>
+	<name>maven-cayenne-plugin</name>
 	<comment>Apache Cayenne is a powerful, full-featured Java Object
 		Relational Mapping framework currently in incubation.</comment>
 	<projects>
