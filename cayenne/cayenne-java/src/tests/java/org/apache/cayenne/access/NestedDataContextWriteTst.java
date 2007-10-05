@@ -32,7 +32,28 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneTestCase;
 
 public class NestedDataContextWriteTst extends CayenneTestCase {
-    
+
+    public void testDeleteNew() throws Exception {
+        deleteTestData();
+        createTestData("testDeleteNew");
+
+        DataContext context = createDataContext();
+        DataContext childContext = context.createChildDataContext();
+
+        Artist a = (Artist) DataObjectUtils
+                .objectForPK(childContext, Artist.class, 33001);
+        Painting p = (Painting) childContext.newObject(Painting.class);
+        p.setPaintingTitle("X");
+        a.addToPaintingArray(p);
+
+        childContext.commitChangesToParent();
+
+        childContext.deleteObject(p);
+        a.removeFromPaintingArray(p);
+
+        childContext.commitChangesToParent();
+    }
+
     /**
      * A test case for CAY-698 bug.
      */
@@ -355,7 +376,8 @@ public class NestedDataContextWriteTst extends CayenneTestCase {
             assertEquals(PersistenceState.NEW, parentMaster.getPersistenceState());
 
             PaintingInfo parentDetail1 = (PaintingInfo) context
-                    .getGraphManager().getNode(childDetail1.getObjectId());
+                    .getGraphManager()
+                    .getNode(childDetail1.getObjectId());
 
             assertNotNull(parentDetail1);
             assertEquals(PersistenceState.NEW, parentDetail1.getPersistenceState());
