@@ -44,6 +44,44 @@ public class NestedDataContextWriteTest extends CayenneCase {
         return context;
     }
 
+    /**
+     * A test case for CAY-698 bug.
+     */
+    public void testNullifyToOne() throws Exception {
+        deleteTestData();
+        createTestData("testNullifyToOne");
+
+        DataContext context = createDataContext();
+        DataContext childContext = context.createChildDataContext();
+        DataContext childContextPeer = context.createChildDataContext();
+
+        Painting childP1 = (Painting) DataObjectUtils.objectForPK(
+                childContext,
+                Painting.class,
+                33001);
+
+        // trigger object creation in the peer nested DC
+        DataObjectUtils.objectForPK(childContextPeer, Painting.class, 33001);
+        childP1.setToArtist(null);
+
+        blockQueries();
+
+        try {
+            childContext.commitChangesToParent();
+            assertEquals(PersistenceState.COMMITTED, childP1.getPersistenceState());
+
+            Painting parentP1 = (Painting) context.getGraphManager().getNode(
+                    childP1.getObjectId());
+
+            assertNotNull(parentP1);
+            assertEquals(PersistenceState.MODIFIED, parentP1.getPersistenceState());
+            assertNull(parentP1.getToArtist());
+        }
+        finally {
+            unblockQueries();
+        }
+    }
+
     public void testCommitChangesToParent() throws Exception {
         deleteTestData();
         createTestData("testFlushChanges");
