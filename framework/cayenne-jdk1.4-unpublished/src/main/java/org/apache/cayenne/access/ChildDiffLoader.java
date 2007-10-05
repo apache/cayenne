@@ -19,7 +19,10 @@
 
 package org.apache.cayenne.access;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
@@ -139,6 +142,12 @@ class ChildDiffLoader implements GraphChangeHandler {
     public void arcDeleted(Object nodeId, final Object targetNodeId, Object arcId) {
         final Persistent source = findObject(nodeId);
 
+        // needed as sometime temporary objects are evoked from the context before
+        // changing their relationships
+        if (source == null) {
+            return;
+        }
+
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 ((ObjectId) nodeId).getEntityName());
         Property property = descriptor.getProperty(arcId.toString());
@@ -155,7 +164,24 @@ class ChildDiffLoader implements GraphChangeHandler {
                         && reverseArc.getRelationship().isRuntime();
 
                 Persistent target = findObject(targetNodeId);
-                property.removeTarget(source, target, autoConnectReverse);
+
+                if (target == null) {
+
+                    // this is usually the case when a NEW object was deleted and then its
+                    // relationships were manipulated; so try to locate the object in the
+                    // collection ...
+                    // the performance of this is rather dubious of course...
+                    target = findObjectInCollection(targetNodeId, property
+                            .readProperty(source));
+                }
+
+                if (target == null) {
+                    // ignore?
+                }
+                else {
+                    property.removeTarget(source, target, autoConnectReverse);
+                }
+
                 return false;
             }
 
@@ -174,6 +200,14 @@ class ChildDiffLoader implements GraphChangeHandler {
         if (object != null) {
             return object;
         }
+        
+        ObjectId id = (ObjectId) nodeId;
+        
+        // this can happen if a NEW object is deleted and after that its relationships are
+        // modified
+        if (id.isTemporary()) {
+            return null;
+        }
 
         // skip context cache lookup, go directly to its channel
         Query query = new ObjectIdQuery((ObjectId) nodeId);
@@ -190,5 +224,19 @@ class ChildDiffLoader implements GraphChangeHandler {
         }
 
         return (Persistent) objects.get(0);
+    }
+    
+    Persistent findObjectInCollection(Object nodeId, Object toManyHolder) {
+        Collection c = (toManyHolder instanceof Map) ? ((Map) toManyHolder)
+                .values() : (Collection) toManyHolder;
+        Iterator it = c.iterator();
+        while (it.hasNext()) {
+            Persistent o = (Persistent) it.next();
+            if(nodeId.equals(o.getObjectId())) {
+                return o;
+            }
+        }
+        
+        return null;
     }
 }

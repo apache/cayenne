@@ -44,6 +44,27 @@ public class NestedDataContextWriteTest extends CayenneCase {
         return context;
     }
 
+    public void testDeleteNew() throws Exception {
+        deleteTestData();
+        createTestData("testDeleteNew");
+
+        DataContext context = createDataContext();
+        DataContext childContext = context.createChildDataContext();
+
+        Artist a = (Artist) DataObjectUtils
+                .objectForPK(childContext, Artist.class, 33001);
+        Painting p = (Painting) childContext.newObject(Painting.class);
+        p.setPaintingTitle("X");
+        a.addToPaintingArray(p);
+
+        childContext.commitChangesToParent();
+
+        childContext.deleteObject(p);
+        a.removeFromPaintingArray(p);
+        
+        childContext.commitChangesToParent();
+    }
+
     /**
      * A test case for CAY-698 bug.
      */
