@@ -109,4 +109,13 @@
 		</constructor-arg>
 	</bean>
 	
+	<bean id="testNullifyToOne" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="P1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
 </beans>
