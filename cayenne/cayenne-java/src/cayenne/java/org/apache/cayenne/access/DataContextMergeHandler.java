@@ -164,7 +164,9 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
         if (source != null && source.getPersistenceState() != PersistenceState.HOLLOW) {
 
             // get target as local object
-            Object target = context.localObject((ObjectId) targetNodeId, null);
+            Object target = targetNodeId != null ? context.localObject(
+                    (ObjectId) targetNodeId,
+                    null) : null;
 
             Property p = propertyForId(nodeId, arcId.toString());
             if (p instanceof CollectionProperty) {
