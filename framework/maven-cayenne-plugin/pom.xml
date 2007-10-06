@@ -75,16 +75,6 @@
 			<artifactId>cayenne-server</artifactId>
 			<version>${version}</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
