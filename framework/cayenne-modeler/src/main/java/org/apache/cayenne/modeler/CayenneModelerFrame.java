@@ -20,19 +20,11 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.AWTEventListener;
 
-import javax.swing.Box;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
+import javax.swing.*;
 
 import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.modeler.action.AboutAction;
@@ -195,6 +187,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
     /** Initializes main toolbar. */
     protected void initToolbar() {
         JToolBar toolBar = new JToolBar();
+
         toolBar.add(getAction(NewProjectAction.getActionName()).buildButton());
         toolBar.add(getAction(OpenProjectAction.getActionName()).buildButton());
         toolBar.add(getAction(SaveAction.getActionName()).buildButton());
@@ -224,11 +217,23 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         toolBar.addSeparator();
 
-        Component c = getAction(FindAction.getActionName()).buildTextField();
-        JLabel findLabel = new JLabel("Find entity:");
-        findLabel.setLabelFor(c);
-        toolBar.add(findLabel);
-        toolBar.add(c);
+        JPanel east = new JPanel();
+        final JTextField findField = new JTextField(10);
+        findField.setAction(getAction(FindAction.getActionName()));
+        JLabel findLabel = new JLabel("Search:");
+        findLabel.setLabelFor(findField);
+        east.add(findLabel);
+        east.add(findField);
+        toolBar.add(east, BorderLayout.EAST);
+        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+            public void eventDispatched(AWTEvent event) {
+                if (event instanceof KeyEvent) {
+                    if (((KeyEvent) event).getModifiers() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+                            && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F)
+                                findField.requestFocus();
+                }
+            }
+        }, AWTEvent.KEY_EVENT_MASK);
 
         getContentPane().add(toolBar, BorderLayout.NORTH);
     }

@@ -37,7 +37,7 @@ import org.apache.cayenne.access.DataDomain;
 
 /**
  * An instance of this class is responsible for displaying search results
- * and navigating to the selected entity's representation. 
+ * and navigating to the selected entity's representation.
  */
 public class FindDialog extends CayenneController {
     private FindDialogView view;
@@ -84,7 +84,7 @@ public class FindDialog extends CayenneController {
         makeCloseableOnEscape();
 
         view.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        view.setModal(true);
+        view.setModal(false);
         view.setVisible(true);
     }
 
@@ -114,7 +114,6 @@ public class FindDialog extends CayenneController {
             Object[] path = (Object[]) paths.get(((FindDialogView.EntityButtonModel) ((JButton) e.getSource()).getModel()).getIndex().intValue());
 
 
-//            DbEntityTabbedView dbEntityTabbedView = editor.getDbDetailView();
             if(path[path.length - 1] instanceof ObjEntity || path[path.length - 1] instanceof DbEntity)
                 /**
                  * Make selection in a project tree, open correspondent entity tab.
@@ -175,8 +174,6 @@ public class FindDialog extends CayenneController {
                     );
                     ((CayenneModelerController) parent).getProjectController().fireObjRelationshipDisplayEvent(event);
                 }
-
-            view.dispose();
         }
 
         /**

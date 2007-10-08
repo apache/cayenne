@@ -18,20 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.modeler.util.CayenneAction;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.JTextField;
+
+import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.FindDialog;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.map.*;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.*;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 public class FindAction extends CayenneAction {
     private java.util.List paths;
@@ -51,23 +54,22 @@ public class FindAction extends CayenneAction {
     public void performAction(ActionEvent e) {
         JTextField source = (JTextField) e.getSource();
 
-        Pattern pattern = null;
-        if (!source.getText().trim().equals(""))
-            pattern = Pattern.compile(source.getText().trim(), Pattern.CASE_INSENSITIVE);
-
         paths = new ArrayList();
+        if (!source.getText().trim().equals("")) {
+            Pattern pattern = Pattern.compile(source.getText().trim(), Pattern.CASE_INSENSITIVE);
 
-        Iterator it = getProjectController().getProject().treeNodes();
-        while(it.hasNext()) {
-            ProjectPath path = (ProjectPath) it.next();
+            Iterator it = getProjectController().getProject().treeNodes();
+            while(it.hasNext()) {
+                ProjectPath path = (ProjectPath) it.next();
 
-            Object o = path.getObject();
-            if ((o instanceof ObjEntity || o instanceof DbEntity) && matchFound(((Entity) o).getName(), pattern))
-                paths.add(path.getPath());
-            else if (o instanceof Attribute && matchFound(((Attribute) o).getName(), pattern))
-                paths.add(path.getPath());
-            else if (o instanceof Relationship && matchFound(((Relationship) o).getName(), pattern))
-                paths.add(path.getPath());
+                Object o = path.getObject();
+                if (o instanceof Entity && matchFound(((Entity) o).getName(), pattern))
+                    paths.add(path.getPath());
+                else if (o instanceof Attribute && matchFound(((Attribute) o).getName(), pattern))
+                    paths.add(path.getPath());
+                else if (o instanceof Relationship && matchFound(((Relationship) o).getName(), pattern))
+                    paths.add(path.getPath());
+            }
         }
 
         source.setText("");

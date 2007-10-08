@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.dialog;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,9 +29,11 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultButtonModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.cayenne.map.DbEntity;
@@ -42,7 +45,6 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 /**
  * Swing component displaying results produced by search feature.
  */
-// TODO: render the output, add scroll pane
 public class FindDialogView extends JDialog {
     private JButton okButton;
     private java.util.List entityButtons;
@@ -69,10 +71,12 @@ public class FindDialogView extends JDialog {
         okButton = new JButton("OK");
         okPanel.add(okButton);
 
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(panel, BorderLayout.CENTER);
-        getContentPane().add(okPanel, BorderLayout.SOUTH);
+        JComponent container = (JComponent) getContentPane();
+        container.setLayout(new BorderLayout());
+        container.add(new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+        container.add(okPanel, BorderLayout.SOUTH);
 
+        container.setPreferredSize(new Dimension(400, 325));
         setTitle("Found entities");
     }
 
