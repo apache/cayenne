@@ -64,4 +64,11 @@ public class ExtendedTypeMapEnumsTest extends TestCase {
         assertNull(map.createType(MockEnum.class.getName()));
         assertNull(map.createType(MockEnum2.class.getName()));
     }
+
+    public void testGetType() {
+        ExtendedTypeMap map = new ExtendedTypeMap();
+        ExtendedType type = map.getRegisteredType(MockEnum.class.getName());
+        assertNotNull(type);
+        assertTrue(type instanceof EnumType);
+    }
 }
