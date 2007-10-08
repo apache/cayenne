@@ -1,0 +1,52 @@
+{
+    attributes = (
+        {columnName = ARTIST_ID; externalType = int; name = artistId; valueType = i; }, 
+        {
+            columnName = ARTIST_NAME; 
+            name = artistName; 
+            valueClassName = NSString; 
+            width = 254; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = DATE_OF_BIRTH; 
+            externalType = datetime; 
+            internalInfo = {_nameInObjectStore = DATE_OF_BIRTH; }; 
+            name = dateOfBirth; 
+            valueClassName = NSCalendarDate; 
+        }
+    ); 
+    attributesUsedForLocking = (artistId); 
+    className = org.apache.art.Artist; 
+    classProperties = (artistName, dateOfBirth, artistExhibitArray, paintingArray, exhibitArray); 
+    externalName = ARTIST; 
+    fetchSpecificationDictionary = {}; 
+    name = Artist; 
+    primaryKeyAttributes = (artistId); 
+    relationships = (
+        {
+            deleteRule = EODeleteRuleCascade; 
+            destination = ArtistExhibit; 
+            isToMany = Y; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = artistId; sourceAttribute = artistId; }); 
+            name = artistExhibitArray; 
+            ownsDestination = Y; 
+            propagatesPrimaryKey = Y; 
+        }, 
+        {
+            definition = artistExhibitArray.toExhibit; 
+            internalInfo = {_nameInObjectStore = artistExhibitArray_toExhibit; }; 
+            joinSemantic = EOInnerJoin; 
+            name = exhibitArray; 
+        }, 
+        {
+            deleteRule = EODeleteRuleCascade; 
+            destination = Painting; 
+            isToMany = Y; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = artistId; sourceAttribute = artistId; }); 
+            name = paintingArray; 
+        }
+    ); 
+}

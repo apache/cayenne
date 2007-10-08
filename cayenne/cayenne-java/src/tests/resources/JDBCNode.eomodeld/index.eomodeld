@@ -1,0 +1,12 @@
+{
+    EOModelVersion = "2.1"; 
+    adaptorName = JDBC; 
+    connectionDictionary = {
+        URL = testurl; 
+        driver = "com.microsoft.jdbc.sqlserver.SQLServerDriver"; 
+        password = pwd; 
+        plugin = unknown; 
+        username = un; 
+    }; 
+    entities = ({className = EOGenericRecord; name = E1; }); 
+}

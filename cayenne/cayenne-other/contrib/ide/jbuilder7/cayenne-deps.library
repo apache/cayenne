@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+  <!--JBuilder Library Definition File-->
+  <fullname>cayenne-deps</fullname>
+  <class>
+    <path>[otherlib/ant-1.6.5.jar]</path>
+    <path>[otherlib/ashwood-28012003.jar]</path>
+    <path>[otherlib/bcel-5.1.jar]</path>
+    <path>[otherlib/commons-beanutils-1.6.1.jar]</path>
+    <path>[otherlib/commons-collections-3.1.jar]</path>
+    <path>[otherlib/commons-lang-2.1.jar]</path>
+    <path>[otherlib/commons-logging-1.0.4.jar]</path>
+    <path>[otherlib/foundrylogic-vpp-2.2.1.jar]</path>
+    <path>[otherlib/junit-3.8.1.jar]</path>
+    <path>[otherlib/log4j-1.2.9.jar]</path>
+    <path>[otherlib/tapestry-3.0.3.jar]</path>
+    <path>[otherlib/ognl-2.6.7.jar]</path>
+    <path>[otherlib/scope-bin-1.0.1.jar]</path>
+    <path>[otherlib/servlet-2.4.jar]</path>
+    <path>[otherlib/struts-1.1.jar]</path>
+    <path>[otherlib/velocity-dep-1.3.jar]</path>
+  </class>
+</library>

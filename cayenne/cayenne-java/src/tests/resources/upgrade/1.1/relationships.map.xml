@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<property name="defaultPackage" value="org.objectstyle.cayenne.testdo.relationship"/>
+	<db-entity name="CLOB_DETAIL">
+		<db-attribute name="CLOB_DETAIL_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="CLOB_MASTER_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="254"/>
+	</db-entity>
+	<db-entity name="CLOB_MASTER">
+		<db-attribute name="CLOB_COLUMN" type="CLOB"/>
+		<db-attribute name="CLOB_MASTER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="254"/>
+	</db-entity>
+	<db-entity name="COMPLEX_JOIN">
+		<db-attribute name="EXTRA_COLUMN" type="VARCHAR" length="50"/>
+		<db-attribute name="FT1_FK" type="INTEGER"/>
+		<db-attribute name="FT3_FK" type="INTEGER"/>
+		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE_FLATA">
+		<db-attribute name="FLATA_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE_FLATB">
+		<db-attribute name="FLATB_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE_JOIN">
+		<db-attribute name="FLATA_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="FLATB_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE_TEST1">
+		<db-attribute name="DEL_RULE_TEST1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TEST2_ID" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE_TEST2">
+		<db-attribute name="DEL_RULE_TEST2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE_TEST3">
+		<db-attribute name="DELETE_RULE_TEST_3_FK" type="INTEGER"/>
+		<db-attribute name="DELETE_RULE_TEST_3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="FLATTENED_TEST_1">
+		<db-attribute name="FT1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<db-entity name="FLATTENED_TEST_2">
+		<db-attribute name="FT1_ID" type="INTEGER"/>
+		<db-attribute name="FT2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<db-entity name="FLATTENED_TEST_3">
+		<db-attribute name="FT2_ID" type="INTEGER"/>
+		<db-attribute name="FT3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<db-entity name="MEANINGFUL_FK">
+		<db-attribute name="MEANIGNFUL_FK_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="RELATIONSHIP_HELPER_ID" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="REFLEXIVE_AND_TO_ONE">
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+		<db-attribute name="PARENT_ID" type="INTEGER"/>
+		<db-attribute name="REFLEXIVE_AND_TO_ONE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="RELATIONSHIP_HELPER_ID" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="RELATIONSHIP_HELPER">
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+		<db-attribute name="RELATIONSHIP_HELPER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="TO_ONEFK1">
+		<db-attribute name="TO_ONEFK1_FK" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="TO_ONEFK1_PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="TO_ONEFK2">
+		<db-attribute name="TO_ONEFK2_PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="ClobDetail" className="org.objectstyle.cayenne.testdo.relationship.ClobDetail" dbEntityName="CLOB_DETAIL">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="ClobMaster" className="org.objectstyle.cayenne.testdo.relationship.ClobMaster" dbEntityName="CLOB_MASTER">
+		<obj-attribute name="clobColumn" type="java.lang.String" db-attribute-path="CLOB_COLUMN"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="DeleteRuleFlatA" className="org.objectstyle.cayenne.testdo.relationship.DeleteRuleFlatA" dbEntityName="DELETE_RULE_FLATA">
+	</obj-entity>
+	<obj-entity name="DeleteRuleFlatB" className="org.objectstyle.cayenne.testdo.relationship.DeleteRuleFlatB" dbEntityName="DELETE_RULE_FLATB">
+	</obj-entity>
+	<obj-entity name="DeleteRuleTest1" className="org.objectstyle.cayenne.testdo.relationship.DeleteRuleTest1" dbEntityName="DELETE_RULE_TEST1">
+	</obj-entity>
+	<obj-entity name="DeleteRuleTest2" className="org.objectstyle.cayenne.testdo.relationship.DeleteRuleTest2" dbEntityName="DELETE_RULE_TEST2">
+	</obj-entity>
+	<obj-entity name="DeleteRuleTest3" className="org.objectstyle.cayenne.testdo.relationship.DeleteRuleTest3" dbEntityName="DELETE_RULE_TEST3">
+	</obj-entity>
+	<obj-entity name="FlattenedTest1" className="org.objectstyle.cayenne.testdo.relationship.FlattenedTest1" dbEntityName="FLATTENED_TEST_1">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="FlattenedTest2" className="org.objectstyle.cayenne.testdo.relationship.FlattenedTest2" dbEntityName="FLATTENED_TEST_2">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="FlattenedTest3" className="org.objectstyle.cayenne.testdo.relationship.FlattenedTest3" dbEntityName="FLATTENED_TEST_3">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MeaningfulFK" className="org.objectstyle.cayenne.testdo.relationship.MeaningfulFK" dbEntityName="MEANINGFUL_FK">
+		<obj-attribute name="relationshipHelperID" type="java.lang.Integer" db-attribute-path="RELATIONSHIP_HELPER_ID"/>
+	</obj-entity>
+	<obj-entity name="ReflexiveAndToOne" className="org.objectstyle.cayenne.testdo.relationship.ReflexiveAndToOne" dbEntityName="REFLEXIVE_AND_TO_ONE">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="RelationshipHelper" className="org.objectstyle.cayenne.testdo.relationship.RelationshipHelper" dbEntityName="RELATIONSHIP_HELPER">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="ToOneFK1" className="org.objectstyle.cayenne.testdo.relationship.ToOneFK1" dbEntityName="TO_ONEFK1">
+	</obj-entity>
+	<obj-entity name="ToOneFK2" className="org.objectstyle.cayenne.testdo.relationship.ToOneFK2" dbEntityName="TO_ONEFK2">
+	</obj-entity>
+	<db-relationship name="master" source="CLOB_DETAIL" target="CLOB_MASTER" toMany="false">
+		<db-attribute-pair source="CLOB_MASTER_ID" target="CLOB_MASTER_ID"/>
+	</db-relationship>
+	<db-relationship name="details" source="CLOB_MASTER" target="CLOB_DETAIL" toMany="true">
+		<db-attribute-pair source="CLOB_MASTER_ID" target="CLOB_MASTER_ID"/>
+	</db-relationship>
+	<db-relationship name="toFT1" source="COMPLEX_JOIN" target="FLATTENED_TEST_1" toMany="false">
+		<db-attribute-pair source="FT1_FK" target="FT1_ID"/>
+	</db-relationship>
+	<db-relationship name="toFT3" source="COMPLEX_JOIN" target="FLATTENED_TEST_3" toMany="false">
+		<db-attribute-pair source="FT3_FK" target="FT3_ID"/>
+	</db-relationship>
+	<db-relationship name="joins" source="DELETE_RULE_FLATA" target="DELETE_RULE_JOIN" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="FLATA_ID" target="FLATA_ID"/>
+	</db-relationship>
+	<db-relationship name="joins" source="DELETE_RULE_FLATB" target="DELETE_RULE_JOIN" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="FLATB_ID" target="FLATB_ID"/>
+	</db-relationship>
+	<db-relationship name="toFlatA" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATA" toMany="false">
+		<db-attribute-pair source="FLATA_ID" target="FLATA_ID"/>
+	</db-relationship>
+	<db-relationship name="toFlatB" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATB" toMany="false">
+		<db-attribute-pair source="FLATB_ID" target="FLATB_ID"/>
+	</db-relationship>
+	<db-relationship name="deleteRuleTest3Array" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST3" toMany="true">
+		<db-attribute-pair source="DEL_RULE_TEST1_ID" target="DELETE_RULE_TEST_3_FK"/>
+	</db-relationship>
+	<db-relationship name="test2" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST2" toMany="false">
+		<db-attribute-pair source="TEST2_ID" target="DEL_RULE_TEST2_ID"/>
+	</db-relationship>
+	<db-relationship name="deleteRuleTest3Array" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST3" toMany="true">
+		<db-attribute-pair source="DEL_RULE_TEST2_ID" target="DELETE_RULE_TEST_3_FK"/>
+	</db-relationship>
+	<db-relationship name="test1Array" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST1" toMany="true">
+		<db-attribute-pair source="DEL_RULE_TEST2_ID" target="TEST2_ID"/>
+	</db-relationship>
+	<db-relationship name="toDeleteRuleTest2" source="DELETE_RULE_TEST3" target="DELETE_RULE_TEST2" toMany="false">
+		<db-attribute-pair source="DELETE_RULE_TEST_3_FK" target="DEL_RULE_TEST2_ID"/>
+	</db-relationship>
+	<db-relationship name="complexJoins" source="FLATTENED_TEST_1" target="COMPLEX_JOIN" toMany="true">
+		<db-attribute-pair source="FT1_ID" target="FT1_FK"/>
+	</db-relationship>
+	<db-relationship name="ft2Array" source="FLATTENED_TEST_1" target="FLATTENED_TEST_2" toMany="true">
+		<db-attribute-pair source="FT1_ID" target="FT1_ID"/>
+	</db-relationship>
+	<db-relationship name="ft3Array" source="FLATTENED_TEST_2" target="FLATTENED_TEST_3" toMany="true">
+		<db-attribute-pair source="FT2_ID" target="FT2_ID"/>
+	</db-relationship>
+	<db-relationship name="toFT1" source="FLATTENED_TEST_2" target="FLATTENED_TEST_1" toMany="false">
+		<db-attribute-pair source="FT1_ID" target="FT1_ID"/>
+	</db-relationship>
+	<db-relationship name="complexJoins" source="FLATTENED_TEST_3" target="COMPLEX_JOIN" toMany="true">
+		<db-attribute-pair source="FT3_ID" target="FT3_FK"/>
+	</db-relationship>
+	<db-relationship name="toFT2" source="FLATTENED_TEST_3" target="FLATTENED_TEST_2" toMany="false">
+		<db-attribute-pair source="FT2_ID" target="FT2_ID"/>
+	</db-relationship>
+	<db-relationship name="toRelationshipHelper" source="MEANINGFUL_FK" target="RELATIONSHIP_HELPER" toMany="false">
+		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
+	</db-relationship>
+	<db-relationship name="children" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE" toMany="true">
+		<db-attribute-pair source="REFLEXIVE_AND_TO_ONE_ID" target="PARENT_ID"/>
+	</db-relationship>
+	<db-relationship name="toHelper" source="REFLEXIVE_AND_TO_ONE" target="RELATIONSHIP_HELPER" toMany="false">
+		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
+	</db-relationship>
+	<db-relationship name="toParent" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE" toMany="false">
+		<db-attribute-pair source="PARENT_ID" target="REFLEXIVE_AND_TO_ONE_ID"/>
+	</db-relationship>
+	<db-relationship name="meanigfulFKs" source="RELATIONSHIP_HELPER" target="MEANINGFUL_FK" toMany="true">
+		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
+	</db-relationship>
+	<db-relationship name="reflexiveAndToOneArray" source="RELATIONSHIP_HELPER" target="REFLEXIVE_AND_TO_ONE" toMany="true">
+		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
+	</db-relationship>
+	<db-relationship name="toPK" source="TO_ONEFK1" target="TO_ONEFK2" toMany="false">
+		<db-attribute-pair source="TO_ONEFK1_FK" target="TO_ONEFK2_PK"/>
+	</db-relationship>
+	<db-relationship name="toOneToFK" source="TO_ONEFK2" target="TO_ONEFK1" toMany="false">
+		<db-attribute-pair source="TO_ONEFK2_PK" target="TO_ONEFK1_FK"/>
+	</db-relationship>
+	<obj-relationship name="master" source="ClobDetail" target="ClobMaster" db-relationship-path="master"/>
+	<obj-relationship name="details" source="ClobMaster" target="ClobDetail" db-relationship-path="details"/>
+	<obj-relationship name="flatB" source="DeleteRuleFlatA" target="DeleteRuleFlatB" db-relationship-path="joins.toFlatB"/>
+	<obj-relationship name="untitledRel" source="DeleteRuleFlatB" target="DeleteRuleFlatA" db-relationship-path="joins.toFlatA"/>
+	<obj-relationship name="test2" source="DeleteRuleTest1" target="DeleteRuleTest2" deleteRule="Deny" db-relationship-path="test2"/>
+	<obj-relationship name="deleteRuleTest3Array" source="DeleteRuleTest2" target="DeleteRuleTest3" db-relationship-path="deleteRuleTest3Array"/>
+	<obj-relationship name="test1Array" source="DeleteRuleTest2" target="DeleteRuleTest1" deleteRule="Nullify" db-relationship-path="test1Array"/>
+	<obj-relationship name="toDeleteRuleTest2" source="DeleteRuleTest3" target="DeleteRuleTest2" db-relationship-path="toDeleteRuleTest2"/>
+	<obj-relationship name="ft2Array" source="FlattenedTest1" target="FlattenedTest2" db-relationship-path="ft2Array"/>
+	<obj-relationship name="ft3Array" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="ft2Array.ft3Array"/>
+	<obj-relationship name="ft3OverComplex" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="complexJoins.toFT3"/>
+	<obj-relationship name="ft3Array" source="FlattenedTest2" target="FlattenedTest3" db-relationship-path="ft3Array"/>
+	<obj-relationship name="toFT1" source="FlattenedTest2" target="FlattenedTest1" db-relationship-path="toFT1"/>
+	<obj-relationship name="toFT1" source="FlattenedTest3" target="FlattenedTest1" db-relationship-path="toFT2.toFT1"/>
+	<obj-relationship name="toFT2" source="FlattenedTest3" target="FlattenedTest2" db-relationship-path="toFT2"/>
+	<obj-relationship name="toRelationshipHelper" source="MeaningfulFK" target="RelationshipHelper" db-relationship-path="toRelationshipHelper"/>
+	<obj-relationship name="children" source="ReflexiveAndToOne" target="ReflexiveAndToOne" db-relationship-path="children"/>
+	<obj-relationship name="toHelper" source="ReflexiveAndToOne" target="RelationshipHelper" db-relationship-path="toHelper"/>
+	<obj-relationship name="toParent" source="ReflexiveAndToOne" target="ReflexiveAndToOne" db-relationship-path="toParent"/>
+	<obj-relationship name="toPK" source="ToOneFK1" target="ToOneFK2" db-relationship-path="toPK"/>
+	<obj-relationship name="toOneToFK" source="ToOneFK2" target="ToOneFK1" db-relationship-path="toOneToFK"/>
+</data-map>

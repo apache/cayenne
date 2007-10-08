@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+	
+<!-- ================================================= -->
+<!--         Cayenne documentation buildfile.          -->
+<!-- ================================================= -->
+<project>
+	<property name="core.build.tools" value="${build}/tools/classes"/>
+	<property name="parser.dir.exp"
+		value="${cayenne.java}/src/cayenne/java/org/apache/cayenne/exp/parser"/>
+	<property name="parser.base.exp" value="ExpressionParser"/>
+	
+	<!-- ========================================== -->
+	<!-- Builds Cayenne documentation from Confluence -->
+	<!-- ========================================== -->
+	<target name="doc">
+		
+		<!-- Compile Doc Builder -->
+		<compile-1_5 destdir="${core.build.tools}" srcref="srcpath-tools"
+					classpathref="classpath-tools"/>
+		
+		<taskdef name="docgen" classname="org.apache.cayenne.tools.ant.docgen.DocGenTask">
+			<classpath refid="classpath-built-tools"/>
+		</taskdef>
+		
+		<!-- Clean the old docs, but not the SCM files -->
+		<delete>
+			<fileset dir="${cayenne.other}/wiki-docs/Documentation" includes="**/*.html,**/*.jpg,**/*.gif"/>
+		</delete>
+		
+		<!-- Build HTML documentation from Confluence -->
+		<docgen spaceKey="CAYDOC20" docBase="${cayenne.other}/wiki-docs" baseUrl="http://cwiki.apache.org/confluence/" 
+			startPage="Documentation" 
+			username="${cayenne.confluence.user}" password="${cayenne.confluence.password}" />
+	</target>
+	
+	<!-- ========================================== -->
+	<!-- Installs Cayenne documentation -->
+	<!-- ========================================== -->
+	<target name="doc-install" depends="grammars">
+		<mkdir dir="${dist}/doc/"/>
+		
+		<copy todir="${dist}/doc">
+			<fileset dir="${cayenne.other}/wiki-docs" excludes="index.html,README.txt,Documentation/index.html"/>
+		</copy>
+		
+		<tstamp/>
+		<copy todir="${dist}/doc" file="${cayenne.other}/wiki-docs/index.html">
+				<filterset>
+					<filter token="CAYENNE_VERSION" value="${project.version}"/>
+					<filter token="CAYENNE_BUILD_DATE" value="${TODAY}"/>
+					<filter token="CAYENNE_BUILD_USER" value="${user.name}"/>
+				</filterset>
+		</copy>
+	
+		<!-- Copy other doc-related stuff -->
+		<mkdir dir="${dist}/doc/dtd"/>
+		<copy todir="${dist}/doc/dtd">
+			<fileset dir="${cayenne.java}/src/cayenne/dtd" includes="**/*.dtd"/>
+		</copy>
+	</target>
+	
+	<!-- ========================================== -->
+	<!-- Builds documentation for the JavaCC Grammars. -->
+	<!-- ========================================== -->
+	<target name="grammars">
+		<mkdir dir="${dist}/doc/grammar"/>
+		
+		<ant antfile="${basedir}/ant/parser.xml" target="jjdoc" inheritrefs="true"
+			dir="${cayenne.java}">
+			<property name="parser.dir" value="${parser.dir.exp}"/>
+			<property name="parser.base" value="${parser.base.exp}"/>
+			<property name="parser.doc.dir" value="${dist}/doc/grammar"/>
+		</ant>
+	</target>
+</project>

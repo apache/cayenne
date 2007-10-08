@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+
+<!-- ================================================= -->
+<!-- Common build paths.                               -->
+<!-- ================================================= -->
+<project>
+	
+	<property environment="cayenne.env"/>
+	
+	<!-- ============================================= -->
+	<!-- Source Paths.                                 -->
+	<!-- ============================================= -->
+	<path id="srcpath-cayenne-1_4">
+		<pathelement path="${cayenne.java}/src/cayenne/java"/>
+	</path>
+	
+	<path id="srcpath-cayenne-1_5">
+		<pathelement path="${cayenne.java.1_5}/src/cayenne/java"/>
+	</path>
+	
+	<path id="srcpath-cayenne-all">
+		<path refid="srcpath-cayenne-1_4"/>
+		<path refid="srcpath-cayenne-1_5"/>
+	</path>
+	
+	<path id="srcpath-modeler">
+		<pathelement path="${cayenne.java}/src/modeler/java"/>
+	</path>
+	
+	<path id="srcpath-dvmodeler">
+		<pathelement path="${cayenne.java}/src/dvmodeler/java"/>
+	</path>
+	
+	<path id="srcpath-tests-1_4">
+		<pathelement path="${cayenne.java}/src/tests/java"/>
+	</path>
+	
+	<path id="srcpath-tests-1_5">
+		<pathelement path="${cayenne.java.1_5}/src/tests/java"/>
+	</path>
+	
+	<path id="srcpath-tests-all">
+		<path refid="srcpath-tests-1_4"/>
+		<path refid="srcpath-tests-1_5"/>
+	</path>
+	
+	<path id="srcpath-pdf-builder">
+		<pathelement path="${cayenne.other}/src/pdf/java"/>
+	</path>
+	
+	<path id="srcpath-tools">
+		<pathelement path="${cayenne.other}/src/tools/java"/>
+	</path>
+	
+	<path id="srcpath-macosx">
+		<pathelement path="${cayenne.other}/platform-macosx/src/java"/>
+	</path>
+	
+	<!-- ============================================= -->
+	<!-- Class Paths.                                  -->
+	<!-- ============================================= -->
+	
+	<path id="classpath-lib">
+		<fileset dir="${cayenne.java}/lib" includes="*.jar"/>
+	</path>
+	
+	<path id="classpath-cayenne-1_4">
+		<path refid="classpath-lib"/>
+		<pathelement path="${build}/cayenne-1_4/classes"/>
+	</path>
+	
+	<path id="classpath-cayenne-lib">
+		<path refid="classpath-cayenne-1_4"/>
+		<pathelement path="${build}/cayenne-1_5/classes"/>
+	</path>
+	
+	<path id="classpath-cayenne-lib-tools">
+		<path refid="classpath-cayenne-lib"/>
+		<pathelement path="${build}/modeler/classes"/>
+		<pathelement path="${cayenne.java}/src/modeler/resources"/>
+	</path>
+	
+	<path id="classpath-tests-1_4">
+		<path refid="classpath-cayenne-lib-tools"/>
+		<pathelement path="${build}/tests-1_4/classes"/>
+	</path>
+	
+	<path id="classpath-tests">
+		<path refid="classpath-tests-1_4"/>
+		<pathelement path="${build}/tests-1_5/classes"/>
+	</path>
+	
+	<path id="classpath-tests-run">
+		<!-- Include Ant libs from the environment before project Ant jars -->
+		
+		<!-- Exclude any XML parsers Ant might bundle...rely on JAXP instead -->
+		<fileset dir="${ant.home}/lib" includes="*.jar"
+			excludes="*xalan*,*xerces*,*xml-api*"/>
+		
+		<path refid="classpath-tests"/>
+		<pathelement path="${cayenne.java}/src/tests/resources"/>
+		<pathelement path="${cayenne.env.CLASSPATH}"/>
+	</path>
+	
+	<path id="classpath-javacc">
+		<fileset dir="${cayenne.java}/lib" includes="javacc*.jar"/>
+	</path>
+	
+	<path id="classpath-doc">
+		<!-- Exclude any XML parsers Ant might bundle...rely on JAXP instead -->
+		<fileset dir="${ant.home}/lib" includes="*.jar"
+			excludes="*xalan*,*xerces*,*xml-api*"/>
+		
+		<fileset dir="${cayenne.other}/lib" includes="*.jar"/>
+		<fileset dir="${cayenne.java}/lib" includes="${velocity.jar}"/>
+	</path>
+	
+	<path id="classpath-tools">
+		<fileset dir="${cayenne.other}/lib" includes="*.jar"/>
+		<path refid="classpath-cayenne-lib"/>
+	</path>
+	
+	<path id="classpath-built-tools">
+		<pathelement path="${build}/tools/classes"/>
+		<pathelement path="${cayenne.other}/src/tools/resources"/>
+		<path refid="classpath-tools"/>
+	</path>
+	
+	<path id="classpath-macosx">
+		<fileset dir="lib" includes="*.jar"/>
+		<path refid="classpath-cayenne-lib-tools"/>
+	</path>
+</project>

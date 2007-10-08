@@ -1,0 +1,17 @@
+<EncodedTestList type="java.util.ArrayList">
+<Test type="org.apache.cayenne.xml.TestObject">
+<name type="java.lang.String">George</name>
+<age type="java.lang.Integer">5</age>
+<open type="java.lang.Boolean">true</open>
+</Test>
+<Test type="org.apache.cayenne.xml.TestObject">
+<name type="java.lang.String">Mary</name>
+<age type="java.lang.Integer">28</age>
+<open type="java.lang.Boolean">false</open>
+</Test>
+<Test type="org.apache.cayenne.xml.TestObject">
+<name type="java.lang.String">Joe</name>
+<age type="java.lang.Integer">31</age>
+<open type="java.lang.Boolean">true</open>
+</Test>
+</EncodedTestList>
