@@ -1,11 +1,6 @@
 Apache Cayenne Upgrade Information
 ==================================
 
-----------------------------------
-Release: 2.0-incubating-SNAPSHOT
-Date:
-----------------------------------
-
 
 UPGRADING FROM 1.2 AND OTHER OBJECTSTYLE RELEASES
 
