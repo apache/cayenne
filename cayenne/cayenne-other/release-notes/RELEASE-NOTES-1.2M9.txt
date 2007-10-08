@@ -1,0 +1,68 @@
+Cayenne Release Notes 1.2 M9 milestone
+Date: 
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+
+Changes/New Features:
+
+* Generated/Identity Columns - http://objectstyle.org/confluence/display/CAY/Generated+Columns
+  - Derby support for generated columns
+  - CAY-361 Modeler now allows to specify generated columns for PK only. Non-pk column can't be generated.
+  - CAY-291	Implement support for auto-pks propagation to dependent entities
+
+* Custom queries.
+  - Query lifecycle API is simplified.
+  - It is now possible to run any kind of query (including custom and one that is not a GenericSelectQuery) 
+    via a DataContext and obtain the results via 'performQuery'.
+  - QueryChain, SingleObjectQuery, RelationshipQuery, NamedQuery can now be used with DataContext.
+
+* Native versions of the Modeler for Windows and Mac OS X (CayenneModeler.exe, CayenneModeler.app).
+
+* CAY-405 Generic Persistent Object
+
+* DataDomain now implements OPPChannel.
+  
+* "DataContextFactory.createDataContext" method signature change. 
+  Previously introduced "DataContextFactory.createDataContext(QueryEngine, ObjectStore)" 
+  is replaced with "DataContextFactory.createDataContext(OPPChannel, ObjectStore)". The change
+  of the custom factories should be trivial, as DataContext now has a corresponding constructor 
+  and DataDomain implements OPPChannel.
+
+* Oracle DATE type is now reverse engineered by default as JDBC TIMESTAMP, as it can store both 
+  date and time info.
+  
+* DbRelationship.srcFkSnapshotWithTargetSnapshot(..) and DbRelationship.srcPkSnapshotWithTargetSnapshot
+  no longer throw an exception when null values are found in primary key snapshot, recognizing that key
+  generation may be deferred (case of DB-generated keys).
+  
+* Portable ObjectId:
+  ObjectId is now used instead of recently introduced GlobalID within ObjectContext space (i.e. removal of 
+  GlobalID only affects remote tier). Still there are substantial changes in the ObjectId itself. To make 
+  it portable across the network, we no longer use Java Class as the main key within the id. Instead 
+  ObjEntity name string is used for this purpose. 
+  
+  UPGRADE NOTE: it wasn't possible to phase out some of the old ObjectId API via deprecation, so methods 
+  "getObjClass" and "getObjectClass" are removed completely. Constructors that take Class as the first argument
+  are deprecated and will only work if entity naming follows CayenneModeler default conventions of using unqualified
+  class name as the entity name.
+ 
+* Thread-bound Transactions:
+  QueryEngine.performQueries(Collection,OperationObserver resultConsumer,Transaction) is deprecated and no longer used 
+  internally to further decouple layers in the access stack. Instead transaction initiator (either DataContext or a user)
+  must bind an appropriate transaction before executing an operation (or use Transaction.performQueries(..) that does
+  it internally). 
+  UPGRADE NOTE: This change only affects users who implemented custom transactions. 
+  
+* Bundled HSQLDB is upgraded from 1.7.3 to 1.8.0.2.
+
+Other Bugs Fixed:
+
+CAY-358	MySQL InnoDB table issues with generated columns
+CAY-406	HSQLDB stored procedure support (as much as HSQLDB itself supports them).
+CAY-355	"validateForX" is called inconsistently

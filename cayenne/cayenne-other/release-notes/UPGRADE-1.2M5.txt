@@ -1,0 +1,30 @@
+Cayenne Upgrade Information 1.2 M5 milestone
+Date: July 22, 2005
+============================================
+
+GENERAL UPGRADE NOTES:
+
+*  WARNING: Most API deprecated in 1.1 is removed from 1.2.
+
+*  For the complete list of new features since the last stable release see 
+    User Guide page at  [cayenne_install_dir]/doc/userguide/introduction/whats-new.html
+
+*  Expect CayenneModeler to be backwards compatible and be able to read 
+   older project files. However once you save old projects with new Modeler, 
+   the latest format will be used, possibly making saved project incompatible 
+   with older versions of the Modeler and runtime.
+
+*  Clean Recompile: Cayenne 1.2 introduces a few API changes. Most of them are done 
+   to the backend and should not affect the applications written with the earlier versions. 
+   However it is a good idea to perform a clean compilation of all Java code that relies on 
+   Cayenne. Updating calls to deprecated methods is also a very good idea.
+   
+   
+UPGRADE NOTES:
+
+*  In 1.2 PostgreSQLAdapter uses DB sequences for primary key generation instead of 
+    AUTO_PK_TABLE. To port an existing application, you will need to create those 
+    sequences (e.g. using the Modeler) and assign correct current values to them 
+    (e.g. taken from the old AUTO_PK_TABLE). After that AUTO_PK_TABLE can be dropped.
+
+

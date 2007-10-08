@@ -1,0 +1,32 @@
+Cayenne Release Notes 1.2 M4 milestone
+Date: May 7, 2005
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+
+Changes/New Features:
+
+CAY-301	A number of Modeler visual improvements and bug fixes (also see CAY-211), 
+  including navigation history, entity toolbars, db entity synching with ObjEntities, etc. 
+  
+NOTE: relationships mapping is now done using an info button ("i") on the entity toolbar.
+  
+CAY-183	Adapter for Clouscape/Derby DB (Experimental. Only tested in embedded mode).
+CAY-312	Antlib addition - now Cayenne Ant tasks can be imported as Antlibs
+
+
+Bugs Fixed:
+
+CAY-306/CAY-313	Fixing API and build process to be more friendly when running under JDK 1.5
+CAY-297	deadlock between commit and external event
+CAY-308	ObjectStore.processUpdatedSnapshots race condition with ObjectStore.resolveHollow
+CAY-299	PostgreSQL selecting procedure results are processed incorrectly
+CAY-305	hsqldb needs to ignore "db schema" namespace element on CREATE/DROP TABLE syntax
+CAY-310	Calling <DataObject>.addTo<DataObject>List() with a null parameter crashes later in commitChanges()
+CAY-277	ExpressionFactory.noMatchDbExp does not exist
+

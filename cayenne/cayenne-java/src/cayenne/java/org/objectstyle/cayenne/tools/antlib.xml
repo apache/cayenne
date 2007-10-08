@@ -1,0 +1,6 @@
+<antlib>
+  <taskdef name="cgen" classname="org.objectstyle.cayenne.tools.CayenneGenerator"/>
+  <taskdef name="cdbgen" classname="org.objectstyle.cayenne.tools.DbGeneratorTask"/>
+  <taskdef name="cdeploy" classname="org.objectstyle.cayenne.tools.DeploymentConfigurator"/>
+  <taskdef name="cdataport" classname="org.objectstyle.cayenne.tools.DataPortTask"/>
+</antlib>

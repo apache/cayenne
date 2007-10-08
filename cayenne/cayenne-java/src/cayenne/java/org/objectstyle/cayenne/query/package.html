@@ -1,0 +1,29 @@
+<html>
+<body>
+Defines standard queries supported by Cayenne and extension mechanism to create
+custom queries. Many of the queries in this package are used by the framework internally. 
+Normally users would only care about these general query classes: 
+<ul>
+	<li>SelectQuery</li>
+	<li>SQLTemplate</li>
+	<li>ProcedureQuery</li>
+</ul>
+	
+and sometimes - these specialized queries:
+
+<ul>
+	<li>QueryChain</li>
+	<li>RelationshipQuery</li>
+	<li>SingleObjectQuery</li>
+</ul>
+
+<p>Cayenne can "execute" any object as a query as long as it implements 
+Query interface and provides meaningful implementation of either <em>Query.route(...)</em> 
+and/or 
+<em>Query.createSQLAction(SQLActionVisitor)}</em> methods. 
+So users can extend/customize queries if they need to. Custom implementations would 
+normally either create a query from a standard Cayenne set 
+and delegate the execution to it (acting as a sort of "query builder"),
+or can implement its own non-standard SQLAction.</p>
+</body>
+</html>

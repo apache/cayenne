@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<property name="defaultPackage" value="org.objectstyle.cayenne.testdo.db1"/>
+	<db-entity name="CROSSDB_M1E1">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<obj-entity name="CrossdbM1E1" className="org.objectstyle.cayenne.testdo.db1.CrossdbM1E1" dbEntityName="CROSSDB_M1E1">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="listOfM2E2" source="CROSSDB_M1E1" target="CROSSDB_M2E2" toMany="true">
+		<db-attribute-pair source="ID" target="M1E1_ID"/>
+	</db-relationship>
+	<obj-relationship name="listOfM2E2" source="CrossdbM1E1" target="CrossdbM2E2" db-relationship-path="listOfM2E2"/>
+</data-map>

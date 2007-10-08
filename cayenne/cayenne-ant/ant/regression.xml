@@ -1,0 +1,262 @@
+<?xml version="1.0"?>
+
+<!-- ================================================= -->
+<!-- Regression Test Application subproject buildfile. -->
+<!-- ================================================= -->
+<project>
+    <property name="resources.test.classgeneration" value="src/tests/resources/test-resources/ClassGeneration"/>
+    <property name="testrun.classgeneration" value="testrun/regression/ClassGeneration"/>
+	<property name="regression.dist.src" value="${dist}/src/regression"/>
+	<property name="regression.build" value="build/regression"/>
+	<property name="regression.src" value="src/regression/java"/>
+	<property environment="regression.env"/>
+    
+    <path id="agnostic-classpath">
+    	<fileset dir="${lib.dir}">
+			<include name="${bcel.jar}"/>
+		</fileset>
+		<fileset dir="${dist}/lib">
+			<include name="cayenne.jar"/>
+		</fileset>
+		<pathelement path="${regression.build}/classes"/>
+		<pathelement path="${regression.src}"/>
+		<pathelement path="${regression.env.CLASSPATH}"/>
+    </path>
+    
+    
+    <target name="use-embedded-hsqldb" unless="cayenne.test.connection">
+	    <echo message="using internal_embedded_datasource for test connection."/>
+	    <property name="cayenne.test.connection" value="internal_embedded_datasource"/>
+        <path id="classpath">
+            <path refid="agnostic-classpath"/>
+            <fileset dir="${lib.dir}">
+    			<include name="${hsqldb.jar}"/>
+    		</fileset>
+        </path>
+    </target>
+
+    <target name="use-specified-connection" if="cayenne.test.connection">
+        <path id="classpath">
+          <path refid="agnostic-classpath"/>
+        </path>
+    </target>
+
+    <!-- This is a simple property check, misspelled property can still -->
+    <!-- lead to failed connection to the test database. -->
+    <!-- dependency order is important as use-embedded-hsqldb sets the conditional -->
+    <target name="check-connection" depends="use-specified-connection,use-embedded-hsqldb">
+    </target>
+
+    <!-- ========================================== -->
+    <!-- Set of regression tests                    -->
+    <!-- ========================================== -->
+    <target name="test"
+            description="Run regression tests."
+            depends="testTemplating,testRandomDomainBuilderAndDataModificationRobot">
+    </target>
+
+    <!-- ========================================== -->
+    <!-- Test Class Generation Templating           -->
+    <!-- ========================================== -->
+    <target name="testTemplating"
+            description="Test class-generation templating."
+            depends="compile">
+                
+            <taskdef name="cgen11" classname="org.objectstyle.cayenne.tools.CayenneGenerator">
+                 <classpath refid="classpath"/>
+            </taskdef>
+            
+            <delete dir="${testrun.classgeneration}/1_1"/>
+
+            <mkdir dir="${testrun.classgeneration}/1_1/singleclass"/>
+            <mkdir dir="${testrun.classgeneration}/1_1/pairclass"/>
+
+            <cgen11 map="${resources.test.classgeneration}/testmap.map.xml"
+                version="1.1"
+                destDir="${testrun.classgeneration}/1_1/singleclass"
+                makepairs="false"
+                overwrite="true"
+                usepkgpath="false"
+                superpkg="org.objectstyle.art.auto"/>
+            <cgen11 map="${resources.test.classgeneration}/testmap.map.xml"
+                version="1.1"
+                mode="entity"
+                destDir="${testrun.classgeneration}/1_1/pairclass"
+                makepairs="true"
+                overwrite="true"
+                usepkgpath="false"
+                superpkg="org.objectstyle.art.auto"/>
+            <cgen11 map="${resources.test.classgeneration}/testmap.map.xml"
+                version="1.1"
+                destDir="${testrun.classgeneration}/1_1/singleclass"
+                makepairs="false"
+                overwrite="true"
+                usepkgpath="true"
+                superpkg="org.objectstyle.art.auto"/>
+            <cgen11 map="${resources.test.classgeneration}/testmap.map.xml"
+                version="1.1"
+                destDir="${testrun.classgeneration}/1_1/pairclass"
+                makepairs="true"
+                overwrite="true"
+                usepkgpath="true"
+                superpkg="org.objectstyle.art.auto"/>
+
+            <taskdef name="fileCompare" classname="org.objectstyle.cayenne.regression.AntFileSetCompareTask">
+                 <classpath refid="classpath"/>
+            </taskdef>
+
+            <fileCompare failOnError="true"
+                    dir1="${testrun.classgeneration}/1_1"
+                    dir2="${resources.test.classgeneration}/1_1">
+ 			    <fileset dir="${resources.test.classgeneration}/1_1"/>
+            </fileCompare>
+            
+            <fileCompare failOnError="true"
+                    dir1="${resources.test.classgeneration}/1_1"
+                    dir2="${testrun.classgeneration}/1_1">
+ 			    <fileset dir="${testrun.classgeneration}/1_1"/>
+            </fileCompare>
+            
+            <path id="classpathPlusVpp">
+                <path refid="classpath"/>
+                <fileset dir="${lib.dir}">
+    			    <include name="${vpp.jar}"/>
+    		    </fileset>
+            </path>
+            
+            <delete dir="${testrun.classgeneration}/1_2"/>
+            
+            <mkdir dir="${testrun.classgeneration}/1_2/singleclass"/>
+            <mkdir dir="${testrun.classgeneration}/1_2/pairclass"/>
+
+            <taskdef name="cgen12"
+                 loaderref="classpathPlusVpp.loader"
+                 classname="org.objectstyle.cayenne.tools.CayenneGenerator">
+                 <classpath refid="classpathPlusVpp"/>
+            </taskdef>
+        
+            <typedef name="vppconfig"
+                 classname="foundrylogic.vpp.VPPConfig"
+                 loaderref="classpathPlusVpp.loader">
+                 <classpath refid="classpathPlusVpp"/>
+            </typedef>
+            <vppconfig id="vppconfig0" >
+                <context>
+                    <property key="foo" value="bar" />
+                    <tool key="StringBuffer" className="java.lang.StringBuffer" />
+                </context>
+            </vppconfig>
+
+            <cgen12 map="${resources.test.classgeneration}/testmap.map.xml"
+                version="1.2"
+                destDir="${testrun.classgeneration}/1_2/singleclass"
+                makepairs="false"
+                overwrite="true"
+                usepkgpath="false"
+                superpkg="org.objectstyle.art.auto">
+                <config refid="vppconfig0" />
+            </cgen12>
+            
+            <cgen12 map="${resources.test.classgeneration}/testmap.map.xml"
+                version="1.2"
+                destDir="${testrun.classgeneration}/1_2/pairclass"
+                makepairs="true"
+                overwrite="true"
+                usepkgpath="false"
+                mode="entity"
+                superpkg="org.objectstyle.art.auto"/>
+            <cgen12 map="${resources.test.classgeneration}/testmap.map.xml"
+                version="1.2"
+                destDir="${testrun.classgeneration}/1_2/singleclass"
+                makepairs="false"
+                overwrite="true"
+                usepkgpath="true"
+                superpkg="org.objectstyle.art.auto"/>
+            <cgen12 map="${resources.test.classgeneration}/testmap.map.xml"
+                version="1.2"
+                destDir="${testrun.classgeneration}/1_2/pairclass"
+                makepairs="true"
+                overwrite="true"
+                usepkgpath="true"
+                superpkg="org.objectstyle.art.auto"/>
+
+            <fileCompare failOnError="true"
+                    dir1="${testrun.classgeneration}/1_2"
+                    dir2="${resources.test.classgeneration}/1_2">
+ 			    <fileset dir="${resources.test.classgeneration}/1_2"/>
+            </fileCompare>
+            
+            <fileCompare failOnError="true"
+                    dir1="${resources.test.classgeneration}/1_2"
+                    dir2="${testrun.classgeneration}/1_2">
+ 			    <fileset dir="${testrun.classgeneration}/1_2"/>
+            </fileCompare>
+            
+                
+    </target>
+
+    <!-- ========================================== -->
+    <!-- Build targets.                             -->
+    <!-- ========================================== -->
+    <target name="testRandomDomainBuilderAndDataModificationRobot"
+            description="test RandomDomainBuilder and DataModificationRobot."
+            depends="compile,check-connection">
+		<java fork="true" 
+		      failonerror="true"
+		      classname="org.objectstyle.cayenne.regression.AntMain">
+		      
+			<classpath refid="classpath"/>
+			
+			<jvmarg value="-Xms64m"/>
+			<jvmarg value="-Xmx64m"/>
+			
+			<sysproperty key="cayenne.test.connection" value="${cayenne.test.connection}"/>
+			<sysproperty key="test.new_objects_per_table" value="${regression.new_objects_per_table}"/>
+			<sysproperty key="test.delete_objects_per_table" value="${regression.delete_objects_per_table}"/>
+			<sysproperty key="test.max_references_per_table" value="${regression.max_references_per_table}"/>
+			<sysproperty key="test.max_foreign_keys_per_table" value="${regression.max_foreign_keys_per_table}"/>
+			<sysproperty key="test.loop_count" value="${regression.loop_count}"/>
+			<sysproperty key="test.max_loops_per_table" value="${regression.max_loops_per_table}"/>
+			<sysproperty key="test.schema_count" value="${regression.schema_count}"/>
+			<sysproperty key="test.commits_per_schema" value="${regression.commits_per_schema}"/>
+		</java>
+	</target>
+	
+	<target name="compile">
+		<ant antfile="build-subproj.xml" target="compile">
+			<property name="subproj" value="regression"/>
+		</ant>
+	</target>
+
+	<target name="dist-bin" depends="jar">
+        <copy file="${lib.dir}/${bcel.jar}" todir="${dist}/lib/regression"/>
+	</target>
+	
+	
+	<!-- ========================================== -->
+    <!-- Build Regression JAR file.                 -->
+    <!-- ========================================== -->
+    <target name="jar" depends="compile">
+    	<mkdir dir="${dist}/lib/regression"/>
+    	
+        <jar jarfile="${dist}/lib/regression/cayenne-regression.jar">
+ 			<fileset dir="${regression.build}/classes"/>
+			<fileset dir="${regression.src}">
+				<include name="**/*.xml"/>
+			</fileset>
+            
+            <metainf dir="doc/licenses" includes="LICENSE"/>
+            <manifest>
+               <attribute name="Built-By" value="${user.name}"/>
+               <attribute name="Extension-Name" value="org.objectstyle.cayenne"/>
+               <attribute name="Specification-Version" value="${project.name}"/>
+               <attribute name="Specification-Vendor" value="ObjectStyle.org"/>
+               <attribute name="Implementation-Vendor-Id" value="org.objectstyle"/>
+               <attribute name="Implementation-Version" value="${project.version}"/>
+               <attribute name="Implementation-Vendor" value="ObjectStyle.org"/>
+               <attribute name="Main-Class" value="org.objectstyle.cayenne.regression.Main"/>
+               <attribute name="Class-Path" value="../cayenne.jar ../cayenne-tests.jar bcel.jar"/>
+            </manifest>
+        </jar>
+    </target>
+</project>

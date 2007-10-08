@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains>
+<domain name="TestDomain">
+	<node name="test-connection"
+              datasource="test-connection.xml"
+	      adapter="org.objectstyle.cayenne.dba.oracle.OracleAdapter"
+	      factory="org.objectstyle.cayenne.conf.DriverDataSourceFactory">
+	 </node>
+</domain>
+</domains>

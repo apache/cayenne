@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+
+<!-- ========================================== -->
+<!-- Creates Mac OS X-friendly distribution.    -->
+<!-- ========================================== -->
+<project name="MacDistro">
+	
+	<property name="dist.mac" value="${dist.base}/macosx"/>
+	<property name="build.mac" value="${build}/macosx"/>
+	
+	<target name="prepare">
+		<taskdef name="jarbundler" classpathref="classpath-macosx"
+			classname="com.loomcom.ant.tasks.jarbundler.JarBundler"/>
+		
+		<mkdir dir="${dist.mac}"/>
+		<mkdir dir="${build.mac}/lib"/>
+		<mkdir dir="${build.mac}/classes"/>
+	</target>
+	
+	<target name="diskimage" depends="prepare,app">
+		<copy todir="${dist.mac}" file="${cayenne.other}/platform-macosx/src/resources/README.txt"/>
+		
+		<!-- unzip platform-neutral distro to make sure mac version is identical -->
+		<untar dest="${dist.mac}"
+			src="${dist.base}/${project.name}-${project.version}.tar.gz"
+			overwrite="false" compression="gzip">
+			
+			<!-- 
+				exclude Windows scripts, but keep modeler.jar and its deps, as it is needed 
+				for local JNDI work
+			-->
+			<patternset excludes="**/bin/*.bat"/>
+		</untar>
+		
+		<!-- must fix permissions; looks like Ant untar breaks them --> 
+		<chmod perm="ugo+rx">
+			<fileset dir="${dist.mac}/${project.name}-${project.version}/bin" includes="**/*.sh,**/*.pl"/>
+		</chmod>
+		
+		<delete>
+			<fileset dir="${dist.base}" includes="*.dmg"/>
+		</delete>
+		
+		<exec executable="hdiutil" failonerror="true">
+			<arg value="create"/>
+			<arg value="-srcfolder"/>
+			<arg value="${dist.mac}"/>
+			<arg value="-format"/>
+			<arg value="UDZO"/>
+			<arg value="-volname"/>
+			<arg value="${project.name}-${project.version}"/>
+			<arg
+				value="${dist.base}/${project.name}-${project.version}-macosx.dmg"/>
+		</exec>
+	</target>
+	
+	<target name="build-ext" depends="prepare">
+		<compile-1_4 destdir="${build.mac}/classes" srcref="srcpath-macosx"
+			classpathref="classpath-macosx"/>
+		
+		<jar jarfile="${build.mac}/lib/cayenne-modeler-macosx.jar">
+			<fileset dir="${build.mac}/classes"/>
+		</jar>
+	</target>
+	
+	<target name="app" depends="prepare,build-ext">	
+		
+		<delete dir="${dist.mac}/CayenneModeler.app"/>
+		
+		<jarbundler dir="${dist.mac}" verbose="true" name="CayenneModeler"
+			mainclass="org.objectstyle.cayenne.modeler.MacOSXMain"
+			icon="${cayenne.other}/platform-macosx/src/resources/CayenneModeler.icns"
+			bundleid="org.objectstyle.cayenne.modeler.CayenneModeler"
+			version="${project.version}"
+			infostring="CayenneModeler ${project.version}"
+			aboutmenuname="CayenneModeler" jvmversion="1.4+" signature="CAYM"
+			type="APPL" vmoptions="-Xmx500m" smalltabs="true"
+			antialiasedgraphics="true" antialiasedtext="true" liveresize="true"
+			growboxintrudes="false" screenmenu="true">
+			
+			<jarfileset dir="${dist}/lib" includes="cayenne.jar"/>
+			<jarfileset dir="${dist}/lib/modeler" includes="*.jar"/>
+			<jarfileset dir="${build.mac}/lib" includes="*.jar"/>
+		</jarbundler>
+	</target>
+</project>

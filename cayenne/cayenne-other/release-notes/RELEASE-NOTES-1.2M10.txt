@@ -1,0 +1,38 @@
+Cayenne Release Notes 1.2 M10 milestone
+Date: 01/05/2006
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://objectstyle.org/jira/secure/BrowseProject.jspa?id=10000
+
+
+Changes/New Features:
+
+* Fixed cross-platform CayenneModeler startup issue.
+
+* MacOSX CayenneModeler will now use Aqua look and feel by default. 
+  If you already used Cayenne on Mac, you may need to delete the old preferences.
+  Go to "/Users/username/.cayenne/modeler.preferences" and remve the following lines: 
+       Editor.lookAndFeel=...
+       Editor.theme=...
+       
+* New method: DataObjectUtils.objectForQuery(DataContext, Query)
+* Remote Object Persistence:
+  - added 'localObjects' to ObjectContext interface.
+  
+* SQLTemplate no longer requires users to specify whether it is selecting or not. 
+  This information is really redundant and can be determined from JDBC in runtime.
+  FrontBase note: you will need FrontBase JDBC driver newer than version 2.5.2. 
+  Older driver will not work due to this change.
+
+Other Bugs Fixed:
+
+* CayenneModeler doesn't react to change in adapter name.
+* CAY-410	Endless loop on remote notifications
+* CAY-374	Generate explicit error message instead of silently ignoring lack of support for Generated columns
+* CAY-413	DataMaps and DataNodes must be alphabetically sorted in the Modeler and cayenne.xml
+* CAY-408	cayenne.xml not found in servlet context path though it is there
+* CAY-403	Incorrect FK statement during schema generation for cross-DB relationships

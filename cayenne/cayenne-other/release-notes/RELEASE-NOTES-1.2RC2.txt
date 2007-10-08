@@ -1,0 +1,28 @@
+Cayenne Release Notes 1.2 RC2 (release candidate)
+Date: June 23, 2006
+============================================
+
+For the latest information visit project web site: 
+http://objectstyle.org/cayenne/
+
+To browse individual bug reports check out project issue tracker:
+http://issues.apache.org/cayenne/
+
+Changes:
+
+* New completely rewritten Quick Start tutorial.
+
+Bug Fixes:
+
+CAY-556	Add {excerpt} sections to all doc chapters with children
+CAY-570	Broken incremental list local cache (cayenne-rop)
+CAY-575	Peer CayenneContexts on the remote client do not synchronize changes with each other - bug in ClientChannel
+CAY-562	Modeler Class Generation Inconsistencies
+CAY-563	NPE when syncing ObjEntity w/out DbEntity
+CAY-564	dataport exclude/include filters ignored
+CAY-555	Chapter ordering problem
+CAY-566	"To Dep PK" checkbox is incorrectly checked when mapping DbRelationship
+CAY-567	Synchronizing pattern compilation block in PatternMatchNode
+CAY-571	DataRow Hessian serialization doesn't work
+CAY-572	SQLTemplate.queryWithParameters() loses cache key
+CAY-573	Deadlock involving connection pool, IncrementalFaultList, and DataRowStore

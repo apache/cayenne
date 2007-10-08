@@ -1,0 +1,152 @@
+body {
+	font-family: "Times New Roman", Times, serif;
+}
+
+
+pre {
+	padding: 8px;
+	border: 1px dashed rgb(153, 153, 153);
+	background-color: rgb(241, 241, 241);
+	font-family: "Courier New", Courier, monospace;
+	font-size: smaller;
+}
+
+
+.lcolor {
+	color: rgb(48, 127, 225);
+}
+
+
+.version {
+	color: rgb(48, 127, 225);
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+
+.codeword {
+	color: rgb(51, 51, 255);
+}
+
+
+dt {
+	font-weight: bold;
+}
+
+
+em {
+	color: rgb(102, 102, 102);
+	font-weight: bold;
+	font-style: normal;
+}
+ul.changes em {
+	color: red
+}
+
+
+table {
+	padding: 0;
+	border: thin solid #999999;
+	border-collapse: collapse;
+	text-align: center;
+}
+table th {
+	padding: 2px 4px;
+	border: thin solid #999999;
+	background-color: rgb(241, 241, 241);
+}
+table td {
+	padding: 2px 4px;
+	border: thin solid #999999;
+}
+.description {
+	text-align: left;
+}
+
+
+#container {
+	width: 90%;
+	margin: 10px auto;
+	line-height: 130%;
+	border-width: 0;
+	background-color: white;
+	color: rgb(51, 51, 51);
+}
+
+
+#top {
+	padding: 0.5em;
+	background-color: white;
+}
+#top h1 {
+	margin: 0;
+	padding: 0;
+}
+
+
+#leftnav {
+	float: left;
+	width: 170px;
+	margin: 0;
+	padding: 0.5em;
+	background-color: white;
+}
+#leftnav ul {
+	margin: 0;
+	padding: 0;
+	border: none;
+	list-style-type: none;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: inherit;	/* bold */
+}
+#leftnav a {
+	width: 170px;
+	height: 1.6em;
+	line-height: 1.6em;
+	display: block;
+	padding-left: 0.2em;
+}
+#leftnav a:link, #leftnav a:visited {
+	text-decoration: none;
+	color: rgb(102, 102, 102);
+}
+#leftnav a:hover {
+	background-color: rgb(48, 127, 225);
+	color: white;
+}
+
+
+#content {
+	max-width: 36em;
+	margin-left: 200px;
+	padding: 1em;
+	border-left: 1px solid rgb(204, 204, 204);
+	background-color: white;
+}
+#content a:link {
+	text-decoration: none;
+	color: rgb(102, 102, 102);
+}
+#content a:visited {
+	text-decoration: none;
+	color: rgb(69, 69, 69);
+}
+#content a:hover {
+	color: rgb(48, 127, 255);
+	text-decoration: underline;
+}
+#content h2:first-child {
+	margin: 0 0 0.5em;
+}
+
+
+.footer {
+	clear: both;
+	margin: 0;
+	padding: 0.5em;
+	background-color: white;
+	color: rgb(51, 51, 51);
+	text-align: center;
+	font-size: 90%;
+}
