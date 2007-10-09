@@ -40,8 +40,8 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
     protected UnitTestDomain domain;
     protected DataSetFactory dataSetFactory;
 
-    public SimpleAccessStack(CayenneResources resources,
-            DataSetFactory dataSetFactory, DataMap[] maps) throws Exception {
+    public SimpleAccessStack(CayenneResources resources, DataSetFactory dataSetFactory,
+            DataMap[] maps) throws Exception {
 
         this.dataSetFactory = dataSetFactory;
         this.resources = resources;
@@ -68,9 +68,14 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
 
         node.addDataMap(map);
 
-        // avoid using shared DataSource if there is more than one node
-        if (!domain.getDataNodes().isEmpty()) {
+        // use shared data source in all cases but the multi-node...
+
+        if (MultiNodeCase.NODE1.equals(node.getName())
+                || MultiNodeCase.NODE2.equals(node.getName())) {
             node.setDataSource(resources.createDataSource());
+        }
+        else {
+            node.setDataSource(resources.getDataSource());
         }
 
         domain.addNode(node);
