@@ -184,7 +184,7 @@ public class DataContextTest extends DataContextCase {
         q
                 .setQualifier(ExpressionFactory.matchExp(
                         "estimatedPrice",
-                        new BigDecimal(1000)));
+                        new BigDecimal(1000d)));
 
         ArtistAssets a1 = (ArtistAssets) context.performQuery(q).get(0);
         assertEquals(1, a1.getPaintingsCount().intValue());
@@ -206,7 +206,7 @@ public class DataContextTest extends DataContextCase {
         q
                 .andQualifier(ExpressionFactory.matchExp(
                         "estimatedPrice",
-                        new BigDecimal(1000)));
+                        new BigDecimal(1000d)));
         q
                 .andParentQualifier(ExpressionFactory.matchExp(
                         "toArtist.artistName",
