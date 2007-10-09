@@ -30,6 +30,9 @@ import org.apache.cayenne.access.DataNode;
  */
 public class MultiNodeCase extends CayenneCase {
 
+    static final String NODE1 = "map-db1";
+    static final String NODE2 = "map-db2";
+
     public static final String MULTINODE_ACCESS_STACK = "MultiNodeStack";
 
     protected AccessStack buildAccessStack() {
@@ -49,10 +52,10 @@ public class MultiNodeCase extends CayenneCase {
     }
 
     public DataNode getNode1() {
-        return accessStack.getDataDomain().getNode("map-db1");
+        return accessStack.getDataDomain().getNode(NODE1);
     }
 
     public DataNode getNode2() {
-        return accessStack.getDataDomain().getNode("map-db2");
+        return accessStack.getDataDomain().getNode(NODE2);
     }
 }
