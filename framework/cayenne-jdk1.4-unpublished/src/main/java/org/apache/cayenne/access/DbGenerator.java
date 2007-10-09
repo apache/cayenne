@@ -562,7 +562,7 @@ public class DbGenerator {
 
             tables.add(nextEntity);
 
-            // check if an automatic PK generation can be potentailly supported
+            // check if an automatic PK generation can be potentially supported
             // in this entity. For now simply check that the key is not propagated
             Iterator relationships = nextEntity.getRelationships().iterator();
 
