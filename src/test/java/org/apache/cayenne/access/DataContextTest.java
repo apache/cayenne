@@ -186,7 +186,9 @@ public class DataContextTest extends DataContextCase {
                         "estimatedPrice",
                         new BigDecimal(1000d)));
 
-        ArtistAssets a1 = (ArtistAssets) context.performQuery(q).get(0);
+        List results = context.performQuery(q);
+        assertEquals(1, results.size());
+        ArtistAssets a1 = (ArtistAssets) results.get(0);
         assertEquals(1, a1.getPaintingsCount().intValue());
     }
 

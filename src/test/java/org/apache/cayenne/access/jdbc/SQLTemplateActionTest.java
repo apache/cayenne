@@ -32,6 +32,7 @@ import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.QueryResult;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -65,8 +66,10 @@ public class SQLTemplateActionTest extends CayenneCase {
         bindings.put("id", new Integer(33005));
         template.setParameters(bindings);
 
+        // must ensure the right SQLTemplateAction is created
         DbAdapter adapter = getAccessStackAdapter().getAdapter();
-        SQLTemplateAction plan = new SQLTemplateAction(template, adapter);
+        SQLAction plan = adapter.getAction(template, getNode());
+        assertTrue(plan instanceof SQLTemplateAction);
 
         MockOperationObserver observer = new MockOperationObserver();
         Connection c = getConnection();
@@ -103,7 +106,7 @@ public class SQLTemplateActionTest extends CayenneCase {
         template.setParameters(bindings);
 
         DbAdapter adapter = getAccessStackAdapter().getAdapter();
-        SQLTemplateAction plan = new SQLTemplateAction(template, adapter);
+        SQLAction plan = adapter.getAction(template, getNode());
 
         MockOperationObserver observer = new MockOperationObserver();
         Connection c = getConnection();
@@ -139,7 +142,7 @@ public class SQLTemplateActionTest extends CayenneCase {
         template.setParameters(bindings);
 
         DbAdapter adapter = getAccessStackAdapter().getAdapter();
-        SQLTemplateAction plan = new SQLTemplateAction(template, adapter);
+        SQLAction plan = adapter.getAction(template, getNode());
 
         MockOperationObserver observer = new MockOperationObserver();
         Connection c = getConnection();
@@ -175,13 +178,13 @@ public class SQLTemplateActionTest extends CayenneCase {
         template.setParameters(bindings);
 
         DbAdapter adapter = getAccessStackAdapter().getAdapter();
-        SQLTemplateAction action = new SQLTemplateAction(template, adapter);
+        SQLAction plan = adapter.getAction(template, getNode());
 
         MockOperationObserver observer = new MockOperationObserver();
         Connection c = getConnection();
 
         try {
-            action.performAction(c, observer);
+            plan.performAction(c, observer);
         }
         finally {
             c.close();
@@ -208,10 +211,8 @@ public class SQLTemplateActionTest extends CayenneCase {
         bindings.put("dob", new Date(System.currentTimeMillis()));
         template.setParameters(bindings);
 
-        SQLTemplateAction action = new SQLTemplateAction(
-                template,
-                getAccessStackAdapter().getAdapter());
-        assertSame(getAccessStackAdapter().getAdapter(), action.getAdapter());
+        DbAdapter adapter = getAccessStackAdapter().getAdapter();
+        SQLAction action = adapter.getAction(template, getNode());
 
         Connection c = getConnection();
         try {
@@ -245,14 +246,13 @@ public class SQLTemplateActionTest extends CayenneCase {
 
         SQLTemplate template = new SQLTemplate(Object.class, "delete from ARTIST");
 
-        SQLTemplateAction plan = new SQLTemplateAction(template, getAccessStackAdapter()
-                .getAdapter());
-        assertSame(getAccessStackAdapter().getAdapter(), plan.getAdapter());
+        DbAdapter adapter = getAccessStackAdapter().getAdapter();
+        SQLAction action = adapter.getAction(template, getNode());
 
         Connection c = getConnection();
         try {
             MockOperationObserver observer = new MockOperationObserver();
-            plan.performAction(c, observer);
+            action.performAction(c, observer);
 
             int[] batches = observer.countsForQuery(template);
             assertNotNull(batches);
@@ -282,9 +282,11 @@ public class SQLTemplateActionTest extends CayenneCase {
                 bindings1, bindings2
         });
 
-        SQLTemplateAction action = new SQLTemplateAction(
-                template,
-                getAccessStackAdapter().getAdapter());
+        DbAdapter adapter = getAccessStackAdapter().getAdapter();
+        SQLAction genericAction = adapter.getAction(template, getNode());
+        assertTrue(genericAction instanceof SQLTemplateAction);
+        SQLTemplateAction action = (SQLTemplateAction) genericAction;
+
         assertSame(getAccessStackAdapter().getAdapter(), action.getAdapter());
         assertSame(template, action.getQuery());
 
