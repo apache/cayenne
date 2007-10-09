@@ -41,7 +41,7 @@ public class SQLiteAdapter extends JdbcAdapter {
     public SQLiteAdapter() {
         setSupportsFkConstraints(false);
         this.setSupportsUniqueConstraints(false);
-        this.setSupportsGeneratedKeys(true);
+        this.setSupportsGeneratedKeys(false);
     }
 
     protected void configureExtendedTypes(ExtendedTypeMap map) {
