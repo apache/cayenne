@@ -17,6 +17,7 @@
 	<bean id="DerbyAdapter" class="org.apache.cayenne.dba.derby.DerbyAdapter"/>
 	<bean id="FrontBaseAdapter" class="org.apache.cayenne.dba.frontbase.FrontBaseAdapter"/>
 	<bean id="IngresAdapter" class="org.apache.cayenne.dba.ingres.IngresAdapter"/>
+	<bean id="SQLiteAdapter" class="org.apache.cayenne.dba.sqlite.SQLiteAdapter"/>
 
 	<!-- ======================================= -->
 	<!-- Access Stack Adapters -->
@@ -56,6 +57,9 @@
 	</bean>
 	<bean id="IngresStackAdapter" class="org.apache.cayenne.unit.IngresStackAdapter">
 		<constructor-arg><ref bean="IngresAdapter"/></constructor-arg>
+	</bean>
+	<bean id="SQLiteStackAdapter" class="org.apache.cayenne.unit.SQLiteStackAdapter">
+		<constructor-arg><ref bean="SQLiteAdapter"/></constructor-arg>
 	</bean>
 	
 	<!-- ======================================= -->
@@ -187,6 +191,7 @@
 				<entry key="org.apache.cayenne.dba.derby.DerbyAdapter"><ref bean="DerbyStackAdapter"/></entry>
 				<entry key="org.apache.cayenne.dba.frontbase.FrontBaseAdapter"><ref bean="FrontBaseStackAdapter"/></entry>
 				<entry key="org.apache.cayenne.dba.ingres.IngresAdapter"><ref bean="IngresStackAdapter"/></entry>
+				<entry key="org.apache.cayenne.dba.sqlite.SQLiteAdapter"><ref bean="SQLiteStackAdapter"/></entry>
 			</map>
 		</constructor-arg>
 	</bean>
