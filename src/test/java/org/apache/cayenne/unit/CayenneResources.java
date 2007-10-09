@@ -31,6 +31,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.conf.ConnectionProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.conn.PoolDataSource;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
@@ -86,8 +87,6 @@ public class CayenneResources implements BeanFactoryAware {
                 CayenneResources.class);
 
         resources.setConnectionKey(System.getProperty(CONNECTION_NAME_KEY));
-
-        
 
         return resources;
     }
@@ -297,17 +296,29 @@ public class CayenneResources implements BeanFactoryAware {
     }
 
     public DataSource createDataSource() {
+
         try {
-            // data source
-            PoolDataSource poolDS = new PoolDataSource(
-                    connectionInfo.getJdbcDriver(),
-                    connectionInfo.getDataSourceUrl());
-            return new PoolManager(
-                    poolDS,
-                    1,
-                    1,
-                    connectionInfo.getUserName(),
-                    connectionInfo.getPassword());
+            AccessStackAdapter adapter = getAccessStackAdapter(Class
+                    .forName(connectionInfo.getAdapterClassName()));
+
+            if (adapter.usePooledDataSource()) {
+                PoolDataSource poolDS = new PoolDataSource(
+                        connectionInfo.getJdbcDriver(),
+                        connectionInfo.getDataSourceUrl());
+                return new PoolManager(
+                        poolDS,
+                        1,
+                        1,
+                        connectionInfo.getUserName(),
+                        connectionInfo.getPassword());
+            }
+            else {
+                return new DriverDataSource(
+                        connectionInfo.getJdbcDriver(),
+                        connectionInfo.getDataSourceUrl(),
+                        connectionInfo.getUserName(),
+                        connectionInfo.getPassword());
+            }
         }
         catch (Exception ex) {
             logObj.error("Can not create shared data source.", ex);

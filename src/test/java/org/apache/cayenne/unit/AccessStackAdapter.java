@@ -62,6 +62,10 @@ public class AccessStackAdapter {
         }
         this.adapter = adapter;
     }
+    
+    public boolean usePooledDataSource() {
+        return true;
+    }
 
     public DbAdapter getAdapter() {
         return adapter;
