@@ -32,6 +32,8 @@ import org.apache.cayenne.access.types.UtilDateType;
  * @author Andrus Adamchik
  * @since 3.0
  */
+// TODO: andrus 10/10/2007 - most of this is bogus... see http://www.zentus.com/sqlitejdbc/usage.html 
+// for how dates should be handled (without relying on the driver).
 class SQLiteDateType extends UtilDateType {
 
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {

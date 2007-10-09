@@ -16,21 +16,35 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit;
+package org.apache.cayenne.dba.sqlite;
 
-import org.apache.cayenne.dba.DbAdapter;
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
 
-public class SQLiteStackAdapter extends AccessStackAdapter {
+import org.apache.cayenne.access.types.AbstractType;
+import org.apache.cayenne.access.types.DefaultType;
 
-    public SQLiteStackAdapter(DbAdapter adapter) {
-        super(adapter);
+/**
+ * This ExtendedType is used by SQLite as often the types of columns of the result sets
+ * can't be determined on the fly, and {@link DefaultType} for Object class throws on
+ * NULLs.
+ * 
+ * @since 3.0
+ * @author Andrus Adamchik
+ */
+class SQLiteObjectType extends AbstractType {
+
+    public String getClassName() {
+        return Object.class.getName();
     }
-    
-    public boolean supportsFKConstraints() {
-        return false;
+
+    public Object materializeObject(CallableStatement rs, int index, int type)
+            throws Exception {
+        return rs.getObject(index);
     }
-    
-    public boolean supportsColumnTypeReengineering() {
-        return false;
+
+    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+        return rs.getObject(index);
     }
+
 }
