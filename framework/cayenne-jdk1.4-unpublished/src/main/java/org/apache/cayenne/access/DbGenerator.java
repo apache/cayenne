@@ -422,9 +422,13 @@ public class DbGenerator {
 
                     DbRelationship reverse = rel.getReverseRelationship();
                     if (reverse != null && !reverse.isToMany() && !reverse.isToPK()) {
-                        list.add(getAdapter().createUniqueConstraint(
+
+                        String unique = getAdapter().createUniqueConstraint(
                                 (DbEntity) rel.getSourceEntity(),
-                                rel.getSourceAttributes()));
+                                rel.getSourceAttributes());
+                        if (unique != null) {
+                            list.add(unique);
+                        }
                     }
                 }
 
