@@ -49,6 +49,7 @@ public class SQLiteAdapter extends JdbcAdapter {
         map.registerType(new SQLiteDateType());
         map.registerType(new SQLiteBigDecimalType());
         map.registerType(new SQLiteFloatType());
+        map.registerType(new SQLiteByteArrayType());
     }
 
     public String createFkConstraint(DbRelationship rel) {
