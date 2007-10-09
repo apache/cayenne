@@ -20,6 +20,7 @@ package org.apache.cayenne.dba.sqlite;
 
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.apache.cayenne.access.types.AbstractType;
@@ -37,17 +38,17 @@ class SQLiteBigDecimalType extends AbstractType {
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         // BigDecimals are not supported by the zentus driver... in addition the driver
-        // throws an NPE on 'getDouble' if the value is null, so must read it as an
-        // object.
-        Number n = (Number) rs.getObject(index);
-        return (n == null) ? null : new BigDecimal(n.doubleValue());
+        // throws an NPE on 'getDouble' if the value is null, and also there are rounding
+        // errors. So will read it as a String...
+        String string = rs.getString(index);
+        return (string == null) ? null : new BigDecimal(string);
     }
 
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         // BigDecimals are not supported by the zentus driver... in addition the driver
-        // throws an NPE on 'getDouble' if the value is null, so must read it as an
-        // object.
-        Number n = (Number) rs.getObject(index);
-        return (n == null) ? null : new BigDecimal(n.doubleValue());
+        // throws an NPE on 'getDouble' if the value is null, and also there are rounding
+        // errors. So will read it as a String...
+        String string = rs.getString(index);
+        return (string == null) ? null : new BigDecimal(string);
     }
 }
