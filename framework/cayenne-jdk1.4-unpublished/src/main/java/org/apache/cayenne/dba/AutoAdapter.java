@@ -42,6 +42,7 @@ import org.apache.cayenne.dba.mysql.MySQLSniffer;
 import org.apache.cayenne.dba.openbase.OpenBaseSniffer;
 import org.apache.cayenne.dba.oracle.OracleSniffer;
 import org.apache.cayenne.dba.postgres.PostgresSniffer;
+import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.map.DbAttribute;
@@ -65,7 +66,7 @@ public class AutoAdapter implements DbAdapter {
             new MySQLSniffer(), new PostgresSniffer(), new OracleSniffer(),
             new SQLServerSniffer(), new HSQLDBSniffer(), new DB2Sniffer(),
             new SybaseSniffer(), new DerbySniffer(), new OpenBaseSniffer(),
-            new FrontBaseSniffer(), new IngresSniffer()
+            new FrontBaseSniffer(), new IngresSniffer(), new SQLiteSniffer()
     };
 
     /**

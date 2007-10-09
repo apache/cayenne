@@ -16,21 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit;
+package org.apache.cayenne.dba.sqlite;
+
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.DbAdapterFactory;
 
-public class SQLiteStackAdapter extends AccessStackAdapter {
+/**
+ * Detects SQLite database from JDBC metadata.
+ * 
+ * @since 3.0
+ * @author Andrus Adamchik
+ */
+public class SQLiteSniffer implements DbAdapterFactory {
 
-    public SQLiteStackAdapter(DbAdapter adapter) {
-        super(adapter);
-    }
-    
-    public boolean supportsFKConstraints() {
-        return false;
-    }
-    
-    public boolean supportsColumnTypeReengineering() {
-        return false;
+    public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
+        String dbName = md.getDatabaseProductName();
+        if (dbName == null || dbName.toUpperCase().indexOf("SQLITE") < 0) {
+            return null;
+        }
+
+        return new SQLiteAdapter();
     }
 }

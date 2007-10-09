@@ -180,6 +180,14 @@ public class AccessStackAdapter {
 
         return true;
     }
+    
+    public boolean supportsFKConstraints() {
+        return true;
+    }
+    
+    public boolean supportsColumnTypeReengineering() {
+        return true;
+    }
 
     /**
      * Returns true if the target database has support for large objects (BLOB, CLOB).
