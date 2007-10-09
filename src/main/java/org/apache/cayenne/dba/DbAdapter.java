@@ -99,12 +99,13 @@ public interface DbAdapter {
 
     /**
      * Returns a SQL string that can be used to create database table corresponding to
-     * <code>ent</code> parameter.
+     * <code>entity</code> parameter.
      */
     public String createTable(DbEntity entity);
 
     /**
-     * Returns a DDL string to create a unique constraint over a set of columns.
+     * Returns a DDL string to create a unique constraint over a set of columns, or null 
+     * if the unique constraints are not supported.
      * 
      * @since 1.1
      */
