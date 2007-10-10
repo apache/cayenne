@@ -37,4 +37,8 @@ public class SQLiteStackAdapter extends AccessStackAdapter {
     public boolean supportsCaseSensitiveLike() {
         return false;
     }
+    
+    public boolean supportsAllAnySome() {
+        return false;
+    }
 }

@@ -60,6 +60,10 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
     }
     
     public void testAll() throws Exception {
+        if(!getAccessStackAdapter().supportsAllAnySome()) {
+            return;
+        }
+        
         createTestData("prepare");
 
         String ejbql = "SELECT p FROM Painting p"
@@ -84,6 +88,10 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
     }
     
     public void testAny() throws Exception {
+        if(!getAccessStackAdapter().supportsAllAnySome()) {
+            return;
+        }
+        
         createTestData("prepare");
 
         String ejbql = "SELECT p FROM Painting p"
@@ -109,6 +117,10 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
     }
     
     public void testSome() throws Exception {
+        if(!getAccessStackAdapter().supportsAllAnySome()) {
+            return;
+        }
+        
         createTestData("prepare");
 
         String ejbql = "SELECT p FROM Painting p"
