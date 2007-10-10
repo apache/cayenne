@@ -33,4 +33,8 @@ public class SQLiteStackAdapter extends AccessStackAdapter {
     public boolean supportsColumnTypeReengineering() {
         return false;
     }
+    
+    public boolean supportsCaseSensitiveLike() {
+        return false;
+    }
 }
