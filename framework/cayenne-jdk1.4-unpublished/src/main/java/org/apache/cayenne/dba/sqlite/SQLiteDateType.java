@@ -102,35 +102,43 @@ class SQLiteDateType extends UtilDateType {
     }
 
     protected Date getTimestamp(String string) throws SQLException {
-        synchronized (timestampFormat) {
-            try {
+        try {
+            synchronized (timestampFormat) {
                 return timestampFormat.parse(string);
             }
-            catch (ParseException e) {
+        }
+        catch (ParseException e) {
+            // also try date format...
+            try {
+                synchronized (dateFormat) {
+                    return dateFormat.parse(string);
+                }
+            }
+            catch (ParseException e1) {
                 throw new SQLException("Unparsable timestamp string: " + string);
             }
         }
     }
 
     protected Date getDate(String string) throws SQLException {
-        synchronized (dateFormat) {
-            try {
+        try {
+            synchronized (dateFormat) {
                 return dateFormat.parse(string);
             }
-            catch (ParseException e) {
-                throw new SQLException("Unparsable date string: " + string);
-            }
+        }
+        catch (ParseException e) {
+            throw new SQLException("Unparsable date string: " + string);
         }
     }
 
     protected Date getTime(String string) throws SQLException {
-        synchronized (timeFormat) {
-            try {
+        try {
+            synchronized (timeFormat) {
                 return timeFormat.parse(string);
             }
-            catch (ParseException e) {
-                throw new SQLException("Unparsable time string: " + string);
-            }
+        }
+        catch (ParseException e) {
+            throw new SQLException("Unparsable time string: " + string);
         }
     }
 
