@@ -73,7 +73,7 @@ public class CalendarType implements ExtendedType {
                 val = rs.getTime(index);
                 break;
             default:
-                // here the driver can "surpirse" us
+                // here the driver can "surprise" us
                 // check the type of returned value...
                 Object object = rs.getObject(index);
 
