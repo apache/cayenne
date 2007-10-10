@@ -89,7 +89,7 @@ public class Application {
         return instance;
     }
 
-    // static methods that should probabaly go away eventually...
+    // static methods that should probably go away eventually...
 
     public static CayenneModelerFrame getFrame() {
         return (CayenneModelerFrame) getInstance().getFrameController().getView();
