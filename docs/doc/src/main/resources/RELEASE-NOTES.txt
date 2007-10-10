@@ -38,6 +38,7 @@ CAY-857 Deprecate derived DbEntity and all associated API's - schedule for remov
 CAY-859 Cayenne agent misses JPA entity classes that were loaded before their PersistenceUnits
 CAY-867 Special exception for accessing previously shutdown domain
 CAY-869 CayenneModeler free-text search
+CAY-875 DbAdapter for SQLite
 
 Bug Fixes Since M1:
 
