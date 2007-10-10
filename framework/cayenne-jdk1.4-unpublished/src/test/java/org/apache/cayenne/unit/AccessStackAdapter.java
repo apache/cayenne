@@ -150,6 +150,10 @@ public class AccessStackAdapter {
     public boolean supportsEqualNullSyntax() {
         return true;
     }
+    
+    public boolean supportsAllAnySome() {
+        return true;
+    }
 
     /**
      * Returns whether the DB supports a TRIM function for an arbitrary character.
