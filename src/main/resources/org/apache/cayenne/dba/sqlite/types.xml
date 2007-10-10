@@ -20,10 +20,10 @@
 -->
 
 <!-- 
-SQLite types mapping
+SQLite types mapping. 
 
-Driver url:
-http://www.zentus.com/sqlitejdbc/
+Types is something really fuzzy in SQLite:
+http://sqlite.org/datatype3.html
 -->
 
 <types>
@@ -34,16 +34,16 @@ http://www.zentus.com/sqlitejdbc/
        <db-type name="BIGINT"/>
    </jdbc-type>
    <jdbc-type name="BINARY">
-       <db-type name="CHAR FOR BIT DATA"/>
+       <db-type name="BINARY"/>
    </jdbc-type>
    <jdbc-type name="BIT">
-       <db-type name="SMALLINT"/>
+       <db-type name="INTEGER"/>
    </jdbc-type>
    <jdbc-type name="BLOB">
        <db-type name="BLOB"/>
    </jdbc-type>
    <jdbc-type name="BOOLEAN">
-       <db-type name="SMALLINT"/>
+       <db-type name="INTEGER"/>
    </jdbc-type>
    <jdbc-type name="CHAR">
        <db-type name="CHAR"/>
@@ -61,10 +61,10 @@ http://www.zentus.com/sqlitejdbc/
        <db-type name="DECIMAL"/>
    </jdbc-type>
    <jdbc-type name="DOUBLE">
-       <db-type name="DOUBLE PRECISION"/>
+       <db-type name="DOUBLE"/>
    </jdbc-type>
    <jdbc-type name="FLOAT">
-       <db-type name="DOUBLE PRECISION"/>
+       <db-type name="REAL"/>
    </jdbc-type>
    <jdbc-type name="INTEGER">
        <db-type name="INTEGER"/>
@@ -73,13 +73,13 @@ http://www.zentus.com/sqlitejdbc/
        <db-type name="JAVA_OBJECT"/>
    </jdbc-type>
    <jdbc-type name="LONGVARBINARY">
-       <db-type name="LONG VARCHAR FOR BIT DATA"/>
+       <db-type name="LONGVARBINARY"/>
    </jdbc-type>
    <jdbc-type name="LONGVARCHAR">
-       <db-type name="LONG VARCHAR"/>
+       <db-type name="LONGVARCHAR"/>
    </jdbc-type>
    <jdbc-type name="NUMERIC">
-       <db-type name="DECIMAL"/>
+       <db-type name="NUMERIC"/>
    </jdbc-type>
    <jdbc-type name="OTHER">
        <db-type name="OTHER"/>
@@ -103,10 +103,10 @@ http://www.zentus.com/sqlitejdbc/
        <db-type name="TIMESTAMP"/>
    </jdbc-type>
    <jdbc-type name="TINYINT">
-       <db-type name="SMALLINT"/>
+       <db-type name="TINYINT"/>
    </jdbc-type>
    <jdbc-type name="VARBINARY">
-       <db-type name="VARCHAR FOR BIT DATA"/>
+       <db-type name="VARBINARY"/>
    </jdbc-type>
    <jdbc-type name="VARCHAR">
        <db-type name="VARCHAR"/>

@@ -244,7 +244,7 @@ public class SQLTemplateActionTest extends CayenneCase {
     public void testExecuteUpdateNoParameters() throws Exception {
         getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
 
-        SQLTemplate template = new SQLTemplate(Object.class, "delete from ARTIST");
+        SQLTemplate template = new SQLTemplate(Object.class, "delete from ARTIST where ARTIST_NAME like 'A%'");
 
         DbAdapter adapter = getAccessStackAdapter().getAdapter();
         SQLAction action = adapter.getAction(template, getNode());
