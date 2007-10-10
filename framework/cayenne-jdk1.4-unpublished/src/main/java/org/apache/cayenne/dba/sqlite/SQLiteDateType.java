@@ -20,70 +20,126 @@ package org.apache.cayenne.dba.sqlite;
 
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.cayenne.access.types.UtilDateType;
 
 /**
- * Implements special date handling for SQLite. See
- * http://www.zentus.com/sqlitejdbc/usage.html for details.
+ * Implements special date handling for SQLite. As SQLite has no native date type and the
+ * JDBC driver does not standardize it either.
  * 
  * @author Andrus Adamchik
  * @since 3.0
  */
-// TODO: andrus 10/10/2007 - most of this is bogus... see http://www.zentus.com/sqlitejdbc/usage.html 
-// for how dates should be handled (without relying on the driver).
+// see http://www.zentus.com/sqlitejdbc/usage.html for some examples of the SQLite date
+// handling fun.
 class SQLiteDateType extends UtilDateType {
+
+    private DateFormat timestampFormat;
+    private DateFormat dateFormat;
+    private DateFormat timeFormat;
+
+    public SQLiteDateType() {
+        timestampFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        timeFormat = new SimpleDateFormat("kk:mm:ss");
+    }
 
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
-        Date val = null;
+        String string = rs.getString(index);
+
+        if (string == null) {
+            return null;
+        }
+
+        long ts = getLongTimestamp(string);
+        if (ts >= 0) {
+            return new Date(ts);
+        }
 
         switch (type) {
             case Types.TIMESTAMP:
-                val = rs.getTimestamp(index);
-                break;
+                return getTimestamp(string);
             case Types.DATE:
-                val = rs.getDate(index);
-                break;
+                return getDate(string);
             case Types.TIME:
-                val = rs.getTime(index);
-                break;
+                return getTime(string);
             default:
-                // here instead of failing like the super does, simply attempt to convert
-                // to timestamp (note that 'getObject' may return a String... SQLite is
-                // not very robust in type conversions.
-                val = rs.getTimestamp(index);
-                break;
+                return getTimestamp(string);
         }
-
-        return (rs.wasNull()) ? null : new Date(val.getTime());
     }
 
-    public Object materializeObject(CallableStatement cs, int index, int type)
+    public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
-        Object val = null;
+
+        String string = rs.getString(index);
+
+        if (string == null) {
+            return null;
+        }
+
+        long ts = getLongTimestamp(string);
+        if (ts >= 0) {
+            return new Date(ts);
+        }
 
         switch (type) {
             case Types.TIMESTAMP:
-                val = cs.getTimestamp(index);
-                break;
+                return getTimestamp(string);
             case Types.DATE:
-                val = cs.getDate(index);
-                break;
+                return getDate(string);
             case Types.TIME:
-                val = cs.getTime(index);
-                break;
+                return getTime(string);
             default:
-                // here instead of failing like the super does, simply attempt to convert
-                // to timestamp (note that 'getObject' may return a String... SQLite is
-                // not very robust in type conversions.
-                val = cs.getTimestamp(index);
-                break;
+                return getTimestamp(string);
         }
+    }
 
-        return (cs.wasNull()) ? null : new java.util.Date(((java.util.Date) val)
-                .getTime());
+    protected Date getTimestamp(String string) throws SQLException {
+        synchronized (timestampFormat) {
+            try {
+                return timestampFormat.parse(string);
+            }
+            catch (ParseException e) {
+                throw new SQLException("Unparsable timestamp string: " + string);
+            }
+        }
+    }
+
+    protected Date getDate(String string) throws SQLException {
+        synchronized (dateFormat) {
+            try {
+                return dateFormat.parse(string);
+            }
+            catch (ParseException e) {
+                throw new SQLException("Unparsable date string: " + string);
+            }
+        }
+    }
+
+    protected Date getTime(String string) throws SQLException {
+        synchronized (timeFormat) {
+            try {
+                return timeFormat.parse(string);
+            }
+            catch (ParseException e) {
+                throw new SQLException("Unparsable time string: " + string);
+            }
+        }
+    }
+
+    protected long getLongTimestamp(String string) {
+        try {
+            return Long.parseLong(string);
+        }
+        catch (NumberFormatException e) {
+            return -1;
+        }
     }
 }
