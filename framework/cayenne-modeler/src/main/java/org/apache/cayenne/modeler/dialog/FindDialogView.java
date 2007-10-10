@@ -55,7 +55,7 @@ public class FindDialogView extends JDialog {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         if (objEntityNames.isEmpty() && dbEntityNames.isEmpty() && attrNames.isEmpty() && relatNames.isEmpty()) {
-            panel.add(new JLabel("No matched entities found!"));
+            panel.add(new JLabel("Nothing found!"));
         } else {
             panel.add(createResultPanel(
                     objEntityNames, CellRenderers.iconForObject(new ObjEntity())));
@@ -71,13 +71,13 @@ public class FindDialogView extends JDialog {
         okButton = new JButton("OK");
         okPanel.add(okButton);
 
-        JComponent container = (JComponent) getContentPane();
-        container.setLayout(new BorderLayout());
-        container.add(new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
-        container.add(okPanel, BorderLayout.SOUTH);
+        JComponent contentPane = (JComponent) getContentPane();
+        contentPane.setLayout(new BorderLayout());
+        contentPane.add(new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+        contentPane.add(okPanel, BorderLayout.SOUTH);
 
-        container.setPreferredSize(new Dimension(400, 325));
-        setTitle("Found entities");
+        contentPane.setPreferredSize(new Dimension(400, 325));
+        setTitle("Search results");
     }
 
     private JPanel createResultPanel(Map names, Icon icon) {

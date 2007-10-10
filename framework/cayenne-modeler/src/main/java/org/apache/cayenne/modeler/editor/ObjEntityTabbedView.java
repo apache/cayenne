@@ -26,10 +26,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
@@ -51,6 +48,8 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         ObjRelationshipDisplayListener, ObjAttributeDisplayListener {
 
     protected ProjectController mediator;
+
+    protected Component entityPanel;
     protected ObjEntityRelationshipTab relationshipsPanel;
     protected ObjEntityAttributeTab attributesPanel;
 
@@ -68,8 +67,8 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
 
-        ObjEntityTab entityPanel = new ObjEntityTab(mediator);
-        addTab("Entity", new JScrollPane(entityPanel));
+        entityPanel = new JScrollPane(new ObjEntityTab(mediator));
+        addTab("Entity", entityPanel);
         
         attributesPanel = new ObjEntityAttributeTab(mediator);
         addTab("Attributes", attributesPanel);
@@ -105,6 +104,14 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
     }
 
     public void currentObjEntityChanged(EntityDisplayEvent e) {
+        Entity entity = e.getEntity();
+        if (e.isSearched() && entity instanceof ObjEntity) {
+            if (getSelectedComponent() != entityPanel) {
+                setSelectedComponent(entityPanel);
+                entityPanel.setVisible(true);
+            }
+        }
+
         resetRemoveButtons();
         setVisible(e.getEntity() != null);
     }

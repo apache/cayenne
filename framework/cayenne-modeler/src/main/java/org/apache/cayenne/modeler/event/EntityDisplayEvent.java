@@ -33,6 +33,9 @@ import org.apache.cayenne.map.Entity;
 public class EntityDisplayEvent extends DataMapDisplayEvent {
 	protected Entity entity;
 
+    /** True if the event is generated when an entity is beeing searched for */
+    protected boolean searched;
+
 	/** True if different from current entity */
 	protected boolean entityChanged = true;
 	protected boolean unselectAttributes;
@@ -100,4 +103,15 @@ public class EntityDisplayEvent extends DataMapDisplayEvent {
 	public void setEntity(Entity entity) {
 		this.entity = entity;
 	}
+
+    /**
+     * Sets the searched.
+     * @param searched
+     */
+    public void setSearched(boolean searched) {
+        this.searched = searched;
+    }
+    public boolean isSearched() {
+        return searched;
+    }
 }

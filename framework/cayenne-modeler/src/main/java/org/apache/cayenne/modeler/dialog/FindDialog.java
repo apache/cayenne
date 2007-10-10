@@ -32,6 +32,7 @@ import org.apache.cayenne.modeler.*;
 import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.access.DataDomain;
 
@@ -84,7 +85,7 @@ public class FindDialog extends CayenneController {
         makeCloseableOnEscape();
 
         view.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        view.setModal(false);
+        view.setModal(true);
         view.setVisible(true);
     }
 
@@ -94,7 +95,6 @@ public class FindDialog extends CayenneController {
 
     protected void initBindings() {
         view.getOkButton().addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 view.dispose();
             }
@@ -111,20 +111,30 @@ public class FindDialog extends CayenneController {
         private EditorView editor = ((CayenneModelerFrame) application.getFrameController().getView()).getView();
 
         public void actionPerformed(ActionEvent e) {
-            Object[] path = (Object[]) paths.get(((FindDialogView.EntityButtonModel) ((JButton) e.getSource()).getModel()).getIndex().intValue());
+            JButton source = (JButton) e.getSource();
 
+            Object[] path = (Object[]) paths.get(((FindDialogView.EntityButtonModel) source.getModel()).getIndex().intValue());
 
-            if(path[path.length - 1] instanceof ObjEntity || path[path.length - 1] instanceof DbEntity)
-                /**
-                 * Make selection in a project tree, open correspondent entity tab.
-                 */
+            if(path[path.length - 1] instanceof Entity) {
+
+                /** Make selection in a project tree, open correspondent entity tab */
                 editor.getProjectTreeView().getSelectionModel().addSelectionPath(buildTreePath(path));
+                EntityDisplayEvent event = new EntityDisplayEvent(
+                        editor.getProjectTreeView(),
+                        (Entity) path[path.length - 1],
+                        (DataMap) path[path.length - 2],
+                        (DataDomain) path[path.length - 3]);
+                event.setSearched(true);
 
+                if (path[path.length - 1] instanceof ObjEntity)
+                    editor.getObjDetailView().currentObjEntityChanged(event);
+                if (path[path.length - 1] instanceof DbEntity)
+                    editor.getDbDetailView().currentDbEntityChanged(event);
+            }
 
             if(path[path.length - 1] instanceof Attribute || path[path.length - 1] instanceof Relationship) {
-                /**
-                 * Make selection in a project tree, open correspondent attributes tab.
-                 */
+
+                /** Make selection in a project tree, open correspondent attributes tab */
                 Object[] o = new Object[path.length - 1];
                 for(int i = 0; i < path.length - 1; i++)
                     o[i] = path[i];
@@ -133,46 +143,49 @@ public class FindDialog extends CayenneController {
 
                 if (path[path.length - 1] instanceof DbAttribute) {
                     AttributeDisplayEvent event = new AttributeDisplayEvent(
-                            editor.getDbDetailView(),
+                            editor.getProjectTreeView(),
                             (Attribute) path[path.length - 1],
                             (Entity) path[path.length - 2],
                             (DataMap) path[path.length - 3],
                             (DataDomain) path[path.length - 4]);
-
-                    ((CayenneModelerController) parent).getProjectController().fireDbAttributeDisplayEvent(event);
+                    event.setSearched(true);
+                    editor.getDbDetailView().currentDbAttributeChanged(event);
                 }
 
                 if (path[path.length - 1] instanceof ObjAttribute) {
                     AttributeDisplayEvent event = new AttributeDisplayEvent(
-                            editor.getObjDetailView(),
+                            editor.getProjectTreeView(),
                             (Attribute) path[path.length - 1],
                             (Entity) path[path.length - 2],
                             (DataMap) path[path.length - 3],
                             (DataDomain) path[path.length - 4]);
-                    ((CayenneModelerController) parent).getProjectController().fireObjAttributeDisplayEvent(event);
+                    event.setSearched(true);
+                    editor.getObjDetailView().currentObjAttributeChanged(event);
                 }
 
                 if (path[path.length - 1] instanceof DbRelationship) {
                     RelationshipDisplayEvent event = new RelationshipDisplayEvent(
-                            editor.getDbDetailView(),
+                            editor.getProjectTreeView(),
                             (Relationship) path[path.length - 1],
                             (Entity) path[path.length - 2],
                             (DataMap) path[path.length - 3],
                             (DataDomain) path[path.length - 4]
                     );
-                    ((CayenneModelerController) parent).getProjectController().fireDbRelationshipDisplayEvent(event);
+                    event.setSearched(true);
+                    editor.getDbDetailView().currentDbRelationshipChanged(event);
                 }
             }
 
                 if (path[path.length - 1] instanceof ObjRelationship) {
                     RelationshipDisplayEvent event = new RelationshipDisplayEvent(
-                            editor.getObjDetailView(),
+                            editor.getProjectTreeView(),
                             (Relationship) path[path.length - 1],
                             (Entity) path[path.length - 2],
                             (DataMap) path[path.length - 3],
                             (DataDomain) path[path.length - 4]
                     );
-                    ((CayenneModelerController) parent).getProjectController().fireObjRelationshipDisplayEvent(event);
+                    event.setSearched(true);
+                    editor.getObjDetailView().currentObjRelationshipChanged(event);
                 }
         }
 

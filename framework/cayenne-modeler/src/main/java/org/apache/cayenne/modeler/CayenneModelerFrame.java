@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.AWTEventListener;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.modeler.action.AboutAction;
@@ -215,16 +216,11 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolBar.add(getAction(NavigateBackwardAction.getActionName()).buildButton());
         toolBar.add(getAction(NavigateForwardAction.getActionName()).buildButton());
 
-        toolBar.addSeparator();
-
-        JPanel east = new JPanel();
+        JPanel east = new JPanel(new BorderLayout());   // is used to place search feature components the most right on a toolbar  
         final JTextField findField = new JTextField(10);
         findField.setAction(getAction(FindAction.getActionName()));
         JLabel findLabel = new JLabel("Search:");
         findLabel.setLabelFor(findField);
-        east.add(findLabel);
-        east.add(findField);
-        toolBar.add(east, BorderLayout.EAST);
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
             public void eventDispatched(AWTEvent event) {
                 if (event instanceof KeyEvent) {
@@ -234,6 +230,12 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
                 }
             }
         }, AWTEvent.KEY_EVENT_MASK);
+        JPanel box = new JPanel();  // is used to place label and text field one after another
+        box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
+        box.add(findLabel);
+        box.add(findField);
+        east.add(box, BorderLayout.EAST);
+        toolBar.add(east);
 
         getContentPane().add(toolBar, BorderLayout.NORTH);
     }

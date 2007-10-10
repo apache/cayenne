@@ -765,6 +765,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                     (DataDomain) data[data.length - 3]);
             mediator.fireQueryDisplayEvent(e);
         }
+
+        this.scrollPathToVisible(path);
     }
 
     /**
