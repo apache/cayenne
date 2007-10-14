@@ -279,7 +279,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
             ((Map) holder).put(getMapKey(relName, value), value);
         }
 
-        if (value != null && setReverse) {
+        if (setReverse) {
             setReverseRelationship(relName, value);
         }
     }

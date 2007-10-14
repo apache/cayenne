@@ -363,16 +363,19 @@ public class SelectTranslator extends QueryAssembler {
                 Iterator dbPathIterator = oa.getDbPathIterator();
                 while (dbPathIterator.hasNext()) {
                     Object pathPart = dbPathIterator.next();
-                    if (pathPart instanceof DbRelationship) {
+
+                    if (pathPart == null) {
+                        throw new CayenneRuntimeException(
+                                "ObjAttribute has no component: " + oa.getName());
+                    }
+
+                    else if (pathPart instanceof DbRelationship) {
                         DbRelationship rel = (DbRelationship) pathPart;
                         dbRelationshipAdded(rel);
                     }
                     else if (pathPart instanceof DbAttribute) {
                         DbAttribute dbAttr = (DbAttribute) pathPart;
-                        if (dbAttr == null) {
-                            throw new CayenneRuntimeException(
-                                    "ObjAttribute has no DbAttribute: " + oa.getName());
-                        }
+
 
                         appendColumn(columns, oa, dbAttr, attributes, null);
                     }
@@ -547,17 +550,18 @@ public class SelectTranslator extends QueryAssembler {
                     Iterator dbPathIterator = oa.getDbPathIterator();
                     while (dbPathIterator.hasNext()) {
                         Object pathPart = dbPathIterator.next();
-                        if (pathPart instanceof DbRelationship) {
+
+                        if (pathPart == null) {
+                            throw new CayenneRuntimeException(
+                                    "ObjAttribute has no component: " + oa.getName());
+                        }
+
+                        else if (pathPart instanceof DbRelationship) {
                             DbRelationship rel = (DbRelationship) pathPart;
                             dbRelationshipAdded(rel);
                         }
                         else if (pathPart instanceof DbAttribute) {
                             DbAttribute attribute = (DbAttribute) pathPart;
-                            if (attribute == null) {
-                                throw new CayenneRuntimeException(
-                                        "ObjAttribute has no DbAttribute: "
-                                                + oa.getName());
-                            }
 
                             if (!skipColumns.contains(attribute)) {
                                 appendColumn(

@@ -74,7 +74,7 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
         Collection collection = (Collection) readProperty(source);
         collection.add(target);
 
-        if (target != null && setReverse) {
+        if (setReverse) {
             setReverse(source, null, target);
         }
     }

@@ -81,6 +81,10 @@ abstract class DataDomainSyncBucket {
 
     void checkReadOnly(ObjEntity entity) throws CayenneRuntimeException {
 
+        if (entity == null) {
+            throw new NullPointerException("Entity must not be null.");
+        }
+
         if (entity.isReadOnly()) {
 
             StringBuffer message = new StringBuffer();
@@ -88,9 +92,7 @@ abstract class DataDomainSyncBucket {
                     .append("Attempt to modify object(s) mapped to a read-only entity: ")
                     .append(entity.getName());
 
-            if (entity != null) {
-                message.append(" '").append(entity.getName()).append("'");
-            }
+            message.append(" '").append(entity.getName()).append("'");
 
             message.append(". Can't commit changes.");
             throw new CayenneRuntimeException(message.toString());

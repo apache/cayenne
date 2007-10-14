@@ -283,6 +283,10 @@ public abstract class Configuration {
      * this configuration into the domain.
      */
     public void addDomain(DataDomain domain) {
+        if (domain == null) {
+            throw new NullPointerException("Attempt to work with a null DataDomain.");
+        }
+
         if (domain.getName() == null) {
             throw new NullPointerException("Attempt to add DataDomain with no name.");
         }
@@ -295,9 +299,7 @@ public abstract class Configuration {
         }
 
         // inject EventManager
-        if (domain != null) {
-            domain.setEventManager(getEventManager());
-        }
+        domain.setEventManager(getEventManager());
 
         logObj.debug("added domain: " + domain.getName());
     }
