@@ -26,6 +26,13 @@
 		<db-attribute name="TABLE4_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="TABLE5_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="MT_MAP_TO_MANY">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MT_MAP_TO_MANY_TARGET">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
+	</db-entity>
 	<db-entity name="MT_REFLEXIVE">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="200"/>
@@ -64,6 +71,10 @@
 	</obj-entity>
 	<obj-entity name="MtDeleteRule" className="org.apache.cayenne.testdo.mt.MtDeleteRule" clientClassName="org.apache.cayenne.testdo.mt.ClientMtDeleteRule" dbEntityName="MT_DELETE_RULE">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MtMapToMany" className="org.apache.cayenne.testdo.mt.MtMapToMany" clientClassName="org.apache.cayenne.testdo.mt.ClientMtMapToMany" dbEntityName="MT_MAP_TO_MANY">
+	</obj-entity>
+	<obj-entity name="MtMapToManyTarget" className="org.apache.cayenne.testdo.mt.MtMapToManyTarget" clientClassName="org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget" dbEntityName="MT_MAP_TO_MANY_TARGET">
 	</obj-entity>
 	<obj-entity name="MtReflexive" className="org.apache.cayenne.testdo.mt.MtReflexive" clientClassName="org.apache.cayenne.testdo.mt.ClientMtReflexive" dbEntityName="MT_REFLEXIVE">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
@@ -111,6 +122,12 @@
 	<db-relationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5" toMany="false">
 		<db-attribute-pair source="TABLE5_ID" target="ID"/>
 	</db-relationship>
+	<db-relationship name="targets" source="MT_MAP_TO_MANY" target="MT_MAP_TO_MANY_TARGET" toMany="true">
+		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
+	</db-relationship>
+	<db-relationship name="mapToMany" source="MT_MAP_TO_MANY_TARGET" target="MT_MAP_TO_MANY" toMany="false">
+		<db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
+	</db-relationship>
 	<db-relationship name="children" source="MT_REFLEXIVE" target="MT_REFLEXIVE" toMany="true">
 		<db-attribute-pair source="ID" target="PARENT_ID"/>
 	</db-relationship>
@@ -135,6 +152,8 @@
 	<obj-relationship name="fromCascade" source="MtDeleteRule" target="MtDeleteCascade" db-relationship-path="fromCascade"/>
 	<obj-relationship name="fromDeny" source="MtDeleteRule" target="MtDeleteDeny" db-relationship-path="fromDeny"/>
 	<obj-relationship name="fromNullify" source="MtDeleteRule" target="MtDeleteNullify" db-relationship-path="fromNullify"/>
+	<obj-relationship name="targets" source="MtMapToMany" target="MtMapToManyTarget" collection-type="java.util.Map" db-relationship-path="targets"/>
+	<obj-relationship name="mapToMany" source="MtMapToManyTarget" target="MtMapToMany" db-relationship-path="mapToMany"/>
 	<obj-relationship name="children" source="MtReflexive" target="MtReflexive" db-relationship-path="children"/>
 	<obj-relationship name="toParent" source="MtReflexive" target="MtReflexive" db-relationship-path="toParent"/>
 	<obj-relationship name="table2Array" source="MtTable1" target="MtTable2" db-relationship-path="table2Array"/>

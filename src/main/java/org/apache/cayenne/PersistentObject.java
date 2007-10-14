@@ -19,6 +19,11 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.ToManyMapProperty;
+
 /**
  * A convenience base superclass for concrete Persistent objects. Provides implementation
  * of properties declared in Persistent interface.
@@ -71,6 +76,32 @@ public abstract class PersistentObject implements Persistent {
 
     public void setObjectId(ObjectId objectId) {
         this.objectId = objectId;
+    }
+    
+    /**
+     * Returns a map key for a given to-many map relationship and a target object.
+     * 
+     * @since 3.0
+     */
+    protected Object getMapKey(String relationshipName, Object value) {
+
+        EntityResolver resolver = objectContext.getEntityResolver();
+        ClassDescriptor descriptor = resolver
+                .getClassDescriptor(objectId.getEntityName());
+
+        if (descriptor == null) {
+            throw new IllegalStateException("DataObject's entity is unmapped, objectId: "
+                    + objectId);
+        }
+
+        Property property = descriptor.getProperty(relationshipName);
+        if (property instanceof ToManyMapProperty) {
+            return ((ToManyMapProperty) property).getMapKey(value);
+        }
+
+        throw new IllegalArgumentException("Relationship '"
+                + relationshipName
+                + "' is not a to-many Map");
     }
 
     public String toString() {
