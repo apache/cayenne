@@ -22,9 +22,11 @@ import java.util.Map;
 
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtMapToMany;
+import org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget;
 import org.apache.cayenne.testdo.mt.MtMapToMany;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
@@ -66,5 +68,39 @@ public class CayenneContextMapRelationshipTest extends CayenneCase {
         assertNotNull(targets.get(new Integer(1)));
         assertNotNull(targets.get(new Integer(2)));
         assertNotNull(targets.get(new Integer(3)));
+    }
+
+    public void testAddToMany() throws Exception {
+        createTestData("prepare");
+
+        ObjectContext context = createClientContext();
+
+        ObjectId id = new ObjectId("MtMapToMany", MtMapToMany.ID_PK_COLUMN, 1);
+        ClientMtMapToMany o1 = (ClientMtMapToMany) DataObjectUtils.objectForQuery(
+                context,
+                new ObjectIdQuery(id));
+
+        Map targets = o1.getTargets();
+        assertNotNull(targets);
+        assertEquals(3, targets.size());
+
+        ClientMtMapToManyTarget newTarget = (ClientMtMapToManyTarget) o1
+                .getObjectContext()
+                .newObject(ClientMtMapToManyTarget.class);
+
+        o1.addToTargets(newTarget);
+        assertEquals(4, targets.size());
+        assertSame(o1, newTarget.getMapToMany());
+
+        o1.getObjectContext().commitChanges();
+
+        o1.getObjectContext().performGenericQuery(new RefreshQuery());
+        assertEquals(4, o1.getTargets().size());
+        
+        int newId = DataObjectUtils.intPKForObject(newTarget);
+        assertSame(newTarget, o1.getTargets().get(new Integer(newId)));
+        
+        assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
+        assertEquals(PersistenceState.HOLLOW, newTarget.getPersistenceState());
     }
 }

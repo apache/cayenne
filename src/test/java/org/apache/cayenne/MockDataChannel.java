@@ -94,4 +94,8 @@ public class MockDataChannel implements DataChannel {
     public EntityResolver getEntityResolver() {
         return resolver;
     }
+    
+    public void setEntityResolver(EntityResolver resolver) {
+        this.resolver = resolver;
+    }
 }

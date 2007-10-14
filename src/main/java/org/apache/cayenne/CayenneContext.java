@@ -63,6 +63,11 @@ public class CayenneContext extends BaseContext {
     QueryCache queryCache;
 
     /**
+     * @since 3.0
+     */
+    boolean propertyChangeCallbacksDisabled;
+
+    /**
      * Creates a new CayenneContext with no channel and disabled graph events.
      */
     public CayenneContext() {
@@ -438,7 +443,9 @@ public class CayenneContext extends BaseContext {
             Object oldValue,
             Object newValue) {
 
-        graphAction.handlePropertyChange(object, property, oldValue, newValue);
+        if (!isPropertyChangeCallbacksDisabled()) {
+            graphAction.handlePropertyChange(object, property, oldValue, newValue);
+        }
     }
 
     public Collection uncommittedObjects() {
@@ -501,5 +508,19 @@ public class CayenneContext extends BaseContext {
         }
 
         return object;
+    }
+
+    /**
+     * @since 3.0
+     */
+    boolean isPropertyChangeCallbacksDisabled() {
+        return propertyChangeCallbacksDisabled;
+    }
+
+    /**
+     * @since 3.0
+     */
+    void setPropertyChangeCallbacksDisabled(boolean propertyChangeCallbacksDisabled) {
+        this.propertyChangeCallbacksDisabled = propertyChangeCallbacksDisabled;
     }
 }

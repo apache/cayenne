@@ -98,6 +98,10 @@ class ObjectContextStateLog implements GraphChangeHandler {
     boolean hasChanges() {
         return !dirtyIds.isEmpty();
     }
+    
+    Collection dirtyIds() {
+        return dirtyIds;
+    }
 
     Collection dirtyNodes() {
         if (dirtyIds.isEmpty()) {

@@ -49,9 +49,7 @@ import org.apache.cayenne.util.GenericResponse;
 public class CayenneContextTest extends CayenneCase {
 
     protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
+        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
     }
 
     public void testConstructor() {
@@ -137,11 +135,18 @@ public class CayenneContextTest extends CayenneCase {
     public void testCommitCommandExecuted() {
 
         MockDataChannel channel = new MockDataChannel(new MockGraphDiff());
+        channel.setEntityResolver(getDomain()
+                .getEntityResolver()
+                .getClientEntityResolver());
         CayenneContext context = new CayenneContext(channel);
 
         // test that a command is being sent via connector on commit...
 
-        context.internalGraphManager().nodePropertyChanged(new Object(), "x", "y", "z");
+        context.internalGraphManager().nodePropertyChanged(
+                new ObjectId("MtTable1"),
+                "x",
+                "y",
+                "z");
 
         context.commitChanges();
         assertEquals(1, channel.getRequestObjects().size());
@@ -256,7 +261,7 @@ public class CayenneContextTest extends CayenneCase {
         assertEquals(PersistenceState.TRANSIENT, newObject.getPersistenceState());
         assertFalse(context.internalGraphManager().dirtyNodes().contains(
                 newObject.getObjectId()));
-        
+
         // see CAY-547 for details...
         assertFalse(context.internalGraphManager().dirtyNodes().contains(null));
 
@@ -320,7 +325,11 @@ public class CayenneContextTest extends CayenneCase {
         context.graphManager.registerNode(hollow.getObjectId(), hollow);
 
         // testing this...
-        context.prepareForAccess(hollow, ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, false);
+        context
+                .prepareForAccess(
+                        hollow,
+                        ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY,
+                        false);
         assertTrue(selectExecuted[0]);
         assertSame(hollow, context.getGraphManager().getNode(gid));
         assertEquals(inflated.getGlobalAttribute1Direct(), hollow
