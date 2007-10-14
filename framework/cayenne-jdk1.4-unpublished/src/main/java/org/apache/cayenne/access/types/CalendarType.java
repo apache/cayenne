@@ -160,7 +160,7 @@ public class CalendarType implements ExtendedType {
     }
 
     protected Object convertToJdbcObject(Calendar value, int type) throws Exception {
-        Calendar calendar = (Calendar) value;
+        Calendar calendar = value;
 
         if (type == Types.DATE)
             return new java.sql.Date(calendar.getTimeInMillis());

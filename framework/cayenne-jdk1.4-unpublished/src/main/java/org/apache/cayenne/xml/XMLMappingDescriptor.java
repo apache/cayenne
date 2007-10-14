@@ -245,7 +245,7 @@ final class XMLMappingDescriptor {
         
         // If a data context has been supplied by the user, then register the data object with the context.
         if ((null != dataContext) && (object instanceof Persistent)) {
-            dataContext.registerNewObject((Persistent) object);
+            dataContext.registerNewObject(object);
         }
 
         NamedNodeMap attributes = objectData.getAttributes();

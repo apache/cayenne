@@ -600,7 +600,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         DataContext context;
         if (null == dataContextFactory) {
-            context = new DataContext((DataChannel) this, new ObjectStore(snapshotCache));
+            context = new DataContext(this, new ObjectStore(snapshotCache));
         }
         else {
             context = dataContextFactory.createDataContext(this, new ObjectStore(

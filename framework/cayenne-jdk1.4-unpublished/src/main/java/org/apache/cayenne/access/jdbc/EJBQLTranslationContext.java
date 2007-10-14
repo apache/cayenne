@@ -153,7 +153,7 @@ public class EJBQLTranslationContext {
      * contents of the marker are cleared.
      */
     void switchToMarker(String marker, boolean reset) {
-        this.currentBuffer = (StringBuffer) findOrCreateMarkedBuffer(marker);
+        this.currentBuffer = findOrCreateMarkedBuffer(marker);
         if (reset) {
             this.currentBuffer.delete(0, this.currentBuffer.length());
         }

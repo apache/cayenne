@@ -311,8 +311,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
         DataContext child = factory != null ? factory
                 .createDataContext(this, objectStore) : new DataContext(
-                (DataChannel) this,
-                objectStore);
+                this, objectStore);
 
         child.setValidatingObjectsOnCommit(isValidatingObjectsOnCommit());
         child.usingSharedSnaphsotCache = isUsingSharedSnapshotCache();
