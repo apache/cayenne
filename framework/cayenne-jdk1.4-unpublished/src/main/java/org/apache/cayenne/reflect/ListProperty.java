@@ -29,6 +29,7 @@ import org.apache.cayenne.util.PersistentObjectList;
  * 
  * @since 1.2
  * @author Andrus Adamchik
+ * @deprecated since 3.0 replaced by non-public classes.
  */
 public class ListProperty extends BaseToManyProperty {
 

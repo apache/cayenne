@@ -16,38 +16,40 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.reflect.valueholder;
 
-package org.apache.cayenne.reflect;
-
-import java.util.List;
-
+import org.apache.cayenne.Fault;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.util.IndexPropertyList;
+import org.apache.cayenne.reflect.Accessor;
+import org.apache.cayenne.reflect.BaseToManyProperty;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyException;
 
 /**
- * A CollectionProperty that uses IndexPropertyList.
- * 
- * @since 1.2
+ * @since 3.0
  * @author Andrus Adamchik
- * @deprecated since 3.0 (no substitute exists in Cayenne)
  */
-public class IndexedListProperty extends ListProperty {
+abstract class ValueHolderToManyProperty extends BaseToManyProperty {
 
-    protected String indexPropertyName;
-
-    public IndexedListProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
-            Accessor accessor, String reverseName, String indexPropertyName) {
-
+    ValueHolderToManyProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
+            Accessor accessor, String reverseName) {
         super(owner, targetDescriptor, accessor, reverseName);
-        this.indexPropertyName = indexPropertyName;
     }
 
-    /**
-     * Creates a List indexed on a specified property.
-     */
-    protected ValueHolder createCollectionValueHolder(Object object)
-            throws PropertyException {
-        List unordered = (List) super.createCollectionValueHolder(object);
-        return new IndexPropertyList(indexPropertyName, unordered, true);
+    protected abstract ValueHolder createCollectionValueHolder(Object object)
+            throws PropertyException;
+
+    public boolean isFault(Object source) {
+        Object target = accessor.getValue(source);
+        return target == null
+                || target instanceof Fault
+                || ((ValueHolder) target).isFault();
+    }
+
+    public void invalidate(Object object) {
+        ValueHolder list = (ValueHolder) readPropertyDirectly(object);
+        if (list != null) {
+            list.invalidate();
+        }
     }
 }
