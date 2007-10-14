@@ -223,7 +223,7 @@ public class ObjectId implements Serializable {
         }
 
         if (o1 == null) {
-            return o2 == null;
+            return false;
         }
 
         if (o1 instanceof Number) {

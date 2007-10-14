@@ -109,14 +109,12 @@ public class SQLTemplateAction implements SQLAction {
 
         // notify of combined counts of all queries inside SQLTemplate multipled by the
         // number of parameter sets...
-        if (counts != null) {
-            int[] ints = new int[counts.size()];
-            for (int i = 0; i < ints.length; i++) {
-                ints[i] = ((Integer) counts.get(i)).intValue();
-            }
-
-            callback.nextBatchCount(query, ints);
+        int[] ints = new int[counts.size()];
+        for (int i = 0; i < ints.length; i++) {
+            ints[i] = ((Integer) counts.get(i)).intValue();
         }
+
+        callback.nextBatchCount(query, ints);
     }
 
     protected void execute(
@@ -159,10 +157,7 @@ public class SQLTemplateAction implements SQLAction {
                                     t1);
                         }
                         finally {
-                            if (iteratedResult) {
-                                break;
-                            }
-                            else {
+                            if (!iteratedResult) {
                                 resultSet.close();
                             }
                         }
