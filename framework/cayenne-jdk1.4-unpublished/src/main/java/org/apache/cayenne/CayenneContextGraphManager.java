@@ -22,6 +22,7 @@ package org.apache.cayenne;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
@@ -35,6 +36,11 @@ import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.graph.NodeDeleteOperation;
 import org.apache.cayenne.graph.NodeIdChangeOperation;
 import org.apache.cayenne.graph.NodePropertyChangeOperation;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.reflect.ArcProperty;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyException;
+import org.apache.cayenne.reflect.ToManyMapProperty;
 
 /**
  * A GraphMap extension that works together with ObjectContext to track persistent object
@@ -128,6 +134,8 @@ final class CayenneContextGraphManager extends GraphMap {
             new CayenneContextMergeHandler(context).merge(parentSyncDiff);
         }
 
+        remapTargets();
+
         if (lifecycleEventsEnabled) {
             GraphDiff diff = changeLog.getDiffsAfterMarker(COMMIT_MARKER);
 
@@ -141,6 +149,81 @@ final class CayenneContextGraphManager extends GraphMap {
             stateLog.graphCommitted();
             reset();
         }
+    }
+
+    /**
+     * Remaps keys in to-many map relationships that contain dirty objects with
+     * potentially modified properties.
+     */
+    private void remapTargets() {
+
+        Iterator it = stateLog.dirtyIds().iterator();
+
+        EntityResolver resolver = context.getEntityResolver();
+
+        // avoid processing callbacks when updating the map...
+        boolean changeCallbacks = context.isPropertyChangeCallbacksDisabled();
+        context.setPropertyChangeCallbacksDisabled(true);
+
+        try {
+            while (it.hasNext()) {
+                ObjectId id = (ObjectId) it.next();
+                ClassDescriptor descriptor = resolver.getClassDescriptor(id
+                        .getEntityName());
+
+                Iterator mapArcProperties = descriptor.getMapArcProperties();
+                if (mapArcProperties.hasNext()) {
+
+                    Object object = getNode(id);
+
+                    while (mapArcProperties.hasNext()) {
+                        ArcProperty arc = (ArcProperty) mapArcProperties.next();
+                        ToManyMapProperty reverseArc = (ToManyMapProperty) arc
+                                .getComplimentaryReverseArc();
+
+                        Object source = arc.readPropertyDirectly(object);
+                        if (source != null && !reverseArc.isFault(source)) {
+                            remapTarget(reverseArc, source, object);
+                        }
+                    }
+                }
+            }
+        }
+        finally {
+            context.setPropertyChangeCallbacksDisabled(changeCallbacks);
+        }
+    }
+
+    // clone of DataDomainSyncBucket.remapTarget
+    private final void remapTarget(
+            ToManyMapProperty property,
+            Object source,
+            Object target) throws PropertyException {
+
+        Map map = (Map) property.readProperty(source);
+        Object newKey = property.getMapKey(target);
+        Object currentValue = map.get(newKey);
+
+        if (currentValue == target) {
+            // nothing to do
+            return;
+        }
+        // else - do not check for conflicts here (i.e. another object mapped for the same
+        // key), as we have no control of the order in which this method is called, so
+        // another object may be remapped later by the caller
+
+        // must do a slow map scan to ensure the object is not mapped under a different
+        // key...
+        Iterator it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry e = (Map.Entry) it.next();
+            if (e.getValue() == target) {
+                it.remove();
+                break;
+            }
+        }
+
+        map.put(newKey, target);
     }
 
     void graphFlushed() {
