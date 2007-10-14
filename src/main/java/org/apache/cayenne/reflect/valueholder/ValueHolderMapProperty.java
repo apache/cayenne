@@ -16,38 +16,45 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.reflect.valueholder;
 
-package org.apache.cayenne.reflect;
-
-import java.util.List;
-
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.util.IndexPropertyList;
+import org.apache.cayenne.reflect.Accessor;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyException;
+import org.apache.cayenne.reflect.ToManyMapProperty;
+import org.apache.cayenne.util.PersistentObjectMap;
 
 /**
- * A CollectionProperty that uses IndexPropertyList.
- * 
- * @since 1.2
+ * @since 3.0
  * @author Andrus Adamchik
- * @deprecated since 3.0 (no substitute exists in Cayenne)
  */
-public class IndexedListProperty extends ListProperty {
+class ValueHolderMapProperty extends ValueHolderToManyProperty implements
+        ToManyMapProperty {
 
-    protected String indexPropertyName;
+    private Accessor mapKeyAccessor;
 
-    public IndexedListProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
-            Accessor accessor, String reverseName, String indexPropertyName) {
-
+    ValueHolderMapProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
+            Accessor accessor, String reverseName, Accessor mapKeyAccessor) {
         super(owner, targetDescriptor, accessor, reverseName);
-        this.indexPropertyName = indexPropertyName;
+        this.mapKeyAccessor = mapKeyAccessor;
     }
 
-    /**
-     * Creates a List indexed on a specified property.
-     */
     protected ValueHolder createCollectionValueHolder(Object object)
             throws PropertyException {
-        List unordered = (List) super.createCollectionValueHolder(object);
-        return new IndexPropertyList(indexPropertyName, unordered, true);
+        if (!(object instanceof Persistent)) {
+
+            throw new PropertyException(
+                    "ValueHolders for non-persistent objects are not supported.",
+                    this,
+                    object);
+        }
+
+        return new PersistentObjectMap((Persistent) object, getName(), mapKeyAccessor);
+    }
+
+    public Object getMapKey(Object target) throws PropertyException {
+        return mapKeyAccessor.getValue(target);
     }
 }

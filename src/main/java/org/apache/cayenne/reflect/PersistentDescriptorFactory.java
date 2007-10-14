@@ -233,15 +233,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             return new PropertyAccessor(targetDescriptor.getProperty(mapKey));
         }
 
-        // do not use 'targetDescriptor' to resolve target entity, as it leads to an
-        // endless loop during the phase when descriptos are not fully initialized
-        ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
-        if (targetEntity.getDbEntity().getPrimaryKey().size() > 1) {
-            return MultiColumnIdMapKeyAccessor.SHARED_ACCESSOR;
-        }
-        else {
-            return SingleColumnIdMapKeyAccessor.SHARED_ACCESSOR;
-        }
+        return IdMapKeyAccessor.SHARED_ACCESSOR;
     }
 
     /**

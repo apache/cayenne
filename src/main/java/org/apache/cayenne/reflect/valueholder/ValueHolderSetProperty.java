@@ -16,35 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.reflect;
+package org.apache.cayenne.reflect.valueholder;
 
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.reflect.Accessor;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyException;
+import org.apache.cayenne.util.PersistentObjectSet;
 
 /**
- * A stateless read-only accessor of the map key value that is based on the Persistent
- * object multi-column id.
- * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-public final class MultiColumnIdMapKeyAccessor implements Accessor {
+class ValueHolderSetProperty extends ValueHolderToManyProperty {
 
-    public static final Accessor SHARED_ACCESSOR = new MultiColumnIdMapKeyAccessor();
-
-    public String getName() {
-        return "MultiColumnIdMapKeyAccessor";
+    ValueHolderSetProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
+            Accessor accessor, String reverseName) {
+        super(owner, targetDescriptor, accessor, reverseName);
     }
 
-    public Object getValue(Object object) throws PropertyException {
-        if (object instanceof Persistent) {
-            return ((Persistent) object).getObjectId();
-        }
-        else {
-            throw new IllegalArgumentException("Object must be Persistent: " + object);
-        }
-    }
+    protected ValueHolder createCollectionValueHolder(Object object)
+            throws PropertyException {
 
-    public void setValue(Object object, Object newValue) throws PropertyException {
-        throw new UnsupportedOperationException("Setting map key is not supported");
+        if (!(object instanceof Persistent)) {
+
+            throw new PropertyException(
+                    "ValueHolders for non-persistent objects are not supported.",
+                    this,
+                    object);
+        }
+
+        return new PersistentObjectSet((Persistent) object, getName());
     }
 }

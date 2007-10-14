@@ -18,27 +18,42 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.DataObjectUtils;
+import java.util.Map;
+
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 
 /**
  * A stateless read-only accessor of the map key value that is based on the Persistent
- * object single-column id.
+ * object id. For single-column ID's the accessor returns a single value (e.g. an
+ * Integer). For multi-column ID's it returns the ObjectId.
  * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-public final class SingleColumnIdMapKeyAccessor implements Accessor {
+public class IdMapKeyAccessor implements Accessor {
 
-    public static final Accessor SHARED_ACCESSOR = new SingleColumnIdMapKeyAccessor();
+    public static final Accessor SHARED_ACCESSOR = new IdMapKeyAccessor();
 
     public String getName() {
-        return "SingleColumnIdMapKeyAccessor";
+        return "IdMapKeyAccessor";
     }
 
     public Object getValue(Object object) throws PropertyException {
         if (object instanceof Persistent) {
-            return DataObjectUtils.pkForObject((Persistent) object);
+            ObjectId id = ((Persistent) object).getObjectId();
+
+            if (id.isTemporary()) {
+                return id;
+            }
+
+            Map map = id.getIdSnapshot();
+            if (map.size() == 1) {
+                Map.Entry pkEntry = (Map.Entry) map.entrySet().iterator().next();
+                return pkEntry.getValue();
+            }
+
+            return id;
         }
         else {
             throw new IllegalArgumentException("Object must be Persistent: " + object);

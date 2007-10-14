@@ -19,6 +19,7 @@
 package org.apache.cayenne.reflect.valueholder;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.map.ObjRelationship;
@@ -26,7 +27,6 @@ import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorFactory;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
-import org.apache.cayenne.reflect.ListProperty;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.reflect.PersistentDescriptorFactory;
 import org.apache.cayenne.reflect.Property;
@@ -47,7 +47,16 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
     protected void createToManyCollectionProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
-        throw new UnsupportedOperationException("Implement me");
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        String reverseName = relationship.getReverseRelationshipName();
+
+        Accessor accessor = createAccessor(descriptor, relationship.getName(), List.class);
+        descriptor.addDeclaredProperty(new ValueHolderListProperty(
+                descriptor,
+                targetDescriptor,
+                accessor,
+                reverseName));
     }
 
     protected void createToManyListProperty(
@@ -58,7 +67,7 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
         String reverseName = relationship.getReverseRelationshipName();
 
         Accessor accessor = createAccessor(descriptor, relationship.getName(), List.class);
-        descriptor.addDeclaredProperty(new ListProperty(
+        descriptor.addDeclaredProperty(new ValueHolderListProperty(
                 descriptor,
                 targetDescriptor,
                 accessor,
@@ -68,13 +77,35 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
     protected void createToManyMapProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
-        throw new UnsupportedOperationException("Implement me");
+
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        String reverseName = relationship.getReverseRelationshipName();
+        Accessor accessor = createAccessor(descriptor, relationship.getName(), Map.class);
+        Accessor mapKeyAccessor = createMapKeyAccessor(relationship, targetDescriptor);
+        Property property = new ValueHolderMapProperty(
+                descriptor,
+                targetDescriptor,
+                accessor,
+                reverseName,
+                mapKeyAccessor);
+
+        descriptor.addDeclaredProperty(property);
     }
 
     protected void createToManySetProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
-        throw new UnsupportedOperationException("Implement me");
+        ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
+                .getTargetEntityName());
+        String reverseName = relationship.getReverseRelationshipName();
+
+        Accessor accessor = createAccessor(descriptor, relationship.getName(), List.class);
+        descriptor.addDeclaredProperty(new ValueHolderSetProperty(
+                descriptor,
+                targetDescriptor,
+                accessor,
+                reverseName));
     }
 
     protected void createToOneProperty(
