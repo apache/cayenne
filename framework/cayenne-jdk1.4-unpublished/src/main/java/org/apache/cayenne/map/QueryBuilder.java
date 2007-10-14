@@ -159,7 +159,7 @@ public abstract class QueryBuilder {
     }
 
     public void addPrefetch(String path) {
-        if (path == null || path != null && path.trim().length() == 0) {
+        if (path == null || (path != null && path.trim().length() == 0)) {
             // throw??
             return;
         }

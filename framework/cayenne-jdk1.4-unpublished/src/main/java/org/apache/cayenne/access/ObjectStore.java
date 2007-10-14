@@ -748,10 +748,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                         changes.remove(nodeId);
                         registerNode(nodeId, object);
                         nodeCreated(nodeId);
-                        if (dataObject != null) {
-                            delegate.finishedProcessDelete(dataObject);
+
+                        delegate.finishedProcessDelete(dataObject);
                         }
-                    }
 
                     break;
             }

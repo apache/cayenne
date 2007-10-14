@@ -67,16 +67,18 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                 Iterator dbPathIterator = oa.getDbPathIterator();
                 while (dbPathIterator.hasNext()) {
                     Object pathPart = dbPathIterator.next();
-                    if (pathPart instanceof DbRelationship) {
+
+                    if (pathPart == null) {
+                        throw new CayenneRuntimeException(
+                                "ObjAttribute has no component: " + oa.getName());
+                    }
+
+                    else if (pathPart instanceof DbRelationship) {
                         // DbRelationship rel = (DbRelationship) pathPart;
                         // dbRelationshipAdded(rel);
                     }
                     else if (pathPart instanceof DbAttribute) {
                         DbAttribute dbAttr = (DbAttribute) pathPart;
-                        if (dbAttr == null) {
-                            throw new CayenneRuntimeException(
-                                    "ObjAttribute has no DbAttribute: " + oa.getName());
-                        }
 
                         appendColumn(idVar, dbAttr, oa.getType());
                     }

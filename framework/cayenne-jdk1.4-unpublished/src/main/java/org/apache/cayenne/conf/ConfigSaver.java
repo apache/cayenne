@@ -204,7 +204,7 @@ public class ConfigSaver {
                         + File.separator
                         + info.getPasswordSource());
                 PasswordEncoding encoder = info.getPasswordEncoder();
-                if (encoder != null && passwordFile != null) {
+                if (encoder != null) {
                     try {
                         PrintStream out = new PrintStream(new FileOutputStream(
                                 passwordFile));

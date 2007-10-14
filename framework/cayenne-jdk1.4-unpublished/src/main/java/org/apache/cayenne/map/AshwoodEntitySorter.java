@@ -194,8 +194,7 @@ public class AshwoodEntitySorter implements EntitySorter {
                     continue;
                 }
 
-                masters[k] = (reflexiveRelName != null) ? descriptor.getProperty(
-                        reflexiveRelName).readProperty(current) : null;
+                masters[k] = descriptor.getProperty(reflexiveRelName).readProperty(current);
 
                 if (masters[k] == null) {
                     masters[k] = findReflexiveMaster(current, (ObjRelationship) objEntity
