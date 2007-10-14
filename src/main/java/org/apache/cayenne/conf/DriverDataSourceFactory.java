@@ -251,13 +251,17 @@ public class DriverDataSourceFactory implements DataSourceFactory {
             }
             finally {
                 try {
-                    bufferedReader.close();
+                    if (bufferedReader != null) {
+                        bufferedReader.close();
+                    }
                 }
                 catch (Exception exception) {
                 }
 
                 try {
-                    inputStreamReader.close();
+                    if (inputStreamReader != null) {
+                        inputStreamReader.close();
+                    }
                 }
                 catch (Exception exception) {
                 }
