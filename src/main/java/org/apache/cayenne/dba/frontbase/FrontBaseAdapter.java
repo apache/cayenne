@@ -140,14 +140,14 @@ public class FrontBaseAdapter extends JdbcAdapter {
             if (at.getType() == Types.LONGVARCHAR) {
 
                 int len = at.getMaxLength() > 0 ? at.getMaxLength() : 1073741824;
-                buf.append("(" + len + ")");
+                buf.append("(").append(len).append(")");
             }
             else if (at.getType() == Types.VARBINARY || at.getType() == Types.BINARY) {
 
                 // use a BIT column with size * 8
                 int len = at.getMaxLength() > 0 ? at.getMaxLength() : 1073741824;
                 len *= 8;
-                buf.append("(" + len + ")");
+                buf.append("(").append(len).append(")");
             }
             else if (TypesMapping.supportsLength(at.getType())) {
                 int len = at.getMaxLength();

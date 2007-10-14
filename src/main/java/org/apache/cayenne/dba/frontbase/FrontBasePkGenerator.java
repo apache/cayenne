@@ -83,13 +83,13 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
 
     protected String pkCreateString(String entName) {
         StringBuffer buf = new StringBuffer();
-        buf.append("SET UNIQUE = 1000000 FOR \"" + entName + "\"");
+        buf.append("SET UNIQUE = 1000000 FOR \"").append(entName).append("\"");
         return buf.toString();
     }
 
     protected String pkSelectString(String entName) {
         StringBuffer buf = new StringBuffer();
-        buf.append("SELECT UNIQUE FROM \"" + entName + "\"");
+        buf.append("SELECT UNIQUE FROM \"").append(entName).append("\"");
         return buf.toString();
     }
 
