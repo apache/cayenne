@@ -131,7 +131,7 @@ public class ResultDirective extends Directive {
 
         String type = getChildAsString(context, node, 1);
         if (type != null) {
-            columnDescriptor.setJavaClass(guessType(type.toString()));
+            columnDescriptor.setJavaClass(guessType(type));
         }
 
         // TODO: andrus 6/27/2007 - this is an unofficial jdbcType parameter that is added
