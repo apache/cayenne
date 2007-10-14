@@ -296,10 +296,10 @@ public class IndexPropertyList extends AbstractList implements ValueHolder {
                     if ((o1 == null && o2 == null) || o1 == o2) {
                         return 0;
                     }
-                    else if (o1 == null && o2 != null) {
+                    else if (o1 == null) {
                         return -1;
                     }
-                    else if (o1 != null && o2 == null) {
+                    else if (o2 == null) {
                         return 1;
                     }
 
