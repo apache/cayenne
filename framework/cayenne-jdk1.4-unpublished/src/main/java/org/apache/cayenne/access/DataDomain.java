@@ -252,6 +252,7 @@ public class DataDomain implements QueryEngine, DataChannel {
         }
 
         if (queryCacheFactory != null
+                && dataContextFactory != null
                 && !Util.isEmptyString(dataContextFactory.toString())) {
             queryCacheFactory = (QueryCacheFactory) createInstance(queryCacheFactory
                     .toString(), QueryCacheFactory.class);
