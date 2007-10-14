@@ -126,7 +126,7 @@ class LifecycleCallbackEventHandler {
         // default listeners are invoked first
         if (!defaultListeners.isEmpty()
                 && !excludingDefaultListeners(object.getObjectId().getEntityName())) {
-            Iterator it = (Iterator) defaultListeners.iterator();
+            Iterator it = defaultListeners.iterator();
             while (it.hasNext()) {
                 ((AbstractCallback) it.next()).performCallback(object);
             }
@@ -167,7 +167,7 @@ class LifecycleCallbackEventHandler {
         Collection entityListeners = (Collection) listeners.get(key);
 
         if (entityListeners != null) {
-            Iterator it = (Iterator) entityListeners.iterator();
+            Iterator it = entityListeners.iterator();
             while (it.hasNext()) {
                 ((AbstractCallback) it.next()).performCallback(object);
             }

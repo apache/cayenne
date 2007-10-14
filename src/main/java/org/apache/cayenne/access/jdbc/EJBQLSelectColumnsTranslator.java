@@ -67,7 +67,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                 String alias = this.lastAlias != null ? lastAlias : context
                         .getTableAlias(idPath, table.getFullyQualifiedName());
 
-                DbAttribute dbAttribute = (DbAttribute) attribute.getDbAttribute();
+                DbAttribute dbAttribute = attribute.getDbAttribute();
 
                 if (context.isAppendingResultColumns()) {
                     context.append(" #result('");

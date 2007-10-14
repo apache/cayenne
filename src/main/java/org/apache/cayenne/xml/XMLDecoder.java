@@ -356,7 +356,7 @@ public class XMLDecoder {
         }
 
         if ((null != dataContext) && (object instanceof Persistent)) {
-            dataContext.registerNewObject((Persistent) object);
+            dataContext.registerNewObject(object);
         }
 
         root = oldRoot;

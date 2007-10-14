@@ -69,8 +69,7 @@ public class ServletUtil {
         Configuration oldConfig = Configuration.sharedConfiguration;
         if (oldConfig instanceof DefaultConfiguration) {
 
-            ResourceLocator locator = ((DefaultConfiguration) oldConfig)
-                    .getResourceLocator();
+            ResourceLocator locator = oldConfig.getResourceLocator();
 
             if (locator instanceof WebApplicationResourceLocator) {
                 if (((WebApplicationResourceLocator) locator).getServletContext() == context) {
