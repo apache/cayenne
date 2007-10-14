@@ -108,6 +108,22 @@ public abstract class ${entityUtils.superClassName} extends ${entityUtils.baseCl
         return ${rel.Name};
     }
 #if ( ! $rel.ReadOnly )
+#if ( ${rel.CollectionType} == "java.util.Map")
+	public void addTo${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
+        if(objectContext != null) {
+            objectContext.prepareForAccess(this, "${rel.Name}", true);
+        }
+        
+        this.${rel.Name}.put(getMapKey("${rel.Name}", object), object);
+    }
+    public void removeFrom${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
+        if(objectContext != null) {
+            objectContext.prepareForAccess(this, "${rel.Name}", true);
+        }
+        
+        this.${rel.Name}.remove(getMapKey("${rel.Name}", object));
+    }
+#else
     public void addTo${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
@@ -122,6 +138,7 @@ public abstract class ${entityUtils.superClassName} extends ${entityUtils.baseCl
         
         this.${rel.Name}.remove(object);
     }
+#end
 #end
 #else
     public $importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) get${stringUtils.capitalized($rel.Name)}() {
