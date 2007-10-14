@@ -92,7 +92,7 @@ public class MemoryClob implements Clob {
         pos--;
 
         if (pos < 0 || pos > dlen) {
-            new CayenneRuntimeException("Invalid position: " + (pos + 1L));
+            throw new CayenneRuntimeException("Invalid position: " + (pos + 1L));
         }
 
         if (length < 0 || length > dlen - pos) {
