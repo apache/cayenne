@@ -46,7 +46,7 @@ public interface QueryRouter {
     /**
      * Returns a QueryEngine that is configured to handle a given DataMap.
      * 
-     * @throws CayenneRuntimeException if an engine can't be found.
+     * @throws org.apache.cayenne.CayenneRuntimeException if an engine can't be found.
      * @throws NullPointerException if a map parameter is null.
      */
     QueryEngine engineForDataMap(DataMap map);
