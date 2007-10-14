@@ -1110,7 +1110,7 @@ public class MapLoader extends DefaultHandler {
         for (int i = 0; i < atts.getLength(); i++) {
             value = atts.getQName(i);
             name = atts.getValue(i);
-            sb.append("Name: " + name + "\tValue: " + value + "\n");
+            sb.append("Name: ").append(name).append("\tValue: ").append(value).append("\n");
         }
         return sb;
     }
