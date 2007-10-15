@@ -137,7 +137,7 @@ class ConverterFactory {
 
             Object convert(Object object, Class type) {
                 if (object == null) {
-                    return type.isPrimitive() ? new Double(0d) : null;
+                    return type.isPrimitive() ? new Double(0.0d) : null;
                 }
 
                 if (object instanceof Double) {
@@ -152,7 +152,7 @@ class ConverterFactory {
 
             Object convert(Object object, Class type) {
                 if (object == null) {
-                    return type.isPrimitive() ? new Float(0f) : null;
+                    return type.isPrimitive() ? new Float(0.0f) : null;
                 }
 
                 if (object instanceof Float) {

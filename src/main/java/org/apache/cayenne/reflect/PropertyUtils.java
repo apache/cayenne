@@ -281,10 +281,10 @@ public class PropertyUtils {
                 return new Character((char) 0);
             }
             else if ("double".equals(className)) {
-                return new Double(0d);
+                return new Double(0.0d);
             }
             else if ("float".equals(className)) {
-                return new Float(0f);
+                return new Float(0.0f);
             }
             else if ("boolean".equals(className)) {
                 return Boolean.FALSE;
