@@ -750,7 +750,7 @@ public class MapLoader extends DefaultHandler {
         if (name == null) {
             throw new SAXException("MapLoader::processStartDbRelationship(),"
                     + " Unable to parse name. Attributes:\n"
-                    + printAttributes(atts).toString());
+                    + printAttributes(atts));
         }
 
         String sourceName = atts.getValue("", "source");
@@ -808,7 +808,7 @@ public class MapLoader extends DefaultHandler {
         if (null == name) {
             throw new SAXException("MapLoader::processStartObjRelationship(),"
                     + " Unable to parse target. Attributes:\n"
-                    + printAttributes(atts).toString());
+                    + printAttributes(atts));
         }
         
         String collectionType = atts.getValue("", "collection-type");
@@ -818,7 +818,7 @@ public class MapLoader extends DefaultHandler {
         if (sourceName == null) {
             throw new SAXException("MapLoader::processStartObjRelationship(),"
                     + " Unable to parse source. Attributes:\n"
-                    + printAttributes(atts).toString());
+                    + printAttributes(atts));
         }
 
         ObjEntity source = dataMap.getObjEntity(sourceName);
