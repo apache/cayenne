@@ -154,7 +154,7 @@ public class AutoAdapter implements DbAdapter {
             }
         }
         catch (SQLException e) {
-            throw new CayenneRuntimeException("Error detecting database type", e);
+            throw new CayenneRuntimeException("Error detecting database type: " + e.getLocalizedMessage(), e);
         }
 
         if (adapter == null) {
