@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<db-entity name="таблiца1">
+		<db-attribute name="атрыбут1" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+</data-map>

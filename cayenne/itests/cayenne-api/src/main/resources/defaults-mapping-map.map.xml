@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="2.0">
+	<property name="defaultPackage" value="org.apache.cayenne.itest.cpa.defaults"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="org.apache.cayenne.itest.cpa.defaults.client"/>
+	<db-entity name="defaults_table1">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="name" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="defaults_table2">
+		<db-attribute name="defaults_table1_id" type="INTEGER"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="defaults_table3">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="name" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="defaults_table4">
+		<db-attribute name="defaults_table3_id" type="INTEGER"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="DefaultsTable1" className="org.apache.cayenne.itest.cpa.defaults.DefaultsTable1" clientClassName="org.apache.cayenne.itest.cpa.defaults.client.DefaultsTable1" dbEntityName="defaults_table1">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="DefaultsTable2" className="org.apache.cayenne.itest.cpa.defaults.DefaultsTable2" clientClassName="org.apache.cayenne.itest.cpa.defaults.client.DefaultsTable2" dbEntityName="defaults_table2">
+	</obj-entity>
+	<obj-entity name="DefaultsTable3" className="org.apache.cayenne.itest.cpa.defaults.DefaultsTable3" clientClassName="org.apache.cayenne.itest.cpa.defaults.client.DefaultsTable3" dbEntityName="defaults_table3">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="DefaultsTable4" className="org.apache.cayenne.itest.cpa.defaults.DefaultsTable4" clientClassName="org.apache.cayenne.itest.cpa.defaults.client.DefaultsTable4" dbEntityName="defaults_table4">
+	</obj-entity>
+	<db-relationship name="to_table1" source="defaults_table2" target="defaults_table1" toMany="false">
+		<db-attribute-pair source="defaults_table1_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="defaultTable4s" source="defaults_table3" target="defaults_table4" toMany="true">
+		<db-attribute-pair source="id" target="defaults_table3_id"/>
+	</db-relationship>
+	<obj-relationship name="toTable1" source="DefaultsTable2" target="DefaultsTable1" db-relationship-path="to_table1"/>
+	<obj-relationship name="defaultTable4s" source="DefaultsTable3" target="DefaultsTable4" db-relationship-path="defaultTable4s"/>
+</data-map>

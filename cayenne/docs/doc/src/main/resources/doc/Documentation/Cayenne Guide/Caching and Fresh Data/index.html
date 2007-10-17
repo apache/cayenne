@@ -1,0 +1,96 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Caching and Fresh Data</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Caching and Fresh Data</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/Cayenne Guide/Introduction/index.html">Introduction</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Installation/index.html">Installation</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Quick Start/index.html">Quick Start</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Design/index.html">Design</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataContext/index.html">DataContext</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Queries/index.html">Queries</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataObjects/index.html">DataObjects</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Stored Procedures/index.html">Stored Procedures</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Expressions/index.html">Expressions</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html">Lifecycle Callbacks</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Performance Tuning/index.html">Performance Tuning</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/index.html">Caching and Fresh Data</a><ul>
+<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/RefreshQuery/index.html">RefreshQuery</a></li>
+</ul>
+</li>
+<li><a href="../../../Documentation/Cayenne Guide/Deployment/index.html">Deployment</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><h2><a name="CachingandFreshData-WhatIsCachedinCayenne"></a>What Is Cached in Cayenne</h2>
+
+<p>Using multiple levels of caching in Cayenne allows to significantly improve performance, reducing the number of trips to the database. There are two things that Cayenne can cache - individual objects and query results (i.e. lists of objects). These two types are handled differently by Cayenne, as described below.</p>
+
+<h2><a name="CachingandFreshData-CachingPersistentObjects"></a>Caching Persistent Objects</h2>
+
+<p>Individual objects are <a href="../../../Documentation/Cayenne Guide/Design/Object Caching/index.html" title="Object Caching">cached by Cayenne</a> by default as they are fetched from the database or created by the user. Such caching is both a performance optimization mechanism and a way to ensure internal object <a href="http://cwiki.apache.org/confluence/confluence/display/CAYDOC/Cayenne%20Contract#CayenneContract-Uniquing" title="Uniquing on Cayenne Contract">uniquing</a>. Users normally do not need to do anything special for this to work. Still there are a few parameters that can be configured </p>
+
+<h2><a name="CachingandFreshData-CachingQueryResultsPluggableCache"></a>Caching Query Results - Pluggable Cache</h2>
+
+<p>Out of the box Cayenne provides two implementations of the pluggable cache factory:</p>
+
+<ul>
+	<li><tt>'org.apache.cayenne.cache.MapQueryCacheFactory'</tt> is a default factory that uses an LRU map to store query results. LRU map ensures that cached results would not take up all available memory, but otherwise it has no cache expiration mechanism.</li>
+</ul>
+
+
+<ul>
+	<li><tt>'org.apache.cayenne.cache.OSQueryCacheFactory'</tt> is a factory that installs OpenSymphony <span class="nobr"><a href="http://www.opensymphony.com/oscache/wiki/Configuration.html" title="Visit page outside Confluence" rel="nofollow">OSCache<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> as a cache provider for Cayenne queries. It allows to configure cache expiration policies and cross-VM synchronization via an <tt>"oscache.properties"</tt> that should be placed in the CLASSPATH.</li>
+</ul>
+
+
+<h2><a name="CachingandFreshData-CacheGroups"></a>Cache Groups</h2>
+
+<h2><a name="CachingandFreshData-RefreshingtheData"></a>Refreshing the Data</h2>
+
+
+<h3><a name="CachingandFreshData-Sections"></a>Sections</h3>
+
+<ol>
+	<li><a href="../../../Documentation/Cayenne Guide/Caching and Fresh Data/RefreshQuery/index.html" title="RefreshQuery">RefreshQuery</a></li>
+</ol>
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2007 Apache Software Foundation
+  </div>
+
+</body>
+</html>

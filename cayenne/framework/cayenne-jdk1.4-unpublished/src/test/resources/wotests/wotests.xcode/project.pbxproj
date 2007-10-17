@@ -1,0 +1,1006 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 39;
+	objects = {
+		013357CCFF5DD5F011CD2B9D = {
+			buildSettings = {
+			};
+			buildStyles = (
+				01A3BF6FFFB0C37D11CD2B9D,
+				01A3BF70FFB0C37D11CD2B9D,
+				015E5C37FFDDB4DD11CD2B8D,
+			);
+			hasScannedForEncodings = 1;
+			isa = PBXProject;
+			mainGroup = 013357CDFF5DD5F011CD2B9D;
+			productRefGroup = 013357CEFF5DD64811CD2B9D;
+			projectDirPath = "";
+			targets = (
+				017C6100FFD43DA37F000001,
+				017C60B4FFD2F2BB7F000001,
+				017C60D6FFD2F2BB7F000001,
+			);
+		};
+		013357CDFF5DD5F011CD2B9D = {
+			children = (
+				013357DEFF5DD7CD11CD2B9D,
+				013357D6FF5DD68111CD2B9D,
+				15D0BC7BFF5EC4B811CD2B9D,
+				15D0BC79FF5EC47311CD2B9D,
+				01D74EAA00210ABC11CD2B8D,
+				096CB46EFF7BFC8111CD2B9D,
+				2123FDFDFFD467417F000001,
+				013357CEFF5DD64811CD2B9D,
+			);
+			isa = PBXGroup;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		013357CEFF5DD64811CD2B9D = {
+			children = (
+				017C60FFFFD43DA37F000001,
+				0B4F248B00221FBD11CD2B8D,
+			);
+			isa = PBXGroup;
+			name = Products;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		013357D6FF5DD68111CD2B9D = {
+			children = (
+				2123FDF9FFD467417F000001,
+			);
+			isa = PBXGroup;
+			name = "Web Components";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		013357DEFF5DD7CD11CD2B9D = {
+			children = (
+				2123FDF6FFD467417F000001,
+				2123FDF7FFD467417F000001,
+				2123FDF8FFD467417F000001,
+			);
+			isa = PBXGroup;
+			name = Classes;
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		015E5C37FFDDB4DD11CD2B8D = {
+			buildRules = (
+			);
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				INSTALL_MODE_FLAG = "a+rX";
+				INSTALL_PATH_FOR_STYLE = "$(DSTROOT)/$(INSTALL_PATH)";
+				SPLIT_INSTALL = YES;
+				WEBSERVER_DOCROOT = "$(DSTROOT)$(LOCAL_LIBRARY_DIR)/WebServer/Documents";
+				WEBSERVER_INSTALL_DIR_APPLICATION = "$(WEBSERVER_INSTALL_ROOT)";
+				WEBSERVER_INSTALL_DIR_FRAMEWORK = "$(WEBSERVER_INSTALL_ROOT)/Frameworks";
+				WEBSERVER_INSTALL_ROOT = "$(WEBSERVER_DOCROOT)/WebObjects";
+				WEBSERVER_RESOURCES_DIR = "$(WEBSERVER_CONTENTS_DIR)/WebServerResources";
+				WEBSERVER_RESOURCES_JAVA_DIR = "$(WEBSERVER_INSTALL_ROOT)/Java";
+				WEBSERVER_WRAPPER_DIR = "$(WEBSERVER_INSTALL_DIR)/$(WRAPPER_NAME)";
+			};
+			isa = PBXBuildStyle;
+			name = WebServer;
+		};
+		016FA8CAFFE5B8A311CD2B8D = {
+			expectedFileType = folder;
+			fallbackIsa = PBXFileReference;
+			includeInIndex = 0;
+			isa = PBXFolderReference;
+			path = Main.wo;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		016FA8CBFFE5B8A311CD2B8D = {
+			fileRef = 016FA8CAFFE5B8A311CD2B8D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0171C3300017AA3E11CD2B8D = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Copy the requisite files from the Server and Client directories into the final wrapper directory\n. \"${BUILD_FILES_DIR}/ComputeTargetClasspath.sh\" \"NO\" \"${SERVER_UNIQUIFIER}\"";
+		};
+		017C60B1FFD2F2BB7F000001 = {
+			expectedFileType = wrapper.cfbundle;
+			fallbackIsa = PBXFileReference;
+			isa = PBXBundleReference;
+			path = "_WO$(SERVER_UNIQUIFIER)wotests.tmp";
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		017C60B2FFD2F2BB7F000001 = {
+			expectedFileType = wrapper.cfbundle;
+			fallbackIsa = PBXFileReference;
+			isa = PBXBundleReference;
+			path = "_WO$(CLIENT_UNIQUIFIER)wotests.tmp";
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		017C60B4FFD2F2BB7F000001 = {
+			buildPhases = (
+				017C60B5FFD2F2BB7F000001,
+				017C60C6FFD2F2BB7F000001,
+				017C60D3FFD2F2BB7F000001,
+				017C60D4FFD2F2BB7F000001,
+				0171C3300017AA3E11CD2B8D,
+			);
+			buildSettings = {
+				BUILD_FILES_DIR = "$(LOCAL_LIBRARY_DIR)/Application Support/Apple/Developer Tools/WebObjects Support";
+				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks\" \"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"";
+				JAVA_ARCHIVE_CLASSES = YES;
+				JAVA_ARCHIVE_TYPE = JAR;
+				JAVA_COMPILER_FLAGS = "-extdirs /Library/WebObjects/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Home/lib/ext";
+				JAVA_FRAMEWORK_RESOURCES_DIRS = Resources;
+				JAVA_ONLY = YES;
+				JAVA_SOURCE_SUBDIR = .;
+				OTHER_JAVA_CLASS_PATH = "";
+				PRODUCT_NAME = "_WO$(SERVER_UNIQUIFIER)wotests";
+				SERVER_UNIQUIFIER = Server;
+				WRAPPER_EXTENSION = tmp;
+			};
+			dependencies = (
+			);
+			isa = PBXBundleTarget;
+			name = "Application Server";
+			productInstallPath = "$(USER_APPS_DIR)";
+			productName = "Server App";
+			productReference = 017C60B1FFD2F2BB7F000001;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>_WO$(SERVER_UNIQUIFIER)wotests</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
+	<key>CFBundleIconFile</key>
+	<string></string>
+	<key>CFBundleIdentifier</key>
+	<string></string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string></string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
+	<key>CFBundleSignature</key>
+	<string>webo</string>
+	<key>CFBundleVersion</key>
+	<string>0.0.1d1</string>
+	<key>Java</key>
+	<dict>
+		<key>JVMVersion</key>
+		<string>1.4+</string>
+	</dict>
+</dict>
+</plist>
+";
+		};
+		017C60B5FFD2F2BB7F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+				2123FDFEFFD467417F000001,
+				2123FDFFFFD467417F000001,
+				2123FE00FFD467417F000001,
+				2123FE01FFD467417F000001,
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C60C6FFD2F2BB7F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+				2123FE02FFD467417F000001,
+				016FA8CBFFE5B8A311CD2B8D,
+				C65E1ED90072974704CD2B8D,
+				FF70E86D02244EA903CD29B6,
+				4002927A05966EE400519604,
+				4002928005966EE500519604,
+			);
+			isa = PBXResourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C60D3FFD2F2BB7F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXJavaArchiveBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C60D4FFD2F2BB7F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+				085A02CA00150D1D11CD2B8D,
+				085A02CB00150D1D11CD2B8D,
+				085A02CC00150D1D11CD2B8D,
+				085A02CD00150D1D11CD2B8D,
+				085A02CF00150D1D11CD2B8D,
+				022D13070059B68211CD2978,
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C60D6FFD2F2BB7F000001 = {
+			buildPhases = (
+				017C60D7FFD2F2BB7F000001,
+				017C60D8FFD2F2BB7F000001,
+				017C60EBFFD2F2BB7F000001,
+				017C60ECFFD2F2BB7F000001,
+				16B190260028D0A611CD2B8D,
+			);
+			buildSettings = {
+				BUILD_CLIENT_LAUNCH_SCRIPT = NO;
+				BUILD_FILES_DIR = "$(LOCAL_LIBRARY_DIR)/Application Support/Apple/Developer Tools/WebObjects Support";
+				CLIENT_UNIQUIFIER = Client;
+				COMPILE_JAVA_SOURCES_IN_NIB_FILES = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks\" \"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"";
+				JAVA_ARCHIVE_CLASSES = BOTH;
+				JAVA_ARCHIVE_TYPE = JAR;
+				JAVA_COMPILER_FLAGS = "-extdirs /Library/WebObjects/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Home/lib/ext";
+				JAVA_FRAMEWORK_RESOURCES_DIRS = WebServerResources;
+				JAVA_ONLY = YES;
+				JAVA_SOURCE_SUBDIR = .;
+				OTHER_JAVA_CLASS_PATH = "";
+				PRODUCT_NAME = "_WO$(CLIENT_UNIQUIFIER)wotests";
+				WRAPPER_EXTENSION = tmp;
+			};
+			dependencies = (
+			);
+			isa = PBXBundleTarget;
+			name = "Web Server";
+			productName = "Client App";
+			productReference = 017C60B2FFD2F2BB7F000001;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>_WO$(CLIENT_UNIQUIFIER)wotests</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
+	<key>CFBundleIconFile</key>
+	<string></string>
+	<key>CFBundleIdentifier</key>
+	<string></string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string></string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
+	<key>CFBundleSignature</key>
+	<string>webo</string>
+	<key>CFBundleVersion</key>
+	<string>0.0.1d1</string>
+	<key>Java</key>
+	<dict>
+		<key>JVMVersion</key>
+		<string>1.4+</string>
+	</dict>
+</dict>
+</plist>
+";
+		};
+		017C60D7FFD2F2BB7F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C60D8FFD2F2BB7F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXResourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C60EBFFD2F2BB7F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXJavaArchiveBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C60ECFFD2F2BB7F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+				085A02D000150D1D11CD2B8D,
+				085A02D100150D1D11CD2B8D,
+				085A02D200150D1D11CD2B8D,
+				085A02D300150D1D11CD2B8D,
+				085A02D500150D1D11CD2B8D,
+				022D13080059B68211CD2978,
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C60FFFFD43DA37F000001 = {
+			expectedFileType = wrapper.application;
+			fallbackIsa = PBXFileReference;
+			isa = PBXApplicationReference;
+			path = wotests.woa;
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		017C6100FFD43DA37F000001 = {
+			buildPhases = (
+				017C6103FFD43DA37F000001,
+				017C6104FFD43DA37F000001,
+				017C6105FFD43DA37F000001,
+				017C6106FFD43DA37F000001,
+				017C6107FFD43DA37F000001,
+				017C6108FFD43DA37F000001,
+				01CC6D570020D11111CD2B8D,
+			);
+			buildSettings = {
+				APPLICATION_DIR_MACOS = "$(CONTENTS_DIR)/MacOS";
+				APPLICATION_DIR_UNIX = "$(CONTENTS_DIR)/UNIX";
+				APPLICATION_DIR_WINDOWS = "$(CONTENTS_DIR)/Windows";
+				BUILD_FILES_DIR = "$(LOCAL_LIBRARY_DIR)/Application Support/Apple/Developer Tools/WebObjects Support";
+				BUNDLE_AS_JAR = YES;
+				CLIENT_UNIQUIFIER = Client;
+				CONTENTS_DIR = "$(WRAPPER_DIR)/Contents";
+				COPY_PHASE_STRIP = NO;
+				INFO_FILE = "$(CONTENTS_DIR)/$(INFO_FILE_NAME)";
+				INFO_FILE_NAME = Info.plist;
+				INSTALL_MODE_FLAG = "a+rX";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/WebObjects/Applications";
+				INSTALL_PATH_FOR_STYLE = "$(TARGET_BUILD_DIR)";
+				JAR_BUNDLE_INSTALL_DIR = "$(LOCAL_LIBRARY_DIR)/WebObjects/Applications";
+				JAVA_DEBUGGER = jdb;
+				JAVA_ONLY = YES;
+				JAVA_SOURCE_SUBDIR = .;
+				JAVA_VM = java;
+				JDB_OPTIONS = "";
+				JVM_OPTIONS = "";
+				PRODUCT_NAME = wotests;
+				RESOURCES_DIR = "$(CONTENTS_DIR)/Resources";
+				RESOURCES_JAVA_DIR = "$(RESOURCES_DIR)/Java";
+				SERVER_UNIQUIFIER = Server;
+				SPLIT_INSTALL = NO;
+				WEBSERVER_CONTENTS_DIR = "$(WEBSERVER_WRAPPER_DIR)/Contents";
+				WEBSERVER_INSTALL_DIR = "$(WEBSERVER_INSTALL_DIR_APPLICATION)";
+				WEBSERVER_RESOURCES_DIR = "$(CONTENTS_DIR)/WebServerResources";
+				WEBSERVER_RESOURCES_JAVA_DIR = "$(WEBSERVER_RESOURCES_DIR)/Java";
+				WOAPPLICATION_CLASS_NAME = Application;
+				WO_TEMPLATE_MAJOR_VERSION = 5;
+				WO_TEMPLATE_MINOR_VERSION = 2;
+				WRAPPER_DIR = "$(INSTALL_PATH_FOR_STYLE)/$(WRAPPER_NAME)";
+				WRAPPER_EXTENSION = woa;
+				WRAPPER_NAME = "$(PRODUCT_NAME).$(WRAPPER_EXTENSION)";
+			};
+			dependencies = (
+				017C6101FFD43DA37F000001,
+				017C6102FFD43DA37F000001,
+			);
+			isa = PBXApplicationTarget;
+			name = wotests;
+			productInstallPath = "$(LOCAL_LIBRARY_DIR)/WebObjects/Applications";
+			productName = NewWrapper;
+			productReference = 017C60FFFFD43DA37F000001;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>wotests</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
+	<key>CFBundleIconFile</key>
+	<string>WOAfile.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string></string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string></string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
+	<key>CFBundleSignature</key>
+	<string>webo</string>
+	<key>CFBundleVersion</key>
+	<string>0.0.1d1</string>
+	<key>Java</key>
+	<dict>
+		<key>JVMVersion</key>
+		<string>1.4+</string>
+	</dict>
+	<key>NSExecutable</key>
+	<string>wotests</string>
+	<key>NSJavaClientRoot</key>
+	<string>Contents/WebServerResources/Java</string>
+	<key>NSJavaNeeded</key>
+	<true/>
+	<key>NSJavaPath</key>
+	<array>
+		<string>wotests.jar</string>
+	</array>
+	<key>NSJavaPathClient</key>
+	<string>wotests.jar</string>
+	<key>NSJavaRoot</key>
+	<string>Contents/Resources/Java</string>
+</dict>
+</plist>
+";
+		};
+		017C6101FFD43DA37F000001 = {
+			isa = PBXTargetDependency;
+			target = 017C60B4FFD2F2BB7F000001;
+			targetProxy = 4002926705966EE200519604;
+		};
+		017C6102FFD43DA37F000001 = {
+			isa = PBXTargetDependency;
+			target = 017C60D6FFD2F2BB7F000001;
+			targetProxy = 4002926805966EE200519604;
+		};
+		017C6103FFD43DA37F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C6104FFD43DA37F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXResourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C6105FFD43DA37F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXJavaArchiveBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C6106FFD43DA37F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		017C6107FFD43DA37F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Copy the requisite files from the Server and Client directories into the final wrapper directory\n. \"${BUILD_FILES_DIR}/AssembleApplication.sh\"";
+		};
+		017C6108FFD43DA37F000001 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Create the run scripts and classpath files for all platforms\n. \"${BUILD_FILES_DIR}/CreateRunFiles.sh\"";
+		};
+		01A3BF6FFFB0C37D11CD2B9D = {
+			buildRules = (
+			);
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_MODE_FLAG = "a+rX";
+				INSTALL_PATH_FOR_STYLE = "$(TARGET_BUILD_DIR)";
+				SPLIT_INSTALL = NO;
+				ZERO_LINK = YES;
+			};
+			isa = PBXBuildStyle;
+			name = Development;
+		};
+		01A3BF70FFB0C37D11CD2B9D = {
+			buildRules = (
+			);
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				INSTALL_MODE_FLAG = "a+rX";
+				INSTALL_PATH_FOR_STYLE = "$(DSTROOT)/$(INSTALL_PATH)";
+				SPLIT_INSTALL = NO;
+				ZERO_LINK = NO;
+			};
+			isa = PBXBuildStyle;
+			name = Deployment;
+		};
+		01CC6D570020D11111CD2B8D = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Set the permissions for the build product\n. \"${BUILD_FILES_DIR}/SetPermissions.sh\"";
+		};
+		01D74EAA00210ABC11CD2B8D = {
+			children = (
+			);
+			isa = PBXGroup;
+			name = Interfaces;
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+//010
+//011
+//012
+//013
+//014
+//020
+//021
+//022
+//023
+//024
+		022D13060059B68211CD2978 = {
+			expectedFileType = wrapper.framework;
+			fallbackIsa = PBXFileReference;
+			isa = PBXFrameworkReference;
+			name = JavaXML.framework;
+			path = /System/Library/Frameworks/JavaXML.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		022D13070059B68211CD2978 = {
+			fileRef = 022D13060059B68211CD2978;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		022D13080059B68211CD2978 = {
+			fileRef = 022D13060059B68211CD2978;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//020
+//021
+//022
+//023
+//024
+//080
+//081
+//082
+//083
+//084
+		085A02CA00150D1D11CD2B8D = {
+			fileRef = 096CB471FF7BFD6311CD2B9D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		085A02CB00150D1D11CD2B8D = {
+			fileRef = 096CB472FF7BFD6311CD2B9D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		085A02CC00150D1D11CD2B8D = {
+			fileRef = 096CB473FF7BFD6311CD2B9D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		085A02CD00150D1D11CD2B8D = {
+			fileRef = 096CB46FFF7BFC8111CD2B9D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		085A02CF00150D1D11CD2B8D = {
+			fileRef = 096CB475FF7BFD6311CD2B9D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		085A02D000150D1D11CD2B8D = {
+			fileRef = 096CB471FF7BFD6311CD2B9D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		085A02D100150D1D11CD2B8D = {
+			fileRef = 096CB472FF7BFD6311CD2B9D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		085A02D200150D1D11CD2B8D = {
+			fileRef = 096CB473FF7BFD6311CD2B9D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		085A02D300150D1D11CD2B8D = {
+			fileRef = 096CB46FFF7BFC8111CD2B9D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		085A02D500150D1D11CD2B8D = {
+			fileRef = 096CB475FF7BFD6311CD2B9D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//080
+//081
+//082
+//083
+//084
+//090
+//091
+//092
+//093
+//094
+		096CB46EFF7BFC8111CD2B9D = {
+			children = (
+				096CB471FF7BFD6311CD2B9D,
+				096CB472FF7BFD6311CD2B9D,
+				096CB473FF7BFD6311CD2B9D,
+				096CB46FFF7BFC8111CD2B9D,
+				096CB475FF7BFD6311CD2B9D,
+				022D13060059B68211CD2978,
+			);
+			isa = PBXGroup;
+			name = Frameworks;
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		096CB46FFF7BFC8111CD2B9D = {
+			expectedFileType = wrapper.framework;
+			fallbackIsa = PBXFileReference;
+			isa = PBXFrameworkReference;
+			name = JavaWebObjects.framework;
+			path = /System/Library/Frameworks/JavaWebObjects.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		096CB471FF7BFD6311CD2B9D = {
+			expectedFileType = wrapper.framework;
+			fallbackIsa = PBXFileReference;
+			isa = PBXFrameworkReference;
+			name = JavaFoundation.framework;
+			path = /System/Library/Frameworks/JavaFoundation.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		096CB472FF7BFD6311CD2B9D = {
+			expectedFileType = wrapper.framework;
+			fallbackIsa = PBXFileReference;
+			isa = PBXFrameworkReference;
+			name = JavaEOControl.framework;
+			path = /System/Library/Frameworks/JavaEOControl.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		096CB473FF7BFD6311CD2B9D = {
+			expectedFileType = wrapper.framework;
+			fallbackIsa = PBXFileReference;
+			isa = PBXFrameworkReference;
+			name = JavaEOAccess.framework;
+			path = /System/Library/Frameworks/JavaEOAccess.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		096CB475FF7BFD6311CD2B9D = {
+			expectedFileType = wrapper.framework;
+			fallbackIsa = PBXFileReference;
+			isa = PBXFrameworkReference;
+			name = JavaWOExtensions.framework;
+			path = /System/Library/Frameworks/JavaWOExtensions.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+//090
+//091
+//092
+//093
+//094
+//0B0
+//0B1
+//0B2
+//0B3
+//0B4
+		0B4F248B00221FBD11CD2B8D = {
+			children = (
+				017C60B1FFD2F2BB7F000001,
+				017C60B2FFD2F2BB7F000001,
+			);
+			isa = PBXGroup;
+			name = Intermediates;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+//0B0
+//0B1
+//0B2
+//0B3
+//0B4
+//150
+//151
+//152
+//153
+//154
+		15D0BC79FF5EC47311CD2B9D = {
+			children = (
+			);
+			isa = PBXGroup;
+			name = "Web Server Resources";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		15D0BC7BFF5EC4B811CD2B9D = {
+			children = (
+				C65E1ED80072974704CD2B8D,
+				FF70E86C02244EA903CD29B6,
+				4002926D05966EE400519604,
+				4002927B05966EE500519604,
+			);
+			isa = PBXGroup;
+			name = Resources;
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+//150
+//151
+//152
+//153
+//154
+//160
+//161
+//162
+//163
+//164
+		16B190260028D0A611CD2B8D = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Copy the requisite files from the Server and Client directories into the final wrapper directory\nif [ \"${BUILD_CLIENT_LAUNCH_SCRIPT}\" = \"YES\" ]; then\n    . \"${BUILD_FILES_DIR}/ComputeTargetClasspath.sh\" \"YES\" \"${CLIENT_UNIQUIFIER}\"\nfi";
+		};
+//160
+//161
+//162
+//163
+//164
+//210
+//211
+//212
+//213
+//214
+		2123FDF6FFD467417F000001 = {
+			expectedFileType = sourcecode.java;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = Application.java;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		2123FDF7FFD467417F000001 = {
+			expectedFileType = sourcecode.java;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = Session.java;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		2123FDF8FFD467417F000001 = {
+			expectedFileType = sourcecode.java;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = DirectAction.java;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		2123FDF9FFD467417F000001 = {
+			children = (
+				016FA8CAFFE5B8A311CD2B8D,
+				2123FDFBFFD467417F000001,
+				2123FDFCFFD467417F000001,
+			);
+			isa = PBXGroup;
+			name = Main;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		2123FDFBFFD467417F000001 = {
+			expectedFileType = sourcecode.java;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = Main.java;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		2123FDFCFFD467417F000001 = {
+			expectedFileType = text.woapi;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = Main.api;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		2123FDFDFFD467417F000001 = {
+			children = (
+			);
+			isa = PBXGroup;
+			name = Documentation;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		2123FDFEFFD467417F000001 = {
+			fileRef = 2123FDF6FFD467417F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+				);
+			};
+		};
+		2123FDFFFFD467417F000001 = {
+			fileRef = 2123FDF8FFD467417F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+				);
+			};
+		};
+		2123FE00FFD467417F000001 = {
+			fileRef = 2123FDF7FFD467417F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+				);
+			};
+		};
+		2123FE01FFD467417F000001 = {
+			fileRef = 2123FDFBFFD467417F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+				);
+			};
+		};
+		2123FE02FFD467417F000001 = {
+			fileRef = 2123FDFCFFD467417F000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//210
+//211
+//212
+//213
+//214
+//400
+//401
+//402
+//403
+//404
+		4002926705966EE200519604 = {
+			containerPortal = 013357CCFF5DD5F011CD2B9D;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 017C60B4FFD2F2BB7F000001;
+			remoteInfo = "Application Server";
+		};
+		4002926805966EE200519604 = {
+			containerPortal = 013357CCFF5DD5F011CD2B9D;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 017C60D6FFD2F2BB7F000001;
+			remoteInfo = "Web Server";
+		};
+		4002926D05966EE400519604 = {
+			expectedFileType = folder;
+			isa = PBXFileReference;
+			path = art.eomodeld;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4002927A05966EE400519604 = {
+			fileRef = 4002926D05966EE400519604;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4002927B05966EE500519604 = {
+			expectedFileType = folder;
+			isa = PBXFileReference;
+			path = "cross-model-relationships.eomodeld";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4002928005966EE500519604 = {
+			fileRef = 4002927B05966EE500519604;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//400
+//401
+//402
+//403
+//404
+//C60
+//C61
+//C62
+//C63
+//C64
+		C65E1ED80072974704CD2B8D = {
+			expectedFileType = image.icns;
+			isa = PBXFileReference;
+			path = WOAfile.icns;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		C65E1ED90072974704CD2B8D = {
+			fileRef = C65E1ED80072974704CD2B8D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//C60
+//C61
+//C62
+//C63
+//C64
+//FF0
+//FF1
+//FF2
+//FF3
+//FF4
+		FF70E86C02244EA903CD29B6 = {
+			expectedFileType = text;
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = Properties;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		FF70E86D02244EA903CD29B6 = {
+			fileRef = FF70E86C02244EA903CD29B6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+	};
+	rootObject = 013357CCFF5DD5F011CD2B9D;
+}

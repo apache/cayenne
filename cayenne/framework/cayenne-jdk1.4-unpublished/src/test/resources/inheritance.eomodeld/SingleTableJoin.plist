@@ -1,0 +1,40 @@
+{
+    attributes = (
+        {
+            columnName = "SINGLE_TABLE_PK"; 
+            externalType = int; 
+            name = singleTablePk; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            columnName = "HELPER_FLAT_PK"; 
+            externalType = int; 
+            internalInfo = {"_nameInObjectStore" = "FLAT_PK"; }; 
+            name = helperFlatPk; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }
+    ); 
+    attributesUsedForLocking = (singleTablePk, helperFlatPk); 
+    externalName = "SINGLE_TABLE_JOIN"; 
+    fetchSpecificationDictionary = {}; 
+    name = SingleTableJoin; 
+    primaryKeyAttributes = (singleTablePk, helperFlatPk); 
+    relationships = (
+        {
+            destination = HelperFlatEntity; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = pk; sourceAttribute = helperFlatPk; }); 
+            name = toHelperFlatEntity; 
+        }, 
+        {
+            destination = SingleTableConcreteEntityOne; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = pk; sourceAttribute = singleTablePk; }); 
+            name = toSingleTable; 
+        }
+    ); 
+}

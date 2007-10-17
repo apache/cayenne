@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	
+	<!-- ARTIST -->
+	<bean id="A1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33001, 'artist1')
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- ARTGROUP -->
+	<bean id="AG1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.ArtGroup</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO ARTGROUP (GROUP_ID, NAME) VALUES (1,'g1')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="AG2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.ArtGroup</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO ARTGROUP (GROUP_ID, NAME) VALUES (2,'g2')
+		</value></constructor-arg>
+	</bean>
+	
+	
+	<!-- ARTIST_GROUP -->
+	<bean id="AGG1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.ArtGroup</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO ARTIST_GROUP (ARTIST_ID, GROUP_ID) VALUES (33001,1)
+		</value></constructor-arg>
+	</bean>
+     
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	
+	<bean id="testReadFlattenedRelationship" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="AG1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testReadFlattenedRelationship2" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="AG1"/>
+				<ref bean="AGG1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testAddToFlattenedRelationship" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="AG1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	
+	<bean id="testDoubleCommitAddToFlattenedRelationship" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="AG1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testRemoveFromFlattenedRelationship" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="AG1"/>
+				<ref bean="AGG1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testRemoveFlattenedRelationshipAndRootRecord" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="AG1"/>
+				<ref bean="AGG1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testAddRemoveFlattenedRelationship1" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="AG1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testAddRemoveFlattenedRelationship2" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="AG1"/>
+				<ref bean="AG2"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

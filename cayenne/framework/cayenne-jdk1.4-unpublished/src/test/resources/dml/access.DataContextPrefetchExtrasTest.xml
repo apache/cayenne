@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	
+	<!-- Char PK -->
+	<bean id="CPK1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CharPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into CHAR_PK_TEST (PK_COL, OTHER_COL) values ('k1', 'n1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="CPK2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CharPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into CHAR_PK_TEST (PK_COL, OTHER_COL) values ('k2', 'n2')
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- Char FK -->
+	<bean id="CFK1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CharFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into CHAR_FK_TEST (PK, FK_COL, NAME) values (1, 'k1', 'fn1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="CFK2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CharFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into CHAR_FK_TEST (PK, FK_COL, NAME) values (2, 'k1', 'fn2')
+		</value></constructor-arg>
+	</bean>
+	<bean id="CFK3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CharFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into CHAR_FK_TEST (PK, FK_COL, NAME) values (3, 'k2', 'fn3')
+		</value></constructor-arg>
+	</bean>
+	<bean id="CFK4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CharFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into CHAR_FK_TEST (PK, FK_COL, NAME) values (4, 'k2', 'fn4')
+		</value></constructor-arg>
+	</bean>
+	<bean id="CFK5" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CharFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into CHAR_FK_TEST (PK, FK_COL, NAME) values (5, 'k1', 'fn5')
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- COMPOUND PK -->
+	<bean id="COMPK1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_PK_TEST (KEY1, KEY2, NAME) values ('101', '201', 'CPK1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="COMPK2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_PK_TEST (KEY1, KEY2, NAME) values ('102', '202', 'CPK2')
+		</value></constructor-arg>
+	</bean>
+	<bean id="COMPK3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_PK_TEST (KEY1, KEY2, NAME) values ('103', '203', 'CPK3')
+		</value></constructor-arg>
+	</bean>
+	
+	<!-- COMPOUND FK -->
+	<bean id="COMFK1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_FK_TEST (PKEY, F_KEY1, F_KEY2, NAME) values (301, '102', '202', 'CFK1')
+		</value></constructor-arg>
+	</bean>
+	<bean id="COMFK2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_FK_TEST (PKEY, F_KEY1, F_KEY2, NAME) values (302, '102', '202', 'CFK2')
+		</value></constructor-arg>
+	</bean>
+	<bean id="COMFK3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_FK_TEST (PKEY, F_KEY1, F_KEY2, NAME) values (303, '101', '201', 'CFK3')
+		</value></constructor-arg>
+	</bean>
+
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	<bean id="testPrefetchToManyOnCharKey" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="CPK1"/>
+				<ref bean="CPK2"/>
+				<ref bean="CFK1"/>
+				<ref bean="CFK2"/>
+				<ref bean="CFK3"/>
+				<ref bean="CFK4"/>
+				<ref bean="CFK5"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="testCompound" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="COMPK1"/>
+				<ref bean="COMPK2"/>
+				<ref bean="COMPK3"/>
+				<ref bean="COMFK1"/>
+				<ref bean="COMFK2"/>
+				<ref bean="COMFK3"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>
