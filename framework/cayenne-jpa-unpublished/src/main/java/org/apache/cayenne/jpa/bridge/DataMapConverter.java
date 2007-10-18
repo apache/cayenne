@@ -204,13 +204,9 @@ public class DataMapConverter {
             JpaEntityListener jpaListener = (JpaEntityListener) path.getObject();
 
             DataMap map = (DataMap) targetPath.firstInstanceOf(DataMap.class);
-            EntityListener listener = map.getEntityListener(jpaListener.getClassName());
-            if (listener == null) {
-                listener = makeEntityListener(jpaListener);
-                map.addEntityListener(listener);
-            }
-
+            EntityListener listener = makeEntityListener(jpaListener);
             map.addDefaultEntityListener(listener);
+
             return false;
         }
     }
@@ -220,14 +216,8 @@ public class DataMapConverter {
         @Override
         public boolean onStartNode(ProjectPath path) {
             JpaEntityListener jpaListener = (JpaEntityListener) path.getObject();
-
-            DataMap map = (DataMap) targetPath.firstInstanceOf(DataMap.class);
-            EntityListener listener = map.getEntityListener(jpaListener.getClassName());
-            if (listener == null) {
-                listener = makeEntityListener(jpaListener);
-                map.addEntityListener(listener);
-            }
-
+            
+            EntityListener listener = makeEntityListener(jpaListener);
             ObjEntity entity = (ObjEntity) targetPath.firstInstanceOf(ObjEntity.class);
             entity.addEntityListener(listener);
 

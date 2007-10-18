@@ -79,12 +79,12 @@ public class DataMapConverterTest extends TestCase {
         listeners.getEntityListeners().add(l2);
 
         DataMap cayenneMap = new DataMapConverter().toDataMap("n1", context);
-        Collection entityListeners = cayenneMap.getEntityListeners();
+        Collection entityListeners = cayenneMap.getDefaultEntityListeners();
         assertEquals(2, entityListeners.size());
         Collection defaultListeners = cayenneMap.getDefaultEntityListeners();
         assertEquals(2, defaultListeners.size());
 
-        EntityListener cl1 = cayenneMap.getEntityListener("abc.C1");
+        EntityListener cl1 = cayenneMap.getDefaultEntityListener("abc.C1");
         assertNotNull(cl1);
         assertEquals(l1.getClassName(), cl1.getClassName());
         assertEquals(1, cl1.getCallbackMap().getPostLoad().getCallbackMethods().size());

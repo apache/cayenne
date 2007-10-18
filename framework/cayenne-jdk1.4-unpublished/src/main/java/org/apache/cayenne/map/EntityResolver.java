@@ -66,7 +66,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     protected transient Map queryCache;
     protected transient Map embeddableCache;
-    protected transient Map entityListenerCache;
     protected transient Map dbEntityCache;
     protected transient Map objEntityCache;
     protected transient Map procedureCache;
@@ -88,7 +87,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
         this.indexedByClass = true;
         this.maps = new ArrayList();
         this.embeddableCache = new HashMap();
-        this.entityListenerCache = new HashMap();
         this.queryCache = new HashMap();
         this.dbEntityCache = new HashMap();
         this.objEntityCache = new HashMap();
@@ -347,22 +345,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @since 3.0
-     */
-    public EntityListener getEntityListener(String className) {
-        EntityListener result = (EntityListener) entityListenerCache.get(className);
-
-        if (result == null) {
-            // reconstruct cache just in case some of the datamaps
-            // have changed and now contain the required information
-            constructCache();
-            result = (EntityListener) entityListenerCache.get(className);
-        }
-
-        return result;
-    }
-
-    /**
      * Returns ClassDescriptor for the ObjEntity matching the name. Returns null if no
      * matching entity exists.
      * 
@@ -395,7 +377,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
         objEntityCache.clear();
         procedureCache.clear();
         entityInheritanceCache.clear();
-        entityListenerCache.clear();
         clientEntityResolver = null;
     }
 
@@ -475,13 +456,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
                     throw new CayenneRuntimeException("More than one Query for name"
                             + name);
                 }
-            }
-
-            // index listeners
-            Iterator listeners = map.getEntityListeners().iterator();
-            while (listeners.hasNext()) {
-                EntityListener listener = (EntityListener) listeners.next();
-                entityListenerCache.put(listener.getClassName(), listener);
             }
         }
 

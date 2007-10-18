@@ -115,7 +115,6 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     protected String defaultClientPackage;
 
     private SortedMap embeddablesMap;
-    private SortedMap entityListenersMap;
     private SortedMap objEntityMap;
     private SortedMap dbEntityMap;
     private SortedMap procedureMap;
@@ -139,7 +138,6 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
 
     public DataMap(String mapName, Map properties) {
         embeddablesMap = new TreeMap();
-        entityListenersMap = new TreeMap();
         objEntityMap = new TreeMap();
         dbEntityMap = new TreeMap();
         procedureMap = new TreeMap();
@@ -494,15 +492,6 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     /**
-     * Removes all stored entity listeners from the map.
-     * 
-     * @since 3.0
-     */
-    public void clearEntityListeners() {
-        entityListenersMap.clear();
-    }
-
-    /**
      * @since 1.1
      */
     public void clearQueries() {
@@ -544,48 +533,6 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      */
     public Collection getQueries() {
         return Collections.unmodifiableCollection(queryMap.values());
-    }
-
-    /**
-     * Adds a default entity listener that should be notified of certain events on all
-     * entities.
-     */
-    public void addEntityListener(EntityListener listener) {
-        if (listener == null) {
-            throw new NullPointerException("Null EntityListener");
-        }
-
-        if (listener.getClassName() == null) {
-            throw new NullPointerException(
-                    "Attempt to add EntityListener with no class name.");
-        }
-
-        // TODO: change method signature to return replaced el and make sure the
-        // Modeler handles it...
-        Object existing = embeddablesMap.get(listener.getClassName());
-        if (existing != null) {
-            if (existing == listener) {
-                return;
-            }
-            else {
-                throw new IllegalArgumentException("An attempt to override listener '"
-                        + listener.getClassName());
-            }
-        }
-
-        entityListenersMap.put(listener.getClassName(), listener);
-    }
-
-    /**
-     * Removes an {@link EntityListener} descriptor with matching class name from entity
-     * listeners and default entity listeners.
-     * 
-     * @since 3.0
-     */
-    public void removeEntityListener(String className) {
-        if (entityListenersMap.remove(className) != null) {
-            removeDefaultEntityListener(className);
-        }
     }
 
     /**
@@ -702,34 +649,6 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         }
 
         return namespace != null ? namespace.getEmbeddable(className) : null;
-    }
-
-    /**
-     * @since 3.0
-     */
-    public Map getEntityListenersMap() {
-        return Collections.unmodifiableMap(entityListenersMap);
-    }
-
-    /**
-     * Returns a collection of {@link EntityListener} mappings stored in the DataMap.
-     * 
-     * @since 3.0
-     */
-    public Collection getEntityListeners() {
-        return Collections.unmodifiableCollection(entityListenersMap.values());
-    }
-
-    /**
-     * @since 3.0
-     */
-    public EntityListener getEntityListener(String className) {
-        EntityListener e = (EntityListener) entityListenersMap.get(className);
-        if (e != null) {
-            return e;
-        }
-
-        return namespace != null ? namespace.getEntityListener(className) : null;
     }
 
     /**
