@@ -69,7 +69,7 @@ public abstract class Configuration {
     protected boolean ignoringLoadFailures;
     protected ConfigLoaderDelegate loaderDelegate;
     protected ConfigSaverDelegate saverDelegate;
-    protected ConfigurationShutdownHook configurationShutdownHook = new ConfigurationShutdownHook();
+    protected ConfigurationShutdownHook configurationShutdownHook;
     protected Map dataViewLocations = new HashMap();
     protected String projectVersion;
 
@@ -463,10 +463,17 @@ public abstract class Configuration {
 
     public void installConfigurationShutdownHook() {
         uninstallConfigurationShutdownHook();
+
+        if (configurationShutdownHook == null) {
+            configurationShutdownHook = new ConfigurationShutdownHook();
+        }
+
         Runtime.getRuntime().addShutdownHook(configurationShutdownHook);
     }
 
     public void uninstallConfigurationShutdownHook() {
-        Runtime.getRuntime().removeShutdownHook(configurationShutdownHook);
+        if (configurationShutdownHook != null) {
+            Runtime.getRuntime().removeShutdownHook(configurationShutdownHook);
+        }
     }
 }

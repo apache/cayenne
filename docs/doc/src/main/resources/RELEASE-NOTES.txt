@@ -8,6 +8,18 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
+Release: 3.0M3
+Date: 
+----------------------------------
+
+Changes/New Features Since M2:
+
+Bug fixes since M2:
+
+CAY-882 Configuration shutdown hook thread may lead to memory leaks
+
+
+----------------------------------
 Release: 3.0M2
 Date: 
 ----------------------------------
