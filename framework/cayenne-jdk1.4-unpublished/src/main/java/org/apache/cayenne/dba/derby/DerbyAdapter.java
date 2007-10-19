@@ -35,6 +35,7 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.merge.MergerFactory;
 
 /**
  * DbAdapter implementation for the <a href="http://incubator.apache.org/derby/"> Derby
@@ -172,6 +173,10 @@ public class DerbyAdapter extends JdbcAdapter {
      */
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         return new TrimmingQualifierTranslator(queryAssembler, "RTRIM");
+    }
+    
+    public MergerFactory mergerFactory() {
+        return new DerbyMergerFactory();
     }
 
 }

@@ -48,6 +48,7 @@ import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -274,5 +275,9 @@ public class AutoAdapter implements DbAdapter {
 
     public String tableTypeForView() {
         return getAdapter().tableTypeForView();
+    }
+
+    public MergerFactory mergerFactory() {
+        return getAdapter().mergerFactory();
     }
 }
