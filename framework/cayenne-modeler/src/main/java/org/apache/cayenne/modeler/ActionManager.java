@@ -67,7 +67,7 @@ public class ActionManager {
                 CreateDbEntityAction.getActionName(),
                 CreateDerivedDbEntityAction.getActionName(),
                 CreateQueryAction.getActionName(), CreateProcedureAction.getActionName(),
-                GenerateDBAction.getActionName()
+                GenerateDBAction.getActionName(), MigrateAction.getActionName()
         }));
     }
 
@@ -131,6 +131,7 @@ public class ActionManager {
         registerAction(new ImportDBAction(application));
         registerAction(new ImportEOModelAction(application));
         registerAction(new GenerateDBAction(application));
+        registerAction(new MigrateAction(application));
         registerAction(new AboutAction(application)).setAlwaysOn(true);
         registerAction(new ConfigurePreferencesAction(application)).setAlwaysOn(true);
         registerAction(new ExitAction(application)).setAlwaysOn(true);

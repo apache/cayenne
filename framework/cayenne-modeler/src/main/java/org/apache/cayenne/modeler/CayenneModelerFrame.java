@@ -20,12 +20,23 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
 
-import javax.swing.*;
-import javax.swing.border.Border;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
 
 import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.modeler.action.AboutAction;
@@ -46,6 +57,7 @@ import org.apache.cayenne.modeler.action.GenerateDBAction;
 import org.apache.cayenne.modeler.action.ImportDBAction;
 import org.apache.cayenne.modeler.action.ImportDataMapAction;
 import org.apache.cayenne.modeler.action.ImportEOModelAction;
+import org.apache.cayenne.modeler.action.MigrateAction;
 import org.apache.cayenne.modeler.action.NavigateBackwardAction;
 import org.apache.cayenne.modeler.action.NavigateForwardAction;
 import org.apache.cayenne.modeler.action.NewProjectAction;
@@ -158,6 +170,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolMenu.addSeparator();
         toolMenu.add(getAction(GenerateCodeAction.getActionName()).buildMenu());
         toolMenu.add(getAction(GenerateDBAction.getActionName()).buildMenu());
+        toolMenu.add(getAction(MigrateAction.getActionName()).buildMenu());
         toolMenu.addSeparator();
         toolMenu.add(getAction(ConfigurePreferencesAction.getActionName()).buildMenu());
 
