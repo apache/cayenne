@@ -46,6 +46,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DerivedDbEntity;
+import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.util.ResourceLocator;
@@ -521,5 +522,9 @@ public class JdbcAdapter implements DbAdapter {
      */
     public void setEjbqlTranslatorFactory(EJBQLTranslatorFactory ejbqlTranslatorFactory) {
         this.ejbqlTranslatorFactory = ejbqlTranslatorFactory;
+    }
+
+    public MergerFactory mergerFactory() {
+        return new MergerFactory();
     }
 }

@@ -29,6 +29,7 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -178,4 +179,6 @@ public interface DbAdapter {
      * <code>DatabaseMetaData.getTableTypes</code>) for a view table.
      */
     public String tableTypeForView();
+    
+    public MergerFactory mergerFactory();
 }

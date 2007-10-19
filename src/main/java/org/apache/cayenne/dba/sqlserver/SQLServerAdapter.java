@@ -25,6 +25,7 @@ import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -123,5 +124,9 @@ public class SQLServerAdapter extends SybaseAdapter {
             // current limitation - we don't allow to set identity parameters...
             sqlBuffer.append(" IDENTITY (1, 1)");
         }
+    }
+    
+    public MergerFactory mergerFactory() {
+        return new SQLServerMergerFactory();
     }
 }
