@@ -28,7 +28,7 @@ import javax.transaction.TransactionSynchronizationRegistry;
 
 import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.cayenne.util.Util;
-import org.apache.geronimo.transaction.jta11.GeronimoTransactionManagerJTA11;
+import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.apache.openejb.client.LocalInitialContextFactory;
 
 /**
@@ -50,7 +50,7 @@ public class OpenEJBContainer {
     }
 
     private File openEjbHome;
-    private GeronimoTransactionManagerJTA11 txManager;
+    private GeronimoTransactionManager txManager;
 
     private OpenEJBContainer() {
         setupOpenEJBHome();
@@ -113,7 +113,7 @@ public class OpenEJBContainer {
         // different IC for binding the environment.
         new InitialContext();
 
-        this.txManager = new GeronimoTransactionManagerJTA11();
+        this.txManager = new GeronimoTransactionManager();
         new InitialContext().bind(
                 "java:comp/TransactionSynchronizationRegistry",
                 txManager);

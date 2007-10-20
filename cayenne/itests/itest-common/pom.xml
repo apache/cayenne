@@ -60,13 +60,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.geronimo.modules</groupId>
-			<artifactId>geronimo-transaction-jta11</artifactId>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.geronimo.modules</groupId>
+			<groupId>org.apache.geronimo.components</groupId>
 			<artifactId>geronimo-transaction</artifactId>
 			<scope>compile</scope>
 		</dependency>
