@@ -45,6 +45,14 @@
 			<artifactId>itest-common</artifactId>
 			<version>${version}</version>
 		</dependency>
+		
+		<!-- DBCP snapshot needed by OpenEJB container -->
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
