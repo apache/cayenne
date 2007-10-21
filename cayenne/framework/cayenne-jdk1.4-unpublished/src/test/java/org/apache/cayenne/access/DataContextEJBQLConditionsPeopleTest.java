@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.inherit.Address;
 import org.apache.cayenne.testdo.inherit.Department;
 import org.apache.cayenne.testdo.inherit.Manager;
@@ -79,6 +80,14 @@ public class DataContextEJBQLConditionsPeopleTest extends PeopleCase {
         d3.setToManager(m3);
 
         context.commitChanges();
+    }
+
+    protected void tearDown() throws Exception {
+        // help in cleaning up relationship cycles...
+        ObjectContext context = createDataContext();
+        context.performGenericQuery(new SQLTemplate(
+                Department.class,
+                "update DEPARTMENT set MANAGER_ID = NULL"));
     }
 
     public void testCollectionMemberOfId() throws Exception {
