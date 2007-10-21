@@ -31,9 +31,4 @@ class MySQLEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
     public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
         return new MySQLEJBQLConditionTranslator(context);
     }
-
-    public EJBQLExpressionVisitor getDeleteTranslator(EJBQLTranslationContext context) {
-        context.setUsingAliases(false);
-        return new MySQLEJBQLDeleteTranslator(context);
-    }
 }
