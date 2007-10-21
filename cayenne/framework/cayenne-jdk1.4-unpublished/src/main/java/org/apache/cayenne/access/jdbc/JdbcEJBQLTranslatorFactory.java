@@ -29,6 +29,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 public class JdbcEJBQLTranslatorFactory implements EJBQLTranslatorFactory {
 
     public EJBQLExpressionVisitor getDeleteTranslator(EJBQLTranslationContext context) {
+        context.setUsingAliases(false);
         return new EJBQLDeleteTranslator(context);
     }
 
