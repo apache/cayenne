@@ -38,6 +38,7 @@ public class JdbcEJBQLTranslatorFactory implements EJBQLTranslatorFactory {
     }
 
     public EJBQLExpressionVisitor getUpdateTranslator(EJBQLTranslationContext context) {
+        context.setUsingAliases(false);
         return new EJBQLUpdateTranslator(context);
     }
 
