@@ -18,22 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.dba.mysql;
 
+import org.apache.cayenne.access.jdbc.EJBQLFromTranslator;
 import org.apache.cayenne.access.jdbc.EJBQLTranslationContext;
-import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
-import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
-class MySQLEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
+class MySQLEJBQLDeleteFromTranslator extends EJBQLFromTranslator {
 
-    public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
-        return new MySQLEJBQLConditionTranslator(context);
+    MySQLEJBQLDeleteFromTranslator(EJBQLTranslationContext context) {
+        super(context);
     }
 
-    public EJBQLExpressionVisitor getDeleteTranslator(EJBQLTranslationContext context) {
-        context.setUsingAliases(false);
-        return new MySQLEJBQLDeleteTranslator(context);
+    /**
+     * Suppresses table alias.
+     */
+    protected String appendTable(String id) {
+        ClassDescriptor descriptor = context.getEntityDescriptor(id);
+        String tableName = descriptor.getEntity().getDbEntity().getFullyQualifiedName();
+
+        context.append(' ').append(tableName);
+        return tableName;
     }
 }

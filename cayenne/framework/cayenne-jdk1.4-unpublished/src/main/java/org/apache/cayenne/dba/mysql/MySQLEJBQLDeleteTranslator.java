@@ -18,22 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.dba.mysql;
 
+import org.apache.cayenne.access.jdbc.EJBQLDeleteTranslator;
 import org.apache.cayenne.access.jdbc.EJBQLTranslationContext;
-import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
-import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+import org.apache.cayenne.ejbql.EJBQLExpression;
 
 /**
  * @since 3.0
  * @author Andrus Adamchik
  */
-class MySQLEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
+class MySQLEJBQLDeleteTranslator extends EJBQLDeleteTranslator {
 
-    public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
-        return new MySQLEJBQLConditionTranslator(context);
+    MySQLEJBQLDeleteTranslator(EJBQLTranslationContext context) {
+        super(context);
     }
 
-    public EJBQLExpressionVisitor getDeleteTranslator(EJBQLTranslationContext context) {
-        context.setUsingAliases(false);
-        return new MySQLEJBQLDeleteTranslator(context);
+    public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
+        context.append(" FROM");
+        expression.visit(new MySQLEJBQLDeleteFromTranslator(context));
+        return false;
     }
 }
