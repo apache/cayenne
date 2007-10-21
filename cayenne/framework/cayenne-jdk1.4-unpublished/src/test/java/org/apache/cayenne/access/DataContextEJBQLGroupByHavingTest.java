@@ -43,12 +43,12 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
         assertTrue(data.get(0) instanceof Object[]);
 
         Object[] row0 = (Object[]) data.get(0);
-        assertEquals(new BigDecimal(1), row0[0]);
+        assertEquals(new BigDecimal(1d), row0[0], 0.001d);
         assertEquals(new Long(3), row0[1]);
 
         Object[] row1 = (Object[]) data.get(1);
-        assertEquals(new BigDecimal(2), row1[0]);
-        assertEquals(new Long(2), row1[1]);
+        assertEquals(new BigDecimal(2d), row1[0], 0.001d);
+        assertEquals(new Long(2l), row1[1]);
     }
 
     public void testGroupByMultipleItems() throws Exception {
@@ -64,17 +64,17 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
         assertTrue(data.get(0) instanceof Object[]);
 
         Object[] row0 = (Object[]) data.get(0);
-        assertEquals(new BigDecimal(1), row0[0]);
+        assertEquals(new BigDecimal(1d), row0[0], 0.001d);
         assertEquals("PX", row0[1]);
         assertEquals(new Long(1), row0[2]);
 
         Object[] row1 = (Object[]) data.get(1);
-        assertEquals(new BigDecimal(1), row1[0]);
+        assertEquals(new BigDecimal(1), row1[0], 0.001d);
         assertEquals("PZ", row1[1]);
         assertEquals(new Long(2), row1[2]);
 
         Object[] row2 = (Object[]) data.get(2);
-        assertEquals(new BigDecimal(2), row2[0]);
+        assertEquals(new BigDecimal(2d), row2[0], 0.001d);
         assertEquals("PY", row2[1]);
         assertEquals(new Long(2), row2[2]);
     }
@@ -112,7 +112,7 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
         assertTrue(data.get(0) instanceof Object[]);
 
         Object[] row0 = (Object[]) data.get(0);
-        assertEquals(new BigDecimal(2), row0[0]);
+        assertEquals(new BigDecimal(2d), row0[0], 0.001d);
         assertEquals(new Long(2), row0[1]);
     }
 
@@ -129,8 +129,8 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
         assertTrue(data.get(0) instanceof Object[]);
 
         Object[] row0 = (Object[]) data.get(0);
-        assertEquals(new BigDecimal(1), row0[0]);
-        assertEquals(new Long(3), row0[1]);
+        assertEquals(new BigDecimal(1d), row0[0], 0.001d);
+        assertEquals(new Long(3l), row0[1]);
     }
 
     public void testGroupByHavingOnAggregateMultipleConditions() throws Exception {
@@ -146,7 +146,7 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
         assertTrue(data.get(0) instanceof Object[]);
 
         Object[] row0 = (Object[]) data.get(0);
-        assertEquals(new BigDecimal(1), row0[0]);
-        assertEquals(new Long(3), row0[1]);
+        assertEquals(new BigDecimal(1d), row0[0], 0.001d);
+        assertEquals(new Long(3l), row0[1]);
     }
 }
