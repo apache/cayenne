@@ -94,6 +94,10 @@ class EJBQLUpdateItemTranslator extends EJBQLConditionTranslator {
             }
         };
 
+
+        // some DB's do not support aliases in SET (Postgresql)
+        pathTranslator.setUsingAliases(false);
+
         expression.visit(pathTranslator);
         return false;
     }

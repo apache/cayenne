@@ -59,10 +59,12 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     protected String joinMarker;
     private String fullPath;
     private EJBQLExpressionVisitor joinAppender;
+    private boolean usingAliases;
 
     EJBQLPathTranslator(EJBQLTranslationContext context) {
         super(true);
         this.context = context;
+        this.usingAliases = true;
     }
 
     protected abstract void appendMultiColumnPath(EJBQLMultiColumnOperand operand);
@@ -212,11 +214,17 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     protected void processTerminatingAttribute(ObjAttribute attribute) {
 
         DbEntity table = currentEntity.getDbEntity();
-        String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
-                idPath,
-                table.getFullyQualifiedName());
-        context.append(' ').append(alias).append('.').append(
-                attribute.getDbAttributeName());
+
+        if (isUsingAliases()) {
+            String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
+                    idPath,
+                    table.getFullyQualifiedName());
+            context.append(' ').append(alias).append('.').append(
+                    attribute.getDbAttributeName());
+        }
+        else {
+            context.append(' ').append(attribute.getDbAttributeName());
+        }
     }
 
     private void processTerminatingRelationship(ObjRelationship relationship) {
@@ -240,7 +248,11 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
             if (pks.size() == 1) {
                 DbAttribute pk = (DbAttribute) pks.get(0);
-                context.append(' ').append(alias).append('.').append(pk.getName());
+                context.append(' ');
+                if (isUsingAliases()) {
+                    context.append(alias).append('.');
+                }
+                context.append(pk.getName());
             }
             else {
                 throw new EJBQLException(
@@ -264,11 +276,11 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
             if (joins.size() == 1) {
                 DbJoin join = (DbJoin) joins.get(0);
-                context
-                        .append(' ')
-                        .append(alias)
-                        .append('.')
-                        .append(join.getSourceName());
+                context.append(' ');
+                if (isUsingAliases()) {
+                    context.append(alias).append('.');
+                }
+                context.append(join.getSourceName());
             }
             else {
                 Map multiColumnMatch = new HashMap(joins.size() + 2);
@@ -276,7 +288,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 Iterator it = joins.iterator();
                 while (it.hasNext()) {
                     DbJoin join = (DbJoin) it.next();
-                    String column = alias + "." + join.getSourceName();
+                    String column = isUsingAliases() ? alias + "." + join.getSourceName() : join.getSourceName();
 
                     multiColumnMatch.put(join.getTargetName(), column);
                 }
@@ -286,5 +298,13 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                         multiColumnMatch));
             }
         }
+    }
+
+    public boolean isUsingAliases() {
+        return usingAliases;
+    }
+
+    public void setUsingAliases(boolean usingAliases) {
+        this.usingAliases = usingAliases;
     }
 }
