@@ -34,16 +34,16 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-class EJBQLFromTranslator extends EJBQLBaseVisitor {
+public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
-    private EJBQLTranslationContext context;
+    protected EJBQLTranslationContext context;
     private String lastId;
 
     static String makeJoinTailMarker(String id) {
         return "FROM_TAIL" + id;
     }
 
-    EJBQLFromTranslator(EJBQLTranslationContext context) {
+    public EJBQLFromTranslator(EJBQLTranslationContext context) {
         super(true);
         this.context = context;
     }
@@ -144,7 +144,7 @@ class EJBQLFromTranslator extends EJBQLBaseVisitor {
         context.append(")");
     }
 
-    private String appendTable(String id) {
+    protected String appendTable(String id) {
         ClassDescriptor descriptor = context.getEntityDescriptor(id);
 
         String tableName = descriptor.getEntity().getDbEntity().getFullyQualifiedName();
