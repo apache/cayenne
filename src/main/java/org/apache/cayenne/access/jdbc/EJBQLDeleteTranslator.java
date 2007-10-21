@@ -27,16 +27,12 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
  * @since 3.0
  * @author Andrus Adamchik
  */
-class EJBQLDeleteTranslator extends EJBQLBaseVisitor {
+public class EJBQLDeleteTranslator extends EJBQLBaseVisitor {
 
-    private EJBQLTranslationContext context;
+    protected EJBQLTranslationContext context;
 
-    EJBQLDeleteTranslator(EJBQLTranslationContext context) {
+    public EJBQLDeleteTranslator(EJBQLTranslationContext context) {
         this.context = context;
-    }
-
-    EJBQLTranslationContext getContext() {
-        return context;
     }
 
     public boolean visitDelete(EJBQLExpression expression) {

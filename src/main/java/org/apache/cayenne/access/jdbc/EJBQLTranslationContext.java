@@ -47,18 +47,20 @@ public class EJBQLTranslationContext {
     private Map idAliases;
     private int columnAliasPosition;
     private EJBQLTranslatorFactory translatorFactory;
+    private boolean usingAliases;
 
     // a flag indicating whether column expressions should be treated as result columns or
     // not.
     private boolean appendingResultColumns;
 
-    public EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression, Map parameters,
-            EJBQLTranslatorFactory translatorFactory) {
+    public EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression,
+            Map parameters, EJBQLTranslatorFactory translatorFactory) {
         this.compiledExpression = compiledExpression;
         this.mainBuffer = new StringBuffer();
         this.currentBuffer = mainBuffer;
         this.parameters = parameters;
         this.translatorFactory = translatorFactory;
+        this.usingAliases = true;
     }
 
     SQLTemplate getQuery() {
@@ -91,7 +93,7 @@ public class EJBQLTranslationContext {
      * Looks up entity descriptor for an identifier that can be a compiled expression id
      * or one of the aliases.
      */
-    ClassDescriptor getEntityDescriptor(String id) {
+    public ClassDescriptor getEntityDescriptor(String id) {
         return compiledExpression.getEntityDescriptor(resolveId(id));
     }
 
@@ -304,7 +306,11 @@ public class EJBQLTranslationContext {
      * Retrieves a SQL alias for the combination of EJBQL id variable and a table name. If
      * such alias hasn't been used, it is created on the fly.
      */
-    String getTableAlias(String idPath, String tableName) {
+    protected String getTableAlias(String idPath, String tableName) {
+        
+        if(!isUsingAliases()) {
+            return tableName;
+        }
 
         StringBuffer keyBuffer = new StringBuffer();
 
@@ -360,5 +366,13 @@ public class EJBQLTranslationContext {
 
     void setAppendingResultColumns(boolean appendingResultColumns) {
         this.appendingResultColumns = appendingResultColumns;
+    }
+
+    public boolean isUsingAliases() {
+        return usingAliases;
+    }
+
+    public void setUsingAliases(boolean useAliases) {
+        this.usingAliases = useAliases;
     }
 }
