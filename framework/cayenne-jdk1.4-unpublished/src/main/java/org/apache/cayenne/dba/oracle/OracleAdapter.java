@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
@@ -176,6 +177,13 @@ public class OracleAdapter extends JdbcAdapter {
     public OracleAdapter() {
         // enable batch updates by default
         setSupportsBatchUpdates(true);
+    }
+    
+    /**
+     * @since 3.0
+     */
+    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
+        return new OracleEJBQLTranslatorFactory();
     }
 
     /**
