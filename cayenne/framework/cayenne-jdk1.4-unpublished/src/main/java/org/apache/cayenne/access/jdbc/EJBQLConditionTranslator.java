@@ -57,7 +57,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         this.context = context;
     }
 
-    void addMultiColumnOperand(EJBQLMultiColumnOperand operand) {
+    protected void addMultiColumnOperand(EJBQLMultiColumnOperand operand) {
         if (multiColumnOperands == null) {
             multiColumnOperands = new ArrayList(2);
         }

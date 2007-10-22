@@ -49,7 +49,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * @since 3.0
  * @author Andrus Adamchik
  */
-abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
+public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     protected ObjEntity currentEntity;
@@ -61,7 +61,7 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     private EJBQLExpressionVisitor joinAppender;
     private boolean usingAliases;
 
-    EJBQLPathTranslator(EJBQLTranslationContext context) {
+    public EJBQLPathTranslator(EJBQLTranslationContext context) {
         super(true);
         this.context = context;
         this.usingAliases = true;
@@ -288,7 +288,9 @@ abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 Iterator it = joins.iterator();
                 while (it.hasNext()) {
                     DbJoin join = (DbJoin) it.next();
-                    String column = isUsingAliases() ? alias + "." + join.getSourceName() : join.getSourceName();
+                    String column = isUsingAliases()
+                            ? alias + "." + join.getSourceName()
+                            : join.getSourceName();
 
                     multiColumnMatch.put(join.getTargetName(), column);
                 }

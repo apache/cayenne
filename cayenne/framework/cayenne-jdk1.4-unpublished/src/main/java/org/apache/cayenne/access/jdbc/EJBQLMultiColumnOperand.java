@@ -29,7 +29,7 @@ import org.apache.cayenne.ejbql.EJBQLException;
  * @author Andrus Adamchik
  * @since 3.0
  */
-abstract class EJBQLMultiColumnOperand {
+public abstract class EJBQLMultiColumnOperand {
 
     static EJBQLMultiColumnOperand getPathOperand(
             EJBQLTranslationContext context,
