@@ -185,7 +185,7 @@
 								${basedir}/src/main/jjtree/org/apache/cayenne/ejbql
 							</sourceDirectory>
 							<outputDirectory>
-								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql
+								${project.build.directory}/generated-sources/jjtree
 							</outputDirectory>
 							<buildNodeFiles>false</buildNodeFiles>
 						</configuration>
@@ -199,10 +199,10 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<sourceDirectory>
-								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql
+								${project.build.directory}/generated-sources/jjtree
 							</sourceDirectory>
 							<outputDirectory>
-								${project.build.directory}/generated-sources/javacc/org/apache/cayenne/ejbql
+								${project.build.directory}/generated-sources/javacc
 							</outputDirectory>
 						</configuration>
 						<goals>
@@ -219,7 +219,7 @@
                         <configuration>
                             <tasks>
                                 <delete
-                                    file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/Node.java"/>
+                                    file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/parser/Node.java"/>
                             </tasks>
                         </configuration>
                         <goals>
