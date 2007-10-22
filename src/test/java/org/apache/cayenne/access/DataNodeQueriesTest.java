@@ -121,8 +121,10 @@ public class DataNodeQueriesTest extends CayenneCase {
         assertEquals(DataContextCase.artistCount, data.size());
         Map row = (Map) data.get(2);
         assertEquals(3, row.size());
-        assertEquals("Can't find ARTIST_ID: " + row, new Integer(33003), row
-                .get("ARTIST_ID"));
+
+        Number id = (Number) row.get("ARTIST_ID");
+        assertNotNull(id);
+        assertEquals("Can't find ARTIST_ID: " + row, 33003, id.intValue());
     }
 
     public void testPerfomQueriesSelectingSQLTemplateAlias() throws Exception {
