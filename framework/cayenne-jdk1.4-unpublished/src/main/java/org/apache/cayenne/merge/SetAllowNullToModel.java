@@ -18,43 +18,38 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-public class DropTable extends AbstractMergerToken {
+/**
+ * A {@link MergerToken} to set the mandatory field of a {@link DbAttribute} to false
+ * 
+ * @author halset
+ */
+public class SetAllowNullToModel extends AbstractToModelToken {
 
     private DbEntity entity;
+    private DbAttribute column;
 
-    public DropTable(MergeDirection direction, DbEntity entity) {
-        super(direction);
+    public SetAllowNullToModel(DbEntity entity, DbAttribute column) {
         this.entity = entity;
-    }
-
-    public void execute(MergerContext mergerContext) {
-        switch (getDirection().getId()) {
-            case MergeDirection.TO_DB_ID:
-                mergerContext.executeSql(createSql(mergerContext.getAdapter()));
-                break;
-            case MergeDirection.TO_MODEL_ID:
-                mergerContext.getDataMap().removeDbEntity(entity.getName(), true);
-                break;
-        }
-    }
-
-    public String createSql(DbAdapter adapter) {
-        return adapter.dropTable(entity);
-    }
-
-    public String getTokenName() {
-        return "Drop Table";
-    }
-
-    public String getTokenValue() {
-        return entity.getName();
+        this.column = column;
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createCreateTable(reverseDirection(), entity);
+        return factory.createSetNotNullToDb(entity, column);
+    }
+
+    public void execute(MergerContext mergerContext) {
+        column.setMandatory(false);
+    }
+
+    public String getTokenName() {
+        return "Set Allow Null";
+    }
+
+    public String getTokenValue() {
+        return entity.getName() + "." + column.getName();
     }
 
 }

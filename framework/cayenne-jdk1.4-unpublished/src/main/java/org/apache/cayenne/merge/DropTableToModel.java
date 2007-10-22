@@ -16,31 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dba.hsqldb;
+package org.apache.cayenne.merge;
 
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.merge.MergerFactory;
-import org.apache.cayenne.merge.MergerToken;
-import org.apache.cayenne.merge.SetColumnTypeToDb;
 
-public class HSQLMergerFactory extends MergerFactory {
+/**
+ * A {@link MergerToken} to remove a {@link DbEntity} from a {@link DataMap}
+ * 
+ * @author halset
+ */
+public class DropTableToModel extends AbstractToModelToken {
 
-    public MergerToken createSetColumnTypeToDb(
-            final DbEntity entity,
-            DbAttribute columnOriginal,
-            final DbAttribute columnNew) {
+    private DbEntity entity;
 
-        return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
-
-            protected void appendPrefix(StringBuffer sqlBuffer) {
-                // http://www.postgresql.org/docs/8.2/static/sql-altertable.html
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(entity.getFullyQualifiedName());
-                sqlBuffer.append(" ALTER ");
-                sqlBuffer.append(columnNew.getName());
-                sqlBuffer.append(" ");
-            }
-        };
+    public DropTableToModel(DbEntity entity) {
+        this.entity = entity;
     }
+
+    public MergerToken createReverse(MergerFactory factory) {
+        return factory.createCreateTableToDb(entity);
+    }
+
+    public void execute(MergerContext mergerContext) {
+        mergerContext.getDataMap().removeDbEntity(entity.getName(), true);
+    }
+
+    public String getTokenName() {
+        return "Drop Table";
+    }
+
+    public String getTokenValue() {
+        return entity.getName();
+    }
+
 }

@@ -18,53 +18,38 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-public class DropColumn extends AbstractMergerToken {
+/**
+ * A {@link MergerToken} to set the mandatory field of a {@link DbAttribute} to true
+ * 
+ * @author halset
+ */
+public class SetNotNullToModel extends AbstractToModelToken {
 
     private DbEntity entity;
     private DbAttribute column;
 
-    public DropColumn(MergeDirection direction, DbEntity entity, DbAttribute column) {
-        super(direction);
+    public SetNotNullToModel(DbEntity entity, DbAttribute column) {
         this.entity = entity;
         this.column = column;
     }
     
-    public void execute(MergerContext mergerContext) {
-        switch(getDirection().getId()){
-            case MergeDirection.TO_DB_ID:
-                mergerContext.executeSql(createSql(mergerContext.getAdapter()));
-                break;
-            case MergeDirection.TO_MODEL_ID:
-                entity.removeAttribute(column.getName());
-                break;
-        }
+    public MergerToken createReverse(MergerFactory factory) {
+        return factory.createSetAllowNullToDb(entity, column);
     }
-    
-    public String createSql(DbAdapter adapter) {
-        StringBuffer sqlBuffer = new StringBuffer();
 
-        sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(entity.getFullyQualifiedName());
-        sqlBuffer.append(" DROP COLUMN ");
-        sqlBuffer.append(column.getName());
-
-        return sqlBuffer.toString();
+    public void execute(MergerContext mergerContext) {
+        column.setMandatory(true);
     }
 
     public String getTokenName() {
-        return "Drop Column";
+        return null;
     }
 
     public String getTokenValue() {
-        return entity.getName() + "." + column.getName();
-    }
-
-    public MergerToken createReverse(MergerFactory factory) {
-        return factory.createAddColumn(reverseDirection(), entity, column);
+        return null;
     }
 
 }

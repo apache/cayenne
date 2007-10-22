@@ -16,31 +16,44 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dba.hsqldb;
+package org.apache.cayenne.merge;
 
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.merge.MergerFactory;
-import org.apache.cayenne.merge.MergerToken;
-import org.apache.cayenne.merge.SetColumnTypeToDb;
 
-public class HSQLMergerFactory extends MergerFactory {
+public class SetAllowNullToDb extends AbstractToDbToken {
 
-    public MergerToken createSetColumnTypeToDb(
-            final DbEntity entity,
-            DbAttribute columnOriginal,
-            final DbAttribute columnNew) {
+    private DbEntity entity;
+    private DbAttribute column;
 
-        return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
-
-            protected void appendPrefix(StringBuffer sqlBuffer) {
-                // http://www.postgresql.org/docs/8.2/static/sql-altertable.html
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(entity.getFullyQualifiedName());
-                sqlBuffer.append(" ALTER ");
-                sqlBuffer.append(columnNew.getName());
-                sqlBuffer.append(" ");
-            }
-        };
+    public SetAllowNullToDb(DbEntity entity, DbAttribute column) {
+        this.entity = entity;
+        this.column = column;
     }
+
+    public String createSql(DbAdapter adapter) {
+        StringBuffer sqlBuffer = new StringBuffer();
+
+        sqlBuffer.append("ALTER TABLE ");
+        sqlBuffer.append(entity.getFullyQualifiedName());
+        sqlBuffer.append(" ALTER COLUMN ");
+        sqlBuffer.append(column.getName());
+        sqlBuffer.append(" DROP NOT NULL");
+
+        return sqlBuffer.toString();
+    }
+
+    public String getTokenName() {
+        return "Set Allow Null";
+    }
+
+    public String getTokenValue() {
+        return entity.getName() + "." + column.getName();
+    }
+
+    public MergerToken createReverse(MergerFactory factory) {
+        return factory.createSetNotNullToModel(entity, column);
+    }
+
 }

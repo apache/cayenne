@@ -18,31 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import org.apache.cayenne.dba.DbAdapter;
-
-public abstract class AbstractMergerToken implements MergerToken {
-
-    private MergeDirection direction;
-
-    public AbstractMergerToken(MergeDirection direction) {
-        this.direction = direction;
-    }
+/**
+ * Common abstract superclass for all {@link MergerToken}s going from the database to the
+ * model.
+ * 
+ * @author halset
+ */
+public abstract class AbstractToModelToken implements MergerToken {
 
     public MergeDirection getDirection() {
-        return direction;
+        return MergeDirection.TO_MODEL;
     }
 
-    /**
-     * Return a direction value for the reverse direction.
-     */
-    protected MergeDirection reverseDirection() {
-        return getDirection().reverseDirection();
-    }
-
-    public abstract String createSql(DbAdapter adapter);
-
-    public abstract String getTokenName();
-
-    public abstract String getTokenValue();
-    
 }

@@ -18,43 +18,38 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-public class CreateTable extends AbstractMergerToken {
+public class SetColumnTypeToModel extends AbstractToModelToken {
 
     private DbEntity entity;
+    private DbAttribute columnOriginal;
+    private DbAttribute columnNew;
 
-    public CreateTable(MergeDirection direction, DbEntity entity) {
-        super(direction);
+    public SetColumnTypeToModel(DbEntity entity, DbAttribute columnOriginal,
+            DbAttribute columnNew) {
         this.entity = entity;
-    }
-    
-    public void execute(MergerContext mergerContext) {
-        switch(getDirection().getId()){
-            case MergeDirection.TO_DB_ID:
-                mergerContext.executeSql(createSql(mergerContext.getAdapter()));
-                break;
-            case MergeDirection.TO_MODEL_ID:
-                mergerContext.getDataMap().addDbEntity(entity);
-                break;
-        }
-    }
-
-    public String createSql(DbAdapter adapter) {
-        return adapter.createTable(entity);
-    }
-
-    public String getTokenName() {
-        return "Create Table";
-    }
-
-    public String getTokenValue() {
-        return entity.getName();
+        this.columnOriginal = columnOriginal;
+        this.columnNew = columnNew;
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createDropTable(reverseDirection(), entity);
+        return factory.createSetColumnTypeToDb(entity, columnNew, columnOriginal);
+    }
+
+    public void execute(MergerContext mergerContext) {
+        // TODO: implement
+        throw new UnsupportedOperationException();
+    }
+
+    public String getTokenName() {
+        return "Set Column Type";
+    }
+    
+    public String getTokenValue() {
+        // TODO: ..varchar(100)
+        return entity.getName() + "." + columnNew.getName();
     }
 
 }

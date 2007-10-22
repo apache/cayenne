@@ -23,38 +23,73 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
 /**
- * A way to create {@link MergerToken} that work for a specific {@link DbAdapter}
+ * A way to create {@link MergerToken}s that work for a specific {@link DbAdapter}
  * 
  * @see DbAdapter#mergerFactory()
  */
 public class MergerFactory {
 
-    public MergerToken createCreateTable(MergeDirection direction, DbEntity entity) {
-        return new CreateTable(direction, entity);
+    public MergerToken createCreateTableToModel(DbEntity entity) {
+        return new CreateTableToModel(entity);
     }
 
-    public MergerToken createDropTable(MergeDirection direction, DbEntity entity) {
-        return new DropTable(direction, entity);
+    public MergerToken createCreateTableToDb(DbEntity entity) {
+        return new CreateTableToDb(entity);
     }
 
-    public MergerToken createAddColumn(MergeDirection direction, DbEntity entity, DbAttribute column) {
-        return new AddColumn(direction, entity, column);
+    public MergerToken createDropTableToModel(DbEntity entity) {
+        return new DropTableToModel(entity);
     }
 
-    public MergerToken createSetNotNull(MergeDirection direction, DbEntity entity, DbAttribute column) {
-        return new SetNotNull(direction, entity, column);
+    public MergerToken createDropTableToDb(DbEntity entity) {
+        return new DropTableToDb(entity);
     }
 
-    public MergerToken createSetAllowNull(MergeDirection direction, DbEntity entity, DbAttribute column) {
-        return new SetAllowNull(direction, entity, column);
+    public MergerToken createAddColumnToModel(DbEntity entity, DbAttribute column) {
+        return new AddColumnToModel(entity, column);
     }
 
-    public MergerToken createDropColum(MergeDirection direction, DbEntity entity, DbAttribute column) {
-        return new DropColumn(direction, entity, column);
-    }
-    
-    public MergerToken createSetColumnType(MergeDirection direction, DbEntity entity, DbAttribute columnOriginal, DbAttribute columnNew) {
-        return new SetColumnType(direction, entity, columnOriginal, columnNew);
+    public MergerToken createAddColumnToDb(DbEntity entity, DbAttribute column) {
+        return new AddColumnToDb(entity, column);
     }
 
+    public MergerToken createDropColumToModel(DbEntity entity, DbAttribute column) {
+        return new DropColumnToModel(entity, column);
+    }
+
+    public MergerToken createDropColumToDb(DbEntity entity, DbAttribute column) {
+        return new DropColumnToDb(entity, column);
+    }
+
+    public MergerToken createSetNotNullToModel(
+
+    DbEntity entity, DbAttribute column) {
+        return new SetNotNullToModel(entity, column);
+    }
+
+    public MergerToken createSetNotNullToDb(DbEntity entity, DbAttribute column) {
+        return new SetNotNullToDb(entity, column);
+    }
+
+    public MergerToken createSetAllowNullToModel(DbEntity entity, DbAttribute column) {
+        return new SetAllowNullToModel(entity, column);
+    }
+
+    public MergerToken createSetAllowNullToDb(DbEntity entity, DbAttribute column) {
+        return new SetAllowNullToDb(entity, column);
+    }
+
+    public MergerToken createSetColumnTypeToModel(
+            DbEntity entity,
+            DbAttribute columnOriginal,
+            DbAttribute columnNew) {
+        return new SetColumnTypeToModel(entity, columnOriginal, columnNew);
+    }
+
+    public MergerToken createSetColumnTypeToDb(
+            DbEntity entity,
+            DbAttribute columnOriginal,
+            DbAttribute columnNew) {
+        return new SetColumnTypeToDb(entity, columnOriginal, columnNew);
+    }
 }

@@ -20,21 +20,20 @@ package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.merge.AddColumn;
+import org.apache.cayenne.merge.AddColumnToDb;
 import org.apache.cayenne.merge.MergeDirection;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
-import org.apache.cayenne.merge.SetColumnType;
+import org.apache.cayenne.merge.SetColumnTypeToDb;
 
 public class SQLServerMergerFactory extends MergerFactory {
 
-    public MergerToken createSetColumnType(
-            MergeDirection direction,
+    public MergerToken createSetColumnTypeToDb(
             final DbEntity entity,
             DbAttribute columnOriginal,
             final DbAttribute columnNew) {
 
-        return new SetColumnType(direction, entity, columnOriginal, columnNew) {
+        return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             protected void appendPrefix(StringBuffer sqlBuffer) {
                 // http://msdn2.microsoft.com/en-us/library/ms190273.aspx
@@ -47,11 +46,10 @@ public class SQLServerMergerFactory extends MergerFactory {
         };
     }
 
-    public MergerToken createAddColumn(
-            MergeDirection direction,
+    public MergerToken createAddColumnToDb(
             final DbEntity entity,
             final DbAttribute column) {
-        return new AddColumn(direction, entity, column) {
+        return new AddColumnToDb(entity, column) {
 
             protected void appendPrefix(StringBuffer sqlBuffer) {
                 // http://msdn2.microsoft.com/en-us/library/ms190273.aspx

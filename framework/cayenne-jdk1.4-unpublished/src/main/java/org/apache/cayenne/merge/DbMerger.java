@@ -94,7 +94,7 @@ public class DbMerger {
                 // look for table
                 DbEntity detectedEntity = findDbEntity(detectedDataMap, tableName);
                 if (detectedEntity == null) {
-                    tokens.add(factory.createCreateTable(MergeDirection.TO_DB, dbEntity));
+                    tokens.add(factory.createCreateTableToDb(dbEntity));
                     continue;
                 }
                 dbEntityToDropByName.remove(detectedEntity.getName());
@@ -140,7 +140,7 @@ public class DbMerger {
         for (Iterator it = detectedEntity.getAttributes().iterator(); it.hasNext();) {
             DbAttribute detected = (DbAttribute) it.next();
             if (findDbAttribute(dbEntity, detected.getName()) == null) {
-                tokens.add(factory.createDropColum(MergeDirection.TO_DB, dbEntity, detected));
+                tokens.add(factory.createDropColumToDb(dbEntity, detected));
             }
         }
 
@@ -152,10 +152,10 @@ public class DbMerger {
             DbAttribute detected = findDbAttribute(detectedEntity, columnName);
 
             if (detected == null) {
-                tokens.add(factory.createAddColumn(MergeDirection.TO_DB, dbEntity, attr));
+                tokens.add(factory.createAddColumnToDb(dbEntity, attr));
                 if (attr.isMandatory()) {
                     // TODO: default value
-                    tokens.add(factory.createSetNotNull(MergeDirection.TO_DB, dbEntity, attr));
+                    tokens.add(factory.createSetNotNullToDb(dbEntity, attr));
                 }
                 continue;
             }
@@ -163,10 +163,10 @@ public class DbMerger {
             // check for not null
             if (attr.isMandatory() != detected.isMandatory()) {
                 if (attr.isMandatory()) {
-                    tokens.add(factory.createSetNotNull(MergeDirection.TO_DB, dbEntity, attr));
+                    tokens.add(factory.createSetNotNullToDb(dbEntity, attr));
                 }
                 else {
-                    tokens.add(factory.createSetAllowNull(MergeDirection.TO_DB, dbEntity, attr));
+                    tokens.add(factory.createSetAllowNullToDb(dbEntity, attr));
                 }
             }
 
@@ -176,7 +176,7 @@ public class DbMerger {
                 case Types.VARCHAR:
                 case Types.CHAR:
                     if (attr.getMaxLength() != detected.getMaxLength()) {
-                        tokens.add(factory.createSetColumnType(MergeDirection.TO_DB, dbEntity, detected, attr));
+                        tokens.add(factory.createSetColumnTypeToDb(dbEntity, detected, attr));
                     }
                     break;
             }

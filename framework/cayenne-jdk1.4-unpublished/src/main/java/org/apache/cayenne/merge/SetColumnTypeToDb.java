@@ -24,37 +24,30 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-public class AddColumn extends AbstractMergerToken {
+/**
+ * An {@link MergerToken} to use to set type, length and precision.
+ */
+public class SetColumnTypeToDb extends AbstractToDbToken {
 
     private DbEntity entity;
-    private DbAttribute column;
+    private DbAttribute columnOriginal;
+    private DbAttribute columnNew;
 
-    public AddColumn(MergeDirection direction, DbEntity entity, DbAttribute column) {
-        super(direction);
+    public SetColumnTypeToDb(DbEntity entity, DbAttribute columnOriginal, DbAttribute columnNew) {
         this.entity = entity;
-        this.column = column;
+        this.columnOriginal = columnOriginal;
+        this.columnNew = columnNew;
     }
-
+    
     /**
      * append the part of the token before the actual column data type
      */
     protected void appendPrefix(StringBuffer sqlBuffer) {
         sqlBuffer.append("ALTER TABLE ");
         sqlBuffer.append(entity.getFullyQualifiedName());
-        sqlBuffer.append(" ADD COLUMN ");
-        sqlBuffer.append(column.getName());
-        sqlBuffer.append(" ");
-    }
-
-    public void execute(MergerContext mergerContext) {
-        switch (getDirection().getId()) {
-            case MergeDirection.TO_DB_ID:
-                mergerContext.executeSql(createSql(mergerContext.getAdapter()));
-                break;
-            case MergeDirection.TO_MODEL_ID:
-                entity.addAttribute(column);
-                break;
-        }
+        sqlBuffer.append(" ALTER ");
+        sqlBuffer.append(columnNew.getName());
+        sqlBuffer.append(" TYPE ");
     }
 
     public String createSql(DbAdapter adapter) {
@@ -63,25 +56,25 @@ public class AddColumn extends AbstractMergerToken {
         appendPrefix(sqlBuffer);
 
         // copied from JdbcAdapter.createTableAppendColumn
-        String[] types = adapter.externalTypesForJdbcType(column.getType());
+        String[] types = adapter.externalTypesForJdbcType(columnNew.getType());
         if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? ((DbEntity) column
+            String entityName = columnNew.getEntity() != null ? ((DbEntity) columnNew
                     .getEntity()).getFullyQualifiedName() : "<null>";
             throw new CayenneRuntimeException("Undefined type for attribute '"
                     + entityName
                     + "."
-                    + column.getName()
+                    + columnNew.getName()
                     + "': "
-                    + column.getType());
+                    + columnNew.getType());
         }
 
         String type = types[0];
         sqlBuffer.append(type);
 
         // append size and precision (if applicable)
-        if (TypesMapping.supportsLength(column.getType())) {
-            int len = column.getMaxLength();
-            int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
+        if (TypesMapping.supportsLength(columnNew.getType())) {
+            int len = columnNew.getMaxLength();
+            int scale = TypesMapping.isDecimal(columnNew.getType()) ? columnNew.getScale() : -1;
 
             // sanity check
             if (scale > len) {
@@ -99,22 +92,21 @@ public class AddColumn extends AbstractMergerToken {
             }
         }
 
-        // use separate token to set value and not null if needed
-        // sqlBuffer.append(" NULL");
-
         return sqlBuffer.toString();
     }
 
     public String getTokenName() {
-        return "Add Column";
+        return "Set Column Type";
     }
-
+    
     public String getTokenValue() {
-        return entity.getName() + "." + column.getName();
+        // TODO: ..varchar(100)
+        return entity.getName() + "." + columnNew.getName();
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return new DropColumn(reverseDirection(), entity, column);
+        return factory.createSetColumnTypeToModel(entity, columnNew, columnOriginal);
     }
+
 
 }

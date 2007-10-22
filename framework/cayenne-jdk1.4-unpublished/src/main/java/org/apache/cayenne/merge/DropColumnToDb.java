@@ -22,26 +22,14 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-public class SetAllowNull extends AbstractMergerToken {
+public class DropColumnToDb extends AbstractToDbToken {
 
     private DbEntity entity;
     private DbAttribute column;
 
-    public SetAllowNull(MergeDirection direction, DbEntity entity, DbAttribute column) {
-        super(direction);
+    public DropColumnToDb(DbEntity entity, DbAttribute column) {
         this.entity = entity;
         this.column = column;
-    }
-
-    public void execute(MergerContext mergerContext) {
-        switch (getDirection().getId()) {
-            case MergeDirection.TO_DB_ID:
-                mergerContext.executeSql(createSql(mergerContext.getAdapter()));
-                break;
-            case MergeDirection.TO_MODEL_ID:
-                column.setMandatory(false);
-                break;
-        }
     }
 
     public String createSql(DbAdapter adapter) {
@@ -49,15 +37,14 @@ public class SetAllowNull extends AbstractMergerToken {
 
         sqlBuffer.append("ALTER TABLE ");
         sqlBuffer.append(entity.getFullyQualifiedName());
-        sqlBuffer.append(" ALTER COLUMN ");
+        sqlBuffer.append(" DROP COLUMN ");
         sqlBuffer.append(column.getName());
-        sqlBuffer.append(" DROP NOT NULL");
 
         return sqlBuffer.toString();
     }
 
     public String getTokenName() {
-        return "Set Allow Null";
+        return "Drop Column";
     }
 
     public String getTokenValue() {
@@ -65,7 +52,7 @@ public class SetAllowNull extends AbstractMergerToken {
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createSetNotNull(reverseDirection(), entity, column);
+        return factory.createAddColumnToModel(entity, column);
     }
 
 }

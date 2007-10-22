@@ -18,6 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+/**
+ * Represent a merge direction that can be one of two. Either from the model to the db or
+ * from the db to the model.
+ * 
+ * @author halset
+ */
 public class MergeDirection {
 
     public static final int TO_DB_ID = 1;
@@ -38,10 +44,6 @@ public class MergeDirection {
 
     public String getName() {
         return name;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public boolean equals(Object obj) {
