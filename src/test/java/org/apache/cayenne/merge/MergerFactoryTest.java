@@ -215,10 +215,10 @@ public class MergerFactoryTest extends CayenneCase {
 
     private void dropTableIfPresent(DataNode node, String tableName) {
         DbEntity entity = new DbEntity(tableName);
-        AbstractMergerToken t = (AbstractMergerToken) node
+        AbstractToDbToken t = (AbstractToDbToken) node
                 .getAdapter()
                 .mergerFactory()
-                .createDropTable(MergeDirection.TO_DB, entity);
+                .createDropTableToDb(entity);
         try {
             executeSql(t.createSql(node.getAdapter()));
         }

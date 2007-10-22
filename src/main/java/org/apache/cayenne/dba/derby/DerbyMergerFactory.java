@@ -20,20 +20,18 @@ package org.apache.cayenne.dba.derby;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.merge.MergeDirection;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
-import org.apache.cayenne.merge.SetColumnType;
+import org.apache.cayenne.merge.SetColumnTypeToDb;
 
 public class DerbyMergerFactory extends MergerFactory {
 
-    public MergerToken createSetColumnType(
-            MergeDirection direction,
+    public MergerToken createSetColumnTypeToDb(
             final DbEntity entity,
             DbAttribute columnOriginal,
             final DbAttribute columnNew) {
 
-        return new SetColumnType(direction, entity, columnOriginal, columnNew) {
+        return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             protected void appendPrefix(StringBuffer sqlBuffer) {
                 // http://db.apache.org/derby/manuals/reference/sqlj26.html
