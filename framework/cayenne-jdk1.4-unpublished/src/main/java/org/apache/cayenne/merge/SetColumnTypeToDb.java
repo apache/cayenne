@@ -100,8 +100,40 @@ public class SetColumnTypeToDb extends AbstractToDbToken {
     }
     
     public String getTokenValue() {
-        // TODO: ..varchar(100)
-        return entity.getName() + "." + columnNew.getName();
+        StringBuffer sb = new StringBuffer();
+        sb.append(entity.getName());
+        sb.append(".");
+        sb.append(columnNew.getName());
+
+        if (columnOriginal.getType() != columnNew.getType()) {
+            sb.append(" type: ");
+            sb.append(TypesMapping.getSqlNameByType(columnOriginal.getType()));
+            sb.append(" -> ");
+            sb.append(TypesMapping.getSqlNameByType(columnNew.getType()));
+        }
+
+        if (columnOriginal.getMaxLength() != columnNew.getMaxLength()) {
+            sb.append(" maxLength: ");
+            sb.append(columnOriginal.getMaxLength());
+            sb.append(" -> ");
+            sb.append(columnNew.getMaxLength());
+        }
+
+        if (columnOriginal.getAttributePrecision() != columnNew.getAttributePrecision()) {
+            sb.append(" precision: ");
+            sb.append(columnOriginal.getAttributePrecision());
+            sb.append(" -> ");
+            sb.append(columnNew.getAttributePrecision());
+        }
+
+        if (columnOriginal.getScale() != columnNew.getScale()) {
+            sb.append(" scale: ");
+            sb.append(columnOriginal.getScale());
+            sb.append(" -> ");
+            sb.append(columnNew.getScale());
+        }
+
+        return sb.toString();
     }
 
     public MergerToken createReverse(MergerFactory factory) {

@@ -18,9 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
+/**
+ * A {@link MergerToken} that modifies one original {@link DbAttribute} to match another
+ * new {@link DbAttribute}s type, maxLength and precision. The name and mandatory fields
+ * are not modified by this token.
+ * 
+ * @author halset
+ */
 public class SetColumnTypeToModel extends AbstractToModelToken {
 
     private DbEntity entity;
@@ -39,17 +47,51 @@ public class SetColumnTypeToModel extends AbstractToModelToken {
     }
 
     public void execute(MergerContext mergerContext) {
-        // TODO: implement
-        throw new UnsupportedOperationException();
+        columnOriginal.setType(columnNew.getType());
+        columnOriginal.setMaxLength(columnNew.getMaxLength());
+        columnOriginal.setAttributePrecision(columnNew.getAttributePrecision());
+        columnOriginal.setScale(columnNew.getScale());
     }
 
     public String getTokenName() {
         return "Set Column Type";
     }
-    
+
     public String getTokenValue() {
-        // TODO: ..varchar(100)
-        return entity.getName() + "." + columnNew.getName();
+        StringBuffer sb = new StringBuffer();
+        sb.append(entity.getName());
+        sb.append(".");
+        sb.append(columnNew.getName());
+
+        if (columnOriginal.getType() != columnNew.getType()) {
+            sb.append(" type: ");
+            sb.append(TypesMapping.getSqlNameByType(columnOriginal.getType()));
+            sb.append(" -> ");
+            sb.append(TypesMapping.getSqlNameByType(columnNew.getType()));
+        }
+
+        if (columnOriginal.getMaxLength() != columnNew.getMaxLength()) {
+            sb.append(" maxLength: ");
+            sb.append(columnOriginal.getMaxLength());
+            sb.append(" -> ");
+            sb.append(columnNew.getMaxLength());
+        }
+
+        if (columnOriginal.getAttributePrecision() != columnNew.getAttributePrecision()) {
+            sb.append(" precision: ");
+            sb.append(columnOriginal.getAttributePrecision());
+            sb.append(" -> ");
+            sb.append(columnNew.getAttributePrecision());
+        }
+
+        if (columnOriginal.getScale() != columnNew.getScale()) {
+            sb.append(" scale: ");
+            sb.append(columnOriginal.getScale());
+            sb.append(" -> ");
+            sb.append(columnNew.getScale());
+        }
+
+        return sb.toString();
     }
 
 }

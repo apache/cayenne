@@ -22,6 +22,11 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
+/**
+ * A {@link MergerToken} to add a "allow null" clause to a column.
+ * 
+ * @author halset
+ */
 public class SetAllowNullToDb extends AbstractToDbToken {
 
     private DbEntity entity;
