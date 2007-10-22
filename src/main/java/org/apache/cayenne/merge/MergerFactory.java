@@ -23,7 +23,9 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
 /**
- * A way to create {@link MergerToken}s that work for a specific {@link DbAdapter}
+ * All {@link MergerToken}s should be created from a {@link MergerFactory} obtained from
+ * {@link DbAdapter#mergerFactory()} so that the {@link DbAdapter} are able to provide
+ * {@link MergerToken} subclasses.
  * 
  * @see DbAdapter#mergerFactory()
  */
@@ -61,9 +63,7 @@ public class MergerFactory {
         return new DropColumnToDb(entity, column);
     }
 
-    public MergerToken createSetNotNullToModel(
-
-    DbEntity entity, DbAttribute column) {
+    public MergerToken createSetNotNullToModel(DbEntity entity, DbAttribute column) {
         return new SetNotNullToModel(entity, column);
     }
 
