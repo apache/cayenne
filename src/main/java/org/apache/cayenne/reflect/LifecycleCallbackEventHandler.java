@@ -141,9 +141,20 @@ class LifecycleCallbackEventHandler {
      */
     void performCallbacks(Collection objects) {
         Iterator it = objects.iterator();
+
         while (it.hasNext()) {
-            Persistent object = (Persistent) it.next();
-            performCallbacks(object);
+            
+            // TODO: andrus, 10/23/2007 - aggregate queries can return Object[] results
+            // that are mixed Persistent and scalars... need to unwrap those... for now
+            // simply check for non-persistent first result and bail out...
+
+            Object object = it.next();
+            if (object instanceof Persistent) {
+                performCallbacks((Persistent) object);
+            }
+            else {
+                break;
+            }
         }
     }
 

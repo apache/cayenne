@@ -231,6 +231,17 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
+     * Sets a lifecycle callbacks registry of the EntityResolver. Users rarely if ever
+     * need to call this method as Cayenne would instantiate a registry itself as needed
+     * based on mapped configuration.
+     * 
+     * @since 3.0
+     */
+    public void setCallbackRegistry(LifecycleCallbackRegistry callbackRegistry) {
+        this.callbackRegistry = callbackRegistry;
+    }
+
+    /**
      * Returns ClientEntityResolver with mapping information that only includes entities
      * available on CWS Client Tier.
      * 
