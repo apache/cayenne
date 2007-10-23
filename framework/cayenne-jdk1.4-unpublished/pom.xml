@@ -176,6 +176,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>javacc-maven-plugin</artifactId>
+				<version>2.1</version>
 				<executions>
 					<execution>
 						<id>jjtree-jpql</id>
@@ -185,7 +186,7 @@
 								${basedir}/src/main/jjtree/org/apache/cayenne/ejbql
 							</sourceDirectory>
 							<outputDirectory>
-								${project.build.directory}/generated-sources/jjtree
+								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql
 							</outputDirectory>
 							<buildNodeFiles>false</buildNodeFiles>
 						</configuration>
@@ -199,10 +200,10 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<sourceDirectory>
-								${project.build.directory}/generated-sources/jjtree
+								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql
 							</sourceDirectory>
 							<outputDirectory>
-								${project.build.directory}/generated-sources/javacc
+								${project.build.directory}/generated-sources/javacc/org/apache/cayenne/ejbql
 							</outputDirectory>
 						</configuration>
 						<goals>
@@ -219,7 +220,7 @@
                         <configuration>
                             <tasks>
                                 <delete
-                                    file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/parser/Node.java"/>
+                                    file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/Node.java"/>
                             </tasks>
                         </configuration>
                         <goals>
