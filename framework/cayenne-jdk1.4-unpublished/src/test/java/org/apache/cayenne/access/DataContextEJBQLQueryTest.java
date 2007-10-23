@@ -31,15 +31,55 @@ import org.apache.art.CompoundFkTestEntity;
 import org.apache.art.CompoundPkTestEntity;
 import org.apache.art.Painting;
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLQueryTest extends CayenneCase {
 
     protected void setUp() throws Exception {
         deleteTestData();
+    }
+
+    /**
+     * CAY-899: Checks that aggregate results do not cause callbacks execution.
+     */
+    public void testSelectAggregatePostLoadCallback() throws Exception {
+
+        createTestData("prepare");
+        DataContext context = createDataContext();
+
+        LifecycleCallbackRegistry existingCallbacks = context
+                .getEntityResolver()
+                .getCallbackRegistry();
+        LifecycleCallbackRegistry testCallbacks = new LifecycleCallbackRegistry(context
+                .getEntityResolver());
+
+        DataContextEJBQLQueryCallback listener = new DataContextEJBQLQueryCallback();
+        testCallbacks.addDefaultListener(
+                LifecycleListener.POST_LOAD,
+                listener,
+                "postLoad");
+
+        context.getEntityResolver().setCallbackRegistry(testCallbacks);
+
+        try {
+            String ejbql = "select count(p), count(distinct p.estimatedPrice), max(p.estimatedPrice), sum(p.estimatedPrice) from Painting p";
+            EJBQLQuery query = new EJBQLQuery(ejbql);
+
+            List data = createDataContext().performQuery(query);
+            
+            assertFalse(listener.postLoad);
+            
+            assertEquals(1, data.size());
+            assertTrue(data.get(0) instanceof Object[]);
+        }
+        finally {
+            context.getEntityResolver().setCallbackRegistry(existingCallbacks);
+        }
     }
 
     public void testSelectAggregate() throws Exception {
@@ -59,8 +99,8 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
     }
 
     public void testSelectAggregateNull() throws Exception {
-        
-        if(!getAccessStackAdapter().supportNullRowForAggregateFunctions()) {
+
+        if (!getAccessStackAdapter().supportNullRowForAggregateFunctions()) {
             return;
         }
 
@@ -125,7 +165,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         assertTrue(artists.get(0) instanceof Artist);
         assertTrue(((Artist) artists.get(0)).getPersistenceState() == PersistenceState.COMMITTED);
     }
-    
+
     public void testFetchLimit() throws Exception {
         createTestData("prepare");
 
