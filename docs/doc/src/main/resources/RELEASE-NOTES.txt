@@ -17,6 +17,7 @@ Changes/New Features Since M2:
 Bug fixes since M2:
 
 CAY-882 Configuration shutdown hook thread may lead to memory leaks
+CAY-899 Default POST_LOAD callbacks break aggregate queries
 
 
 ----------------------------------
