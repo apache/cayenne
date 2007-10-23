@@ -19,11 +19,7 @@
 package org.apache.cayenne.map;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A mapping descriptor of a single callback event.
@@ -40,7 +36,7 @@ public class CallbackDescriptor implements Serializable {
 
     public CallbackDescriptor(int callbackType) {
         setCallbackType(callbackType);
-        this.callbackMethods = new HashSet(3);
+        this.callbackMethods = new LinkedHashSet(3);
     }
 
     /**
@@ -52,6 +48,7 @@ public class CallbackDescriptor implements Serializable {
 
     /**
      * Returns all callback methods for this callback event.
+     * @return Returns all callback methods
      */
     public Collection getCallbackMethods() {
         return Collections.unmodifiableCollection(callbackMethods);

@@ -311,6 +311,12 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         encodeOBJRelationshipsAsXML(getObjEntityMap(), encoder);
         encoder.print(getQueryMap());
 
+        //write entity listeners
+        for(Iterator i = getDefaultEntityListeners().iterator(); i.hasNext();) {
+            EntityListener entityListener = (EntityListener)i.next();
+            entityListener.encodeAsXML(encoder);
+        }
+
         encoder.indent(-1);
         encoder.println("</data-map>");
     }

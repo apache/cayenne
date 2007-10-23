@@ -161,6 +161,15 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         // store attributes
         encoder.print(getDeclaredAttributes());
 
+        //write entity listeners
+        for(Iterator i = getEntityListeners().iterator(); i.hasNext();) {
+            EntityListener entityListener = (EntityListener)i.next();
+            entityListener.encodeAsXML(encoder);
+        }
+
+        //write entity-level callbacks
+        getCallbackMap().encodeCallbacksAsXML(encoder);
+
         encoder.indent(-1);
         encoder.println("</obj-entity>");
     }

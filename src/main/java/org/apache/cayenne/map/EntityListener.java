@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
 import java.io.Serializable;
 
 /**
@@ -27,7 +30,7 @@ import java.io.Serializable;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EntityListener implements Serializable {
+public class EntityListener implements Serializable, XMLSerializable {
 
     protected String className;
     protected CallbackMap callbacks;
@@ -51,8 +54,21 @@ public class EntityListener implements Serializable {
 
     /**
      * Returns an object that stores callback methods of this listener.
+     * @return callback map
      */
     public CallbackMap getCallbackMap() {
         return callbacks;
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<entity-listener class=\"");
+        encoder.print(className);
+        encoder.println("\">");
+        encoder.indent(1);
+
+        getCallbackMap().encodeCallbacksAsXML(encoder);
+
+        encoder.indent(-1);
+        encoder.println("</entity-listener>");
     }
 }
