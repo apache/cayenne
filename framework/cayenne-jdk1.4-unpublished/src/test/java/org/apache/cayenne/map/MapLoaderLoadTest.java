@@ -20,6 +20,9 @@
 package org.apache.cayenne.map;
 
 import java.util.List;
+import java.io.PrintWriter;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 
 import junit.framework.TestCase;
 
@@ -111,6 +114,18 @@ public class MapLoaderLoadTest extends TestCase {
         assertNotNull(ent.getSuperClassName());
 
         checkLoadedQueries(map);
+    }
+
+    public void testEncodeAsXML() throws FileNotFoundException {
+        //load map
+        MapLoader mapLoader = new MapLoader();
+        DataMap map = mapLoader.loadDataMap(getMapXml("testmap.map.xml"));
+        assertNotNull(map);
+
+        //endode map
+        PrintWriter pw = new PrintWriter(new FileOutputStream("testmap_generated.map.xml"));
+        map.encodeAsXML(pw);
+        pw.close();
     }
 
     private void checkLoadedQueries(DataMap map) throws Exception {

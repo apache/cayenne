@@ -19,8 +19,10 @@
 package org.apache.cayenne.map;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 import org.apache.cayenne.LifecycleListener;
+import org.apache.cayenne.util.XMLEncoder;
 
 /**
  * A generic descriptor of a set of standard lifecycle callbacks.
@@ -99,5 +101,25 @@ public class CallbackMap implements Serializable {
 
     public CallbackDescriptor getPreUpdate() {
         return preUpdate;
+    }
+
+    public void encodeCallbacksAsXML(XMLEncoder encoder) {
+        printMethods(prePersist, "pre-persist", encoder);
+        printMethods(postPersist, "post-persist", encoder);
+        printMethods(preUpdate, "pre-update", encoder);
+        printMethods(postUpdate, "post-update", encoder);
+        printMethods(preRemove, "pre-remove", encoder);
+        printMethods(postRemove, "post-remove", encoder);
+        printMethods(postLoad, "post-load", encoder);
+    }
+
+    private static void printMethods(CallbackDescriptor descriptor, String stringCallbackName, XMLEncoder encoder) {
+        for (Iterator i = descriptor.getCallbackMethods().iterator(); i.hasNext();) {
+            encoder.print("<");
+            encoder.print(stringCallbackName);
+            encoder.print(" method-name=\"");
+            encoder.print((String)i.next());
+            encoder.println("\"/>");
+        }
     }
 }

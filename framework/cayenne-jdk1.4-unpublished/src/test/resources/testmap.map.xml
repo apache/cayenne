@@ -26,11 +26,16 @@
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
 		<db-attribute name="PARENT_GROUP_ID" type="INTEGER"/>
 	</db-entity>
-	<db-entity name="ARTIST">
-		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
-		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
-	</db-entity>
+    <db-entity name="ARTIST">
+        <db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+        <db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
+        <db-attribute name="DATE_OF_BIRTH" type="DATE"/>
+    </db-entity>
+    <db-entity name="ARTIS_CT">
+        <db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+        <db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
+        <db-attribute name="DATE_OF_BIRTH" type="DATE"/>
+    </db-entity>
 	<db-entity name="ARTIST_EXHIBIT">
 		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -227,7 +232,7 @@
 	<obj-entity name="Artist" className="org.apache.art.Artist" dbEntityName="ARTIST">
 		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
-	</obj-entity>
+    </obj-entity>
 	<obj-entity name="ArtistAssets" className="org.apache.art.ArtistAssets" dbEntityName="ARTIST_ASSETS">
 		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
 		<obj-attribute name="paintingsCount" type="java.lang.Integer" db-attribute-path="PAINTINGS_COUNT"/>
@@ -571,4 +576,38 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 	<query name="QueryWithSharedCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
 		<property name="cayenne.GenericSelectQuery.cachePolicy" value="sharedcache"/>
 	</query>
+
+    <obj-entity name="ArtistCallbackTest" className="org.apache.art.ArtistCallbackTest" dbEntityName="ARTIST_CT">
+        <obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
+        <obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
+
+        <entity-listener class="org.apache.art.EntityListenerObjEntity">
+            <pre-persist method-name="prePersistEntityListener"/>
+            <post-persist method-name="postPersistEntityListener"/>
+            <pre-update method-name="preUpdateEntityListener"/>
+            <post-update method-name="postUpdateEntityListener"/>
+            <pre-remove method-name="preRemoveEntityListener"/>
+            <post-remove method-name="postRemoveEntityListener"/>
+            <post-load method-name="postLoadEntityListener"/>
+        </entity-listener>
+
+        <pre-persist method-name="prePersistEntityObjEntity"/>
+        <post-persist method-name="postPersistEntityObjEntity"/>
+        <pre-update method-name="preUpdateEntityObjEntity"/>
+        <post-update method-name="postUpdateEntityObjEntity"/>
+        <pre-remove method-name="preRemoveEntityObjEntity"/>
+        <post-remove method-name="postRemoveEntityObjEntity"/>
+        <post-load method-name="postLoadEntityObjEntity"/>
+    </obj-entity>
+
+    <entity-listener class="org.apache.art.EntityListenerDataMap">
+        <pre-persist method-name="prePersistDataMap1"/>
+        <pre-persist method-name="prePersistDataMap2"/>
+        <post-persist method-name="postPersistDataMap"/>
+        <pre-update method-name="preUpdateDataMap"/>
+        <post-update method-name="postUpdateDataMap"/>
+        <pre-remove method-name="preRemoveDataMap"/>
+        <post-remove method-name="postRemoveDataMap"/>
+        <post-load method-name="postLoadDataMap"/>
+    </entity-listener>
 </data-map>

@@ -89,6 +89,16 @@ public class MapLoader extends DefaultHandler {
     public static final String PROCEDURE_TAG = "procedure";
     public static final String PROCEDURE_PARAMETER_TAG = "procedure-parameter";
 
+    //lifecycle listeners and callbacks related
+    public static final String ENTITY_LISTENER_TAG = "entity-listener";
+    public static final String PRE_PERSIST_TAG = "pre-persist";
+    public static final String POST_PERSIST_TAG = "post-persist";
+    public static final String PRE_UPDATE_TAG = "pre-update";
+    public static final String POST_UPDATE_TAG = "post-update";
+    public static final String PRE_REMOVE_TAG = "pre-remove";
+    public static final String POST_REMOVE_TAG = "post-remove";
+    public static final String POST_LOAD_TAG = "post-load";    
+
     // Query-related
     public static final String QUERY_TAG = "query";
 
@@ -109,6 +119,7 @@ public class MapLoader extends DefaultHandler {
     private DataMap dataMap;
     private DbEntity dbEntity;
     private ObjEntity objEntity;
+    private EntityListener entityListener;
     private Embeddable embeddable;
     private EmbeddedAttribute embeddedAttribute;
     private DbRelationship dbRelationship;
@@ -286,6 +297,59 @@ public class MapLoader extends DefaultHandler {
             }
         });
 
+        startTagOpMap.put(ENTITY_LISTENER_TAG, new StartClosure() {
+            void execute(Attributes attributes) throws SAXException {
+                processStartEntitylistener(attributes);
+            }
+        });
+
+        startTagOpMap.put(PRE_PERSIST_TAG, new StartClosure() {
+            void execute(Attributes attributes) throws SAXException {
+                processStartPrePersist(attributes);
+            }
+        });
+
+        startTagOpMap.put(POST_PERSIST_TAG, new StartClosure() {
+            void execute(Attributes attributes) throws SAXException {
+                processStartPostPersist(attributes);
+            }
+        });
+
+        startTagOpMap.put(PRE_UPDATE_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartPreUpdate(attributes);
+            }
+        });
+
+        startTagOpMap.put(POST_UPDATE_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartPostUpdate(attributes);
+            }
+        });
+
+        startTagOpMap.put(PRE_REMOVE_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartPreRemove(attributes);
+            }
+        });
+
+        startTagOpMap.put(POST_REMOVE_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartPostRemove(attributes);
+            }
+        });
+
+        startTagOpMap.put(POST_LOAD_TAG, new StartClosure() {
+
+            void execute(Attributes attributes) throws SAXException {
+                processStartPostLoad(attributes);
+            }
+        });
+
         StartClosure resetBuffer = new StartClosure() {
 
             void execute(Attributes attributes) throws SAXException {
@@ -415,6 +479,101 @@ public class MapLoader extends DefaultHandler {
                 processEndQueryPrefetch();
             }
         });
+
+        endTagOpMap.put(ENTITY_LISTENER_TAG, new EndClosure() {
+            void execute() throws SAXException {
+                processEndEntitylistener();
+            }
+        });
+    }
+
+    private void processStartEntitylistener(Attributes attributes) {
+        entityListener = new EntityListener(attributes.getValue("", "class"));
+        if (objEntity != null) {
+            //we are inside of obj-entity tag
+            objEntity.addEntityListener(entityListener);
+        }
+        else if (dataMap != null) {
+            //we are inside of datamap tag
+            dataMap.addDefaultEntityListener(entityListener);
+        }
+    }
+
+    private void processEndEntitylistener() {
+        entityListener = null;
+    }
+
+
+    private void processStartPrePersist(Attributes attributes) {
+        String methodName = attributes.getValue("", "method-name");
+        if (entityListener != null) {
+            //new "entity-listener" tag as a child of "obj-entity"
+            entityListener.getCallbackMap().getPrePersist().addCallbackMethod(methodName);
+        }
+        else if (objEntity != null) {
+            //new callback tags - children of "obj-entity"
+            objEntity.getCallbackMap().getPrePersist().addCallbackMethod(methodName);
+        }
+    }
+
+    private void processStartPostPersist(Attributes attributes) {
+        String methodName = attributes.getValue("", "method-name");
+        if (entityListener != null) {
+            entityListener.getCallbackMap().getPostPersist().addCallbackMethod(methodName);
+        }
+        else if (objEntity != null) {
+            objEntity.getCallbackMap().getPostPersist().addCallbackMethod(methodName);
+        }
+    }
+
+    private void processStartPreUpdate(Attributes attributes) {
+        String methodName = attributes.getValue("", "method-name");
+        if (entityListener != null) {
+            entityListener.getCallbackMap().getPreUpdate().addCallbackMethod(methodName);
+        }
+        else if (objEntity != null) {
+            objEntity.getCallbackMap().getPreUpdate().addCallbackMethod(methodName);
+        }
+    }
+
+    private void processStartPostUpdate(Attributes attributes) {
+        String methodName = attributes.getValue("", "method-name");
+        if (entityListener != null) {
+            entityListener.getCallbackMap().getPostUpdate().addCallbackMethod(methodName);
+        }
+        else if (objEntity != null) {
+            objEntity.getCallbackMap().getPostUpdate().addCallbackMethod(methodName);
+        }
+    }
+
+    private void processStartPreRemove(Attributes attributes) {
+        String methodName = attributes.getValue("", "method-name");
+        if (entityListener != null) {
+            entityListener.getCallbackMap().getPreRemove().addCallbackMethod(methodName);
+        }
+        else if (objEntity != null) {
+            objEntity.getCallbackMap().getPreRemove().addCallbackMethod(methodName);
+        }
+    }
+
+    private void processStartPostRemove(Attributes attributes) {
+        String methodName = attributes.getValue("", "method-name"); 
+        if (entityListener != null) {
+            entityListener.getCallbackMap().getPostRemove().addCallbackMethod(methodName);
+        }
+        else if (objEntity != null) {
+            objEntity.getCallbackMap().getPostRemove().addCallbackMethod(methodName);
+        }
+    }
+
+    private void processStartPostLoad(Attributes attributes) {
+        String methodName = attributes.getValue("", "method-name");
+        if (entityListener != null) {
+            entityListener.getCallbackMap().getPostLoad().addCallbackMethod(methodName);
+        }
+        else if (objEntity != null) {
+            objEntity.getCallbackMap().getPostLoad().addCallbackMethod(methodName);
+        }
     }
 
     /**
