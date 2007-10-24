@@ -50,6 +50,7 @@ public class ModelerPreferences extends ExtendedProperties {
 
     /** List of the last 4 opened project files. */
     public static final String LAST_PROJ_FILES = "Editor.lastSeveralProjectFiles";
+    public static final int LAST_PROJ_FILES_SIZE = 12;
 
     /** GUI layout */
     public static final String EDITOR_LAFNAME = "Editor.lookAndFeel";

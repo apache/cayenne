@@ -38,7 +38,6 @@ import org.apache.cayenne.swing.control.FileMenuItem;
  * @author Andrus Adamchik
  */
 public class RecentFileMenu extends JMenu {
-
     /**
      * Constructor for RecentFileMenu.
      */
@@ -60,7 +59,7 @@ public class RecentFileMenu extends JMenu {
     public void rebuildFromPreferences() {
         ModelerPreferences pref = ModelerPreferences.getPreferences();
         Vector arr = pref.getVector(ModelerPreferences.LAST_PROJ_FILES);
-        while (arr.size() > 4) {
+        while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
             arr.remove(arr.size() - 1);
         }
 
@@ -79,7 +78,7 @@ public class RecentFileMenu extends JMenu {
             }
             else {
                 // add a new one
-                FileMenuItem item = new FileMenuItem(name);
+                FileMenuItem item = new FileMenuItem((i + 1) + ". " + name);
                 item.setAction(findAction());
                 add(item);
             }

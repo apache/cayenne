@@ -139,7 +139,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         fileMenu.add(getAction(RevertAction.getActionName()).buildMenu());
         fileMenu.addSeparator();
 
-        recentFileMenu = new RecentFileMenu("Recent Files");
+        recentFileMenu = new RecentFileMenu("Recent Projects");
         recentFileMenu.rebuildFromPreferences();
         recentFileMenu.setEnabled(recentFileMenu.getMenuComponentCount() > 0);
         fileMenu.add(recentFileMenu);
