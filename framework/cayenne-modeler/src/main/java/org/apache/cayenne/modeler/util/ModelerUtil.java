@@ -102,26 +102,39 @@ public final class ModelerUtil {
 
     public static String[] getRegisteredTypeNames() {
         String[] explicitList = new ExtendedTypeMap().getRegisteredTypeNames();
-        Set allNamesSet = new HashSet(Arrays.asList(explicitList));
+        Set nonPrimitives = new HashSet(Arrays.asList(explicitList));
 
         // add types that are not mapped explicitly, but nevertheless supported by Cayenne
-        allNamesSet.add(Calendar.class.getName());
-        allNamesSet.add(BigInteger.class.getName());
-        allNamesSet.add(Serializable.class.getName());
-        allNamesSet.add(Character.class.getName());
-        allNamesSet.add("char[]");
-        allNamesSet.add("java.lang.Character[]");
-        allNamesSet.add("java.lang.Byte[]");
-        allNamesSet.add("java.util.Date");
-        allNamesSet.remove(Void.TYPE.getName());
+        nonPrimitives.add(Calendar.class.getName());
+        nonPrimitives.add(BigInteger.class.getName());
+        nonPrimitives.add(Serializable.class.getName());
+        nonPrimitives.add(Character.class.getName());
+        nonPrimitives.add("char[]");
+        nonPrimitives.add("java.lang.Character[]");
+        nonPrimitives.add("java.lang.Byte[]");
+        nonPrimitives.add("java.util.Date");
+        nonPrimitives.remove(Void.TYPE.getName());
 
-        String[] allNames = new String[allNamesSet.size()];
-        allNamesSet.toArray(allNames);
-        Arrays.sort(allNames);
+        String[] nonPrimitivesNames = new String[nonPrimitives.size()];
+        nonPrimitives.toArray(nonPrimitivesNames);
+        Arrays.sort(nonPrimitivesNames);
 
-        String[] finalList = new String[allNames.length + 1];
-        System.arraycopy(allNames, 0, finalList, 1, allNames.length);
+        String[] primitivesNames = {
+                "boolean", "byte", "char", "double", "float", "int", "long", "short"
+        };
+
+        String[] finalList = new String[primitivesNames.length
+                + nonPrimitivesNames.length
+                + 1];
+
         finalList[0] = "";
+        System.arraycopy(primitivesNames, 0, finalList, 1, primitivesNames.length);
+        System.arraycopy(
+                nonPrimitivesNames,
+                0,
+                finalList,
+                primitivesNames.length + 1,
+                nonPrimitivesNames.length);
 
         return finalList;
     }
