@@ -185,10 +185,13 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
                 currentArcDiff = new HashMap();
                 currentArcDiff.put(arcId, null);
             }
-            // check for situation when a substitute arc was created prior to deleting the
-            // old arc...
-            else if (targetNodeId.equals(currentArcDiff.get(arcId))) {
-                currentArcDiff.put(arcId, null);
+            else {
+                // skip deletion record if a substitute arc was created prior to deleting
+                // the old arc...
+                Object existingTargetId = currentArcDiff.get(arcId);
+                if (existingTargetId == null || targetNodeId.equals(existingTargetId)) {
+                    currentArcDiff.put(arcId, null);
+                }
             }
         }
     }
