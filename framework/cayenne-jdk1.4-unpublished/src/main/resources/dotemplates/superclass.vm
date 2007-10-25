@@ -50,11 +50,22 @@ public abstract class ${classGen.superPrefix}${classGen.className} extends $clas
         writeProperty("${attr.Name}", $classGen.formatVariableName(${attr.Name}));
     }
 #end
+#if ( $classGen.isBoolean(${attr.Type}) )
+	public boolean is${classGen.cappedProp}() {
+        Boolean value = (Boolean)readProperty("${attr.Name}");
+        return (value != null) ? value.booleanValue() : false;
+    }
+#elseif ( $classGen.isNonBooleanPrimitive(${attr.Type}) )
+    public $classGen.formatJavaType(${attr.Type}) get${classGen.cappedProp}() {
+        Object value = readProperty("${attr.Name}");
+        return (value != null) ? ($classGen.formatJavaTypeAsNonBooleanPrimitive(${attr.Type})) value : 0; 
+    }
+#else
     public $classGen.formatJavaType(${attr.Type}) get${classGen.cappedProp}() {
         return ($classGen.formatJavaType(${attr.Type}))readProperty("${attr.Name}");
     }
-    
-    
+#end
+
 #end
 ##
 ## Create list add/remove/get methods
