@@ -74,6 +74,7 @@ CAY-863 Object property unexpectedly set to null through forceMergeWithSnapshot
 CAY-870 Race condition in ClassDescriptorMap
 CAY-872 Potential bug deleting uncommited objects from a nested DataContext
 CAY-873 maven-cayenne-plugin requires transitive deps declared
+CAY-901 Cannot set more than one to-one relationship to null.
 
 ----------------------------------
 Release: 3.0M1
