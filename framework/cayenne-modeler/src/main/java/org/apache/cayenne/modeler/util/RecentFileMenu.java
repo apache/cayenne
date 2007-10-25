@@ -78,7 +78,7 @@ public class RecentFileMenu extends JMenu {
             }
             else {
                 // add a new one
-                FileMenuItem item = new FileMenuItem((i + 1) + ". " + name);
+                FileMenuItem item = new FileMenuItem(name);
                 item.setAction(findAction());
                 add(item);
             }
