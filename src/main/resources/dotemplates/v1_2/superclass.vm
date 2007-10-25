@@ -70,11 +70,22 @@ public abstract class ${entityUtils.superClassName} extends ${entityUtils.baseCl
         writeProperty("${attr.Name}", $stringUtils.formatVariableName(${attr.Name}));
     }
 #end
+#if ( $importUtils.isBoolean(${attr.Type}) )
+	public boolean is${stringUtils.capitalized($attr.Name)}() {
+        Boolean value = (Boolean)readProperty("${attr.Name}");
+        return (value != null) ? value.booleanValue() : false;
+    }
+#elseif ( $importUtils.isNonBooleanPrimitive(${attr.Type}) )
+    public $classGen.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
+        Object value = readProperty("${attr.Name}");
+        return (value != null) ? ($importUtils.formatJavaTypeAsNonBooleanPrimitive(${attr.Type})) value : 0; 
+    }
+#else
     public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
         return ($importUtils.formatJavaType(${attr.Type}))readProperty("${attr.Name}");
     }
-    
-    
+#end
+
 #end
 ##
 ## Create list add/remove/get methods

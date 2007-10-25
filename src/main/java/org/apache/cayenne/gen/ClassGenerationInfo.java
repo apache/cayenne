@@ -113,6 +113,25 @@ public class ClassGenerationInfo {
 
         return type;
     }
+    
+    /**
+     * @since 3.0
+     */
+    public String formatJavaTypeAsNonBooleanPrimitive(String type) {
+        String value = (String) ImportUtils.classesForPrimitives.get(type);
+        return formatJavaType(value != null ? value : type);
+    }
+    
+    public boolean isNonBooleanPrimitive(String type) {
+        return ImportUtils.classesForPrimitives.containsKey(type) && !isBoolean(type);
+    }
+ 
+    /**
+     * @since 3.0
+     */
+    public boolean isBoolean(String type) {
+        return "boolean".equals(type);
+    }
 
     public String formatVariableName(String variableName) {
         if (MappingNamesHelper.getInstance().isReservedJavaKeyword(variableName)) {
