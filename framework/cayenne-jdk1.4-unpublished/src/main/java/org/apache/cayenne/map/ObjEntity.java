@@ -149,6 +149,14 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
             encoder.print(getClientSuperClassName());
         }
 
+        if (isExcludingSuperclassListeners()) {
+            encoder.print("\" exclude-superclass-listeners=\"true");
+        }
+
+        if (isExcludingDefaultListeners()) {
+            encoder.print("\" exclude-default-listeners=\"true");
+        }
+
         encoder.println("\">");
         encoder.indent(1);
 

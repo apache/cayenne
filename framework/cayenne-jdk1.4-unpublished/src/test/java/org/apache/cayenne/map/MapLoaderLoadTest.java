@@ -113,6 +113,11 @@ public class MapLoaderLoadTest extends TestCase {
         ObjEntity ent = map.getObjEntity("Painting");
         assertNotNull(ent.getSuperClassName());
 
+        //text exclude... parameters
+        ObjEntity artistCallbackTestEntity = map.getObjEntity("ArtistCallbackTest");
+        assertTrue(artistCallbackTestEntity.isExcludingDefaultListeners());
+        assertTrue(artistCallbackTestEntity.isExcludingSuperclassListeners());
+
         checkLoadedQueries(map);
     }
 
