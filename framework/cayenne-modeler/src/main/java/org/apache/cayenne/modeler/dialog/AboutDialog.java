@@ -17,35 +17,26 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.dialog;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
-import org.apache.cayenne.modeler.CayenneModelerFrame;
-import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
@@ -57,12 +48,12 @@ import org.scopemvc.util.UIStrings;
 // Implementation note - the data displayed here is 
 // static and very simple, so there is no need to implement complex Scope MVC 
 // triad, though it might be beneficial to use strings file
-public class AboutDialog extends CayenneDialog {
+public class AboutDialog extends JFrame implements FocusListener, KeyListener, MouseListener {
 
-    private static String licenseString;
+    private static final long serialVersionUID = 1L;
+    private JLabel license, info;
     private static String infoString;
     private static ImageIcon logoImage;
-    private static final Dimension infoAreaSize = new Dimension(450, 350);
 
     static synchronized ImageIcon getLogoImage() {
         if (logoImage == null) {
@@ -77,12 +68,12 @@ public class AboutDialog extends CayenneDialog {
     static synchronized String getInfoString() {
         if (infoString == null) {
             StringBuffer buffer = new StringBuffer();
-
+            buffer.append("<html>");
             buffer.append("<font size='-1' face='Arial,Helvetica'>");
             buffer.append(UIStrings.get("cayenne.modeler.about.info"));
             buffer.append("</font>");
+            
             buffer.append("<font size='-2' face='Arial,Helvetica'>");
-
             String version = LocalizedStringsHandler.getString("cayenne.version");
             if (version != null) {
                 buffer.append("<br>Version: ").append(version);
@@ -94,148 +85,88 @@ public class AboutDialog extends CayenneDialog {
             }
 
             buffer.append("</font>");
+            buffer.append("</html>");
             infoString = buffer.toString();
         }
 
         return infoString;
     }
 
-    /** 
-     * Reads Cayenne license from cayenne.jar file and returns it as a string.
-     */
-    static synchronized String getLicenseString() {
-        if (licenseString == null) {
-            BufferedReader in = null;
-            try {
-                InputStream licenseIn = AboutDialog.class
-                        .getClassLoader()
-                        .getResourceAsStream("META-INF/LICENSE");
-
-                if (licenseIn != null) {
-                    in = new BufferedReader(new InputStreamReader(licenseIn));
-                    String line = null;
-                    StringBuffer buf = new StringBuffer();
-
-                    while ((line = in.readLine()) != null) {
-                        // strip comments
-                        if (line.startsWith("/*") || line.startsWith(" */")) {
-                            continue;
-                        }
-
-                        // strip separators 
-                        if (line.indexOf("=================") >= 0) {
-                            continue;
-                        }
-
-                        // strip beginning of the line
-                        if (line.startsWith(" *")) {
-                            line = line.substring(2);
-                        }
-
-                        buf.append(line).append('\n');
-                    }
-
-                    licenseString = buf.toString();
-                }
-
-            }
-            catch (IOException ioex) {
-                // ignoring
-            }
-            finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    }
-                    catch (IOException ioex) {
-                        // ignoring
-                    }
-                }
-            }
-
-            // if license is not initialized for whatever reason,
-            // send them to the website
-            if (licenseString == null) {
-                licenseString =
-                    "Latest Cayenne license can be found at http://apache.org/licenses/LICENSE-2.0";
-            }
-        }
-
-        return licenseString;
-    }
-
-    public AboutDialog(CayenneModelerFrame frame) {
-        super(frame, "About CayenneModeler", true);
-        init();
-
+    public AboutDialog() {
+        super();
+        final FlowLayout flowLayout = new FlowLayout();
+        getContentPane().setLayout(flowLayout);
+        getContentPane().setBackground(Color.WHITE);
+        this.setUndecorated(true);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.pack();
-        this.centerWindow();
-        this.setVisible(true);
-    }
 
-    /** 
-     * Sets up the graphical components. 
-     */
-    private void init() {
-
-        // create widgets
-        JButton okButton = CayenneWidgetFactory.createButton("Close");
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                AboutDialog.this.dispose();
-            }
-        });
-
-        // assemble info section
-        JTabbedPane tabPanel = new JTabbedPane() {
-
-            public Dimension getPreferredSize() {
-                return infoAreaSize;
-            }
-        };
-
-        tabPanel.setTabPlacement(SwingConstants.TOP);
-        tabPanel.addTab("About CayenneModeler", new JScrollPane(initInfoPanel()));
-        tabPanel.addTab("License", new JScrollPane(initLicensePanel()));
-
-        // assemble button
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(okButton);
-
-        // assemble dialog
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(tabPanel, BorderLayout.CENTER);
-        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-    }
-
-    private JComponent initInfoPanel() {
+        addMouseListener(this);
+        addFocusListener(this);
+        addKeyListener(this);
+        setLocationRelativeTo(null); // centre on screen
+        
+        final JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        panel.setBackground(Color.WHITE);
+        getContentPane().add(panel);
 
         JLabel image = new JLabel(getLogoImage());
-        image.setBounds(4, 4, 4, 4);
+        panel.add(image, new GridBagConstraints());
 
-        JEditorPane infoPanel = new JEditorPane("text/html", getInfoString());
-        infoPanel.setEditable(false);
-        infoPanel.addHyperlinkListener(this);
-        infoPanel.setBackground(getParent().getBackground());
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout(10, 10));
-
-        panel.add(image, BorderLayout.NORTH);
-        panel.add(infoPanel, BorderLayout.CENTER);
-
-        return panel;
+        license = new JLabel();
+        final GridBagConstraints gridBagConstraints_1 = new GridBagConstraints();
+        gridBagConstraints_1.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints_1.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_1.gridx = 0;
+        gridBagConstraints_1.gridy = 1;
+        gridBagConstraints_1.insets = new Insets(0, 12, 0, 0);
+        panel.add(license, gridBagConstraints_1);
+        license.setText("<html><font size='-1' face='Arial,Helvetica'>Available under the Apache license.</font></html>");
+        
+        info = new JLabel();
+        final GridBagConstraints gridBagConstraints_2 = new GridBagConstraints();
+        gridBagConstraints_2.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints_2.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_2.gridx = 0;
+        gridBagConstraints_2.gridy = 2;
+        gridBagConstraints_2.insets = new Insets(6, 12, 12, 12);
+        panel.add(info, gridBagConstraints_2);
+        info.setText(getInfoString());
+        
+        this.pack();
+        this.setVisible(true);
+    }
+    
+    public void keyPressed(KeyEvent e) {
+        dispose();
+    }
+   
+    public void focusLost(FocusEvent e) {
+        dispose();
     }
 
-    private JComponent initLicensePanel() {
-        JTextArea licenseText = new JTextArea(getLicenseString());
+    public void focusGained(FocusEvent e) {
+    }
 
-        licenseText.setBackground(Color.WHITE);
-        licenseText.setEditable(false);
-        licenseText.setLineWrap(true);
-        licenseText.setWrapStyleWord(true);
+    public void keyReleased(KeyEvent e) {
+    }
 
-        return licenseText;
+    public void keyTyped(KeyEvent e) {
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        dispose();
+    }
+
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    public void mouseExited(MouseEvent e) {
+    }
+
+    public void mousePressed(MouseEvent e) {
+    }
+
+    public void mouseReleased(MouseEvent e) {
     }
 }

@@ -50,6 +50,6 @@ public class AboutAction extends CayenneAction {
     }
 
     public void showAboutDialog() {
-        new AboutDialog(Application.getFrame());
+        new AboutDialog();
     }
 }
