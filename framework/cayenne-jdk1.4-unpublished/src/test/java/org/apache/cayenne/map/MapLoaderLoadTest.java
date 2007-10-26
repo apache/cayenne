@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.map;
 
-import java.util.List;
-import java.io.PrintWriter;
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -32,6 +33,7 @@ import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
+import org.apache.cayenne.unit.CayenneResources;
 import org.xml.sax.InputSource;
 
 public class MapLoaderLoadTest extends TestCase {
@@ -122,13 +124,14 @@ public class MapLoaderLoadTest extends TestCase {
     }
 
     public void testEncodeAsXML() throws FileNotFoundException {
-        //load map
+        // load map
         MapLoader mapLoader = new MapLoader();
         DataMap map = mapLoader.loadDataMap(getMapXml("testmap.map.xml"));
         assertNotNull(map);
 
-        //endode map
-        PrintWriter pw = new PrintWriter(new FileOutputStream("testmap_generated.map.xml"));
+        // encode map
+        File file = new File(CayenneResources.getResources().getTestDir(), "testmap_generated.map.xml");
+        PrintWriter pw = new PrintWriter(new FileOutputStream(file));
         map.encodeAsXML(pw);
         pw.close();
     }
