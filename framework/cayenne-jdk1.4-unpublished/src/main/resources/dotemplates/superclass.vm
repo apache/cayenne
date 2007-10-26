@@ -65,6 +65,8 @@ public abstract class ${classGen.superPrefix}${classGen.className} extends $clas
         return ($classGen.formatJavaType(${attr.Type}))readProperty("${attr.Name}");
     }
 #end
+
+
 #end
 ##
 ## Create list add/remove/get methods
