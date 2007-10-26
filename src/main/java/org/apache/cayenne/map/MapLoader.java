@@ -869,6 +869,12 @@ public class MapLoader extends DefaultHandler {
         String serverOnly = atts.getValue("", "serverOnly");
         objEntity.setServerOnly(TRUE.equalsIgnoreCase(serverOnly));
 
+        String excludeSuperclassListeners = atts.getValue("", "exclude-superclass-listeners");
+        objEntity.setExcludingSuperclassListeners(TRUE.equalsIgnoreCase(excludeSuperclassListeners));
+
+        String excludeDefaultListeners = atts.getValue("", "exclude-default-listeners");
+        objEntity.setExcludingDefaultListeners(TRUE.equalsIgnoreCase(excludeDefaultListeners));
+
         String lockType = atts.getValue("", "lock-type");
         if ("optimistic".equals(lockType)) {
             objEntity.setDeclaredLockType(ObjEntity.LOCK_TYPE_OPTIMISTIC);

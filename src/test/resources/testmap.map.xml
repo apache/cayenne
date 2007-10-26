@@ -242,7 +242,12 @@
 		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
 		<obj-attribute name="paintingsCount" type="java.lang.Integer" db-attribute-path="PAINTINGS_COUNT"/>
 	</obj-entity>
-	<obj-entity name="ArtistCallbackTest" className="org.apache.art.ArtistCallbackTest">
+	<obj-entity name="ArtistCallbackTest" 
+		 className="org.apache.art.ArtistCallbackTest"
+                 dbEntityName="ARTIST_CT"
+                 exclude-superclass-listeners="true"
+                 exclude-default-listeners="true">
+
 		<obj-attribute name="artistName" type="java.lang.String"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date"/>
 		<entity-listener class="org.apache.art.EntityListenerObjEntity">
