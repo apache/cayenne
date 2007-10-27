@@ -104,8 +104,8 @@ public class DataContextPerformQueryAPITest extends CayenneCase {
         assertEquals(1, artists.size());
 
         Artist artist = (Artist) artists.get(0);
-        assertEquals(new Integer(33002), artist.getObjectId().getIdSnapshot().get(
-                Artist.ARTIST_ID_PK_COLUMN));
+        assertEquals(33002, ((Number) artist.getObjectId().getIdSnapshot().get(
+                Artist.ARTIST_ID_PK_COLUMN)).intValue());
     }
 
     public void testNonSelectingQueryString() throws Exception {
