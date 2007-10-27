@@ -20,10 +20,15 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 
@@ -114,6 +119,25 @@ public class LOBBatchQueryWrapper {
         if (value instanceof byte[]) {
             byte[] bytes = (byte[]) value;
             return bytes.length == 0 ? null : bytes;
+        }
+        else if (value instanceof Serializable) {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
+
+                public synchronized byte[] toByteArray() {
+                    return buf;
+                }
+            };
+
+            try {
+                ObjectOutputStream out = new ObjectOutputStream(bytes);
+                out.writeObject(value);
+                out.close();
+            }
+            catch (IOException e) {
+                throw new CayenneRuntimeException("Error serializing object", e);
+            }
+            
+            return bytes.toByteArray();
         }
 
         return null;
