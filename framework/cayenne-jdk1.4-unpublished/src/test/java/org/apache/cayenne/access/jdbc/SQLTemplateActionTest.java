@@ -86,7 +86,7 @@ public class SQLTemplateActionTest extends CayenneCase {
         assertEquals(1, rows.size());
         Map row = (Map) rows.get(0);
 
-        assertEquals(bindings.get("id"), row.get("ARTIST_ID"));
+        assertEquals(33005, ((Number) row.get("ARTIST_ID")).intValue());
         assertEquals("artist5", row.get("ARTIST_NAME"));
         assertTrue(row.containsKey("DATE_OF_BIRTH"));
     }
