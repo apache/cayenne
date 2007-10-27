@@ -50,7 +50,6 @@
 </ul>
 </li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
 </ul>
 </div>
 <div id="ConfluenceContent"><table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>
@@ -158,7 +157,7 @@
     <span class="code-tag">&lt;plugins&gt;</span>
         <span class="code-tag">&lt;plugin&gt;</span>
             <span class="code-tag">&lt;groupId&gt;</span>org.apache.cayenne.plugins<span class="code-tag">&lt;/groupId&gt;</span>
-      	    <span class="code-tag">&lt;artifactId&gt;</span>cayenne-maven-plugin<span class="code-tag">&lt;/artifactId&gt;</span>
+      	    <span class="code-tag">&lt;artifactId&gt;</span>maven-cayenne-plugin<span class="code-tag">&lt;/artifactId&gt;</span>
       	    <span class="code-tag">&lt;executions&gt;</span>
                 <span class="code-tag">&lt;execution&gt;</span>
       		    <span class="code-tag">&lt;id&gt;</span>cgen<span class="code-tag">&lt;/id&gt;</span>
@@ -175,20 +174,19 @@
 <span class="code-tag">&lt;/build&gt;</span></pre>
 </div></div>
 
-<p>Here is an example of using CGen to generate DataObject subclass/superclass pairs from DataMap located in "src/datamap.xml". All generated subclasses and superclasses will be saved in the same directory "src/java/dobj" regardless of their package names:</p>
+<p>Here is an example of using CGen to generate Persistent subclass/superclass pairs from DataMap located in "main/resources/datamap.map.xml":</p>
 <div class="code"><div class="codeContent">
 <pre class="code-xml"><span class="code-tag">&lt;build&gt;</span>
     <span class="code-tag">&lt;plugins&gt;</span>
         <span class="code-tag">&lt;plugin&gt;</span>
             <span class="code-tag">&lt;groupId&gt;</span>org.apache.cayenne.plugins<span class="code-tag">&lt;/groupId&gt;</span>
-      	    <span class="code-tag">&lt;artifactId&gt;</span>cayenne-maven-plugin<span class="code-tag">&lt;/artifactId&gt;</span>
+      	    <span class="code-tag">&lt;artifactId&gt;</span>maven-cayenne-plugin<span class="code-tag">&lt;/artifactId&gt;</span>
       	    <span class="code-tag">&lt;executions&gt;</span>
                 <span class="code-tag">&lt;execution&gt;</span>
       		    <span class="code-tag">&lt;id&gt;</span>cgen<span class="code-tag">&lt;/id&gt;</span>
       		    <span class="code-tag">&lt;configuration&gt;</span>
-      			<span class="code-tag">&lt;map&gt;</span>${project.build.sourceDirectory}/datamap.xml<span class="code-tag">&lt;/map&gt;</span>
-                        <span class="code-tag">&lt;destDir&gt;</span>${project.build.sourceDirectory}/dobj<span class="code-tag">&lt;/destDir&gt;</span>
-                        <span class="code-tag">&lt;usePkgPath&gt;</span>true<span class="code-tag">&lt;/usePkgPath&gt;</span>
+      			<span class="code-tag">&lt;map&gt;</span>${project.build.sourceDirectory}/../resources/datamap.map.xml<span class="code-tag">&lt;/map&gt;</span>
+                        <span class="code-tag">&lt;destDir&gt;</span>${project.build.sourceDirectory}<span class="code-tag">&lt;/destDir&gt;</span>
       		    <span class="code-tag">&lt;/configuration&gt;</span>
       		    <span class="code-tag">&lt;goals&gt;</span>
       			<span class="code-tag">&lt;goal&gt;</span>cgen<span class="code-tag">&lt;/goal&gt;</span>
@@ -208,7 +206,7 @@
     <span class="code-tag">&lt;plugins&gt;</span>
         <span class="code-tag">&lt;plugin&gt;</span>
             <span class="code-tag">&lt;groupId&gt;</span>org.apache.cayenne.plugins<span class="code-tag">&lt;/groupId&gt;</span>
-      	    <span class="code-tag">&lt;artifactId&gt;</span>cayenne-maven-plugin<span class="code-tag">&lt;/artifactId&gt;</span>
+      	    <span class="code-tag">&lt;artifactId&gt;</span>maven-cayenne-plugin<span class="code-tag">&lt;/artifactId&gt;</span>
       	    <span class="code-tag">&lt;executions&gt;</span>
                 <span class="code-tag">&lt;execution&gt;</span>
       		    <span class="code-tag">&lt;id&gt;</span>cgen<span class="code-tag">&lt;/id&gt;</span>

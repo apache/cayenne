@@ -1,0 +1,399 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+  <head>
+    <title>Apache Cayenne Documentation - Database Support</title>
+    <style type="text/css">@import "../../../style.css";</style>
+  </head>
+<body>
+  <div class="header">
+    <div style="float: left;"><a href="http://cayenne.apache.org/"><img src="../../../images/logo.gif" align="absmiddle" border="0"></a></div>
+    <span class="logoSpaceLink"><a href="../../../index.html">Cayenne User Documentation</a></span><br />
+    <span class="pagetitle">Database Support</span>
+  </div>
+<div id="cayenne_toc">
+<ul>
+<li><a href="../../../Documentation/Overview/Database Support/index.html">Database Support</a><ul>
+</ul>
+</li>
+<li><a href="../../../Documentation/Overview/License/index.html">License</a></li>
+<li><a href="../../../Documentation/Overview/Guide to 3.0 Features/index.html">Guide to 3.0 Features</a></li>
+<li><a href="../../../Documentation/Overview/Guide to 1.2 Features/index.html">Guide to 1.2 Features</a></li>
+<li><a href="../../../Documentation/Overview/Guide to 1.1 Features/index.html">Guide to 1.1 Features</a></li>
+</ul>
+</div>
+<div id="ConfluenceContent"><p>This page provides useful information about JDBC driver settings for various database. All databases below have custom Cayenne DbAdapters and are automatically recognized by Cayenne AutoAdapter.</p>
+
+
+<h3><a name="DatabaseSupport-DB2"></a>DB2</h3>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://www.ibm.com/db2/" title="Visit page outside Confluence" rel="nofollow">http://www.ibm.com/db2/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>com.ibm.db2.jcc.DB2Driver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:db2://127.0.0.1:50000/dbname</td>
+</tr>
+</tbody></table>
+
+
+<h3><a name="DatabaseSupport-Derby"></a>Derby</h3>
+<p><em>(since Cayenne 1.2)</em></p>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://db.apache.org/derby/" title="Visit page outside Confluence" rel="nofollow">http://db.apache.org/derby/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<th class='confluenceTh'>&nbsp;</th>
+<th class='confluenceTh'>Embedded</th>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>org.apache.derby.jdbc.EmbeddedDriver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:derby:path-to-hsql-db-files;create=true</td>
+</tr>
+<tr>
+<th class='confluenceTh'>&nbsp;</th>
+<th class='confluenceTh'>Remote Server</th>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>org.apache.derby.jdbc.ClientDriver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:derby://127.0.0.1/testdb</td>
+</tr>
+</tbody></table>
+
+
+
+<h3><a name="DatabaseSupport-FireBird%28Interbase%29"></a>FireBird (Interbase)</h3>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://firebird.sourceforge.net/" title="Visit page outside Confluence" rel="nofollow">http://firebird.sourceforge.net/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>org.firebirdsql.jdbc.FBDriver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:firebirdsql:127.0.0.1/10007:/path-to-dbname.fdb</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Notes</td>
+<td class='confluenceTd'>FirebirdAdapter hasn't been well-tested for some time. Looking for volunteer FireBird users to help us.</td>
+</tr>
+</tbody></table>
+
+<h3><a name="DatabaseSupport-FrontBase"></a>FrontBase</h3>
+<p><em>(since Cayenne 1.2)</em></p>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://www.frontbase.com/" title="Visit page outside Confluence" rel="nofollow">http://www.frontbase.com/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>jdbc.FrontBase.FBJDriver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:FrontBase://127.0.0.1/dbname</td>
+</tr>
+</tbody></table>
+
+
+<h3><a name="DatabaseSupport-HSQLDB"></a>HSQLDB</h3>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://hsqldb.sourceforge.net/" title="Visit page outside Confluence" rel="nofollow">http://hsqldb.sourceforge.net/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>org.hsqldb.jdbcDriver</td>
+</tr>
+<tr>
+<th class='confluenceTh'>&nbsp;</th>
+<th class='confluenceTh'>Embedded</th>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:hsqldb:<span class="nobr"><a href="file:/path-to-hsql-db-files" title="Visit page outside Confluence" rel="nofollow">file:/path-to-hsql-db-files<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<th class='confluenceTh'>&nbsp;</th>
+<th class='confluenceTh'>Remote Server</th>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:hsqldb:hsql://127.0.0.1</td>
+</tr>
+</tbody></table>
+
+
+<h3><a name="DatabaseSupport-Ingres"></a>Ingres</h3>
+<p><em>(since Cayenne 1.2)</em></p>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://opensource.ca.com/projects/ingres/" title="Visit page outside Confluence" rel="nofollow">http://opensource.ca.com/projects/ingres/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>com.ingres.jdbc.IngresDriver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:ingres://127.0.0.1:II7/dbname</td>
+</tr>
+</tbody></table>
+
+<h3><a name="DatabaseSupport-MySQL"></a>MySQL</h3>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://www.mysql.com/" title="Visit page outside Confluence" rel="nofollow">http://www.mysql.com/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>com.mysql.jdbc.Driver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:mysql://127.0.0.1/dbname</td>
+</tr>
+</tbody></table>
+
+<h3><a name="DatabaseSupport-OpenBase"></a>OpenBase</h3>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://www.openbase.com/" title="Visit page outside Confluence" rel="nofollow">http://www.openbase.com/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>com.openbase.jdbc.ObDriver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:openbase://127.0.0.1/dbname</td>
+</tr>
+</tbody></table>
+
+<h3><a name="DatabaseSupport-Oracle%2810i%29"></a>Oracle (10i)</h3>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://oracle.com/" title="Visit page outside Confluence" rel="nofollow">http://oracle.com/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>oracle.jdbc.driver.OracleDriver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:oracle:thin:@//127.0.0.1:1521/dbname</td>
+</tr>
+</tbody></table>
+
+<h3><a name="DatabaseSupport-Oracle%288%2C8i%2C9i%29"></a>Oracle (8, 8i, 9i)</h3>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://oracle.com/" title="Visit page outside Confluence" rel="nofollow">http://oracle.com/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>oracle.jdbc.driver.OracleDriver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:oracle:thin:@127.0.0.1:1521:dbname</td>
+</tr>
+</tbody></table>
+
+<h3><a name="DatabaseSupport-PostgreSQL%287.4%2C8.%29"></a>PostgreSQL (7.4, 8.*)</h3>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://www.postgresql.org/" title="Visit page outside Confluence" rel="nofollow">http://www.postgresql.org/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>org.postgresql.Driver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:postgresql://127.0.0.1:5432/dbname</td>
+</tr>
+</tbody></table>
+
+<h3><a name="DatabaseSupport-SQLite3."></a>SQLite 3.*</h3>
+<p><em>(since Cayenne 3.0)</em></p>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://www.sqlite.org/" title="Visit page outside Confluence" rel="nofollow">http://www.sqlite.org/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> <span class="nobr"><a href="http://www.zentus.com/sqlitejdbc/" title="Visit page outside Confluence" rel="nofollow">http://www.zentus.com/sqlitejdbc/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>org.sqlite.JDBC</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:sqlite:path_to_dbfile</td>
+</tr>
+</tbody></table>
+
+
+<h3><a name="DatabaseSupport-SQLServer"></a>SQLServer</h3>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<th class='confluenceTh'>&nbsp;</th>
+<th class='confluenceTh'>Microsoft Driver - SQL Server 2005</th>
+</tr>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://www.microsoft.com/sql/default.asp" title="Visit page outside Confluence" rel="nofollow">http://www.microsoft.com/sql/default.asp<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>com.microsoft.sqlserver.jdbc.SQLServerDriver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:sqlserver://127.0.0.1;databaseName=dbname</td>
+</tr>
+<tr>
+<th class='confluenceTh'>&nbsp;</th>
+<th class='confluenceTh'>Microsoft Driver - SQL Server prior to 2005</th>
+</tr>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://www.microsoft.com/sql/default.asp" title="Visit page outside Confluence" rel="nofollow">http://www.microsoft.com/sql/default.asp<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>com.microsoft.jdbc.sqlserver.SQLServerDriver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:microsoft:sqlserver://127.0.0.1;databaseName=dbname;SelectMethod=cursor</td>
+</tr>
+<tr>
+<th class='confluenceTh'>&nbsp;</th>
+<th class='confluenceTh'>jTDS Driver</th>
+</tr>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://jtds.sourceforge.net/" title="Visit page outside Confluence" rel="nofollow">http://jtds.sourceforge.net/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>net.sourceforge.jtds.jdbc.Driver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:jtds:sqlserver://127.0.0.1:5000/dbname</td>
+</tr>
+</tbody></table>
+
+<h3><a name="DatabaseSupport-Sybase"></a>Sybase</h3>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<th class='confluenceTh'>&nbsp;</th>
+<th class='confluenceTh'>Sybase Driver</th>
+</tr>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://www.sybase.com/" title="Visit page outside Confluence" rel="nofollow">http://www.sybase.com/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>com.sybase.jdbc3.jdbc.SybDriver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:sybase:Tds:127.0.0.1:5000/dbname</td>
+</tr>
+<tr>
+<th class='confluenceTh'>&nbsp;</th>
+<th class='confluenceTh'>jTDS Driver</th>
+</tr>
+<tr>
+<td class='confluenceTd'>Vendor Site</td>
+<td class='confluenceTd'><span class="nobr"><a href="http://jtds.sourceforge.net/" title="Visit page outside Confluence" rel="nofollow">http://jtds.sourceforge.net/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></td>
+</tr>
+<tr>
+<td class='confluenceTd'>Driver Name</td>
+<td class='confluenceTd'>net.sourceforge.jtds.jdbc.Driver</td>
+</tr>
+<tr>
+<td class='confluenceTd'>Sample URL</td>
+<td class='confluenceTd'>jdbc:jtds:sybase://127.0.0.1:5000/dbname;useLOBs=false;TDS=4.2</td>
+</tr>
+</tbody></table>
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+  <div class="clearer">.</div>
+  <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
+
+  <div class="smalltext copyright">
+    Copyright &copy;2001-2007 Apache Software Foundation
+  </div>
+
+</body>
+</html>

@@ -58,7 +58,6 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
 </ul>
 </div>
 <div id="ConfluenceContent"><p>As discussed before, an object must be deleted in the DataContext to trigger a removal of the corresponding row from the database on commit. There are few simple ways to delete individual objects and collections of objects. Quite naturally, a delete operation changes the object state to PersistenceState.DELETED. However there maybe other consequences of such operation for the overall object graph. Such consequences are controlled via <a href="../../../../Documentation/Modeler Guide/Modeling Object Layer/Delete Rules/index.html" title="Delete Rules">delete rules</a> configured for object relationships. Properly configuring delete rules will simplify the application code, as you no longer need to track related objects and do the right thing with them. Other delete rule effects are discussed for each DataContext deletion method individually.</p>

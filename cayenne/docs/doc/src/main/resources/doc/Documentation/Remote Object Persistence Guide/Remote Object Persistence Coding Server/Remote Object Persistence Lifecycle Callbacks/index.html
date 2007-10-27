@@ -43,26 +43,14 @@
 <li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence CWS Deployment/index.html">Remote Object Persistence CWS Deployment</a></li>
 <li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Client Deployment/index.html">Remote Object Persistence Client Deployment</a></li>
 <li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Security/index.html">Remote Object Persistence Security</a></li>
+<li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Customization/index.html">Remote Object Persistence Customization</a></li>
 <li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Comparison/index.html">Remote Object Persistence Comparison</a></li>
 <li><a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Limitations/index.html">Remote Object Persistence Limitations</a></li>
 </ul>
 </div>
 <div id="ConfluenceContent"><p><em>(since 3.0)</em></p>
 
-<p>The easiest way to add server-side functionality to the web service is by registering <a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">persistent object lifecycle callbacks</a>. Note that enabling server-side callbacks for ROP is done differently from the general advice above. You'll need to subclass HesianService, overriding 'createChannel':</p>
-
-<div class="code"><div class="codeContent">
-<pre class="code-java"><span class="code-keyword">public</span> class MyService <span class="code-keyword">extends</span> HessianService {
-
-    <span class="code-keyword">protected</span> DataChannel createChannel() {
-        ClientServerChannel channel = <span class="code-keyword">new</span> ClientServerChannel(domain);
-        channel.setLifecycleCallbacksEnabled(<span class="code-keyword">true</span>);
-        <span class="code-keyword">return</span> channel;
-    }
-}</pre>
-</div></div>
-
-<p><em>Note that at some point server-side callbacks will be the default, so this code may no longer be necessary.</em></p></div>
+<p>The easiest way to add server-side functionality to the web service is by registering <a href="../../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">persistent object lifecycle callbacks</a>. Callbacks are enabled by default, so nothing special needs to be done beyond setting up the listeners.</p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

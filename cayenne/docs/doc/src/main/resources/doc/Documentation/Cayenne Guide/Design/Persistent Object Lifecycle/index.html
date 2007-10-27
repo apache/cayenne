@@ -55,7 +55,6 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
 </ul>
 </div>
 <div id="ConfluenceContent"><p>A lifecycle of a persistent object can be represented as a number of states and transitions between them. These states are formally defined as "int" constants in <tt>org.apache.cayenne.PersistenceState</tt> class. Transitions between states (see the diagram below) occur in response to the application interacting with either persistent objects or Cayenne context. Whenever a transition occurs, Cayenne automatically updates "persistenceState" property of all affected objects by calling <tt>setPersistenceState()</tt>.</p>
@@ -66,8 +65,48 @@
 <img src="new-persistent-object.png" align="absmiddle" border="0" /></p></td>
 
 <td class="confluenceTd"  valign="top">
-<p>A feteched or committed object state transformations:<br/>
-<img src="fetched-persistent-object.png" align="absmiddle" border="0" /></p></td></tr></tbody></table></div>
+<p>A fetched or committed object state transformations:<br/>
+<img src="fetched-persistent-object.png" align="absmiddle" border="0" /></p></td></tr></tbody></table>
+
+<p>The states are defined as follows:</p>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<th class='confluenceTh'>State</th>
+<th class='confluenceTh'>Value</th>
+<th class='confluenceTh'>Description</th>
+</tr>
+<tr>
+<td class='confluenceTd'>TRANSIENT</td>
+<td class='confluenceTd'>1</td>
+<td class='confluenceTd'>The object is not registered in a <tt>DataContext</tt> and will not persist.</td>
+</tr>
+<tr>
+<td class='confluenceTd'>NEW</td>
+<td class='confluenceTd'>2</td>
+<td class='confluenceTd'>The object is freshly registered in a <tt>DataContext</tt>, but has not been persisted to the database (there is no matching database record).</td>
+</tr>
+<tr>
+<td class='confluenceTd'>COMMITTED</td>
+<td class='confluenceTd'>3</td>
+<td class='confluenceTd'>The object is registered in a <tt>DataContext</tt> and has been persisted to the database (there is a matching database record).</td>
+</tr>
+<tr>
+<td class='confluenceTd'>MODIFIED</td>
+<td class='confluenceTd'>4</td>
+<td class='confluenceTd'>The object is registered in a <tt>DataContext</tt> and there is a matching database record and the object has been modified in memory, but the changes have not yet been persisted back to the database.</td>
+</tr>
+<tr>
+<td class='confluenceTd'>HOLLOW</td>
+<td class='confluenceTd'>5</td>
+<td class='confluenceTd'>The object is registered in a <tt>DataContext</tt> and has a corresponding database row, but the values have not yet been fetched from the database.  The values will be fetched/faulted from the database automatically by Cayenne if any fields are requested from the object.</td>
+</tr>
+<tr>
+<td class='confluenceTd'>DELETED</td>
+<td class='confluenceTd'>6</td>
+<td class='confluenceTd'>The object is registered in a <tt>DataContext</tt> and will be deleted from the database upon commit.</td>
+</tr>
+</tbody></table></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

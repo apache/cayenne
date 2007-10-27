@@ -55,7 +55,6 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
 </ul>
 </div>
 <div id="ConfluenceContent"><p>DataObjects creation and registering with DataContext is an expensive operation. There are cases when only a few objects are really used, but the application still has to fetch a lot of objects. For instance when a user performs a search, result may contain thousands of records, but user will only check 2-3 of them. Cayenne allows programmers to explicitly disable objects creation for such cases. Results will be returned in the form of java.util.Map's. In Cayenne such maps are called <tt>DataRows</tt>.</p>
