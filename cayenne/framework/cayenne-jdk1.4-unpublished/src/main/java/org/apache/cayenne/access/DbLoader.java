@@ -315,7 +315,7 @@ public class DbLoader {
             if (oldEnt != null) {
                 if (delegate == null) {
                     // no delegate, don't know what to do, cancel import
-                    return false;
+                    break;
                 }
 
                 try {
@@ -416,7 +416,7 @@ public class DbLoader {
                 this.dbEntityList.add(dbEntity);
             }
         }
-
+        
         // get primary keys for each table and store it in dbEntity
         Iterator i = map.getDbEntities().iterator();
         while (i.hasNext()) {
