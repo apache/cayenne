@@ -29,6 +29,7 @@
   </div>
 <div id="cayenne_toc">
 <ul>
+<li><a href="../../Documentation/Overview/Database Support/index.html">Database Support</a></li>
 <li><a href="../../Documentation/Overview/License/index.html">License</a></li>
 <li><a href="../../Documentation/Overview/Guide to 3.0 Features/index.html">Guide to 3.0 Features</a></li>
 <li><a href="../../Documentation/Overview/Guide to 1.2 Features/index.html">Guide to 1.2 Features</a></li>
@@ -43,31 +44,34 @@
 
 <p>Cayenne features include management of persistent Java objects mapped to relational databases, single method call queries and updates (including atomic updates of all modified objects), seamless integration of multiple databases into a single virtual data source, remote object persistence, etc. Cayenne is distributed with CayenneModeler - a complete GUI mapping tool that supports reverse-engineering of RDBMS schema, editing database mappings and generation of Java source code for the persistent objects.</p>
 
-<p>Cayenne comes with a comprehensive set of HTML documentation and full source code, including source code for the GUI tools. Free support is provided via user mailing lists. Commercial support and consulting services are also available. </p>
+<p>Cayenne comes with a comprehensive set of HTML documentation and full source code, including source code for the GUI tools. Free support is provided via user mailing lists. Commercial support and consulting services are also available.</p>
 
 <h2><a name="Overview-FlavorsofCayenne"></a>Flavors of Cayenne</h2>
 
-<p>Cayenne framework provides three flavors of object persistence: Cayenne Persistence API, Remote Object Persistence (ROP) and Java Persistence API (JPA). All three are dealing with object persistence, and are based on the same underlying Cayenne stack. <b>If you are in doubt which one to choose, go with "Cayenne Persistence API" - this is a universal choice appropriate for most Java applications.</b> But what are the differences between the three? </p>
-
+<p>Cayenne framework provides three flavors of object persistence: Cayenne Persistence API, Remote Object Persistence (ROP) and Java Persistence API (JPA). All three are dealing with object persistence, and are based on the same underlying Cayenne stack. <b>If you are in doubt which one to choose, go with "Cayenne Persistence API" - this is a universal choice appropriate for most Java applications.</b> But what are the differences between the three?</p>
 <ul>
-	<li><b><a href="../../Documentation/Cayenne Guide/index.html" title="Cayenne Guide">Cayenne Persistence API</a></b> is a general purpose object-relational API and XML mapping format. CayenneModeler GUI tool is used to create the mapping. When we say "Cayenne" throughout the documentation, we usually mean Cayenne Persistence API flavor, unless JPA or ROP is explicitly mentioned.</li>
+	<li><b><a href="../../Documentation/Cayenne Guide/index.html" title="Cayenne Guide"><b>Cayenne Persistence API</b></a></b> is a general purpose object-relational API and XML mapping format. CayenneModeler GUI tool is used to create the mapping. When we say "Cayenne" throughout the documentation, we usually mean Cayenne Persistence API flavor, unless JPA or ROP is explicitly mentioned.</li>
 </ul>
 
 
 <ul>
-	<li><b><a href="../../Documentation/Remote Object Persistence Guide/index.html" title="Remote Object Persistence Guide">Remote Object Persistence (ROP)</a></b> is <b>not a standalone persistence API</b>. Rather this is a technology that enables the use of Cayenne Persistence API on remote client applications. This architecture is demonstrated <a href="../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Introduction/index.html" title="Remote Object Persistence Introduction">here</a>. Often (but not always) ROP clients are SWT or Swing applications that can not (or should not) access the database directly, and/or benefit from separation of the server and client logic.</li>
+	<li><b><a href="../../Documentation/Remote Object Persistence Guide/index.html" title="Remote Object Persistence Guide"><b>Remote Object Persistence (ROP)</b></a></b> is <b>not a standalone persistence API</b>. Rather this is a technology that enables the use of Cayenne Persistence API on remote client applications. This architecture is demonstrated <a href="../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Introduction/index.html" title="Remote Object Persistence Introduction">here</a>. Often (but not always) ROP clients are SWT or Swing applications that can not (or should not) access the database directly, and/or benefit from separation of the server and client logic.</li>
 </ul>
 
 
 <ul>
-	<li><b><a href="../../Documentation/JPA Guide/index.html" title="JPA Guide">Java Persistence API (JPA)</a></b> <font color="red">(alpha, new in 3.0)</font> is an emerging Java standard for object relational mapping (it is a part of EJB3). JPA mapping is commonly done via annotations directly on Java classes. The advantage of JPA is standardized mapping and persistence API, that in theory allows to switch provider vendors. The disadvantage is that the underlying provider implementation is completely hidden from the application, making it less flexible. <em>As of the early 3.0 milestones, implementation of the JPA provider in Cayenne is not complete.</em></li>
+	<li><b><a href="../../Documentation/JPA Guide/index.html" title="JPA Guide"><b>Java Persistence API (JPA)</b></a></b> <font color="red">(alpha, new in 3.0)</font> is an emerging Java standard for object relational mapping (it is a part of EJB3). JPA mapping is commonly done via annotations directly on Java classes. The advantage of JPA is standardized mapping and persistence API, that in theory allows to switch provider vendors. The disadvantage is that the underlying provider implementation is completely hidden from the application, making it less flexible. <em>As of the early 3.0 milestones, implementation of the JPA provider in Cayenne is not complete.</em></li>
 </ul>
 
 
+<h2><a name="Overview-Supporteddatabases"></a>Supported databases</h2>
+
+<p>Almost any SQL database which provides JDBC connectivity will work with Cayenne. Some common choices can be seen <a href="../../Documentation/Overview/Database Support/index.html" title="Database Support">here</a>.</p>
 
 <h3><a name="Overview-Sections"></a>Sections</h3>
 
 <ol>
+	<li><a href="../../Documentation/Overview/Database Support/index.html" title="Database Support">Database support</a></li>
 	<li><a href="../../Documentation/Overview/License/index.html" title="License">License</a></li>
 	<li><a href="../../Documentation/Overview/Guide to 3.0 Features/index.html" title="Guide to 3.0 Features">Guide to 3.0 Features</a></li>
 	<li><a href="../../Documentation/Overview/Guide to 1.2 Features/index.html" title="Guide to 1.2 Features">Guide to 1.2 Features</a></li>

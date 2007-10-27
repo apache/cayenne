@@ -29,6 +29,7 @@
   </div>
 <div id="cayenne_toc">
 <ul>
+<li><a href="../../../Documentation/Overview/Database Support/index.html">Database Support</a></li>
 <li><a href="../../../Documentation/Overview/License/index.html">License</a></li>
 <li><a href="../../../Documentation/Overview/Guide to 3.0 Features/index.html">Guide to 3.0 Features</a><ul>
 </ul>
@@ -59,11 +60,10 @@
 	<li>Loading mapping from annotations</li>
 	<li>Loading mapping from XML</li>
 	<li>Class enhancement</li>
-	<li>Basic selecting EJBQL</li>
+	<li>EJBQL</li>
 	<li>Entity callbacks</li>
+	<li>All types of relationships and simple properties</li>
 </ul>
-
-
 
 
 
@@ -127,13 +127,6 @@
 
 
 
-<h2><a name="Guideto3.0Features-RemoteObjectPersistence"></a>Remote Object Persistence</h2>
-
-<ul>
-	<li>Validation callbacks support for ROP ObjectContext. Now object validation works the same way on the ROP client as it did on the server.</li>
-</ul>
-
-
 <h3><a name="Guideto3.0Features-DbAttributeScaleandPrecision"></a>DbAttribute Scale and Precision</h3>
 
 <p>Changed DbAttribute "precision" property to "scale" (as it meant scale all along) and added a separate "precision" attribute to track precision.</p>
@@ -142,6 +135,17 @@
 
 <p>Cayenne can now persist the following extra simple property types: java.util.Calendar, java.math.BigInteger, java.io.Serializable, char[], java.lang.Character, java.lang.Character[], java.lang.Byte[]. <em>(Note that until <span class="nobr"><a href="https://issues.apache.org/cayenne/browse/CAY-826" title="Visit page outside Confluence" rel="nofollow">CAY-826<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> is fixed, these types do not show up in the Modeler, still users can enter them directly).</em></p>
 
+<h3><a name="Guideto3.0Features-SupportforToManyRelationshipMapsandCollections."></a>Support for To-Many Relationship Maps and Collections.</h3>
+
+<p>In addition to mapping a to-many relationship as a List, Cayenne now supports to-many Maps (keyed by target object pk, or an arbitrary unique property), Sets and generic Collections. Note that relationship maps is the only conceptually new type of relationships. Collection and Set are not that different from the earlier List behavior (that was a Collection, and just like Set ensured uniqueness of its objects).</p>
+
+
+<h2><a name="Guideto3.0Features-RemoteObjectPersistence"></a>Remote Object Persistence</h2>
+
+<h3><a name="Guideto3.0Features-ValidationcallbackssupportforROPObjectContext."></a>Validation callbacks support for ROP ObjectContext. </h3>
+<p>Now object validation works the same way on the ROP client as it did on the server.</p>
+
+
 
 
 <h2><a name="Guideto3.0Features-CayenneModeler"></a>CayenneModeler</h2>
@@ -149,8 +153,8 @@
 <ul>
 	<li>Added ability to specify password encryption mechanism</li>
 	<li>Added ability to drag and drop cayenne.xml from the filesystem to the Modeler window to open the project.</li>
+	<li>Added support for to-many relationship collections mapping.</li>
 </ul>
-
 
 
 

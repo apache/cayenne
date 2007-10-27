@@ -55,7 +55,6 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
 </ul>
 </div>
 <div id="ConfluenceContent"><p>Handling of Java nulls as operands is no different from normal values. Instead of using special conditional operators, like SQL does, "equal to" and "not equal to" expressions can be used directly with null values. It is up to Cayenne to translate expressions with nulls to the valid SQL.</p>
@@ -71,7 +70,7 @@
 <p>When a query is executed with this qualifier, the a SQL String similar to the following will be generated:</p>
 
 <div class="preformatted"><div class="preformattedContent">
-<pre>... WHERE t0.BIRTH_DATE IS NULL</pre>
+<pre>... WHERE t0.BIRTH_DATE IS NOT NULL</pre>
 </div></div></div>
 </div>
   <div class="clearer">.</div>

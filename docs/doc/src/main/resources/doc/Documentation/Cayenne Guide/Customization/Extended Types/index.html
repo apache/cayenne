@@ -45,13 +45,13 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a><ul>
+<li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom DbAdapter/index.html">Custom DbAdapter</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/Extended Types/index.html">Extended Types</a><ul>
 </ul>
 </li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/Custom Query Cache Provider/index.html">Custom Query Cache Provider</a></li>
 </ul>
 </li>
-<li><a href="../../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
 </ul>
 </div>
 <div id="ConfluenceContent"><p>JDBC specification defines a set of "standard" database column types (defined in java.sql.Types class) and a very specific mapping of these types to Java Object Types, such as java.lang.String, java.math.BigDecimal, etc. Sometimes there is a need to use a custom Java type not known to JDBC driver. CayenneModeler allows to configure an arbitrary Java class as an <tt>org.apache.cayenne.map.ObjAttribute</tt> type by simply entering a fully-qualified name such class in the type column of an ObjAttribute. However there is more to it than just that. Cayenne needs to know how to instantiate this type from a database "primitive" value, and conversly, how to transform an object of the custom type to a JDBC-compatible object.</p>
@@ -65,7 +65,8 @@
 
 <span class="code-comment">// Find DataNode
 </span>DataDomain domain = Configuration.getSharedConfiguration().getDomain();
-DataNode node = domain.getNode(<span class="code-quote">"node_name_from_the_project"</span>);
+<span class="code-comment">// replace 'node_name' with the name of the DataNode you've entered in the Modeler.
+</span>DataNode node = domain.getNode(<span class="code-quote">"node_name"</span>);
 
 <span class="code-comment">// install ExtendedType
 </span>node.getAdapter().getExtendedTypes().registerType(customType);</pre>
@@ -73,7 +74,36 @@ DataNode node = domain.getNode(<span class="code-quote">"node_name_from_the_proj
 
 <h3><a name="ExtendedTypes-DbAdaptersandExtendedTypes"></a>DbAdapters and Extended Types</h3>
 
-<p>As shown in the example above, ExtendedTypes are stored by <a href="../../../../Documentation/Cayenne Guide/Design/Runtime Components/DbAdapter/index.html" title="DbAdapter">DbAdapter</a>. In fact DbAdapters often install their own extended types to address incompatibilities, incompletness and differences between JDBC drivers in handling "standard" JDBC types. For instance some drivers support reading large character columns (CLOB) as java.sql.Clob, but some other - as "character stream", etc. Adapters provided with Cayenne override <tt>configureExtendedTypes()</tt> method to install their own types, possibly substituting Cayenne defaults. Custom DbAdapters can use the same technique.</p></div>
+<p>As shown in the example above, ExtendedTypes are stored by <a href="../../../../Documentation/Cayenne Guide/Design/Runtime Components/DbAdapter/index.html" title="DbAdapter">DbAdapter</a>. In fact DbAdapters often install their own extended types to address incompatibilities, incompletness and differences between JDBC drivers in handling "standard" JDBC types. For instance some drivers support reading large character columns (CLOB) as java.sql.Clob, but some other - as "character stream", etc. Adapters provided with Cayenne override <tt>configureExtendedTypes()</tt> method to install their own types, possibly substituting Cayenne defaults. Custom DbAdapters can use the same technique.</p>
+
+<h3><a name="ExtendedTypes-Threetierconsiderations"></a>Three tier considerations</h3>
+
+<p>If you are using Cayenne in a three tier (ROP) environment, serialization of the extended type becomes important. More information can be found <a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Customization/index.html" title="Remote Object Persistence Customization">here.</a></p>
+
+<h3><a name="ExtendedTypes-MappingJavaEnums"></a>Mapping Java Enums</h3>
+
+<p>Note that <span class="nobr"><a href="http://java.sun.com/j2se/1.5.0/docs/guide/language/enums.html" title="Visit page outside Confluence" rel="nofollow">custom enums<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> are supported by Cayenne natively. Cayenne stores an enum name in the database if the corresponding database column is a character column, and enum ordinal, if the column is numeric. So in a simple case no special ExtendedType is needed to map enums. Still often you may need one when you want to store a non-standard enum property in the database. </p>
+
+<p>Take for example the following enum:</p>
+<div class="code"><div class="codeContent">
+<pre class="code-java"><span class="code-keyword">public</span> <span class="code-keyword">enum</span> MyEnum {
+
+	E1(55), E2(97), E3(101);
+	
+	<span class="code-keyword">private</span> <span class="code-object">int</span> code;
+	
+	<span class="code-keyword">private</span> MyEnum(<span class="code-object">int</span> code) {
+		<span class="code-keyword">this</span>.code = code;
+	}
+	
+	<span class="code-keyword">public</span> <span class="code-object">int</span> getCode() {
+		<span class="code-keyword">return</span> code;
+	}
+}</pre>
+</div></div>
+
+<p>To store and retrieve string values "E1", "E2", "E3" no ExtendedType is needed. To store "code" value a custom ExtendedType is needed. </p>
+</div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

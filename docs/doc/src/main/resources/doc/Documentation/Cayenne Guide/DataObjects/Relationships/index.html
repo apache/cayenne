@@ -58,14 +58,13 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
-<li><a href="../../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>Relationships are special DataObject properties that reference other "related" objects. Semantically there are two types of relationships - to-one pointing to just a single DataObjects (e.g. Painting.toArtist), and to-many pointing to a collection of DataObjects of the same base type (e.g. Artist.paintingArray).</p>
+<div id="ConfluenceContent"><p>Relationships are special object properties that reference other "related" objects. Semantically there are two types of relationships - to-one pointing to just a single DataObjects (e.g. Painting.toArtist), and to-many pointing to a collection of Persistent objects of the some distinct base type (e.g. Artist.paintingArray).</p>
 
 <h3><a name="Relationships-ToOneRelationships"></a>To-One Relationships</h3>
 
-<p>"Get" methods for to-one relationships return the target DataObject. If the object is not in memory yet, it will be fetched on demand. Modifying to-one relationships is no different from modifying attributes - just a simple call to a "set" method:</p>
+<p>"Get" methods for to-one relationships return the target Persistent object. If the object is not in memory yet, it will be fetched on first access. Modifying to-one relationships is no different from modifying attributes - just a simple call to a "set" method:</p>
 <div class="code"><div class="codeContent">
 <pre class="code-java">Painting painting;
 
@@ -73,7 +72,7 @@
 </span>Artist originalArtist = painting.getToArtist();
 
 <span class="code-comment">// replace with a <span class="code-keyword">new</span> artist
-</span>Artist newArtist = (Artist)context.createAndRegisterNewObject(Artist.class);
+</span>Artist newArtist = (Artist)context.newObject(Artist.class);
 painting.setToArtist(newArtist);
 
 <span class="code-comment">// or remove Artist at all...
@@ -84,7 +83,9 @@ painting.setToArtist(newArtist);
 
 <h3><a name="Relationships-ToManyRelationships"></a>To-Many Relationships</h3>
 
-<p>"Get" methods for to-many relationships return Lists of DataObjects. Just like individual DataObjects, such lists are also resolved on demand (e.g. when a user tries to read an element from the list). For modification there are special "addTo..." and "removeFrom..." methods:</p>
+<p>"Get" methods for to-many relationships return various collections of Persistent objects. To-many relationships can be mapped as Lists (default), Collections, Sets or Maps. Below we may refer to all four types of mappings as "collections", although strictly speaking Map is not a Collection in Java.</p>
+
+<p>Just like individual Persistent objects, relationship collections are also resolved on first access (e.g. when a user tries to read an element from a collection or obtains an Iterator). For modification there are special "addTo..." and "removeFrom..." methods:</p>
 <div class="code"><div class="codeContent">
 <pre class="code-java">Artist artist;
 
@@ -98,11 +99,71 @@ painting.setToArtist(newArtist);
 }
 
 <span class="code-comment">// add a <span class="code-keyword">new</span> painting
-</span>Painting newPainting = (Painting)context.createAndRegisterNewObject(Painting.class);
+</span>Painting newPainting = (Painting)context.newObject(Painting.class);
 artist.addToPaintingArray(newPainting);</pre>
 </div></div>
-<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>
-<p>While to-many relationships in Cayenne are represented by Lists, they are really ordered Sets, as they are not allowed to contain the same object more than once.</p></td></tr></table></div>
+
+<p>Not much difference in managing Map relationships. Let's assume that Artist's paintings are modeled as a map, keyed by painting name:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">Artist artist;
+
+<span class="code-comment">// obtain a map of paintings
+</span>Map paintings = artist.getPaintingMap();
+
+<span class="code-comment">// lookup the painting
+</span>Painting girl = (Painting) paintings.get(<span class="code-quote">"Girl"</span>);
+
+<span class="code-comment">// remove the painting
+</span><span class="code-keyword">if</span>(girl != <span class="code-keyword">null</span>) {
+   artist.removeFromPaintingMap(girl);
+}
+
+<span class="code-comment">// add a <span class="code-keyword">new</span> painting
+</span>Painting newPainting = (Painting)context.newObject(Painting.class);
+
+<span class="code-comment">// must set the key property BEFORE adding to relationship
+</span><span class="code-comment">// unless the key is object id:
+</span>newPainting.setName(<span class="code-quote">"New Painting"</span>);
+
+artist.addToPaintingMap(newPainting);</pre>
+</div></div>
+
+<p>There's one caveat though - if an object property that is used as a map key changes, the object is remapped in the relationship only after the context is committed:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">Painting girl = (Painting) paintings.get(<span class="code-quote">"Girl"</span>);
+girl.setName(<span class="code-quote">"New Name"</span>);
+
+...
+
+<span class="code-keyword">if</span>(paintings.get(<span class="code-quote">"Girl"</span>) != <span class="code-keyword">null</span>) {
+   <span class="code-comment">// still <span class="code-keyword">true</span>
+</span>}
+
+
+<span class="code-keyword">if</span>(paintings.get(<span class="code-quote">"New Name"</span>) != <span class="code-keyword">null</span>) {
+   <span class="code-comment">// still <span class="code-keyword">false</span>
+</span>}
+
+
+...
+
+<span class="code-comment">// <span class="code-keyword">this</span> refreshes relationship Map keys as a side effect
+</span>girl.getObjectContext().commitChanges();
+
+<span class="code-keyword">if</span>(paintings.get(<span class="code-quote">"Girl"</span>) != <span class="code-keyword">null</span>) {
+   <span class="code-comment">// now <span class="code-keyword">false</span>
+</span>}
+
+
+<span class="code-keyword">if</span>(paintings.get(<span class="code-quote">"New Name"</span>) != <span class="code-keyword">null</span>) {
+   <span class="code-comment">// now <span class="code-keyword">true</span>
+</span>}</pre>
+</div></div>
+
+
+<p>Performance-wise, Maps have the most overhead of all collection options. Sets are somewhat slower than Lists or Collections (Collections are implemented as Lists internally). Considering that Cayenne Lists are internally managed as ordered Sets, and are not allowed to contain the same object more than once, you may want to avoid modeling relationships as Sets at all, unless the object public interface requirements warrant that.</p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

@@ -47,7 +47,6 @@
 <li><a href="../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
-<li><a href="../../../Documentation/Cayenne Guide/DataViews/index.html">DataViews</a></li>
 </ul>
 </div>
 <div id="ConfluenceContent"><h2><a name="LifecycleCallbacks-LifecycleCallbacks"></a>Lifecycle Callbacks</h2>
@@ -235,25 +234,7 @@ registry.addListener(LifecycleListener.PRE_UPDATE, Artist.class, listener, <span
 <span class="code-comment">// register Artist class callback
 </span>registry.addListener(LifecycleListener.POST_LOAD, Artist.class, <span class="code-quote">"onLoad"</span>);</pre>
 </div></div>
-
-
-<h2><a name="LifecycleCallbacks-EnablingCallbacks"></a>Enabling Callbacks</h2>
-
-<p><em>TODO: expect this to be changed to something more user-friendly.</em></p>
-
-
-<p>By default callbacks are disable. To building ObjectContext with enabled callbacks, do something like this:</p>
-
-<div class="code"><div class="codeContent">
-<pre class="code-java">DataChannelCallbackInterceptor postInterceptor = <span class="code-keyword">new</span> DataChannelCallbackInterceptor();
-postInterceptor.setChannel(domain);
-ObjectStore objectStore = <span class="code-keyword">new</span> ObjectStore(domain.getSharedSnapshotCache());
-
-ObjectContextCallbackInterceptor preInterceptor = <span class="code-keyword">new</span> ObjectContextCallbackInterceptor();
-preInterceptor.setContext(<span class="code-keyword">new</span> DataContext(postInterceptor, objectStore));
-
-ObjectContext userContext = preInterceptor;</pre>
-</div></div></div>
+</div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
