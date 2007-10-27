@@ -154,10 +154,10 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     }
 
     public void testInSubquery() throws Exception {
-        createTestData("prepareIn");
+        createTestData("prepareInSubquery");
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle IN ("
-                + "SELECT a1.artistName FROM Artist a1"
+                + "SELECT p1.paintingTitle FROM Painting p1 WHERE p1.paintingTitle = 'C'"
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -171,8 +171,8 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
             ids.add(id);
         }
 
-        assertTrue(ids.contains(new Integer(33006)));
-        assertTrue(ids.contains(new Integer(33007)));
+        assertTrue(ids.contains(new Integer(33012)));
+        assertTrue(ids.contains(new Integer(33014)));
     }
 
     public void testCollectionEmpty() throws Exception {
