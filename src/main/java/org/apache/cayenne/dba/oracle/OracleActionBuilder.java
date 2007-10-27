@@ -25,6 +25,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
@@ -35,6 +36,10 @@ class OracleActionBuilder extends JdbcActionBuilder {
 
     OracleActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
         super(adapter, resolver);
+    }
+    
+    public SQLAction sqlAction(SQLTemplate query) {
+        return new OracleSQLTemplateAction(query, adapter);
     }
 
     public SQLAction batchAction(BatchQuery query) {
