@@ -29,6 +29,8 @@ import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 
 /**
@@ -59,6 +61,15 @@ public class SybaseStackAdapter extends AccessStackAdapter {
         }
     }
 
+    public void willCreateTables(Connection con, DataMap map) throws Exception {
+
+        // Sybase does not support NULLable BIT columns...
+        DbEntity e = map.getDbEntity("PRIMITIVES_TEST");
+        if (e != null) {
+            ((DbAttribute) e.getAttribute("BOOLEAN_COLUMN")).setMandatory(true);
+        }
+    }
+
     public void willDropTables(Connection con, DataMap map, Collection tablesToDrop)
             throws Exception {
 
@@ -67,9 +78,9 @@ public class SybaseStackAdapter extends AccessStackAdapter {
             dropConstraints(con, (String) it.next());
         }
 
-        dropProcedures(con, map);  
+        dropProcedures(con, map);
     }
-    
+
     protected void dropProcedures(Connection con, DataMap map) throws Exception {
         Procedure proc = map.getProcedure("cayenne_tst_select_proc");
         if (proc != null && proc.getDataMap() == map) {
