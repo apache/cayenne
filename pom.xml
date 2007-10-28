@@ -141,9 +141,12 @@
 		</developer>
 		<developer>
 			<name>Kevin Menard</name>
+			<email>kmenard@servprise.com</email>
+			<organization>Servprise International, Inc.</organization>
 			<roles>
-				<role>Committer</role>
+				<role>PMC, Member</role>
 			</roles>
+			<timezone>-5</timezone>
 		</developer>
 		<developer>
 			<id>amaniatis</id>
