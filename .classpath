@@ -1,10 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry output="target/test-classes" kind="src" path="src/test/java"/>
-	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry excluding="**/*.java" output="target/test-classes" kind="src" path="src/test/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
-	<classpathentry kind="output" path="target/classes"/>
+    <classpathentry kind="src" path="src/main/java" />
+    <classpathentry kind="src" path="src/main/resources" />
+    <classpathentry output="target/test-classes" kind="src" path="src/test/java" />
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/com/caucho/hessian/3.0.20/hessian-3.0.20.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/commons-collections/commons-collections/3.1/commons-collections-3.1.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/commons-dbcp/commons-dbcp/1.2.1/commons-dbcp-1.2.1.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/commons-pool/commons-pool/1.2/commons-pool-1.2.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/foundrylogic/vpp/vpp/2.2.1/vpp-2.2.1.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/hsqldb/hsqldb/1.8.0.4/hsqldb-1.8.0.4.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/jgroups/jgroups-all/2.2.7/jgroups-all-2.2.7.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/jivesoftware/smack/2.2.1/smack-2.2.1.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/jivesoftware/smackx/2.2.1/smackx-2.2.1.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/mockrunner/mockrunner/0.3.7/mockrunner-0.3.7.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/opensymphony/oscache/2.3.2/oscache-2.3.2.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/org/apache/geronimo/specs/geronimo-jms_1.1_spec/1.1/geronimo-jms_1.1_spec-1.1.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/org/objectstyle/ashwood/ashwood/1.1/ashwood-1.1.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/org/springframework/spring-beans/1.2.6/spring-beans-1.2.6.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/org/springframework/spring-core/1.2.6/spring-core-1.2.6.jar" exported="true" />
+    <classpathentry kind="lib" path="/Users/kmenard/.m2/repository/velocity/velocity/1.3/velocity-1.3.jar" exported="true" />
+    <classpathentry kind="output" path="target/classes" />
 </classpath>
+
