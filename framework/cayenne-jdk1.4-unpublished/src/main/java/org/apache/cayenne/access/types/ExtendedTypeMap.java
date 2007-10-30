@@ -36,10 +36,25 @@ import org.apache.cayenne.util.Util;
  * 
  * @author Andrus Adamchik
  */
+// TODO: andrus 10/30/2007 - implement efficient synchronization. This class is 99% read
+// and 1% write, so probably should use ConcurrentHashMap once we switch to Java 5.
 public class ExtendedTypeMap {
 
-    protected Map typeMap = new HashMap();
-    protected DefaultType defaultType = new DefaultType();
+    static final Map classesForPrimitives;
+
+    static {
+        classesForPrimitives = new HashMap();
+        classesForPrimitives.put("long", Long.class.getName());
+        classesForPrimitives.put("double", Double.class.getName());
+        classesForPrimitives.put("byte", Byte.class.getName());
+        classesForPrimitives.put("boolean", Boolean.class.getName());
+        classesForPrimitives.put("float", Float.class.getName());
+        classesForPrimitives.put("short", Short.class.getName());
+        classesForPrimitives.put("int", Integer.class.getName());
+    }
+
+    protected final Map typeMap;
+    protected DefaultType defaultType;
 
     Collection extendedTypeFactories;
 
@@ -52,6 +67,9 @@ public class ExtendedTypeMap {
      * JDK version is at least 1.5, also loads support for enumerated types.
      */
     public ExtendedTypeMap() {
+        this.typeMap = new HashMap();
+        this.defaultType = new DefaultType();
+
         initDefaultTypes();
         initDefaultFactories();
     }
@@ -140,7 +158,7 @@ public class ExtendedTypeMap {
      */
     public void registerType(ExtendedType type) {
         typeMap.put(type.getClassName(), type);
-        
+
         // factory to handle subclasses of type.className
         addFactory(new SubclassTypeFactory(type));
     }
@@ -153,8 +171,9 @@ public class ExtendedTypeMap {
     }
 
     /**
-     * Returns a guaranteed non-null ExtendedType instance for a given Java class name. The
-     * following lookup sequence is used to determine the type:
+     * Returns a guaranteed non-null ExtendedType instance for a given Java class name.
+     * Primitive class names are internally replaced by the non-primitive counterparts.
+     * The following lookup sequence is used to determine the type:
      * <ul>
      * <li>First the methods checks for an ExtendedType explicitly registered with the
      * map for a given class name (most common types are registered by Cayenne internally;
@@ -172,13 +191,19 @@ public class ExtendedTypeMap {
      * <i>Note that for array types class name must be in the form 'MyClass[]'</i>.
      */
     public ExtendedType getRegisteredType(String javaClassName) {
+
+        String nonPrimitive = (String) classesForPrimitives.get(javaClassName);
+        if (nonPrimitive != null) {
+            javaClassName = nonPrimitive;
+        }
+
         ExtendedType type = getExplictlyRegisteredType(javaClassName);
 
         if (type != null) {
             return type;
         }
 
-        type = getDefaultType(javaClassName);
+        type = createType(javaClassName);
 
         if (type != null) {
             // register to speed up future access
@@ -188,7 +213,7 @@ public class ExtendedTypeMap {
 
         return getDefaultType();
     }
-    
+
     ExtendedType getExplictlyRegisteredType(String className) {
         return (ExtendedType) typeMap.get(className);
     }
@@ -245,9 +270,10 @@ public class ExtendedTypeMap {
     }
 
     /**
-     * Returns a default type for specific Java classes. This implementation supports
-     * dynamically loading EnumType handlers for concrete Enum classes (assuming the
-     * application runs under JDK1.5+).
+     * Returns an ExtendedType for specific Java classes. Uses user-provided and
+     * Cayenne-provided {@link ExtendedTypeFactory} factories to instantiate the
+     * ExtendedType. All primitive classes must be converted to the corresponding Java
+     * classes by the callers.
      * 
      * @return a default type for a given class or null if a class has no default type
      *         mapping.
