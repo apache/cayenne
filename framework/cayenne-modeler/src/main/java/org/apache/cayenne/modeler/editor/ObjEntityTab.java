@@ -102,6 +102,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
     protected JButton tableLabel;
     protected JCheckBox readOnly;
     protected JCheckBox optimisticLocking;
+    protected JCheckBox excludeSuperclassListeners;
+    protected JCheckBox excludeDefaultListeners;
 
     protected JComponent clientSeparator;
     protected JLabel serverOnlyLabel;
@@ -162,6 +164,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
         readOnly = new JCheckBox();
         optimisticLocking = new JCheckBox();
+        excludeSuperclassListeners = new JCheckBox();
+        excludeDefaultListeners = new JCheckBox();
 
         tableLabel = CayenneWidgetFactory.createLabelButton("Table/View:");
         syncWithDbEntityButton = CayenneWidgetFactory.createButton("Sync w/DbEntity");
@@ -184,7 +188,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
         // assemble
         FormLayout layout = new FormLayout(
-                "right:70dlu, 3dlu, fill:135dlu, 3dlu, pref",
+                "right:100dlu, 3dlu, fill:135dlu, 3dlu, pref",
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
@@ -201,6 +205,9 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         builder.append("Qualifier:", qualifier.getComponent(), 3);
         builder.append("Read-Only:", readOnly, 3);
         builder.append("Optimistic Locking:", optimisticLocking, 3);
+        //add callback-related stuff
+        builder.append("Exclude superclass listeners:", excludeSuperclassListeners, 3);
+        builder.append("Exclude default listeners:", excludeDefaultListeners, 3);
 
         clientSeparator = builder.appendSeparator("Java Client");
         serverOnlyLabel = builder.append("Not for Client Use:", serverOnly, 3);
@@ -312,6 +319,32 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
             }
         });
 
+        excludeSuperclassListeners.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        ObjEntity entity = mediator.getCurrentObjEntity();
+                        if (entity != null) {
+                            entity.setExcludingSuperclassListeners(excludeSuperclassListeners.isSelected());
+                            mediator.fireObjEntityEvent(new EntityEvent(this, entity));
+                        }
+                    }
+                }
+        );
+
+        excludeDefaultListeners.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        ObjEntity entity = mediator.getCurrentObjEntity();
+                        if (entity != null) {
+                            entity.setExcludingDefaultListeners(excludeDefaultListeners.isSelected());
+                            mediator.fireObjEntityEvent(new EntityEvent(this, entity));
+                        }
+                    }
+                }
+        );
+
         serverOnly.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -328,6 +361,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
     /**
      * Updates the view from the current model state. Invoked when a currently displayed
      * ObjEntity is changed.
+     *
+     * @param entity current entity
      */
     private void initFromModel(final ObjEntity entity) {
         // TODO: this is a hack until we implement a real MVC
@@ -350,6 +385,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         // otherwise we must keep this checked in but not editable.
         optimisticLocking
                 .setSelected(entity.getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC);
+        excludeSuperclassListeners.setSelected(entity.isExcludingSuperclassListeners());
+        excludeDefaultListeners.setSelected(entity.isExcludingDefaultListeners());
 
         // init DbEntities
         DataMap map = mediator.getCurrentDataMap();

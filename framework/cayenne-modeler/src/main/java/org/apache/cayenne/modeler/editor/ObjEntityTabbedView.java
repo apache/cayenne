@@ -21,8 +21,7 @@ package org.apache.cayenne.modeler.editor;
 
 import java.awt.Component;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -31,12 +30,8 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.ObjAttributeDisplayListener;
-import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.ObjRelationshipDisplayListener;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.event.*;
 
 /**
  * Tabbed ObjEntity editor panel.
@@ -52,6 +47,14 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
     protected Component entityPanel;
     protected ObjEntityRelationshipTab relationshipsPanel;
     protected ObjEntityAttributeTab attributesPanel;
+    /**
+     * callback methods on ObjEntity tab
+     */
+    protected AbstractCallbackMethodsTab callbacksPanel;
+    /**
+     * callback methods on ObjEntity's entity listeners tab
+     */
+    protected JPanel listenersPanel;
 
     public ObjEntityTabbedView(ProjectController mediator) {
         this.mediator = mediator;
@@ -72,9 +75,15 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         
         attributesPanel = new ObjEntityAttributeTab(mediator);
         addTab("Attributes", attributesPanel);
-        
+
         relationshipsPanel = new ObjEntityRelationshipTab(mediator);
         addTab("Relationships", relationshipsPanel);
+
+        callbacksPanel = new ObjEntityCallbackMethodsTab(mediator);
+        addTab("Callbacks", callbacksPanel);
+
+        listenersPanel = new ObjEntityCallbackListenersTab(mediator);
+        addTab("Listeners", listenersPanel);
     }
 
     private void initController() {
@@ -101,6 +110,7 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         Application app = Application.getInstance();
         app.getAction(RemoveAttributeAction.getActionName()).setEnabled(false);
         app.getAction(RemoveRelationshipAction.getActionName()).setEnabled(false);
+        app.getAction(RemoveCallbackMethodAction.getActionName()).setEnabled(false);
     }
 
     public void currentObjEntityChanged(EntityDisplayEvent e) {

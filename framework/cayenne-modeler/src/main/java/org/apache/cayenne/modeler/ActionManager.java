@@ -125,6 +125,20 @@ public class ActionManager {
         registerAction(new RemoveAttributeAction(application));
         registerAction(new CreateRelationshipAction(application));
         registerAction(new RemoveRelationshipAction(application));
+        // start callback-related actions
+        registerAction(new CreateCallbackMethodAction(application)).setAlwaysOn(true);
+        registerAction(new CreateCallbackMethodForListenerAction(application)).setAlwaysOn(true);
+        registerAction(new CreateCallbackMethodForDataMapListenerAction(application)).setAlwaysOn(true);
+        registerAction(new RemoveCallbackMethodAction(application));
+        registerAction(new RemoveCallbackMethodForListenerAction(application));
+        registerAction(new RemoveCallbackMethodForDataMapListenerAction(application));
+        registerAction(new CreateObjEntityListenerAction(application)).setAlwaysOn(true);
+        registerAction(new CreateDataMapEntityListenerAction(application)).setAlwaysOn(true);
+        registerAction(new ChangeObjEntityListenerClassAction(application));
+        registerAction(new ChangeDataMapEntityListenerClassAction(application));
+        registerAction(new RemoveEntityListenerAction(application)).setAlwaysOn(true);
+        registerAction(new RemoveEntityListenerForDataMapAction(application)).setAlwaysOn(true);
+        // end callback-related actions
         registerAction(new DbEntitySyncAction(application));
         registerAction(new ObjEntitySyncAction(application));
         registerAction(new DerivedEntitySyncAction(application));
@@ -148,6 +162,8 @@ public class ActionManager {
 
     /**
      * Returns an action for key.
+     * @param key action name
+     * @return action
      */
     public CayenneAction getAction(String key) {
         return (CayenneAction) actionMap.get(key);
@@ -213,6 +229,7 @@ public class ActionManager {
     /**
      * Sets the state of all controlled actions, flipping it to "enabled" for all actions
      * in provided collection and to "disabled" for the rest.
+     * @param namesOfEnabled action names
      */
     protected void processActionsState(Collection namesOfEnabled) {
         Iterator it = actionMap.entrySet().iterator();
