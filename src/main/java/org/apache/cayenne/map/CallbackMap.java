@@ -20,6 +20,8 @@ package org.apache.cayenne.map;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.util.XMLEncoder;
@@ -54,6 +56,11 @@ public class CallbackMap implements Serializable {
     protected CallbackDescriptor postRemove;
     protected CallbackDescriptor postLoad;
 
+    /**
+     * map for quick access to a callback descriptor by type
+     */
+    private Map callbacksMap = new HashMap();
+
     public CallbackMap() {
         this.prePersist = new CallbackDescriptor(LifecycleListener.PRE_PERSIST);
         this.postPersist = new CallbackDescriptor(LifecycleListener.POST_PERSIST);
@@ -62,10 +69,18 @@ public class CallbackMap implements Serializable {
         this.preRemove = new CallbackDescriptor(LifecycleListener.PRE_REMOVE);
         this.postRemove = new CallbackDescriptor(LifecycleListener.POST_REMOVE);
         this.postLoad = new CallbackDescriptor(LifecycleListener.POST_LOAD);
+
+        callbacksMap.put(new Integer(LifecycleListener.PRE_PERSIST), prePersist);
+        callbacksMap.put(new Integer(LifecycleListener.POST_PERSIST), postPersist);
+        callbacksMap.put(new Integer(LifecycleListener.PRE_UPDATE), preUpdate);
+        callbacksMap.put(new Integer(LifecycleListener.POST_UPDATE), postUpdate);
+        callbacksMap.put(new Integer(LifecycleListener.PRE_REMOVE), preRemove);
+        callbacksMap.put(new Integer(LifecycleListener.POST_REMOVE), postRemove);
+        callbacksMap.put(new Integer(LifecycleListener.POST_LOAD), postLoad);
     }
 
     /**
-     * Returns all event callbacks in a single array ordered by event type, following the
+     * @return all event callbacks in a single array ordered by event type, following the
      * order in {@link CallbackMap#CALLBACKS} array.
      */
     public CallbackDescriptor[] getCallbacks() {
@@ -73,6 +88,14 @@ public class CallbackMap implements Serializable {
                 prePersist, preRemove, preUpdate, postPersist, postRemove, postUpdate,
                 postLoad
         };
+    }
+
+    /**
+     * @param callbackType callback type id
+     * @return CallbackDescriptor for the specified callback type id
+     */
+    public CallbackDescriptor getCallbackDescriptor(int callbackType) {
+        return (CallbackDescriptor)callbacksMap.get(new Integer(callbackType));
     }
 
     public CallbackDescriptor getPostLoad() {
