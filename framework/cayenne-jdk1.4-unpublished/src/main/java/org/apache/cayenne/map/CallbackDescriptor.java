@@ -73,4 +73,50 @@ public class CallbackDescriptor implements Serializable {
 
         this.callbackType = callbackType;
     }
+
+    /**
+     * moves specified callback method to the specified position
+     *
+     * @param callbackMethod callbacm method name (should exist)
+     * @param destinationIndex destinationi index (should be valid)
+     * @return true if any changes were made
+     */
+    public boolean moveMethod(String callbackMethod, int destinationIndex) {
+        List callbackMethodsList = new ArrayList(callbackMethods);
+        int currentIndex = callbackMethodsList.indexOf(callbackMethod);
+        if (currentIndex < 0)
+            throw new IllegalArgumentException("Unknown callback method: " + callbackMethod);
+
+        boolean changed = false;
+
+        if (destinationIndex > currentIndex) {
+            callbackMethodsList.add(destinationIndex + 1, callbackMethod);
+            callbackMethodsList.remove(currentIndex);
+            changed = true;
+        }
+        else if (destinationIndex < currentIndex) {
+            callbackMethodsList.add(destinationIndex, callbackMethod);
+            callbackMethodsList.remove(currentIndex + 1);
+            changed = true;
+        }
+
+        if (changed) {
+            callbackMethods.clear();
+            callbackMethods.addAll(callbackMethodsList);
+        }
+
+        return changed;
+    }
+
+    /**
+     * replaces callback method at the specified position
+     * @param index callback method index
+     * @param method new callback method
+     */
+    public void setCallbackMethodAt(int index, String method) {
+        List callbackMethodsList = new ArrayList(callbackMethods);
+        callbackMethodsList.set(index, method);
+        callbackMethods.clear();
+        callbackMethods.addAll(callbackMethodsList);
+    }
 }
