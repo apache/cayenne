@@ -25,7 +25,7 @@
 OUT_DIR=`pwd`/target/mac-assembly
 TARGET_DIR=`pwd`/target
 
-mvn -o -P mac clean package
+mvn -P mac clean package
 
 # Repackage stuff assembled with Maven in a .dmg that makes sense
 
