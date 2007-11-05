@@ -168,6 +168,7 @@ public abstract class BaseRemoteService implements RemoteService {
             }
 
             th.printStackTrace(causeMessage);
+            causeMessage.flush();
             Exception cause = new Exception(causeMessageStream.toString());
             
             StringBuffer wrapperMessage = new StringBuffer();
