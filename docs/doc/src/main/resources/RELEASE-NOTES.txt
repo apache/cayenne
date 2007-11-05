@@ -21,7 +21,7 @@ Bug fixes since M2:
 CAY-882 Configuration shutdown hook thread may lead to memory leaks
 CAY-887 CM Usability:Recent Files list shold be longer
 CAY-899 Default POST_LOAD callbacks break aggregate queries
-
+CAY-913 ToMany Map relationships cause ClassCastExceptions on commit when the source is Fault
 
 ----------------------------------
 Release: 3.0M2
