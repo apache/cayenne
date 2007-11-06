@@ -1,5 +1,5 @@
 Cayenne Release Notes 1.2.4
-Date: 
+Date: 10/12/2007
 ============================================
 
 For the latest information visit project web site: 
