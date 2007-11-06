@@ -19,13 +19,7 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.gen.DefaultClassGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
@@ -33,6 +27,9 @@ import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
 import org.xml.sax.InputSource;
+
+import java.io.File;
+import java.util.*;
 
 /**
  * Utility class to perform class generation from data map. This class is used by
@@ -106,6 +103,9 @@ class CayenneGeneratorUtil {
                         filteredEntities.add(entity);
                     }
                 }
+            }
+            else {
+                throw new CayenneRuntimeException("Cannot generate client classes because the data map is not configured to allow them.");
             }
         }
         else {
