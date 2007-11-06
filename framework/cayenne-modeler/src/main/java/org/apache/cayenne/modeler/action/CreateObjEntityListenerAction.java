@@ -111,7 +111,7 @@ public class CreateObjEntityListenerAction extends CayenneAction {
                 addEntityListener(new EntityListener(listenerClass));
                 getProjectController().fireEntityListenerEvent(
                         new EntityListenerEvent(
-                                e.getSource(),
+                                CreateObjEntityListenerAction.this,
                                 listenerClass,
                                 listenerClass,
                                 MapEvent.ADD

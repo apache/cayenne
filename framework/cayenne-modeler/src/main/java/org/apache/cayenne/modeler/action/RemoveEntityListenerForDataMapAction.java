@@ -67,16 +67,18 @@ public class RemoveEntityListenerForDataMapAction extends CayenneAction {
      */
     public void performAction(ActionEvent e) {
         String listenerClass = getProjectController().getCurrentListenerClass();
-        getProjectController().getCurrentDataMap().removeDefaultEntityListener(listenerClass);
+        if (listenerClass != null) {
+            getProjectController().getCurrentDataMap().removeDefaultEntityListener(listenerClass);
 
-        getProjectController().fireEntityListenerEvent(
-                new EntityListenerEvent(
-                        e.getSource(),
-                        listenerClass,
-                        listenerClass,
-                        MapEvent.REMOVE
-                )
-        );
+            getProjectController().fireEntityListenerEvent(
+                    new EntityListenerEvent(
+                            RemoveEntityListenerForDataMapAction.this,
+                            listenerClass,
+                            listenerClass,
+                            MapEvent.REMOVE
+                    )
+            );
+        }
     }
 }
 

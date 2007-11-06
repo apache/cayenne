@@ -74,7 +74,7 @@ public class RemoveEntityListenerAction extends CayenneAction {
 
         getProjectController().fireEntityListenerEvent(
                 new EntityListenerEvent(
-                        e.getSource(),
+                        RemoveEntityListenerAction.this,
                         listenerClass,
                         listenerClass,
                         MapEvent.REMOVE

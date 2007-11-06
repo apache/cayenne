@@ -23,11 +23,10 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.*;
 import org.apache.cayenne.modeler.event.*;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.CallbackMap;
+import org.apache.cayenne.map.EntityListener;
 
 import java.util.List;
-
 
 /**
  * Tab for editing entity listeners of an ObjEntity
@@ -35,8 +34,7 @@ import java.util.List;
  * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
-public class ObjEntityCallbackListenersTab extends AbstractCallbackListenersTab
-    implements ObjEntityDisplayListener {
+public class ObjEntityCallbackListenersTab extends AbstractCallbackListenersTab {
 
     /**
      * constructor
@@ -58,45 +56,23 @@ public class ObjEntityCallbackListenersTab extends AbstractCallbackListenersTab
         return null;
     }
 
-
-    /**
-     * Current obj entity used as a model has changed.
-     *
-     * @param e event
-     */
-    public void currentObjEntityChanged(EntityDisplayEvent e) {
-        if (e.getSource() == this) {
-            return;
-        }
-
-        ObjEntity entity = (ObjEntity) e.getEntity();
-        // Important: process event even if this is the same entity,
-        // since the inheritance structure might have changed
-        if (entity != null) {
-            rebuildListenerClassCombo();
-
-            mediator.fireCallbackTypeSelectionEvent(
-                new CallbackTypeSelectionEvent(
-                    e.getSource(),
-                    (CallbackType)callbackTypeCombo.getItemAt(0))
-            );
-
-            rebuildTable();
-        }
-
-        // if an entity was selected on a tree,
-        // unselect currently selected row
-        if (e.isUnselectAttributes()) {
-            table.clearSelection();
-        }
-    }
-
     /**
      * init listener
      */
     protected void initController() {
         super.initController();
-        mediator.addObjEntityDisplayListener(this);
+
+        mediator.addObjEntityDisplayListener(
+                new ObjEntityDisplayListener() {
+                    public void currentObjEntityChanged(EntityDisplayEvent e) {
+                        if (ObjEntityCallbackListenersTab.this.isVisible()) {
+                            rebuildListenerClassCombo(null);
+                            mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
+                            rebuildTable();
+                        }
+                    }
+                }
+        );
     }
 
     /**
@@ -138,11 +114,8 @@ public class ObjEntityCallbackListenersTab extends AbstractCallbackListenersTab
         return Application.getInstance().getAction(CreateObjEntityListenerAction.getActionName());
     }
 
-    /**
-     * @return action for changing entity listeners
-     */
-    public CayenneAction getChangeEntityListenerAction() {
-        return Application.getInstance().getAction(ChangeObjEntityListenerClassAction.getActionName());
+    protected EntityListener getEntityListener(String listenerClass) {
+        return mediator.getCurrentObjEntity().getEntityListener(listenerClass);
     }
 }
 

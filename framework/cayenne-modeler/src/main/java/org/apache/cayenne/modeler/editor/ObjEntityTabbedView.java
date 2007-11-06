@@ -100,7 +100,9 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
                     selected = ((JScrollPane) selected).getViewport().getView();
                 }
 
-                ((ExistingSelectionProcessor) selected).processExistingSelection(e);
+                if (selected instanceof ExistingSelectionProcessor) {
+                    ((ExistingSelectionProcessor) selected).processExistingSelection(e);
+                }
             }
         });
     }

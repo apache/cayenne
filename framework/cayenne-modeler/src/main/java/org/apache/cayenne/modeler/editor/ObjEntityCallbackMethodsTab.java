@@ -18,12 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
+import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.CallbackTypeSelectionEvent;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.CallbackMap;
+
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 
 /**
@@ -32,8 +33,7 @@ import org.apache.cayenne.map.CallbackMap;
  * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
-public class ObjEntityCallbackMethodsTab extends AbstractCallbackMethodsTab implements
-        ObjEntityDisplayListener {
+public class ObjEntityCallbackMethodsTab extends AbstractCallbackMethodsTab  {
 
     /**
      * constructor
@@ -44,40 +44,30 @@ public class ObjEntityCallbackMethodsTab extends AbstractCallbackMethodsTab impl
     }
 
     /**
-     * Processes selection of a new ObjEntity
-     */
-    public void currentObjEntityChanged(EntityDisplayEvent e) {
-        if (e.getSource() == this) {
-            return;
-        }
-
-        ObjEntity entity = (ObjEntity) e.getEntity();
-        // Important: process event even if this is the same entity,
-        // since the inheritance structure might have changed
-        if (entity != null) {
-            mediator.fireCallbackTypeSelectionEvent(
-                new CallbackTypeSelectionEvent(
-                    e.getSource(),
-                    (CallbackType)callbackTypeCombo.getItemAt(0))
-            );
-
-            rebuildTable();
-        }
-
-        // if an entity was selected on a tree,
-        // unselect currently selected row
-        if (e.isUnselectAttributes()) {
-            table.clearSelection();
-        }
-    }
-
-
-    /**
      * listeners initialization
      */
     protected void initController() {
         super.initController();
-        mediator.addObjEntityDisplayListener(this);
+        //mediator.addObjEntityDisplayListener(this);
+        addComponentListener(
+                new ComponentAdapter() {
+                    public void componentShown(ComponentEvent e) {
+                        mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
+                        rebuildTable();
+                    }
+                }
+        );
+
+        mediator.addObjEntityDisplayListener(
+                new ObjEntityDisplayListener() {
+                    public void currentObjEntityChanged(EntityDisplayEvent e) {
+                        if (ObjEntityCallbackMethodsTab.this.isVisible()) {
+                            mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
+                            rebuildTable();
+                        }
+                    }
+                }
+        );
     }
 
 

@@ -21,11 +21,9 @@ package org.apache.cayenne.modeler.editor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.event.ListenerClassSelectionEvent;
-import org.apache.cayenne.modeler.event.EntityListenerEvent;
-import org.apache.cayenne.modeler.event.ListenerClassSelectionListener;
-import org.apache.cayenne.modeler.event.EntityListenerListener;
+import org.apache.cayenne.modeler.event.*;
 import org.apache.cayenne.map.EntityListener;
+import org.apache.cayenne.map.event.MapEvent;
 
 import javax.swing.*;
 import java.util.List;
@@ -33,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 
@@ -44,8 +44,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
  * @author Vasil Tarasevich
  * @version 1.0 Oct 29, 2007
  */
-public abstract class AbstractCallbackListenersTab extends AbstractCallbackMethodsTab
-        implements ListenerClassSelectionListener, EntityListenerListener {
+public abstract class AbstractCallbackListenersTab extends AbstractCallbackMethodsTab {
 
     /**
      * listener class seiection combo
@@ -76,11 +75,6 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
     public abstract CayenneAction getCreateEntityListenerAction();
 
     /**
-     * @return action for changing entity listeners
-     */
-    public abstract CayenneAction getChangeEntityListenerAction();
-
-    /**
      * performs GUI components initialization
      */
     protected void init() {
@@ -88,19 +82,82 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
 
         toolBar.addSeparator();
         toolBar.add(getCreateEntityListenerAction().buildButton());
-        toolBar.add(getChangeEntityListenerAction().buildButton());
         toolBar.add(getRemoveEntityListenerAction().buildButton());
+    }
+
+    protected abstract EntityListener getEntityListener(String listenerClass);
+
+    private void processEditedListenerClassValue(String newValue) {
+        String prevName = mediator.getCurrentListenerClass();
+        if (getEntityListener(newValue) == null) {
+            getEntityListener(prevName).setClassName(newValue);
+            mediator.fireEntityListenerEvent(
+                    new EntityListenerEvent(
+                            this,
+                            prevName,
+                            newValue,
+                            MapEvent.CHANGE
+                    )
+            );
+        }
+    }
+
+
+    /**
+     * init listeners
+     */
+    protected void initController() {
+        super.initController();
+        addComponentListener(
+                new ComponentAdapter() {
+                    public void componentShown(ComponentEvent e) {
+                        rebuildListenerClassCombo(null);
+                        mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
+                        rebuildTable();
+                    }
+                }
+        );
+
 
         listenerClassCombo.addItemListener(
                 new ItemListener() {
                     public void itemStateChanged(ItemEvent e) {
-                        if (e.getStateChange() == ItemEvent.SELECTED) {
-                            mediator.fireListenerClassSelectionEvent(
-                                    new ListenerClassSelectionEvent(
-                                            AbstractCallbackListenersTab.this,
-                                            (String)listenerClassCombo.getSelectedItem()
-                                    )
-                            );
+                        if (e.getStateChange() == ItemEvent.SELECTED && isVisible()) {
+                            //detect editing
+                            if (listenerClassCombo.getSelectedIndex() == -1 &&
+                                listenerClassCombo.getSelectedItem() != null) {
+                                processEditedListenerClassValue((String)listenerClassCombo.getSelectedItem());
+                            }
+                            else {
+                                //just celeection changed
+                                mediator.setCurrentListenerClass((String)listenerClassCombo.getSelectedItem());
+                                rebuildTable();
+                            }
+                        }
+                    }
+                }
+        );
+
+        mediator.addEntityListenerListener(
+                new EntityListenerListener() {
+                    public void entityListenerAdded(EntityListenerEvent e) {
+                        if (isVisible() && getCreateEntityListenerAction() == e.getSource()) {
+                            rebuildListenerClassCombo(e.getNewName());
+                            rebuildTable();
+                        }
+                    }
+
+                    public void entityListenerChanged(EntityListenerEvent e) {
+                        if (isVisible() && e.getSource() == AbstractCallbackListenersTab.this) {
+                            rebuildListenerClassCombo(e.getNewName());
+                            rebuildTable();
+                        }
+                    }
+
+                    public void entityListenerRemoved(EntityListenerEvent e) {
+                        if (isVisible() && getRemoveEntityListenerAction() == e.getSource()) {
+                            rebuildListenerClassCombo(null);
+                            rebuildTable();
                         }
                     }
                 }
@@ -108,18 +165,11 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
     }
 
     /**
-     * init listeners
-     */
-    protected void initController() {
-        super.initController();
-        mediator.addListenerClassSelectionListener(this);
-        mediator.addEntityListenerListener(this);
-    }
-
-    /**
      * rebuils listener class selection dropdown content and fires selection event
+     *
+     * @param selectedListener listener to be selected after rebuild
      */
-    protected void rebuildListenerClassCombo() {
+    protected void rebuildListenerClassCombo(String selectedListener) {
         List entityListeners = getEntityListeners();
         List listenerClasses = new ArrayList();
         if (entityListeners !=  null) {
@@ -133,12 +183,21 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
                 new DefaultComboBoxModel(listenerClasses.toArray())
         );
 
-        mediator.fireListenerClassSelectionEvent(
-                new ListenerClassSelectionEvent(
-                        this,
-                        listenerClassCombo.getItemCount() > 0 ?
-                        (String)listenerClassCombo.getItemAt(0) : null)
-        );
+        getCreateCallbackMethodAction().setEnabled(listenerClasses.size() > 0);
+
+        if (selectedListener == null) {
+            if (listenerClasses.size() > 0) {
+                listenerClassCombo.setSelectedIndex(0);
+            }
+        }
+        else {
+            listenerClassCombo.setSelectedItem(selectedListener);
+        }
+
+        mediator.setCurrentListenerClass((String)listenerClassCombo.getSelectedItem());
+
+        getRemoveEntityListenerAction().setEnabled(listenerClasses.size() > 0);
+        listenerClassCombo.setEnabled(listenerClasses.size() > 0);
     }
 
 
@@ -148,51 +207,10 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
      */
     protected void buildFilter(DefaultFormBuilder builder) {
         listenerClassCombo = CayenneWidgetFactory.createComboBox();
+        listenerClassCombo.setEditable(true);
         builder.append(new JLabel("Listener class:"), listenerClassCombo);
         builder.nextLine();
         super.buildFilter(builder);
     }
 
-    /**
-     * processes adding of new entity listener
-     * @param e event
-     */
-    public void entityListenerAdded(EntityListenerEvent e) {
-        rebuildListenerClassCombo();
-        listenerClassCombo.setSelectedItem(e.getNewName());
-        mediator.fireListenerClassSelectionEvent(
-                new ListenerClassSelectionEvent(
-                        this,
-                        e.getNewName()
-                )
-        );
-    }
-
-    /**
-     * processes renaming of an entity listener
-     * @param e event
-     */
-    public void entityListenerChanged(EntityListenerEvent e) {
-        rebuildListenerClassCombo();
-    }
-
-    /**
-     * processes removing of an entity listener
-     * @param e event
-     */
-    public void entityListenerRemoved(EntityListenerEvent e) {
-        rebuildListenerClassCombo();
-    }
-
-    /**
-     * processes listener class selection
-     * @param e event
-     */
-    public void listenerClassSelected(ListenerClassSelectionEvent e) {
-        if (e.getSource() == this) {
-            rebuildTable();
-            getChangeEntityListenerAction().setEnabled(e.getListenerClass() != null);
-        }
-    }
 }
-

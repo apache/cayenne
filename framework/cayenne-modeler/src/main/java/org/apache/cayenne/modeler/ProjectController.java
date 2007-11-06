@@ -103,6 +103,11 @@ public class ProjectController extends CayenneController {
         private ObjAttribute objAttr;
         private DbAttribute dbAttr;
         private ObjRelationship objRel;
+        private DbRelationship dbRel;
+        private Procedure procedure;
+        private ProcedureParameter procedureParameter;
+        private Query query;
+
         /**
          * currently selecte entity listener class
          */
@@ -115,10 +120,6 @@ public class ProjectController extends CayenneController {
          * currently selected callback method
          */
         private String callbackMethod;
-        private DbRelationship dbRel;
-        private Procedure procedure;
-        private ProcedureParameter procedureParameter;
-        private Query query;
 
         public ControllerState() {
             domain = null;
@@ -128,8 +129,6 @@ public class ProjectController extends CayenneController {
             objEntity = null;
             objAttr = null;
             objRel = null;
-
-            callbackMethod = null;
 
             dbEntity = null;
             dbAttr = null;
@@ -447,27 +446,6 @@ public class ProjectController extends CayenneController {
         return currentState.objRel;
     }
 
-    /**
-     * @return currently selecte entity listener class
-     */
-    public String getCurrentListenerClass() {
-        return currentState.listenerClass;
-    }
-
-    /**
-     * @return currently selected callback type
-     */
-    public CallbackType getCurrentCallbackType() {
-        return currentState.callbackType;
-    }
-
-    /**
-     * @return currently selected callback method
-     */
-    public String getCurrentCallbackMethod() {
-        return currentState.callbackMethod;
-    }
-
     public DbRelationship getCurrentDbRelationship() {
         return currentState.dbRel;
     }
@@ -550,46 +528,6 @@ public class ProjectController extends CayenneController {
 
     public void addObjRelationshipListener(ObjRelationshipListener listener) {
         listenerList.add(ObjRelationshipListener.class, listener);
-    }
-
-    /**
-     * adds callback method manipulation listener
-     * @param listener listener
-     */
-    public void addCallbackMethodListener(CallbackMethodListener listener) {
-        listenerList.add(CallbackMethodListener.class, listener);
-    }
-
-    /**
-     * adds callback type selection listener
-     * @param listener listener
-     */
-    public void addCallbackTypeSelectionListener(CallbackTypeSelectionListener listener) {
-        listenerList.add(CallbackTypeSelectionListener.class, listener);
-    }
-
-    /**
-     * adds listener class selection listener
-     * @param listener listener
-     */
-    public void addListenerClassSelectionListener(ListenerClassSelectionListener listener) {
-        listenerList.add(ListenerClassSelectionListener.class, listener);
-    }
-
-    /**
-     * adds listener class manipulation listener
-     * @param listener listener
-     */
-    public void addEntityListenerListener(EntityListenerListener listener) {
-        listenerList.add(EntityListenerListener.class, listener);
-    }
-
-    /**
-     * adds callback method display listener
-     * @param listener listener
-     */
-    public void addCallbackMethodDisplayListener(CallbackMethodDisplayListener listener) {
-        listenerList.add(CallbackMethodDisplayListener.class, listener);
     }
 
     public void addObjRelationshipDisplayListener(ObjRelationshipDisplayListener listener) {
@@ -1405,121 +1343,6 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    /**
-     * fires callback type selection event
-     * @param e event
-     */
-    public void fireCallbackTypeSelectionEvent(CallbackTypeSelectionEvent e) {
-        currentState.callbackType = e.getCallbackType();
-
-        EventListener[] list = listenerList.getListeners(CallbackTypeSelectionListener.class);
-        for (int i = 0; i < list.length; i++) {
-            CallbackTypeSelectionListener temp = (CallbackTypeSelectionListener) list[i];
-            temp.callbackTypeSelected(e);
-        }
-    }
-
-    /**
-     * fires listener class selection event
-     * @param e event
-     */
-    public void fireListenerClassSelectionEvent(ListenerClassSelectionEvent e) {
-        currentState.listenerClass = e.getListenerClass();
-
-        EventListener[] list = listenerList.getListeners(ListenerClassSelectionListener.class);
-        for (int i = 0; i < list.length; i++) {
-            ListenerClassSelectionListener temp = (ListenerClassSelectionListener) list[i];
-            temp.listenerClassSelected(e);
-        }
-    }
-
-    /**
-     * fires callback method manipulation event
-     * @param e event
-     */
-    public void fireCallbackMethodEvent(CallbackMethodEvent e) {
-        setDirty(true);
-
-        //if (currentState.map != null && e.getId() == MapEvent.CHANGE) {
-        //    currentState.map.objRelationshipChanged(e);
-        //}
-
-        EventListener[] list = listenerList.getListeners(CallbackMethodListener.class);
-        for (int i = 0; i < list.length; i++) {
-            CallbackMethodListener temp = (CallbackMethodListener) list[i];
-            switch (e.getId()) {
-                case MapEvent.ADD:
-                    temp.callbackMethodAdded(e);
-                    break;
-                case MapEvent.CHANGE:
-                    temp.callbackMethodChanged(e);
-                    break;
-                case MapEvent.REMOVE:
-                    temp.callbackMethodRemoved(e);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid CallbackEvent type: "
-                            + e.getId());
-            }
-        }
-    }
-
-
-    /**
-     * fires entity listener manipulation event
-     * @param e event
-     */
-    public void fireEntityListenerEvent(EntityListenerEvent e) {
-        setDirty(true);
-
-        EventListener[] list = listenerList.getListeners(EntityListenerListener.class);
-        for (int i = 0; i < list.length; i++) {
-            EntityListenerListener temp = (EntityListenerListener) list[i];
-            switch (e.getId()) {
-                case MapEvent.ADD:
-                    temp.entityListenerAdded(e);
-                    break;
-                case MapEvent.CHANGE:
-                    temp.entityListenerChanged(e);
-                    break;
-                case MapEvent.REMOVE:
-                    temp.entityListenerRemoved(e);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid CallbackEvent type: "
-                            + e.getId());
-            }
-        }
-    }
-
-    /**
-     * fires callback method display event event
-     * @param e event
-     */
-
-    public void fireCallbackMethodDisplayEvent(CallbackMethodDisplayEvent e) {
-        boolean changed;
-
-        if (e.getCallbackMethod() != null) {
-            changed = !e.getCallbackMethod().equals(currentState.callbackMethod);
-        }
-        else {
-            changed = currentState != null;
-        }
-        
-        if (changed) {
-            currentState.callbackMethod = e.getCallbackMethod();
-        }
-
-        EventListener[] list = listenerList
-                .getListeners(CallbackMethodDisplayListener.class);
-        for (int i = 0; i < list.length; i++) {
-            CallbackMethodDisplayListener temp = (CallbackMethodDisplayListener) list[i];
-            temp.currentCallbackMethodCahnged(e);
-        }
-    }
-
-
     public void fireObjRelationshipDisplayEvent(RelationshipDisplayEvent e) {
         boolean changed = e.getRelationship() != currentState.objRel;
         e.setRelationshipChanged(changed);
@@ -1576,6 +1399,119 @@ public class ProjectController extends CayenneController {
 
             if (dirty) {
                 ((CayenneModelerController) getParent()).projectModifiedAction();
+            }
+        }
+    }
+
+    /**
+     * @return currently selecte entity listener class
+     */
+    public String getCurrentListenerClass() {
+        return currentState.listenerClass;
+    }
+
+    /**
+     * @return currently selected callback type
+     */
+    public CallbackType getCurrentCallbackType() {
+        return currentState.callbackType;
+    }
+
+    /**
+     * @return currently selected callback method
+     */
+    public String getCurrentCallbackMethod() {
+        return currentState.callbackMethod;
+    }
+
+
+    /**
+     * @return currently selecte entity listener class
+     */
+    public void setCurrentListenerClass(String listenerClass) {
+        currentState.listenerClass = listenerClass;
+    }
+
+    /**
+     * @return currently selected callback type
+     */
+    public void setCurrentCallbackType(CallbackType callbackType) {
+        currentState.callbackType = callbackType;
+    }
+
+    /**
+     * @return currently selected callback method
+     */
+    public void setCurrentCallbackMethod(String callbackMethod) {
+        currentState.callbackMethod = callbackMethod;
+    }
+
+    /**
+     * adds callback method manipulation listener
+     * @param listener listener
+     */
+    public void addCallbackMethodListener(CallbackMethodListener listener) {
+        listenerList.add(CallbackMethodListener.class, listener);
+    }
+    
+    /**
+     * fires callback method manipulation event
+     * @param e event
+     */
+    public void fireCallbackMethodEvent(CallbackMethodEvent e) {
+        setDirty(true);
+
+        EventListener[] list = listenerList.getListeners(CallbackMethodListener.class);
+        for (int i = 0; i < list.length; i++) {
+            CallbackMethodListener temp = (CallbackMethodListener) list[i];
+            switch (e.getId()) {
+                case MapEvent.ADD:
+                    temp.callbackMethodAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    temp.callbackMethodChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    temp.callbackMethodRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid CallbackEvent type: "
+                            + e.getId());
+            }
+        }
+    }
+
+    /**
+     * adds listener class manipulation listener
+     * @param listener listener
+     */
+    public void addEntityListenerListener(EntityListenerListener listener) {
+        listenerList.add(EntityListenerListener.class, listener);
+    }
+
+    /**
+     * fires entity listener manipulation event
+     * @param e event
+     */
+    public void fireEntityListenerEvent(EntityListenerEvent e) {
+        setDirty(true);
+
+        EventListener[] list = listenerList.getListeners(EntityListenerListener.class);
+        for (int i = 0; i < list.length; i++) {
+            EntityListenerListener temp = (EntityListenerListener) list[i];
+            switch (e.getId()) {
+                case MapEvent.ADD:
+                    temp.entityListenerAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    temp.entityListenerChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    temp.entityListenerRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid CallbackEvent type: "
+                            + e.getId());
             }
         }
     }

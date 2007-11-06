@@ -68,5 +68,20 @@ public class CallbackType {
     public String toString() {
         return name;
     }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CallbackType that = (CallbackType) o;
+
+        if (type != that.type) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        return type;
+    }
 }
 

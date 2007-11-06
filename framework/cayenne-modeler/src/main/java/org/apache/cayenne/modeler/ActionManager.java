@@ -127,17 +127,15 @@ public class ActionManager {
         registerAction(new RemoveRelationshipAction(application));
         // start callback-related actions
         registerAction(new CreateCallbackMethodAction(application)).setAlwaysOn(true);
-        registerAction(new CreateCallbackMethodForListenerAction(application)).setAlwaysOn(true);
-        registerAction(new CreateCallbackMethodForDataMapListenerAction(application)).setAlwaysOn(true);
+        registerAction(new CreateCallbackMethodForListenerAction(application));
+        registerAction(new CreateCallbackMethodForDataMapListenerAction(application));
         registerAction(new RemoveCallbackMethodAction(application));
         registerAction(new RemoveCallbackMethodForListenerAction(application));
         registerAction(new RemoveCallbackMethodForDataMapListenerAction(application));
         registerAction(new CreateObjEntityListenerAction(application)).setAlwaysOn(true);
         registerAction(new CreateDataMapEntityListenerAction(application)).setAlwaysOn(true);
-        registerAction(new ChangeObjEntityListenerClassAction(application));
-        registerAction(new ChangeDataMapEntityListenerClassAction(application));
-        registerAction(new RemoveEntityListenerAction(application)).setAlwaysOn(true);
-        registerAction(new RemoveEntityListenerForDataMapAction(application)).setAlwaysOn(true);
+        registerAction(new RemoveEntityListenerAction(application));
+        registerAction(new RemoveEntityListenerForDataMapAction(application));
         // end callback-related actions
         registerAction(new DbEntitySyncAction(application));
         registerAction(new ObjEntitySyncAction(application));

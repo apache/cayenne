@@ -24,15 +24,14 @@ import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.map.*;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.event.CallbackMethodListener;
+import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.action.AbstractRemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
-import org.apache.cayenne.modeler.editor.StringTransferHandler;
-import org.apache.cayenne.modeler.event.*;
 import org.apache.cayenne.modeler.util.*;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -41,7 +40,6 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.Iterator;
 import java.util.List;
 
@@ -54,11 +52,7 @@ import java.util.List;
  * @version 1.0 Oct 23, 2007
  */
 
-public abstract class AbstractCallbackMethodsTab extends JPanel
-        implements
-            ExistingSelectionProcessor,
-            CallbackMethodListener,
-            CallbackTypeSelectionListener {
+public abstract class AbstractCallbackMethodsTab extends JPanel {
     /**
      * mediator instance
      */
@@ -145,20 +139,6 @@ public abstract class AbstractCallbackMethodsTab extends JPanel
         auxPanel.setOpaque(false);
         auxPanel.setLayout(new BorderLayout());
 
-        callbackTypeCombo.addItemListener(
-                new ItemListener() {
-                    public void itemStateChanged(ItemEvent e) {
-                        if (e.getStateChange() == ItemEvent.SELECTED) {
-                            mediator.fireCallbackTypeSelectionEvent(
-                                    new CallbackTypeSelectionEvent(
-                                            e.getSource(),
-                                            (CallbackType)callbackTypeCombo.getSelectedItem())
-                            );
-                        }
-                    }
-                }
-        );
-
         FormLayout formLayout = new FormLayout("right:70dlu, 3dlu, fill:150dlu");
         DefaultFormBuilder builder = new DefaultFormBuilder(formLayout);
         buildFilter(builder);
@@ -189,7 +169,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel
 
                 //move callback method inside of model
                 CallbackDescriptor callbackDescriptor =
-                        getCallbackMap().getCallbackDescriptor(mediator.getCurrentCallbackType().getType());
+                        getCallbackMap().getCallbackDescriptor(((CallbackType)callbackTypeCombo.getSelectedItem()).getType());
                 mediator.setDirty(callbackDescriptor.moveMethod(callbackMethod, rowIndex));
                 rebuildTable();
             }
@@ -207,48 +187,57 @@ public abstract class AbstractCallbackMethodsTab extends JPanel
      * listeners initialization
      */
     protected void initController() {
-        mediator.addCallbackMethodListener(this);
-        mediator.addCallbackTypeSelectionListener(this);
+        mediator.addCallbackMethodListener(
+                new CallbackMethodListener() {
+                    public void callbackMethodChanged(CallbackMethodEvent e) {
+                        if (isVisible()) {
+                            rebuildTable();
+                        }
+                    }
+
+                    public void callbackMethodAdded(CallbackMethodEvent e) {
+                        if (isVisible()) {
+                            rebuildTable();
+                        }
+                    }
+
+                    public void callbackMethodRemoved(CallbackMethodEvent e) {
+                        if (isVisible()) {
+                            rebuildTable();
+                        }
+                    }
+                }
+        );
+
+        callbackTypeCombo.addItemListener(
+                new ItemListener() {
+                    public void itemStateChanged(ItemEvent e) {
+                        if (e.getStateChange() == ItemEvent.SELECTED) {
+                            mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
+                            rebuildTable();
+                        }
+                    }
+                }
+        );
 
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                    processExistingSelection(e);
+                    mediator.setCurrentCallbackMethod(
+                            table.getSelectedRow() >= 0 ?
+                                (String)table.getModel().getValueAt(table.getSelectedRow(), 0) : null);
+                    getRemoveCallbackMethodAction().setEnabled(table.getSelectedRow() >= 0);
                 }
             }
         });
     }
 
-    /**
-     * process table selection change
-     * @param e event
-     */
-    public void processExistingSelection(EventObject e) {
-        if (e instanceof ChangeEvent) {
-            table.clearSelection();
-        }
-        String method = null;
-        if (table.getSelectedRow() >= 0) {
-            CallbackDescriptorTableModel model = (CallbackDescriptorTableModel) table.getModel();
-            method = model.getCallbackMethod(table.getSelectedRow());
-            // scroll table
-            UIUtil.scrollToSelectedRow(table);
-        }
-
-        getRemoveCallbackMethodAction().setEnabled(table.getSelectedRow() >= 0);
-
-        CallbackMethodDisplayEvent ev = new CallbackMethodDisplayEvent(e.getSource(), method);
-
-
-        mediator.fireCallbackMethodDisplayEvent(ev);
-    }
 
     /**
      * rebuilds table content
      */
     protected void rebuildTable() {
-        //System.out.println("RebuildTable: " + this);
-        CallbackType callbackType = mediator.getCurrentCallbackType();
+        CallbackType callbackType = (CallbackType)callbackTypeCombo.getSelectedItem();
         List methods = new ArrayList();
         CallbackDescriptor descriptor = null;
         CallbackMap callbackMap = getCallbackMap();
@@ -272,6 +261,8 @@ public abstract class AbstractCallbackMethodsTab extends JPanel
         TableColumn methodNameColumn =
                 table.getColumnModel().getColumn(CallbackDescriptorTableModel.METHOD_NAME);
         methodNameColumn.setMinWidth(424);
+
+        mediator.setCurrentCallbackMethod(null);
     }
 
     /**
@@ -318,40 +309,12 @@ public abstract class AbstractCallbackMethodsTab extends JPanel
         }
     }
 
-    /**
-     * processes change of callback method
-     * @param e event
-     */
-    public void callbackMethodChanged(CallbackMethodEvent e) {
-        table.select(e);
-    }
-
-    /**
-     * processes addition of new callback method - rebuilds table
-     * @param e event
-     */
-    public void callbackMethodAdded(CallbackMethodEvent e) {
-        rebuildTable();
-        table.select(e.getNewName());
-    }
-
-    /**
-     * processes removal of a callback method - removes a row from GUI
-     * @param e event
-     */
-    public void callbackMethodRemoved(CallbackMethodEvent e) {
-        CallbackDescriptorTableModel model = (CallbackDescriptorTableModel) table.getModel();
-        int ind = model.getObjectList().indexOf(e.getNewName());
-        model.removeRow(e.getNewName());
-        table.select(ind);
-    }
-
-    /**
-     * rebuilds table according to the newly selected callback type
-      * @param e event
-     */
-    public void callbackTypeSelected(CallbackTypeSelectionEvent e) {
-        rebuildTable();
+    protected final CallbackType getSelectedCallbackType() {
+        CallbackType selectedType = (CallbackType)callbackTypeCombo.getSelectedItem();
+        if (selectedType == null) {
+                selectedType = (CallbackType)callbackTypeCombo.getItemAt(0);
+        }
+        return selectedType;
     }
 }
 
