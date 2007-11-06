@@ -36,7 +36,7 @@ import foundrylogic.vpp.VPPConfig;
  * 
  * @author Andrus Adamchik, Kevin Menard
  */
-public class CayenneGenerator extends Task {
+public class CayenneGenerator extends CayenneTask {
 
     protected String includeEntitiesPattern;
     protected String excludeEntitiesPattern;

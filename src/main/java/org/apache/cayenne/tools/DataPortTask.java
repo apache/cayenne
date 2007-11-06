@@ -42,7 +42,7 @@ import org.apache.tools.ant.Task;
  * @author Andrus Adamchik
  * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples package.
  */
-public class DataPortTask extends Task {
+public class DataPortTask extends CayenneTask {
 
     protected File projectFile;
     protected String maps;
