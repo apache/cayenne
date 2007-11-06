@@ -36,7 +36,7 @@ import org.apache.tools.ant.Task;
  * 
  * @author Andrus Adamchik
  */
-public class DeploymentConfigurator extends Task {
+public class DeploymentConfigurator extends CayenneTask {
 
     protected ProjectConfigInfo info;
 

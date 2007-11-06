@@ -38,11 +38,11 @@ import org.xml.sax.InputSource;
  * An Ant Task that is a frontend to Cayenne DbGenerator allowing schema generation from
  * DataMap using Ant.
  * 
- * @author nirvdrum, Andrus Adamchik
+ * @author Kevin Menard, Andrus Adamchik
  * @since 1.2
  */
 // TODO: support classpath attribute for loading the driver
-public class DbGeneratorTask extends Task {
+public class DbGeneratorTask extends CayenneTask {
 
     protected DbAdapter adapter;
     protected File map;
@@ -51,14 +51,13 @@ public class DbGeneratorTask extends Task {
     protected String userName;
     protected String password;
 
-    // DbGenerator options... setup defaults similar to DbGemerator itself:
+    // DbGenerator options... setup defaults similar to DbGenerator itself:
     // all DROP set to false, all CREATE - to true
     protected boolean dropTables;
     protected boolean dropPK;
     protected boolean createTables = true;
     protected boolean createPK = true;
     protected boolean createFK = true;
-
 
     public void execute() {
 
@@ -233,5 +232,4 @@ public class DbGeneratorTask extends Task {
     public void setPassword(String password) {
         this.password = password;
     }
-
 }
