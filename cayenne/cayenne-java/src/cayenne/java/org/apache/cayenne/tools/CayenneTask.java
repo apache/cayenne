@@ -21,15 +21,50 @@ package org.apache.cayenne.tools;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.Reference;
 import org.apache.cayenne.conf.Configuration;
 
 /**
  * A superclass of Cayenne Ant tasks. Performs some common setup
  * 
- * @author Andrei Adamchik
+ * @author Andrei Adamchik, Kevin Menard
  * @since 1.2
  */
 public abstract class CayenneTask extends Task {
+
+	protected Path classpath;
+	
+	/**
+     * Sets the classpath used by the task.
+     *
+     * @param path The classpath to set.
+     */
+    public void setClasspath(Path path) {
+        createClasspath().append(path);
+    }
+
+    /**
+     * Sets the classpath reference used by the task.
+     *
+     * @param reference The classpath reference to set.
+     */
+    public void setClasspathRef(Reference reference) {
+        createClasspath().setRefid(reference);
+    }
+
+    /**
+     * Convenience method for creating a classpath instance to be used for the task.
+     *
+     * @return The new classpath.
+     */
+    private Path createClasspath() {
+        if (null == classpath) {
+            classpath = new Path(getProject());
+        }
+
+        return classpath.createPath();
+    }
 
     /**
      * Sets up logging to be in line with the Ant logging system. It should be called by
