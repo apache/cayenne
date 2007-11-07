@@ -67,12 +67,21 @@ public abstract class AbstractCreateCallbackMethodAction extends CayenneAction {
      */
     public final void performAction(ActionEvent e) {
         CallbackType callbackType = getProjectController().getCurrentCallbackType();
-        getCallbackMap().getCallbackDescriptor(callbackType.getType()).addCallbackMethod(NEW_CALLBACK_METHOD);
+
+        //generate methodName
+        int counter = 1;
+        String methodName;
+        do {
+            methodName = NEW_CALLBACK_METHOD + counter;
+            counter++;
+        } while(getCallbackMap().getCallbackDescriptor(callbackType.getType()).getCallbackMethods().contains(methodName));
+
+        getCallbackMap().getCallbackDescriptor(callbackType.getType()).addCallbackMethod(methodName);
 
         CallbackMethodEvent ce = new CallbackMethodEvent(
                 e.getSource(),
                 null,
-                NEW_CALLBACK_METHOD,
+                methodName,
                 MapEvent.ADD
         );
 

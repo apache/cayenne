@@ -67,6 +67,7 @@ public class ObjEntityCallbackListenersTab extends AbstractCallbackListenersTab 
                     public void currentObjEntityChanged(EntityDisplayEvent e) {
                         if (ObjEntityCallbackListenersTab.this.isVisible()) {
                             rebuildListenerClassCombo(null);
+                            updateCallbackTypeCounters();
                             mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
                             rebuildTable();
                         }

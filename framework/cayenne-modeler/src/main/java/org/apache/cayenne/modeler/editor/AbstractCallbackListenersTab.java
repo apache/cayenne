@@ -113,6 +113,7 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
                     public void componentShown(ComponentEvent e) {
                         rebuildListenerClassCombo(null);
                         mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
+                        updateCallbackTypeCounters();
                         rebuildTable();
                     }
                 }
@@ -131,6 +132,7 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
                             else {
                                 //just celeection changed
                                 mediator.setCurrentListenerClass((String)listenerClassCombo.getSelectedItem());
+                                updateCallbackTypeCounters();
                                 rebuildTable();
                             }
                         }

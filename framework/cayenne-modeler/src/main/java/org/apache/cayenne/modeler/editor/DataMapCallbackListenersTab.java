@@ -77,6 +77,7 @@ public class DataMapCallbackListenersTab extends AbstractCallbackListenersTab {
                     public void currentDataMapChanged(DataMapDisplayEvent e) {
                         if (isVisible()) {
                             rebuildListenerClassCombo(null);
+                            updateCallbackTypeCounters();
                             mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
                             rebuildTable();
                         }

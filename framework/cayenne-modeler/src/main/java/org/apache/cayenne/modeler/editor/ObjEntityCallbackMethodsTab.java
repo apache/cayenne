@@ -53,6 +53,7 @@ public class ObjEntityCallbackMethodsTab extends AbstractCallbackMethodsTab  {
                 new ComponentAdapter() {
                     public void componentShown(ComponentEvent e) {
                         mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
+                        updateCallbackTypeCounters();
                         rebuildTable();
                     }
                 }
@@ -63,6 +64,7 @@ public class ObjEntityCallbackMethodsTab extends AbstractCallbackMethodsTab  {
                     public void currentObjEntityChanged(EntityDisplayEvent e) {
                         if (ObjEntityCallbackMethodsTab.this.isVisible()) {
                             mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
+                            updateCallbackTypeCounters();
                             rebuildTable();
                         }
                     }

@@ -39,6 +39,11 @@ public class CallbackType {
     private String name;
 
     /**
+     * methods counter
+     */
+    private int counter;
+
+    /**
      * constructor
      * @param type type id
      * @param name name
@@ -46,6 +51,7 @@ public class CallbackType {
     public CallbackType(int type, String name) {
         this.type = type;
         this.name = name;
+        this.counter = 0;
     }
 
     /**
@@ -63,10 +69,33 @@ public class CallbackType {
     }
 
     /**
-     * @return callback name
+     * @return number of callback methods of this type.
+     */
+    public int getCounter() {
+        return counter;
+    }
+
+    /**
+     * Method to specify counter value
+     * @param counter new coutner value
+     */
+    public void setCounter(int counter) {
+        this.counter = counter;
+    }
+
+    /**
+     * @return a human readable label representing for this callback. 
      */
     public String toString() {
-        return name;
+        if (counter <= 0) {
+            return name;
+        }
+        else if (counter == 1) {
+            return name + " (1 method)";
+        }
+        else {
+            return name + " (" + counter + " methods)";
+        }
     }
 
     public boolean equals(Object o) {
