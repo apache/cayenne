@@ -62,12 +62,19 @@ public class DataPortTask extends CayenneTask {
 
         FileConfiguration configuration = new FileConfiguration(projectFile);
 
+        ClassLoader threadContextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
+            // need to set context class loader so that cayenne can find jdbc driver and
+            // PasswordEncoder
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             configuration.initialize();
         }
         catch (Exception ex) {
             throw new BuildException("Error loading Cayenne configuration from "
                     + projectFile, ex);
+        } finally {
+            // set back to original ClassLoader
+            Thread.currentThread().setContextClassLoader(threadContextClassLoader);
         }
 
         // perform project validation
