@@ -26,12 +26,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.collections.ComparatorUtils;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+import org.apache.commons.collections.ComparatorUtils;
 
 /**
  * Defines object sorting criteria, used either for in-memory sorting of object lists or
@@ -58,11 +59,13 @@ public class Ordering implements Comparator, Serializable, XMLSerializable {
     protected transient Expression sortSpec;
     protected boolean ascending;
     protected boolean caseInsensitive;
+    protected boolean pathExceptionSuppressed = false;
+    protected boolean nullSortedFirst = true;
 
     /**
      * Orders a given list of objects, using a List of Orderings applied according the
      * default iteration order of the Orderings list. I.e. each Ordering with lower index
-     * is more significant than any other Ordering with higer index. List being ordered is
+     * is more significant than any other Ordering with higher index. List being ordered is
      * modified in place.
      */
     public static void orderList(List objects, List orderings) {
@@ -103,7 +106,47 @@ public class Ordering implements Comparator, Serializable, XMLSerializable {
             this.sortSpec = null;
         }
     }
-
+     
+    /**
+     * Sets sort order for whether nulls are at the top or bottom of the resulting list. Default is true.
+     * 
+     * @param nullSortedFirst true sorts nulls to the top of the list, false sorts nulls to the bottom
+     */
+    public void setNullSortedFirst(boolean nullSortedFirst) {
+        this.nullSortedFirst = nullSortedFirst;
+    }
+    
+    /** 
+     * Get sort order for nulls.
+     * 
+     *  @return true if nulls are sorted to the top of the list, false if sorted to the bottom
+     */
+    public boolean isNullSortedFirst() {
+        return nullSortedFirst;
+    }
+    
+    /**
+     * Sets whether a path with a null in the middle is ignored. For example, a sort from <code>painting</code>
+     * on <code>artist.name</code> would by default throw an exception if the artist was null.
+     * If set to true, then this is treated just like a null value.
+     * Default is false.
+     * 
+     * @param pathExceptionSuppressed true to suppress exceptions and sort as null
+     */
+    public void setPathExceptionSupressed(boolean pathExceptionSuppressed) {
+        this.pathExceptionSuppressed = pathExceptionSuppressed;
+    }
+    
+    /** 
+     * Is a path with a null in the middle is ignored.
+     * 
+     * @return true is exception is suppressed and sorted as null
+     */
+    public boolean isPathExceptionSuppressed() {
+        return pathExceptionSuppressed;
+    }
+    
+    
     /**
      * Returns sortSpec string representation.
      * 
@@ -173,15 +216,36 @@ public class Ordering implements Comparator, Serializable, XMLSerializable {
      */
     public int compare(Object o1, Object o2) {
         Expression exp = getSortSpec();
-        Object value1 = exp.evaluate(o1);
-        Object value2 = exp.evaluate(o2);
+		Object value1 = null;
+		Object value2 = null;
+		try {
+        	value1 = exp.evaluate(o1);
+		} catch (ExpressionException e) {
+			if (pathExceptionSuppressed && e.getCause() instanceof org.apache.cayenne.reflect.UnresolvablePathException) {
+				//do nothing, we expect this 
+			} else {
+				//rethrow
+				throw e;
+			}
+		}
+		
+		try {
+        	value2 = exp.evaluate(o2);
+		} catch (ExpressionException e) {
+			if (pathExceptionSuppressed && e.getCause() instanceof org.apache.cayenne.reflect.UnresolvablePathException) {
+				//do nothing, we expect this 
+			} else {
+				//rethrow
+				throw e;
+			}
+		}
 
-        // nulls first policy... maybe make this configurable as some DB do
-        if (value1 == null) {
-            return (value2 == null) ? 0 : -1;
-        }
-        else if (value2 == null) {
-            return 1;
+		if (value1 == null && value2 == null) {
+		    return 0;
+		} else if (value1 == null) {
+		    return nullSortedFirst? -1:1;
+		} else if (value2 == null) {
+            return nullSortedFirst? 1:-1;
         }
 
         if (this.caseInsensitive) {
