@@ -72,8 +72,8 @@ public class PropertyUtils {
 
                 if (value == null) {
                     // null value in the middle....
-                    throw new CayenneRuntimeException(
-                            "Null value in the middle of the path");
+                    throw new UnresolvablePathException(
+                            "Null value in the middle of the path, failed on " + nestedPropertyName + " from " + object);
                 }
 
                 value = getSimpleProperty(value, pathSegment);
