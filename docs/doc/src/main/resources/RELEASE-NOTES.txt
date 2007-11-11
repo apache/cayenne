@@ -18,6 +18,7 @@ CAY-263 cdbgen (DbGeneratorTask) must support classpath and classpathref
 CAY-879 Storing lifecycle listeners and callbacks in the *.map.xml and loading them back
 CAY-885 merge changes between model and db
 CAY-900 Create CayenneModeler Swing UI for managing callbacks and lifecycle listeners
+CAY-916 Ordering should be able to ignore paths with null elements
 
 Bug fixes since M2:
 
