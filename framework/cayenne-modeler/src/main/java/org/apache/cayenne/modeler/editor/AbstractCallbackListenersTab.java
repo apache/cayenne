@@ -90,15 +90,15 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
     private void processEditedListenerClassValue(String newValue) {
         String prevName = mediator.getCurrentListenerClass();
         if (getEntityListener(newValue) == null) {
-            getEntityListener(prevName).setClassName(newValue);
-            mediator.fireEntityListenerEvent(
-                    new EntityListenerEvent(
-                            this,
-                            prevName,
-                            newValue,
-                            MapEvent.CHANGE
-                    )
-            );
+            EntityListener listener = getEntityListener(prevName);
+            if (listener != null) {
+                listener.setClassName(newValue);
+                mediator.fireEntityListenerEvent(new EntityListenerEvent(
+                        this,
+                        prevName,
+                        newValue,
+                        MapEvent.CHANGE));
+            }
         }
     }
 
