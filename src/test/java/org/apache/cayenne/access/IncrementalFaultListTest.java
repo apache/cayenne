@@ -117,6 +117,22 @@ public class IncrementalFaultListTest extends CayenneCase {
         }
     }
 
+    public void testSort() throws Exception {
+        prepareList(6);
+
+        new Ordering(Artist.ARTIST_NAME_PROPERTY, Ordering.DESC).orderList(list);
+
+        Iterator it = list.iterator();
+        Artist previousArtist = null;
+        while (it.hasNext()) {
+            Artist artist = (Artist) it.next();
+            if (previousArtist != null) {
+                assertTrue(previousArtist.getArtistName().compareTo(
+                        artist.getArtistName()) > 0);
+            }
+        }
+    }
+
     public void testUnfetchedObjects() throws Exception {
         prepareList(6);
         assertEquals(DataContextTest.artistCount, list.getUnfetchedObjects());
@@ -175,7 +191,7 @@ public class IncrementalFaultListTest extends CayenneCase {
 
         assertNotNull(a0);
         assertTrue(list.elements.get(0) instanceof Artist);
-        
+
         Object a = list.get(8);
 
         assertNotNull(a);

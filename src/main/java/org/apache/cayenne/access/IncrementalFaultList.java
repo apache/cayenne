@@ -941,7 +941,7 @@ public class IncrementalFaultList implements List {
         }
 
         public void set(Object o) {
-            throw new UnsupportedOperationException("set operation not supported");
+            IncrementalFaultList.this.set(listIndex - 1, o);
         }
     }
 }
