@@ -19,6 +19,7 @@ CAY-879 Storing lifecycle listeners and callbacks in the *.map.xml and loading t
 CAY-885 merge changes between model and db
 CAY-900 Create CayenneModeler Swing UI for managing callbacks and lifecycle listeners
 CAY-916 Ordering should be able to ignore paths with null elements
+CAY-918 An exception during in-memory sorting of IncrementalFaultList
 
 Bug fixes since M2:
 
