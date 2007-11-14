@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DeleteDenyException;
@@ -119,6 +120,24 @@ class DataContextDeleteAction {
         object.setObjectContext(null);
     }
 
+    private Collection toCollection(Object object) {
+
+        if (object == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        // create copies of collections to avoid iterator exceptions
+        if (object instanceof Collection) {
+            return new ArrayList((Collection) object);
+        }
+        else if (object instanceof Map) {
+            return new ArrayList(((Map) object).values());
+        }
+        else {
+            return Collections.singleton(object);
+        }
+    }
+
     private void processDeleteRules(final Persistent object, int oldState)
             throws DeleteDenyException {
 
@@ -130,33 +149,17 @@ class DataContextDeleteAction {
             ObjRelationship relationship = (ObjRelationship) it.next();
 
             boolean processFlattened = relationship.isFlattened()
-                    && relationship.isToDependentEntity() && !relationship.isReadOnly();
+                    && relationship.isToDependentEntity()
+                    && !relationship.isReadOnly();
 
             // first check for no action... bail out if no flattened processing is needed
             if (relationship.getDeleteRule() == DeleteRule.NO_ACTION && !processFlattened) {
                 continue;
             }
 
-            List relatedObjects = Collections.EMPTY_LIST;
-
             ArcProperty property = (ArcProperty) descriptor.getProperty(relationship
                     .getName());
-            Object related = property.readProperty(object);
-
-            if (relationship.isToMany()) {
-
-                List toMany = (List) related;
-                if (toMany.size() > 0) {
-                    // Get a copy of the list so that deleting objects doesn't
-                    // result in concurrent modification exceptions
-                    relatedObjects = new ArrayList(toMany);
-                }
-            }
-            else {
-                if (related != null) {
-                    relatedObjects = Collections.singletonList(related);
-                }
-            }
+            Collection relatedObjects = toCollection(property.readProperty(object));
 
             // no related object, bail out
             if (relatedObjects.size() == 0) {
