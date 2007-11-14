@@ -21,7 +21,7 @@ package org.apache.cayenne.reflect;
 
 /**
  * A visitor for various types of properties in a ClassDescriptor. Helpful in defining
- * operations that should be performed differently on differernt properties.
+ * operations that should be performed differently on different properties.
  * 
  * @since 3.0
  * @author Andrus Adamchik
