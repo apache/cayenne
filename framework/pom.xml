@@ -36,7 +36,6 @@
 
 	<modules>
 		<module>cayenne-legal-unpublished</module>
-		<module>cayenne-jdk1.4-unpublished</module>
 		<module>cayenne-jdk1.5-unpublished</module>
 		<module>cayenne-jpa-unpublished</module>
 		<module>cayenne-agent</module>
