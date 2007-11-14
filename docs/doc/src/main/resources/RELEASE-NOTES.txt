@@ -28,6 +28,7 @@ CAY-887 CM Usability:Recent Files list shold be longer
 CAY-899 Default POST_LOAD callbacks break aggregate queries
 CAY-913 ToMany Map relationships cause ClassCastExceptions on commit when the source is Fault
 CAY-914 cdataport classloader trouble
+CAY-920 ClassCastException when processing delete rules for Map relationships
 
 ----------------------------------
 Release: 3.0M2
