@@ -117,6 +117,20 @@ public class PropertyUtilsTest extends TestCase {
         PropertyUtils.setProperty(o1, "intField", null);
         assertEquals(0, o1.getIntField());
     }
+    
+    
+    public void testSetConverted() {
+        MockEnumHolder o1 = new MockEnumHolder();
+
+        // String to Enum
+        PropertyUtils.setProperty(o1, "mockEnum", "b");
+        assertSame(MockEnum.b, o1.getMockEnum());
+        
+        // check that regular converters still work
+        PropertyUtils.setProperty(o1, "number", "445");
+        assertEquals(445, o1.getNumber());
+    }
+
 
     protected TestJavaBean createBean() {
         TestJavaBean o1 = new TestJavaBean();
