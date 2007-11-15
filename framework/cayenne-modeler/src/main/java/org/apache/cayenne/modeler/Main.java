@@ -101,11 +101,11 @@ public class Main {
 
     protected boolean checkJDKVersion() {
         try {
-            Class.forName("javax.swing.SpringLayout");
+            Class.forName("java.lang.StringBuilder");
             return true;
         }
         catch (Exception ex) {
-            logObj.fatal("CayenneModeler requires JDK 1.4.");
+            logObj.fatal("CayenneModeler requires JDK 1.5.");
             logObj.fatal("Found : '"
                     + System.getProperty("java.version")
                     + "' at "
@@ -115,7 +115,7 @@ public class Main {
                     null,
                     "Unsupported JDK at "
                             + System.getProperty("java.home")
-                            + ". Set JAVA_HOME to the JDK1.4 location.",
+                            + ". Set JAVA_HOME to the JDK1.5 location.",
                     "Unsupported JDK Version",
                     JOptionPane.ERROR_MESSAGE);
             return false;
