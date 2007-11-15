@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.cayenne.access.types.MockEnum;
+import org.apache.cayenne.access.types.MockEnumHolder;
 
 import junit.framework.TestCase;
 
@@ -119,7 +121,7 @@ public class PropertyUtilsTest extends TestCase {
     }
     
     
-    public void testSetConverted() {
+    public void testSetConvertedEnum() {
         MockEnumHolder o1 = new MockEnumHolder();
 
         // String to Enum
