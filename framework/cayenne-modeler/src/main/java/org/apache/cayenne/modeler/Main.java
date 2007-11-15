@@ -265,7 +265,7 @@ public class Main {
     }
 
     /**
-     * Returns a file correspinding to $HOME/.cayenne/modeler.log
+     * Returns a file corresponding to $HOME/.cayenne/modeler.log
      */
     protected File getLogFile() {
         if (!CayenneUserDir.getInstance().canWrite()) {
