@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	<bean id="RH1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FkOfDifferentType</value></constructor-arg>
+		<constructor-arg><value>
+		insert into RELATIONSHIP_HELPER (NAME, RELATIONSHIP_HELPER_ID) values ('RH1', 1)
+		</value></constructor-arg>
+	</bean>
+
+	<bean id="FD1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FkOfDifferentType</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FK_OF_DIFFERENT_TYPE (ID, RELATIONSHIP_HELPER_FK) values (1, 1)
+		</value></constructor-arg>
+	</bean>
+
+
+	
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->
+	<bean id="testResolveToOneOverFKOfDifferentNumType" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="RH1"/>
+				<ref bean="FD1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

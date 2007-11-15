@@ -39,18 +39,18 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm-commons</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
 		</dependency>
 
 		<dependency>
@@ -62,7 +62,12 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>jgroups</groupId>
+			<artifactId>jgroups-all</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>ant</groupId>
 			<artifactId>ant</artifactId>
@@ -84,8 +89,54 @@
 		</dependency>
 
 		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>velocity</groupId>
 			<artifactId>velocity</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.objectstyle.ashwood</groupId>
+			<artifactId>ashwood</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jms_1.1_spec</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>jivesoftware</groupId>
+			<artifactId>smack</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>jivesoftware</groupId>
+			<artifactId>smackx</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>foundrylogic.vpp</groupId>
+			<artifactId>vpp</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>opensymphony</groupId>
+			<artifactId>oscache</artifactId>
 		</dependency>
 
 		<dependency>
@@ -93,15 +144,26 @@
 			<artifactId>mockrunner</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-jdk1.4-unpublished</artifactId>
-			<version>${version}</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>
+		<resources>
+			<!-- don't filter dotemplates -->
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<excludes>
+					<exclude>dotemplates/**</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>dotemplates/**</include>
+				</includes>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -111,7 +173,62 @@
 					<target>1.5</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>javacc-maven-plugin</artifactId>
+				<version>2.1</version>
+				<executions>
+					<execution>
+						<id>jjtree-jpql</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceDirectory>
+								${basedir}/src/main/jjtree/org/apache/cayenne/ejbql
+							</sourceDirectory>
+							<outputDirectory>
+								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql
+							</outputDirectory>
+							<buildNodeFiles>false</buildNodeFiles>
+						</configuration>
+						<goals>
+							<goal>jjtree</goal>
+						</goals>
+					</execution>
 
+					<execution>
+						<id>javacc-ejbql</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceDirectory>
+								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql
+							</sourceDirectory>
+							<outputDirectory>
+								${project.build.directory}/generated-sources/javacc/org/apache/cayenne/ejbql
+							</outputDirectory>
+						</configuration>
+						<goals>
+							<goal>javacc</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <tasks>
+                                <delete
+                                    file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/Node.java"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -121,6 +238,19 @@
 						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.cayenne.build-tools</groupId>
+				<artifactId>maven-cayenne-build-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>date</id>
+						<goals>
+							<goal>date</goal>
 						</goals>
 					</execution>
 				</executions>

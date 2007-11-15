@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<property name="defaultPackage" value="org.objectstyle.art2"/>
+	<db-entity name="MYARTGROUP">
+		<db-attribute name="MY_GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="CUSTOM" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="MY_PARENT_GROUP_ID" type="INTEGER"/>
+	</db-entity>
+	<obj-entity name="MyArtGroup" className="org.objectstyle.art2.MyArtGroup" dbEntityName="MYARTGROUP">
+		<obj-attribute name="custom" type="java.lang.String" db-attribute-path="CUSTOM"/>
+	</obj-entity>
+	<db-relationship name="toParentArtGroup" source="MYARTGROUP" target="ARTGROUP" toMany="false">
+		<db-attribute-pair source="MY_PARENT_GROUP_ID" target="GROUP_ID"/>
+	</db-relationship>
+	<obj-relationship name="toParentGroup" source="MyArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toParentArtGroup"/>
+</data-map>
