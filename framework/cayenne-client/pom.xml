@@ -32,16 +32,9 @@
 	<artifactId>cayenne-client</artifactId>
 	<packaging>jar</packaging>
 	<name>Cayenne Aggregated Client Jar</name>
-	<description>An aggregation of 1.4, 1.5 modules into an ROP client jar.</description>
+	<description>An aggregation of 1.5 module into an ROP client jar.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-jdk1.4-unpublished</artifactId>
-			<version>${version}</version>
-			<scope>provided</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>
 			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
@@ -94,11 +87,6 @@
 						<configuration>
 							<excludesFile>src/main/aggregator/excludes.txt</excludesFile>
 							<artifactItems>
-								<artifactItem>
-									<groupId>org.apache.cayenne.unpublished</groupId>
-									<artifactId>cayenne-jdk1.4-unpublished</artifactId>
-									<version>${version}</version>
-								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.cayenne.unpublished</groupId>
 									<artifactId>cayenne-jdk1.5-unpublished</artifactId>

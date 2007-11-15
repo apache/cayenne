@@ -37,8 +37,8 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.4</source>
-					<target>1.4</target>
+					<source>1.5</source>
+					<target>1.5</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -83,7 +83,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>org.apache.cayenne.core</groupId>
-					<artifactId>cayenne-jdk1.4</artifactId>
+					<artifactId>cayenne-jdk1.5</artifactId>
 					<version>${version}</version>
 				</dependency>
 				<dependency>

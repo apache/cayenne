@@ -48,12 +48,6 @@
 		-->
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-jdk1.4-unpublished</artifactId>
-			<version>${version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
 			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
 			<version>${version}</version>
 		</dependency>
@@ -76,7 +70,7 @@
 					<mainClass>org.apache.cayenne.modeler.Main</mainClass>
 					<icon>src/japplication/resources/CayenneModeler.ico</icon>
 					<os>windows</os>
-					<jvm>1.4+</jvm>
+					<jvm>1.5+</jvm>
 					<jvmOptions>-Xmx500m</jvmOptions>
 					<excludes>
 						<exclude>asm</exclude>
