@@ -16,10 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.art;
+package org.apache.cayenne.access;
 
-import org.apache.art.auto._PrimitivesTestEntity;
+import org.apache.art.PrimitivesTestEntity;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.unit.CayenneCase;
 
-public class PrimitivesTestEntity extends _PrimitivesTestEntity {
+public class PrimitiveAttributesTest extends CayenneCase {
 
+    public void testCommit() {
+        ObjectContext context = createDataContext();
+
+        PrimitivesTestEntity e = (PrimitivesTestEntity) context
+                .newObject(PrimitivesTestEntity.class);
+        e.setBooleanColumn(true);
+        e.setIntColumn(88);
+        context.commitChanges();
+    }
 }
