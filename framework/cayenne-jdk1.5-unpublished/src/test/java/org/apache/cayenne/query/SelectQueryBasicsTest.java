@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.query;
 
 import java.util.ArrayList;
@@ -129,50 +128,6 @@ public class SelectQueryBasicsTest extends TestCase {
 
         q.addCustomDbAttribute("ARTIST_ID");
         assertTrue(q.isFetchingCustomAttributes());
-    }
-
-    public void testSetParentQualifier() throws Exception {
-        SelectQuery q = new SelectQuery();
-        assertNull(q.getParentQualifier());
-
-        Expression qual = ExpressionFactory.expressionOfType(Expression.AND);
-        q.setParentQualifier(qual);
-        assertNotNull(q.getParentQualifier());
-        assertSame(qual, q.getParentQualifier());
-    }
-
-    public void testAndParentQualifier() throws Exception {
-        SelectQuery q = new SelectQuery();
-        assertNull(q.getParentQualifier());
-
-        Expression e1 = ExpressionFactory.expressionOfType(Expression.EQUAL_TO);
-        q.andParentQualifier(e1);
-        assertSame(e1, q.getParentQualifier());
-
-        Expression e2 = ExpressionFactory.expressionOfType(Expression.NOT_EQUAL_TO);
-        q.andParentQualifier(e2);
-        assertEquals(Expression.AND, q.getParentQualifier().getType());
-    }
-
-    public void testOrParentQualifier() throws Exception {
-        SelectQuery q = new SelectQuery();
-        assertNull(q.getParentQualifier());
-
-        Expression e1 = ExpressionFactory.expressionOfType(Expression.EQUAL_TO);
-        q.orParentQualifier(e1);
-        assertSame(e1, q.getParentQualifier());
-
-        Expression e2 = ExpressionFactory.expressionOfType(Expression.NOT_EQUAL_TO);
-        q.orParentQualifier(e2);
-        assertEquals(Expression.OR, q.getParentQualifier().getType());
-    }
-
-    public void testParentObjEntityName() throws Exception {
-        SelectQuery q = new SelectQuery();
-        assertNull(q.getParentObjEntityName());
-
-        q.setParentObjEntityName("SomeEntity");
-        assertSame("SomeEntity", q.getParentObjEntityName());
     }
 
     public void testQueryWithParams1() {

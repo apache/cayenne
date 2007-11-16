@@ -21,8 +21,6 @@ package org.apache.cayenne.dba;
 
 import java.sql.Types;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class JdbcAdapterTest extends CayenneCase {
@@ -39,21 +37,6 @@ public class JdbcAdapterTest extends CayenneCase {
         checkType(Types.ARRAY);
         checkType(Types.DATE);
         checkType(Types.VARCHAR);
-    }
-
-    public void testCreateTable() throws Exception {
-        DbEntity e = getDbEntity("ARTIST_ASSETS");
-        assertNotNull(e);
-        assertTrue(e instanceof DerivedDbEntity);
-
-        // an attempt to create a derived table must generate an exception
-        try {
-            adapter.createTable(e);
-            fail("Derived tables shouldn't be allowed in 'create'.");
-        }
-        catch (Exception ex) {
-            // exception expected
-        }
     }
 
     private void checkType(int type) throws java.lang.Exception {

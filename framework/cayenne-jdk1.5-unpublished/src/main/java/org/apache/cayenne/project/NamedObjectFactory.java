@@ -31,8 +31,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.DerivedDbAttribute;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -77,10 +75,8 @@ public abstract class NamedObjectFactory {
         factories.put(DataMap.class, new DataMapFactory());
         factories.put(ObjEntity.class, new ObjEntityFactory());
         factories.put(DbEntity.class, new DbEntityFactory());
-        factories.put(DerivedDbEntity.class, new DerivedDbEntityFactory());
         factories.put(ObjAttribute.class, new ObjAttributeFactory());
         factories.put(DbAttribute.class, new DbAttributeFactory());
-        factories.put(DerivedDbAttribute.class, new DerivedDbAttributeFactory());
         factories.put(DataNode.class, new DataNodeFactory());
         factories.put(DbRelationship.class, new DbRelationshipFactory(null, false));
         factories.put(ObjRelationship.class, new ObjRelationshipFactory(null, false));
@@ -318,12 +314,6 @@ public abstract class NamedObjectFactory {
         }
     }
 
-    static class DerivedDbEntityFactory extends DbEntityFactory {
-        protected Object create(String name, Object namingContext) {
-            return new DerivedDbEntity(name);
-        }
-    }
-
     static class ObjAttributeFactory extends NamedObjectFactory {
         protected String nameBase() {
             return "untitledAttr";
@@ -345,19 +335,6 @@ public abstract class NamedObjectFactory {
                 name,
                 TypesMapping.NOT_DEFINED,
                 (DbEntity) namingContext);
-        }
-    }
-
-    /**
-     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3)
-     */
-    static class DerivedDbAttributeFactory extends ObjAttributeFactory {
-        protected Object create(String name, Object namingContext) {
-            return new DerivedDbAttribute(
-                name,
-                TypesMapping.NOT_DEFINED,
-                (DbEntity) namingContext,
-                DerivedDbAttribute.ATTRIBUTE_TOKEN);
         }
     }
 

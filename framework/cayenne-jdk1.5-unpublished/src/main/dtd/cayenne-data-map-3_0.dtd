@@ -48,12 +48,11 @@ Root element.
 <!--
 A descriptor of a DB table or view.
 -->
-<!ELEMENT db-entity (db-attribute+, db-attribute-derived+, db-key-generator?)>
+<!ELEMENT db-entity (db-attribute+, db-key-generator?)>
 <!ATTLIST db-entity
 	name CDATA #REQUIRED
 	schema CDATA #IMPLIED
 	catalog CDATA #IMPLIED
-	parentName CDATA #IMPLIED
 >
 
 <!--
@@ -68,27 +67,6 @@ A descriptor of a DB table column.
 	type CDATA #REQUIRED
 	length CDATA #IMPLIED
 	precision CDATA #IMPLIED
->
-
-<!--
-A descriptor of a column of a "dynamic view" defined via a derived DbEntity.
-DEPRECATED as of 3.0 - may be removed in the later 3.0 milestones.
--->
-<!ELEMENT db-attribute-derived (db-attribute-ref*)>
-<!ATTLIST db-attribute-derived
-	name CDATA #REQUIRED
-	isPrimaryKey (true | false) "false"
-	isMandatory (true | false) "false"
-	type CDATA #REQUIRED
-	length CDATA #IMPLIED
-	precision CDATA #IMPLIED
-	isGroupBy (true | false) "false"
-	spec CDATA #IMPLIED
->
-
-<!ELEMENT db-attribute-ref EMPTY>
-<!ATTLIST db-attribute
-	name CDATA #REQUIRED
 >
 
 <!--

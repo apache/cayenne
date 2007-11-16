@@ -21,7 +21,6 @@ package org.apache.cayenne.project.validator;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DerivedDbAttribute;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
@@ -59,27 +58,6 @@ public class DbAttributeValidator extends TreeNodeValidator {
             validator.registerWarning("DbAttribute has no type.", path);
         }
 
-        if (attribute instanceof DerivedDbAttribute) {
-            DerivedDbAttribute derived = (DerivedDbAttribute) attribute;
-            int paramCount = derived.getParams().size();
-
-            String spec = derived.getExpressionSpec();
-            int paramsExpected = 0;
-            if (spec != null) {
-                // count tokens
-                int ind = -DerivedDbAttribute.ATTRIBUTE_TOKEN.length();
-                while ((ind = spec.indexOf(DerivedDbAttribute.ATTRIBUTE_TOKEN, ind
-                        + DerivedDbAttribute.ATTRIBUTE_TOKEN.length())) >= 0) {
-                    paramsExpected++;
-                }
-            }
-
-            if (paramsExpected != paramCount) {
-                validator.registerWarning("Derived Attribute's \""
-                        + attribute.getName()
-                        + "\" parameter mismatch.", path);
-            }
-        }
         // VARCHAR and CHAR attributes must have max length
         else if (attribute.getMaxLength() < 0
                 && (attribute.getType() == java.sql.Types.VARCHAR || attribute.getType() == java.sql.Types.CHAR)) {

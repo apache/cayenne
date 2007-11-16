@@ -214,17 +214,6 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="TINYINT_COL" type="TINYINT"/>
 	</db-entity>
-	<db-entity name="ARTIST_ASSETS" parentName="PAINTING">
-		<db-attribute-derived name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isGroupBy="true" spec="%@">
-			<db-attribute-ref name="ARTIST_ID"/>
-		</db-attribute-derived>
-		<db-attribute-derived name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2" spec="SUM(%@)">
-			<db-attribute-ref name="ESTIMATED_PRICE"/>
-		</db-attribute-derived>
-		<db-attribute-derived name="PAINTINGS_COUNT" type="INTEGER" length="10" scale="2" spec="COUNT(%@)">
-			<db-attribute-ref name="PAINTING_ID"/>
-		</db-attribute-derived>
-	</db-entity>
 	<obj-entity name="ArraysEntity" className="org.apache.art.ArraysEntity" dbEntityName="ARRAYS_ENTITY">
 		<obj-attribute name="byteArray" type="byte[]" db-attribute-path="BYTE_ARRAY"/>
 		<obj-attribute name="byteWrapperArray" type="java.lang.Byte[]" db-attribute-path="BYTE_WRAPPER_ARRAY"/>
@@ -237,10 +226,6 @@
 	<obj-entity name="Artist" className="org.apache.art.Artist" dbEntityName="ARTIST">
 		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
-	</obj-entity>
-	<obj-entity name="ArtistAssets" className="org.apache.art.ArtistAssets" dbEntityName="ARTIST_ASSETS">
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="paintingsCount" type="java.lang.Integer" db-attribute-path="PAINTINGS_COUNT"/>
 	</obj-entity>
 	<obj-entity name="ArtistCallbackTest" 
 		 className="org.apache.art.ArtistCallbackTest"
@@ -268,9 +253,6 @@
 		<post-load method-name="postLoadEntityObjEntity"/>
 	</obj-entity>
 	<obj-entity name="ArtistExhibit" className="org.apache.art.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT">
-	</obj-entity>
-	<obj-entity name="ArtistPaintingCounts" className="org.apache.art.ArtistPaintingCounts" dbEntityName="ARTIST_ASSETS">
-		<obj-attribute name="paintingsCount" type="java.lang.Integer" db-attribute-path="PAINTINGS_COUNT"/>
 	</obj-entity>
 	<obj-entity name="BigDecimalEntity" className="org.apache.art.BigDecimalEntity" dbEntityName="BIGDECIMAL_ENTITY">
 		<obj-attribute name="bigDecimalField" type="java.math.BigDecimal" db-attribute-path="BIGDECIMAL_FIELD"/>
@@ -446,9 +428,6 @@
 	<db-relationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
-	<db-relationship name="toArtist" source="ARTIST_ASSETS" target="ARTIST" toMany="false">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
 	<db-relationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST" toMany="false">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
@@ -538,7 +517,6 @@
 	<obj-relationship name="artistExhibitArray" source="Artist" target="ArtistExhibit" deleteRule="Cascade" db-relationship-path="artistExhibitArray"/>
 	<obj-relationship name="groupArray" source="Artist" target="ArtGroup" deleteRule="Cascade" db-relationship-path="artistGroupArray.toGroup"/>
 	<obj-relationship name="paintingArray" source="Artist" target="Painting" deleteRule="Cascade" db-relationship-path="paintingArray"/>
-	<obj-relationship name="toArtist" source="ArtistAssets" target="Artist" deleteRule="Deny" db-relationship-path="toArtist"/>
 	<obj-relationship name="toArtist" source="ArtistExhibit" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
 	<obj-relationship name="toExhibit" source="ArtistExhibit" target="Exhibit" deleteRule="Nullify" db-relationship-path="toExhibit"/>
 	<obj-relationship name="binaryPKDetails" source="BinaryPKTest1" target="BinaryPKTest2" db-relationship-path="binaryPKDetails"/>

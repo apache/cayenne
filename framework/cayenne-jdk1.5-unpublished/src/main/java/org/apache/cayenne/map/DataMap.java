@@ -276,33 +276,11 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         encoder.print(getProcedureMap());
 
         // DbEntities
-        boolean hasDerived = false;
         Iterator dbEntities = getDbEntityMap().entrySet().iterator();
         while (dbEntities.hasNext()) {
             Map.Entry entry = (Map.Entry) dbEntities.next();
             DbEntity dbe = (DbEntity) entry.getValue();
-
-            // skip derived, store them after regular DbEntities
-            if (dbe instanceof DerivedDbEntity) {
-                hasDerived = true;
-            }
-            else {
-                dbe.encodeAsXML(encoder);
-            }
-        }
-
-        // DerivedDbEntities
-        if (hasDerived) {
-            Iterator derivedDbEntities = getDbEntityMap().entrySet().iterator();
-            while (derivedDbEntities.hasNext()) {
-                Map.Entry entry = (Map.Entry) derivedDbEntities.next();
-                DbEntity dbe = (DbEntity) entry.getValue();
-
-                // only store derived...
-                if (dbe instanceof DerivedDbEntity) {
-                    dbe.encodeAsXML(encoder);
-                }
-            }
+            dbe.encodeAsXML(encoder);
         }
 
         // others...

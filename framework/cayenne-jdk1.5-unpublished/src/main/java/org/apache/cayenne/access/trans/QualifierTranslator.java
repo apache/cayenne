@@ -32,7 +32,6 @@ import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.commons.collections.IteratorUtils;
 
 /** 
@@ -46,7 +45,6 @@ public class QualifierTranslator
 
     protected StringBuffer qualBuf = new StringBuffer();
 
-    protected boolean translateParentQual;
     protected DataObjectMatchTranslator objectMatchTranslator;
     protected boolean matchingObject;
 
@@ -78,25 +76,19 @@ public class QualifierTranslator
     protected Expression extractQualifier() {
         Query q = queryAssembler.getQuery();
 
-        Expression qualifier =
-            (isTranslateParentQual())
-                ? ((SelectQuery) q).getParentQualifier()
-                : ((QualifiedQuery) q).getQualifier();
+        Expression qualifier = ((QualifiedQuery) q).getQualifier();
 
         // append Entity qualifiers, taking inheritance into account
         ObjEntity entity = getObjEntity();
 
         if (entity != null) {
-            EntityInheritanceTree tree =
-                queryAssembler.getEntityResolver().lookupInheritanceTree(
-                    entity);
-            Expression entityQualifier =
-                (tree != null)
-                    ? tree.qualifierForEntityAndSubclasses()
-                    : entity.getDeclaredQualifier();
+            EntityInheritanceTree tree = queryAssembler
+                    .getEntityResolver()
+                    .lookupInheritanceTree(entity);
+            Expression entityQualifier = (tree != null) ? tree
+                    .qualifierForEntityAndSubclasses() : entity.getDeclaredQualifier();
             if (entityQualifier != null) {
-                qualifier =
-                    (qualifier != null)
+                qualifier = (qualifier != null)
                         ? qualifier.andExp(entityQualifier)
                         : entityQualifier;
             }
@@ -106,8 +98,8 @@ public class QualifierTranslator
     }
 
     /**
-     * Called before processing an expression to initialize
-     * objectMatchTranslator if needed. 
+     * Called before processing an expression to initialize objectMatchTranslator if
+     * needed.
      */
     protected void detectObjectMatch(Expression exp) {
         // On demand initialization of
@@ -390,37 +382,6 @@ public class QualifierTranslator
         while (it.hasNext()) {
             qualBuf.append(", ");
             appendLiteral(qualBuf, it.next(), paramDesc, listExpr);
-        }
-    }
-
-    /**
-     * Returns <code>true</code> if this translator will translate
-     * parent qualifier on call to <code>doTranslation</code>.
-     * 
-     * @return boolean
-     */
-    public boolean isTranslateParentQual() {
-        return translateParentQual;
-    }
-
-    /**
-     * Configures translator to translate
-     * parent or main qualifier on call to <code>doTranslation</code>.
-     * 
-     * @param translateParentQual The translateParentQual to set
-     */
-    public void setTranslateParentQual(boolean translateParentQual) {
-        this.translateParentQual = translateParentQual;
-    }
-
-    public ObjEntity getObjEntity() {
-        if (isTranslateParentQual()) {
-            SelectQuery query = (SelectQuery) queryAssembler.getQuery();
-            return queryAssembler.getEntityResolver().getObjEntity(
-                query.getParentObjEntityName());
-        }
-        else {
-            return super.getObjEntity();
         }
     }
 

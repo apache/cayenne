@@ -96,18 +96,6 @@ public class MapLoaderLoadTest extends TestCase {
         assertEquals("paintingPrice", param.getName());
         assertEquals(ProcedureParameter.IN_PARAMETER, param.getDirection());
 
-        // test derived entities
-        DerivedDbEntity d1 = (DerivedDbEntity) map.getDbEntity("ARTIST_ASSETS");
-        assertNotNull(d1);
-        assertNotNull(d1.getParentEntity());
-        assertEquals(1, d1.getGroupByAttributes().size());
-
-        DerivedDbAttribute a1 = (DerivedDbAttribute) d1.getAttribute("ESTIMATED_PRICE");
-        assertNotNull(a1);
-        assertNotNull(a1.getExpressionSpec());
-        assertNotNull(a1.getParams());
-        assertEquals(1, a1.getParams().size());
-
         // test super class name
         // We expect the artist entity to have a super class name... test map should be
         // set up in that way.

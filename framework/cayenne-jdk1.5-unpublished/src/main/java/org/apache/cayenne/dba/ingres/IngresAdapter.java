@@ -21,17 +21,16 @@ package org.apache.cayenne.dba.ingres;
 
 import java.util.Iterator;
 
-import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
-import org.apache.cayenne.access.trans.QueryAssembler;
-import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.trans.QualifierTranslator;
+import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbEntity;
 
 /**
  * DbAdapter implementation for <a href="http://opensource.ca.com/projects/ingres/">Ingres</a>.
@@ -60,14 +59,6 @@ public class IngresAdapter extends JdbcAdapter {
      * <code>ent</code> parameter.
      */
     public String createTable(DbEntity ent) {
-        // later we may support view creation
-        // for derived DbEntities
-        if (ent instanceof DerivedDbEntity) {
-            throw new CayenneRuntimeException("Can't create table for derived DbEntity '"
-                    + ent.getName()
-                    + "'.");
-        }
-
         StringBuffer buf = new StringBuffer();
         buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");
 

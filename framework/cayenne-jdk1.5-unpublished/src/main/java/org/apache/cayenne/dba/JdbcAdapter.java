@@ -45,7 +45,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
@@ -229,12 +228,7 @@ public class JdbcAdapter implements DbAdapter {
      * <code>ent</code> parameter.
      */
     public String createTable(DbEntity entity) {
-        if (entity instanceof DerivedDbEntity) {
-            throw new CayenneRuntimeException("Can't create table for derived DbEntity '"
-                    + entity.getName()
-                    + "'.");
-        }
-
+ 
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append("CREATE TABLE ").append(entity.getFullyQualifiedName()).append(
                 " (");

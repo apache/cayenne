@@ -54,16 +54,6 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     protected List orderings;
     protected boolean distinct;
 
-    /**
-     * since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
-     */
-    protected Expression parentQualifier;
-    
-    /**
-     * since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
-     */
-    protected String parentObjEntityName;
-
     SelectQueryMetadata selectInfo = new SelectQueryMetadata();
 
     /** Creates an empty SelectQuery. */
@@ -313,8 +303,6 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         query.setDistinct(distinct);
 
         query.selectInfo.copyFromInfo(this.selectInfo);
-        query.setParentObjEntityName(parentObjEntityName);
-        query.setParentQualifier(parentQualifier);
         query.setRoot(root);
 
         // The following algorithm is for building the new query name based
@@ -592,87 +580,10 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         this.selectInfo.setFetchLimit(fetchLimit);
     }
 
-    /** 
-     * Setter for query's parent entity qualifier. 
-     * 
-     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
-     */
-    public void setParentQualifier(Expression parentQualifier) {
-        this.parentQualifier = parentQualifier;
-    }
-
-    /** 
-     * Getter for query parent entity qualifier. 
-     * 
-     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
-     */
-    public Expression getParentQualifier() {
-        return parentQualifier;
-    }
-
-    /**
-     * Adds specified parent entity qualifier to the existing parent entity qualifier
-     * joining it using "AND".
-     * 
-     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
-     */
-    public void andParentQualifier(Expression e) {
-        parentQualifier = (parentQualifier != null) ? parentQualifier.andExp(e) : e;
-    }
-
-    /**
-     * Adds specified parent entity qualifier to the existing qualifier joining it using
-     * "OR".
-     * 
-     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
-     */
-    public void orParentQualifier(Expression e) {
-        parentQualifier = (parentQualifier != null) ? parentQualifier.orExp(e) : e;
-    }
-
-    /**
-     * Returns the name of parent ObjEntity.
-     * 
-     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
-     */
-    public String getParentObjEntityName() {
-        return parentObjEntityName;
-    }
-
-    /**
-     * Sets the name of parent ObjEntity. If query's root ObjEntity maps to a derived
-     * entity in the DataMap, this query qualifier will resolve to a HAVING clause of an
-     * SQL statement. To allow fine tuning the query before applying GROUP BY and HAVING,
-     * callers can setup the name of parent ObjEntity and parent qualifier that will be
-     * used to create WHERE clause preceeding GROUP BY.
-     * <p>
-     * For instance this is helpful to qualify the fetch on a related entity attributes,
-     * since HAVING does not allow joins.
-     * </p>
-     * 
-     * @param parentObjEntityName The parentObjEntityName to set
-     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
-     */
-    public void setParentObjEntityName(String parentObjEntityName) {
-        this.parentObjEntityName = parentObjEntityName;
-    }
-
-    /**
-     * Returns <code>true</code> if this query has an extra qualifier that uses a parent
-     * entity of the query root entity for additional result filtering.
-     * 
-     * @deprecated since 3.0M2 (scheduled for removal in 3.0M3) as DerivedDbEntity is deprecated.
-     */
-    public boolean isQualifiedOnParent() {
-        return getParentObjEntityName() != null && parentQualifier != null;
-    }
-
     /**
      * Returns <code>pageSize</code> property. Page size is a hint telling Cayenne
      * QueryEngine that query result should use paging instead of reading the whole result
      * in the memory.
-     * 
-     * @return int
      */
     public int getPageSize() {
         return selectInfo.getPageSize();

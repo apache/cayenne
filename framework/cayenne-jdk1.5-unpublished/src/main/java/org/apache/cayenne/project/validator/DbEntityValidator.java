@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
@@ -44,15 +43,6 @@ public class DbEntityValidator extends TreeNodeValidator {
 		validateName(ent, path, validator);
 		validateAttributes(ent, path, validator);
 		validatePK(ent, path, validator);
-
-		if ((ent instanceof DerivedDbEntity)
-			&& ((DerivedDbEntity) ent).getParentEntity() == null) {
-			validator.registerError(
-				"No parent selected for derived entity \""
-					+ ent.getName()
-					+ "\".",
-				path);
-		}
 	}
 
 	/**
