@@ -56,7 +56,7 @@ public class DbMerger {
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List createMergeTokens(DataNode dataNode, DataMap dataMap) {
+    public List<MergerToken> createMergeTokens(DataNode dataNode, DataMap dataMap) {
         return createMergeTokens(dataNode.getAdapter(), dataNode.getDataSource(), dataMap);
     }
 
@@ -64,10 +64,10 @@ public class DbMerger {
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List createMergeTokens(DbAdapter adapter, DataSource dataSource, DataMap dataMap) {
+    public List<MergerToken> createMergeTokens(DbAdapter adapter, DataSource dataSource, DataMap dataMap) {
         factory = adapter.mergerFactory();
 
-        List tokens = new ArrayList();
+        List<MergerToken> tokens = new ArrayList<MergerToken>();
         Connection conn = null;
         ResultSet rs = null;
         try {
@@ -129,7 +129,7 @@ public class DbMerger {
         return tokens;
     }
 
-    private void checkRows(List tokens, DbEntity dbEntity, DbEntity detectedEntity) {
+    private void checkRows(List<MergerToken> tokens, DbEntity dbEntity, DbEntity detectedEntity) {
 
         // columns to drop
         for (Iterator it = detectedEntity.getAttributes().iterator(); it.hasNext();) {
