@@ -62,7 +62,7 @@ public class ObjectId implements Serializable {
     }
 
     /**
-     * Creates a TEMPORARY ObjectId. Assignes a generated unique key.
+     * Creates a TEMPORARY ObjectId. Assigns a generated unique key.
      * 
      * @since 1.2
      */

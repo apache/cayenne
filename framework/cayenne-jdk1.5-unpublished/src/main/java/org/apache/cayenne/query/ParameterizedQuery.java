@@ -36,5 +36,5 @@ public interface ParameterizedQuery extends Query {
      * parameters. In case of select queries, it is up to the implementing query to name
      * the new query to avoid cache key conflicts.
      */
-    public Query createQuery(Map parameters);
+    public Query createQuery(Map<?,?> parameters);
 }

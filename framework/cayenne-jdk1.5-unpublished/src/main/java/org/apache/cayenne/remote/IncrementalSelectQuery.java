@@ -200,7 +200,7 @@ class IncrementalSelectQuery extends SelectQuery {
         return query.getCachePolicy();
     }
 
-    public List getCustomDbAttributes() {
+    public List<String> getCustomDbAttributes() {
         return query.getCustomDbAttributes();
     }
 
@@ -212,7 +212,7 @@ class IncrementalSelectQuery extends SelectQuery {
         return query.getName();
     }
 
-    public List getOrderings() {
+    public List<Ordering> getOrderings() {
         return query.getOrderings();
     }
 
