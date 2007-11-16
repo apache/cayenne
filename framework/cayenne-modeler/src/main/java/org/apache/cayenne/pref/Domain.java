@@ -117,7 +117,7 @@ public class Domain extends _Domain {
             return null;
         }
 
-        Domain childSubdomain = (Domain) getObjectContext().newObject(Domain.class);
+        Domain childSubdomain = getObjectContext().newObject(Domain.class);
         addToSubdomains(childSubdomain);
         childSubdomain.setName(subdomainName);
 
