@@ -142,11 +142,10 @@ public class PreferenceDetail extends CayenneDataObject {
             if (context != null && getObjectId() != null) {
                 int pk = DataObjectUtils.intPKForObject(this);
 
-                domainPreference = (DomainPreference) DataObjectUtils.objectForPK(
+                domainPreference = DataObjectUtils.objectForPK(
                         context,
                         DomainPreference.class,
                         pk);
-
             }
         }
 
