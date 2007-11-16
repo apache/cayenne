@@ -37,15 +37,15 @@ import org.apache.cayenne.dba.TypesMapping;
  */
 public class DefaultType extends AbstractType {
 
-    private static final Map readMethods = new HashMap();
-    private static final Map procReadMethods = new HashMap();
+    private static final Map<String, Method> readMethods = new HashMap<String, Method>();
+    private static final Map<String, Method> procReadMethods = new HashMap<String, Method>();
     private static Method readObjectMethod;
     private static Method procReadObjectMethod;
 
     static {
         try {
-            Class rsClass = ResultSet.class;
-            Class[] paramTypes = new Class[] {
+            Class<?> rsClass = ResultSet.class;
+            Class<?>[] paramTypes = new Class[] {
                 Integer.TYPE
             };
             readMethods.put(TypesMapping.JAVA_LONG, rsClass.getMethod(
@@ -94,7 +94,7 @@ public class DefaultType extends AbstractType {
             readObjectMethod = rsClass.getMethod("getObject", paramTypes);
 
             // init procedure read methods
-            Class csClass = CallableStatement.class;
+            Class<?> csClass = CallableStatement.class;
             procReadMethods.put(TypesMapping.JAVA_LONG, csClass.getMethod(
                     "getLong",
                     paramTypes));
@@ -145,8 +145,10 @@ public class DefaultType extends AbstractType {
         }
     }
 
-    /** Returns an Iterator of supported default Java classes (as Strings) */
-    public static Iterator defaultTypes() {
+    /** 
+     * Returns an Iterator over the names of supported default Java classes.
+     */
+    public static Iterator<String> defaultTypes() {
         return readMethods.keySet().iterator();
     }
 

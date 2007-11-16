@@ -33,11 +33,11 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
         this.map = map;
     }
 
-    public ExtendedType getType(Class objectClass) {
+    public ExtendedType getType(Class<?> objectClass) {
 
         if (objectClass.isArray()) {
 
-            Class elementType = objectClass.getComponentType();
+            Class<?> elementType = objectClass.getComponentType();
 
             if (Character.class.isAssignableFrom(elementType)) {
                 // can't use "getRegisteredType" as it causes infinite recursion

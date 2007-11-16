@@ -30,7 +30,7 @@ import org.apache.cayenne.util.Util;
 class SubclassTypeFactory implements ExtendedTypeFactory {
 
     private ExtendedType type;
-    private Class javaClass;
+    private Class<?> javaClass;
 
     SubclassTypeFactory(ExtendedType type) {
         this.type = type;
@@ -50,7 +50,7 @@ class SubclassTypeFactory implements ExtendedTypeFactory {
         }
     }
 
-    public ExtendedType getType(Class objectClass) {
+    public ExtendedType getType(Class<?> objectClass) {
 
         if ((javaClass != null) && javaClass.isAssignableFrom(objectClass)) {
             return type;

@@ -31,5 +31,5 @@ public interface ExtendedTypeFactory {
      * Returns ExtendedType instance that can handle a given object class. May return null
      * indicating that the class can not be handled.
      */
-    ExtendedType getType(Class objectClass);
+    ExtendedType getType(Class<?> objectClass);
 }
