@@ -38,8 +38,8 @@ public class EJBQLTranslationContext {
 
     private Map tableAliases;
     private Map boundParameters;
-    private StringBuffer mainBuffer;
-    private StringBuffer currentBuffer;
+    private StringBuilder mainBuffer;
+    private StringBuilder currentBuffer;
     private EJBQLCompiledExpression compiledExpression;
     private Map attributes;
     private Map reusableJoins;
@@ -56,7 +56,7 @@ public class EJBQLTranslationContext {
     public EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression,
             Map parameters, EJBQLTranslatorFactory translatorFactory) {
         this.compiledExpression = compiledExpression;
-        this.mainBuffer = new StringBuffer();
+        this.mainBuffer = new StringBuilder();
         this.currentBuffer = mainBuffer;
         this.parameters = parameters;
         this.translatorFactory = translatorFactory;
@@ -128,7 +128,7 @@ public class EJBQLTranslationContext {
     }
 
     /**
-     * Inserts a marker in the SQL, mapped to a StringBuffer that can be later filled with
+     * Inserts a marker in the SQL, mapped to a StringBuilder that can be later filled with
      * content.
      */
     void markCurrentPosition(String marker) {
@@ -138,7 +138,7 @@ public class EJBQLTranslationContext {
         String internalMarker = (String) getAttribute(marker);
 
         // make sure we mark the main buffer
-        StringBuffer current = this.currentBuffer;
+        StringBuilder current = this.currentBuffer;
 
         try {
             switchToMainBuffer();
@@ -165,12 +165,12 @@ public class EJBQLTranslationContext {
         this.currentBuffer = this.mainBuffer;
     }
 
-    private StringBuffer findOrCreateMarkedBuffer(String marker) {
-        StringBuffer buffer;
+    private StringBuilder findOrCreateMarkedBuffer(String marker) {
+        StringBuilder buffer;
 
         String internalMarker = (String) getAttribute(marker);
         if (internalMarker == null) {
-            buffer = new StringBuffer();
+            buffer = new StringBuilder();
             internalMarker = bindParameter(buffer, "marker");
 
             // register mapping of internal to external marker
@@ -178,12 +178,12 @@ public class EJBQLTranslationContext {
         }
         else {
             Object object = boundParameters.get(internalMarker);
-            if (!(object instanceof StringBuffer)) {
+            if (!(object instanceof StringBuilder)) {
                 throw new IllegalArgumentException(
                         "Invalid or missing buffer for marker: " + marker);
             }
 
-            buffer = (StringBuffer) object;
+            buffer = (StringBuilder) object;
         }
 
         return buffer;
@@ -312,7 +312,7 @@ public class EJBQLTranslationContext {
             return tableName;
         }
 
-        StringBuffer keyBuffer = new StringBuffer();
+        StringBuilder keyBuffer = new StringBuilder();
 
         // per JPA spec, 4.4.2, "Identification variables are case insensitive.", while
         // relationship path is case-sensitive

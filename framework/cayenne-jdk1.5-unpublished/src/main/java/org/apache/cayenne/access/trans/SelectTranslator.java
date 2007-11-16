@@ -75,11 +75,11 @@ public class SelectTranslator extends QueryAssembler {
 
     final Map aliasLookup = new HashMap();
 
-    final List tableList = new ArrayList();
-    final List aliasList = new ArrayList();
-    final List dbRelList = new ArrayList();
+    final List<DbEntity> tableList = new ArrayList<DbEntity>();
+    final List<String> aliasList = new ArrayList<String>();
+    final List<DbRelationship> dbRelList = new ArrayList<DbRelationship>();
 
-    List resultColumns;
+    List<ColumnDescriptor> resultColumns;
     Map attributeOverrides;
     Map defaultAttributesByColumn;
 
@@ -114,7 +114,7 @@ public class SelectTranslator extends QueryAssembler {
         String orderByStr = orderingTranslator.doTranslation();
 
         // assemble
-        StringBuffer queryBuf = new StringBuffer();
+        StringBuilder queryBuf = new StringBuilder();
         queryBuf.append("SELECT ");
 
         // check if DISTINCT is appropriate
@@ -122,9 +122,8 @@ public class SelectTranslator extends QueryAssembler {
         if (forcingDistinct || getSelectQuery().isDistinct()) {
 
             suppressingDistinct = false;
-            Iterator it = resultColumns.iterator();
-            while (it.hasNext()) {
-                ColumnDescriptor column = (ColumnDescriptor) it.next();
+
+            for (ColumnDescriptor column : resultColumns) {
                 if (isUnsupportedForDistinct(column.getJdbcType())) {
                     suppressingDistinct = true;
                     break;
@@ -137,21 +136,18 @@ public class SelectTranslator extends QueryAssembler {
         }
 
         // convert ColumnDescriptors to column names
-        List selectColumnExpList = new ArrayList();
-
-        Iterator it = resultColumns.iterator();
-        while (it.hasNext()) {
-            ColumnDescriptor column = (ColumnDescriptor) it.next();
+        List<String> selectColumnExpList = new ArrayList<String>();
+        for (ColumnDescriptor column : resultColumns) {
             selectColumnExpList.add(column.getQualifiedColumnName());
         }
 
         // append any column expressions used in the order by if this query
         // uses the DISTINCT modifier
         if (forcingDistinct || getSelectQuery().isDistinct()) {
-            List orderByColumnList = orderingTranslator.getOrderByColumnList();
+            List<String> orderByColumnList = orderingTranslator.getOrderByColumnList();
             for (int i = 0; i < orderByColumnList.size(); i++) {
                 // Convert to ColumnDescriptors??
-                Object orderByColumnExp = orderByColumnList.get(i);
+                String orderByColumnExp = orderByColumnList.get(i);
                 if (!selectColumnExpList.contains(orderByColumnExp)) {
                     selectColumnExpList.add(orderByColumnExp);
                 }
@@ -254,14 +250,14 @@ public class SelectTranslator extends QueryAssembler {
         return (SelectQuery) getQuery();
     }
 
-    List buildResultColumns() {
+    List<ColumnDescriptor> buildResultColumns() {
 
         this.defaultAttributesByColumn = new HashMap();
 
         // create alias for root table
         newAliasForTable(getRootDbEntity());
 
-        List columns = new ArrayList();
+        List<ColumnDescriptor> columns = new ArrayList<ColumnDescriptor>();
         SelectQuery query = getSelectQuery();
 
         // for query with custom attributes use a different strategy
@@ -279,7 +275,9 @@ public class SelectTranslator extends QueryAssembler {
      * Appends columns needed for object SelectQuery to the provided columns list.
      */
     // TODO: this whole method screams REFACTORING!!!
-    List appendQueryColumns(final List columns, SelectQuery query) {
+    List<ColumnDescriptor> appendQueryColumns(
+            final List<ColumnDescriptor> columns,
+            SelectQuery query) {
 
         final Set attributes = new HashSet();
 
@@ -315,7 +313,6 @@ public class SelectTranslator extends QueryAssembler {
                     }
                     else if (pathPart instanceof DbAttribute) {
                         DbAttribute dbAttr = (DbAttribute) pathPart;
-
 
                         appendColumn(columns, oa, dbAttr, attributes, null);
                     }
@@ -537,7 +534,9 @@ public class SelectTranslator extends QueryAssembler {
     /**
      * Appends custom columns from SelectQuery to the provided list.
      */
-    List appendCustomColumns(List columns, SelectQuery query) {
+    List<ColumnDescriptor> appendCustomColumns(
+            List<ColumnDescriptor> columns,
+            SelectQuery query) {
 
         List<String> customAttributes = query.getCustomDbAttributes();
         DbEntity table = getRootDbEntity();
@@ -559,7 +558,7 @@ public class SelectTranslator extends QueryAssembler {
     }
 
     private void appendColumn(
-            List columns,
+            List<ColumnDescriptor> columns,
             ObjAttribute objAttribute,
             DbAttribute attribute,
             Set skipSet,
@@ -588,7 +587,7 @@ public class SelectTranslator extends QueryAssembler {
             for (int i = 0; i < columns.size(); i++) {
                 ColumnDescriptor column = (ColumnDescriptor) columns.get(i);
                 if (attribute.getName().equals(column.getName())) {
-                  
+
                     // kick out the original attribute
                     ObjAttribute original = (ObjAttribute) defaultAttributesByColumn
                             .remove(column);
@@ -597,7 +596,7 @@ public class SelectTranslator extends QueryAssembler {
                         if (attributeOverrides == null) {
                             attributeOverrides = new HashMap();
                         }
-                        
+
                         attributeOverrides.put(original, column);
                         column.setJavaClass(Void.TYPE.getName());
                     }
@@ -608,16 +607,16 @@ public class SelectTranslator extends QueryAssembler {
         }
     }
 
-    private void appendTable(StringBuffer queryBuf, int index) {
-        DbEntity ent = (DbEntity) tableList.get(index);
+    private void appendTable(StringBuilder queryBuf, int index) {
+        DbEntity ent = tableList.get(index);
         queryBuf.append(ent.getFullyQualifiedName());
         // The alias should be the alias from the same index in aliasList, not that
         // returned by aliasForTable.
         queryBuf.append(' ').append((String) aliasList.get(index));
     }
 
-    private void appendJoins(StringBuffer queryBuf, int index) {
-        DbRelationship rel = (DbRelationship) dbRelList.get(index);
+    private void appendJoins(StringBuilder queryBuf, int index) {
+        DbRelationship rel = dbRelList.get(index);
         String srcAlias = aliasForTable((DbEntity) rel.getSourceEntity());
         String targetAlias = (String) aliasLookup.get(rel);
 
@@ -661,7 +660,7 @@ public class SelectTranslator extends QueryAssembler {
     }
 
     /**
-     * Sets up and returns a new alias for a speciafied table.
+     * Sets up and returns a new alias for a specified table.
      */
     protected String newAliasForTable(DbEntity ent) {
         String newAlias = "t" + aliasCounter++;
@@ -686,15 +685,16 @@ public class SelectTranslator extends QueryAssembler {
             return (String) aliasList.get(entIndex);
         }
         else {
-            StringBuffer msg = new StringBuffer();
+            StringBuilder msg = new StringBuilder();
             msg.append("Alias not found, DbEntity: '").append(
                     ent != null ? ent.getName() : "<null entity>").append(
                     "'\nExisting aliases:");
 
             int len = aliasList.size();
             for (int i = 0; i < len; i++) {
-                String dbeName = (tableList.get(i) != null) ? ((DbEntity) tableList
-                        .get(i)).getName() : "<null entity>";
+                String dbeName = (tableList.get(i) != null)
+                        ? tableList.get(i).getName()
+                        : "<null entity>";
                 msg.append("\n").append(aliasList.get(i)).append(" => ").append(dbeName);
             }
 
