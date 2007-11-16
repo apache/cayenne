@@ -212,17 +212,6 @@ public class CayenneContextTest extends CayenneCase {
         Collection entities = Collections.singleton(dataMap);
         context.setEntityResolver(new EntityResolver(entities));
 
-        // an invalid class should blow
-        try {
-            context.newObject(Object.class);
-            fail("ClientObjectContext created an object that is not persistent.");
-        }
-        catch (CayenneRuntimeException e) {
-            // expected
-        }
-
-        // now try a good one... note that unlike 1.1 server side cayenne there is no
-        // entity checking performed; DataMap is not needed at this step
         Persistent object = context.newObject(MockPersistentObject.class);
         assertNotNull(object);
         assertTrue(object instanceof MockPersistentObject);

@@ -75,7 +75,7 @@ public class CayenneContext extends BaseContext {
     }
 
     /**
-     * Creates a new CayenneContext, initializaing it with a channel instance.
+     * Creates a new CayenneContext, initializing it with a channel instance.
      * CayenneContext created using this constructor WILL NOT broadcast graph change
      * events.
      */
@@ -84,7 +84,7 @@ public class CayenneContext extends BaseContext {
     }
 
     /**
-     * Creates a new CayenneContext, initializaing it with a channel. If
+     * Creates a new CayenneContext, initializing it with a channel. If
      * <code>graphEventsEnabled</code> is true, this context will broadcast GraphEvents
      * using ObjectContext.GRAPH_CHANGE_SUBJECT.
      */
@@ -302,7 +302,7 @@ public class CayenneContext extends BaseContext {
     /**
      * Creates and registers a new Persistent object instance.
      */
-    public Persistent newObject(Class persistentClass) {
+    public <T extends Persistent> T newObject(Class<T> persistentClass) {
         if (persistentClass == null) {
             throw new NullPointerException("Persistent class can't be null.");
         }
@@ -315,7 +315,7 @@ public class CayenneContext extends BaseContext {
 
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
                 entity.getName());
-        Persistent object = (Persistent) descriptor.createObject();
+        T object = (T) descriptor.createObject();
         registerNewObject(object, entity.getName(), descriptor);
         return object;
     }

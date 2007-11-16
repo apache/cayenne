@@ -117,7 +117,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
 
         assertEquals(4, objects.size());
 
-        Artist childNew = (Artist) childContext.newObject(Artist.class);
+        Artist childNew = childContext.newObject(Artist.class);
         childNew.setArtistName("NNN");
 
         Artist childModified = (Artist) objects.get(0);

@@ -37,12 +37,12 @@ public class ToManyListTest extends CayenneCase {
     }
 
     private ToManyList createForNewArtist() {
-        Artist artist = (Artist) context.newObject(Artist.class);
+        Artist artist = context.newObject(Artist.class);
         return new ToManyList(artist, Artist.PAINTING_ARRAY_PROPERTY);
     }
 
     private ToManyList createForExistingArtist() {
-        Artist artist = (Artist) context.newObject(Artist.class);
+        Artist artist = context.newObject(Artist.class);
         artist.setArtistName("aa");
         context.commitChanges();
         return new ToManyList(artist, Artist.PAINTING_ARRAY_PROPERTY);

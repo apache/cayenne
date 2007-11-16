@@ -114,7 +114,7 @@ public class DataContextBlobTest extends CayenneCase {
 
     protected void runWithBlobSize(int sizeBytes) throws Exception {
         // insert new clob
-        BlobTestEntity blobObj1 = (BlobTestEntity) ctxt.newObject(BlobTestEntity.class);
+        BlobTestEntity blobObj1 = ctxt.newObject(BlobTestEntity.class);
 
         // init BLOB of a specified size
         byte[] bytes = new byte[sizeBytes];

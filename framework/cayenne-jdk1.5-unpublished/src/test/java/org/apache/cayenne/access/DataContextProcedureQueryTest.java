@@ -333,12 +333,12 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     protected void createArtist(double paintingPrice) {
-        Artist a = (Artist) ctxt.newObject(Artist.class);
+        Artist a = ctxt.newObject(Artist.class);
         a.setArtistName("An Artist");
 
-        Painting p = (Painting) ctxt.newObject(Painting.class);
+        Painting p = ctxt.newObject(Painting.class);
         p.setPaintingTitle("A Painting");
-        // converting double to stringn prevents rounding weirdness...
+        // converting double to string prevents rounding weirdness...
         p.setEstimatedPrice(new BigDecimal("" + paintingPrice));
         a.addToPaintingArray(p);
 
