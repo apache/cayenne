@@ -41,7 +41,7 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
         this.map = map;
     }
 
-    public ExtendedType getType(Class objectClass) {
+    public ExtendedType getType(Class<?> objectClass) {
 
         if (Serializable.class.isAssignableFrom(objectClass)) {
 
@@ -71,9 +71,9 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
      */
     final class SerializableType extends ExtendedTypeDecorator {
 
-        private Class javaClass;
+        private Class<?> javaClass;
 
-        SerializableType(Class javaClass, ExtendedType bytesType) {
+        SerializableType(Class<?> javaClass, ExtendedType bytesType) {
             super(bytesType);
             this.javaClass = javaClass;
         }

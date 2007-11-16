@@ -37,11 +37,11 @@ import org.apache.cayenne.validation.ValidationResult;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class CalendarType implements ExtendedType {
+public class CalendarType<T extends Calendar> implements ExtendedType {
 
-    protected Class calendarClass;
+    protected Class<T> calendarClass;
 
-    public CalendarType(Class calendarClass) {
+    public CalendarType(Class<T> calendarClass) {
         if (calendarClass == null) {
             throw new IllegalArgumentException("Null calendar class");
         }
@@ -113,7 +113,7 @@ public class CalendarType implements ExtendedType {
                 val = rs.getTime(index);
                 break;
             default:
-                // here the driver can "surpirse" us
+                // here the driver can "surprise" us
                 // check the type of returned value...
                 Object object = rs.getObject(index);
 

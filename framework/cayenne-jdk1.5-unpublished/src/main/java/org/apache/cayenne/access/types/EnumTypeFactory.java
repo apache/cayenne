@@ -18,51 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
-import java.lang.reflect.Constructor;
-
-import org.apache.cayenne.util.Util;
-
 /**
- * ExtendedTypeFactory for handling JDK 1.5 Enums. Gracefully handles JDK 1.4 environment.
+ * ExtendedTypeFactory for handling JDK 1.5 Enums.
  * 
  * @since 3.0
  * @author Andrus Adamchik
  */
 class EnumTypeFactory implements ExtendedTypeFactory {
 
-    private Constructor enumTypeConstructor;
-
-    EnumTypeFactory() {
-
-        // see if we can support enums
-        try {
-            Class enumTypeClass = Util
-                    .getJavaClass("org.apache.cayenne.access.types.EnumType");
-            enumTypeConstructor = enumTypeClass.getConstructor(new Class[] {
-                Class.class
-            });
+    @SuppressWarnings("all")
+    public ExtendedType getType(Class<?> objectClass) {
+        
+        if(objectClass.isEnum()) {
+            return new EnumType(objectClass);
         }
-        catch (Throwable th) {
-            // no enums support... either Java 1.4 or Cayenne 1.5 extensions are absent
-        }
-    }
-
-    public ExtendedType getType(Class objectClass) {
-        if (enumTypeConstructor == null) {
-            return null;
-        }
-
-        try {
-            // load EnumType via reflection as the source has to stay JDK 1.4 compliant
-            ExtendedType type = (ExtendedType) enumTypeConstructor
-                    .newInstance(new Object[] {
-                        objectClass
-                    });
-
-            return type;
-        }
-        catch (Throwable th) {
-            // ignore exceptions...
+        else {
             return null;
         }
     }

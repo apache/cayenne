@@ -40,10 +40,10 @@ import org.apache.cayenne.util.Util;
 // and 1% write, so probably should use ConcurrentHashMap once we switch to Java 5.
 public class ExtendedTypeMap {
 
-    static final Map classesForPrimitives;
+    static final Map<String, String> classesForPrimitives;
 
     static {
-        classesForPrimitives = new HashMap();
+        classesForPrimitives = new HashMap<String, String>();
         classesForPrimitives.put("long", Long.class.getName());
         classesForPrimitives.put("double", Double.class.getName());
         classesForPrimitives.put("byte", Byte.class.getName());
@@ -53,21 +53,21 @@ public class ExtendedTypeMap {
         classesForPrimitives.put("int", Integer.class.getName());
     }
 
-    protected final Map typeMap;
+    protected final Map<String, ExtendedType> typeMap;
     protected DefaultType defaultType;
 
-    Collection extendedTypeFactories;
+    Collection<ExtendedTypeFactory> extendedTypeFactories;
 
     // standard type factories registered by Cayenne that are consulted after the user
     // factories.
-    Collection internalTypeFactories;
+    Collection<ExtendedTypeFactory> internalTypeFactories;
 
     /**
      * Creates new ExtendedTypeMap, populating it with default JDBC-compatible types. If
      * JDK version is at least 1.5, also loads support for enumerated types.
      */
     public ExtendedTypeMap() {
-        this.typeMap = new HashMap();
+        this.typeMap = new HashMap<String, ExtendedType>();
         this.defaultType = new DefaultType();
 
         initDefaultTypes();
@@ -82,9 +82,9 @@ public class ExtendedTypeMap {
         registerType(new VoidType());
 
         // register default types
-        Iterator it = DefaultType.defaultTypes();
+        Iterator<String> it = DefaultType.defaultTypes();
         while (it.hasNext()) {
-            registerType(new DefaultType((String) it.next()));
+            registerType(new DefaultType(it.next()));
         }
     }
 
@@ -95,7 +95,7 @@ public class ExtendedTypeMap {
      * @since 3.0
      */
     protected void initDefaultFactories() {
-        internalTypeFactories = new ArrayList(3);
+        internalTypeFactories = new ArrayList<ExtendedTypeFactory>(3);
         internalTypeFactories.add(new EnumTypeFactory());
         internalTypeFactories.add(new ByteOrCharArrayFactory(this));
 
@@ -109,7 +109,7 @@ public class ExtendedTypeMap {
      * 
      * @since 1.2
      */
-    public Collection getFactories() {
+    public Collection<ExtendedTypeFactory> getFactories() {
         return extendedTypeFactories != null ? Collections
                 .unmodifiableCollection(extendedTypeFactories) : Collections.EMPTY_SET;
     }
@@ -131,7 +131,7 @@ public class ExtendedTypeMap {
         }
 
         if (extendedTypeFactories == null) {
-            extendedTypeFactories = new ArrayList();
+            extendedTypeFactories = new ArrayList<ExtendedTypeFactory>();
         }
 
         extendedTypeFactories.add(factory);
@@ -192,7 +192,7 @@ public class ExtendedTypeMap {
      */
     public ExtendedType getRegisteredType(String javaClassName) {
 
-        String nonPrimitive = (String) classesForPrimitives.get(javaClassName);
+        String nonPrimitive = classesForPrimitives.get(javaClassName);
         if (nonPrimitive != null) {
             javaClassName = nonPrimitive;
         }
@@ -215,7 +215,7 @@ public class ExtendedTypeMap {
     }
 
     ExtendedType getExplictlyRegisteredType(String className) {
-        return (ExtendedType) typeMap.get(className);
+        return typeMap.get(className);
     }
 
     /**
@@ -223,7 +223,7 @@ public class ExtendedTypeMap {
      * default type. It is guaranteed that this method returns a non-null ExtendedType
      * instance.
      */
-    public ExtendedType getRegisteredType(Class javaClass) {
+    public ExtendedType getRegisteredType(Class<?> javaClass) {
         String name = null;
 
         if (javaClass.isArray()) {
@@ -249,13 +249,13 @@ public class ExtendedTypeMap {
      * Returns array of Java class names supported by Cayenne for JDBC mapping.
      */
     public String[] getRegisteredTypeNames() {
-        Set keys = typeMap.keySet();
+        Set<String> keys = typeMap.keySet();
         int len = keys.size();
         String[] types = new String[len];
 
-        Iterator it = keys.iterator();
+        Iterator<String> it = keys.iterator();
         for (int i = 0; i < len; i++) {
-            types[i] = (String) it.next();
+            types[i] = it.next();
         }
 
         return types;
@@ -285,7 +285,7 @@ public class ExtendedTypeMap {
             return null;
         }
 
-        Class typeClass;
+        Class<?> typeClass;
         try {
             typeClass = Util.getJavaClass(className);
         }
@@ -296,10 +296,7 @@ public class ExtendedTypeMap {
 
         // lookup in user factories first
         if (extendedTypeFactories != null) {
-
-            Iterator it = extendedTypeFactories.iterator();
-            while (it.hasNext()) {
-                ExtendedTypeFactory factory = (ExtendedTypeFactory) it.next();
+            for (ExtendedTypeFactory factory : extendedTypeFactories) {
 
                 ExtendedType type = factory.getType(typeClass);
                 if (type != null) {
@@ -310,10 +307,7 @@ public class ExtendedTypeMap {
 
         // lookup in internal factories
 
-        Iterator it = internalTypeFactories.iterator();
-        while (it.hasNext()) {
-            ExtendedTypeFactory factory = (ExtendedTypeFactory) it.next();
-
+        for (ExtendedTypeFactory factory : internalTypeFactories) {
             ExtendedType type = factory.getType(typeClass);
             if (type != null) {
                 return type;

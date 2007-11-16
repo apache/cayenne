@@ -39,12 +39,12 @@ import org.apache.cayenne.validation.ValidationResult;
  * @since 1.2
  * @author Andrus Adamchik
  */
-public class EnumType implements ExtendedType {
+public class EnumType<T extends Enum<T>> implements ExtendedType {
 
-    protected Class enumClass;
+    protected Class<T> enumClass;
     protected Object[] values;
 
-    public EnumType(Class enumClass) {
+    public EnumType(Class<T> enumClass) {
         if (enumClass == null) {
             throw new IllegalArgumentException("Null enum class");
         }
@@ -93,7 +93,7 @@ public class EnumType implements ExtendedType {
 
         if (value instanceof Enum) {
 
-            Enum e = (Enum) value;
+            Enum<?> e = (Enum<?>) value;
 
             if (TypesMapping.isNumeric(type)) {
                 statement.setInt(pos, e.ordinal());
