@@ -23,8 +23,7 @@ import org.apache.cayenne.DataObjectUtils;
 public class ExposedPkTest extends PojoContextCase {
 
     public void testGenerated() throws Exception {
-        ExposedPkEntity1 o1 = (ExposedPkEntity1) context
-                .newObject(ExposedPkEntity1.class);
+        ExposedPkEntity1 o1 = context.newObject(ExposedPkEntity1.class);
         o1.setName("a");
 
         assertEquals(0, o1.getPk());
