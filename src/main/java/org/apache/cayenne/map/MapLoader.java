@@ -79,8 +79,6 @@ public class MapLoader extends DefaultHandler {
     public static final String DB_ENTITY_TAG = "db-entity";
     public static final String OBJ_ENTITY_TAG = "obj-entity";
     public static final String DB_ATTRIBUTE_TAG = "db-attribute";
-    public static final String DB_ATTRIBUTE_DERIVED_TAG = "db-attribute-derived";
-    public static final String DB_ATTRIBUTE_REF_TAG = "db-attribute-ref";
     public static final String OBJ_ATTRIBUTE_TAG = "obj-attribute";
     public static final String OBJ_RELATIONSHIP_TAG = "obj-relationship";
     public static final String DB_RELATIONSHIP_TAG = "db-relationship";
@@ -131,16 +129,16 @@ public class MapLoader extends DefaultHandler {
     private String descending;
     private String ignoreCase;
 
-    private Map startTagOpMap;
-    private Map endTagOpMap;
+    private Map<String, StartClosure> startTagOpMap;
+    private Map<String, EndClosure> endTagOpMap;
     private String currentTag;
-    private StringBuffer charactersBuffer;
-    private Map mapProperties;
+    private StringBuilder charactersBuffer;
+    private Map<String, String> mapProperties;
 
     public MapLoader() {
         // compile tag processors.
-        startTagOpMap = new HashMap(40);
-        endTagOpMap = new HashMap(40);
+        startTagOpMap = new HashMap<String, StartClosure>(40);
+        endTagOpMap = new HashMap<String, EndClosure>(40);
 
         startTagOpMap.put(DB_ENTITY_TAG, new StartClosure() {
 
@@ -153,20 +151,6 @@ public class MapLoader extends DefaultHandler {
 
             void execute(Attributes attributes) throws SAXException {
                 processStartDbAttribute(attributes);
-            }
-        });
-
-        startTagOpMap.put(DB_ATTRIBUTE_DERIVED_TAG, new StartClosure() {
-
-            void execute(Attributes attributes) throws SAXException {
-                processStartDerivedDbAttribute(attributes);
-            }
-        });
-
-        startTagOpMap.put(DB_ATTRIBUTE_REF_TAG, new StartClosure() {
-
-            void execute(Attributes attributes) throws SAXException {
-                processStartDbAttributeRef(attributes);
             }
         });
 
@@ -264,7 +248,7 @@ public class MapLoader extends DefaultHandler {
         startTagOpMap.put(QUERY_SQL_TAG, new StartClosure() {
 
             void execute(Attributes attributes) throws SAXException {
-                charactersBuffer = new StringBuffer();
+                charactersBuffer = new StringBuilder();
                 processStartQuerySQL(attributes);
             }
         });
@@ -272,7 +256,7 @@ public class MapLoader extends DefaultHandler {
         startTagOpMap.put(QUERY_ORDERING_TAG, new StartClosure() {
 
             void execute(Attributes attributes) throws SAXException {
-                charactersBuffer = new StringBuffer();
+                charactersBuffer = new StringBuilder();
                 processStartQueryOrdering(attributes);
             }
         });
@@ -353,7 +337,7 @@ public class MapLoader extends DefaultHandler {
         StartClosure resetBuffer = new StartClosure() {
 
             void execute(Attributes attributes) throws SAXException {
-                charactersBuffer = new StringBuffer();
+                charactersBuffer = new StringBuilder();
             }
         };
 
@@ -400,13 +384,7 @@ public class MapLoader extends DefaultHandler {
                 processEndDbAttribute();
             }
         });
-
-        endTagOpMap.put(DB_ATTRIBUTE_DERIVED_TAG, new EndClosure() {
-
-            void execute() throws SAXException {
-                processEndDbAttribute();
-            }
-        });
+        
         endTagOpMap.put(DB_RELATIONSHIP_TAG, new EndClosure() {
 
             void execute() throws SAXException {
@@ -682,7 +660,7 @@ public class MapLoader extends DefaultHandler {
 
         rememberCurrentTag(localName);
 
-        StartClosure op = (StartClosure) startTagOpMap.get(localName);
+        StartClosure op = startTagOpMap.get(localName);
         if (op != null) {
             op.execute(attributes);
         }
@@ -691,7 +669,7 @@ public class MapLoader extends DefaultHandler {
     public void endElement(String namespaceURI, String localName, String qName)
             throws SAXException {
 
-        EndClosure op = (EndClosure) endTagOpMap.get(localName);
+        EndClosure op = endTagOpMap.get(localName);
         if (op != null) {
             op.execute();
         }
@@ -734,39 +712,12 @@ public class MapLoader extends DefaultHandler {
 
     private void processStartDbEntity(Attributes atts) {
         String name = atts.getValue("", "name");
-        String parentName = atts.getValue("", "parentName");
 
-        if (parentName != null) {
-            dbEntity = new DerivedDbEntity(name);
-            ((DerivedDbEntity) dbEntity).setParentEntityName(parentName);
-        }
-        else {
-            dbEntity = new DbEntity(name);
-        }
-
-        if (!(dbEntity instanceof DerivedDbEntity)) {
-            dbEntity.setSchema(atts.getValue("", "schema"));
-            dbEntity.setCatalog(atts.getValue("", "catalog"));
-        }
+        dbEntity = new DbEntity(name);
+        dbEntity.setSchema(atts.getValue("", "schema"));
+        dbEntity.setCatalog(atts.getValue("", "catalog"));
 
         dataMap.addDbEntity(dbEntity);
-    }
-
-    private void processStartDbAttributeRef(Attributes atts) throws SAXException {
-        String name = atts.getValue("", "name");
-        if ((attrib instanceof DerivedDbAttribute)
-                && (dbEntity instanceof DerivedDbEntity)) {
-            DbEntity parent = ((DerivedDbEntity) dbEntity).getParentEntity();
-            DbAttribute ref = (DbAttribute) parent.getAttribute(name);
-            ((DerivedDbAttribute) attrib).addParam(ref);
-        }
-        else {
-            throw new SAXException(
-                    "Referenced attributes are not supported by regular DbAttributes. "
-                            + " Offending attribute name '"
-                            + attrib.getName()
-                            + "'.");
-        }
     }
 
     private void processStartDbAttribute(Attributes atts) {
@@ -801,52 +752,6 @@ public class MapLoader extends DefaultHandler {
         attrib.setPrimaryKey(TRUE.equalsIgnoreCase(atts.getValue("", "isPrimaryKey")));
         attrib.setMandatory(TRUE.equalsIgnoreCase(atts.getValue("", "isMandatory")));
         attrib.setGenerated(TRUE.equalsIgnoreCase(atts.getValue("", "isGenerated")));
-    }
-
-    private void processStartDerivedDbAttribute(Attributes atts) {
-        String name = atts.getValue("", "name");
-        String type = atts.getValue("", "type");
-        String spec = atts.getValue("", "spec");
-
-        attrib = new DerivedDbAttribute(name);
-        attrib.setType(TypesMapping.getSqlTypeByName(type));
-        ((DerivedDbAttribute) attrib).setExpressionSpec(spec);
-        dbEntity.addAttribute(attrib);
-
-        String length = atts.getValue("", "length");
-        if (length != null) {
-            attrib.setMaxLength(Integer.parseInt(length));
-        }
-
-        // this is an obsolete 1.2 'precision' attribute that really meant 'scale'
-        String pseudoPrecision = atts.getValue("", "precision");
-        if (pseudoPrecision != null) {
-            attrib.setScale(Integer.parseInt(pseudoPrecision));
-        }
-
-        String precision = atts.getValue("", "attributePrecision");
-        if (precision != null) {
-            attrib.setAttributePrecision(Integer.parseInt(precision));
-        }
-
-        String scale = atts.getValue("", "scale");
-        if (scale != null) {
-            attrib.setScale(Integer.parseInt(scale));
-        }
-
-        String temp = atts.getValue("", "isPrimaryKey");
-        if (temp != null && temp.equalsIgnoreCase(TRUE)) {
-            attrib.setPrimaryKey(true);
-        }
-        temp = atts.getValue("", "isMandatory");
-        if (temp != null && temp.equalsIgnoreCase(TRUE)) {
-            attrib.setMandatory(true);
-        }
-
-        temp = atts.getValue("", "isGroupBy");
-        if (temp != null && temp.equalsIgnoreCase(TRUE)) {
-            ((DerivedDbAttribute) attrib).setGroupBy(true);
-        }
     }
 
     private void processStartDbKeyGenerator(Attributes atts) {
@@ -1145,7 +1050,7 @@ public class MapLoader extends DefaultHandler {
         }
 
         if (mapProperties == null) {
-            mapProperties = new TreeMap();
+            mapProperties = new TreeMap<String, String>();
         }
 
         mapProperties.put(name, value);

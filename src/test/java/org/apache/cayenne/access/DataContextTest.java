@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.art.Artist;
-import org.apache.art.ArtistAssets;
 import org.apache.art.Exhibit;
 import org.apache.art.Painting;
 import org.apache.art.ROArtist;
@@ -166,56 +165,6 @@ public class DataContextTest extends DataContextCase {
         List results = context.performQuery(q);
 
         assertEquals(2, results.size());
-    }
-
-    /**
-     * Test fetching a derived entity.
-     */
-    public void testDerivedEntityFetch1() throws Exception {
-
-        // some DBs don't support HAVING
-        if (!getAccessStackAdapter().supportsHaving()) {
-            return;
-        }
-
-        createTestData("testPaintings");
-
-        SelectQuery q = new SelectQuery("ArtistAssets");
-        q
-                .setQualifier(ExpressionFactory.matchExp(
-                        "estimatedPrice",
-                        new BigDecimal(1000d)));
-
-        List results = context.performQuery(q);
-        assertEquals(1, results.size());
-        ArtistAssets a1 = (ArtistAssets) results.get(0);
-        assertEquals(1, a1.getPaintingsCount().intValue());
-    }
-
-    /**
-     * Test fetching a derived entity with complex qualifier including relationships.
-     */
-    public void testDerivedEntityFetch2() throws Exception {
-        // some DBs don't support HAVING
-        if (!getAccessStackAdapter().supportsHaving()) {
-            return;
-        }
-
-        createTestData("testPaintings");
-
-        SelectQuery q = new SelectQuery("ArtistAssets");
-        q.setParentObjEntityName("Painting");
-        q
-                .andQualifier(ExpressionFactory.matchExp(
-                        "estimatedPrice",
-                        new BigDecimal(1000d)));
-        q
-                .andParentQualifier(ExpressionFactory.matchExp(
-                        "toArtist.artistName",
-                        "artist1"));
-
-        ArtistAssets a1 = (ArtistAssets) context.performQuery(q).get(0);
-        assertEquals(1, a1.getPaintingsCount().intValue());
     }
 
     public void testSelectDate() throws Exception {

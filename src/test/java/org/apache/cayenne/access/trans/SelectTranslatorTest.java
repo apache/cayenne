@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.trans;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -27,11 +26,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.art.Artist;
-import org.apache.art.ArtistAssets;
 import org.apache.art.ArtistExhibit;
 import org.apache.art.CompoundPainting;
 import org.apache.art.Painting;
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
@@ -91,88 +88,6 @@ public class SelectTranslatorTest extends CayenneCase {
                 // do some simple assertions to make sure all parts are in
                 assertNotNull(generatedSql);
                 assertTrue(generatedSql.startsWith("SELECT DISTINCT"));
-            }
-        };
-
-        test.test(q);
-    }
-
-    /**
-     * Tests query creation with relationship from derived entity.
-     */
-    public void testCreateSqlString3() throws Exception {
-        ObjectId id = new ObjectId("Artist", "ARTIST_ID", 35);
-        Artist a1 = (Artist) createDataContext().localObject(id, null);
-
-        // query with qualifier and ordering
-        SelectQuery q = new SelectQuery(ArtistAssets.class, ExpressionFactory.matchExp(
-                "toArtist",
-                a1));
-
-        Template test = new Template() {
-
-            void test(SelectTranslator transl) throws Exception {
-                String sql = transl.createSqlString();
-
-                // do some simple assertions to make sure all parts are in
-                assertNotNull(sql);
-                assertTrue(sql.startsWith("SELECT "));
-                assertTrue(sql.indexOf(" FROM ") > 0);
-
-                // no WHERE clause
-                assertTrue(sql.indexOf(" WHERE ") < 0);
-
-                assertTrue(sql.indexOf(" GROUP BY ") > 0);
-                assertTrue(sql.indexOf("ARTIST_ID =") > 0);
-                assertTrue(sql.indexOf("ARTIST_ID =") > sql.indexOf(" GROUP BY "));
-            }
-        };
-
-        test.test(q);
-    }
-
-    /**
-     * Tests query creation with relationship from derived entity.
-     */
-    public void testCreateSqlString4() throws Exception {
-        // query with qualifier and ordering
-        SelectQuery q = new SelectQuery(ArtistAssets.class);
-        q.setParentObjEntityName("Painting");
-        q.setParentQualifier(ExpressionFactory.matchExp("toArtist.artistName", "abc"));
-        q.andParentQualifier(ExpressionFactory.greaterOrEqualExp(
-                "estimatedPrice",
-                new BigDecimal(1d)));
-        q.setQualifier(ExpressionFactory.matchExp("estimatedPrice", new BigDecimal(3d)));
-
-        Template test = new Template() {
-
-            void test(SelectTranslator transl) throws Exception {
-                String sql = transl.createSqlString();
-
-                // do some simple assertions to make sure all parts are in
-                assertNotNull(sql);
-                assertTrue(sql.startsWith("SELECT "));
-                assertTrue(sql.indexOf(" FROM ") > 0);
-
-                // no WHERE clause
-                assertTrue("WHERE clause is expected: " + sql, sql.indexOf(" WHERE ") > 0);
-                assertTrue("WHERE clause must have estimated price: " + sql, sql
-                        .indexOf("ESTIMATED_PRICE >=") > 0);
-
-                assertTrue("GROUP BY clause is expected:" + sql, sql
-                        .indexOf(" GROUP BY ") > 0);
-                assertTrue("HAVING clause is expected", sql.indexOf(" HAVING ") > 0);
-                assertTrue(sql.indexOf("ARTIST_ID =") > 0);
-                assertTrue("Relationship join must be in WHERE: " + sql, sql
-                        .indexOf("ARTIST_ID =") > sql.indexOf(" WHERE "));
-                assertTrue("Relationship join must be in WHERE: " + sql, sql
-                        .indexOf("ARTIST_ID =") < sql.indexOf(" GROUP BY "));
-                assertTrue("Qualifier for related entity must be in WHERE: " + sql, sql
-                        .indexOf("ARTIST_NAME") > sql.indexOf(" WHERE "));
-                assertTrue("Qualifier for related entity must be in WHERE: " + sql, sql
-                        .indexOf("ARTIST_NAME") < sql.indexOf(" GROUP BY "));
-                assertTrue("WHERE clause must have estimated price: " + sql, sql
-                        .indexOf("ESTIMATED_PRICE >=") < sql.indexOf(" GROUP BY "));
             }
         };
 

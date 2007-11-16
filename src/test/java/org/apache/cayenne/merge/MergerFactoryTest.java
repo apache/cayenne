@@ -32,7 +32,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class MergerFactoryTest extends CayenneCase {
@@ -243,10 +242,6 @@ public class MergerFactoryTest extends CayenneCase {
 
         for (Iterator it = map.getDbEntities().iterator(); it.hasNext();) {
             DbEntity ent = (DbEntity) it.next();
-
-            if (ent instanceof DerivedDbEntity) {
-                continue;
-            }
 
             if (excludeBinPK) {
                 boolean skip = false;

@@ -29,7 +29,6 @@ import java.util.Map;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
@@ -139,12 +138,6 @@ public class DataPort {
         while (it.hasNext()) {
             DbEntity entity = (DbEntity) it.next();
 
-            // skip derived DbEntities. Should we consult delegate ?
-            // Using derived entities may allow things like materialized views....
-            if (entity instanceof DerivedDbEntity) {
-                continue;
-            }
-
             Query query = new SQLTemplate(entity, "DELETE FROM "
                     + entity.getFullyQualifiedName());
 
@@ -196,11 +189,6 @@ public class DataPort {
             insertObserver.clear();
 
             DbEntity entity = (DbEntity) it.next();
-
-            // skip derived DbEntities...
-            if (entity instanceof DerivedDbEntity) {
-                continue;
-            }
 
             SelectQuery select = new SelectQuery(entity);
             select.setFetchingDataRows(true);

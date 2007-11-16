@@ -41,7 +41,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -85,10 +84,6 @@ public abstract class AbstractAccessStack {
             List filtered = new ArrayList();
             while (it.hasNext()) {
                 DbEntity ent = (DbEntity) it.next();
-
-                if (ent instanceof DerivedDbEntity) {
-                    continue;
-                }
 
                 // check for LOB attributes
                 if (excludeLOB) {
@@ -158,9 +153,6 @@ public abstract class AbstractAccessStack {
             ListIterator it = list.listIterator(list.size());
             while (it.hasPrevious()) {
                 DbEntity ent = (DbEntity) it.previous();
-                if (ent instanceof DerivedDbEntity) {
-                    continue;
-                }
 
                 String deleteSql = "DELETE FROM " + ent.getName();
 
@@ -241,16 +233,6 @@ public abstract class AbstractAccessStack {
 
     protected void createPKSupport(DataNode node, DataMap map) throws Exception {
         List filteredEntities = dbEntitiesInInsertOrder(node, map);
-
-        // remove derived...
-        Iterator it = filteredEntities.iterator();
-        while (it.hasNext()) {
-            DbEntity e = (DbEntity) it.next();
-            if (e instanceof DerivedDbEntity) {
-                it.remove();
-            }
-        }
-
         node.getAdapter().getPkGenerator().createAutoPk(node, filteredEntities);
     }
 
@@ -287,10 +269,6 @@ public abstract class AbstractAccessStack {
         Iterator it = orderedEnts.iterator();
         while (it.hasNext()) {
             DbEntity ent = (DbEntity) it.next();
-            if (ent instanceof DerivedDbEntity) {
-                continue;
-            }
-
             queries.add(adapter.createTable(ent));
         }
 
@@ -299,8 +277,7 @@ public abstract class AbstractAccessStack {
         it = orderedEnts.iterator();
         while (it.hasNext()) {
             DbEntity ent = (DbEntity) it.next();
-            if (ent instanceof DerivedDbEntity
-                    || !getAdapter(node).supportsFKConstraints(ent)) {
+            if (!getAdapter(node).supportsFKConstraints(ent)) {
                 continue;
             }
 

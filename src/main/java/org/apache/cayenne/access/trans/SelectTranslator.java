@@ -37,7 +37,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -81,7 +80,6 @@ public class SelectTranslator extends QueryAssembler {
     final List dbRelList = new ArrayList();
 
     List resultColumns;
-    List groupByList;
     Map attributeOverrides;
     Map defaultAttributesByColumn;
 
@@ -108,22 +106,8 @@ public class SelectTranslator extends QueryAssembler {
 
         QualifierTranslator tr = adapter.getQualifierTranslator(this);
 
-        // build parent qualifier
-        // Parent qualifier translation must PRECEED main qualifier
-        // since it will be appended first and its parameters must
-        // go first as well
-        String parentQualifierStr = null;
-        if (getSelectQuery().isQualifiedOnParent()) {
-            tr.setTranslateParentQual(true);
-            parentQualifierStr = tr.doTranslation();
-        }
-
-        // build main qualifier
-        tr.setTranslateParentQual(false);
+        // build qualifier
         String qualifierStr = tr.doTranslation();
-
-        // build GROUP BY
-        this.groupByList = buildGroupByList();
 
         // build ORDER BY
         OrderingTranslator orderingTranslator = new OrderingTranslator(this);
@@ -208,52 +192,17 @@ public class SelectTranslator extends QueryAssembler {
             }
         }
 
-        // append parent qualifier if any
-        if (parentQualifierStr != null) {
+        // append qualifier
+        if (qualifierStr != null) {
             if (hasWhere) {
                 queryBuf.append(" AND (");
-                queryBuf.append(parentQualifierStr);
+                queryBuf.append(qualifierStr);
                 queryBuf.append(")");
             }
             else {
                 hasWhere = true;
                 queryBuf.append(" WHERE ");
-                queryBuf.append(parentQualifierStr);
-            }
-        }
-
-        // append group by
-        boolean hasGroupBy = false;
-        if (groupByList != null) {
-            int groupByCount = groupByList.size();
-            if (groupByCount > 0) {
-                hasGroupBy = true;
-                queryBuf.append(" GROUP BY ");
-                appendGroupBy(queryBuf, 0);
-                for (int i = 1; i < groupByCount; i++) {
-                    queryBuf.append(", ");
-                    appendGroupBy(queryBuf, i);
-                }
-            }
-        }
-
-        // append qualifier
-        if (qualifierStr != null) {
-            if (hasGroupBy) {
-                queryBuf.append(" HAVING ");
                 queryBuf.append(qualifierStr);
-            }
-            else {
-                if (hasWhere) {
-                    queryBuf.append(" AND (");
-                    queryBuf.append(qualifierStr);
-                    queryBuf.append(")");
-                }
-                else {
-                    hasWhere = true;
-                    queryBuf.append(" WHERE ");
-                    queryBuf.append(qualifierStr);
-                }
             }
         }
 
@@ -303,15 +252,6 @@ public class SelectTranslator extends QueryAssembler {
 
     private SelectQuery getSelectQuery() {
         return (SelectQuery) getQuery();
-    }
-
-    /**
-     * Creates a list of columns used in the query's GROUP BY clause.
-     */
-    private List buildGroupByList() {
-        DbEntity dbEntity = getRootDbEntity();
-        return (dbEntity instanceof DerivedDbEntity) ? ((DerivedDbEntity) dbEntity)
-                .getGroupByAttributes() : Collections.EMPTY_LIST;
     }
 
     List buildResultColumns() {
@@ -668,12 +608,6 @@ public class SelectTranslator extends QueryAssembler {
         }
     }
 
-    private void appendGroupBy(StringBuffer queryBuf, int index) {
-        DbAttribute column = (DbAttribute) groupByList.get(index);
-        String alias = aliasForTable((DbEntity) column.getEntity());
-        queryBuf.append(column.getAliasedName(alias));
-    }
-
     private void appendTable(StringBuffer queryBuf, int index) {
         DbEntity ent = (DbEntity) tableList.get(index);
         queryBuf.append(ent.getFullyQualifiedName());
@@ -730,10 +664,6 @@ public class SelectTranslator extends QueryAssembler {
      * Sets up and returns a new alias for a speciafied table.
      */
     protected String newAliasForTable(DbEntity ent) {
-        if (ent instanceof DerivedDbEntity) {
-            ent = ((DerivedDbEntity) ent).getParentEntity();
-        }
-
         String newAlias = "t" + aliasCounter++;
         tableList.add(ent);
         aliasList.add(newAlias);
@@ -750,9 +680,6 @@ public class SelectTranslator extends QueryAssembler {
      * FROM clause).
      */
     public String aliasForTable(DbEntity ent) {
-        if (ent instanceof DerivedDbEntity) {
-            ent = ((DerivedDbEntity) ent).getParentEntity();
-        }
 
         int entIndex = tableList.indexOf(ent);
         if (entIndex >= 0) {

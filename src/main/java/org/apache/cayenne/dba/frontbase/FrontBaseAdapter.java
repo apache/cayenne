@@ -30,7 +30,6 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -87,14 +86,6 @@ public class FrontBaseAdapter extends JdbcAdapter {
      * Customizes table creating procedure for FrontBase.
      */
     public String createTable(DbEntity ent) {
-
-        // later we may support view creation
-        // for derived DbEntities
-        if (ent instanceof DerivedDbEntity) {
-            throw new CayenneRuntimeException("Can't create table for derived DbEntity '"
-                    + ent.getName()
-                    + "'.");
-        }
 
         StringBuffer buf = new StringBuffer();
         buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");

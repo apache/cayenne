@@ -33,7 +33,6 @@ import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbEntity;
 
 /**
  * @author <a href="mailto:mkienenb@alaska.net">Mike Kienenberger</a>
@@ -159,10 +158,6 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     }
 
     protected boolean canCreatePK(DbEntity entity) {
-        if (entity instanceof DerivedDbEntity) {
-            return false;
-        }
-
         List pk = entity.getPrimaryKey();
         if (pk == null || pk.size() == 0) {
             return false;

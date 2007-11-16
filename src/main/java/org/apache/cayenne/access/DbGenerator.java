@@ -44,7 +44,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.apache.commons.logging.Log;
@@ -527,11 +526,6 @@ public class DbGenerator {
             DbEntity nextEntity = (DbEntity) it.next();
 
             // do sanity checks...
-
-            // derived DbEntities are not included in generated SQL
-            if (nextEntity instanceof DerivedDbEntity) {
-                continue;
-            }
 
             // tables with no columns are not included
             if (nextEntity.getAttributes().size() == 0) {
