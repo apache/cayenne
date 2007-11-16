@@ -151,10 +151,8 @@ public class DeleteRulesTest extends RelationshipCase {
         int oldRule = changeDeleteRule(DeleteRule.CASCADE);
 
         try {
-            DeleteRuleFlatA a = (DeleteRuleFlatA) context
-                    .newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = (DeleteRuleFlatB) context
-                    .newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
             context.commitChanges();
 
@@ -179,10 +177,8 @@ public class DeleteRulesTest extends RelationshipCase {
         ObjRelationship reverse = unsetReverse();
 
         try {
-            DeleteRuleFlatA a = (DeleteRuleFlatA) context
-                    .newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = (DeleteRuleFlatB) context
-                    .newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
             context.commitChanges();
 
@@ -206,10 +202,8 @@ public class DeleteRulesTest extends RelationshipCase {
         int oldRule = changeDeleteRule(DeleteRule.NULLIFY);
 
         try {
-            DeleteRuleFlatA a = (DeleteRuleFlatA) context
-                    .newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = (DeleteRuleFlatB) context
-                    .newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
             context.commitChanges();
 
@@ -234,10 +228,8 @@ public class DeleteRulesTest extends RelationshipCase {
         ObjRelationship reverse = unsetReverse();
 
         try {
-            DeleteRuleFlatA a = (DeleteRuleFlatA) context
-                    .newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = (DeleteRuleFlatB) context
-                    .newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
             context.commitChanges();
 
@@ -261,10 +253,8 @@ public class DeleteRulesTest extends RelationshipCase {
         int oldRule = changeDeleteRule(DeleteRule.DENY);
 
         try {
-            DeleteRuleFlatA a = (DeleteRuleFlatA) context
-                    .newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = (DeleteRuleFlatB) context
-                    .newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
             context.commitChanges();
 
@@ -288,10 +278,8 @@ public class DeleteRulesTest extends RelationshipCase {
         ObjRelationship reverse = unsetReverse();
 
         try {
-            DeleteRuleFlatA a = (DeleteRuleFlatA) context
-                    .newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = (DeleteRuleFlatB) context
-                    .newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
             context.commitChanges();
 

@@ -78,10 +78,10 @@ public interface ObjectContext extends Serializable {
     Persistent localObject(ObjectId id, Object prototype);
 
     /**
-     * Creates a new persistent object scheduled to be inserted to the database on next
-     * commit.
+     * Creates a new persistent object of a given class scheduled to be inserted to the
+     * database on next commit.
      */
-    Persistent newObject(Class persistentClass);
+    <T extends Persistent> T newObject(Class<T> persistentClass);
 
     /**
      * Registers a transient object with the context. The difference with

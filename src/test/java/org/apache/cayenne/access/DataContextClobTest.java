@@ -108,7 +108,7 @@ public class DataContextClobTest extends CayenneCase {
 
     protected void runWithClobSize(int sizeBytes) throws Exception {
         // insert new clob
-        ClobTestEntity clobObj1 = (ClobTestEntity) ctxt.newObject(ClobTestEntity.class);
+        ClobTestEntity clobObj1 = ctxt.newObject(ClobTestEntity.class);
 
         // init CLOB of a specified size
         if (sizeBytes == 0) {

@@ -726,7 +726,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
-    public Persistent newObject(Class persistentClass) {
+    public <T extends Persistent> T newObject(Class<T> persistentClass) {
         if (persistentClass == null) {
             throw new NullPointerException("Null 'persistentClass'");
         }
@@ -737,7 +737,7 @@ public class DataContext extends BaseContext implements DataChannel {
                     + persistentClass.getName());
         }
 
-        return newObject(entity.getName());
+        return (T) newObject(entity.getName());
     }
 
     /**

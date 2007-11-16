@@ -49,10 +49,10 @@ public class CAY_788Test extends SelectQueryBase {
     protected void populateTables() throws Exception {
         DataContext ctxt = createDataContext();
         for (int i = 0; i < 10; i++) {
-            Painting p = (Painting) ctxt.newObject(Painting.class);
+            Painting p = ctxt.newObject(Painting.class);
             p.setPaintingTitle("Painting title #" + i);
             p.setPaintingDescription("Painting desc #" + i);
-            PaintingInfo pi = (PaintingInfo) ctxt.newObject(PaintingInfo.class);
+            PaintingInfo pi = ctxt.newObject(PaintingInfo.class);
             pi.setTextReview("Review #" + i);
             p.setToPaintingInfo(pi);
         }

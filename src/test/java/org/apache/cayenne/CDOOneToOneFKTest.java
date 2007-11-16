@@ -70,7 +70,7 @@ public class CDOOneToOneFKTest extends RelationshipCase {
     }
 
     public void test2Null() throws Exception {
-        ToOneFK2 src = (ToOneFK2) context.newObject(ToOneFK2.class);
+        ToOneFK2 src = context.newObject(ToOneFK2.class);
         context.commitChanges();
         context = createDataContext();
 
@@ -82,7 +82,7 @@ public class CDOOneToOneFKTest extends RelationshipCase {
     }
 
     public void testReplaceNull1() throws Exception {
-        ToOneFK2 src = (ToOneFK2) context.newObject(ToOneFK2.class);
+        ToOneFK2 src = context.newObject(ToOneFK2.class);
         context.commitChanges();
         context = createDataContext();
 
@@ -96,10 +96,10 @@ public class CDOOneToOneFKTest extends RelationshipCase {
     }
 
     public void testReplaceNull2() throws Exception {
-        ToOneFK2 src = (ToOneFK2) context.newObject(ToOneFK2.class);
+        ToOneFK2 src = context.newObject(ToOneFK2.class);
         context.commitChanges();
 
-        ToOneFK1 target = (ToOneFK1) context.newObject(ToOneFK1.class);
+        ToOneFK1 target = context.newObject(ToOneFK1.class);
 
         // *** TESTING THIS ***
         src.setToOneToFK(target);
@@ -120,8 +120,8 @@ public class CDOOneToOneFKTest extends RelationshipCase {
     }
 
     public void testNewAdd() throws Exception {
-        ToOneFK2 src = (ToOneFK2) context.newObject(ToOneFK2.class);
-        ToOneFK1 target = (ToOneFK1) context.newObject(ToOneFK1.class);
+        ToOneFK2 src = context.newObject(ToOneFK2.class);
+        ToOneFK1 target = context.newObject(ToOneFK1.class);
 
         // *** TESTING THIS ***
         src.setToOneToFK(target);

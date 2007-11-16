@@ -37,36 +37,36 @@ public class DataContextEJBQLConditionsPeopleTest extends PeopleCase {
         deleteTestData();
 
         ObjectContext context = createDataContext();
-        Department d1 = (Department) context.newObject(Department.class);
+        Department d1 = context.newObject(Department.class);
         d1.setName("d1");
 
-        Department d2 = (Department) context.newObject(Department.class);
+        Department d2 = context.newObject(Department.class);
         d2.setName("d2");
 
-        Department d3 = (Department) context.newObject(Department.class);
+        Department d3 = context.newObject(Department.class);
         d3.setName("d3");
 
         context.commitChanges();
 
-        Manager m1 = (Manager) context.newObject(Manager.class);
+        Manager m1 = context.newObject(Manager.class);
         m1.setName("m1");
         m1.setPersonType("EM");
 
-        Manager m2 = (Manager) context.newObject(Manager.class);
+        Manager m2 = context.newObject(Manager.class);
         m2.setName("m2");
         m2.setPersonType("EM");
 
-        Manager m3 = (Manager) context.newObject(Manager.class);
+        Manager m3 = context.newObject(Manager.class);
         m3.setName("m3");
         m3.setPersonType("EM");
 
-        Address a1 = (Address) context.newObject(Address.class);
+        Address a1 = context.newObject(Address.class);
         m1.addToAddresses(a1);
 
-        Address a2 = (Address) context.newObject(Address.class);
+        Address a2 = context.newObject(Address.class);
         m2.addToAddresses(a2);
 
-        Address a3 = (Address) context.newObject(Address.class);
+        Address a3 = context.newObject(Address.class);
         m3.addToAddresses(a3);
 
         d1.addToEmployees(m1);
