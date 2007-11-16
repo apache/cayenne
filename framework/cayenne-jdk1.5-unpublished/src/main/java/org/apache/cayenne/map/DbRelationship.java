@@ -99,7 +99,7 @@ public class DbRelationship extends Relationship {
 
     /**
      * Returns a target of this relationship. If relationship is not attached to a
-     * DbEntity, and DbEntity doesn't have a namcespace, and exception is thrown.
+     * DbEntity, and DbEntity doesn't have a namespace, and exception is thrown.
      */
     public Entity getTargetEntity() {
         String targetName = getTargetEntityName();
