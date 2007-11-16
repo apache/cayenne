@@ -186,7 +186,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
 
         String template = "SELECT * FROM PAINTING "
                 + "WHERE #bindObjectEqual($a) ORDER BY PAINTING_ID";
@@ -206,7 +206,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
 
         String template = "SELECT * FROM PAINTING "
                 + "WHERE #bindObjectNotEqual($a) ORDER BY PAINTING_ID";
@@ -229,7 +229,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
@@ -249,7 +249,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' ) ORDER BY PAINTING_ID";
@@ -287,7 +287,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
 
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";

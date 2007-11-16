@@ -59,7 +59,7 @@ public abstract class BaseContext implements ObjectContext {
 
     public abstract Collection modifiedObjects();
 
-    public abstract <T extends Persistent> T newObject(Class<T> persistentClass);
+    public abstract <T> T newObject(Class<T> persistentClass);
 
     public abstract void registerNewObject(Object object);
 

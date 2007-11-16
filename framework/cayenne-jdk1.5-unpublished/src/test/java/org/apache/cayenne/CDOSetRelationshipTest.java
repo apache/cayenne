@@ -96,7 +96,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     public void testAddToMany() throws Exception {
         createTestData("prepare");
 
-        SetToMany o1 = (SetToMany) DataObjectUtils.objectForPK(
+        SetToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 SetToMany.class,
                 1);
@@ -148,7 +148,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     public void testAddToManyViaReverse() throws Exception {
         createTestData("prepare");
 
-        SetToMany o1 = (SetToMany) DataObjectUtils.objectForPK(
+        SetToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 SetToMany.class,
                 1);

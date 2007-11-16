@@ -127,8 +127,8 @@ public final class DataObjectUtils {
      * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static Object objectForPK(ObjectContext context, Class dataObjectClass, int pk) {
-        return objectForPK(context, buildId(context, dataObjectClass, new Integer(pk)));
+    public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, int pk) {
+        return (T) objectForPK(context, buildId(context, dataObjectClass, new Integer(pk)));
     }
 
     /**
@@ -141,12 +141,12 @@ public final class DataObjectUtils {
      * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static Object objectForPK(
+    public static <T> T objectForPK(
             ObjectContext context,
-            Class dataObjectClass,
+            Class<T> dataObjectClass,
             Object pk) {
 
-        return objectForPK(context, buildId(context, dataObjectClass, pk));
+        return (T) objectForPK(context, buildId(context, dataObjectClass, pk));
     }
 
     /**
@@ -159,7 +159,7 @@ public final class DataObjectUtils {
      * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static Object objectForPK(ObjectContext context, Class dataObjectClass, Map pk) {
+    public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, Map<?,?> pk) {
 
         ObjEntity entity = context.getEntityResolver().lookupObjEntity(dataObjectClass);
         if (entity == null) {
@@ -167,7 +167,7 @@ public final class DataObjectUtils {
                     + dataObjectClass);
         }
 
-        return objectForPK(context, new ObjectId(entity.getName(), pk));
+        return (T) objectForPK(context, new ObjectId(entity.getName(), pk));
     }
 
     /**
@@ -211,7 +211,7 @@ public final class DataObjectUtils {
      * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static Object objectForPK(ObjectContext context, String objEntityName, Map pk) {
+    public static Object objectForPK(ObjectContext context, String objEntityName, Map<?,?> pk) {
         if (objEntityName == null) {
             throw new IllegalArgumentException("Null ObjEntity name.");
         }
@@ -288,7 +288,7 @@ public final class DataObjectUtils {
         return new ObjectId(objEntityName, attr.getName(), pk);
     }
 
-    static ObjectId buildId(ObjectContext context, Class dataObjectClass, Object pk) {
+    static ObjectId buildId(ObjectContext context, Class<?> dataObjectClass, Object pk) {
         if (pk == null) {
             throw new IllegalArgumentException("Null PK");
         }

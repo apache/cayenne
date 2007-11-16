@@ -55,7 +55,7 @@ public class CAY_207Test extends PeopleCase {
 
         try {
             // M1
-            Manager o1 = (Manager) DataObjectUtils.objectForPK(context, Manager.class, 1);
+            Manager o1 = DataObjectUtils.objectForPK(context, Manager.class, 1);
             assertTrue(o1 instanceof CAY_207Manager1);
 
             Object p1 = o1.readProperty("clientContactType");
@@ -77,7 +77,7 @@ public class CAY_207Test extends PeopleCase {
         prepare();
 
         try {
-            Manager o2 = (Manager) DataObjectUtils.objectForPK(context, Manager.class, 2);
+            Manager o2 = DataObjectUtils.objectForPK(context, Manager.class, 2);
             assertTrue(o2 instanceof CAY_207Manager2);
 
             Object p2 = o2.readProperty("clientContactType");
@@ -99,10 +99,7 @@ public class CAY_207Test extends PeopleCase {
 
         try {
             // M1
-            Manager o1 = (Manager) DataObjectUtils.objectForPK(
-                    context,
-                    CAY_207Manager1.class,
-                    1);
+            Manager o1 = DataObjectUtils.objectForPK(context, CAY_207Manager1.class, 1);
             assertTrue(o1 instanceof CAY_207Manager1);
 
             Object p1 = o1.readProperty("clientContactType");
@@ -124,10 +121,7 @@ public class CAY_207Test extends PeopleCase {
         prepare();
 
         try {
-            Manager o2 = (Manager) DataObjectUtils.objectForPK(
-                    context,
-                    CAY_207Manager2.class,
-                    2);
+            Manager o2 = DataObjectUtils.objectForPK(context, CAY_207Manager2.class, 2);
             assertTrue(o2 instanceof CAY_207Manager2);
 
             Object p2 = o2.readProperty("clientContactType");
@@ -148,8 +142,7 @@ public class CAY_207Test extends PeopleCase {
         prepare();
 
         try {
-            CAY_207Manager2 o2 = (CAY_207Manager2) context
-                    .newObject(CAY_207Manager2.class);
+            CAY_207Manager2 o2 = context.newObject(CAY_207Manager2.class);
             o2.setPersonType("M2");
             o2.setName("aaaa");
             o2.setClientContactType(new CAY_207String1("T1:AAAAA"));

@@ -96,7 +96,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     public void testAddToMany() throws Exception {
         createTestData("prepare");
 
-        CollectionToMany o1 = (CollectionToMany) DataObjectUtils.objectForPK(
+        CollectionToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 CollectionToMany.class,
                 1);
@@ -123,7 +123,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     public void testRemoveToMany() throws Exception {
         createTestData("prepare");
 
-        CollectionToMany o1 = (CollectionToMany) DataObjectUtils.objectForPK(
+        CollectionToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 CollectionToMany.class,
                 1);
@@ -149,7 +149,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     public void testAddToManyViaReverse() throws Exception {
         createTestData("prepare");
 
-        CollectionToMany o1 = (CollectionToMany) DataObjectUtils.objectForPK(
+        CollectionToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 CollectionToMany.class,
                 1);
