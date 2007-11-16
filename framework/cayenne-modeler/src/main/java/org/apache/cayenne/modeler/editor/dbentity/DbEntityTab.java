@@ -17,33 +17,24 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.editor.dbentity;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EventObject;
 import java.util.Iterator;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -54,9 +45,6 @@ import org.apache.cayenne.modeler.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
-import org.apache.cayenne.modeler.util.CellRenderers;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -85,8 +73,6 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
 
     protected TextAdapter name;
     protected TextAdapter schema;
-    protected JComboBox parentEntities;
-    protected JButton parentLabel;
     protected JLabel schemaLabel;
 
     protected JComboBox pkGeneratorType;
@@ -130,13 +116,6 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
             }
         };
 
-        parentLabel = CayenneWidgetFactory.createLabelButton("Parent DbEntity:");
-        parentLabel.setEnabled(false);
-
-        parentEntities = CayenneWidgetFactory.createComboBox();
-        parentEntities.setEditable(false);
-        parentEntities.setEnabled(false);
-
         pkGeneratorType = new JComboBox();
         pkGeneratorType.setEditable(false);
         pkGeneratorType.setModel(new DefaultComboBoxModel(PK_GENERATOR_TYPES));
@@ -158,7 +137,6 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         builder.appendSeparator("DbEntity Configuration");
         builder.append("DbEntity Name:", name.getComponent());
         builder.append(schemaLabel, schema.getComponent());
-        builder.append(parentLabel, parentEntities);
 
         builder.appendSeparator("Primary Key");
         builder.append("PK Generation Strategy:", pkGeneratorType);
@@ -176,46 +154,6 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
 
     private void initController() {
         mediator.addDbEntityDisplayListener(this);
-
-        parentEntities.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                DbEntity current = mediator.getCurrentDbEntity();
-
-                if (current instanceof DerivedDbEntity) {
-                    DerivedDbEntity derived = (DerivedDbEntity) current;
-                    DbEntity parent = (DbEntity) parentEntities.getSelectedItem();
-
-                    if (parent != derived.getParentEntity()) {
-                        derived.setParentEntity(parent);
-                        derived.resetToParentView();
-                        ProjectUtil.cleanObjMappings(mediator.getCurrentDataMap());
-
-                        EntityEvent event = new EntityEvent(this, current);
-                        mediator.fireDbEntityEvent(event);
-                    }
-                }
-            }
-        });
-
-        parentLabel.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                DbEntity current = mediator.getCurrentDbEntity();
-
-                if (current instanceof DerivedDbEntity) {
-                    DbEntity parent = ((DerivedDbEntity) current).getParentEntity();
-                    if (parent != null) {
-                        DataDomain dom = mediator.getCurrentDataDomain();
-                        mediator.fireDbEntityDisplayEvent(new EntityDisplayEvent(
-                                this,
-                                parent,
-                                parent.getDataMap(),
-                                dom));
-                    }
-                }
-            }
-        });
 
         pkGeneratorType.addItemListener(new ItemListener() {
 
@@ -265,68 +203,29 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         name.setText(entity.getName());
         schema.setText(entity.getSchema());
 
-        if (entity instanceof DerivedDbEntity) {
+        String type = PK_DEFAULT_GENERATOR;
 
-            updateState(true);
-
-            // build a list consisting of non-derived entities
-
-            DataMap map = mediator.getCurrentDataMap();
-            Collection allEntities = map.getNamespace().getDbEntities();
-            java.util.List entities = new ArrayList(allEntities.size());
-            Iterator it = allEntities.iterator();
-
-            while (it.hasNext()) {
-                DbEntity parentEntity = (DbEntity) it.next();
-                if (!(parentEntity instanceof DerivedDbEntity)) {
-                    entities.add(parentEntity);
-                }
-            }
-
-            DefaultComboBoxModel model = new DefaultComboBoxModel(entities.toArray());
-            model.setSelectedItem(((DerivedDbEntity) entity).getParentEntity());
-            parentEntities.setRenderer(CellRenderers.entityListRendererWithIcons(map));
-            parentEntities.setModel(model);
+        if (entity.getPrimaryKeyGenerator() != null) {
+            type = PK_CUSTOM_SEQUENCE_GENERATOR;
         }
         else {
-            String type = PK_DEFAULT_GENERATOR;
-
-            if (entity.getPrimaryKeyGenerator() != null) {
-                type = PK_CUSTOM_SEQUENCE_GENERATOR;
-            }
-            else {
-                Iterator it = entity.getPrimaryKey().iterator();
-                while (it.hasNext()) {
-                    DbAttribute a = (DbAttribute) it.next();
-                    if (a.isGenerated()) {
-                        type = PK_DB_GENERATOR;
-                        break;
-                    }
+            Iterator it = entity.getPrimaryKey().iterator();
+            while (it.hasNext()) {
+                DbAttribute a = (DbAttribute) it.next();
+                if (a.isGenerated()) {
+                    type = PK_DB_GENERATOR;
+                    break;
                 }
             }
-
-            updateState(false);
-            pkGeneratorType.setSelectedItem(type);
-            pkGeneratorDetailLayout.show(pkGeneratorDetail, type);
-
-            parentEntities.setSelectedIndex(-1);
         }
-    }
 
-    /**
-     * Enables or disbales form fields depending on the type of entity shown.
-     */
-    protected void updateState(boolean isDerivedEntity) {
-        schemaLabel.setEnabled(!isDerivedEntity);
-        schema.getComponent().setEnabled(!isDerivedEntity);
-
-        parentLabel.setEnabled(isDerivedEntity);
-        parentEntities.setEnabled(isDerivedEntity);
-        parentLabel.setVisible(isDerivedEntity);
-        parentEntities.setVisible(isDerivedEntity);
-
-        pkGeneratorDetail.setVisible(!isDerivedEntity);
-        pkGeneratorType.setVisible(!isDerivedEntity);
+        schemaLabel.setEnabled(true);
+        schema.getComponent().setEnabled(true);
+        pkGeneratorDetail.setVisible(true);
+        pkGeneratorType.setVisible(true);
+        
+        pkGeneratorType.setSelectedItem(type);
+        pkGeneratorDetailLayout.show(pkGeneratorDetail, type);
     }
 
     void setEntityName(String newName) {

@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ProcedureEvent;
@@ -74,10 +73,6 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
         Iterator dbEntities = dataMap.getDbEntities().iterator();
         while (dbEntities.hasNext()) {
             DbEntity entity = (DbEntity) dbEntities.next();
-            
-            if(entity instanceof DerivedDbEntity) {
-                continue;
-            }
             
             if (doAll || Util.isEmptyString(entity.getSchema())) {
                 if (!Util.nullSafeEquals(defaultSchema, entity.getSchema())) {

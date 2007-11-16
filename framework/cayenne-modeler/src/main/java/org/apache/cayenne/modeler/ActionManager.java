@@ -29,7 +29,51 @@ import java.util.Map;
 
 import javax.swing.Action;
 
-import org.apache.cayenne.modeler.action.*;
+import org.apache.cayenne.modeler.action.AboutAction;
+import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
+import org.apache.cayenne.modeler.action.CreateAttributeAction;
+import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
+import org.apache.cayenne.modeler.action.CreateCallbackMethodForDataMapListenerAction;
+import org.apache.cayenne.modeler.action.CreateCallbackMethodForListenerAction;
+import org.apache.cayenne.modeler.action.CreateDataMapAction;
+import org.apache.cayenne.modeler.action.CreateDataMapEntityListenerAction;
+import org.apache.cayenne.modeler.action.CreateDbEntityAction;
+import org.apache.cayenne.modeler.action.CreateDomainAction;
+import org.apache.cayenne.modeler.action.CreateNodeAction;
+import org.apache.cayenne.modeler.action.CreateObjEntityAction;
+import org.apache.cayenne.modeler.action.CreateObjEntityListenerAction;
+import org.apache.cayenne.modeler.action.CreateProcedureAction;
+import org.apache.cayenne.modeler.action.CreateProcedureParameterAction;
+import org.apache.cayenne.modeler.action.CreateQueryAction;
+import org.apache.cayenne.modeler.action.CreateRelationshipAction;
+import org.apache.cayenne.modeler.action.DbEntitySyncAction;
+import org.apache.cayenne.modeler.action.ExitAction;
+import org.apache.cayenne.modeler.action.FindAction;
+import org.apache.cayenne.modeler.action.GenerateCodeAction;
+import org.apache.cayenne.modeler.action.GenerateDBAction;
+import org.apache.cayenne.modeler.action.ImportDBAction;
+import org.apache.cayenne.modeler.action.ImportDataMapAction;
+import org.apache.cayenne.modeler.action.ImportEOModelAction;
+import org.apache.cayenne.modeler.action.MigrateAction;
+import org.apache.cayenne.modeler.action.NavigateBackwardAction;
+import org.apache.cayenne.modeler.action.NavigateForwardAction;
+import org.apache.cayenne.modeler.action.NewProjectAction;
+import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
+import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.action.ProjectAction;
+import org.apache.cayenne.modeler.action.RemoveAction;
+import org.apache.cayenne.modeler.action.RemoveAttributeAction;
+import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.action.RemoveCallbackMethodForDataMapListenerAction;
+import org.apache.cayenne.modeler.action.RemoveCallbackMethodForListenerAction;
+import org.apache.cayenne.modeler.action.RemoveEntityListenerAction;
+import org.apache.cayenne.modeler.action.RemoveEntityListenerForDataMapAction;
+import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
+import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
+import org.apache.cayenne.modeler.action.RevertAction;
+import org.apache.cayenne.modeler.action.SaveAction;
+import org.apache.cayenne.modeler.action.SaveAsAction;
+import org.apache.cayenne.modeler.action.ValidateAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
@@ -65,7 +109,6 @@ public class ActionManager {
                 GenerateCodeAction.getActionName(),
                 CreateObjEntityAction.getActionName(),
                 CreateDbEntityAction.getActionName(),
-                CreateDerivedDbEntityAction.getActionName(),
                 CreateQueryAction.getActionName(), CreateProcedureAction.getActionName(),
                 GenerateDBAction.getActionName(), MigrateAction.getActionName()
         }));
@@ -116,7 +159,6 @@ public class ActionManager {
         registerAction(new GenerateCodeAction(application));
         registerAction(new CreateObjEntityAction(application));
         registerAction(new CreateDbEntityAction(application));
-        registerAction(new CreateDerivedDbEntityAction(application));
         registerAction(new CreateProcedureAction(application));
         registerAction(new CreateProcedureParameterAction(application));
         registerAction(new RemoveProcedureParameterAction(application));
@@ -139,7 +181,6 @@ public class ActionManager {
         // end callback-related actions
         registerAction(new DbEntitySyncAction(application));
         registerAction(new ObjEntitySyncAction(application));
-        registerAction(new DerivedEntitySyncAction(application));
         registerAction(new ImportDBAction(application));
         registerAction(new ImportEOModelAction(application));
         registerAction(new GenerateDBAction(application));

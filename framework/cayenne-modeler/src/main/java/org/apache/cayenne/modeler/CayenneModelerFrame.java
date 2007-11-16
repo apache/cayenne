@@ -38,18 +38,15 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.modeler.action.AboutAction;
 import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.action.CreateDbEntityAction;
-import org.apache.cayenne.modeler.action.CreateDerivedDbEntityAction;
 import org.apache.cayenne.modeler.action.CreateDomainAction;
 import org.apache.cayenne.modeler.action.CreateNodeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
-import org.apache.cayenne.modeler.action.DerivedEntitySyncAction;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.FindAction;
 import org.apache.cayenne.modeler.action.GenerateCodeAction;
@@ -155,13 +152,10 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         projectMenu.add(getAction(CreateObjEntityAction.getActionName()).buildMenu());
         projectMenu.add(getAction(CreateDbEntityAction.getActionName()).buildMenu());
-        projectMenu.add(getAction(CreateDerivedDbEntityAction.getActionName())
-                .buildMenu());
         projectMenu.add(getAction(CreateProcedureAction.getActionName()).buildMenu());
         projectMenu.add(getAction(CreateQueryAction.getActionName()).buildMenu());
         projectMenu.addSeparator();
         projectMenu.add(getAction(ObjEntitySyncAction.getActionName()).buildMenu());
-        projectMenu.add(getAction(DerivedEntitySyncAction.getActionName()).buildMenu());
         projectMenu.addSeparator();
         projectMenu.add(getAction(RemoveAction.getActionName()).buildMenu());
 
@@ -216,7 +210,6 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolBar.addSeparator();
 
         toolBar.add(getAction(CreateDbEntityAction.getActionName()).buildButton());
-        toolBar.add(getAction(CreateDerivedDbEntityAction.getActionName()).buildButton());
         toolBar.add(getAction(CreateProcedureAction.getActionName()).buildButton());
 
         toolBar.addSeparator();
@@ -266,15 +259,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
     }
 
     public void currentDbEntityChanged(EntityDisplayEvent e) {
-        boolean derived = e.getEntity() instanceof DerivedDbEntity;
-
-        if (derived) {
-            actionManager.derivedDbEntitySelected();
-            getAction(DerivedEntitySyncAction.getActionName()).setEnabled(true);
-        }
-        else {
-            actionManager.dbEntitySelected();
-        }
+        actionManager.dbEntitySelected();
     }
 
     public void currentQueryChanged(QueryDisplayEvent e) {

@@ -20,12 +20,9 @@
 package org.apache.cayenne.modeler.editor.dbentity;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.EventObject;
 
 import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
@@ -37,8 +34,6 @@ import javax.swing.table.TableColumn;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbAttribute;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbAttributeListener;
 import org.apache.cayenne.modeler.Application;
@@ -47,14 +42,12 @@ import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.dialog.EditDerivedParamsDialog;
 import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 
@@ -65,12 +58,10 @@ import org.apache.cayenne.modeler.util.UIUtil;
  * @author Andrus Adamchik
  */
 public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListener,
-        ListSelectionListener, DbAttributeListener, ExistingSelectionProcessor,
-        ActionListener {
+        ListSelectionListener, DbAttributeListener, ExistingSelectionProcessor {
 
     protected ProjectController mediator;
     protected CayenneTable table;
-    protected JButton editParams;
 
     public DbEntityAttributeTab(ProjectController temp_mediator) {
         super();
@@ -80,8 +71,6 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
 
         // Create and layout components
         init();
-
-        editParams.addActionListener(this);
     }
 
     private void init() {
@@ -95,11 +84,6 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
 
         toolBar.addSeparator();
 
-        editParams = new JButton();
-        editParams.setIcon(ModelerUtil.buildIcon("icon-info.gif"));
-        editParams.setToolTipText("Edit Parameters");
-        toolBar.add(editParams);
-
         toolBar.addSeparator();
         toolBar.add(app.getAction(RemoveAttributeAction.getActionName()).buildButton());
 
@@ -108,21 +92,6 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
         // Create table with two columns and no rows.
         table = new CayenneTable();
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == editParams) {
-            int row = table.getSelectedRow();
-            if (row >= 0) {
-                DbAttribute attr = ((DbAttributeTableModel) table.getModel())
-                        .getAttribute(row);
-
-                EditDerivedParamsDialog dialog = new EditDerivedParamsDialog(
-                        (DerivedDbAttribute) attr);
-                dialog.setVisible(true);
-                dialog.dispose();
-            }
-        }
     }
 
     public void valueChanged(ListSelectionEvent e) {
@@ -162,7 +131,6 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
         if (table.getSelectedRow() >= 0) {
             DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
             att = model.getAttribute(table.getSelectedRow());
-            editParams.setEnabled(att instanceof DerivedDbAttribute);
 
             // scroll table
             UIUtil.scrollToSelectedRow(table);
@@ -206,12 +174,8 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
     }
 
     protected void rebuildTable(DbEntity ent) {
-        editParams.setVisible(ent instanceof DerivedDbEntity);
-        editParams.setEnabled(false);
 
-        DbAttributeTableModel model = (ent instanceof DerivedDbEntity)
-                ? new DerivedDbAttributeTableModel(ent, mediator, this)
-                : new DbAttributeTableModel(ent, mediator, this);
+        DbAttributeTableModel model = new DbAttributeTableModel(ent, mediator, this);
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);

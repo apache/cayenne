@@ -23,8 +23,6 @@ import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbAttribute;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -96,26 +94,18 @@ public class CreateAttributeAction extends CayenneAction {
     }
 
     public void createDbAttribute() {
-        Class attrClass = null;
-
         DbEntity dbEntity = getProjectController().getCurrentDbEntity();
-        if (dbEntity instanceof DerivedDbEntity) {
-            if (((DerivedDbEntity) dbEntity).getParentEntity() == null) {
-                return;
-            }
-            attrClass = DerivedDbAttribute.class;
-        }
-        else {
-            attrClass = DbAttribute.class;
-        }
-
-        DbAttribute attr =
-            (DbAttribute) NamedObjectFactory.createObject(attrClass, dbEntity);
+        DbAttribute attr = (DbAttribute) NamedObjectFactory.createObject(
+                DbAttribute.class,
+                dbEntity);
         dbEntity.addAttribute(attr);
 
         ProjectController mediator = getProjectController();
-        mediator.fireDbAttributeEvent(
-            new AttributeEvent(this, attr, dbEntity, MapEvent.ADD));
+        mediator.fireDbAttributeEvent(new AttributeEvent(
+                this,
+                attr,
+                dbEntity,
+                MapEvent.ADD));
 
         AttributeDisplayEvent ade = new AttributeDisplayEvent(
                 this,

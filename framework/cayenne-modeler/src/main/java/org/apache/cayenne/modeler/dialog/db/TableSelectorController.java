@@ -31,7 +31,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
@@ -214,20 +213,10 @@ public class TableSelectorController extends CayenneController {
             }
         }
 
-        // now do a pass through the tables and exclude derived
-        Iterator tablesIt = tables.iterator();
-        while (tablesIt.hasNext()) {
-            DbEntity table = (DbEntity) tablesIt.next();
-            if (table instanceof DerivedDbEntity) {
-                excludedTables.put(table.getName(), table);
-                validationMessages.put(table.getName(), "derived entity");
-            }
-        }
-
         // Find selectable tables
         permanentlyExcludedCount = excludedTables.size();
         selectableTablesList.clear();
-        tablesIt = tables.iterator();
+        Iterator tablesIt = tables.iterator();
         while (tablesIt.hasNext()) {
             DbEntity table = (DbEntity) tablesIt.next();
             

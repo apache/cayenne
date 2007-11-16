@@ -35,7 +35,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DerivedDbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
@@ -60,7 +59,6 @@ public final class CellRenderers {
     protected static ImageIcon objEntityIcon;
     protected static ImageIcon relationshipIcon;
     protected static ImageIcon attributeIcon;
-    protected static ImageIcon derivedDbEntityIcon;
     protected static ImageIcon procedureIcon;
     protected static ImageIcon queryIcon;
 
@@ -70,7 +68,6 @@ public final class CellRenderers {
         mapIcon = ModelerUtil.buildIcon("icon-datamap.gif");
         dbEntityIcon = ModelerUtil.buildIcon("icon-dbentity.gif");
         objEntityIcon = ModelerUtil.buildIcon("icon-objentity.gif");
-        derivedDbEntityIcon = ModelerUtil.buildIcon("icon-derived-dbentity.gif");
         procedureIcon = ModelerUtil.buildIcon("icon-stored-procedure.gif");
         queryIcon = ModelerUtil.buildIcon("icon-query.gif");
         relationshipIcon = ModelerUtil.buildIcon("icon-relationship.gif");
@@ -93,10 +90,7 @@ public final class CellRenderers {
         }
         else if (object instanceof Entity) {
             Entity entity = (Entity) object;
-            if (entity instanceof DerivedDbEntity) {
-                return derivedDbEntityIcon;
-            }
-            else if (entity instanceof DbEntity) {
+            if (entity instanceof DbEntity) {
                 return dbEntityIcon;
             }
             else if (entity instanceof ObjEntity) {
