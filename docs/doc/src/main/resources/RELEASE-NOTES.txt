@@ -22,6 +22,7 @@ CAY-903 Support primitive types in DataObjects
 CAY-904 Switch cayenne to Java 5: merge cayenne-jdk1.4-unpublished to cayenne-jdk1.5-unpublished
 CAY-916 Ordering should be able to ignore paths with null elements
 CAY-918 An exception during in-memory sorting of IncrementalFaultList
+CAY-921 Remove DerviedDbEntity support from Cayenne
 
 Bug fixes since M2:
 
