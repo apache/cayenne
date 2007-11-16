@@ -539,13 +539,13 @@ public class SelectTranslator extends QueryAssembler {
      */
     List appendCustomColumns(List columns, SelectQuery query) {
 
-        List customAttributes = query.getCustomDbAttributes();
+        List<String> customAttributes = query.getCustomDbAttributes();
         DbEntity table = getRootDbEntity();
         int len = customAttributes.size();
 
         for (int i = 0; i < len; i++) {
-            DbAttribute attribute = (DbAttribute) table
-                    .getAttribute((String) customAttributes.get(i));
+            DbAttribute attribute = (DbAttribute) table.getAttribute(customAttributes
+                    .get(i));
             if (attribute == null) {
                 throw new CayenneRuntimeException("Attribute does not exist: "
                         + customAttributes.get(i));

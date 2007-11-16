@@ -46,24 +46,24 @@ public interface ObjectContext extends Serializable {
      * Returns a collection of objects that are registered with this ObjectContext and
      * have a state PersistenceState.NEW
      */
-    Collection newObjects();
+    Collection<?> newObjects();
 
     /**
      * Returns a collection of objects that are registered with this ObjectContext and
      * have a state PersistenceState.DELETED
      */
-    Collection deletedObjects();
+    Collection<?> deletedObjects();
 
     /**
      * Returns a collection of objects that are registered with this ObjectContext and
      * have a state PersistenceState.MODIFIED
      */
-    Collection modifiedObjects();
+    Collection<?> modifiedObjects();
 
     /**
      * Returns a collection of MODIFIED, DELETED or NEW objects.
      */
-    Collection uncommittedObjects();
+    Collection<?> uncommittedObjects();
 
     /**
      * Returns an object local to this ObjectContext and matching the ObjectId. If

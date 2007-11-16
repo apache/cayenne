@@ -22,12 +22,10 @@ package org.apache.cayenne.query;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -50,8 +48,8 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     public static final String DISTINCT_PROPERTY = "cayenne.SelectQuery.distinct";
     public static final boolean DISTINCT_DEFAULT = false;
 
-    protected List customDbAttributes;
-    protected List orderings;
+    protected List<String> customDbAttributes;
+    protected List<Ordering> orderings;
     protected boolean distinct;
 
     SelectQueryMetadata selectInfo = new SelectQueryMetadata();
@@ -70,7 +68,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /**
-     * Creates a SelectQuery for the specifed ObjEntity with the given qualifier
+     * Creates a SelectQuery for the specified ObjEntity with the given qualifier
      * 
      * @param root the ObjEntity this SelectQuery is for.
      * @param qualifier an Expression indicating which objects should be fetched
@@ -85,7 +83,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @param rootClass the Class of objects fetched by this query.
      */
-    public SelectQuery(Class rootClass) {
+    public SelectQuery(Class<?> rootClass) {
         this(rootClass, null);
     }
 
@@ -95,12 +93,12 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @param rootClass the Class of objects fetched by this query.
      */
-    public SelectQuery(Class rootClass, Expression qualifier) {
+    public SelectQuery(Class<?> rootClass, Expression qualifier) {
         init(rootClass, qualifier);
     }
 
     /**
-     * Creates a SelectQuery for the specifed DbEntity.
+     * Creates a SelectQuery for the specified DbEntity.
      * 
      * @param root the DbEntity this SelectQuery is for.
      * @since 1.1
@@ -110,7 +108,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /**
-     * Creates a SelectQuery for the specifed DbEntity with the given qualifier.
+     * Creates a SelectQuery for the specified DbEntity with the given qualifier.
      * 
      * @param root the DbEntity this SelectQuery is for.
      * @param qualifier an Expression indicating which objects should be fetched
@@ -192,7 +190,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public void initWithProperties(Map properties) {
+    public void initWithProperties(Map<?,?> properties) {
 
         // must init defaults even if properties are empty
         if (properties == null) {
@@ -241,7 +239,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         }
         else if (root instanceof Class) {
             rootType = QueryBuilder.JAVA_CLASS_ROOT;
-            rootString = ((Class) root).getName();
+            rootString = ((Class<?>) root).getName();
         }
 
         if (rootType != null) {
@@ -271,9 +269,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
         // encode orderings
         if (orderings != null && !orderings.isEmpty()) {
-            Iterator it = orderings.iterator();
-            while (it.hasNext()) {
-                Ordering ordering = (Ordering) it.next();
+            for (Ordering ordering : orderings) {
                 ordering.encodeAsXML(encoder);
             }
         }
@@ -286,7 +282,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * A shortcut for {@link #queryWithParameters(Map, boolean)}that prunes parts of
      * qualifier that have no parameter value set.
      */
-    public SelectQuery queryWithParameters(Map parameters) {
+    public SelectQuery queryWithParameters(Map<?,?> parameters) {
         return queryWithParameters(parameters, true);
     }
 
@@ -297,7 +293,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @see org.apache.cayenne.exp.Expression#expWithParameters(java.util.Map, boolean)
      *      parameter substitution.
      */
-    public SelectQuery queryWithParameters(Map parameters, boolean pruneMissing) {
+    public SelectQuery queryWithParameters(Map<?,?> parameters, boolean pruneMissing) {
         // create a query replica
         SelectQuery query = new SelectQuery();
         query.setDistinct(distinct);
@@ -342,7 +338,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public Query createQuery(Map parameters) {
+    public Query createQuery(Map<?,?> parameters) {
         return queryWithParameters(parameters);
     }
 
@@ -356,18 +352,18 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Adds a list of orderings.
      */
-    public void addOrderings(List orderings) {
+    public void addOrderings(List<Ordering> orderings) {
         nonNullOrderings().addAll(orderings);
     }
 
     /** Adds ordering specification to this query orderings. */
     public void addOrdering(String sortPathSpec, boolean isAscending) {
-        this.addOrdering(new Ordering(sortPathSpec, isAscending));
+        addOrdering(new Ordering(sortPathSpec, isAscending));
     }
 
     /** Adds ordering specification to this query orderings. */
     public void addOrdering(String sortPathSpec, boolean isAscending, boolean ignoreCase) {
-        this.addOrdering(new Ordering(sortPathSpec, isAscending, ignoreCase));
+        addOrdering(new Ordering(sortPathSpec, isAscending, ignoreCase));
     }
 
     /**
@@ -384,7 +380,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Returns a list of orderings used by this query.
      */
-    public List getOrderings() {
+    public List<Ordering> getOrderings() {
         return (orderings != null) ? orderings : Collections.EMPTY_LIST;
     }
 
@@ -413,20 +409,13 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Returns a list of attributes that will be included in the results of this query.
      */
-    public List getCustomDbAttributes() {
+    public List<String> getCustomDbAttributes() {
         // if query root is DbEntity, and no custom attributes
         // are defined, return DbEntity attributes.
         if ((customDbAttributes == null || customDbAttributes.isEmpty())
                 && (root instanceof DbEntity)) {
-            Collection attributes = ((DbEntity) root).getAttributes();
-            List attributeNames = new ArrayList(attributes.size());
-            Iterator it = attributes.iterator();
-            while (it.hasNext()) {
-                DbAttribute attribute = (DbAttribute) it.next();
-                attributeNames.add(attribute.getName());
-            }
-
-            return attributeNames;
+            Collection<String> names = ((DbEntity) root).getAttributeMap().keySet();
+            return new ArrayList<String>(names);
         }
         else {
             return (customDbAttributes != null)
@@ -444,7 +433,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         nonNullCustomDbAttributes().add(attributePath);
     }
 
-    public void addCustomDbAttributes(List attrPaths) {
+    public void addCustomDbAttributes(List<String> attrPaths) {
         nonNullCustomDbAttributes().addAll(attrPaths);
     }
 
@@ -623,9 +612,9 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @since 1.2
      */
-    List nonNullCustomDbAttributes() {
+    List<String> nonNullCustomDbAttributes() {
         if (customDbAttributes == null) {
-            customDbAttributes = new ArrayList();
+            customDbAttributes = new ArrayList<String>();
         }
 
         return customDbAttributes;
@@ -636,9 +625,9 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @since 1.2
      */
-    List nonNullOrderings() {
+    List<Ordering> nonNullOrderings() {
         if (orderings == null) {
-            orderings = new ArrayList();
+            orderings = new ArrayList<Ordering>(3);
         }
 
         return orderings;
