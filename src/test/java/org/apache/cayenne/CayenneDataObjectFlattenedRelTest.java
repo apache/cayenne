@@ -73,7 +73,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
         createTestData("testAddToFlattenedRelationship");
         DataContext context = createDataContext();
 
-        Artist a1 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33001);
+        Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 33001);
         assertEquals(0, a1.getGroupArray().size());
 
         SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
@@ -99,7 +99,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
 
         // refetch artist with a different context
         context = createDataContext();
-        a1 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33001);
+        a1 = DataObjectUtils.objectForPK(context, Artist.class, 33001);
         groupList = a1.getGroupArray();
         assertEquals(1, groupList.size());
         assertEquals("g1", ((ArtGroup) groupList.get(0)).getName());
@@ -185,7 +185,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
     public void testAddRemoveFlattenedRelationship1() throws Exception {
         DataContext context = createDataContext();
         createTestData("testAddRemoveFlattenedRelationship1");
-        Artist a1 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33001);
+        Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 33001);
 
         SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
                 "name",
@@ -211,7 +211,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
 
         DataContext context = createDataContext();
 
-        Artist a1 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33001);
+        Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 33001);
 
         SelectQuery q = new SelectQuery(ArtGroup.class);
         List results = context.performQuery(q);

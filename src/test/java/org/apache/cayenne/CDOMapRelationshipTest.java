@@ -56,7 +56,7 @@ public class CDOMapRelationshipTest extends RelationshipCase {
         assertEquals(2, DataObjectUtils.intPKForObject((Persistent) targets.get("B")));
         assertEquals(3, DataObjectUtils.intPKForObject((Persistent) targets.get("C")));
     }
-    
+
     public void testReadToManyId() throws Exception {
         createTestData("prepare-id");
 
@@ -75,9 +75,12 @@ public class CDOMapRelationshipTest extends RelationshipCase {
         assertNotNull(targets.get(new Integer(2)));
         assertNotNull(targets.get(new Integer(3)));
 
-        assertEquals(1, DataObjectUtils.intPKForObject((Persistent) targets.get(new Integer(1))));
-        assertEquals(2, DataObjectUtils.intPKForObject((Persistent) targets.get(new Integer(2))));
-        assertEquals(3, DataObjectUtils.intPKForObject((Persistent) targets.get(new Integer(3))));
+        assertEquals(1, DataObjectUtils.intPKForObject((Persistent) targets
+                .get(new Integer(1))));
+        assertEquals(2, DataObjectUtils.intPKForObject((Persistent) targets
+                .get(new Integer(2))));
+        assertEquals(3, DataObjectUtils.intPKForObject((Persistent) targets
+                .get(new Integer(3))));
     }
 
     public void testReadToManyPrefetching() throws Exception {
@@ -104,7 +107,7 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     public void testAddToMany() throws Exception {
         createTestData("prepare");
 
-        MapToMany o1 = (MapToMany) DataObjectUtils.objectForPK(
+        MapToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 MapToMany.class,
                 1);
@@ -131,7 +134,7 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     public void testRemoveToMany() throws Exception {
         createTestData("prepare");
 
-        MapToMany o1 = (MapToMany) DataObjectUtils.objectForPK(
+        MapToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 MapToMany.class,
                 1);
@@ -157,7 +160,7 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     public void testAddToManyViaReverse() throws Exception {
         createTestData("prepare");
 
-        MapToMany o1 = (MapToMany) DataObjectUtils.objectForPK(
+        MapToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 MapToMany.class,
                 1);
@@ -184,7 +187,7 @@ public class CDOMapRelationshipTest extends RelationshipCase {
     public void testModifyToManyKey() throws Exception {
         createTestData("prepare");
 
-        MapToMany o1 = (MapToMany) DataObjectUtils.objectForPK(
+        MapToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 MapToMany.class,
                 1);

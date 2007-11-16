@@ -50,7 +50,7 @@ public class DeleteObjectTest extends CayenneCase {
     public void testDeleteObject() throws Exception {
         createTestData("testDeleteObject");
 
-        Artist artist = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist artist = DataObjectUtils.objectForPK(context, Artist.class, 1);
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
         context.deleteObject(artist);
         assertEquals(PersistenceState.DELETED, artist.getPersistenceState());
@@ -80,7 +80,7 @@ public class DeleteObjectTest extends CayenneCase {
     public void testDeleteObjectsRelationshipCollection() throws Exception {
         createTestData("testDeleteObjectsRelationshipCollection");
 
-        Artist artist = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist artist = DataObjectUtils.objectForPK(context, Artist.class, 1);
         List paintings = artist.getPaintingArray();
 
         assertEquals(3, paintings.size());
@@ -115,7 +115,7 @@ public class DeleteObjectTest extends CayenneCase {
     public void testDeleteObjectInIterator() throws Exception {
         createTestData("testDeleteObjectsRelationshipCollection");
 
-        Artist artist = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist artist = DataObjectUtils.objectForPK(context, Artist.class, 1);
         List paintings = artist.getPaintingArray();
 
         assertEquals(3, paintings.size());

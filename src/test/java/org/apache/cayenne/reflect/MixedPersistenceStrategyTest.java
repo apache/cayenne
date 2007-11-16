@@ -38,8 +38,10 @@ public class MixedPersistenceStrategyTest extends CayenneCase {
         createTestData("testConflictingField");
 
         DataContext c = createDataContext();
-        MixedPersistenceStrategy object = (MixedPersistenceStrategy) DataObjectUtils
-                .objectForPK(c, MixedPersistenceStrategy.class, 1);
+        MixedPersistenceStrategy object = DataObjectUtils.objectForPK(
+                c,
+                MixedPersistenceStrategy.class,
+                1);
 
         assertEquals(2, object.getDetails().size());
         assertTrue(object.getDetails() instanceof ValueHolder);
@@ -53,11 +55,15 @@ public class MixedPersistenceStrategyTest extends CayenneCase {
         createTestData("testConflictingField");
 
         DataContext c = createDataContext();
-        MixedPersistenceStrategy2 detail1 = (MixedPersistenceStrategy2) DataObjectUtils
-                .objectForPK(c, MixedPersistenceStrategy2.class, 1);
+        MixedPersistenceStrategy2 detail1 = DataObjectUtils.objectForPK(
+                c,
+                MixedPersistenceStrategy2.class,
+                1);
 
-        MixedPersistenceStrategy2 detail2 = (MixedPersistenceStrategy2) DataObjectUtils
-                .objectForPK(c, MixedPersistenceStrategy2.class, 2);
+        MixedPersistenceStrategy2 detail2 = DataObjectUtils.objectForPK(
+                c,
+                MixedPersistenceStrategy2.class,
+                2);
 
         // resolve master (this is where CAY-582 exception happens)
         assertEquals("n1", detail1.getMaster().getName());

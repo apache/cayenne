@@ -302,7 +302,7 @@ public class CayenneContext extends BaseContext {
     /**
      * Creates and registers a new Persistent object instance.
      */
-    public <T extends Persistent> T newObject(Class<T> persistentClass) {
+    public <T> T newObject(Class<T> persistentClass) {
         if (persistentClass == null) {
             throw new NullPointerException("Persistent class can't be null.");
         }
@@ -316,7 +316,7 @@ public class CayenneContext extends BaseContext {
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
                 entity.getName());
         T object = (T) descriptor.createObject();
-        registerNewObject(object, entity.getName(), descriptor);
+        registerNewObject((Persistent) object, entity.getName(), descriptor);
         return object;
     }
 
