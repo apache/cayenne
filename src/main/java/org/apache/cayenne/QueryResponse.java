@@ -37,7 +37,7 @@ import java.util.List;
  *         // ...
  *     }
  *     else {
- *         int[] updateCounts = reponse.currentUpdateCount();
+ *         int[] updateCounts = response.currentUpdateCount();
  *         // ...
  *     }
  * }
@@ -77,7 +77,7 @@ public interface QueryResponse {
 
     /**
      * Returns an update count under the current iterator position. Returned value is an
-     * int[] to accomodate batch queries. For a regular update result, the value will be
+     * int[] to accommodate batch queries. For a regular update result, the value will be
      * an int[1]. Use {@link #isList()} to check the result type before calling this
      * method.
      */
