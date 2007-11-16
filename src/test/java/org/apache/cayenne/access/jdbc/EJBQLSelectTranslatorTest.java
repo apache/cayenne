@@ -34,7 +34,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         return translateSelect(ejbql, Collections.EMPTY_MAP);
     }
 
-    private SQLTemplate translateSelect(String ejbql, Map parameters) {
+    private SQLTemplate translateSelect(String ejbql, Map<?,?> parameters) {
         EJBQLParser parser = EJBQLParserFactory.getParser();
         EJBQLCompiledExpression select = parser.compile(ejbql, getDomain()
                 .getEntityResolver());
@@ -58,7 +58,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         assertTrue(sql, sql.indexOf("t0.DATE_OF_BIRTH") > 0);
         assertTrue(sql, sql.endsWith(" FROM ARTIST t0${marker1}"));
 
-        StringBuffer fromMarker = (StringBuffer) query.getParameters().get("marker1");
+        StringBuilder fromMarker = (StringBuilder) query.getParameters().get("marker1");
         assertNotNull(fromMarker);
         assertEquals("", fromMarker.toString());
     }
@@ -71,7 +71,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
 
         assertTrue(sql, sql.startsWith("SELECT"));
 
-        StringBuffer fromMarker = (StringBuffer) query.getParameters().get("marker0");
+        StringBuilder fromMarker = (StringBuilder) query.getParameters().get("marker0");
         assertNotNull(fromMarker);
         assertEquals("", fromMarker.toString());
 
@@ -89,7 +89,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         assertTrue(sql, sql.startsWith("SELECT"));
 
         // check that overlapping implicit and explicit joins did not result in duplicates
-        StringBuffer fromMarker = (StringBuffer) query.getParameters().get("marker1");
+        StringBuilder fromMarker = (StringBuilder) query.getParameters().get("marker1");
         assertNotNull(fromMarker);
         assertTrue(fromMarker.toString(), fromMarker.indexOf("INNER JOIN GALLERY") >= 0);
         assertTrue(fromMarker.toString(), fromMarker.indexOf("INNER JOIN PAINTING") >= 0);
@@ -113,7 +113,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
 
         assertTrue(sql, sql.startsWith("SELECT"));
 
-        StringBuffer fromMarker = (StringBuffer) query.getParameters().get("marker1");
+        StringBuilder fromMarker = (StringBuilder) query.getParameters().get("marker1");
         assertNotNull(fromMarker);
         String from = fromMarker.toString();
         assertEquals("", from);
