@@ -64,7 +64,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * 
      * @since 1.2
      */
-    protected static final Collection DEFAULT_GENERIC_CLASSES = Arrays
+    protected static final Collection<String> DEFAULT_GENERIC_CLASSES = Arrays
             .asList(new String[] {
                 CAYENNE_DATA_OBJECT_CLASS
             });
@@ -81,7 +81,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
     protected String clientClassName;
     protected String clientSuperClassName;
 
-    protected List entityListeners;
+    protected List<EntityListener> entityListeners;
     protected CallbackMap callbacks;
     protected boolean excludingDefaultListeners;
     protected boolean excludingSuperclassListeners;
@@ -94,7 +94,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         setName(name);
         this.lockType = LOCK_TYPE_NONE;
         this.callbacks = new CallbackMap();
-        this.entityListeners = new ArrayList(2);
+        this.entityListeners = new ArrayList<EntityListener>(2);
     }
 
     /**
@@ -169,13 +169,12 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         // store attributes
         encoder.print(getDeclaredAttributes());
 
-        //write entity listeners
-        for(Iterator i = getEntityListeners().iterator(); i.hasNext();) {
-            EntityListener entityListener = (EntityListener)i.next();
+        // write entity listeners
+        for (EntityListener entityListener : entityListeners) {
             entityListener.encodeAsXML(encoder);
         }
 
-        //write entity-level callbacks
+        // write entity-level callbacks
         getCallbackMap().encodeCallbacksAsXML(encoder);
 
         encoder.indent(-1);
@@ -184,8 +183,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
 
     /**
      * Returns an ObjEntity stripped of any server-side information, such as DbEntity
-     * mapping. "clientClassName" property of this entity is used to intialize "className"
-     * property of returned entity.
+     * mapping. "clientClassName" property of this entity is used to initialize
+     * "className" property of returned entity.
      * 
      * @since 1.2
      */
@@ -213,11 +212,11 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
             if (relationship.isRuntime()) {
                 continue;
             }
-            
+
             ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
-            // note that 'isClientAllowed' also checks parent DataMap client policy 
+            // note that 'isClientAllowed' also checks parent DataMap client policy
             // that can be handy in case of cross-map relationships
-            if(targetEntity == null || !targetEntity.isClientAllowed()) {
+            if (targetEntity == null || !targetEntity.isClientAllowed()) {
                 continue;
             }
 
@@ -257,7 +256,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * 
      * @since 1.2
      */
-    public Class getJavaClass() {
+    public Class<?> getJavaClass() {
         String name = getJavaClassName();
 
         try {
@@ -278,7 +277,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * 
      * @since 3.0
      */
-    public List getEntityListeners() {
+    public List<EntityListener> getEntityListeners() {
         return Collections.unmodifiableList(entityListeners);
     }
 
@@ -290,9 +289,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      *             registered.
      */
     public void addEntityListener(EntityListener listener) {
-        Iterator it = entityListeners.iterator();
-        while (it.hasNext()) {
-            EntityListener next = (EntityListener) it.next();
+        for (EntityListener next : entityListeners) {
             if (listener.getClassName().equals(next.getClassName())) {
                 throw new IllegalArgumentException("Duplicate listener for "
                         + next.getClassName());
@@ -308,9 +305,9 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * @since 3.0
      */
     public void removeEntityListener(String className) {
-        Iterator it = entityListeners.iterator();
+        Iterator<EntityListener> it = entityListeners.iterator();
         while (it.hasNext()) {
-            EntityListener next = (EntityListener) it.next();
+            EntityListener next = it.next();
             if (className.equals(next.getClassName())) {
                 it.remove();
                 break;
@@ -322,9 +319,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * @since 3.0
      */
     public EntityListener getEntityListener(String className) {
-        Iterator it = entityListeners.iterator();
-        while (it.hasNext()) {
-            EntityListener next = (EntityListener) it.next();
+        for (EntityListener next : entityListeners) {
             if (className.equals(next.getClassName())) {
                 return next;
             }
@@ -615,12 +610,12 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * Returns a SortedMap of all attributes that either belong to this ObjEntity or
      * inherited.
      */
-    public SortedMap getAttributeMap() {
+    public SortedMap<String, Attribute> getAttributeMap() {
         if (superEntityName == null) {
             return super.getAttributeMap();
         }
 
-        SortedMap attributeMap = new TreeMap();
+        SortedMap<String, Attribute> attributeMap = new TreeMap<String, Attribute>();
         appendAttributes(attributeMap);
         return attributeMap;
     }
@@ -628,7 +623,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
     /**
      * Recursively appends all attributes in the entity inheritance hierarchy.
      */
-    final void appendAttributes(Map map) {
+    final void appendAttributes(Map<String, Attribute> map) {
         map.putAll(super.getAttributeMap());
 
         ObjEntity superEntity = getSuperEntity();
@@ -641,7 +636,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * Returns a Collection of all attributes that either belong to this ObjEntity or
      * inherited.
      */
-    public Collection getAttributes() {
+    public Collection<Attribute> getAttributes() {
         if (superEntityName == null) {
             return super.getAttributes();
         }
@@ -677,12 +672,12 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         return (superEntity != null) ? superEntity.getRelationship(name) : null;
     }
 
-    public SortedMap getRelationshipMap() {
+    public SortedMap<String, Relationship> getRelationshipMap() {
         if (superEntityName == null) {
             return super.getRelationshipMap();
         }
 
-        SortedMap relationshipMap = new TreeMap();
+        SortedMap<String, Relationship> relationshipMap = new TreeMap<String, Relationship>();
         appendRelationships(relationshipMap);
         return relationshipMap;
     }
@@ -690,7 +685,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
     /**
      * Recursively appends all relationships in the entity inheritance hierarchy.
      */
-    final void appendRelationships(Map map) {
+    final void appendRelationships(Map<String, Relationship> map) {
         map.putAll(super.getRelationshipMap());
 
         ObjEntity superEntity = getSuperEntity();
@@ -699,7 +694,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         }
     }
 
-    public Collection getRelationships() {
+    public Collection<Relationship> getRelationships() {
         if (superEntityName == null) {
             return super.getRelationships();
         }
@@ -713,7 +708,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * 
      * @since 1.1
      */
-    public Collection getDeclaredRelationships() {
+    public Collection<Relationship> getDeclaredRelationships() {
         return super.getRelationships();
     }
 
@@ -722,9 +717,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * parameter. Returns null if no such attribute is found.
      */
     public ObjAttribute getAttributeForDbAttribute(DbAttribute dbAttribute) {
-        Iterator it = getAttributeMap().values().iterator();
-        while (it.hasNext()) {
-            Object next = it.next();
+
+        for (Attribute next : getAttributeMap().values()) {
 
             if (next instanceof EmbeddedAttribute) {
                 ObjAttribute embeddedAttribute = ((EmbeddedAttribute) next)
@@ -749,12 +743,11 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * parameter. Returns null if no such relationship is found.
      */
     public ObjRelationship getRelationshipForDbRelationship(DbRelationship dbRelationship) {
-        Iterator it = getRelationshipMap().entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        
+        for (Map.Entry<String, Relationship> entry : getRelationshipMap().entrySet()) {
             ObjRelationship objRel = (ObjRelationship) entry.getValue();
 
-            List relList = objRel.getDbRelationships();
+            List<DbRelationship> relList = objRel.getDbRelationships();
             if (relList.size() != 1) {
                 continue;
             }

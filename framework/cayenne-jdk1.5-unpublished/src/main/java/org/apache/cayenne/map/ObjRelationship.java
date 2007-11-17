@@ -57,7 +57,7 @@ public class ObjRelationship extends Relationship implements EventListener {
     protected boolean usedForLocking;
     protected String dbRelationshipPath;
 
-    protected List dbRelationships = new ArrayList();
+    protected List<DbRelationship> dbRelationships = new ArrayList<DbRelationship>(2);
 
     /**
      * Stores the type of collection mapped by a to-many relationship. Null for to-one
@@ -162,11 +162,13 @@ public class ObjRelationship extends Relationship implements EventListener {
      * null if no such relationship is found.
      */
     public ObjRelationship getReverseRelationship() {
+        
         // reverse the list
-        List reversed = new ArrayList();
-        Iterator rit = this.getDbRelationships().iterator();
-        while (rit.hasNext()) {
-            DbRelationship rel = (DbRelationship) rit.next();
+        List<DbRelationship> relationships = getDbRelationships();
+        List<DbRelationship> reversed = new ArrayList<DbRelationship>(relationships
+                .size());
+
+        for (DbRelationship rel : relationships) {
             DbRelationship reverse = rel.getReverseRelationship();
             if (reverse == null)
                 return null;
@@ -226,7 +228,7 @@ public class ObjRelationship extends Relationship implements EventListener {
     /**
      * Returns an immutable list of underlying DbRelationships.
      */
-    public List getDbRelationships() {
+    public List<DbRelationship> getDbRelationships() {
         refreshFromPath(true);
         return Collections.unmodifiableList(dbRelationships);
     }

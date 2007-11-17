@@ -219,7 +219,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable map of relationships sorted by name.
      */
-    public SortedMap getRelationshipMap() {
+    public SortedMap<String,Relationship> getRelationshipMap() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableSortedMap(relationships);
@@ -250,7 +250,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable collection of Relationships that exist in this entity.
      */
-    public Collection getRelationships() {
+    public Collection<Relationship> getRelationships() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableCollection(relationships.values());
@@ -259,7 +259,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable sorted map of entity attributes.
      */
-    public SortedMap getAttributeMap() {
+    public SortedMap<String, Attribute> getAttributeMap() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableSortedMap(attributes);
@@ -268,7 +268,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable collection of entity attributes.
      */
-    public Collection getAttributes() {
+    public Collection<Attribute> getAttributes() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableCollection(attributes.values());
