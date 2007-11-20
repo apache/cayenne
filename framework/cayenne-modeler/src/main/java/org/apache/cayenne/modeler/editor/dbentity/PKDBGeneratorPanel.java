@@ -76,7 +76,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
     public void onInit(DbEntity entity) {
         resetStrategy(entity, true, false);
 
-        Collection pkAttributes = entity.getPrimaryKey();
+        Collection pkAttributes = entity.getPrimaryKeys();
 
         // by default check the only numeric PK
         if (pkAttributes.size() == 1) {
@@ -96,7 +96,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
             attributes.removeItemListener(listeners[i]);
         }
 
-        Collection pkAttributes = entity.getPrimaryKey();
+        Collection pkAttributes = entity.getPrimaryKeys();
         if (pkAttributes.isEmpty()) {
             attributes.removeAllItems();
             attributes.addItem("<Entity has no PK columns>");

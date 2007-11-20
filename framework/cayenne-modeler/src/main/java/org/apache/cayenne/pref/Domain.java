@@ -178,7 +178,7 @@ public class Domain extends _Domain {
 
         ObjectContext context = getObjectContext();
         DbEntity entity = context.getEntityResolver().lookupDbEntity(javaClass);
-        DbAttribute pk = (DbAttribute) entity.getPrimaryKey().get(0);
+        DbAttribute pk = entity.getPrimaryKeys().iterator().next();
 
         Expression qualifier = Expression.fromString("db:" + pk.getName() + " in $ids");
         Map params = Collections.singletonMap("ids", ids);

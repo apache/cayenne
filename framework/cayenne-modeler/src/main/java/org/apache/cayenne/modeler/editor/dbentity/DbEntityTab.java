@@ -209,7 +209,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
             type = PK_CUSTOM_SEQUENCE_GENERATOR;
         }
         else {
-            Iterator it = entity.getPrimaryKey().iterator();
+            Iterator it = entity.getPrimaryKeys().iterator();
             while (it.hasNext()) {
                 DbAttribute a = (DbAttribute) it.next();
                 if (a.isGenerated()) {
