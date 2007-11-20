@@ -39,7 +39,7 @@ public class EJBQLQuery implements Query {
 
     protected String name;
     protected String ejbqlStatement;
-    protected Map parameters;
+    protected Map<Object, Object> parameters;
 
     protected transient EJBQLCompiledExpression expression;
     EJBQLQueryMetadata metadata = new EJBQLQueryMetadata();
@@ -101,7 +101,7 @@ public class EJBQLQuery implements Query {
      * Returns unmodifiable map of combined named and positional parameters. Positional
      * parameter keys are Integers, while named parameter keys are strings.
      */
-    public Map getParameters() {
+    public Map<String, ?> getParameters() {
         return parameters != null
                 ? Collections.unmodifiableMap(parameters)
                 : Collections.EMPTY_MAP;
@@ -121,7 +121,7 @@ public class EJBQLQuery implements Query {
         // spec requires it.
 
         if (parameters == null) {
-            parameters = new HashMap();
+            parameters = new HashMap<Object, Object>();
         }
 
         parameters.put(name, object);
@@ -142,7 +142,7 @@ public class EJBQLQuery implements Query {
         // spec requires it.
 
         if (parameters == null) {
-            parameters = new HashMap();
+            parameters = new HashMap<Object, Object>();
         }
 
         parameters.put(new Integer(position), object);

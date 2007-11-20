@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -57,19 +56,20 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EntityResolver implements MappingNamespace, Serializable {
 
-    static final Object DUPLICATE_MARKER = new Object();
+    static final ObjEntity DUPLICATE_MARKER = new ObjEntity();
 
     protected static final Log logger = LogFactory.getLog(EntityResolver.class);
 
     protected boolean indexedByClass;
 
-    protected transient Map queryCache;
-    protected transient Map embeddableCache;
-    protected transient Map dbEntityCache;
-    protected transient Map objEntityCache;
-    protected transient Map procedureCache;
     protected Collection<DataMap> maps;
-    protected transient Map entityInheritanceCache;
+
+    protected transient Map<String, Query> queryCache;
+    protected transient Map<String, Embeddable> embeddableCache;
+    protected transient Map<String, DbEntity> dbEntityCache;
+    protected transient Map<String, ObjEntity> objEntityCache;
+    protected transient Map<String, Procedure> procedureCache;
+    protected transient Map<String, EntityInheritanceTree> entityInheritanceCache;
     protected EntityResolver clientEntityResolver;
 
     // must be transient, as resolver may get deserialized in another VM, and descriptor
@@ -85,18 +85,18 @@ public class EntityResolver implements MappingNamespace, Serializable {
     public EntityResolver() {
         this.indexedByClass = true;
         this.maps = new ArrayList<DataMap>(3);
-        this.embeddableCache = new HashMap();
-        this.queryCache = new HashMap();
-        this.dbEntityCache = new HashMap();
-        this.objEntityCache = new HashMap();
-        this.procedureCache = new HashMap();
-        this.entityInheritanceCache = new HashMap();
+        this.embeddableCache = new HashMap<String, Embeddable>();
+        this.queryCache = new HashMap<String, Query>();
+        this.dbEntityCache = new HashMap<String, DbEntity>();
+        this.objEntityCache = new HashMap<String, ObjEntity>();
+        this.procedureCache = new HashMap<String, Procedure>();
+        this.entityInheritanceCache = new HashMap<String, EntityInheritanceTree>();
     }
 
     /**
      * Creates new EntityResolver that indexes a collection of DataMaps.
      */
-    public EntityResolver(Collection dataMaps) {
+    public EntityResolver(Collection<DataMap> dataMaps) {
         this();
         this.maps.addAll(dataMaps); // Take a copy
         this.constructCache();
@@ -111,12 +111,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
                     this);
 
             // load default callbacks
-            Iterator maps = this.maps.iterator();
-            while (maps.hasNext()) {
-                DataMap map = (DataMap) maps.next();
-                Iterator listeners = map.getDefaultEntityListeners().iterator();
-                while (listeners.hasNext()) {
-                    EntityListener listener = (EntityListener) listeners.next();
+            for (DataMap map : maps) {
+
+                for (EntityListener listener : map.getDefaultEntityListeners()) {
                     Object listenerInstance = createListener(listener);
 
                     CallbackDescriptor[] callbacks = listener
@@ -124,11 +121,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                             .getCallbacks();
                     for (int i = 0; i < callbacks.length; i++) {
 
-                        Iterator callbackMethods = callbacks[i]
-                                .getCallbackMethods()
-                                .iterator();
-                        while (callbackMethods.hasNext()) {
-                            String method = (String) callbackMethods.next();
+                        for (String method : callbacks[i].getCallbackMethods()) {
 
                             // note that callbacks[i].getCallbackType() == i
                             callbackRegistry.addDefaultListener(
@@ -141,15 +134,11 @@ public class EntityResolver implements MappingNamespace, Serializable {
             }
 
             // load entity callbacks
-            Iterator entities = getObjEntities().iterator();
-            while (entities.hasNext()) {
-                ObjEntity entity = (ObjEntity) entities.next();
-                Class entityClass = entity.getJavaClass();
+            for (ObjEntity entity : getObjEntities()) {
+                Class<?> entityClass = entity.getJavaClass();
 
                 // external listeners go first, entity's own callbacks go next
-                Iterator entityListeners = entity.getEntityListeners().iterator();
-                while (entityListeners.hasNext()) {
-                    EntityListener listener = (EntityListener) entityListeners.next();
+                for (EntityListener listener : entity.getEntityListeners()) {
                     Object listenerInstance = createListener(listener);
 
                     CallbackDescriptor[] callbacks = listener
@@ -157,12 +146,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                             .getCallbacks();
                     for (int i = 0; i < callbacks.length; i++) {
 
-                        Iterator callbackMethods = callbacks[i]
-                                .getCallbackMethods()
-                                .iterator();
-                        while (callbackMethods.hasNext()) {
-                            String method = (String) callbackMethods.next();
-
+                        for (String method : callbacks[i].getCallbackMethods()) {
                             // note that callbacks[i].getCallbackType() == i
                             callbackRegistry.addListener(
                                     i,
@@ -175,12 +159,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
                 CallbackDescriptor[] callbacks = entity.getCallbackMap().getCallbacks();
                 for (int i = 0; i < callbacks.length; i++) {
-                    Iterator callbackMethods = callbacks[i]
-                            .getCallbackMethods()
-                            .iterator();
-                    while (callbackMethods.hasNext()) {
-                        String method = (String) callbackMethods.next();
-
+                    for (String method : callbacks[i].getCallbackMethods()) {
                         // note that callbacks[i].getCallbackType() == i
                         callbackRegistry.addListener(i, entityClass, method);
                     }
@@ -195,7 +174,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Creates a listener instance.
      */
     private Object createListener(EntityListener listener) {
-        Class listenerClass;
+        Class<?> listenerClass;
 
         try {
             listenerClass = Util.getJavaClass(listener.getClassName());
@@ -257,9 +236,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                     EntityResolver resolver = new ClientEntityResolver();
 
                     // translate to client DataMaps
-                    Iterator it = getDataMaps().iterator();
-                    while (it.hasNext()) {
-                        DataMap map = (DataMap) it.next();
+                    for (DataMap map : getDataMaps()) {
                         DataMap clientMap = map.getClientDataMap(this);
 
                         if (clientMap != null) {
@@ -433,16 +410,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
             }
 
             // index stored procedures
-            Iterator procedures = map.getProcedures().iterator();
-            while (procedures.hasNext()) {
-                Procedure proc = (Procedure) procedures.next();
+            for (Procedure proc : map.getProcedures()) {
                 procedureCache.put(proc.getName(), proc);
             }
 
             // index queries
-            Iterator queries = map.getQueries().iterator();
-            while (queries.hasNext()) {
-                Query query = (Query) queries.next();
+            for (Query query : map.getQueries()) {
                 String name = query.getName();
                 Object existingQuery = queryCache.put(name, query);
 
@@ -454,9 +427,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
 
         // restart the map iterator to index inheritance
-        Iterator mapIterator2 = maps.iterator();
-        while (mapIterator2.hasNext()) {
-            DataMap map = (DataMap) mapIterator2.next();
+        for (DataMap map : maps) {
 
             // index ObjEntity inheritance
             for (ObjEntity oe : map.getObjEntities()) {
@@ -505,9 +476,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             return null;
         }
 
-        Iterator it = maps.iterator();
-        while (it.hasNext()) {
-            DataMap map = (DataMap) it.next();
+        for (DataMap map : maps) {
             if (mapName.equals(map.getName())) {
                 return map;
             }
@@ -536,7 +505,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @return the required DbEntity, or null if none matches the specifier
      * @deprecated since 3.0 - lookup DbEntity via ObjEntity instead.
      */
-    public synchronized DbEntity lookupDbEntity(Class aClass) {
+    public synchronized DbEntity lookupDbEntity(Class<?> aClass) {
         ObjEntity oe = lookupObjEntity(aClass);
         return oe != null ? oe.getDbEntity() : null;
     }
@@ -582,7 +551,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * 
      * @return the required ObjEntity or null if there is none that matches the specifier
      */
-    public synchronized ObjEntity lookupObjEntity(Class aClass) {
+    public synchronized ObjEntity lookupObjEntity(Class<?> aClass) {
         if (!indexedByClass) {
             throw new CayenneRuntimeException("Class index is disabled.");
         }
@@ -608,7 +577,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             }
         }
         else if (object instanceof Class) {
-            return lookupObjEntity((Class) object);
+            return lookupObjEntity((Class<?>) object);
         }
 
         return lookupObjEntity(object.getClass());
@@ -764,12 +733,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
             // since ClassDescriptorMap is not synchronized, we need to prefill it with
             // entity proxies here.
-            Iterator maps = this.maps.iterator();
-            while (maps.hasNext()) {
-                DataMap map = (DataMap) maps.next();
-                Iterator entities = map.getObjEntityMap().keySet().iterator();
-                while (entities.hasNext()) {
-                    classDescriptorMap.getDescriptor((String) entities.next());
+            for (DataMap map : maps) {
+                for (String entityName : map.getObjEntityMap().keySet()) {
+                    classDescriptorMap.getDescriptor(entityName);
                 }
             }
 
