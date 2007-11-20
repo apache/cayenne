@@ -133,7 +133,7 @@ public class MapLoader extends DefaultHandler {
     private Map<String, EndClosure> endTagOpMap;
     private String currentTag;
     private StringBuilder charactersBuffer;
-    private Map<String, String> mapProperties;
+    private Map<String, Object> mapProperties;
 
     public MapLoader() {
         // compile tag processors.
@@ -1050,7 +1050,7 @@ public class MapLoader extends DefaultHandler {
         }
 
         if (mapProperties == null) {
-            mapProperties = new TreeMap<String, String>();
+            mapProperties = new TreeMap<String, Object>();
         }
 
         mapProperties.put(name, value);

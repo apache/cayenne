@@ -67,20 +67,20 @@ public interface MappingNamespace {
     /**
      * Returns all DbEntities in the namespace.
      */
-    Collection getDbEntities();
+    Collection<DbEntity> getDbEntities();
 
     /**
      * Returns all ObjEntities in the namespace.
      */
-    Collection getObjEntities();
+    Collection<ObjEntity> getObjEntities();
 
     /**
      * Returns all Procedures in the namespace.
      */
-    Collection getProcedures();
+    Collection<Procedure> getProcedures();
 
     /**
      * Returns all Queries in the namespace.
      */
-    Collection getQueries();
+    Collection<Query> getQueries();
 }

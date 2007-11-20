@@ -21,7 +21,6 @@ package org.apache.cayenne.map;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -40,14 +39,14 @@ import org.apache.cayenne.util.XMLSerializable;
 public class Embeddable implements XMLSerializable, Serializable {
 
     protected String className;
-    protected SortedMap attributes;
+    protected SortedMap<String, EmbeddableAttribute> attributes;
 
     public Embeddable() {
         this(null);
     }
 
     public Embeddable(String className) {
-        this.attributes = new TreeMap();
+        this.attributes = new TreeMap<String, EmbeddableAttribute>();
         this.className = className;
     }
 
@@ -56,21 +55,19 @@ public class Embeddable implements XMLSerializable, Serializable {
      * <code>dbAttribute</code> parameter. Returns null if no such attribute is found.
      */
     public EmbeddableAttribute getAttributeForDbPath(String dbPath) {
-        Iterator it = attributes.values().iterator();
-        while (it.hasNext()) {
-            EmbeddableAttribute attribute = (EmbeddableAttribute) it.next();
+        for (EmbeddableAttribute attribute : attributes.values()) {
             if (dbPath.equals(attribute.getDbAttributeName())) {
                 return attribute;
             }
         }
-        
+
         return null;
     }
 
     /**
      * Returns an unmodifiable sorted map of embeddable attributes.
      */
-    public SortedMap getAttributeMap() {
+    public SortedMap<String, EmbeddableAttribute> getAttributeMap() {
         // create a new instance ... Caching unmodifiable map causes
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableSortedMap(attributes);
@@ -79,7 +76,7 @@ public class Embeddable implements XMLSerializable, Serializable {
     /**
      * Returns an unmodifiable collection of embeddable attributes.
      */
-    public Collection getAttributes() {
+    public Collection<EmbeddableAttribute> getAttributes() {
         // create a new instance. Caching unmodifiable collection causes
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableCollection(attributes.values());

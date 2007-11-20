@@ -114,13 +114,13 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     protected boolean clientSupported;
     protected String defaultClientPackage;
 
-    private SortedMap embeddablesMap;
-    private SortedMap objEntityMap;
-    private SortedMap dbEntityMap;
-    private SortedMap procedureMap;
-    private SortedMap queryMap;
+    private SortedMap<String, Embeddable> embeddablesMap;
+    private SortedMap<String, ObjEntity> objEntityMap;
+    private SortedMap<String, DbEntity> dbEntityMap;
+    private SortedMap<String, Procedure> procedureMap;
+    private SortedMap<String, Query> queryMap;
 
-    private List defaultEntityListeners;
+    private List<EntityListener> defaultEntityListeners;
 
     /**
      * Creates a new unnamed DataMap.
@@ -136,13 +136,13 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         this(mapName, Collections.EMPTY_MAP);
     }
 
-    public DataMap(String mapName, Map properties) {
-        embeddablesMap = new TreeMap();
-        objEntityMap = new TreeMap();
-        dbEntityMap = new TreeMap();
-        procedureMap = new TreeMap();
-        queryMap = new TreeMap();
-        defaultEntityListeners = new ArrayList(3);
+    public DataMap(String mapName, Map<String, Object> properties) {
+        embeddablesMap = new TreeMap<String, Embeddable>();
+        objEntityMap = new TreeMap<String, ObjEntity>();
+        dbEntityMap = new TreeMap<String, DbEntity>();
+        procedureMap = new TreeMap<String, Procedure>();
+        queryMap = new TreeMap<String, Query>();
+        defaultEntityListeners = new ArrayList<EntityListener>(3);
 
         setName(mapName);
         initWithProperties(properties);
@@ -154,7 +154,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @since 1.1
      */
-    public void initWithProperties(Map properties) {
+    public void initWithProperties(Map<String, Object> properties) {
         // must init defaults even if properties are empty
         if (properties == null) {
             properties = Collections.EMPTY_MAP;
@@ -289,9 +289,9 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         encodeOBJRelationshipsAsXML(getObjEntityMap(), encoder);
         encoder.print(getQueryMap());
 
-        //write entity listeners
-        for(Iterator i = getDefaultEntityListeners().iterator(); i.hasNext();) {
-            EntityListener entityListener = (EntityListener)i.next();
+        // write entity listeners
+        for (Iterator i = getDefaultEntityListeners().iterator(); i.hasNext();) {
+            EntityListener entityListener = (EntityListener) i.next();
             entityListener.encodeAsXML(encoder);
         }
 
@@ -323,7 +323,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
             ObjEntity entity = (ObjEntity) entry.getValue();
-            
+
             // filter out synthetic
             Iterator relationships = entity.getDeclaredRelationships().iterator();
             while (relationships.hasNext()) {
@@ -401,7 +401,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * Returns a sorted unmodifiable map of ObjEntities contained in this DataMap, keyed
      * by ObjEntity name.
      */
-    public SortedMap getObjEntityMap() {
+    public SortedMap<String, ObjEntity> getObjEntityMap() {
         return Collections.unmodifiableSortedMap(objEntityMap);
     }
 
@@ -409,7 +409,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * Returns a sorted unmodifiable map of DbEntities contained in this DataMap, keyed by
      * DbEntity name.
      */
-    public SortedMap getDbEntityMap() {
+    public SortedMap<String, DbEntity> getDbEntityMap() {
         return Collections.unmodifiableSortedMap(dbEntityMap);
     }
 
@@ -506,7 +506,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * @since 1.1
      */
-    public SortedMap getQueryMap() {
+    public SortedMap<String, Query> getQueryMap() {
         return Collections.unmodifiableSortedMap(queryMap);
     }
 
@@ -515,7 +515,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @since 1.1
      */
-    public Collection getQueries() {
+    public Collection<Query> getQueries() {
         return Collections.unmodifiableCollection(queryMap.values());
     }
 
@@ -603,14 +603,14 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * Returns an unmodifiable collection of ObjEntities stored in this DataMap.
      */
-    public Collection getObjEntities() {
+    public Collection<ObjEntity> getObjEntities() {
         return Collections.unmodifiableCollection(objEntityMap.values());
     }
 
     /**
      * @since 3.0
      */
-    public Map getEmbeddableMap() {
+    public Map<String, Embeddable> getEmbeddableMap() {
         return Collections.unmodifiableMap(embeddablesMap);
     }
 
@@ -619,7 +619,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @since 3.0
      */
-    public Collection getEmbeddables() {
+    public Collection<Embeddable> getEmbeddables() {
         return Collections.unmodifiableCollection(embeddablesMap.values());
     }
 
@@ -627,7 +627,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 3.0
      */
     public Embeddable getEmbeddable(String className) {
-        Embeddable e = (Embeddable) embeddablesMap.get(className);
+        Embeddable e = embeddablesMap.get(className);
         if (e != null) {
             return e;
         }
@@ -642,7 +642,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @since 3.0
      */
-    public List getDefaultEntityListeners() {
+    public List<EntityListener> getDefaultEntityListeners() {
         return Collections.unmodifiableList(defaultEntityListeners);
     }
 
@@ -686,9 +686,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 3.0
      */
     public EntityListener getDefaultEntityListener(String className) {
-        Iterator it = defaultEntityListeners.iterator();
-        while (it.hasNext()) {
-            EntityListener next = (EntityListener) it.next();
+        for (EntityListener next : defaultEntityListeners) {
             if (className.equals(next.getClassName())) {
                 return next;
             }
@@ -700,7 +698,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * Returns all DbEntities in this DataMap.
      */
-    public Collection getDbEntities() {
+    public Collection<DbEntity> getDbEntities() {
         return Collections.unmodifiableCollection(dbEntityMap.values());
     }
 
@@ -709,7 +707,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * be searched.
      */
     public DbEntity getDbEntity(String dbEntityName) {
-        DbEntity entity = (DbEntity) dbEntityMap.get(dbEntityName);
+        DbEntity entity = dbEntityMap.get(dbEntityName);
 
         if (entity != null) {
             return entity;
@@ -728,10 +726,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
             return null;
         }
 
-        Iterator it = getObjEntityMap().entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            ObjEntity entity = (ObjEntity) entry.getValue();
+        for (ObjEntity entity : getObjEntities()) {
             if (javaClassName.equals(entity.getClassName())) {
                 return entity;
             }
@@ -745,7 +740,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * search a parent EntityNamespace.
      */
     public ObjEntity getObjEntity(String objEntityName) {
-        ObjEntity entity = (ObjEntity) objEntityMap.get(objEntityName);
+        ObjEntity entity = objEntityMap.get(objEntityName);
         if (entity != null) {
             return entity;
         }
@@ -756,25 +751,22 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * Returns all ObjEntities mapped to the given DbEntity.
      */
-    public Collection getMappedEntities(DbEntity dbEntity) {
+    public Collection<ObjEntity> getMappedEntities(DbEntity dbEntity) {
         if (dbEntity == null) {
             return Collections.EMPTY_LIST;
         }
 
-        Collection allEntities = (namespace != null)
-                ? namespace.getObjEntities()
-                : getObjEntities();
+        Collection<ObjEntity> allEntities = (namespace != null) ? namespace
+                .getObjEntities() : getObjEntities();
 
         if (allEntities.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
 
-        Collection result = new ArrayList();
-        Iterator iter = allEntities.iterator();
-        while (iter.hasNext()) {
-            ObjEntity objEnt = (ObjEntity) iter.next();
-            if (objEnt.getDbEntity() == dbEntity) {
-                result.add(objEnt);
+        Collection<ObjEntity> result = new ArrayList<ObjEntity>();
+        for (ObjEntity entity : allEntities) {
+            if (entity.getDbEntity() == dbEntity) {
+                result.add(entity);
             }
         }
 
@@ -885,7 +877,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * Returns stored procedures associated with this DataMap.
      */
-    public Collection getProcedures() {
+    public Collection<Procedure> getProcedures() {
         return Collections.unmodifiableCollection(procedureMap.values());
     }
 
@@ -894,7 +886,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * Procedure is not found in this DataMap, a parent EntityNamcespace is searched.
      */
     public Procedure getProcedure(String procedureName) {
-        Procedure procedure = (Procedure) procedureMap.get(procedureName);
+        Procedure procedure = procedureMap.get(procedureName);
         if (procedure != null) {
             return procedure;
         }
@@ -935,7 +927,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * Returns a sorted unmodifiable map of Procedures in this DataMap keyed by name.
      */
-    public SortedMap getProcedureMap() {
+    public SortedMap<String, Procedure> getProcedureMap() {
         return Collections.unmodifiableSortedMap(procedureMap);
     }
 
@@ -1055,7 +1047,10 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     public void dbEntityChanged(EntityEvent e) {
         Entity entity = e.getEntity();
         if (entity instanceof DbEntity) {
-            ((DbEntity) entity).dbEntityChanged(e);
+
+            DbEntity dbEntity = (DbEntity) entity;
+
+            dbEntity.dbEntityChanged(e);
 
             // finish up the name change here because we
             // do not have direct access to the dbEntityMap
@@ -1064,7 +1059,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
                 dbEntityMap.remove(e.getOldName());
 
                 // add the entity back in with the new name
-                dbEntityMap.put(e.getNewName(), entity);
+                dbEntityMap.put(e.getNewName(), dbEntity);
 
                 // important - clear parent namespace:
                 MappingNamespace ns = getNamespace();
@@ -1131,7 +1126,9 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     public void objEntityChanged(EntityEvent e) {
         Entity entity = e.getEntity();
         if (entity instanceof ObjEntity) {
-            ((ObjEntity) entity).objEntityChanged(e);
+
+            ObjEntity objEntity = (ObjEntity) entity;
+            objEntity.objEntityChanged(e);
 
             // finish up the name change here because we
             // do not have direct access to the objEntityMap
@@ -1140,7 +1137,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
                 objEntityMap.remove(e.getOldName());
 
                 // add the entity back in with the new name
-                objEntityMap.put(e.getNewName(), entity);
+                objEntityMap.put(e.getNewName(), objEntity);
 
                 // important - clear parent namespace:
                 MappingNamespace ns = getNamespace();

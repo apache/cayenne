@@ -51,7 +51,7 @@ public class DbRelationship extends Relationship {
             "PropertyDidChange");
 
     // The columns through which the join is implemented.
-    protected List joins = new ArrayList();
+    protected List<DbJoin> joins = new ArrayList<DbJoin>(2);
 
     // Is relationship from source to target points to dependent primary
     // key (primary key column of destination table that is also a FK to the source
@@ -295,7 +295,7 @@ public class DbRelationship extends Relationship {
      * Returns a list of joins. List is returned by reference, so any modifications of the
      * list will affect this relationship.
      */
-    public List getJoins() {
+    public List<DbJoin> getJoins() {
         return joins;
     }
 

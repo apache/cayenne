@@ -21,7 +21,6 @@ package org.apache.cayenne.map;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -39,10 +38,10 @@ import org.apache.cayenne.util.XMLEncoder;
 public class EmbeddedAttribute extends Attribute {
 
     protected String type;
-    protected SortedMap attributeOverrides;
+    protected SortedMap<String, String> attributeOverrides;
 
     public EmbeddedAttribute() {
-        attributeOverrides = new TreeMap();
+        attributeOverrides = new TreeMap<String, String>();
     }
 
     public EmbeddedAttribute(String name) {
@@ -73,16 +72,12 @@ public class EmbeddedAttribute extends Attribute {
         encoder.println('>');
 
         encoder.indent(1);
-        
-        
-        
-        Iterator it = attributeOverrides.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry e = (Map.Entry) it.next();
+
+        for (Map.Entry<String, String> e : attributeOverrides.entrySet()) {
             encoder.print("<embeddable-attribute-override name=\"");
-            encoder.print(e.getKey().toString());
+            encoder.print(e.getKey());
             encoder.print("\" db-attribute-path=\"");
-            encoder.print(e.getValue().toString());
+            encoder.print(e.getValue());
             encoder.println("\"/>");
         }
 
@@ -90,7 +85,7 @@ public class EmbeddedAttribute extends Attribute {
         encoder.println("</embedded-attribute>");
     }
 
-    public Map getAttributeOverrides() {
+    public Map<String, String> getAttributeOverrides() {
         return Collections.unmodifiableMap(attributeOverrides);
     }
 
@@ -137,11 +132,9 @@ public class EmbeddedAttribute extends Attribute {
 
         EmbeddableAttribute ea = null;
 
-        Iterator overrides = attributeOverrides.entrySet().iterator();
-        while (overrides.hasNext()) {
-            Map.Entry override = (Map.Entry) overrides.next();
+        for (Map.Entry<String, String> override : attributeOverrides.entrySet()) {
             if (dbPath.equals(override.getValue())) {
-                ea = e.getAttribute(override.getKey().toString());
+                ea = e.getAttribute(override.getKey());
                 break;
             }
         }
@@ -179,17 +172,17 @@ public class EmbeddedAttribute extends Attribute {
      * Returns a Collection of ObjAttributes of an embedded object taking into account
      * column name overrides.
      */
-    public Collection getAttributes() {
+    public Collection<ObjAttribute> getAttributes() {
         Embeddable e = getEmbeddable();
         if (e == null) {
             return Collections.EMPTY_LIST;
         }
 
-        Collection embeddableAttributes = e.getAttributes();
-        Collection objectAttributes = new ArrayList(embeddableAttributes.size());
-        Iterator it = embeddableAttributes.iterator();
-        while (it.hasNext()) {
-            EmbeddableAttribute ea = (EmbeddableAttribute) it.next();
+        Collection<EmbeddableAttribute> embeddableAttributes = e.getAttributes();
+        Collection<ObjAttribute> objectAttributes = new ArrayList<ObjAttribute>(
+                embeddableAttributes.size());
+
+        for (EmbeddableAttribute ea : embeddableAttributes) {
             objectAttributes.add(makeObjAttribute(ea));
         }
 
@@ -215,7 +208,7 @@ public class EmbeddedAttribute extends Attribute {
      * Returns Java class of an object property described by this attribute. Wraps any
      * thrown exceptions into CayenneRuntimeException.
      */
-    public Class getJavaClass() {
+    public Class<?> getJavaClass() {
         if (this.getType() == null) {
             return null;
         }

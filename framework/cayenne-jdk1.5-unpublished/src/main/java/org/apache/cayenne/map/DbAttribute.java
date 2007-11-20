@@ -178,10 +178,8 @@ public class DbAttribute extends Attribute {
         Iterator relationships = getEntity().getRelationships().iterator();
         while (relationships.hasNext()) {
             DbRelationship relationship = (DbRelationship) relationships.next();
-            Iterator joins = relationship.getJoins().iterator();
 
-            while (joins.hasNext()) {
-                DbJoin join = (DbJoin) joins.next();
+            for (DbJoin join : relationship.getJoins()) {
                 if (name.equals(join.getSourceName())) {
                     DbAttribute target = join.getTarget();
                     if (target != null && target.isPrimaryKey()) {
