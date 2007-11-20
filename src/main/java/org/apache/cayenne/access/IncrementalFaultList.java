@@ -59,7 +59,7 @@ import org.apache.cayenne.util.Util;
  * 
  * @author Andrus Adamchik
  */
-public class IncrementalFaultList implements List {
+public class IncrementalFaultList<E> implements List<E> {
 
     protected int pageSize;
     protected List elements;
@@ -92,7 +92,7 @@ public class IncrementalFaultList implements List {
      * Creates a new list copying settings from another list. Elements WILL NOT be copied
      * or fetched.
      */
-    public IncrementalFaultList(IncrementalFaultList list) {
+    public IncrementalFaultList(IncrementalFaultList<E> list) {
         this.pageSize = list.pageSize;
         this.internalQuery = list.internalQuery;
         this.dataContext = list.dataContext;
@@ -100,7 +100,7 @@ public class IncrementalFaultList implements List {
         this.maxFetchSize = list.maxFetchSize;
         this.rowWidth = list.rowWidth;
         this.helper = list.helper;
-        elements = Collections.synchronizedList(new ArrayList());
+        elements = Collections.synchronizedList(new ArrayList<Object>());
     }
 
     /**
@@ -154,9 +154,7 @@ public class IncrementalFaultList implements List {
 
             // I guess this check is redundant, as custom attributes warrant data rows
             if (!select.isFetchingCustomAttributes()) {
-                Iterator pk = rootEntity.getDbEntity().getPrimaryKeys().iterator();
-                while (pk.hasNext()) {
-                    DbAttribute attribute = (DbAttribute) pk.next();
+                for (DbAttribute attribute : rootEntity.getDbEntity().getPrimaryKeys()) {
                     clone.addCustomDbAttribute(attribute.getName());
                 }
             }
@@ -165,7 +163,7 @@ public class IncrementalFaultList implements List {
             resolvesFirstPage = false;
         }
 
-        List elementsUnsynced = new ArrayList();
+        List<Object> elementsUnsynced = new ArrayList<Object>();
         fillIn(query, elementsUnsynced, resolvesFirstPage);
         this.elements = Collections.synchronizedList(elementsUnsynced);
     }
@@ -182,8 +180,8 @@ public class IncrementalFaultList implements List {
      * fully resolved. For the rest of the list, only ObjectIds are read.
      * 
      * @deprecated since 3.0 this method is not called and is deprecated in favor of
-     *             {@link #fillIn(Query, List, boolean)}, as this method performed unneeded
-     *             synchronization.
+     *             {@link #fillIn(Query, List, boolean)}, as this method performed
+     *             unneeded synchronization.
      * @since 1.0.6
      */
     protected void fillIn(Query query) {
@@ -281,7 +279,7 @@ public class IncrementalFaultList implements List {
         if (internalQuery.isFetchingDataRows()) {
             // both unresolved and resolved objects are represented
             // as Maps, so no instanceof check is possible.
-            Map map = (Map) object;
+            Map<?, ?> map = (Map<?, ?>) object;
             int size = map.size();
             return size < rowWidth;
         }
@@ -335,8 +333,8 @@ public class IncrementalFaultList implements List {
                 toIndex = elements.size();
             }
 
-            List quals = new ArrayList(pageSize);
-            List ids = new ArrayList(pageSize);
+            List<Expression> quals = new ArrayList<Expression>(pageSize);
+            List<Object> ids = new ArrayList<Object>(pageSize);
             for (int i = fromIndex; i < toIndex; i++) {
                 Object obj = elements.get(i);
                 if (isUnresolved(obj)) {
@@ -485,7 +483,7 @@ public class IncrementalFaultList implements List {
      * to getPageSize()) at a time as necessary - when retrieved with next() or
      * previous().
      */
-    public ListIterator listIterator() {
+    public ListIterator<E> listIterator() {
         return new IncrementalListIterator(0);
     }
 
@@ -497,7 +495,7 @@ public class IncrementalFaultList implements List {
      * one. DataObjects are resolved a page at a time (according to getPageSize()) as
      * necessary - when retrieved with next() or previous().
      */
-    public ListIterator listIterator(int index) {
+    public ListIterator<E> listIterator(int index) {
         if (index < 0 || index > size()) {
             throw new IndexOutOfBoundsException("Index: " + index);
         }
@@ -509,10 +507,10 @@ public class IncrementalFaultList implements List {
      * Return an iterator for this list. DataObjects are resolved a page (according to
      * getPageSize()) at a time as necessary - when retrieved with next().
      */
-    public Iterator iterator() {
+    public Iterator<E> iterator() {
         // by virtue of get(index)'s implementation, resolution of ids into
         // objects will occur on pageSize boundaries as necessary.
-        return new Iterator() {
+        return new Iterator<E>() {
 
             int listIndex = 0;
 
@@ -520,7 +518,7 @@ public class IncrementalFaultList implements List {
                 return (listIndex < elements.size());
             }
 
-            public Object next() {
+            public E next() {
                 if (listIndex >= elements.size())
                     throw new NoSuchElementException("no more elements");
 
@@ -558,7 +556,7 @@ public class IncrementalFaultList implements List {
     /**
      * @see java.util.Collection#addAll(Collection)
      */
-    public boolean addAll(Collection c) {
+    public boolean addAll(Collection<? extends E> c) {
         synchronized (elements) {
             return elements.addAll(c);
         }
@@ -567,7 +565,7 @@ public class IncrementalFaultList implements List {
     /**
      * @see java.util.List#addAll(int, Collection)
      */
-    public boolean addAll(int index, Collection c) {
+    public boolean addAll(int index, Collection<? extends E> c) {
         synchronized (elements) {
             return elements.addAll(index, c);
         }
@@ -594,16 +592,13 @@ public class IncrementalFaultList implements List {
     /**
      * @see java.util.Collection#containsAll(Collection)
      */
-    public boolean containsAll(Collection c) {
+    public boolean containsAll(Collection<?> c) {
         synchronized (elements) {
             return elements.containsAll(c);
         }
     }
 
-    /**
-     * @see java.util.List#get(int)
-     */
-    public Object get(int index) {
+    public E get(int index) {
         synchronized (elements) {
             Object o = elements.get(index);
 
@@ -612,10 +607,10 @@ public class IncrementalFaultList implements List {
                 int pageStart = pageIndex(index) * pageSize;
                 resolveInterval(pageStart, pageStart + pageSize);
 
-                return elements.get(index);
+                return (E) elements.get(index);
             }
             else {
-                return o;
+                return (E) o;
             }
         }
     }
@@ -636,44 +631,32 @@ public class IncrementalFaultList implements List {
         }
     }
 
-    /**
-     * @see java.util.List#lastIndexOf(Object)
-     */
     public int lastIndexOf(Object o) {
         return helper.lastIndexOfObject(o);
     }
 
-    /**
-     * @see java.util.List#remove(int)
-     */
-    public Object remove(int index) {
+    public E remove(int index) {
         synchronized (elements) {
-            return elements.remove(index);
+            // have to resolve the page to return correct object
+            E object = get(index);
+            elements.remove(index);
+            return object;
         }
     }
 
-    /**
-     * @see java.util.Collection#remove(Object)
-     */
     public boolean remove(Object o) {
         synchronized (elements) {
             return elements.remove(o);
         }
     }
 
-    /**
-     * @see java.util.Collection#removeAll(Collection)
-     */
-    public boolean removeAll(Collection c) {
+    public boolean removeAll(Collection<?> c) {
         synchronized (elements) {
             return elements.removeAll(c);
         }
     }
 
-    /**
-     * @see java.util.Collection#retainAll(Collection)
-     */
-    public boolean retainAll(Collection c) {
+    public boolean retainAll(Collection<?> c) {
         synchronized (elements) {
             return elements.retainAll(c);
         }
@@ -699,7 +682,7 @@ public class IncrementalFaultList implements List {
         }
     }
 
-    public List subList(int fromIndex, int toIndex) {
+    public List<E> subList(int fromIndex, int toIndex) {
         synchronized (elements) {
             resolveInterval(fromIndex, toIndex);
             return elements.subList(fromIndex, toIndex);
@@ -712,13 +695,10 @@ public class IncrementalFaultList implements List {
         return elements.toArray();
     }
 
-    /**
-     * @see java.util.Collection#toArray(Object[])
-     */
-    public Object[] toArray(Object[] a) {
+    public <T> T[] toArray(T[] a) {
         resolveAll();
 
-        return elements.toArray(a);
+        return (T[]) elements.toArray(a);
     }
 
     /**
@@ -891,7 +871,7 @@ public class IncrementalFaultList implements List {
         }
     }
 
-    class IncrementalListIterator implements ListIterator {
+    class IncrementalListIterator implements ListIterator<E> {
 
         // by virtue of get(index)'s implementation, resolution of ids into
         // objects will occur on pageSize boundaries as necessary.
@@ -914,7 +894,7 @@ public class IncrementalFaultList implements List {
             return (listIndex > 0);
         }
 
-        public Object next() {
+        public E next() {
             if (listIndex >= elements.size())
                 throw new NoSuchElementException("at the end of the list");
 
@@ -925,7 +905,7 @@ public class IncrementalFaultList implements List {
             return listIndex;
         }
 
-        public Object previous() {
+        public E previous() {
             if (listIndex < 1)
                 throw new NoSuchElementException("at the beginning of the list");
 
