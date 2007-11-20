@@ -22,7 +22,6 @@ package org.apache.cayenne.query;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -42,7 +41,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  */
 public class NamedQuery extends IndirectQuery {
 
-    protected Map parameters;
+    protected Map<String, ?> parameters;
 
     protected boolean forceNoCache;
 
@@ -55,12 +54,12 @@ public class NamedQuery extends IndirectQuery {
         this(name, null);
     }
 
-    public NamedQuery(String name, Map parameters) {
+    public NamedQuery(String name, Map<String, ?> parameters) {
         this.name = name;
 
         // copy parameters map (among other things to make hessian serilaization work).
         if (parameters != null && !parameters.isEmpty()) {
-            this.parameters = new HashMap(parameters);
+            this.parameters = new HashMap<String, Object>(parameters);
         }
     }
 
@@ -132,17 +131,14 @@ public class NamedQuery extends IndirectQuery {
      * initial map with ObjectIds. This is needed so that a query could work uniformly on
      * the server and client sides.
      */
-    Map normalizedParameters() {
+    Map<String, ?> normalizedParameters() {
         if (parameters == null || parameters.isEmpty()) {
             return Collections.EMPTY_MAP;
         }
 
-        Map substitutes = new HashMap(parameters);
+        Map<String, Object> substitutes = new HashMap<String, Object>(parameters);
 
-        Iterator it = parameters.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-
+        for (Map.Entry<String, ?> entry : parameters.entrySet()) {
             Object value = entry.getValue();
 
             if (value instanceof Persistent) {
@@ -232,10 +228,9 @@ public class NamedQuery extends IndirectQuery {
         }
 
         EqualsBuilder builder = new EqualsBuilder();
-        Iterator entries = parameters.entrySet().iterator();
-        while (entries.hasNext()) {
-            Map.Entry entry = (Map.Entry) entries.next();
-            Object entryKey = entry.getKey();
+
+        for (Map.Entry<String, ?> entry : parameters.entrySet()) {
+            String entryKey = entry.getKey();
             Object entryValue = entry.getValue();
 
             if (entryValue == null) {
