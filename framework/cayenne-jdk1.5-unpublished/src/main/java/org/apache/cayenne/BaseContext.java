@@ -45,7 +45,7 @@ public abstract class BaseContext implements ObjectContext {
 
     public abstract void deleteObject(Object object) throws DeleteDenyException;
 
-    public abstract Collection deletedObjects();
+    public abstract Collection<?> deletedObjects();
 
     public DataChannel getChannel() {
         return channel;
@@ -57,17 +57,17 @@ public abstract class BaseContext implements ObjectContext {
 
     public abstract Persistent localObject(ObjectId id, Object prototype);
 
-    public abstract Collection modifiedObjects();
+    public abstract Collection<?> modifiedObjects();
 
     public abstract <T> T newObject(Class<T> persistentClass);
 
     public abstract void registerNewObject(Object object);
 
-    public abstract Collection newObjects();
+    public abstract Collection<?> newObjects();
 
     public abstract QueryResponse performGenericQuery(Query query);
 
-    public abstract List performQuery(Query query);
+    public abstract List<?> performQuery(Query query);
 
     /**
      * @deprecated since 3.0 this method is replaced by
@@ -81,7 +81,7 @@ public abstract class BaseContext implements ObjectContext {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {
 
             ObjectId oid = object.getObjectId();
-            List objects = performQuery(new ObjectIdQuery(oid, false, ObjectIdQuery.CACHE));
+            List<?> objects = performQuery(new ObjectIdQuery(oid, false, ObjectIdQuery.CACHE));
 
             if (objects.size() == 0) {
                 throw new FaultFailureException(
@@ -132,5 +132,5 @@ public abstract class BaseContext implements ObjectContext {
 
     public abstract void rollbackChangesLocally();
 
-    public abstract Collection uncommittedObjects();
+    public abstract Collection<?> uncommittedObjects();
 }

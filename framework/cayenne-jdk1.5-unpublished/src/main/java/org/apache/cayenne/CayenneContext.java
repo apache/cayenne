@@ -337,9 +337,9 @@ public class CayenneContext extends BaseContext {
     /**
      * Runs a query, returning result as list.
      */
-    public List performQuery(Query query) {
-        List result = onQuery(this, query).firstList();
-        return result != null ? result : new ArrayList(1);
+    public List<?> performQuery(Query query) {
+        List<?> result = onQuery(this, query).firstList();
+        return result != null ? result : new ArrayList<Object>(1);
     }
 
     public QueryResponse performGenericQuery(Query query) {
@@ -448,25 +448,25 @@ public class CayenneContext extends BaseContext {
         }
     }
 
-    public Collection uncommittedObjects() {
+    public Collection<?> uncommittedObjects() {
         synchronized (graphManager) {
             return graphManager.dirtyNodes();
         }
     }
 
-    public Collection deletedObjects() {
+    public Collection<?> deletedObjects() {
         synchronized (graphManager) {
             return graphManager.dirtyNodes(PersistenceState.DELETED);
         }
     }
 
-    public Collection modifiedObjects() {
+    public Collection<?> modifiedObjects() {
         synchronized (graphManager) {
             return graphManager.dirtyNodes(PersistenceState.MODIFIED);
         }
     }
 
-    public Collection newObjects() {
+    public Collection<?> newObjects() {
         synchronized (graphManager) {
             return graphManager.dirtyNodes(PersistenceState.NEW);
         }

@@ -465,7 +465,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Returns a list of objects that are registered with this DataContext and have a
      * state PersistenceState.NEW
      */
-    public Collection newObjects() {
+    public Collection<?> newObjects() {
         return getObjectStore().objectsInState(PersistenceState.NEW);
     }
 
@@ -473,7 +473,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Returns a list of objects that are registered with this DataContext and have a
      * state PersistenceState.DELETED
      */
-    public Collection deletedObjects() {
+    public Collection<?> deletedObjects() {
         return getObjectStore().objectsInState(PersistenceState.DELETED);
     }
 
@@ -481,7 +481,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Returns a list of objects that are registered with this DataContext and have a
      * state PersistenceState.MODIFIED
      */
-    public Collection modifiedObjects() {
+    public Collection<?> modifiedObjects() {
         return getObjectStore().objectsInState(PersistenceState.MODIFIED);
     }
 
@@ -490,7 +490,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
-    public Collection uncommittedObjects() {
+    public Collection<?> uncommittedObjects() {
 
         int len = getObjectStore().registeredObjectsCount();
         if (len == 0) {
@@ -498,7 +498,7 @@ public class DataContext extends BaseContext implements DataChannel {
         }
 
         // guess target collection size
-        Collection objects = new ArrayList(len > 100 ? len / 2 : len);
+        Collection<Object> objects = new ArrayList<Object>(len > 100 ? len / 2 : len);
 
         Iterator it = getObjectStore().getObjectIterator();
         while (it.hasNext()) {
@@ -1303,14 +1303,14 @@ public class DataContext extends BaseContext implements DataChannel {
      * @return A list of DataObjects or a DataRows, depending on the value returned by
      *         {@link QueryMetadata#isFetchingDataRows()}.
      */
-    public List performQuery(Query query) {
+    public List<?> performQuery(Query query) {
         query = nonNullDelegate().willPerformQuery(this, query);
         if (query == null) {
-            return new ArrayList(1);
+            return new ArrayList<Object>(1);
         }
 
-        List result = onQuery(this, query).firstList();
-        return result != null ? result : new ArrayList(1);
+        List<?> result = onQuery(this, query).firstList();
+        return result != null ? result : new ArrayList<Object>(1);
     }
 
     /**
@@ -1350,7 +1350,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.1
      */
-    public int[] performNonSelectingQuery(String queryName, Map parameters) {
+    public int[] performNonSelectingQuery(String queryName, Map<String, ?> parameters) {
         return performNonSelectingQuery(new NamedQuery(queryName, parameters));
     }
 
@@ -1366,7 +1366,7 @@ public class DataContext extends BaseContext implements DataChannel {
      *            is required in case a query uses caching.
      * @since 1.1
      */
-    public List performQuery(String queryName, boolean expireCachedLists) {
+    public List<?> performQuery(String queryName, boolean expireCachedLists) {
         return performQuery(queryName, Collections.EMPTY_MAP, expireCachedLists);
     }
 
@@ -1383,7 +1383,7 @@ public class DataContext extends BaseContext implements DataChannel {
      *            is required in case a query uses caching.
      * @since 1.1
      */
-    public List performQuery(String queryName, Map parameters, boolean expireCachedLists) {
+    public List<?> performQuery(String queryName, Map parameters, boolean expireCachedLists) {
         NamedQuery query = new NamedQuery(queryName, parameters);
         query.setForceNoCache(expireCachedLists);
         return performQuery(query);
