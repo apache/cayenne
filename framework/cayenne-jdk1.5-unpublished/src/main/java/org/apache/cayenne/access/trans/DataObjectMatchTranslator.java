@@ -72,7 +72,7 @@ public class DataObjectMatchTranslator {
 
             // match on target PK
             DbEntity ent = (DbEntity) rel.getTargetEntity();
-            Iterator pk = ent.getPrimaryKey().iterator();
+            Iterator pk = ent.getPrimaryKeys().iterator();
 
             // index by name
             while (pk.hasNext()) {

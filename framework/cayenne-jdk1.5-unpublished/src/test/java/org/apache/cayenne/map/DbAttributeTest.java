@@ -20,7 +20,7 @@
 package org.apache.cayenne.map;
 
 import java.sql.Types;
-import java.util.List;
+import java.util.Collection;
 
 import junit.framework.TestCase;
 
@@ -49,12 +49,12 @@ public class DbAttributeTest extends TestCase {
 
     public void testPrimaryKeyEmpty() {
         DbEntity dbe = new DbEntity("e");
-        assertNotNull(dbe.getPrimaryKey());
+        assertNotNull(dbe.getPrimaryKeys());
 
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
         dbe.addAttribute(a);
-        assertNotNull(dbe.getPrimaryKey());
-        assertEquals(0, dbe.getPrimaryKey().size());
+        assertNotNull(dbe.getPrimaryKeys());
+        assertEquals(0, dbe.getPrimaryKeys().size());
     }
 
     public void testPrimaryKeyAdded() {
@@ -62,26 +62,23 @@ public class DbAttributeTest extends TestCase {
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
         a.setPrimaryKey(true);
         dbe.addAttribute(a);
-        List pk = dbe.getPrimaryKey();
+        Collection<DbAttribute> pk = dbe.getPrimaryKeys();
         assertNotNull(pk);
         assertEquals(1, pk.size());
-        assertEquals(pk, dbe.getPrimaryKey());
     }
 
     public void testPrimaryKeyAttributeChanged() {
         DbEntity dbe = new DbEntity("e");
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
         dbe.addAttribute(a);
-        List pk = dbe.getPrimaryKey();
+        Collection<DbAttribute> pk = dbe.getPrimaryKeys();
         assertNotNull(pk);
         assertEquals(0, pk.size());
-        assertEquals(pk, dbe.getPrimaryKey());
 
         a.setPrimaryKey(true);
-        pk = dbe.getPrimaryKey();
+        pk = dbe.getPrimaryKeys();
         assertNotNull(pk);
         assertEquals(1, pk.size());
-        assertEquals(pk, dbe.getPrimaryKey());
     }
 
     public void testPrimaryKeyRemoved() {
@@ -89,33 +86,28 @@ public class DbAttributeTest extends TestCase {
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
         a.setPrimaryKey(true);
         dbe.addAttribute(a);
-        List pk = dbe.getPrimaryKey();
+        Collection<DbAttribute> pk = dbe.getPrimaryKeys();
         assertNotNull(pk);
         assertEquals(1, pk.size());
-        assertEquals(pk, dbe.getPrimaryKey());
 
         dbe.removeAttribute(a.getName());
-        pk = dbe.getPrimaryKey();
+        pk = dbe.getPrimaryKeys();
         assertNotNull(pk);
-        assertEquals(0, pk.size());
-        assertEquals(pk, dbe.getPrimaryKey());
-    }
+        assertEquals(0, pk.size());    }
 
     public void testAttributesCleared() {
         DbEntity dbe = new DbEntity("e");
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
         a.setPrimaryKey(true);
         dbe.addAttribute(a);
-        List pk = dbe.getPrimaryKey();
+        Collection<DbAttribute> pk = dbe.getPrimaryKeys();
         assertNotNull(pk);
         assertEquals(1, pk.size());
-        assertEquals(pk, dbe.getPrimaryKey());
 
         dbe.clearAttributes();
-        pk = dbe.getPrimaryKey();
+        pk = dbe.getPrimaryKeys();
         assertNotNull(pk);
         assertEquals(0, pk.size());
-        assertEquals(pk, dbe.getPrimaryKey());
     }
 
     public void testAutoIncrement() throws Exception {

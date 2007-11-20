@@ -19,17 +19,17 @@
 
 package org.apache.cayenne;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * DataRow a map that holds values retrieved from the database for a given query row.
@@ -168,9 +168,9 @@ public class DataRow extends HashMap {
         // ... handle special case - PK.size == 1
         // use some not-so-significant optimizations...
 
-        List pk = entity.getPrimaryKey();
+        Collection<DbAttribute> pk = entity.getPrimaryKeys();
         if (pk.size() == 1) {
-            DbAttribute attribute = (DbAttribute) pk.get(0);
+            DbAttribute attribute = pk.iterator().next();
 
             String key = (prefix) ? namePrefix + attribute.getName() : attribute
                     .getName();
@@ -192,10 +192,7 @@ public class DataRow extends HashMap {
         // ... handle generic case - PK.size > 1
 
         Map idMap = new HashMap(pk.size() * 2);
-        Iterator it = pk.iterator();
-        while (it.hasNext()) {
-            DbAttribute attribute = (DbAttribute) it.next();
-
+        for (DbAttribute attribute : pk) {
             String key = (prefix) ? namePrefix + attribute.getName() : attribute
                     .getName();
 

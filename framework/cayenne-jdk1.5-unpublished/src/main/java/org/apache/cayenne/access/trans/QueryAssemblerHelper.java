@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -413,13 +414,13 @@ public abstract class QueryAssemblerHelper {
 
         DbJoin join = (DbJoin) joins.get(0);
 
-        DbAttribute att = null;
+        DbAttribute attribute = null;
 
         if (rel.isToMany()) {
             DbEntity ent = (DbEntity) join.getRelationship().getTargetEntity();
-            List pk = ent.getPrimaryKey();
+            Collection<DbAttribute> pk = ent.getPrimaryKeys();
             if (pk.size() != 1) {
-                StringBuffer msg = new StringBuffer();
+                StringBuilder msg = new StringBuilder();
                 msg
                     .append("DB_NAME expressions can only support ")
                     .append("targets with a single column PK. ")
@@ -430,12 +431,12 @@ public abstract class QueryAssemblerHelper {
                 throw new CayenneRuntimeException(msg.toString());
             }
 
-            att = (DbAttribute) pk.get(0);
+            attribute = pk.iterator().next();
         }
         else {
-            att = join.getSource();
+            attribute = join.getSource();
         }
 
-        processColumn(buf, att);
+        processColumn(buf, attribute);
     }
 }

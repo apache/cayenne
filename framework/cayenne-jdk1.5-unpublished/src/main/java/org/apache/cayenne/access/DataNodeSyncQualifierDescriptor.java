@@ -79,7 +79,7 @@ class DataNodeSyncQualifierDescriptor {
 
         // master PK columns
         if (entity.getDbEntity() == dbEntity) {
-            Iterator pkIt = entity.getDbEntity().getPrimaryKey().iterator();
+            Iterator pkIt = entity.getDbEntity().getPrimaryKeys().iterator();
             while (pkIt.hasNext()) {
                 final DbAttribute attribute = (DbAttribute) pkIt.next();
                 attributes.add(attribute);

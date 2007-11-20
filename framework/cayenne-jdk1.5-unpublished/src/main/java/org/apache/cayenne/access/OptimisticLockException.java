@@ -73,7 +73,7 @@ public class OptimisticLockException extends CayenneRuntimeException {
         // for PK, ignoring other locking attributes...
 
         Expression qualifier = null;
-        Iterator it = rootEntity.getPrimaryKey().iterator();
+        Iterator it = rootEntity.getPrimaryKeys().iterator();
         while (it.hasNext()) {
             DbAttribute attribute = (DbAttribute) it.next();
             Expression attributeQualifier = ExpressionFactory.matchDbExp(attribute

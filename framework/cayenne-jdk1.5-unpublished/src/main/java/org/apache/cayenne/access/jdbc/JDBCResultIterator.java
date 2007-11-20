@@ -355,7 +355,7 @@ public class JDBCResultIterator implements ResultIterator {
             throw new CayenneRuntimeException("Null root DbEntity, can't index PK");
         }
 
-        int len = rootEntity.getPrimaryKey().size();
+        int len = rootEntity.getPrimaryKeys().size();
 
         // sanity check
         if (len == 0) {

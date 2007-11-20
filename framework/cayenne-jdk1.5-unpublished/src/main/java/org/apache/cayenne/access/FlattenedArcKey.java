@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -108,11 +107,8 @@ final class FlattenedArcKey {
 
         boolean autoPkDone = false;
         DbEntity joinEntity = getJoinEntity();
-        List pkAttributes = joinEntity.getPrimaryKey();
-        Iterator it = pkAttributes.iterator();
 
-        while (it.hasNext()) {
-            DbAttribute dbAttr = (DbAttribute) it.next();
+        for (DbAttribute dbAttr : joinEntity.getPrimaryKeys()) {
             String dbAttrName = dbAttr.getName();
             if (snapshot.containsKey(dbAttrName)) {
                 continue;
@@ -148,12 +144,9 @@ final class FlattenedArcKey {
         Map snapshot = eagerJoinSnapshot();
 
         DbEntity joinEntity = getJoinEntity();
-        List pkAttributes = joinEntity.getPrimaryKey();
 
         boolean fetchKey = false;
-        Iterator it = pkAttributes.iterator();
-        while (it.hasNext()) {
-            DbAttribute dbAttr = (DbAttribute) it.next();
+        for (DbAttribute dbAttr : joinEntity.getPrimaryKeys()) {
             String dbAttrName = dbAttr.getName();
             if (!snapshot.containsKey(dbAttrName)) {
                 fetchKey = true;
@@ -174,9 +167,7 @@ final class FlattenedArcKey {
                 Expression.EQUAL_TO));
         query.setFetchingDataRows(true);
 
-        it = pkAttributes.iterator();
-        while (it.hasNext()) {
-            DbAttribute dbAttr = (DbAttribute) it.next();
+        for (DbAttribute dbAttr : joinEntity.getPrimaryKeys()) {
             query.addCustomDbAttribute(dbAttr.getName());
         }
 

@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -225,7 +226,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         }
 
         // add unmapped PK
-        Iterator pks = getResolver().getEntity().getDbEntity().getPrimaryKey().iterator();
+        Iterator pks = getResolver().getEntity().getDbEntity().getPrimaryKeys().iterator();
         while (pks.hasNext()) {
             DbAttribute pk = (DbAttribute) pks.next();
             appendColumn(targetSource, pk.getName(), prefix + pk.getName());
@@ -255,14 +256,18 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
      */
     private void buildPKIndex() {
         // index PK
-        List pks = getResolver().getEntity().getDbEntity().getPrimaryKey();
+        Collection<DbAttribute> pks = getResolver()
+                .getEntity()
+                .getDbEntity()
+                .getPrimaryKeys();
         this.idIndices = new int[pks.size()];
 
         // this is needed for checking that a valid index is made
         Arrays.fill(idIndices, -1);
 
+        Iterator<DbAttribute> it = pks.iterator();
         for (int i = 0; i < idIndices.length; i++) {
-            DbAttribute pk = (DbAttribute) pks.get(i);
+            DbAttribute pk = it.next();
 
             for (int j = 0; j < columns.length; j++) {
                 if (pk.getName().equals(columns[j].getName())) {

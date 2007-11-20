@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -127,8 +128,13 @@ public final class DataObjectUtils {
      * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, int pk) {
-        return (T) objectForPK(context, buildId(context, dataObjectClass, new Integer(pk)));
+    public static <T> T objectForPK(
+            ObjectContext context,
+            Class<T> dataObjectClass,
+            int pk) {
+        return (T) objectForPK(
+                context,
+                buildId(context, dataObjectClass, new Integer(pk)));
     }
 
     /**
@@ -159,7 +165,10 @@ public final class DataObjectUtils {
      * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, Map<?,?> pk) {
+    public static <T> T objectForPK(
+            ObjectContext context,
+            Class<T> dataObjectClass,
+            Map<String, ?> pk) {
 
         ObjEntity entity = context.getEntityResolver().lookupObjEntity(dataObjectClass);
         if (entity == null) {
@@ -211,7 +220,10 @@ public final class DataObjectUtils {
      * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static Object objectForPK(ObjectContext context, String objEntityName, Map<?,?> pk) {
+    public static Object objectForPK(
+            ObjectContext context,
+            String objEntityName,
+            Map<String, ?> pk) {
         if (objEntityName == null) {
             throw new IllegalArgumentException("Null ObjEntity name.");
         }
@@ -277,14 +289,14 @@ public final class DataObjectUtils {
                     + entity.getName());
         }
 
-        List pkAttributes = dbEntity.getPrimaryKey();
+        Collection<DbAttribute> pkAttributes = dbEntity.getPrimaryKeys();
         if (pkAttributes.size() != 1) {
             throw new CayenneRuntimeException("PK contains "
                     + pkAttributes.size()
                     + " columns, expected 1.");
         }
 
-        DbAttribute attr = (DbAttribute) pkAttributes.get(0);
+        DbAttribute attr = pkAttributes.iterator().next();
         return new ObjectId(objEntityName, attr.getName(), pk);
     }
 
@@ -309,14 +321,14 @@ public final class DataObjectUtils {
                     + entity.getName());
         }
 
-        List pkAttributes = dbEntity.getPrimaryKey();
+        Collection<DbAttribute> pkAttributes = dbEntity.getPrimaryKeys();
         if (pkAttributes.size() != 1) {
             throw new CayenneRuntimeException("PK contains "
                     + pkAttributes.size()
                     + " columns, expected 1.");
         }
 
-        DbAttribute attr = (DbAttribute) pkAttributes.get(0);
+        DbAttribute attr = pkAttributes.iterator().next();
         return new ObjectId(entity.getName(), attr.getName(), pk);
     }
 

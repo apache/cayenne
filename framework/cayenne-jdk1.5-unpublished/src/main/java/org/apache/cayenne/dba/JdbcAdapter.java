@@ -270,7 +270,7 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
-        Iterator pkit = entity.getPrimaryKey().iterator();
+        Iterator pkit = entity.getPrimaryKeys().iterator();
         if (pkit.hasNext()) {
             sqlBuffer.append(", PRIMARY KEY (");
             boolean firstPk = true;

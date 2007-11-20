@@ -118,7 +118,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
         // append id columns ... (some may have been appended already via relationships)
 
         DbEntity table = descriptor.getEntity().getDbEntity();
-        Iterator it = table.getPrimaryKey().iterator();
+        Iterator it = table.getPrimaryKeys().iterator();
         while (it.hasNext()) {
             DbAttribute pk = (DbAttribute) it.next();
             appendColumn(idVar, pk);

@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -266,9 +267,9 @@ public class JdbcPkGenerator implements PkGenerator {
      * @since 1.0.2
      */
     protected byte[] binaryPK(DbEntity entity) {
-        List pkColumns = entity.getPrimaryKey();
+        Collection<DbAttribute> pkColumns = entity.getPrimaryKeys();
         if (pkColumns.size() == 1) {
-            DbAttribute pk = (DbAttribute) pkColumns.get(0);
+            DbAttribute pk = pkColumns.iterator().next();
             if (pk.getMaxLength() > 0
                     && (pk.getType() == Types.BINARY || pk.getType() == Types.VARBINARY)) {
                 return IDUtil.pseudoUniqueSecureByteSequence(pk.getMaxLength());
