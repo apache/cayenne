@@ -18,7 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.testdo.embeddable.auto;
 
+import org.apache.cayenne.Persistent;
+
 public class _Embeddable1 {
+
+    private Persistent owner;
+    private String embeddedProperty;
 
     protected String embedded10;
     protected String embedded20;
@@ -28,6 +33,7 @@ public class _Embeddable1 {
     }
 
     public void setEmbedded10(String embedded10) {
+        propertyWillChange("embdedded10", this.embedded10, embedded10);
         this.embedded10 = embedded10;
     }
 
@@ -36,6 +42,17 @@ public class _Embeddable1 {
     }
 
     public void setEmbedded20(String embedded20) {
+        propertyWillChange("embdedded20", this.embedded20, embedded20);
         this.embedded20 = embedded20;
+    }
+
+    protected void propertyWillChange(String property, Object oldValue, Object newValue) {
+        if (owner != null && owner.getObjectContext() != null) {
+            owner.getObjectContext().propertyChanged(
+                    owner,
+                    embeddedProperty + "." + property,
+                    oldValue,
+                    newValue);
+        }
     }
 }
