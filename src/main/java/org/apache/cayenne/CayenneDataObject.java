@@ -66,7 +66,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
     protected Map values = new HashMap();
 
     /**
-     * Returns a DataContext that holds this object. Object becomes assocaiated with a
+     * Returns a DataContext that holds this object. Object becomes associated with a
      * DataContext either when the object is fetched using a query, or when a new object
      * is registered explicitly with a DataContext.
      * 
@@ -650,9 +650,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
             // attributes, see if we have a target object set
             boolean validate = true;
             DbRelationship dbRelationship = (DbRelationship) dbRels.get(0);
-            Iterator joins = dbRelationship.getJoins().iterator();
-            while (joins.hasNext()) {
-                DbJoin join = (DbJoin) joins.next();
+            for (DbJoin join : dbRelationship.getJoins()) {
                 DbAttribute source = join.getSource();
 
                 if (source.isMandatory()) {

@@ -19,7 +19,13 @@
 package org.apache.cayenne.map;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A mapping descriptor of a single callback event.
@@ -28,15 +34,13 @@ import java.util.*;
  * @author Andrus Adamchik
  */
 public class CallbackDescriptor implements Serializable {
-    
-   
 
     protected int callbackType;
-    protected Set callbackMethods;
+    protected Set<String> callbackMethods;
 
     public CallbackDescriptor(int callbackType) {
         setCallbackType(callbackType);
-        this.callbackMethods = new LinkedHashSet(3);
+        this.callbackMethods = new LinkedHashSet<String>(3);
     }
 
     /**
@@ -48,9 +52,10 @@ public class CallbackDescriptor implements Serializable {
 
     /**
      * Returns all callback methods for this callback event.
+     * 
      * @return Returns all callback methods
      */
-    public Collection getCallbackMethods() {
+    public Collection<String> getCallbackMethods() {
         return Collections.unmodifiableCollection(callbackMethods);
     }
 
@@ -76,16 +81,17 @@ public class CallbackDescriptor implements Serializable {
 
     /**
      * moves specified callback method to the specified position
-     *
+     * 
      * @param callbackMethod callbacm method name (should exist)
      * @param destinationIndex destinationi index (should be valid)
      * @return true if any changes were made
      */
     public boolean moveMethod(String callbackMethod, int destinationIndex) {
-        List callbackMethodsList = new ArrayList(callbackMethods);
+        List<String> callbackMethodsList = new ArrayList<String>(callbackMethods);
         int currentIndex = callbackMethodsList.indexOf(callbackMethod);
         if (currentIndex < 0)
-            throw new IllegalArgumentException("Unknown callback method: " + callbackMethod);
+            throw new IllegalArgumentException("Unknown callback method: "
+                    + callbackMethod);
 
         boolean changed = false;
 
@@ -109,12 +115,13 @@ public class CallbackDescriptor implements Serializable {
     }
 
     /**
-     * replaces callback method at the specified position
+     * Replaces a callback method at the specified position
+     * 
      * @param index callback method index
      * @param method new callback method
      */
     public void setCallbackMethodAt(int index, String method) {
-        List callbackMethodsList = new ArrayList(callbackMethods);
+        List<String> callbackMethodsList = new ArrayList<String>(callbackMethods);
         callbackMethodsList.set(index, method);
         callbackMethods.clear();
         callbackMethods.addAll(callbackMethodsList);

@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -69,7 +68,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected transient Map dbEntityCache;
     protected transient Map objEntityCache;
     protected transient Map procedureCache;
-    protected List maps;
+    protected Collection<DataMap> maps;
     protected transient Map entityInheritanceCache;
     protected EntityResolver clientEntityResolver;
 
@@ -85,7 +84,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public EntityResolver() {
         this.indexedByClass = true;
-        this.maps = new ArrayList();
+        this.maps = new ArrayList<DataMap>(3);
         this.embeddableCache = new HashMap();
         this.queryCache = new HashMap();
         this.dbEntityCache = new HashMap();
@@ -279,44 +278,36 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns all DbEntities.
      */
-    public Collection getDbEntities() {
+    public Collection<DbEntity> getDbEntities() {
         CompositeCollection c = new CompositeCollection();
-        Iterator it = getDataMaps().iterator();
-        while (it.hasNext()) {
-            DataMap map = (DataMap) it.next();
+        for (DataMap map : getDataMaps()) {
             c.addComposited(map.getDbEntities());
         }
 
         return c;
     }
 
-    public Collection getObjEntities() {
+    public Collection<ObjEntity> getObjEntities() {
         CompositeCollection c = new CompositeCollection();
-        Iterator it = getDataMaps().iterator();
-        while (it.hasNext()) {
-            DataMap map = (DataMap) it.next();
+        for (DataMap map : getDataMaps()) {
             c.addComposited(map.getObjEntities());
         }
 
         return c;
     }
 
-    public Collection getProcedures() {
+    public Collection<Procedure> getProcedures() {
         CompositeCollection c = new CompositeCollection();
-        Iterator it = getDataMaps().iterator();
-        while (it.hasNext()) {
-            DataMap map = (DataMap) it.next();
+        for (DataMap map : getDataMaps()) {
             c.addComposited(map.getProcedures());
         }
 
         return c;
     }
 
-    public Collection getQueries() {
+    public Collection<Query> getQueries() {
         CompositeCollection c = new CompositeCollection();
-        Iterator it = getDataMaps().iterator();
-        while (it.hasNext()) {
-            DataMap map = (DataMap) it.next();
+        for (DataMap map : getDataMaps()) {
             c.addComposited(map.getQueries());
         }
 
@@ -402,25 +393,17 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
         // index DbEntities separatly and before ObjEntities to avoid infinite loops when
         // looking up DbEntities during ObjEntity index op
-        Iterator mapIterator0 = maps.iterator();
-        while (mapIterator0.hasNext()) {
-            DataMap map = (DataMap) mapIterator0.next();
 
-            Iterator dbEntities = map.getDbEntities().iterator();
-            while (dbEntities.hasNext()) {
-                DbEntity de = (DbEntity) dbEntities.next();
+        for (DataMap map : maps) {
+            for (DbEntity de : map.getDbEntities()) {
                 dbEntityCache.put(de.getName(), de);
             }
         }
 
-        Iterator mapIterator1 = maps.iterator();
-        while (mapIterator1.hasNext()) {
-            DataMap map = (DataMap) mapIterator1.next();
+        for (DataMap map : maps) {
 
             // index ObjEntities
-            Iterator objEntities = map.getObjEntities().iterator();
-            while (objEntities.hasNext()) {
-                ObjEntity oe = (ObjEntity) objEntities.next();
+            for (ObjEntity oe : map.getObjEntities()) {
 
                 // index by name
                 objEntityCache.put(oe.getName(), oe);
@@ -476,12 +459,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
             DataMap map = (DataMap) mapIterator2.next();
 
             // index ObjEntity inheritance
-            Iterator objEntities = map.getObjEntities().iterator();
-            while (objEntities.hasNext()) {
-                ObjEntity oe = (ObjEntity) objEntities.next();
+            for (ObjEntity oe : map.getObjEntities()) {
 
                 // build inheritance tree... include nodes that
-                // have no children to avoid uneeded cache rebuilding on lookup...
+                // have no children to avoid unneeded cache rebuilding on lookup...
                 EntityInheritanceTree node = (EntityInheritanceTree) entityInheritanceCache
                         .get(oe.getName());
                 if (node == null) {
@@ -535,7 +516,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
         return null;
     }
 
-    public synchronized void setDataMaps(Collection maps) {
+    public synchronized void setDataMaps(Collection<DataMap> maps) {
         this.maps.clear();
         this.maps.addAll(maps);
         clearCache();
@@ -544,8 +525,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns an unmodifiable collection of DataMaps.
      */
-    public Collection getDataMaps() {
-        return Collections.unmodifiableList(maps);
+    public Collection<DataMap> getDataMaps() {
+        return Collections.unmodifiableCollection(maps);
     }
 
     /**
