@@ -21,15 +21,15 @@
 package org.apache.cayenne.jpa.bridge;
 
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 import junit.framework.Assert;
 
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.jpa.entity.cayenne.MockCayenneEntity1;
 import org.apache.cayenne.jpa.entity.cayenne.MockCayenneEntity2;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -78,9 +78,9 @@ public class DataMapMappingAssertion extends Assert {
         assertEquals("catalog1", table.getCatalog());
         assertEquals("schema1", table.getSchema());
 
-        List pks = table.getPrimaryKey();
+        Collection<DbAttribute> pks = table.getPrimaryKeys();
         assertEquals(1, pks.size());
-        DbAttribute pk = (DbAttribute) pks.get(0);
+        DbAttribute pk = (DbAttribute) pks.iterator().next();
         assertEquals("id", pk.getName());
         assertTrue(pk.isPrimaryKey());
         assertTrue(pk.isMandatory());
