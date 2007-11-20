@@ -63,7 +63,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
     protected ObjectId objectId;
     protected transient int persistenceState = PersistenceState.TRANSIENT;
     protected transient ObjectContext objectContext;
-    protected Map values = new HashMap();
+    protected Map<String, Object> values = new HashMap<String, Object>();
 
     /**
      * Returns a DataContext that holds this object. Object becomes associated with a
