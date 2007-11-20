@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.CayenneRuntimeException;
-
 /**
  * An accessor for fields storing embedded objects. This accessor will initialize null
  * fields with appropriate embeddable objects when needed during get and set calls.
@@ -32,14 +30,14 @@ public class EmbeddedFieldAccessor implements Accessor {
     protected String propertyPath;
     protected Accessor embeddedAccessor;
     protected Accessor embeddableAccessor;
-    protected Class embeddedClass;
+    protected EmbeddableDescriptor embeddableDescriptor;
 
-    public EmbeddedFieldAccessor(Class embeddableClass, Accessor embeddedAccessor,
-            Accessor embeddableAccessor) {
+    public EmbeddedFieldAccessor(EmbeddableDescriptor embeddableDescriptor,
+            Accessor embeddedAccessor, Accessor embeddableAccessor) {
         this.propertyPath = embeddedAccessor.getName()
                 + "."
                 + embeddableAccessor.getName();
-        this.embeddedClass = embeddableClass;
+        this.embeddableDescriptor = embeddableDescriptor;
         this.embeddableAccessor = embeddableAccessor;
         this.embeddedAccessor = embeddedAccessor;
     }
@@ -63,26 +61,11 @@ public class EmbeddedFieldAccessor implements Accessor {
     protected Object getEmbeddable(Object owner) {
         Object embeddable = embeddedAccessor.getValue(owner);
         if (embeddable == null) {
-            embeddable = createEmbeddable();
+            embeddable = embeddableDescriptor.createObject(owner, embeddedAccessor
+                    .getName());
             embeddedAccessor.setValue(owner, embeddable);
         }
 
         return embeddable;
-    }
-
-    protected Object createEmbeddable() {
-        if (embeddedClass == null) {
-            throw new NullPointerException(
-                    "Null embedded objectClass. Accessor wasn't initialized properly.");
-        }
-
-        try {
-            return embeddedClass.newInstance();
-        }
-        catch (Throwable e) {
-            throw new CayenneRuntimeException("Error creating embedded object of class '"
-                    + embeddedClass.getName()
-                    + "'", e);
-        }
     }
 }

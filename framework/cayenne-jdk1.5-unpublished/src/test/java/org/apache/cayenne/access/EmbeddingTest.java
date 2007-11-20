@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
@@ -80,7 +81,7 @@ public class EmbeddingTest extends CayenneCase {
         deleteTestData();
 
         ObjectContext context = createDataContext();
-        EmbedEntity1 o1 = (EmbedEntity1) context.newObject(EmbedEntity1.class);
+        EmbedEntity1 o1 = context.newObject(EmbedEntity1.class);
         o1.setName("NAME");
 
         Embeddable1 e1 = new Embeddable1();
@@ -93,12 +94,12 @@ public class EmbeddingTest extends CayenneCase {
         Embeddable1 e2 = new Embeddable1();
         o1.setEmbedded2(e2);
 
-        // init after it was set on the ownig object
+        // init after it was set on the owning object
         e2.setEmbedded10("E21");
         e2.setEmbedded20("E22");
 
         context.commitChanges();
-        
+
         SelectQuery query = new SelectQuery(EmbedEntity1.class);
         query.setFetchingDataRows(true);
         DataRow row = (DataRow) DataObjectUtils.objectForQuery(context, query);
@@ -109,27 +110,51 @@ public class EmbeddingTest extends CayenneCase {
         assertEquals("E22", row.get("EMBEDDED40"));
     }
 
-//    public void testUpdateEmbeddedProperties() throws Exception {
-//        createTestData("testUpdate");
-//
-//        SelectQuery query = new SelectQuery(EmbedEntity1.class);
-//        query.addOrdering(EmbedEntity1.NAME_PROPERTY, true);
-//
-//        ObjectContext context = createDataContext();
-//        List results = context.performQuery(query);
-//        EmbedEntity1 o1 = (EmbedEntity1) results.get(0);
-//
-//        assertEquals("n1", o1.getName());
-//        Embeddable1 e11 = o1.getEmbedded1();
-//        e11.setEmbedded10("x1");
-//        
-//        assertEquals(PersistenceState.MODIFIED, o1.getPersistenceState());
-//        
-//        context.commitChanges();
-//        SelectQuery query1 = new SelectQuery(EmbedEntity1.class);
-//        query1.setFetchingDataRows(true);
-//        DataRow row = (DataRow) DataObjectUtils.objectForQuery(context, query1);
-//        assertNotNull(row);
-//        assertEquals("x1", row.get("EMBEDDED10"));
-//    }
+    public void testUpdateEmbeddedProperties() throws Exception {
+        createTestData("testUpdate");
+
+        SelectQuery query = new SelectQuery(EmbedEntity1.class);
+        query.addOrdering(EmbedEntity1.NAME_PROPERTY, true);
+
+        ObjectContext context = createDataContext();
+        List results = context.performQuery(query);
+        EmbedEntity1 o1 = (EmbedEntity1) results.get(0);
+
+        Embeddable1 e11 = o1.getEmbedded1();
+        e11.setEmbedded10("x1");
+
+        assertEquals(PersistenceState.MODIFIED, o1.getPersistenceState());
+
+        context.commitChanges();
+        SelectQuery query1 = new SelectQuery(EmbedEntity1.class);
+        query1.setFetchingDataRows(true);
+        DataRow row = (DataRow) DataObjectUtils.objectForQuery(context, query1);
+        assertNotNull(row);
+        assertEquals("x1", row.get("EMBEDDED10"));
+    }
+
+    public void testUpdateEmbedded() throws Exception {
+        createTestData("testUpdate");
+
+        SelectQuery query = new SelectQuery(EmbedEntity1.class);
+        query.addOrdering(EmbedEntity1.NAME_PROPERTY, true);
+
+        ObjectContext context = createDataContext();
+        List results = context.performQuery(query);
+        EmbedEntity1 o1 = (EmbedEntity1) results.get(0);
+
+        Embeddable1 e11 = new Embeddable1();
+        e11.setEmbedded10("x1");
+        e11.setEmbedded20("x2");
+        o1.setEmbedded1(e11);
+
+        assertEquals(PersistenceState.MODIFIED, o1.getPersistenceState());
+
+        context.commitChanges();
+        SelectQuery query1 = new SelectQuery(EmbedEntity1.class);
+        query1.setFetchingDataRows(true);
+        DataRow row = (DataRow) DataObjectUtils.objectForQuery(context, query1);
+        assertNotNull(row);
+        assertEquals("x1", row.get("EMBEDDED10"));
+    }
 }
