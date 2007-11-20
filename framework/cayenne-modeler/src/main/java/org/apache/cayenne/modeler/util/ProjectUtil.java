@@ -77,7 +77,7 @@ public class ProjectUtil {
         }
 
         // must fully relink renamed map
-        List nodes = new ArrayList();
+        List<DataNode> nodes = new ArrayList<DataNode>();
         Iterator allNodes = domain.getDataNodes().iterator();
         while (allNodes.hasNext()) {
             DataNode node = (DataNode) allNodes.next();
@@ -239,19 +239,18 @@ public class ProjectUtil {
      * corresponding Db* objects that not longer exist.
      */
     public static void cleanObjMappings(DataMap map) {
-        Iterator ents = map.getObjEntities().iterator();
-        while (ents.hasNext()) {
-            ObjEntity ent = (ObjEntity) ents.next();
-            DbEntity dbEnt = ent.getDbEntity();
+
+        for (ObjEntity entity : map.getObjEntities()) {
+            DbEntity dbEnt = entity.getDbEntity();
 
             // the whole entity mapping is invalid
             if (dbEnt != null && map.getDbEntity(dbEnt.getName()) != dbEnt) {
-                clearDbMapping(ent);
+                clearDbMapping(entity);
                 continue;
             }
 
             // check indiv. attributes
-            Iterator atts = ent.getAttributes().iterator();
+            Iterator atts = entity.getAttributes().iterator();
             while (atts.hasNext()) {
                 ObjAttribute att = (ObjAttribute) atts.next();
                 DbAttribute dbAtt = att.getDbAttribute();
@@ -263,7 +262,7 @@ public class ProjectUtil {
             }
 
             // check indiv. relationships
-            Iterator rels = ent.getRelationships().iterator();
+            Iterator rels = entity.getRelationships().iterator();
             while (rels.hasNext()) {
                 ObjRelationship rel = (ObjRelationship) rels.next();
 
@@ -278,7 +277,6 @@ public class ProjectUtil {
                     }
                 }
             }
-
         }
     }
 
