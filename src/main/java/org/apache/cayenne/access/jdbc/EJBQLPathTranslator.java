@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -244,10 +245,10 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                     idPath,
                     table.getFullyQualifiedName());
 
-            List pks = table.getPrimaryKey();
+            Collection<DbAttribute> pks = table.getPrimaryKeys();
 
             if (pks.size() == 1) {
-                DbAttribute pk = (DbAttribute) pks.get(0);
+                DbAttribute pk = pks.iterator().next();
                 context.append(' ');
                 if (isUsingAliases()) {
                     context.append(alias).append('.');

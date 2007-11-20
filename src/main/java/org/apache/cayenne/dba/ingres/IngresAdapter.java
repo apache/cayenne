@@ -125,7 +125,7 @@ public class IngresAdapter extends JdbcAdapter {
         }
 
         // primary key clause
-        Iterator pkit = ent.getPrimaryKey().iterator();
+        Iterator pkit = ent.getPrimaryKeys().iterator();
         if (pkit.hasNext()) {
             if (first)
                 first = false;

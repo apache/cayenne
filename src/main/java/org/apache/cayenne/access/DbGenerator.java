@@ -566,7 +566,7 @@ public class DbGenerator {
 
             // create a copy of the original PK list,
             // since the list will be modified locally
-            List pkAttributes = new ArrayList(nextEntity.getPrimaryKey());
+            List pkAttributes = new ArrayList(nextEntity.getPrimaryKeys());
             while (pkAttributes.size() > 0 && relationships.hasNext()) {
                 DbRelationship nextRelationship = (DbRelationship) relationships.next();
                 if (!nextRelationship.isToMasterPK()) {

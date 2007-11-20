@@ -39,7 +39,7 @@ public class DeleteBatchQuery extends BatchQuery {
     protected List dbAttributes;
     protected boolean usingOptimisticLocking;
 
-    private List qualifierAttributes;
+    private Collection<DbAttribute> qualifierAttributes;
     private Collection nullQualifierNames;
 
     /**
@@ -51,7 +51,7 @@ public class DeleteBatchQuery extends BatchQuery {
      * @param batchCapacity Estimated size of the batch.
      */
     public DeleteBatchQuery(DbEntity dbEntity, int batchCapacity) {
-        this(dbEntity, dbEntity.getPrimaryKey(), Collections.EMPTY_SET, batchCapacity);
+        this(dbEntity, dbEntity.getPrimaryKeys(), Collections.EMPTY_SET, batchCapacity);
     }
 
     /**
@@ -63,8 +63,9 @@ public class DeleteBatchQuery extends BatchQuery {
      *            values.
      * @param batchCapacity Estimated size of the batch.
      */
-    public DeleteBatchQuery(DbEntity dbEntity, List qualifierAttributes,
-            Collection nullQualifierNames, int batchCapacity) {
+    public DeleteBatchQuery(DbEntity dbEntity,
+            Collection<DbAttribute> qualifierAttributes, Collection nullQualifierNames,
+            int batchCapacity) {
 
         super(dbEntity);
 
@@ -105,10 +106,10 @@ public class DeleteBatchQuery extends BatchQuery {
     }
 
     /**
-     * @since 1.2
+     * @since 3.0 (since 3.0 changed to return collection instead of a list).
      */
-    public List getQualifierAttributes() {
-        return Collections.unmodifiableList(qualifierAttributes);
+    public Collection<DbAttribute> getQualifierAttributes() {
+        return qualifierAttributes;
     }
 
     public Object getValue(int dbAttributeIndex) {

@@ -17,13 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.trans;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
@@ -45,14 +43,13 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
     public String createSqlString(BatchQuery batch) {
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) batch;
         String table = batch.getDbEntity().getFullyQualifiedName();
-        List qualifierAttributes = deleteBatch.getQualifierAttributes();
 
         StringBuffer query = new StringBuffer("DELETE FROM ");
         query.append(table).append(" WHERE ");
 
-        Iterator i = qualifierAttributes.iterator();
+        Iterator<DbAttribute> i = deleteBatch.getQualifierAttributes().iterator();
         while (i.hasNext()) {
-            DbAttribute attribute = (DbAttribute) i.next();
+            DbAttribute attribute = i.next();
             appendDbAttribute(query, attribute);
             query.append(deleteBatch.isNull(attribute) ? " IS NULL" : " = ?");
 
@@ -71,13 +68,12 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
             throws SQLException, Exception {
 
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
-        List qualifierAttributes = deleteBatch.getQualifierAttributes();
 
         int parameterIndex = 1;
+        int i = 0;
 
-        for (int i = 0; i < qualifierAttributes.size(); i++) {
-            Object value = query.getValue(i);
-            DbAttribute attribute = (DbAttribute) qualifierAttributes.get(i);
+        for (DbAttribute attribute : deleteBatch.getQualifierAttributes()) {
+            Object value = query.getValue(i++);
 
             // skip null attributes... they are translated as "IS NULL"
             if (deleteBatch.isNull(attribute)) {

@@ -126,7 +126,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
             Map idMap = id.getReplacementIdMap();
 
             boolean autoPkDone = false;
-            Iterator it = dbEntity.getPrimaryKey().iterator();
+            Iterator it = dbEntity.getPrimaryKeys().iterator();
             while (it.hasNext()) {
                 DbAttribute dbAttr = (DbAttribute) it.next();
                 String dbAttrName = dbAttr.getName();

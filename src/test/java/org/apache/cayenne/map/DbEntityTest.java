@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.map;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
@@ -41,12 +41,12 @@ public class DbEntityTest extends CayenneCase {
 
         DbEntity d2 = (DbEntity) Util.cloneViaSerialization(entity);
 
-        assertNotNull(d2.getPrimaryKey());
-        assertEquals(entity.getPrimaryKey().size(), d2.getPrimaryKey().size());
+        assertNotNull(d2.getPrimaryKeys());
+        assertEquals(entity.getPrimaryKeys().size(), d2.getPrimaryKeys().size());
 
         DbAttribute pk2 = (DbAttribute) d2.getAttribute(pk.getName());
         assertNotNull(pk2);
-        assertTrue(d2.getPrimaryKey().contains(pk2));
+        assertTrue(d2.getPrimaryKeys().contains(pk2));
 
         assertNotNull(d2.getGeneratedAttributes());
         assertEquals(entity.getGeneratedAttributes().size(), d2
@@ -73,12 +73,12 @@ public class DbEntityTest extends CayenneCase {
                 entity,
                 new EntityResolver());
 
-        assertNotNull(d2.getPrimaryKey());
-        assertEquals(entity.getPrimaryKey().size(), d2.getPrimaryKey().size());
+        assertNotNull(d2.getPrimaryKeys());
+        assertEquals(entity.getPrimaryKeys().size(), d2.getPrimaryKeys().size());
 
         DbAttribute pk2 = (DbAttribute) d2.getAttribute(pk.getName());
         assertNotNull(pk2);
-        assertTrue(d2.getPrimaryKey().contains(pk2));
+        assertTrue(d2.getPrimaryKeys().contains(pk2));
 
         assertNotNull(d2.getGeneratedAttributes());
         assertEquals(entity.getGeneratedAttributes().size(), d2
@@ -143,10 +143,10 @@ public class DbEntityTest extends CayenneCase {
         a2.setPrimaryKey(true);
         ent.addAttribute(a2);
 
-        List pk = ent.getPrimaryKey();
+        Collection<DbAttribute> pk = ent.getPrimaryKeys();
         assertNotNull(pk);
         assertEquals(1, pk.size());
-        assertSame(a2, pk.get(0));
+        assertSame(a2, pk.iterator().next());
     }
 
     public void testAddPKAttribute() {
@@ -156,9 +156,9 @@ public class DbEntityTest extends CayenneCase {
         a1.setName("a1");
         a1.setPrimaryKey(false);
 
-        assertTrue(ent.getPrimaryKey().isEmpty());
+        assertTrue(ent.getPrimaryKeys().isEmpty());
         ent.addAttribute(a1);
-        assertTrue(ent.getPrimaryKey().isEmpty());
+        assertTrue(ent.getPrimaryKeys().isEmpty());
     }
 
     public void testChangeAttributeToPK() {
@@ -169,9 +169,9 @@ public class DbEntityTest extends CayenneCase {
         a1.setPrimaryKey(false);
         ent.addAttribute(a1);
 
-        assertFalse(ent.getPrimaryKey().contains(a1));
+        assertFalse(ent.getPrimaryKeys().contains(a1));
         a1.setPrimaryKey(true);
-        assertTrue(ent.getPrimaryKey().contains(a1));
+        assertTrue(ent.getPrimaryKeys().contains(a1));
     }
 
     public void testChangePKAttribute() {
@@ -182,9 +182,9 @@ public class DbEntityTest extends CayenneCase {
         a1.setPrimaryKey(true);
         ent.addAttribute(a1);
 
-        assertTrue(ent.getPrimaryKey().contains(a1));
+        assertTrue(ent.getPrimaryKeys().contains(a1));
         a1.setPrimaryKey(false);
-        assertFalse(ent.getPrimaryKey().contains(a1));
+        assertFalse(ent.getPrimaryKeys().contains(a1));
     }
 
     public void testRemoveAttribute() {

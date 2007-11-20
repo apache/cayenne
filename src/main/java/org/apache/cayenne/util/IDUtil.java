@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.util;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -31,7 +32,7 @@ import org.apache.cayenne.CayenneRuntimeException;
  * @author Andrus Adamchik
  */
 public class IDUtil {
-    
+
     private static final int BITMASK_0 = 0xff;
     private static final int BITMASK_1 = 0xff << 8;
     private static final int BITMASK_2 = 0xff << 16;
@@ -70,13 +71,18 @@ public class IDUtil {
     /**
      * Prints a byte value to a StringBuffer as a double digit hex value.
      * 
-     * @since 1.2
+     * @since 1.2 Since 3.0 signature has changed to take Appendable argument.
      */
-    public static void appendFormattedByte(StringBuffer buffer, byte byteValue) {
+    public static void appendFormattedByte(Appendable buffer, byte byteValue) {
         final String digits = "0123456789ABCDEF";
 
-        buffer.append(digits.charAt((byteValue >>> 4) & 0xF));
-        buffer.append(digits.charAt(byteValue & 0xF));
+        try {
+            buffer.append(digits.charAt((byteValue >>> 4) & 0xF));
+            buffer.append(digits.charAt(byteValue & 0xF));
+        }
+        catch (IOException e) {
+            throw new CayenneRuntimeException("Error appending data to buffer", e);
+        }
     }
 
     /**

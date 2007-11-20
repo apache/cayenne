@@ -667,7 +667,7 @@ public class DbLoader {
 
         if (toPK) {
             toDependentPK = true;
-            if (((DbEntity) relationship.getTargetEntity()).getPrimaryKey().size() == joins
+            if (((DbEntity) relationship.getTargetEntity()).getPrimaryKeys().size() == joins
                     .size()) {
                 toMany = false;
             }

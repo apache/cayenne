@@ -20,6 +20,7 @@ package org.apache.cayenne.access.jdbc;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -477,10 +478,10 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         String alias = context.getTableAlias(expression.getText(), table
                 .getFullyQualifiedName());
 
-        List pks = table.getPrimaryKey();
+        Collection<DbAttribute> pks = table.getPrimaryKeys();
 
         if (pks.size() == 1) {
-            DbAttribute pk = (DbAttribute) pks.get(0);
+            DbAttribute pk = pks.iterator().next();
             context.append(' ').append(alias).append('.').append(pk.getName());
         }
         else {

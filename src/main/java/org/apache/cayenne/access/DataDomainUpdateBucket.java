@@ -126,7 +126,7 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
                     if (isRootDbEntity) {
                         Map replacementId = o.getObjectId().getReplacementIdMap();
 
-                        Iterator pkIt = dbEntity.getPrimaryKey().iterator();
+                        Iterator pkIt = dbEntity.getPrimaryKeys().iterator();
                         while (pkIt.hasNext()) {
                             String name = ((DbAttribute) pkIt.next()).getName();
                             if (snapshot.containsKey(name)

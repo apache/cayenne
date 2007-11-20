@@ -154,7 +154,7 @@ public class IncrementalFaultList implements List {
 
             // I guess this check is redundant, as custom attributes warrant data rows
             if (!select.isFetchingCustomAttributes()) {
-                Iterator pk = rootEntity.getDbEntity().getPrimaryKey().iterator();
+                Iterator pk = rootEntity.getDbEntity().getPrimaryKeys().iterator();
                 while (pk.hasNext()) {
                     DbAttribute attribute = (DbAttribute) pk.next();
                     clone.addCustomDbAttribute(attribute.getName());

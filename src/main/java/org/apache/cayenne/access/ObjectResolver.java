@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +48,7 @@ class ObjectResolver {
 
     DataContext context;
     ClassDescriptor descriptor;
-    List primaryKey;
+    Collection<DbAttribute> primaryKey;
 
     EntityInheritanceTree inheritanceTree;
     boolean refreshObjects;
@@ -72,7 +73,7 @@ class ObjectResolver {
                     + "' has no DbEntity.");
         }
 
-        this.primaryKey = dbEntity.getPrimaryKey();
+        this.primaryKey = dbEntity.getPrimaryKeys();
         if (primaryKey.size() == 0) {
             throw new CayenneRuntimeException("Won't be able to create ObjectId for '"
                     + descriptor.getEntity().getName()
@@ -260,9 +261,9 @@ class ObjectResolver {
 
     ObjectId createObjectId(DataRow dataRow, ObjEntity objEntity, String namePrefix) {
 
-        List pk = objEntity == this.descriptor.getEntity() ? this.primaryKey : objEntity
-                .getDbEntity()
-                .getPrimaryKey();
+        Collection<DbAttribute> pk = objEntity == this.descriptor.getEntity()
+                ? this.primaryKey
+                : objEntity.getDbEntity().getPrimaryKeys();
 
         boolean prefix = namePrefix != null && namePrefix.length() > 0;
 
@@ -270,7 +271,7 @@ class ObjectResolver {
         // use some not-so-significant optimizations...
 
         if (pk.size() == 1) {
-            DbAttribute attribute = (DbAttribute) pk.get(0);
+            DbAttribute attribute = pk.iterator().next();
 
             String key = (prefix) ? namePrefix + attribute.getName() : attribute
                     .getName();

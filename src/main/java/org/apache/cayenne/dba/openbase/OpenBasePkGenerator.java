@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -103,12 +104,12 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * @since 1.2
      */
     protected String newIDString(DbEntity ent) {
-        if ((null == ent.getPrimaryKey()) || (1 != ent.getPrimaryKey().size())) {
+        if ((null == ent.getPrimaryKeys()) || (1 != ent.getPrimaryKeys().size())) {
             throw new CayenneRuntimeException("Error generating pk for DbEntity "
                     + ent.getName()
                     + ": pk must be single attribute");
         }
-        DbAttribute primaryKeyAttribute = (DbAttribute) ent.getPrimaryKey().get(0);
+        DbAttribute primaryKeyAttribute = ent.getPrimaryKeys().iterator().next();
 
         StringBuffer buf = new StringBuffer("NEWID FOR ");
         buf.append(ent.getName()).append(' ').append(primaryKeyAttribute.getName());
@@ -158,11 +159,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     }
 
     protected boolean canCreatePK(DbEntity entity) {
-        List pk = entity.getPrimaryKey();
-        if (pk == null || pk.size() == 0) {
-            return false;
-        }
-        return true;
+        return entity.getPrimaryKeys().size() > 0;
     }
 
     /**
@@ -187,7 +184,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * Returns a String to create PK support for an entity.
      */
     protected String createPKString(DbEntity entity) {
-        List pk = entity.getPrimaryKey();
+        Collection<DbAttribute> pk = entity.getPrimaryKeys();
 
         if (pk == null || pk.size() == 0) {
             throw new CayenneRuntimeException("Entity '"
@@ -195,17 +192,17 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
                     + "' has no PK defined.");
         }
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append("CREATE PRIMARY KEY ").append(entity.getName()).append(" (");
 
-        Iterator it = pk.iterator();
+        Iterator<DbAttribute> it = pk.iterator();
 
         // at this point we know that there is at least on PK column
-        DbAttribute firstColumn = (DbAttribute) it.next();
+        DbAttribute firstColumn = it.next();
         buffer.append(firstColumn.getName());
 
         while (it.hasNext()) {
-            DbAttribute column = (DbAttribute) it.next();
+            DbAttribute column = it.next();
             buffer.append(", ").append(column.getName());
         }
 
@@ -218,7 +215,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * recommendations.
      */
     protected String createUniquePKIndexString(DbEntity entity) {
-        List pk = entity.getPrimaryKey();
+        Collection<DbAttribute> pk = entity.getPrimaryKeys();
 
         if (pk == null || pk.size() == 0) {
             throw new CayenneRuntimeException("Entity '"
@@ -226,21 +223,21 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
                     + "' has no PK defined.");
         }
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         // compound PK doesn't work well with UNIQUE index...
         // create a regular one in this case
         buffer.append(pk.size() == 1 ? "CREATE UNIQUE INDEX " : "CREATE INDEX ").append(
                 entity.getName()).append(" (");
 
-        Iterator it = pk.iterator();
+        Iterator<DbAttribute> it = pk.iterator();
 
         // at this point we know that there is at least on PK column
-        DbAttribute firstColumn = (DbAttribute) it.next();
+        DbAttribute firstColumn = it.next();
         buffer.append(firstColumn.getName());
 
         while (it.hasNext()) {
-            DbAttribute column = (DbAttribute) it.next();
+            DbAttribute column = it.next();
             buffer.append(", ").append(column.getName());
         }
         buffer.append(")");

@@ -73,7 +73,7 @@ public interface QueryResponse {
      * Returns a List under the current iterator position. Use {@link #isList()} to check
      * the result type before calling this method.
      */
-    List currentList();
+    List<?> currentList();
 
     /**
      * Returns an update count under the current iterator position. Returned value is an
@@ -98,7 +98,7 @@ public interface QueryResponse {
      * null if the query has no lists. Note that this method resets current iterator to an
      * undefined state.
      */
-    List firstList();
+    List<?> firstList();
 
     /**
      * A utility method for quickly retrieving the first update count from the response.

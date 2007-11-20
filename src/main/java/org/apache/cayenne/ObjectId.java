@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -45,14 +44,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class ObjectId implements Serializable {
 
     protected String entityName;
-    protected Map objectIdKeys;
+    protected Map<String, Object> objectIdKeys;
 
     private String singleKey;
     private Object singleValue;
 
     protected byte[] key;
 
-    protected Map replacementIdMap;
+    protected Map<String, Object> replacementIdMap;
 
     // hash code is transient to make sure id is portable across VM
     transient int hashCode;
@@ -108,14 +107,14 @@ public class ObjectId implements Serializable {
      * 
      * @since 1.2
      */
-    public ObjectId(String entityName, Map idMap) {
+    public ObjectId(String entityName, Map<String, ?> idMap) {
         this.entityName = entityName;
 
         if (idMap == null || idMap.size() == 0) {
 
         }
         else if (idMap.size() == 1) {
-            Map.Entry e = (Map.Entry) idMap.entrySet().iterator().next();
+            Map.Entry<String, ?> e = idMap.entrySet().iterator().next();
             this.singleKey = String.valueOf(e.getKey());
             this.singleValue = e.getValue();
         }
@@ -124,7 +123,7 @@ public class ObjectId implements Serializable {
             // we have to create a copy of the map, otherwise we may run into
             // serialization
             // problems with hessian
-            this.objectIdKeys = new HashMap(idMap);
+            this.objectIdKeys = new HashMap<String, Object>(idMap);
         }
     }
 
@@ -144,11 +143,11 @@ public class ObjectId implements Serializable {
     }
 
     /**
-     * Returns an unmodifiable Map of persistent id values, essentailly a primary key map.
+     * Returns an unmodifiable Map of persistent id values, essentially a primary key map.
      * For temporary id returns replacement id, if it was already created. Otherwise
      * returns an empty map.
      */
-    public Map getIdSnapshot() {
+    public Map<String, ?> getIdSnapshot() {
         if (isTemporary()) {
             return (replacementIdMap == null) ? Collections.EMPTY_MAP : Collections
                     .unmodifiableMap(replacementIdMap);
@@ -195,9 +194,7 @@ public class ObjectId implements Serializable {
             return false;
         }
 
-        Iterator entries = objectIdKeys.entrySet().iterator();
-        while (entries.hasNext()) {
-            Map.Entry entry = (Map.Entry) entries.next();
+        for (Map.Entry<String, ?> entry : objectIdKeys.entrySet()) {
             Object entryKey = entry.getKey();
             Object entryValue = entry.getValue();
 
@@ -299,9 +296,9 @@ public class ObjectId implements Serializable {
      * 
      * @since 1.2
      */
-    public Map getReplacementIdMap() {
+    public Map<String, Object> getReplacementIdMap() {
         if (replacementIdMap == null) {
-            replacementIdMap = new HashMap();
+            replacementIdMap = new HashMap<String, Object>();
         }
 
         return replacementIdMap;
@@ -315,7 +312,7 @@ public class ObjectId implements Serializable {
     public ObjectId createReplacementId() {
         // merge existing and replaced ids to handle a replaced subset of
         // a compound primary key
-        Map newIdMap = new HashMap(getIdSnapshot());
+        Map<String, Object> newIdMap = new HashMap<String, Object>(getIdSnapshot());
         if (replacementIdMap != null) {
             newIdMap.putAll(replacementIdMap);
         }
@@ -337,7 +334,7 @@ public class ObjectId implements Serializable {
      */
     public String toString() {
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         buffer.append("<ObjectId:").append(entityName);
 
@@ -353,15 +350,12 @@ public class ObjectId implements Serializable {
         }
         else if (objectIdKeys != null) {
 
-            
             // ensure consistent order of the keys, so that toString could be used as a
             // unique key, just like id itself
-            
-            List keys = new ArrayList(objectIdKeys.keySet());
+
+            List<String> keys = new ArrayList<String>(objectIdKeys.keySet());
             Collections.sort(keys);
-            Iterator it = keys.iterator();
-            while (it.hasNext()) {
-                Object key = it.next();
+            for (Object key : keys) {
                 buffer.append(", ");
                 buffer.append(String.valueOf(key)).append("=").append(
                         objectIdKeys.get(key));

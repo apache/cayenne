@@ -55,12 +55,12 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
 
     protected String catalog;
     protected String schema;
-    protected List primaryKey;
+    protected Collection<DbAttribute> primaryKey;
 
     /**
      * @since 1.2
      */
-    protected Collection generatedAttributes;
+    protected Collection<DbAttribute> generatedAttributes;
     protected DbKeyGenerator primaryKeyGenerator;
 
     /**
@@ -69,8 +69,8 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     public DbEntity() {
         super();
 
-        this.primaryKey = new ArrayList(2);
-        this.generatedAttributes = new ArrayList(2);
+        this.primaryKey = new ArrayList<DbAttribute>(2);
+        this.generatedAttributes = new ArrayList<DbAttribute>(2);
     }
 
     /**
@@ -154,13 +154,20 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     }
 
     /**
-     * Returns an unmodifiable list of DbAttributes representing the primary key of the
-     * table described by this DbEntity.
+     * Returns an unmodifiable collection of DbAttributes representing the primary key of
+     * the table described by this DbEntity.
+     * 
+     * @since 3.0
      */
-    // TODO: (Andrus 09/06/2005) Change to Collection ... no reason to keep as list other
-    // than backwards compatibility
-    public List getPrimaryKey() {
-        return Collections.unmodifiableList(primaryKey);
+    public Collection<DbAttribute> getPrimaryKeys() {
+        return Collections.unmodifiableCollection(primaryKey);
+    }
+    
+    /**
+     * @deprecated since 3.0 use {@link #getPrimaryKeys()} that returns a collection.
+     */
+    public List<DbAttribute> getPrimaryKey() {
+        return new ArrayList<DbAttribute>(getPrimaryKeys());
     }
 
     /**
@@ -169,7 +176,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
      * 
      * @since 1.2
      */
-    public Collection getGeneratedAttributes() {
+    public Collection<DbAttribute> getGeneratedAttributes() {
         return Collections.unmodifiableCollection(generatedAttributes);
     }
 
@@ -314,19 +321,19 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         }
 
         // catch clearing (event with null ('any') DbAttribute)
-        Attribute attr = e.getAttribute();
-        if ((attr == null) && (this.attributes.isEmpty())) {
+        Attribute attribute = e.getAttribute();
+        if ((attribute == null) && (this.attributes.isEmpty())) {
             this.primaryKey.clear();
             this.generatedAttributes.clear();
             return;
         }
 
         // make sure we handle a DbAttribute
-        if (!(attr instanceof DbAttribute)) {
+        if (!(attribute instanceof DbAttribute)) {
             return;
         }
 
-        DbAttribute dbAttr = (DbAttribute) attr;
+        DbAttribute dbAttribute = (DbAttribute) attribute;
 
         // handle attribute name changes
         if (e.getId() == AttributeEvent.CHANGE && e.isNameChange()) {
@@ -346,7 +353,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
                         Iterator ait = oe.getAttributes().iterator();
                         while (ait.hasNext()) {
                             ObjAttribute oa = (ObjAttribute) ait.next();
-                            if (oa.getDbAttribute() == dbAttr) {
+                            if (oa.getDbAttribute() == dbAttribute) {
                                 oa.setDbAttributeName(newName);
                             }
                         }
@@ -360,10 +367,10 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
                         Iterator joins = rel.getJoins().iterator();
                         while (joins.hasNext()) {
                             DbJoin join = (DbJoin) joins.next();
-                            if (join.getSource() == dbAttr) {
+                            if (join.getSource() == dbAttribute) {
                                 join.setSourceName(newName);
                             }
-                            if (join.getTarget() == dbAttr) {
+                            if (join.getTarget() == dbAttribute) {
                                 join.setTargetName(newName);
                             }
                         }
@@ -375,26 +382,25 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             attributes.remove(oldName);
 
             // add the attribute back in with the new name
-            super.addAttribute(dbAttr);
+            super.addAttribute(dbAttribute);
         }
 
         // handle PK refresh
-        if (primaryKey.contains(dbAttr) || dbAttr.isPrimaryKey()) {
+        if (primaryKey.contains(dbAttribute) || dbAttribute.isPrimaryKey()) {
             switch (e.getId()) {
                 case MapEvent.ADD:
-                    this.primaryKey.add(attr);
+                    this.primaryKey.add(dbAttribute);
                     break;
 
                 case MapEvent.REMOVE:
-                    this.primaryKey.remove(attr);
+                    this.primaryKey.remove(dbAttribute);
                     break;
 
                 default:
                     // generic update
                     this.primaryKey.clear();
-                    Iterator it = this.getAttributes().iterator();
-                    while (it.hasNext()) {
-                        DbAttribute dba = (DbAttribute) it.next();
+                    for (Object next : getAttributes()) {
+                        DbAttribute dba = (DbAttribute) next;
                         if (dba.isPrimaryKey()) {
                             this.primaryKey.add(dba);
                         }
@@ -403,22 +409,21 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         }
 
         // handle generated key refresh
-        if (generatedAttributes.contains(dbAttr) || dbAttr.isGenerated()) {
+        if (generatedAttributes.contains(dbAttribute) || dbAttribute.isGenerated()) {
             switch (e.getId()) {
                 case MapEvent.ADD:
-                    this.generatedAttributes.add(attr);
+                    this.generatedAttributes.add(dbAttribute);
                     break;
 
                 case MapEvent.REMOVE:
-                    this.generatedAttributes.remove(attr);
+                    this.generatedAttributes.remove(dbAttribute);
                     break;
 
                 default:
                     // generic update
                     this.generatedAttributes.clear();
-                    Iterator it = this.getAttributes().iterator();
-                    while (it.hasNext()) {
-                        DbAttribute dba = (DbAttribute) it.next();
+                    for (Object next : getAttributes()) {
+                        DbAttribute dba = (DbAttribute) next;
                         if (dba.isGenerated()) {
                             this.generatedAttributes.add(dba);
                         }
@@ -497,7 +502,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         }
 
         Map replacement = id.getReplacementIdMap();
-        Collection pk = getPrimaryKey();
+        Collection pk = getPrimaryKeys();
         if (pk.size() != replacement.size()) {
             return false;
         }

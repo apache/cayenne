@@ -55,7 +55,7 @@ public class DbEntityValidator extends TreeNodeValidator {
 		ProjectPath path,
 		Validator validator) {
 		if (ent.getAttributes().size() > 0
-			&& ent.getPrimaryKey().size() == 0) {
+			&& ent.getPrimaryKeys().size() == 0) {
 			DataMap map = ent.getDataMap();
 			if (map != null && map.getMappedEntities(ent).size() > 0) {
 				// there is an objentity, so complain about no pk
