@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.cayenne.graph.GraphChangeHandler;
@@ -38,25 +36,24 @@ import org.apache.cayenne.graph.GraphManager;
  */
 class ObjectContextStateLog implements GraphChangeHandler {
 
-    Set dirtyIds;
+    Set<Object> dirtyIds;
     GraphManager graphManager;
 
     ObjectContextStateLog(GraphManager graphManager) {
-        this.dirtyIds = new HashSet();
+        this.dirtyIds = new HashSet<Object>();
         this.graphManager = graphManager;
     }
 
     void clear() {
-        dirtyIds = new HashSet();
+        dirtyIds = new HashSet<Object>();
     }
 
     /**
      * Updates dirty objects state and clears dirty ids map.
      */
     void graphCommitted() {
-        Iterator it = dirtyIds.iterator();
-        while (it.hasNext()) {
-            Object node = graphManager.getNode(it.next());
+        for (Object id : dirtyIds) {
+            Object node = graphManager.getNode(id);
             if (node instanceof Persistent) {
                 Persistent persistentNode = (Persistent) node;
                 switch (persistentNode.getPersistenceState()) {
@@ -75,9 +72,8 @@ class ObjectContextStateLog implements GraphChangeHandler {
     }
 
     void graphReverted() {
-        Iterator it = dirtyIds.iterator();
-        while (it.hasNext()) {
-            Object node = graphManager.getNode(it.next());
+        for (Object id : dirtyIds) {
+            Object node = graphManager.getNode(id);
             if (node instanceof Persistent) {
                 Persistent persistentNode = (Persistent) node;
                 switch (persistentNode.getPersistenceState()) {
@@ -98,35 +94,33 @@ class ObjectContextStateLog implements GraphChangeHandler {
     boolean hasChanges() {
         return !dirtyIds.isEmpty();
     }
-    
-    Collection dirtyIds() {
+
+    Collection<Object> dirtyIds() {
         return dirtyIds;
     }
 
-    Collection dirtyNodes() {
+    Collection<Object> dirtyNodes() {
         if (dirtyIds.isEmpty()) {
             return Collections.EMPTY_SET;
         }
 
-        List objects = new ArrayList(dirtyIds.size());
-        Iterator it = dirtyIds.iterator();
-        while (it.hasNext()) {
-            objects.add(graphManager.getNode(it.next()));
+        Collection<Object> objects = new ArrayList<Object>(dirtyIds.size());
+        for (Object id : dirtyIds) {
+            objects.add(graphManager.getNode(id));
         }
 
         return objects;
     }
 
-    Collection dirtyNodes(int state) {
+    Collection<Object> dirtyNodes(int state) {
         if (dirtyIds.isEmpty()) {
             return Collections.EMPTY_SET;
         }
 
         int size = dirtyIds.size();
-        List objects = new ArrayList(size > 50 ? size / 2 : size);
-        Iterator it = dirtyIds.iterator();
-        while (it.hasNext()) {
-            Persistent o = (Persistent) graphManager.getNode(it.next());
+        Collection<Object> objects = new ArrayList<Object>(size > 50 ? size / 2 : size);
+        for (Object id : dirtyIds) {
+            Persistent o = (Persistent) graphManager.getNode(id);
 
             if (o.getPersistenceState() == state) {
                 objects.add(o);

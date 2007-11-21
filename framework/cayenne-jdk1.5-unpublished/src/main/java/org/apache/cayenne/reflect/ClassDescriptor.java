@@ -117,7 +117,7 @@ public interface ClassDescriptor {
      * 
      * @since 3.0
      */
-    Iterator getMapArcProperties();
+    Iterator<ArcProperty> getMapArcProperties();
 
     /**
      * Passes the visitor to all properties "visit" method, terminating properties

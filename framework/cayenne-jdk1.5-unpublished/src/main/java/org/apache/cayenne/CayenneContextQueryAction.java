@@ -92,7 +92,7 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
 
             CayenneContext context = (CayenneContext) actingContext;
 
-            // handle 4 separate scenarious, but do not combine them as it will be
+            // handle 4 separate scenarios, but do not combine them as it will be
             // unclear how to handle cascading behavior
 
             // 1. refresh all
@@ -109,7 +109,7 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
             }
 
             // 2. invalidate object collection
-            Collection objects = refreshQuery.getObjects();
+            Collection<?> objects = refreshQuery.getObjects();
             if (objects != null && !objects.isEmpty()) {
 
                 invalidateLocally(context.internalGraphManager(), objects.iterator());
@@ -150,7 +150,7 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
         return !DONE;
     }
 
-    private void invalidateLocally(CayenneContextGraphManager graphManager, Iterator it) {
+    private void invalidateLocally(CayenneContextGraphManager graphManager, Iterator<?> it) {
         while (it.hasNext()) {
             Persistent object = (Persistent) it.next();
 

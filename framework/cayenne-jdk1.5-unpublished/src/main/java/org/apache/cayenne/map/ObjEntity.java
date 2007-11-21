@@ -650,7 +650,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * 
      * @since 1.1
      */
-    public Collection getDeclaredAttributes() {
+    public Collection<Attribute> getDeclaredAttributes() {
         return super.getAttributes();
     }
 

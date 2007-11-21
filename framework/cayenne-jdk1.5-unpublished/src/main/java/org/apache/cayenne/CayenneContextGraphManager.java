@@ -55,7 +55,7 @@ final class CayenneContextGraphManager extends GraphMap {
     static final String FLUSH_MARKER = "flush";
 
     CayenneContext context;
-    Collection deadIds;
+    Collection<Object> deadIds;
     boolean changeEventsEnabled;
     boolean lifecycleEventsEnabled;
 
@@ -92,11 +92,11 @@ final class CayenneContextGraphManager extends GraphMap {
                 .getDiffsAfterMarker(FLUSH_MARKER) : changeLog.getDiffs();
     }
 
-    Collection dirtyNodes() {
+    Collection<Object> dirtyNodes() {
         return stateLog.dirtyNodes();
     }
 
-    Collection dirtyNodes(int state) {
+    Collection<Object> dirtyNodes(int state) {
         return stateLog.dirtyNodes(state);
     }
 
@@ -157,7 +157,7 @@ final class CayenneContextGraphManager extends GraphMap {
      */
     private void remapTargets() {
 
-        Iterator it = stateLog.dirtyIds().iterator();
+        Iterator<Object> it = stateLog.dirtyIds().iterator();
 
         EntityResolver resolver = context.getEntityResolver();
 
@@ -171,13 +171,13 @@ final class CayenneContextGraphManager extends GraphMap {
                 ClassDescriptor descriptor = resolver.getClassDescriptor(id
                         .getEntityName());
 
-                Iterator mapArcProperties = descriptor.getMapArcProperties();
+                Iterator<ArcProperty> mapArcProperties = descriptor.getMapArcProperties();
                 if (mapArcProperties.hasNext()) {
 
                     Object object = getNode(id);
 
                     while (mapArcProperties.hasNext()) {
-                        ArcProperty arc = (ArcProperty) mapArcProperties.next();
+                        ArcProperty arc = mapArcProperties.next();
                         ToManyMapProperty reverseArc = (ToManyMapProperty) arc
                                 .getComplimentaryReverseArc();
 
@@ -200,7 +200,7 @@ final class CayenneContextGraphManager extends GraphMap {
             Object source,
             Object target) throws PropertyException {
 
-        Map map = (Map) property.readProperty(source);
+        Map<Object, Object> map = (Map<Object, Object>) property.readProperty(source);
         Object newKey = property.getMapKey(target);
         Object currentValue = map.get(newKey);
 
@@ -214,9 +214,9 @@ final class CayenneContextGraphManager extends GraphMap {
 
         // must do a slow map scan to ensure the object is not mapped under a different
         // key...
-        Iterator it = map.entrySet().iterator();
+        Iterator<?> it = map.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry e = (Map.Entry) it.next();
+            Map.Entry<?, ?> e = (Map.Entry<?, ?>) it.next();
             if (e.getValue() == target) {
                 it.remove();
                 break;
@@ -315,7 +315,7 @@ final class CayenneContextGraphManager extends GraphMap {
 
         if (deadIds != null) {
             // unregister dead ids...
-            Iterator it = deadIds.iterator();
+            Iterator<Object> it = deadIds.iterator();
             while (it.hasNext()) {
                 nodes.remove(it.next());
             }
@@ -324,9 +324,9 @@ final class CayenneContextGraphManager extends GraphMap {
         }
     }
 
-    Collection deadIds() {
+    Collection<Object> deadIds() {
         if (deadIds == null) {
-            deadIds = new ArrayList();
+            deadIds = new ArrayList<Object>();
         }
 
         return deadIds;
