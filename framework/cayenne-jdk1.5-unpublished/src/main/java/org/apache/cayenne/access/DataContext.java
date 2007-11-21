@@ -105,8 +105,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.1
      */
-    // TODO: Andrus, 11/7/2005 - should we use InheritableThreadLocal instead?
-    protected static final ThreadLocal threadDataContext = new ThreadLocal();
+    protected static final ThreadLocal<DataContext> threadDataContext = new ThreadLocal<DataContext>();
 
     // Set of DataContextDelegates to be notified.
     private DataContextDelegate delegate;
@@ -149,7 +148,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * @see org.apache.cayenne.conf.WebApplicationContextFilter
      */
     public static DataContext getThreadDataContext() throws IllegalStateException {
-        DataContext dc = (DataContext) threadDataContext.get();
+        DataContext dc = threadDataContext.get();
         if (dc == null) {
             throw new IllegalStateException("Current thread has no bound DataContext.");
         }
@@ -309,9 +308,9 @@ public class DataContext extends BaseContext implements DataChannel {
         // pass it in constructor.
         ObjectStore objectStore = new ObjectStore();
 
-        DataContext child = factory != null ? factory
-                .createDataContext(this, objectStore) : new DataContext(
-                this, objectStore);
+        DataContext child = factory != null
+                ? factory.createDataContext(this, objectStore)
+                : new DataContext(this, objectStore);
 
         child.setValidatingObjectsOnCommit(isValidatingObjectsOnCommit());
         child.usingSharedSnaphsotCache = isUsingSharedSnapshotCache();
@@ -369,7 +368,7 @@ public class DataContext extends BaseContext implements DataChannel {
                     // guarantee that a new channel uses the same EventManager.
                     EventUtil.listenForChannelEvents(channel, mergeHandler);
                 }
-                
+
                 if (!usingSharedSnaphsotCache && getObjectStore() != null) {
                     DataRowStore cache = getObjectStore().getDataRowCache();
 
@@ -581,11 +580,8 @@ public class DataContext extends BaseContext implements DataChannel {
                                         + ". Object may have been deleted externally.");
                     }
 
-                    DbRelationship dbRel = (DbRelationship) rel.getDbRelationships().get(
-                            0);
-                    Iterator joins = dbRel.getJoins().iterator();
-                    while (joins.hasNext()) {
-                        DbJoin join = (DbJoin) joins.next();
+                    DbRelationship dbRel = rel.getDbRelationships().get(0);
+                    for (DbJoin join : dbRel.getJoins()) {
                         String key = join.getSourceName();
                         snapshot.put(key, storedSnapshot.get(key));
                     }
@@ -616,14 +612,12 @@ public class DataContext extends BaseContext implements DataChannel {
         // we should ignore any object id values if a corresponding attribute
         // is a part of relationship "toMasterPK", since those values have been
         // set above when db relationships where processed.
-        Map thisIdParts = object.getObjectId().getIdSnapshot();
+        Map<String, Object> thisIdParts = object.getObjectId().getIdSnapshot();
         if (thisIdParts != null) {
 
             // put only those that do not exist in the map
-            Iterator idIterator = thisIdParts.entrySet().iterator();
-            while (idIterator.hasNext()) {
-                Map.Entry entry = (Map.Entry) idIterator.next();
-                Object nextKey = entry.getKey();
+            for (Map.Entry<String, Object> entry : thisIdParts.entrySet()) {
+                String nextKey = entry.getKey();
                 if (!snapshot.containsKey(nextKey)) {
                     snapshot.put(nextKey, entry.getValue());
                 }
@@ -692,9 +686,10 @@ public class DataContext extends BaseContext implements DataChannel {
                 true);
         return (DataObject) list.get(0);
     }
-    
+
     /**
-     * Creates a DataObject from DataRow. This variety of the 'objectFromDataRow' method is normally used for generic classes.
+     * Creates a DataObject from DataRow. This variety of the 'objectFromDataRow' method
+     * is normally used for generic classes.
      * 
      * @see DataRow
      * @since 3.0
@@ -1383,7 +1378,10 @@ public class DataContext extends BaseContext implements DataChannel {
      *            is required in case a query uses caching.
      * @since 1.1
      */
-    public List<?> performQuery(String queryName, Map parameters, boolean expireCachedLists) {
+    public List<?> performQuery(
+            String queryName,
+            Map parameters,
+            boolean expireCachedLists) {
         NamedQuery query = new NamedQuery(queryName, parameters);
         query.setForceNoCache(expireCachedLists);
         return performQuery(query);

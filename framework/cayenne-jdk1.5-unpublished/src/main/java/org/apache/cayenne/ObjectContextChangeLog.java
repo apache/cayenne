@@ -44,15 +44,15 @@ import org.apache.cayenne.graph.NodeDiff;
  */
 class ObjectContextChangeLog {
 
-    List diffs;
-    Map markers;
+    List<GraphDiff> diffs;
+    Map<String, Integer> markers;
 
     ObjectContextChangeLog() {
         reset();
     }
 
     void unregisterNode(Object nodeId) {
-        Iterator it = diffs.iterator();
+        Iterator<?> it = diffs.iterator();
         while (it.hasNext()) {
             Object next = it.next();
 
@@ -76,7 +76,7 @@ class ObjectContextChangeLog {
     }
 
     void setMarker(String markerTag) {
-        markers.put(markerTag, new Integer(diffs.size()));
+        markers.put(markerTag, diffs.size());
     }
 
     void removeMarker(String markerTag) {
@@ -113,8 +113,8 @@ class ObjectContextChangeLog {
         // must create a new list instead of clearing an existing one, as the original
         // list may have been exposed via events or "getDiffs", and trimming it is
         // undesirable.
-        this.diffs = new ArrayList();
-        this.markers = new HashMap();
+        this.diffs = new ArrayList<GraphDiff>();
+        this.markers = new HashMap<String, Integer>();
     }
 
     int size() {
@@ -144,7 +144,7 @@ class ObjectContextChangeLog {
      * Returns a sublist of the diffs list that shouldn't change when OperationRecorder is
      * cleared or new operations are added.
      */
-    private List immutableList(int fromIndex, int toIndex) {
+    private List<GraphDiff> immutableList(int fromIndex, int toIndex) {
         if (toIndex - fromIndex == 0) {
             return Collections.EMPTY_LIST;
         }
@@ -156,13 +156,13 @@ class ObjectContextChangeLog {
 
     // moded Sublist from JDK that doesn't check for co-modification, as the underlying
     // list is guaranteed to only grow and never shrink or be replaced.
-    static class SubList extends AbstractList implements Serializable {
+    static class SubList extends AbstractList<GraphDiff> implements Serializable {
 
-        private List list;
+        private List<GraphDiff> list;
         private int offset;
         private int size;
 
-        SubList(List list, int fromIndex, int toIndex) {
+        SubList(List<GraphDiff> list, int fromIndex, int toIndex) {
             if (fromIndex < 0)
                 throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
             if (toIndex > list.size()) {
@@ -180,7 +180,7 @@ class ObjectContextChangeLog {
             size = toIndex - fromIndex;
         }
 
-        public Object get(int index) {
+        public GraphDiff get(int index) {
             rangeCheck(index);
             return list.get(index + offset);
         }
@@ -197,8 +197,7 @@ class ObjectContextChangeLog {
 
         // serialization method...
         private Object writeReplace() throws ObjectStreamException {
-            return new ArrayList(list.subList(offset, offset + size));
+            return new ArrayList<GraphDiff>(list.subList(offset, offset + size));
         }
     }
-
 }

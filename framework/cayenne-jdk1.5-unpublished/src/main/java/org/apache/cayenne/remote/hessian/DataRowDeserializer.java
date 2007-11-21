@@ -51,7 +51,7 @@ class DataRowDeserializer extends AbstractMapDeserializer {
         versionField.setAccessible(true);
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return DataRow.class;
     }
 
@@ -70,7 +70,7 @@ class DataRowDeserializer extends AbstractMapDeserializer {
         in.addRef(row);
 
         while (!in.isEnd()) {
-            row.put(in.readObject(), in.readObject());
+            row.put((String) in.readObject(), in.readObject());
         }
 
         in.readEnd();

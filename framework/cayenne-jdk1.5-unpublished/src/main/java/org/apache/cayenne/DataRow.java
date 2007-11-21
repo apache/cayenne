@@ -21,7 +21,6 @@ package org.apache.cayenne;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.map.DbAttribute;
@@ -39,7 +38,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Andrus Adamchik
  * @since 1.1
  */
-public class DataRow extends HashMap {
+public class DataRow extends HashMap<String, Object> {
 
     // "volatile" is supposed to ensure consistency in read and increment operations;
     // is this universally true?
@@ -50,7 +49,7 @@ public class DataRow extends HashMap {
     protected long version = currentVersion++;
     protected long replacesVersion = DataObject.DEFAULT_VERSION;
 
-    public DataRow(Map map) {
+    public DataRow(Map<String, ? extends Object> map) {
         super(map);
     }
 
@@ -80,9 +79,7 @@ public class DataRow extends HashMap {
     public DataRow applyDiff(DataRow diff) {
         DataRow merged = new DataRow(this);
 
-        Iterator it = diff.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Map.Entry<String, Object> entry : diff.entrySet()) {
             merged.put(entry.getKey(), entry.getValue());
         }
 
@@ -101,11 +98,9 @@ public class DataRow extends HashMap {
         // build a diff...
         DataRow diff = null;
 
-        Iterator entries = entrySet().iterator();
-        while (entries.hasNext()) {
-            Map.Entry entry = (Map.Entry) entries.next();
+        for (Map.Entry<String, Object> entry : entrySet()) {
 
-            Object key = entry.getKey();
+            String key = entry.getKey();
             Object currentValue = entry.getValue();
             Object rowValue = row.get(key);
 
@@ -123,13 +118,16 @@ public class DataRow extends HashMap {
     /**
      * Creates an ObjectId from the values in the snapshot. If needed attributes are
      * missing in a snapshot, CayenneRuntimeException is thrown.
+     * 
+     * @deprecated since 3.0 - unused
      */
-    // TODO: andrus, 5/25/2006 - deprecate this method - it is unused
     public ObjectId createObjectId(ObjEntity entity) {
         return createObjectId(entity.getName(), entity.getDbEntity());
     }
 
-    // TODO: andrus, 5/25/2006 - deprecate this method - it is unused
+    /**
+     * @deprecated since 3.0 - unused.
+     */
     public ObjectId createObjectId(String entityName, DbEntity entity) {
         return createObjectId(entityName, entity, null);
     }
@@ -145,7 +143,7 @@ public class DataRow extends HashMap {
             throw new CayenneRuntimeException("Only 'to one' can have a target ObjectId.");
         }
 
-        Map target = relationship.targetPkSnapshotWithSrcSnapshot(this);
+        Map<String, Object> target = relationship.targetPkSnapshotWithSrcSnapshot(this);
         return (target != null) ? new ObjectId(entityName, target) : null;
     }
 
@@ -159,8 +157,8 @@ public class DataRow extends HashMap {
      * </p>
      * 
      * @since 1.2
+     * @deprecated since 3.0 - unused.
      */
-    // TODO: andrus, 5/25/2006 - deprecate this method - it is unused
     public ObjectId createObjectId(String entityName, DbEntity entity, String namePrefix) {
 
         boolean prefix = namePrefix != null && namePrefix.length() > 0;
@@ -191,7 +189,7 @@ public class DataRow extends HashMap {
 
         // ... handle generic case - PK.size > 1
 
-        Map idMap = new HashMap(pk.size() * 2);
+        Map<String, Object> idMap = new HashMap<String, Object>(pk.size() * 2);
         for (DbAttribute attribute : pk) {
             String key = (prefix) ? namePrefix + attribute.getName() : attribute
                     .getName();

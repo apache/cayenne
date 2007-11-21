@@ -147,7 +147,7 @@ public class ObjectId implements Serializable {
      * For temporary id returns replacement id, if it was already created. Otherwise
      * returns an empty map.
      */
-    public Map<String, ?> getIdSnapshot() {
+    public Map<String, Object> getIdSnapshot() {
         if (isTemporary()) {
             return (replacementIdMap == null) ? Collections.EMPTY_MAP : Collections
                     .unmodifiableMap(replacementIdMap);
