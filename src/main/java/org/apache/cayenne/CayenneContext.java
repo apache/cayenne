@@ -221,7 +221,7 @@ public class CayenneContext extends BaseContext {
             if (graphManager.hasChanges()) {
 
                 ValidationResult result = new ValidationResult();
-                Iterator it = graphManager.dirtyNodes().iterator();
+                Iterator<?> it = graphManager.dirtyNodes().iterator();
                 while (it.hasNext()) {
                     Persistent p = (Persistent) it.next();
                     if (p instanceof Validating) {

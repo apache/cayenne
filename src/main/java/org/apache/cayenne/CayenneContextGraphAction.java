@@ -35,11 +35,12 @@ import org.apache.cayenne.util.ObjectContextGraphAction;
  */
 class CayenneContextGraphAction extends ObjectContextGraphAction {
 
-    ThreadLocal arcChangeInProcess;
+    ThreadLocal<Boolean> arcChangeInProcess;
 
     CayenneContextGraphAction(ObjectContext context) {
         super(context);
-        this.arcChangeInProcess = new ThreadLocal();
+        this.arcChangeInProcess = new ThreadLocal<Boolean>();
+        this.arcChangeInProcess.set(Boolean.FALSE);
     }
 
     protected void handleArcPropertyChange(
@@ -99,7 +100,7 @@ class CayenneContextGraphAction extends ObjectContextGraphAction {
      * This method is used to prevent cycles when setting reverse relationships.
      */
     boolean isArchChangeInProcess() {
-        return arcChangeInProcess.get() != null;
+        return arcChangeInProcess.get();
     }
 
     /**
@@ -108,7 +109,7 @@ class CayenneContextGraphAction extends ObjectContextGraphAction {
      * relationships.
      */
     void setArcChangeInProcess(boolean flag) {
-        arcChangeInProcess.set(flag ? Boolean.TRUE : null);
+        arcChangeInProcess.set(flag);
     }
 
     private void setReverse(

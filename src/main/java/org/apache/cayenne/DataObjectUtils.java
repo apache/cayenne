@@ -68,7 +68,7 @@ public final class DataObjectUtils {
      * thrown.
      */
     public static Object pkForObject(Persistent dataObject) {
-        Map pk = extractObjectId(dataObject);
+        Map<String, Object> pk = extractObjectId(dataObject);
 
         if (pk.size() != 1) {
             throw new CayenneRuntimeException("Expected single column PK, got "
@@ -77,8 +77,7 @@ public final class DataObjectUtils {
                     + pk);
         }
 
-        Map.Entry pkEntry = (Map.Entry) pk.entrySet().iterator().next();
-        return pkEntry.getValue();
+        return pk.entrySet().iterator().next().getValue();
     }
 
     /**
@@ -86,11 +85,11 @@ public final class DataObjectUtils {
      * out of all methods for primary key retrieval. It will work for all possible types
      * of primary keys. If an object is transient, an exception is thrown.
      */
-    public static Map compoundPKForObject(Persistent dataObject) {
+    public static Map<String, Object> compoundPKForObject(Persistent dataObject) {
         return Collections.unmodifiableMap(extractObjectId(dataObject));
     }
 
-    static Map extractObjectId(Persistent dataObject) {
+    static Map<String, Object> extractObjectId(Persistent dataObject) {
         if (dataObject == null) {
             throw new IllegalArgumentException("Null DataObject");
         }
@@ -255,7 +254,7 @@ public final class DataObjectUtils {
      * @since 1.2
      */
     public static Object objectForQuery(ObjectContext context, Query query) {
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
 
         if (objects.size() == 0) {
             return null;

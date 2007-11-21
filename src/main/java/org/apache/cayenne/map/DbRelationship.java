@@ -333,14 +333,14 @@ public class DbRelationship extends Relationship {
      * CayenneRuntimeException if relationship is "to many" or if snapshot is missing id
      * components.
      */
-    public Map targetPkSnapshotWithSrcSnapshot(Map srcSnapshot) {
+    public Map<String, Object> targetPkSnapshotWithSrcSnapshot(Map<String, Object> srcSnapshot) {
 
         if (isToMany()) {
             throw new CayenneRuntimeException(
                     "Only 'to one' relationships support this method.");
         }
 
-        Map idMap;
+        Map<String, Object> idMap;
 
         int numJoins = joins.size();
         int foundNulls = 0;
@@ -359,7 +359,7 @@ public class DbRelationship extends Relationship {
         }
         // handle generic case: numJoins > 1
         else {
-            idMap = new HashMap(numJoins * 2);
+            idMap = new HashMap<String, Object>(numJoins * 2);
             for (int i = 0; i < numJoins; i++) {
                 DbJoin join = (DbJoin) joins.get(i);
                 DbAttribute source = join.getSource();

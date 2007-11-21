@@ -135,7 +135,7 @@ class ObjectContextDeleteAction {
             return;
         }
 
-        Collection relatedObjects = relatedObjects(object, property);
+        Collection<?> relatedObjects = relatedObjects(object, property);
         if (relatedObjects.isEmpty()) {
             return;
         }
@@ -155,9 +155,7 @@ class ObjectContextDeleteAction {
                 if (reverseArc != null) {
 
                     if (reverseArc instanceof ToManyProperty) {
-                        Iterator iterator = relatedObjects.iterator();
-                        while (iterator.hasNext()) {
-                            Object relatedObject = iterator.next();
+                        for (Object relatedObject : relatedObjects) {
                             ((ToManyProperty) reverseArc).removeTarget(
                                     relatedObject,
                                     object,
@@ -165,9 +163,7 @@ class ObjectContextDeleteAction {
                         }
                     }
                     else {
-                        Iterator iterator = relatedObjects.iterator();
-                        while (iterator.hasNext()) {
-                            Object relatedObject = iterator.next();
+                        for (Object relatedObject : relatedObjects) {
                             ((ToOneProperty) reverseArc).setTarget(
                                     relatedObject,
                                     null,
@@ -179,7 +175,7 @@ class ObjectContextDeleteAction {
                 break;
             case DeleteRule.CASCADE:
 
-                Iterator iterator = relatedObjects.iterator();
+                Iterator<?> iterator = relatedObjects.iterator();
                 while (iterator.hasNext()) {
                     Persistent relatedObject = (Persistent) iterator.next();
 
@@ -195,7 +191,7 @@ class ObjectContextDeleteAction {
         }
     }
 
-    private Collection relatedObjects(Object object, Property property) {
+    private Collection<?> relatedObjects(Object object, Property property) {
         Object related = property.readProperty(object);
 
         if (related == null) {
@@ -204,10 +200,12 @@ class ObjectContextDeleteAction {
         // return collections by copy, to allow removal of objects from the underlying
         // relationship inside the iterator
         else if (property instanceof ToManyProperty) {
-            Collection relatedCollection = (Collection) related;
-            return relatedCollection.isEmpty() ? Collections.EMPTY_LIST : new ArrayList(
-                    relatedCollection);
+            Collection<?> relatedCollection = (Collection<?>) related;
+            return relatedCollection.isEmpty()
+                    ? Collections.EMPTY_LIST
+                    : new ArrayList<Object>(relatedCollection);
         }
+        // TODO: andrus 11/21/2007 - ToManyMapProperty check
         else {
             return Collections.singleton(related);
         }

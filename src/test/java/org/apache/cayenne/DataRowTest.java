@@ -63,6 +63,9 @@ public class DataRowTest extends CayenneCase {
         assertFalse(s3.getVersion() == s1.getVersion());
     }
 
+    /**
+     * @deprecated since 3.0 - unused.
+     */
     public void testCreateObjectId() throws Exception {
         // must provide a map container for the entities
         DataMap entityContainer = new DataMap();
@@ -78,7 +81,7 @@ public class DataRowTest extends CayenneCase {
         at.setPrimaryKey(true);
         dbe.addAttribute(at);
 
-        Class entityClass = Number.class;
+        Class<?> entityClass = Number.class;
         objEntity.setClassName(entityClass.getName());
 
         // test same id created by different methods
@@ -94,6 +97,9 @@ public class DataRowTest extends CayenneCase {
         assertEquals(ref, oid);
     }
 
+    /**
+     * @deprecated since 3.0 - unused.
+     */
     public void testCreateObjectIdNulls() throws Exception {
         // must provide a map container for the entities
         DataMap entityContainer = new DataMap();
