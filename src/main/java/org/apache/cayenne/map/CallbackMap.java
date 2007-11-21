@@ -19,11 +19,7 @@
 package org.apache.cayenne.map;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
 
-import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -34,114 +30,82 @@ import org.apache.cayenne.util.XMLEncoder;
  */
 public class CallbackMap implements Serializable {
 
-    // these int constants correspond to indexes in array in LifecycleCallbackRegistry, so
-    // they must start with 0 and increment by 1.
-
-    /**
-     * An array containing all valid callbacks with each callback int value corresponding
-     * to its index in the array.
-     */
-    public static final int[] CALLBACKS = new int[] {
-            LifecycleListener.PRE_PERSIST, LifecycleListener.PRE_REMOVE,
-            LifecycleListener.PRE_UPDATE, LifecycleListener.POST_PERSIST,
-            LifecycleListener.POST_REMOVE, LifecycleListener.POST_UPDATE,
-            LifecycleListener.POST_LOAD
-    };
-
-    protected CallbackDescriptor prePersist;
-    protected CallbackDescriptor postPersist;
-    protected CallbackDescriptor preUpdate;
-    protected CallbackDescriptor postUpdate;
-    protected CallbackDescriptor preRemove;
-    protected CallbackDescriptor postRemove;
-    protected CallbackDescriptor postLoad;
-
-    /**
-     * map for quick access to a callback descriptor by type
-     */
-    private Map callbacksMap = new HashMap();
+    protected CallbackDescriptor[] callbacks = new CallbackDescriptor[LifecycleEvent
+            .values().length];
 
     public CallbackMap() {
-        this.prePersist = new CallbackDescriptor(LifecycleListener.PRE_PERSIST);
-        this.postPersist = new CallbackDescriptor(LifecycleListener.POST_PERSIST);
-        this.preUpdate = new CallbackDescriptor(LifecycleListener.PRE_UPDATE);
-        this.postUpdate = new CallbackDescriptor(LifecycleListener.POST_UPDATE);
-        this.preRemove = new CallbackDescriptor(LifecycleListener.PRE_REMOVE);
-        this.postRemove = new CallbackDescriptor(LifecycleListener.POST_REMOVE);
-        this.postLoad = new CallbackDescriptor(LifecycleListener.POST_LOAD);
 
-        callbacksMap.put(new Integer(LifecycleListener.PRE_PERSIST), prePersist);
-        callbacksMap.put(new Integer(LifecycleListener.POST_PERSIST), postPersist);
-        callbacksMap.put(new Integer(LifecycleListener.PRE_UPDATE), preUpdate);
-        callbacksMap.put(new Integer(LifecycleListener.POST_UPDATE), postUpdate);
-        callbacksMap.put(new Integer(LifecycleListener.PRE_REMOVE), preRemove);
-        callbacksMap.put(new Integer(LifecycleListener.POST_REMOVE), postRemove);
-        callbacksMap.put(new Integer(LifecycleListener.POST_LOAD), postLoad);
+        LifecycleEvent[] events = LifecycleEvent.values();
+        callbacks = new CallbackDescriptor[events.length];
+
+        for (int i = 0; i < events.length; i++) {
+            callbacks[i] = new CallbackDescriptor(events[i]);
+        }
     }
 
     /**
-     * @return all event callbacks in a single array ordered by event type, following the
-     * order in {@link CallbackMap#CALLBACKS} array.
+     * Returns all event callbacks as an array ordered by event type.
      */
     public CallbackDescriptor[] getCallbacks() {
-        return new CallbackDescriptor[] {
-                prePersist, preRemove, preUpdate, postPersist, postRemove, postUpdate,
-                postLoad
-        };
+        return callbacks;
     }
 
     /**
      * @param callbackType callback type id
      * @return CallbackDescriptor for the specified callback type id
      */
-    public CallbackDescriptor getCallbackDescriptor(int callbackType) {
-        return (CallbackDescriptor)callbacksMap.get(new Integer(callbackType));
+    public CallbackDescriptor getCallbackDescriptor(LifecycleEvent callbackType) {
+        return callbacks[callbackType.ordinal()];
     }
 
     public CallbackDescriptor getPostLoad() {
-        return postLoad;
+        return callbacks[LifecycleEvent.POST_LOAD.ordinal()];
     }
 
     public CallbackDescriptor getPostPersist() {
-        return postPersist;
+        return callbacks[LifecycleEvent.POST_PERSIST.ordinal()];
     }
 
     public CallbackDescriptor getPostRemove() {
-        return postRemove;
+        return callbacks[LifecycleEvent.POST_REMOVE.ordinal()];
     }
 
     public CallbackDescriptor getPostUpdate() {
-        return postUpdate;
+        return callbacks[LifecycleEvent.POST_UPDATE.ordinal()];
     }
 
     public CallbackDescriptor getPrePersist() {
-        return prePersist;
+        return callbacks[LifecycleEvent.PRE_PERSIST.ordinal()];
     }
 
     public CallbackDescriptor getPreRemove() {
-        return preRemove;
+        return callbacks[LifecycleEvent.PRE_REMOVE.ordinal()];
     }
 
     public CallbackDescriptor getPreUpdate() {
-        return preUpdate;
+        return callbacks[LifecycleEvent.PRE_UPDATE.ordinal()];
     }
 
     public void encodeCallbacksAsXML(XMLEncoder encoder) {
-        printMethods(prePersist, "pre-persist", encoder);
-        printMethods(postPersist, "post-persist", encoder);
-        printMethods(preUpdate, "pre-update", encoder);
-        printMethods(postUpdate, "post-update", encoder);
-        printMethods(preRemove, "pre-remove", encoder);
-        printMethods(postRemove, "post-remove", encoder);
-        printMethods(postLoad, "post-load", encoder);
+        printMethods(getPrePersist(), "pre-persist", encoder);
+        printMethods(getPostPersist(), "post-persist", encoder);
+        printMethods(getPreUpdate(), "pre-update", encoder);
+        printMethods(getPostUpdate(), "post-update", encoder);
+        printMethods(getPreRemove(), "pre-remove", encoder);
+        printMethods(getPostRemove(), "post-remove", encoder);
+        printMethods(getPostLoad(), "post-load", encoder);
     }
 
-    private static void printMethods(CallbackDescriptor descriptor, String stringCallbackName, XMLEncoder encoder) {
-        for (Iterator i = descriptor.getCallbackMethods().iterator(); i.hasNext();) {
+    private static void printMethods(
+            CallbackDescriptor descriptor,
+            String stringCallbackName,
+            XMLEncoder encoder) {
+
+        for (String methodName : descriptor.getCallbackMethods()) {
             encoder.print("<");
             encoder.print(stringCallbackName);
             encoder.print(" method-name=\"");
-            encoder.print((String)i.next());
+            encoder.print(methodName);
             encoder.println("\"/>");
         }
     }

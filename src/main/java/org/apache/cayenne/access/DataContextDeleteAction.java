@@ -23,15 +23,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DeleteDenyException;
-import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DeleteRule;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
@@ -101,7 +100,7 @@ class DataContextDeleteAction {
             throws DeleteDenyException {
 
         dataContext.getEntityResolver().getCallbackRegistry().performCallbacks(
-                LifecycleListener.PRE_REMOVE,
+                LifecycleEvent.PRE_REMOVE,
                 object);
 
         object.setPersistenceState(PersistenceState.DELETED);

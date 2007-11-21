@@ -20,7 +20,6 @@ package org.apache.cayenne.map;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -35,10 +34,10 @@ import java.util.Set;
  */
 public class CallbackDescriptor implements Serializable {
 
-    protected int callbackType;
+    protected LifecycleEvent callbackType;
     protected Set<String> callbackMethods;
 
-    public CallbackDescriptor(int callbackType) {
+    public CallbackDescriptor(LifecycleEvent callbackType) {
         setCallbackType(callbackType);
         this.callbackMethods = new LinkedHashSet<String>(3);
     }
@@ -67,15 +66,11 @@ public class CallbackDescriptor implements Serializable {
         callbackMethods.remove(methodName);
     }
 
-    public int getCallbackType() {
+    public LifecycleEvent getCallbackType() {
         return callbackType;
     }
 
-    void setCallbackType(int callbackType) {
-        if (Arrays.binarySearch(CallbackMap.CALLBACKS, callbackType) != callbackType) {
-            throw new IllegalArgumentException("Invalid callback: " + callbackType);
-        }
-
+    void setCallbackType(LifecycleEvent callbackType) {
         this.callbackType = callbackType;
     }
 

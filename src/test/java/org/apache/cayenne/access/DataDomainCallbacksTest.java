@@ -19,10 +19,10 @@
 package org.apache.cayenne.access;
 
 import org.apache.art.Artist;
-import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
@@ -46,13 +46,10 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        registry.addListener(
-                LifecycleListener.POST_LOAD,
-                Artist.class,
-                "postLoadCallback");
+        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
         registry.addListener(
-                LifecycleListener.POST_LOAD,
+                LifecycleEvent.POST_LOAD,
                 Artist.class,
                 listener,
                 "publicCallback");
@@ -126,10 +123,8 @@ public class DataDomainCallbacksTest extends CayenneCase {
         context.commitChanges();
         assertFalse(a1.isPreUpdated());
 
-        registry.addListener(
-                LifecycleListener.PRE_UPDATE,
-                Artist.class,
-                "preUpdateCallback");
+        registry
+                .addListener(LifecycleEvent.PRE_UPDATE, Artist.class, "preUpdateCallback");
         a1.setArtistName("ZZ");
         context.commitChanges();
         assertTrue(a1.isPreUpdated());
@@ -139,7 +134,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
         registry.addListener(
-                LifecycleListener.PRE_UPDATE,
+                LifecycleEvent.PRE_UPDATE,
                 Artist.class,
                 listener2,
                 "publicCallback");
@@ -169,7 +164,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
         assertFalse(a1.isPostUpdated());
 
         registry.addListener(
-                LifecycleListener.POST_UPDATE,
+                LifecycleEvent.POST_UPDATE,
                 Artist.class,
                 "postUpdateCallback");
         a1.setArtistName("ZZ");
@@ -181,7 +176,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
         registry.addListener(
-                LifecycleListener.POST_UPDATE,
+                LifecycleEvent.POST_UPDATE,
                 Artist.class,
                 listener2,
                 "publicCallback");
@@ -206,12 +201,12 @@ public class DataDomainCallbacksTest extends CayenneCase {
         context.commitChanges();
 
         registry.addListener(
-                LifecycleListener.POST_REMOVE,
+                LifecycleEvent.POST_REMOVE,
                 Artist.class,
                 "postRemoveCallback");
         MockCallingBackListener listener2 = new MockCallingBackListener();
         registry.addListener(
-                LifecycleListener.POST_REMOVE,
+                LifecycleEvent.POST_REMOVE,
                 Artist.class,
                 listener2,
                 "publicCallback");
@@ -228,7 +223,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
         LifecycleCallbackRegistry registry = getDomain()
                 .getEntityResolver()
                 .getCallbackRegistry();
-        
+
         ObjectContext context = createDataContext();
         Artist a1 = (Artist) context.newObject(Artist.class);
         a1.setArtistName("XX");
@@ -236,7 +231,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
         assertFalse(a1.isPostPersisted());
 
         registry.addListener(
-                LifecycleListener.POST_PERSIST,
+                LifecycleEvent.POST_PERSIST,
                 Artist.class,
                 "postPersistCallback");
         MockCallingBackListener listener2 = new MockCallingBackListener() {
@@ -247,7 +242,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
             }
         };
         registry.addListener(
-                LifecycleListener.POST_PERSIST,
+                LifecycleEvent.POST_PERSIST,
                 Artist.class,
                 listener2,
                 "publicCallback");

@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -43,7 +42,7 @@ public class Procedure implements CayenneMapEntry, XMLSerializable, Serializable
     protected String catalog;
     protected String schema;
     protected boolean returningValue;
-    protected List callParameters = new ArrayList();
+    protected List<ProcedureParameter> callParameters = new ArrayList<ProcedureParameter>();
 
     /**
      * Creates an unnamed procedure object.
@@ -134,7 +133,7 @@ public class Procedure implements CayenneMapEntry, XMLSerializable, Serializable
         this.dataMap = dataMap;
     }
 
-    public void setCallParameters(List parameters) {
+    public void setCallParameters(List<ProcedureParameter> parameters) {
         clearCallParameters();
         callParameters.addAll(parameters);
     }
@@ -160,7 +159,7 @@ public class Procedure implements CayenneMapEntry, XMLSerializable, Serializable
     /** Removes a named call parameter. */
     public void removeCallParameter(String name) {
         for (int i = 0; i < callParameters.size(); i++) {
-            ProcedureParameter nextParam = (ProcedureParameter) callParameters.get(i);
+            ProcedureParameter nextParam = callParameters.get(i);
             if (name.equals(nextParam.getName())) {
                 callParameters.remove(i);
                 break;
@@ -175,7 +174,7 @@ public class Procedure implements CayenneMapEntry, XMLSerializable, Serializable
     /**
      * Returns an unmodifiable list of call parameters.
      */
-    public List getCallParameters() {
+    public List<ProcedureParameter> getCallParameters() {
         return Collections.unmodifiableList(callParameters);
     }
 
@@ -183,11 +182,10 @@ public class Procedure implements CayenneMapEntry, XMLSerializable, Serializable
      * Returns a list of OUT and INOUT call parameters. If procedure has a return value,
      * it will also be included as a call parameter.
      */
-    public List getCallOutParameters() {
-        List outParams = new ArrayList(callParameters.size());
-        Iterator it = callParameters.iterator();
-        while (it.hasNext()) {
-            ProcedureParameter param = (ProcedureParameter) it.next();
+    public List<ProcedureParameter> getCallOutParameters() {
+        List<ProcedureParameter> outParams = new ArrayList<ProcedureParameter>(
+                callParameters.size());
+        for (ProcedureParameter param : callParameters) {
             if (param.isOutParam()) {
                 outParams.add(param);
             }

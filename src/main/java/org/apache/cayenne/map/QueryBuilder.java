@@ -46,13 +46,12 @@ public abstract class QueryBuilder {
     public static final String JAVA_CLASS_ROOT = "java-class";
 
     protected String name;
-    protected Map properties;
-    protected List resultColumns;
+    protected Map<String, String> properties;
     protected String sql;
-    protected Map adapterSql;
+    protected Map<String, String> adapterSql;
     protected Expression qualifier;
-    protected List orderings;
-    protected List prefetches;
+    protected List<Ordering> orderings;
+    protected List<String> prefetches;
     protected DataMap dataMap;
     protected String rootType;
     protected String rootName;
@@ -121,7 +120,7 @@ public abstract class QueryBuilder {
         }
         else {
             if (adapterSql == null) {
-                adapterSql = new HashMap();
+                adapterSql = new HashMap<String, String>();
             }
 
             adapterSql.put(adapterClass, sql);
@@ -139,7 +138,7 @@ public abstract class QueryBuilder {
 
     public void addProperty(String name, String value) {
         if (properties == null) {
-            properties = new HashMap();
+            properties = new HashMap<String, String>();
         }
 
         properties.put(name, value);
@@ -147,7 +146,7 @@ public abstract class QueryBuilder {
 
     public void addOrdering(String path, String descending, String ignoreCase) {
         if (orderings == null) {
-            orderings = new ArrayList();
+            orderings = new ArrayList<Ordering>();
         }
 
         if (path != null && path.trim().length() == 0) {
@@ -165,7 +164,7 @@ public abstract class QueryBuilder {
         }
 
         if (prefetches == null) {
-            prefetches = new ArrayList();
+            prefetches = new ArrayList<String>();
         }
         prefetches.add(path.trim());
     }
