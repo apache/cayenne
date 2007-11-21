@@ -18,41 +18,55 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.LifecycleListener;
-import org.apache.cayenne.map.*;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.CallbackMethodListener;
-import org.apache.cayenne.modeler.event.CallbackMethodEvent;
-import org.apache.cayenne.modeler.action.AbstractRemoveCallbackMethodAction;
-import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
-import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
-import org.apache.cayenne.modeler.util.*;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.JToolBar;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+
+import org.apache.cayenne.map.CallbackDescriptor;
+import org.apache.cayenne.map.CallbackMap;
+import org.apache.cayenne.map.LifecycleEvent;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.AbstractRemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
+import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.event.CallbackMethodEvent;
+import org.apache.cayenne.modeler.event.CallbackMethodListener;
+import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.PanelFactory;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
- * Base abstract class for all calback methids editing tabs
- * Contains logic for callback methods displaying, creating, removing, esiting, reordering
- *
+ * Base abstract class for all calback methids editing tabs Contains logic for callback
+ * methods displaying, creating, removing, esiting, reordering
+ * 
  * @author Vasil Tarasevich
  * @version 1.0 Oct 23, 2007
  */
 
 public abstract class AbstractCallbackMethodsTab extends JPanel {
+
     /**
      * mediator instance
      */
@@ -69,22 +83,23 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     protected CayenneTable table;
 
     /**
-     * Dropdown for callback type selection.
-     * Contains fixed list of 7 callback types.
+     * Dropdown for callback type selection. Contains fixed list of 7 callback types.
      */
     protected JComboBox callbackTypeCombo = CayenneWidgetFactory.createComboBox(
-            new Object[]{
-                    new CallbackType(LifecycleListener.PRE_PERSIST, "pre-persist"),
-                    new CallbackType(LifecycleListener.POST_PERSIST, "post-persist"),
-                    new CallbackType(LifecycleListener.PRE_UPDATE, "pre-update"),
-                    new CallbackType(LifecycleListener.POST_UPDATE, "post-update"),
-                    new CallbackType(LifecycleListener.PRE_REMOVE, "pre-remove"),
-                    new CallbackType(LifecycleListener.POST_REMOVE, "post-remove"),
-                    new CallbackType(LifecycleListener.POST_LOAD, "post-load"),
-            }, false);
+            new Object[] {
+                    new CallbackType(LifecycleEvent.PRE_PERSIST, "pre-persist"),
+                    new CallbackType(LifecycleEvent.POST_PERSIST, "post-persist"),
+                    new CallbackType(LifecycleEvent.PRE_UPDATE, "pre-update"),
+                    new CallbackType(LifecycleEvent.POST_UPDATE, "post-update"),
+                    new CallbackType(LifecycleEvent.PRE_REMOVE, "pre-remove"),
+                    new CallbackType(LifecycleEvent.POST_REMOVE, "post-remove"),
+                    new CallbackType(LifecycleEvent.POST_LOAD, "post-load"),
+            },
+            false);
 
     /**
      * constructor
+     * 
      * @param mediator mediator instance
      */
     public AbstractCallbackMethodsTab(ProjectController mediator) {
@@ -99,8 +114,9 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     protected abstract CallbackMap getCallbackMap();
 
     /**
-     * creates filter pane for filtering callback methods list
-     * adds callback method type dropdown
+     * creates filter pane for filtering callback methods list adds callback method type
+     * dropdown
+     * 
      * @param builder forms builder
      */
     protected void buildFilter(DefaultFormBuilder builder) {
@@ -121,7 +137,8 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
      */
     protected AbstractRemoveCallbackMethodAction getRemoveCallbackMethodAction() {
         Application app = Application.getInstance();
-        return (AbstractRemoveCallbackMethodAction)app.getAction(RemoveCallbackMethodAction.ACTION_NAME);
+        return (AbstractRemoveCallbackMethodAction) app
+                .getAction(RemoveCallbackMethodAction.ACTION_NAME);
     }
 
     /**
@@ -148,11 +165,12 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         table.setDefaultRenderer(String.class, new StringRenderer());
         table.getTableHeader().setReorderingAllowed(false);
 
-        //drag-and-drop initialization
+        // drag-and-drop initialization
         table.setDragEnabled(true);
         table.setTransferHandler(new StringTransferHandler() {
+
             protected String exportString(JComponent c) {
-                JTable table = (JTable)c;
+                JTable table = (JTable) c;
                 int rowIndex = table.getSelectedRow();
 
                 String result = null;
@@ -164,18 +182,21 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
             }
 
             protected void importString(JComponent c, String callbackMethod) {
-                JTable table = (JTable)c;
+                JTable table = (JTable) c;
                 int rowIndex = table.getSelectedRow();
 
-                //move callback method inside of model
-                CallbackDescriptor callbackDescriptor =
-                        getCallbackMap().getCallbackDescriptor(((CallbackType)callbackTypeCombo.getSelectedItem()).getType());
-                mediator.setDirty(callbackDescriptor.moveMethod(callbackMethod, rowIndex));
+                // move callback method inside of model
+                CallbackDescriptor callbackDescriptor = getCallbackMap()
+                        .getCallbackDescriptor(
+                                ((CallbackType) callbackTypeCombo.getSelectedItem())
+                                        .getType());
+                mediator
+                        .setDirty(callbackDescriptor.moveMethod(callbackMethod, rowIndex));
                 rebuildTable();
             }
 
             protected void cleanup(JComponent c, boolean remove) {
-                //System.out.println("c");
+                // System.out.println("c");
             }
         });
         auxPanel.add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
@@ -187,49 +208,52 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
      * listeners initialization
      */
     protected void initController() {
-        mediator.addCallbackMethodListener(
-                new CallbackMethodListener() {
-                    public void callbackMethodChanged(CallbackMethodEvent e) {
-                        if (isVisible()) {
-                            rebuildTable();
-                        }
-                    }
+        mediator.addCallbackMethodListener(new CallbackMethodListener() {
 
-                    public void callbackMethodAdded(CallbackMethodEvent e) {
-                        if (isVisible()) {
-                            updateCallbackTypeCounters();
-                            rebuildTable();
-                        }
-                    }
-
-                    public void callbackMethodRemoved(CallbackMethodEvent e) {
-                        if (isVisible()) {
-                            updateCallbackTypeCounters();
-                            rebuildTable();
-                        }
-                    }
+            public void callbackMethodChanged(CallbackMethodEvent e) {
+                if (isVisible()) {
+                    rebuildTable();
                 }
-        );
+            }
 
-        callbackTypeCombo.addItemListener(
-                new ItemListener() {
-                    public void itemStateChanged(ItemEvent e) {
-                        if (e.getStateChange() == ItemEvent.SELECTED) {
-                            mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
-                            updateCallbackTypeCounters();
-                            rebuildTable();
-                        }
-                    }
+            public void callbackMethodAdded(CallbackMethodEvent e) {
+                if (isVisible()) {
+                    updateCallbackTypeCounters();
+                    rebuildTable();
                 }
-        );
+            }
+
+            public void callbackMethodRemoved(CallbackMethodEvent e) {
+                if (isVisible()) {
+                    updateCallbackTypeCounters();
+                    rebuildTable();
+                }
+            }
+        });
+
+        callbackTypeCombo.addItemListener(new ItemListener() {
+
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    mediator.setCurrentCallbackType((CallbackType) callbackTypeCombo
+                            .getSelectedItem());
+                    updateCallbackTypeCounters();
+                    rebuildTable();
+                }
+            }
+        });
 
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                    mediator.setCurrentCallbackMethod(
-                            table.getSelectedRow() >= 0 ?
-                                (String)table.getModel().getValueAt(table.getSelectedRow(), 0) : null);
-                    getRemoveCallbackMethodAction().setEnabled(table.getSelectedRow() >= 0);
+                    mediator.setCurrentCallbackMethod(table.getSelectedRow() >= 0
+                            ? (String) table.getModel().getValueAt(
+                                    table.getSelectedRow(),
+                                    0)
+                            : null);
+                    getRemoveCallbackMethodAction().setEnabled(
+                            table.getSelectedRow() >= 0);
                 }
             }
         });
@@ -237,7 +261,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 
     protected void updateCallbackTypeCounters() {
         CallbackMap map = getCallbackMap();
-        
+
         for (int i = 0; i < callbackTypeCombo.getItemCount(); i++) {
             CallbackType type = (CallbackType) callbackTypeCombo.getItemAt(i);
 
@@ -253,12 +277,11 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         callbackTypeCombo.repaint();
     }
 
-
     /**
      * rebuilds table content
      */
     protected void rebuildTable() {
-        CallbackType callbackType = (CallbackType)callbackTypeCombo.getSelectedItem();
+        CallbackType callbackType = (CallbackType) callbackTypeCombo.getSelectedItem();
         List methods = new ArrayList();
         CallbackDescriptor descriptor = null;
         CallbackMap callbackMap = getCallbackMap();
@@ -279,8 +302,8 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         table.setRowHeight(25);
         table.setRowMargin(3);
 
-        TableColumn methodNameColumn =
-                table.getColumnModel().getColumn(CallbackDescriptorTableModel.METHOD_NAME);
+        TableColumn methodNameColumn = table.getColumnModel().getColumn(
+                CallbackDescriptorTableModel.METHOD_NAME);
         methodNameColumn.setMinWidth(424);
 
         mediator.setCurrentCallbackMethod(null);
@@ -301,8 +324,8 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 
             // center cardinality column
             int align = column == ObjRelationshipTableModel.REL_SEMANTICS
-                        ? JLabel.CENTER
-                        : JLabel.LEFT;
+                    ? JLabel.CENTER
+                    : JLabel.LEFT;
             super.setHorizontalAlignment(align);
 
             super.getTableCellRendererComponent(
@@ -318,12 +341,13 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
             ObjRelationship relationship = model.getRelationship(row);
 
             if (relationship != null
-                && relationship.getSourceEntity() != model.getEntity()) {
+                    && relationship.getSourceEntity() != model.getEntity()) {
                 setForeground(Color.GRAY);
-            } else {
+            }
+            else {
                 setForeground(isSelected && !hasFocus
-                              ? table.getSelectionForeground()
-                              : table.getForeground());
+                        ? table.getSelectionForeground()
+                        : table.getForeground());
             }
 
             return this;
@@ -331,12 +355,10 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     }
 
     protected final CallbackType getSelectedCallbackType() {
-        CallbackType selectedType = (CallbackType)callbackTypeCombo.getSelectedItem();
+        CallbackType selectedType = (CallbackType) callbackTypeCombo.getSelectedItem();
         if (selectedType == null) {
-                selectedType = (CallbackType)callbackTypeCombo.getItemAt(0);
+            selectedType = (CallbackType) callbackTypeCombo.getItemAt(0);
         }
         return selectedType;
     }
 }
-
-

@@ -18,20 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
+import org.apache.cayenne.map.LifecycleEvent;
 
 /**
- * Entity for callback type.
- * Contains type and type name
- *
+ * Entity for callback type. Contains type and type name
+ * 
  * @author Vasil Tarasevich
  * @version 1.0 Oct 26, 2007
  */
 
 public class CallbackType {
-    /**
-     * callback type ID
-     */
-    private int type;
+
+    private LifecycleEvent type;
 
     /**
      * callback type name
@@ -45,10 +43,11 @@ public class CallbackType {
 
     /**
      * constructor
+     * 
      * @param type type id
      * @param name name
      */
-    public CallbackType(int type, String name) {
+    public CallbackType(LifecycleEvent type, String name) {
         this.type = type;
         this.name = name;
         this.counter = 0;
@@ -57,7 +56,7 @@ public class CallbackType {
     /**
      * @return callback type id
      */
-    public int getType() {
+    public LifecycleEvent getType() {
         return type;
     }
 
@@ -77,6 +76,7 @@ public class CallbackType {
 
     /**
      * Method to specify counter value
+     * 
      * @param counter new coutner value
      */
     public void setCounter(int counter) {
@@ -84,7 +84,7 @@ public class CallbackType {
     }
 
     /**
-     * @return a human readable label representing for this callback. 
+     * @return a human readable label representing for this callback.
      */
     public String toString() {
         if (counter <= 0) {
@@ -99,18 +99,20 @@ public class CallbackType {
     }
 
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         CallbackType that = (CallbackType) o;
 
-        if (type != that.type) return false;
+        if (type != that.type)
+            return false;
 
         return true;
     }
 
     public int hashCode() {
-        return type;
+        return type.hashCode();
     }
 }
-
