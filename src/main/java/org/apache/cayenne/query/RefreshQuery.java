@@ -34,7 +34,7 @@ import org.apache.cayenne.map.EntityResolver;
  */
 public class RefreshQuery implements Query {
 
-    protected Collection objects;
+    protected Collection<?> objects;
     protected Query query;
     protected String[] groupKeys;
 
@@ -50,7 +50,7 @@ public class RefreshQuery implements Query {
      * Creates a RefreshQuery that refreshes a collection of objects, including
      * invalidation of their relationships.
      */
-    public RefreshQuery(Collection objects) {
+    public RefreshQuery(Collection<?> objects) {
         this.objects = objects;
     }
 
@@ -103,7 +103,7 @@ public class RefreshQuery implements Query {
         return groupKeys;
     }
 
-    public Collection getObjects() {
+    public Collection<?> getObjects() {
         return objects;
     }
 

@@ -245,10 +245,10 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
 
         // TODO: andrus 8/20/2007 - can we optimize this somehow, avoiding type checking??
         if (holder instanceof Collection) {
-            ((Collection) holder).remove(value);
+            ((Collection<Object>) holder).remove(value);
         }
         else if (holder instanceof Map) {
-            ((Map) holder).remove(getMapKey(relName, value));
+            ((Map<Object, Object>) holder).remove(getMapKey(relName, value));
         }
 
         if (value != null && setReverse) {
@@ -273,10 +273,10 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
 
         // TODO: andrus 8/20/2007 - can we optimize this somehow, avoiding type checking??
         if (holder instanceof Collection) {
-            ((Collection) holder).add(value);
+            ((Collection<Object>) holder).add(value);
         }
         else if (holder instanceof Map) {
-            ((Map) holder).put(getMapKey(relName, value), value);
+            ((Map<Object, Object>) holder).put(getMapKey(relName, value), value);
         }
 
         if (setReverse) {
@@ -431,10 +431,10 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
 
     protected void appendProperties(StringBuffer buffer) {
         buffer.append("[");
-        Iterator it = values.entrySet().iterator();
+        Iterator<Map.Entry<String, Object>> it = values.entrySet().iterator();
 
         while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+            Map.Entry<String, Object> entry = it.next();
 
             buffer.append(entry.getKey()).append("=>");
             Object value = entry.getValue();
@@ -499,13 +499,13 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
             case PersistenceState.NEW:
             case PersistenceState.MODIFIED:
             case PersistenceState.DELETED:
-                values = (Map) in.readObject();
+                values = (Map<String, Object>) in.readObject();
                 break;
             case PersistenceState.COMMITTED:
             case PersistenceState.HOLLOW:
                 this.persistenceState = PersistenceState.HOLLOW;
                 // props will be populated when required (readProperty called)
-                values = new HashMap();
+                values = new HashMap<String, Object>();
                 break;
         }
 
@@ -558,11 +558,9 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
         // handling meaningful keys within the object lifecycle requires something more,
         // namely read/write methods for relationships and direct values should be
         // synchronous with each other..
-        Map failedDbAttributes = null;
+        Map<String, ValidationFailure> failedDbAttributes = null;
 
-        Iterator attributes = objEntity.getAttributes().iterator();
-        while (attributes.hasNext()) {
-            Object next = attributes.next();
+        for (Object next : objEntity.getAttributes()) {
 
             // TODO: andrus, 2/20/2007 - handle embedded attribute
             if (!(next instanceof ObjAttribute)) {
@@ -587,7 +585,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
                 if (failure != null) {
 
                     if (failedDbAttributes == null) {
-                        failedDbAttributes = new HashMap();
+                        failedDbAttributes = new HashMap<String, ValidationFailure>();
                     }
 
                     failedDbAttributes.put(dbAttribute.getName(), failure);
@@ -632,7 +630,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
         }
 
         // validate mandatory relationships
-        Iterator relationships = objEntity.getRelationships().iterator();
+        Iterator<?> relationships = objEntity.getRelationships().iterator();
         while (relationships.hasNext()) {
             ObjRelationship relationship = (ObjRelationship) relationships.next();
 
@@ -640,16 +638,15 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
                 continue;
             }
 
-            List dbRels = relationship.getDbRelationships();
+            List<DbRelationship> dbRels = relationship.getDbRelationships();
             if (dbRels.isEmpty()) {
-                // Wha?
                 continue;
             }
 
             // if db relationship is not based on a PK and is based on mandatory
             // attributes, see if we have a target object set
             boolean validate = true;
-            DbRelationship dbRelationship = (DbRelationship) dbRels.get(0);
+            DbRelationship dbRelationship = dbRels.get(0);
             for (DbJoin join : dbRelationship.getJoins()) {
                 DbAttribute source = join.getSource();
 
@@ -690,9 +687,8 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
 
         // deal with previously found attribute failures...
         if (failedDbAttributes != null && !failedDbAttributes.isEmpty()) {
-            Iterator failedAttributes = failedDbAttributes.values().iterator();
-            while (failedAttributes.hasNext()) {
-                validationResult.addFailure((ValidationFailure) failedAttributes.next());
+            for (ValidationFailure failure : failedDbAttributes.values()) {
+                validationResult.addFailure(failure);
             }
         }
     }
@@ -737,12 +733,13 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
      */
     public void encodeAsXML(XMLEncoder encoder) {
         EntityResolver er = getObjectContext().getEntityResolver();
-        ObjEntity object = er.lookupObjEntity(getClass());
+        ObjEntity objectEntity = er.lookupObjEntity(getClass());
 
         String[] fields = this.getClass().getName().split("\\.");
         encoder.setRoot(fields[fields.length - 1], this.getClass().getName());
 
-        for (Iterator it = object.getDeclaredAttributes().iterator(); it.hasNext();) {
+        Iterator<?> it = objectEntity.getDeclaredAttributes().iterator();
+        while (it.hasNext()) {
             ObjAttribute att = (ObjAttribute) it.next();
             String name = att.getName();
             encoder.encodeProperty(name, readNestedProperty(name));
@@ -761,7 +758,8 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
                 .getEntityResolver();
         ObjEntity objectEntity = resolver.lookupObjEntity(getClass());
 
-        for (Iterator it = objectEntity.getDeclaredAttributes().iterator(); it.hasNext();) {
+        Iterator<?> it = objectEntity.getDeclaredAttributes().iterator();
+        while (it.hasNext()) {
             ObjAttribute att = (ObjAttribute) it.next();
             String name = att.getName();
             writeProperty(name, decoder.decodeObject(name));
