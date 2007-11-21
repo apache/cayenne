@@ -33,20 +33,20 @@ public interface EntitySorter {
     /**
      * Initializes a list of DataMaps used by the sorter.
      */
-    void setDataMaps(Collection dataMaps);
+    void setDataMaps(Collection<DataMap> dataMaps);
 
     /**
      * Sorts a list of DbEntities.
      */
-    void sortDbEntities(List dbEntities, boolean deleteOrder);
+    void sortDbEntities(List<DbEntity> dbEntities, boolean deleteOrder);
 
     /**
      * Sorts a list of ObjEntities.
      */
-    void sortObjEntities(List objEntities, boolean deleteOrder);
+    void sortObjEntities(List<ObjEntity> objEntities, boolean deleteOrder);
 
     /**
      * Sorts a list of objects belonging to the ObjEntity.
      */
-    void sortObjectsForEntity(ObjEntity entity, List objects, boolean deleteOrder);
+    void sortObjectsForEntity(ObjEntity entity, List<?> objects, boolean deleteOrder);
 }

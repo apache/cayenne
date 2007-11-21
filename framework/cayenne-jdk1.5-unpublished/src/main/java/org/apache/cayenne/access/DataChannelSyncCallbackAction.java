@@ -24,10 +24,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
 /**
@@ -78,7 +78,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
     abstract void applyPostCommit();
 
-    void apply(int callbackType, Collection objects) {
+    void apply(LifecycleEvent callbackType, Collection<?> objects) {
         if (seenIds != null && objects != null) {
             callbackRegistry.performCallbacks(callbackType, objects);
         }
@@ -158,20 +158,20 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
         }
 
         protected boolean hasListeners() {
-            return !(callbackRegistry.isEmpty(LifecycleListener.PRE_UPDATE)
-                    && callbackRegistry.isEmpty(LifecycleListener.POST_UPDATE)
-                    && callbackRegistry.isEmpty(LifecycleListener.POST_REMOVE) && callbackRegistry
-                    .isEmpty(LifecycleListener.POST_PERSIST));
+            return !(callbackRegistry.isEmpty(LifecycleEvent.PRE_UPDATE)
+                    && callbackRegistry.isEmpty(LifecycleEvent.POST_UPDATE)
+                    && callbackRegistry.isEmpty(LifecycleEvent.POST_REMOVE) && callbackRegistry
+                    .isEmpty(LifecycleEvent.POST_PERSIST));
         }
 
         void applyPreCommit() {
-            apply(LifecycleListener.PRE_UPDATE, updated);
+            apply(LifecycleEvent.PRE_UPDATE, updated);
         }
 
         void applyPostCommit() {
-            apply(LifecycleListener.POST_UPDATE, updated);
-            apply(LifecycleListener.POST_REMOVE, removed);
-            apply(LifecycleListener.POST_PERSIST, persisted);
+            apply(LifecycleEvent.POST_UPDATE, updated);
+            apply(LifecycleEvent.POST_REMOVE, removed);
+            apply(LifecycleEvent.POST_PERSIST, persisted);
         }
     }
 
@@ -183,7 +183,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
         }
 
         protected boolean hasListeners() {
-            return !callbackRegistry.isEmpty(LifecycleListener.POST_LOAD);
+            return !callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD);
         }
 
         void applyPreCommit() {
@@ -191,8 +191,8 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
         }
 
         void applyPostCommit() {
-            apply(LifecycleListener.POST_LOAD, updated);
-            apply(LifecycleListener.POST_LOAD, removed);
+            apply(LifecycleEvent.POST_LOAD, updated);
+            apply(LifecycleEvent.POST_LOAD, removed);
         }
     }
 }

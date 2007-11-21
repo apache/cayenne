@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
@@ -122,7 +123,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
         try {
             callbackRegistry.addListener(
-                    LifecycleListener.PRE_PERSIST,
+                    LifecycleEvent.PRE_PERSIST,
                     MtTable1.class,
                     "prePersistMethod");
 
@@ -136,8 +137,10 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
             context.commitChanges();
 
             // find peer
-            MtTable1 peer = (MtTable1) csChannel.getServerContext().getGraphManager().getNode(
-                    clientObject.getObjectId());
+            MtTable1 peer = (MtTable1) csChannel
+                    .getServerContext()
+                    .getGraphManager()
+                    .getNode(clientObject.getObjectId());
 
             assertTrue(peer.isPrePersisted());
         }

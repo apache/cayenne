@@ -22,15 +22,12 @@ import java.util.Collection;
 
 import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.LifecycleEvent;
 
 /**
  * A registry of lifecycle callbacks for all callback event types. Valid event types are
- * {@link LifecycleListener#PRE_PERSIST}, {@link LifecycleListener#POST_PERSIST},
- * {@link LifecycleListener#PRE_UPDATE}, {@link LifecycleListener#POST_UPDATE},
- * {@link LifecycleListener#PRE_REMOVE}, {@link LifecycleListener#POST_REMOVE},
- * {@link LifecycleListener#POST_LOAD}.
+ * defined in {@link LifecycleEvent} enum.
  * 
  * @since 3.0
  * @author Andrus Adamchik
@@ -43,7 +40,7 @@ public class LifecycleCallbackRegistry {
      * Creates an empty callback registry.
      */
     public LifecycleCallbackRegistry(EntityResolver resolver) {
-        eventCallbacks = new LifecycleCallbackEventHandler[CallbackMap.CALLBACKS.length];
+        eventCallbacks = new LifecycleCallbackEventHandler[LifecycleEvent.values().length];
         for (int i = 0; i < eventCallbacks.length; i++) {
             eventCallbacks[i] = new LifecycleCallbackEventHandler(resolver);
         }
@@ -68,8 +65,8 @@ public class LifecycleCallbackRegistry {
     /**
      * Returns true if there are no listeners for a specific event type.
      */
-    public boolean isEmpty(int type) {
-        return eventCallbacks[type].isEmpty();
+    public boolean isEmpty(LifecycleEvent type) {
+        return eventCallbacks[type.ordinal()].isEmpty();
     }
 
     /**
@@ -78,21 +75,21 @@ public class LifecycleCallbackRegistry {
      * methods in this class can be used to register arbitrary listeners.
      */
     public void addDefaultListener(LifecycleListener listener) {
-        addDefaultListener(LifecycleListener.PRE_PERSIST, listener, "prePersist");
-        addDefaultListener(LifecycleListener.POST_PERSIST, listener, "postPersist");
-        addDefaultListener(LifecycleListener.PRE_REMOVE, listener, "preRemove");
-        addDefaultListener(LifecycleListener.POST_REMOVE, listener, "postRemove");
-        addDefaultListener(LifecycleListener.PRE_UPDATE, listener, "preUpdate");
-        addDefaultListener(LifecycleListener.POST_UPDATE, listener, "postUpdate");
-        addDefaultListener(LifecycleListener.POST_LOAD, listener, "postLoad");
+        addDefaultListener(LifecycleEvent.PRE_PERSIST, listener, "prePersist");
+        addDefaultListener(LifecycleEvent.POST_PERSIST, listener, "postPersist");
+        addDefaultListener(LifecycleEvent.PRE_REMOVE, listener, "preRemove");
+        addDefaultListener(LifecycleEvent.POST_REMOVE, listener, "postRemove");
+        addDefaultListener(LifecycleEvent.PRE_UPDATE, listener, "preUpdate");
+        addDefaultListener(LifecycleEvent.POST_UPDATE, listener, "postUpdate");
+        addDefaultListener(LifecycleEvent.POST_LOAD, listener, "postLoad");
     }
 
     /**
      * Registers a callback method to be invoked on a provided non-entity object when a
      * lifecycle event occurs on any entity that does not suppress default callbacks.
      */
-    public void addDefaultListener(int type, Object listener, String methodName) {
-        eventCallbacks[type].addDefaultListener(listener, methodName);
+    public void addDefaultListener(LifecycleEvent type, Object listener, String methodName) {
+        eventCallbacks[type.ordinal()].addDefaultListener(listener, methodName);
     }
 
     /**
@@ -100,14 +97,14 @@ public class LifecycleCallbackRegistry {
      * listeners are not required to implement {@link LifecycleListener} interface. Other
      * methods in this class can be used to register arbitrary listeners.
      */
-    public void addListener(Class entityClass, LifecycleListener listener) {
-        addListener(LifecycleListener.PRE_PERSIST, entityClass, listener, "prePersist");
-        addListener(LifecycleListener.POST_PERSIST, entityClass, listener, "postPersist");
-        addListener(LifecycleListener.PRE_REMOVE, entityClass, listener, "preRemove");
-        addListener(LifecycleListener.POST_REMOVE, entityClass, listener, "postRemove");
-        addListener(LifecycleListener.PRE_UPDATE, entityClass, listener, "preUpdate");
-        addListener(LifecycleListener.POST_UPDATE, entityClass, listener, "postUpdate");
-        addListener(LifecycleListener.POST_LOAD, entityClass, listener, "postLoad");
+    public void addListener(Class<?> entityClass, LifecycleListener listener) {
+        addListener(LifecycleEvent.PRE_PERSIST, entityClass, listener, "prePersist");
+        addListener(LifecycleEvent.POST_PERSIST, entityClass, listener, "postPersist");
+        addListener(LifecycleEvent.PRE_REMOVE, entityClass, listener, "preRemove");
+        addListener(LifecycleEvent.POST_REMOVE, entityClass, listener, "postRemove");
+        addListener(LifecycleEvent.PRE_UPDATE, entityClass, listener, "preUpdate");
+        addListener(LifecycleEvent.POST_UPDATE, entityClass, listener, "postUpdate");
+        addListener(LifecycleEvent.POST_LOAD, entityClass, listener, "postLoad");
     }
 
     /**
@@ -115,32 +112,32 @@ public class LifecycleCallbackRegistry {
      * lifecycle event occurs for a specific entity.
      */
     public void addListener(
-            int type,
-            Class entityClass,
+            LifecycleEvent type,
+            Class<?> entityClass,
             Object listener,
             String methodName) {
-        eventCallbacks[type].addListener(entityClass, listener, methodName);
+        eventCallbacks[type.ordinal()].addListener(entityClass, listener, methodName);
     }
 
     /**
      * Registers a callback method to be invoked on an entity class instances when a
      * lifecycle event occurs.
      */
-    public void addListener(int type, Class entityClass, String methodName) {
-        eventCallbacks[type].addListener(entityClass, methodName);
+    public void addListener(LifecycleEvent type, Class<?> entityClass, String methodName) {
+        eventCallbacks[type.ordinal()].addListener(entityClass, methodName);
     }
 
     /**
      * Invokes callbacks of a specific type for a given entity object.
      */
-    public void performCallbacks(int type, Persistent object) {
-        eventCallbacks[type].performCallbacks(object);
+    public void performCallbacks(LifecycleEvent type, Persistent object) {
+        eventCallbacks[type.ordinal()].performCallbacks(object);
     }
 
     /**
      * Invokes callbacks of a specific type for a collection of entity objects.
      */
-    public void performCallbacks(int type, Collection objects) {
-        eventCallbacks[type].performCallbacks(objects);
+    public void performCallbacks(LifecycleEvent type, Collection<?> objects) {
+        eventCallbacks[type.ordinal()].performCallbacks(objects);
     }
 }

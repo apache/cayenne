@@ -183,13 +183,13 @@ public class ObjRelationship extends Relationship implements EventListener {
 
         Entity src = this.getSourceEntity();
 
-        Iterator it = target.getRelationships().iterator();
+        Iterator<?> it = target.getRelationships().iterator();
         while (it.hasNext()) {
             ObjRelationship rel = (ObjRelationship) it.next();
             if (rel.getTargetEntity() != src)
                 continue;
 
-            List otherRels = rel.getDbRelationships();
+            List<?> otherRels = rel.getDbRelationships();
             if (reversed.size() != otherRels.size())
                 continue;
 

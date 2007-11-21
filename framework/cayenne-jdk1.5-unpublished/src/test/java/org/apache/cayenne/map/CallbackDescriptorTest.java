@@ -18,27 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.LifecycleListener;
-
 import junit.framework.TestCase;
 
 public class CallbackDescriptorTest extends TestCase {
 
     public void testConstructor() {
-        CallbackDescriptor m = new CallbackDescriptor(LifecycleListener.POST_LOAD);
-        assertEquals(LifecycleListener.POST_LOAD, m.getCallbackType());
-
-        try {
-            new CallbackDescriptor(10000);
-            fail("Must have thrown");
-        }
-        catch (IllegalArgumentException e) {
-            // expected
-        }
+        CallbackDescriptor m = new CallbackDescriptor(LifecycleEvent.POST_LOAD);
+        assertEquals(LifecycleEvent.POST_LOAD, m.getCallbackType());
     }
 
     public void testAddCallbackMethod() {
-        CallbackDescriptor m = new CallbackDescriptor(LifecycleListener.PRE_PERSIST);
+        CallbackDescriptor m = new CallbackDescriptor(LifecycleEvent.PRE_PERSIST);
         assertEquals(0, m.getCallbackMethods().size());
         m.addCallbackMethod("a");
         assertEquals(1, m.getCallbackMethods().size());

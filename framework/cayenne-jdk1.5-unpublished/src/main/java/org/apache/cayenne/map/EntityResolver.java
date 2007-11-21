@@ -124,10 +124,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
                         for (String method : callbacks[i].getCallbackMethods()) {
 
                             // note that callbacks[i].getCallbackType() == i
-                            callbackRegistry.addDefaultListener(
-                                    i,
-                                    listenerInstance,
-                                    method);
+                            callbackRegistry.addDefaultListener(callbacks[i]
+                                    .getCallbackType(), listenerInstance, method);
                         }
                     }
                 }
@@ -149,7 +147,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                         for (String method : callbacks[i].getCallbackMethods()) {
                             // note that callbacks[i].getCallbackType() == i
                             callbackRegistry.addListener(
-                                    i,
+                                    callbacks[i].getCallbackType(),
                                     entityClass,
                                     listenerInstance,
                                     method);
@@ -161,7 +159,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 for (int i = 0; i < callbacks.length; i++) {
                     for (String method : callbacks[i].getCallbackMethods()) {
                         // note that callbacks[i].getCallbackType() == i
-                        callbackRegistry.addListener(i, entityClass, method);
+                        callbackRegistry.addListener(
+                                callbacks[i].getCallbackType(),
+                                entityClass,
+                                method);
                     }
                 }
             }

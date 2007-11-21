@@ -30,7 +30,6 @@ import java.util.Map;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -39,6 +38,7 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -143,14 +143,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 .getEntityResolver()
                 .getCallbackRegistry();
 
-        if (!callbackRegistry.isEmpty(LifecycleListener.POST_LOAD)) {
+        if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
 
             List list = response.firstList();
             if (list != null
                     && !list.isEmpty()
                     && !(query.getMetaData(domain.getEntityResolver()))
                             .isFetchingDataRows()) {
-                callbackRegistry.performCallbacks(LifecycleListener.POST_LOAD, list);
+                callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, list);
             }
         }
     }
@@ -170,8 +170,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             ObjectIdQuery oidQuery = (ObjectIdQuery) query;
             DataRow row = null;
 
-            if (cache != null
-                    && !oidQuery.isFetchMandatory()) {
+            if (cache != null && !oidQuery.isFetchMandatory()) {
                 row = cache.getCachedSnapshot(oidQuery.getObjectId());
             }
 
@@ -214,10 +213,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return !DONE;
             }
 
-            if(cache == null) {
+            if (cache == null) {
                 return !DONE;
             }
-            
+
             DataRow sourceRow = cache.getCachedSnapshot(relationshipQuery.getObjectId());
             if (sourceRow == null) {
                 return !DONE;
@@ -492,10 +491,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                         .getEntityResolver()
                         .getCallbackRegistry();
 
-                if (!callbackRegistry.isEmpty(LifecycleListener.POST_LOAD)) {
-                    callbackRegistry.performCallbacks(
-                            LifecycleListener.POST_LOAD,
-                            objects);
+                if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
+                    callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, objects);
                 }
             }
         }

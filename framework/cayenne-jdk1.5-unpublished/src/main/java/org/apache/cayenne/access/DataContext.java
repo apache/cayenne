@@ -39,7 +39,6 @@ import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.Fault;
-import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -57,6 +56,7 @@ import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -772,7 +772,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
         // invoke callbacks
         getEntityResolver().getCallbackRegistry().performCallbacks(
-                LifecycleListener.PRE_PERSIST,
+                LifecycleEvent.PRE_PERSIST,
                 object);
 
         return object;
@@ -907,7 +907,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
         // invoke callbacks
         getEntityResolver().getCallbackRegistry().performCallbacks(
-                LifecycleListener.PRE_PERSIST,
+                LifecycleEvent.PRE_PERSIST,
                 persistent);
     }
 

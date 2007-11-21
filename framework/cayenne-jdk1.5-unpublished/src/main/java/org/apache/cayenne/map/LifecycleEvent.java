@@ -18,17 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
-
-public class CallbackMapTest extends TestCase {
-
-    public void testGetCallbacks() {
-        CallbackDescriptor[] callbacks = new CallbackMap().getCallbacks();
-        assertEquals(LifecycleEvent.values().length, callbacks.length);
-
-        // assert correct callback ordering
-        for (int i = 0; i < callbacks.length; i++) {
-            assertEquals(LifecycleEvent.values()[i], callbacks[i].getCallbackType());
-        }
-    }
+/**
+ * Defines possible object lifecycle events for which callbacks are supported.
+ * 
+ * @since 3.0
+ * @author Andrus Adamchik
+ */
+public enum LifecycleEvent {
+    PRE_PERSIST, PRE_REMOVE, PRE_UPDATE, POST_PERSIST, POST_REMOVE, POST_UPDATE, POST_LOAD;
 }

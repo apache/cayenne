@@ -57,8 +57,8 @@ import org.objectstyle.ashwood.graph.StrongConnection;
  */
 public class AshwoodEntitySorter implements EntitySorter {
 
-    protected Collection dataMaps;
-    protected Map dbEntityToTableMap;
+    protected Collection<DataMap> dataMaps;
+    protected Map<DbEntity, Table> dbEntityToTableMap;
     protected Digraph referentialDigraph;
     protected Digraph contractedReferentialDigraph;
     protected Map components;
@@ -71,7 +71,7 @@ public class AshwoodEntitySorter implements EntitySorter {
     // used for lazy initialization
     protected boolean dirty;
 
-    public AshwoodEntitySorter(Collection dataMaps) {
+    public AshwoodEntitySorter(Collection<DataMap> dataMaps) {
         tableComparator = new TableComparator();
         dbEntityComparator = new DbEntityComparator();
         objEntityComparator = new ObjEntityComparator();
@@ -87,14 +87,12 @@ public class AshwoodEntitySorter implements EntitySorter {
             return;
         }
 
-        Collection tables = new ArrayList(64);
-        dbEntityToTableMap = new HashMap(64);
+        Collection<Table> tables = new ArrayList<Table>(64);
+        dbEntityToTableMap = new HashMap<DbEntity, Table>(64);
         reflexiveDbEntities = new HashMap(32);
-        for (Iterator i = dataMaps.iterator(); i.hasNext();) {
-            DataMap map = (DataMap) i.next();
-            Iterator entitiesToConvert = map.getDbEntities().iterator();
-            while (entitiesToConvert.hasNext()) {
-                DbEntity entity = (DbEntity) entitiesToConvert.next();
+
+        for (DataMap map : dataMaps) {
+            for (DbEntity entity : map.getDbEntities()) {
                 Table table = new Table(entity.getCatalog(), entity.getSchema(), entity
                         .getName());
                 fillInMetadata(table, entity);
@@ -130,17 +128,17 @@ public class AshwoodEntitySorter implements EntitySorter {
     /**
      * @since 1.1
      */
-    public synchronized void setDataMaps(Collection dataMaps) {
+    public synchronized void setDataMaps(Collection<DataMap> dataMaps) {
         this.dirty = true;
         this.dataMaps = dataMaps != null ? dataMaps : Collections.EMPTY_LIST;
     }
 
-    public void sortDbEntities(List dbEntities, boolean deleteOrder) {
+    public void sortDbEntities(List<DbEntity> dbEntities, boolean deleteOrder) {
         _indexSorter();
         Collections.sort(dbEntities, getDbEntityComparator(deleteOrder));
     }
 
-    public void sortObjEntities(List objEntities, boolean deleteOrder) {
+    public void sortObjEntities(List<ObjEntity> objEntities, boolean deleteOrder) {
         _indexSorter();
         Collections.sort(objEntities, getObjEntityComparator(deleteOrder));
     }
@@ -194,7 +192,8 @@ public class AshwoodEntitySorter implements EntitySorter {
                     continue;
                 }
 
-                masters[k] = descriptor.getProperty(reflexiveRelName).readProperty(current);
+                masters[k] = descriptor.getProperty(reflexiveRelName).readProperty(
+                        current);
 
                 if (masters[k] == null) {
                     masters[k] = findReflexiveMaster(current, (ObjRelationship) objEntity
@@ -331,8 +330,8 @@ public class AshwoodEntitySorter implements EntitySorter {
         return c;
     }
 
-    protected Comparator getObjEntityComparator(boolean dependantFirst) {
-        Comparator c = objEntityComparator;
+    protected Comparator<ObjEntity> getObjEntityComparator(boolean dependantFirst) {
+        Comparator<ObjEntity> c = objEntityComparator;
         if (dependantFirst) {
             c = new ReverseComparator(c);
         }
@@ -351,34 +350,33 @@ public class AshwoodEntitySorter implements EntitySorter {
         return reflexiveDbEntities.containsKey(metadata);
     }
 
-    private final class DbEntityComparator implements Comparator {
+    private final class DbEntityComparator implements Comparator<DbEntity> {
 
-        public int compare(Object o1, Object o2) {
+        public int compare(DbEntity o1, DbEntity o2) {
             if (o1 == o2)
                 return 0;
-            Table t1 = getTable((DbEntity) o1);
-            Table t2 = getTable((DbEntity) o2);
+            Table t1 = getTable(o1);
+            Table t2 = getTable(o2);
             return tableComparator.compare(t1, t2);
         }
     }
 
-    private final class ObjEntityComparator implements Comparator {
+    private final class ObjEntityComparator implements Comparator<ObjEntity> {
 
-        public int compare(Object o1, Object o2) {
+        public int compare(ObjEntity o1, ObjEntity o2) {
             if (o1 == o2)
                 return 0;
-            Table t1 = getTable((ObjEntity) o1);
-            Table t2 = getTable((ObjEntity) o2);
+            Table t1 = getTable(o1);
+            Table t2 = getTable(o2);
             return tableComparator.compare(t1, t2);
         }
     }
 
-    private final class TableComparator implements Comparator {
+    private final class TableComparator implements Comparator<Table> {
 
-        public int compare(Object o1, Object o2) {
+        public int compare(Table t1, Table t2) {
             int result = 0;
-            Table t1 = (Table) o1;
-            Table t2 = (Table) o2;
+
             if (t1 == t2)
                 return 0;
             if (t1 == null)
@@ -400,13 +398,13 @@ public class AshwoodEntitySorter implements EntitySorter {
 
     private final static class ComponentRecord {
 
-        ComponentRecord(int index, Collection component) {
+        ComponentRecord(int index, Collection<?> component) {
             this.index = index;
             this.component = component;
         }
 
         int index;
-        Collection component;
+        Collection<?> component;
     }
 
 }

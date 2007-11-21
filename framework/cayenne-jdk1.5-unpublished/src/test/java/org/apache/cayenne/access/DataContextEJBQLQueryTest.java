@@ -31,9 +31,9 @@ import org.apache.art.CompoundFkTestEntity;
 import org.apache.art.CompoundPkTestEntity;
 import org.apache.art.Painting;
 import org.apache.cayenne.DataObjectUtils;
-import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.unit.CayenneCase;
@@ -60,7 +60,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         DataContextEJBQLQueryCallback listener = new DataContextEJBQLQueryCallback();
         testCallbacks.addDefaultListener(
-                LifecycleListener.POST_LOAD,
+                LifecycleEvent.POST_LOAD,
                 listener,
                 "postLoad");
 
