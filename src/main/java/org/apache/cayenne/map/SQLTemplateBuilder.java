@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.query.Query;
@@ -51,13 +50,11 @@ class SQLTemplateBuilder extends QueryBuilder {
         // init SQL
         template.setDefaultTemplate(sql);
         if (adapterSql != null) {
-            Iterator it = adapterSql.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                Object key = entry.getKey();
-                Object value = entry.getValue();
+            for (Map.Entry<String, String> entry : adapterSql.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
                 if (key != null && value != null) {
-                    template.setTemplate(key.toString(), value.toString());
+                    template.setTemplate(key, value);
                 }
             }
         }

@@ -109,7 +109,7 @@ public class Embeddable implements XMLSerializable, Serializable {
     }
 
     public EmbeddableAttribute getAttribute(String name) {
-        return (EmbeddableAttribute) attributes.get(name);
+        return attributes.get(name);
     }
 
     public void removeAttribute(String name) {

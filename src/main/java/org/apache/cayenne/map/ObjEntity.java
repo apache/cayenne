@@ -198,17 +198,12 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         // TODO: should we also copy lock type?
 
         // copy attributes
-        Iterator attributes = getDeclaredAttributes().iterator();
-        while (attributes.hasNext()) {
-            ObjAttribute attribute = (ObjAttribute) attributes.next();
-            entity.addAttribute(attribute.getClientAttribute());
+        for (Attribute attribute : getDeclaredAttributes()) {
+            entity.addAttribute(((ObjAttribute)attribute).getClientAttribute());
         }
 
         // copy relationships; skip runtime generated relationships
-        Iterator relationships = getDeclaredRelationships().iterator();
-        while (relationships.hasNext()) {
-            ObjRelationship relationship = (ObjRelationship) relationships.next();
-
+        for (Relationship relationship : getDeclaredRelationships()) {
             if (relationship.isRuntime()) {
                 continue;
             }
@@ -220,7 +215,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
                 continue;
             }
 
-            entity.addRelationship(relationship.getClientRelationship());
+            entity.addRelationship(((ObjRelationship)relationship).getClientRelationship());
         }
 
         // TODO: andrus 2/5/2007 - copy embeddables
@@ -767,18 +762,16 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         if (dbEntityName == null)
             return;
 
-        Iterator it = getAttributeMap().values().iterator();
-        while (it.hasNext()) {
-            ObjAttribute objAttr = (ObjAttribute) it.next();
+        for (Attribute attribute : getAttributeMap().values()) {
+            ObjAttribute objAttr = (ObjAttribute) attribute;
             DbAttribute dbAttr = objAttr.getDbAttribute();
             if (null != dbAttr) {
                 objAttr.setDbAttribute(null);
             }
         }
 
-        Iterator rels = this.getRelationships().iterator();
-        while (rels.hasNext()) {
-            ((ObjRelationship) rels.next()).clearDbRelationships();
+        for (Relationship relationship : this.getRelationships()) {
+            ((ObjRelationship) relationship).clearDbRelationships();
         }
 
         dbEntityName = null;
@@ -821,7 +814,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         return (superEntity != null) ? superEntity.isSubentityOf(entity) : false;
     }
 
-    public Iterator resolvePathComponents(Expression pathExp) throws ExpressionException {
+    public Iterator<Object> resolvePathComponents(Expression pathExp) throws ExpressionException {
 
         // resolve DB_PATH if we can
         if (pathExp.getType() == Expression.DB_PATH) {
@@ -905,12 +898,12 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
 
         // TODO: make it a public method - resolveDBPathComponents or something...
         // seems generally useful
-        String toDbPath(Iterator objectPathComponents) {
+        String toDbPath(Iterator<Object> objectPathComponents) {
             StringBuffer buf = new StringBuffer();
             while (objectPathComponents.hasNext()) {
                 Object component = objectPathComponents.next();
 
-                Iterator dbSubpath;
+                Iterator<?> dbSubpath;
 
                 if (component instanceof ObjRelationship) {
                     dbSubpath = ((ObjRelationship) component)
@@ -998,12 +991,10 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
             DataMap map = getDataMap();
             if (map != null) {
                 ObjEntity oe = (ObjEntity) e.getEntity();
-                Iterator rit = oe.getRelationships().iterator();
-                while (rit.hasNext()) {
-                    ObjRelationship or = (ObjRelationship) rit.next();
-                    or = or.getReverseRelationship();
-                    if (null != or && or.targetEntityName.equals(oldName)) {
-                        or.targetEntityName = newName;
+                for (Relationship relationship : oe.getRelationships()) {
+                    relationship = ((ObjRelationship)relationship).getReverseRelationship();
+                    if (null != relationship && relationship.targetEntityName.equals(oldName)) {
+                        relationship.targetEntityName = newName;
                     }
                 }
             }

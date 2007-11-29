@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
@@ -36,7 +35,7 @@ import org.apache.cayenne.exp.Expression;
  */
 public class EntityInheritanceTree {
     protected ObjEntity entity;
-    protected Collection subentities;
+    protected Collection<EntityInheritanceTree> subentities;
     protected Expression normalizedQualifier;
 
     public EntityInheritanceTree(ObjEntity entity) {
@@ -56,9 +55,7 @@ public class EntityInheritanceTree {
         }
 
         if (subentities != null) {
-            Iterator it = subentities.iterator();
-            while (it.hasNext()) {
-                EntityInheritanceTree child = (EntityInheritanceTree) it.next();
+            for (EntityInheritanceTree child : subentities) {
                 Expression childQualifier = child.qualifierForEntityAndSubclasses();
 
                 // if any child qualifier is null, just return null, since no filtering is possible
@@ -80,9 +77,7 @@ public class EntityInheritanceTree {
     public ObjEntity entityMatchingRow(DataRow row) {
         // match depth first
         if (subentities != null) {
-            Iterator it = subentities.iterator();
-            while (it.hasNext()) {
-                EntityInheritanceTree child = (EntityInheritanceTree) it.next();
+            for (EntityInheritanceTree child : subentities) {
                 ObjEntity matched = child.entityMatchingRow(row);
 
                 if (matched != null) {
@@ -106,7 +101,7 @@ public class EntityInheritanceTree {
 
     public void addChildNode(EntityInheritanceTree node) {
         if (subentities == null) {
-            subentities = new ArrayList(2);
+            subentities = new ArrayList<EntityInheritanceTree>(2);
         }
 
         subentities.add(node);
@@ -116,7 +111,7 @@ public class EntityInheritanceTree {
         return (subentities != null) ? subentities.size() : 0;
     }
 
-    public Collection getChildren() {
+    public Collection<EntityInheritanceTree> getChildren() {
         return (subentities != null) ? subentities : Collections.EMPTY_LIST;
     }
 
@@ -124,12 +119,12 @@ public class EntityInheritanceTree {
         return entity;
     }
 
-    public Collection allAttributes() {
+    public Collection<Attribute> allAttributes() {
         if (subentities == null) {
             return entity.getAttributes();
         }
 
-        Collection c = new ArrayList();
+        Collection<Attribute> c = new ArrayList<Attribute>();
         appendDeclaredAttributes(c);
 
         // add base attributes if any
@@ -141,12 +136,12 @@ public class EntityInheritanceTree {
         return c;
     }
 
-    public Collection allRelationships() {
+    public Collection<Relationship> allRelationships() {
         if (subentities == null) {
             return entity.getRelationships();
         }
 
-        Collection c = new ArrayList();
+        Collection<Relationship> c = new ArrayList<Relationship>();
         appendDeclaredRelationships(c);
 
         // add base relationships if any
@@ -158,25 +153,21 @@ public class EntityInheritanceTree {
         return c;
     }
 
-    protected void appendDeclaredAttributes(Collection c) {
+    protected void appendDeclaredAttributes(Collection<Attribute> c) {
         c.addAll(entity.getDeclaredAttributes());
 
         if (subentities != null) {
-            Iterator it = subentities.iterator();
-            while (it.hasNext()) {
-                EntityInheritanceTree child = (EntityInheritanceTree) it.next();
+            for (EntityInheritanceTree child : subentities) {
                 child.appendDeclaredAttributes(c);
             }
         }
     }
 
-    protected void appendDeclaredRelationships(Collection c) {
+    protected void appendDeclaredRelationships(Collection<Relationship> c) {
         c.addAll(entity.getDeclaredRelationships());
 
         if (subentities != null) {
-            Iterator it = subentities.iterator();
-            while (it.hasNext()) {
-                EntityInheritanceTree child = (EntityInheritanceTree) it.next();
+            for (EntityInheritanceTree child : subentities) {
                 child.appendDeclaredRelationships(c);
             }
         }

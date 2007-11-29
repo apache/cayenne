@@ -248,7 +248,7 @@ public class ObjRelationship extends Relationship implements EventListener {
         // on the flattened path
         int numDbRelationships = dbRelationships.size();
         if (numDbRelationships > 0) {
-            DbRelationship lastRel = (DbRelationship) dbRelationships
+            DbRelationship lastRel = dbRelationships
                     .get(numDbRelationships - 1);
             if (!lastRel.getTargetEntityName().equals(dbRel.getSourceEntity().getName())) {
                 throw new CayenneRuntimeException("Error adding db relationship "
@@ -296,7 +296,7 @@ public class ObjRelationship extends Relationship implements EventListener {
                 StringBuffer path = new StringBuffer();
 
                 for (int i = 0; i < dbRelationships.size(); i++) {
-                    DbRelationship r = (DbRelationship) dbRelationships.get(i);
+                    DbRelationship r = dbRelationships.get(i);
                     if (i > 0) {
                         path.append('.');
                     }
@@ -343,7 +343,7 @@ public class ObjRelationship extends Relationship implements EventListener {
      * Returns true if underlying DbRelationships point to dependent entity.
      */
     public boolean isToDependentEntity() {
-        return ((DbRelationship) getDbRelationships().get(0)).isToDependentPK();
+        return (getDbRelationships().get(0)).isToDependentPK();
     }
 
     /**
@@ -353,7 +353,7 @@ public class ObjRelationship extends Relationship implements EventListener {
      * @since 1.1
      */
     public boolean isToPK() {
-        return ((DbRelationship) getDbRelationships().get(0)).isToPK();
+        return (getDbRelationships().get(0)).isToPK();
     }
 
     /**
@@ -459,9 +459,9 @@ public class ObjRelationship extends Relationship implements EventListener {
             }
 
             StringBuffer path = new StringBuffer();
-            Iterator it = getDbRelationships().iterator();
+            Iterator<DbRelationship> it = getDbRelationships().iterator();
             while (it.hasNext()) {
-                DbRelationship next = (DbRelationship) it.next();
+                DbRelationship next = it.next();
                 path.append(next.getName());
                 if (it.hasNext()) {
                     path.append(Entity.PATH_SEPARATOR);
@@ -479,7 +479,7 @@ public class ObjRelationship extends Relationship implements EventListener {
      */
     public String getReverseDbRelationshipPath() throws ExpressionException {
 
-        List relationships = getDbRelationships();
+        List<DbRelationship> relationships = getDbRelationships();
         if (relationships == null || relationships.isEmpty()) {
             return null;
         }
@@ -487,10 +487,10 @@ public class ObjRelationship extends Relationship implements EventListener {
         StringBuffer buffer = new StringBuffer();
 
         // iterate in reverse order
-        ListIterator it = relationships.listIterator(relationships.size());
+        ListIterator<DbRelationship> it = relationships.listIterator(relationships.size());
         while (it.hasPrevious()) {
 
-            DbRelationship relationship = (DbRelationship) it.previous();
+            DbRelationship relationship = it.previous();
             DbRelationship reverse = relationship.getReverseRelationship();
 
             // another sanity check
@@ -538,7 +538,7 @@ public class ObjRelationship extends Relationship implements EventListener {
         StringBuffer validPath = new StringBuffer();
 
         try {
-            Iterator it = entity.resolvePathComponents(new ASTDbPath(path));
+            Iterator<Object> it = entity.resolvePathComponents(new ASTDbPath(path));
             while (it.hasNext()) {
                 DbRelationship relationship = (DbRelationship) it.next();
 
@@ -572,9 +572,9 @@ public class ObjRelationship extends Relationship implements EventListener {
             EventManager eventLoop = EventManager.getDefaultManager();
 
             // remove existing relationships
-            Iterator removeIt = dbRelationships.iterator();
+            Iterator<DbRelationship> removeIt = dbRelationships.iterator();
             while (removeIt.hasNext()) {
-                DbRelationship relationship = (DbRelationship) removeIt.next();
+                DbRelationship relationship = removeIt.next();
                 eventLoop.removeListener(
                         this,
                         DbRelationship.PROPERTY_DID_CHANGE,
@@ -593,7 +593,7 @@ public class ObjRelationship extends Relationship implements EventListener {
 
                 try {
                     // add new relationships from path
-                    Iterator it = entity.resolvePathComponents(new ASTDbPath(
+                    Iterator<Object> it = entity.resolvePathComponents(new ASTDbPath(
                             this.dbRelationshipPath));
 
                     while (it.hasNext()) {
@@ -633,9 +633,7 @@ public class ObjRelationship extends Relationship implements EventListener {
         // rel is toMany. If all are toOne, then the rel is toOne.
         // Simple (non-flattened) relationships form the degenerate case
         // taking the value of the single underlying dbrel.
-        Iterator dbRelIterator = this.dbRelationships.iterator();
-        while (dbRelIterator.hasNext()) {
-            DbRelationship thisRel = (DbRelationship) dbRelIterator.next();
+        for (DbRelationship thisRel : this.dbRelationships) {
             if (thisRel.isToMany()) {
                 this.toMany = true;
                 return;
@@ -661,8 +659,8 @@ public class ObjRelationship extends Relationship implements EventListener {
             return;
         }
 
-        DbRelationship firstRel = (DbRelationship) dbRelationships.get(0);
-        DbRelationship secondRel = (DbRelationship) dbRelationships.get(1);
+        DbRelationship firstRel = dbRelationships.get(0);
+        DbRelationship secondRel = dbRelationships.get(1);
 
         // only support many-to-many with single-step join
         if (!firstRel.isToMany() || secondRel.isToMany()) {

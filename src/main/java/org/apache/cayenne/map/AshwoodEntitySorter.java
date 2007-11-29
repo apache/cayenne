@@ -62,7 +62,7 @@ public class AshwoodEntitySorter implements EntitySorter {
     protected Digraph referentialDigraph;
     protected Digraph contractedReferentialDigraph;
     protected Map components;
-    protected Map reflexiveDbEntities;
+    protected Map<DbEntity, List> reflexiveDbEntities;
 
     protected TableComparator tableComparator;
     protected DbEntityComparator dbEntityComparator;
@@ -89,7 +89,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
         Collection<Table> tables = new ArrayList<Table>(64);
         dbEntityToTableMap = new HashMap<DbEntity, Table>(64);
-        reflexiveDbEntities = new HashMap(32);
+        reflexiveDbEntities = new HashMap<DbEntity, List>(32);
 
         for (DataMap map : dataMaps) {
             for (DbEntity entity : map.getDbEntities()) {
@@ -168,7 +168,7 @@ public class AshwoodEntitySorter implements EntitySorter {
                 .getEntityResolver();
         ClassDescriptor descriptor = resolver.getClassDescriptor(objEntity.getName());
 
-        List reflexiveRels = (List) reflexiveDbEntities.get(dbEntity);
+        List reflexiveRels = reflexiveDbEntities.get(dbEntity);
         String[] reflexiveRelNames = new String[reflexiveRels.size()];
         for (int i = 0; i < reflexiveRelNames.length; i++) {
             DbRelationship dbRel = (DbRelationship) reflexiveRels.get(i);
@@ -276,9 +276,9 @@ public class AshwoodEntitySorter implements EntitySorter {
                         table.addForeignKey(fk);
 
                         if (newReflexive) {
-                            List reflexiveRels = (List) reflexiveDbEntities.get(entity);
+                            List<DbRelationship> reflexiveRels = reflexiveDbEntities.get(entity);
                             if (reflexiveRels == null) {
-                                reflexiveRels = new ArrayList(1);
+                                reflexiveRels = new ArrayList<DbRelationship>(1);
                                 reflexiveDbEntities.put(entity, reflexiveRels);
                             }
                             reflexiveRels.add(candidate);
@@ -295,7 +295,7 @@ public class AshwoodEntitySorter implements EntitySorter {
             ObjRelationship toOneRel,
             String targetEntityName) {
 
-        DbRelationship finalRel = (DbRelationship) toOneRel.getDbRelationships().get(0);
+        DbRelationship finalRel = toOneRel.getDbRelationships().get(0);
         ObjectContext context = object.getObjectContext();
 
         // find committed snapshot - so we can't fetch from the context as it will return
@@ -339,7 +339,7 @@ public class AshwoodEntitySorter implements EntitySorter {
     }
 
     protected Table getTable(DbEntity dbEntity) {
-        return (dbEntity != null) ? (Table) dbEntityToTableMap.get(dbEntity) : null;
+        return (dbEntity != null) ? dbEntityToTableMap.get(dbEntity) : null;
     }
 
     protected Table getTable(ObjEntity objEntity) {

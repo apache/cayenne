@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbAttributeListener;
@@ -175,11 +173,8 @@ public class DbAttribute extends Attribute {
             return false;
         }
 
-        Iterator relationships = getEntity().getRelationships().iterator();
-        while (relationships.hasNext()) {
-            DbRelationship relationship = (DbRelationship) relationships.next();
-
-            for (DbJoin join : relationship.getJoins()) {
+        for (Relationship relationship : getEntity().getRelationships()) {
+            for (DbJoin join : ((DbRelationship)relationship).getJoins()) {
                 if (name.equals(join.getSourceName())) {
                     DbAttribute target = join.getTarget();
                     if (target != null && target.isPrimaryKey()) {

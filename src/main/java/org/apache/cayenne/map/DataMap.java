@@ -195,18 +195,14 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         DataMap clientMap = new DataMap(getName());
 
         // create client entities for entities
-        Iterator entities = getObjEntities().iterator();
-        while (entities.hasNext()) {
-            ObjEntity entity = (ObjEntity) entities.next();
+        for (ObjEntity entity : getObjEntities()) {
             if (entity.isClientAllowed()) {
                 clientMap.addObjEntity(entity.getClientEntity());
             }
         }
 
         // create proxies for named queries
-        Iterator queries = getQueries().iterator();
-        while (queries.hasNext()) {
-            Query q = (Query) queries.next();
+        for (Query q : getQueries()) {
             NamedQuery proxy = new NamedQuery(q.getName());
             proxy.setName(q.getName());
 
@@ -276,10 +272,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         encoder.print(getProcedureMap());
 
         // DbEntities
-        Iterator dbEntities = getDbEntityMap().entrySet().iterator();
-        while (dbEntities.hasNext()) {
-            Map.Entry entry = (Map.Entry) dbEntities.next();
-            DbEntity dbe = (DbEntity) entry.getValue();
+        for (DbEntity dbe : getDbEntityMap().values()) {
             dbe.encodeAsXML(encoder);
         }
 
@@ -290,8 +283,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         encoder.print(getQueryMap());
 
         // write entity listeners
-        for (Iterator i = getDefaultEntityListeners().iterator(); i.hasNext();) {
-            EntityListener entityListener = (EntityListener) i.next();
+        for (EntityListener entityListener : getDefaultEntityListeners()) {
             entityListener.encodeAsXML(encoder);
         }
 
@@ -299,17 +291,11 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         encoder.println("</data-map>");
     }
 
-    // stores relationships of for the map of entities
-    private final void encodeDBRelationshipsAsXML(Map entityMap, XMLEncoder encoder) {
-        Iterator it = entityMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            Entity entity = (Entity) entry.getValue();
-
-            // filter out synthetic
-            Iterator relationships = entity.getRelationships().iterator();
-            while (relationships.hasNext()) {
-                Relationship relationship = (Relationship) relationships.next();
+    // stores relationships for the map of entities
+    private final void encodeDBRelationshipsAsXML(Map<String, DbEntity> entityMap, XMLEncoder encoder) {
+        for (Entity entity : entityMap.values()) {
+            for (Relationship relationship : entity.getRelationships()) {
+                // filter out synthetic
                 if (!relationship.isRuntime()) {
                     relationship.encodeAsXML(encoder);
                 }
@@ -317,17 +303,11 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         }
     }
 
-    // stores relationships of for the map of entities
-    private final void encodeOBJRelationshipsAsXML(Map entityMap, XMLEncoder encoder) {
-        Iterator it = entityMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            ObjEntity entity = (ObjEntity) entry.getValue();
-
-            // filter out synthetic
-            Iterator relationships = entity.getDeclaredRelationships().iterator();
-            while (relationships.hasNext()) {
-                Relationship relationship = (Relationship) relationships.next();
+    // stores relationships for the map of entities
+    private final void encodeOBJRelationshipsAsXML(Map<String, ObjEntity> entityMap, XMLEncoder encoder) {
+        for (ObjEntity entity : entityMap.values()) {
+            for (Relationship relationship : entity.getDeclaredRelationships()) {
+                // filter out synthetic
                 if (!relationship.isRuntime()) {
                     relationship.encodeAsXML(encoder);
                 }
@@ -346,6 +326,9 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         return name;
     }
 
+    /**
+     * Set the name of this DataMap.
+     */
     public void setName(String name) {
         this.name = name;
     }
@@ -359,23 +342,17 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * </p>
      */
     public void mergeWithDataMap(DataMap map) {
-        Iterator dbs = new ArrayList(map.getDbEntities()).iterator();
-        while (dbs.hasNext()) {
-            DbEntity ent = (DbEntity) dbs.next();
+        for (DbEntity ent : new ArrayList<DbEntity>(map.getDbEntities())) {
             this.removeDbEntity(ent.getName());
             this.addDbEntity(ent);
         }
 
-        Iterator objs = new ArrayList(map.getObjEntities()).iterator();
-        while (objs.hasNext()) {
-            ObjEntity ent = (ObjEntity) objs.next();
+        for (ObjEntity ent : new ArrayList<ObjEntity>(map.getObjEntities())) {
             this.removeObjEntity(ent.getName());
             this.addObjEntity(ent);
         }
 
-        Iterator queries = new ArrayList(map.getQueries()).iterator();
-        while (queries.hasNext()) {
-            Query query = (Query) queries.next();
+        for (Query query : new ArrayList<Query>(map.getQueries())) {
             this.removeQuery(query.getName());
             this.addQuery(query);
         }
@@ -419,7 +396,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 1.1
      */
     public Query getQuery(String queryName) {
-        Query query = (Query) queryMap.get(queryName);
+        Query query = queryMap.get(queryName);
         if (query != null) {
             return query;
         }
@@ -654,9 +631,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      *             registered.
      */
     public void addDefaultEntityListener(EntityListener listener) {
-        Iterator it = defaultEntityListeners.iterator();
-        while (it.hasNext()) {
-            EntityListener next = (EntityListener) it.next();
+         for (EntityListener next : defaultEntityListeners) {
             if (listener.getClassName().equals(next.getClassName())) {
                 throw new IllegalArgumentException("Duplicate default listener for "
                         + next.getClassName());
@@ -672,9 +647,9 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 3.0
      */
     public void removeDefaultEntityListener(String className) {
-        Iterator it = defaultEntityListeners.iterator();
+        Iterator<EntityListener> it = defaultEntityListeners.iterator();
         while (it.hasNext()) {
-            EntityListener next = (EntityListener) it.next();
+            EntityListener next = it.next();
             if (className.equals(next.getClassName())) {
                 it.remove();
                 break;
@@ -686,9 +661,9 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 3.0
      */
     public EntityListener getDefaultEntityListener(String className) {
-        for (EntityListener next : defaultEntityListeners) {
-            if (className.equals(next.getClassName())) {
-                return next;
+        for (EntityListener listener : defaultEntityListeners) {
+            if (className.equals(listener.getClassName())) {
+                return listener;
             }
         }
 
@@ -798,16 +773,12 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 1.1
      */
     public void removeDbEntity(String dbEntityName, boolean clearDependencies) {
-        DbEntity dbEntityToDelete = (DbEntity) dbEntityMap.remove(dbEntityName);
+        DbEntity dbEntityToDelete = dbEntityMap.remove(dbEntityName);
 
         if (dbEntityToDelete != null && clearDependencies) {
-            Iterator dbEnts = this.getDbEntities().iterator();
-            while (dbEnts.hasNext()) {
-                DbEntity dbEnt = (DbEntity) dbEnts.next();
-                // take a copy since we're going to modifiy the entity
-                Iterator rels = new ArrayList(dbEnt.getRelationships()).iterator();
-                while (rels.hasNext()) {
-                    DbRelationship rel = (DbRelationship) rels.next();
+            for (DbEntity dbEnt : this.getDbEntities()) {
+                // take a copy since we're going to modify the entity
+                for (Relationship rel : new ArrayList<Relationship>(dbEnt.getRelationships())) {
                     if (dbEntityName.equals(rel.getTargetEntityName())) {
                         dbEnt.removeRelationship(rel.getName());
                     }
@@ -815,21 +786,15 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
             }
 
             // Remove all obj relationships referencing removed DbRelationships.
-            Iterator objEnts = this.getObjEntities().iterator();
-            while (objEnts.hasNext()) {
-                ObjEntity objEnt = (ObjEntity) objEnts.next();
+            for (ObjEntity objEnt : this.getObjEntities()) {
                 if (objEnt.getDbEntity() == dbEntityToDelete) {
                     objEnt.clearDbMapping();
                 }
                 else {
-                    Iterator iter = objEnt.getRelationships().iterator();
-                    while (iter.hasNext()) {
-                        ObjRelationship rel = (ObjRelationship) iter.next();
-                        Iterator dbRels = rel.getDbRelationships().iterator();
-                        while (dbRels.hasNext()) {
-                            DbRelationship dbRel = (DbRelationship) dbRels.next();
+                    for (Relationship rel : objEnt.getRelationships()) {
+                        for (DbRelationship dbRel : ((ObjRelationship)rel).getDbRelationships()) {
                             if (dbRel.getTargetEntity() == dbEntityToDelete) {
-                                rel.clearDbRelationships();
+                                ((ObjRelationship)rel).clearDbRelationships();
                                 break;
                             }
                         }
@@ -853,21 +818,17 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 1.1
      */
     public void removeObjEntity(String objEntityName, boolean clearDependencies) {
-        ObjEntity entity = (ObjEntity) objEntityMap.remove(objEntityName);
+        ObjEntity entity = objEntityMap.remove(objEntityName);
 
         if (entity != null && clearDependencies) {
 
             // remove relationships that point to this entity
-            Iterator entities = getObjEntities().iterator();
-            while (entities.hasNext()) {
-                ObjEntity ent = (ObjEntity) entities.next();
-                // take a copy since we're going to modifiy the entity
-                Iterator rels = new ArrayList(ent.getRelationships()).iterator();
-                while (rels.hasNext()) {
-                    ObjRelationship rel = (ObjRelationship) rels.next();
-                    if (objEntityName.equals(rel.getTargetEntityName())
-                            || objEntityName.equals(rel.getTargetEntityName())) {
-                        ent.removeRelationship(rel.getName());
+            for (ObjEntity ent : getObjEntities()) {
+                // take a copy since we're going to modify the entity
+                for (Relationship relationship : new ArrayList<Relationship>(ent.getRelationships())) {
+                    if (objEntityName.equals(relationship.getTargetEntityName())
+                            || objEntityName.equals(relationship.getTargetEntityName())) {
+                        ent.removeRelationship(relationship.getName());
                     }
                 }
             }

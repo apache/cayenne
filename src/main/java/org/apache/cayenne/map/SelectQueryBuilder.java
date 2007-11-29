@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 
@@ -46,9 +44,8 @@ class SelectQueryBuilder extends QueryBuilder {
         }
 
         if (prefetches != null && !prefetches.isEmpty()) {
-            Iterator it = prefetches.iterator();
-            while(it.hasNext()) {
-                query.addPrefetch((String) it.next());
+            for (String prefetch : prefetches) {
+                query.addPrefetch(prefetch);
             }
         }
 
