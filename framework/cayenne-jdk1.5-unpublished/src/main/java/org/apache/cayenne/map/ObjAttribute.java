@@ -56,7 +56,7 @@ public class ObjAttribute extends Attribute {
      * Returns Java class of an object property described by this attribute. Wraps any
      * thrown exceptions into CayenneRuntimeException.
      */
-    public Class getJavaClass() {
+    public Class<?> getJavaClass() {
         if (this.getType() == null) {
             return null;
         }
@@ -138,7 +138,7 @@ public class ObjAttribute extends Attribute {
      * Returns a DbAttribute mapped by this ObjAttribute.
      */
     public DbAttribute getDbAttribute() {
-        Iterator pathIterator = getDbPathIterator();
+        Iterator<Object> pathIterator = getDbPathIterator();
         Object o = null;
         while (pathIterator.hasNext()) {
             o = pathIterator.next();
@@ -146,7 +146,7 @@ public class ObjAttribute extends Attribute {
         return (DbAttribute) o;
     }
 
-    public Iterator getDbPathIterator() {
+    public Iterator<Object> getDbPathIterator() {
         if (dbAttributePath == null) {
             return IteratorUtils.EMPTY_ITERATOR;
         }

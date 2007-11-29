@@ -47,8 +47,8 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     protected String name;
     protected DataMap dataMap;
 
-    protected SortedMap attributes;
-    protected SortedMap relationships;
+    protected SortedMap<String, Attribute> attributes;
+    protected SortedMap<String, Relationship> relationships;
 
     /**
      * Creates an unnamed Entity.
@@ -61,12 +61,13 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * Creates a named Entity.
      */
     public Entity(String name) {
-        this.attributes = new TreeMap();
-        this.relationships = new TreeMap();
+        attributes = new TreeMap<String, Attribute>();
+        relationships = new TreeMap<String, Relationship>();
 
         setName(name);
     }
-    
+
+    @Override
     public String toString() {
         return new ToStringBuilder(this).append("name", getName()).toString();
     }
@@ -87,9 +88,8 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     }
 
     public void setParent(Object parent) {
-        if (parent != null && !(parent instanceof DataMap)) {
+        if (parent != null && !(parent instanceof DataMap))
             throw new IllegalArgumentException("Expected null or DataMap, got: " + parent);
-        }
 
         setDataMap((DataMap) parent);
     }
@@ -113,7 +113,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * with this name exists.
      */
     public Attribute getAttribute(String attributeName) {
-        return (Attribute) attributes.get(attributeName);
+        return attributes.get(attributeName);
     }
 
     /**
@@ -121,9 +121,8 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * attribute has no name, IllegalArgumentException is thrown.
      */
     public void addAttribute(Attribute attribute) {
-        if (attribute.getName() == null) {
+        if (attribute.getName() == null)
             throw new IllegalArgumentException("Attempt to insert unnamed attribute.");
-        }
 
         // block overrides
 
@@ -131,24 +130,22 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
         // Modeler handles it...
         Object existingAttribute = attributes.get(attribute.getName());
         if (existingAttribute != null) {
-            if (existingAttribute == attribute) {
+            if (existingAttribute == attribute)
                 return;
-            }
-            else {
-                throw new IllegalArgumentException("An attempt to override attribute '"
-                        + attribute.getName()
-                        + "'");
-            }
+            else
+                throw new IllegalArgumentException("An attempt to override attribute '" +
+                        attribute.getName() +
+                        "'");
         }
-        
-        // Check that there aren't any relationships with the same name as the given attribute.
+
+        // Check that there aren't any relationships with the same name as the given
+        // attribute.
         Object existingRelationship = relationships.get(attribute.getName());
-        if (existingRelationship != null) {            
+        if (existingRelationship != null)
             throw new IllegalArgumentException(
-                    "Attribute name conflict with existing relationship '"
-                            + attribute.getName()
-                            + "'");
-        }
+                    "Attribute name conflict with existing relationship '" +
+                            attribute.getName() +
+                            "'");
 
         attributes.put(attribute.getName(), attribute);
         attribute.setEntity(this);
@@ -168,14 +165,13 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * relationship with this name exists in the entity.
      */
     public Relationship getRelationship(String relName) {
-        return (Relationship) relationships.get(relName);
+        return relationships.get(relName);
     }
 
     /** Adds new relationship to the entity. */
     public void addRelationship(Relationship relationship) {
-        if (relationship.getName() == null) {
+        if (relationship.getName() == null)
             throw new IllegalArgumentException("Attempt to insert unnamed relationship.");
-        }
 
         // block overrides
 
@@ -183,25 +179,23 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
         // Modeler handles it...
         Object existingRelationship = relationships.get(relationship.getName());
         if (existingRelationship != null) {
-            if (existingRelationship == relationship) {
+            if (existingRelationship == relationship)
                 return;
-            }
-            else {
+            else
                 throw new IllegalArgumentException(
-                        "An attempt to override relationship '"
-                                + relationship.getName()
-                                + "'");
-            }
+                        "An attempt to override relationship '" +
+                                relationship.getName() +
+                                "'");
         }
-        
-        // Check that there aren't any attributes with the same name as the given relationship.
+
+        // Check that there aren't any attributes with the same name as the given
+        // relationship.
         Object existingAttribute = attributes.get(relationship.getName());
-        if (existingAttribute != null) {
+        if (existingAttribute != null)
             throw new IllegalArgumentException(
-                    "Relationship name conflict with existing attribute '"
-                            + relationship.getName()
-                            + "'");
-        }
+                    "Relationship name conflict with existing attribute '" +
+                            relationship.getName() +
+                            "'");
 
         relationships.put(relationship.getName(), relationship);
         relationship.setSourceEntity(this);
@@ -219,7 +213,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable map of relationships sorted by name.
      */
-    public SortedMap<String,Relationship> getRelationshipMap() {
+    public SortedMap<String, Relationship> getRelationshipMap() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableSortedMap(relationships);
@@ -233,16 +227,12 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * @since 1.1
      */
     public Relationship getAnyRelationship(Entity targetEntity) {
-        if (getRelationships().isEmpty()) {
+        if (getRelationships().isEmpty())
             return null;
-        }
 
-        Iterator it = getRelationships().iterator();
-        while (it.hasNext()) {
-            Relationship r = (Relationship) it.next();
-            if (r.getTargetEntity() == targetEntity) {
+        for (Relationship r : getRelationships()) {
+            if (r.getTargetEntity() == targetEntity)
                 return r;
-            }
         }
         return null;
     }
@@ -292,7 +282,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      */
     public Object lastPathComponent(Expression pathExp) {
         Object last = null;
-        Iterator it = resolvePathComponents(pathExp);
+        Iterator<Object> it = resolvePathComponents(pathExp);
         while (it.hasNext()) {
             last = it.next();
         }
@@ -307,7 +297,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * return an Iterator, but an attempt to read the first invalid path component will
      * result in ExpressionException.
      */
-    public abstract Iterator resolvePathComponents(Expression pathExp)
+    public abstract Iterator<Object> resolvePathComponents(Expression pathExp)
             throws ExpressionException;
 
     /**
@@ -316,13 +306,13 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * entity, this method will still return an Iterator, but an attempt to read the first
      * invalid path component will result in ExpressionException.
      */
-    public Iterator resolvePathComponents(String path) throws ExpressionException {
+    public Iterator<Object> resolvePathComponents(String path) throws ExpressionException {
         return new PathIterator(path);
     }
 
     // An iterator resolving mapping components represented by the path string.
     // This entity is assumed to be the root of the path.
-    final class PathIterator implements Iterator {
+    final class PathIterator implements Iterator<Object> {
 
         private StringTokenizer toks;
         private Entity currentEnt;
@@ -330,8 +320,8 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
 
         PathIterator(String path) {
             super();
-            this.currentEnt = Entity.this;
-            this.toks = new StringTokenizer(path, PATH_SEPARATOR);
+            currentEnt = Entity.this;
+            toks = new StringTokenizer(path, PATH_SEPARATOR);
             this.path = path;
         }
 
@@ -346,14 +336,13 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
             Attribute attr = currentEnt.getAttribute(pathComp);
             if (attr != null) {
                 // do a sanity check...
-                if (toks.hasMoreTokens()) {
+                if (toks.hasMoreTokens())
                     throw new ExpressionException(
-                            "Attribute must be the last component of the path: '"
-                                    + pathComp
-                                    + "'.",
+                            "Attribute must be the last component of the path: '" +
+                                    pathComp +
+                                    "'.",
                             path,
                             null);
-                }
 
                 return attr;
             }
@@ -383,11 +372,10 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
 
     final MappingNamespace getNonNullNamespace() {
         MappingNamespace parent = getDataMap();
-        if (parent == null) {
-            throw new CayenneRuntimeException("Entity '"
-                    + getName()
-                    + "' has no parent MappingNamespace (such as DataMap)");
-        }
+        if (parent == null)
+            throw new CayenneRuntimeException("Entity '" +
+                    getName() +
+                    "' has no parent MappingNamespace (such as DataMap)");
 
         return parent;
     }

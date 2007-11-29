@@ -23,18 +23,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 
 /**
  * A DbRelationship is a descriptor of a database inter-table relationship based on one or
@@ -115,7 +114,7 @@ public class DbRelationship extends Relationship {
      * 
      * @since 1.1
      */
-    public Collection getTargetAttributes() {
+    public Collection<DbAttribute> getTargetAttributes() {
         if (joins.size() == 0) {
             return Collections.EMPTY_LIST;
         }
@@ -128,7 +127,7 @@ public class DbRelationship extends Relationship {
      * 
      * @since 1.1
      */
-    public Collection getSourceAttributes() {
+    public Collection<DbAttribute> getSourceAttributes() {
         if (joins.size() == 0) {
             return Collections.EMPTY_LIST;
         }
@@ -152,9 +151,7 @@ public class DbRelationship extends Relationship {
 
         reverse.setToMany(!toMany);
 
-        Iterator it = joins.iterator();
-        while (it.hasNext()) {
-            DbJoin join = (DbJoin) it.next();
+        for (DbJoin join : joins) {
             DbJoin reverseJoin = join.createReverseJoin();
             reverseJoin.setRelationship(reverse);
             reverse.addJoin(reverseJoin);
@@ -183,22 +180,17 @@ public class DbRelationship extends Relationship {
         }
 
         TestJoin testJoin = new TestJoin(this);
-        Iterator it = target.getRelationships().iterator();
-        while (it.hasNext()) {
-            DbRelationship rel = (DbRelationship) it.next();
+        for (Relationship rel : target.getRelationships()) {
             if (rel.getTargetEntity() != src)
                 continue;
 
-            List otherJoins = rel.getJoins();
+            List<DbJoin> otherJoins = ((DbRelationship)rel).getJoins();
             if (otherJoins.size() != joins.size()) {
                 continue;
             }
 
-            Iterator jit = otherJoins.iterator();
             boolean joinsMatch = true;
-            while (jit.hasNext()) {
-                DbJoin join = (DbJoin) jit.next();
-
+            for (DbJoin join : otherJoins) {
                 // flip join and try to find similar
                 testJoin.setSourceName(join.getTargetName());
                 testJoin.setTargetName(join.getSourceName());
@@ -209,7 +201,7 @@ public class DbRelationship extends Relationship {
             }
 
             if (joinsMatch) {
-                return rel;
+                return (DbRelationship) rel;
             }
         }
 
@@ -223,9 +215,7 @@ public class DbRelationship extends Relationship {
      * @since 1.1
      */
     public boolean isToPK() {
-        Iterator it = getJoins().iterator();
-        while (it.hasNext()) {
-            DbJoin join = (DbJoin) it.next();
+        for (DbJoin join : getJoins()) {
             if (join.getTarget() == null) {
                 return false;
             }
@@ -271,14 +261,12 @@ public class DbRelationship extends Relationship {
      * @since 1.1
      */
     public boolean isValidForDepPk() {
-        Iterator it = getJoins().iterator();
         // handle case with no joins
-        if (!it.hasNext()) {
+        if (getJoins().size() == 0) {
             return false;
         }
 
-        while (it.hasNext()) {
-            DbJoin join = (DbJoin) it.next();
+        for (DbJoin join : getJoins()) {
             DbAttribute target = join.getTarget();
             DbAttribute source = join.getSource();
 
@@ -318,7 +306,7 @@ public class DbRelationship extends Relationship {
         joins.clear();
     }
 
-    public void setJoins(Collection newJoins) {
+    public void setJoins(Collection<DbJoin> newJoins) {
         this.removeAllJoins();
 
         if (newJoins != null) {
@@ -347,7 +335,7 @@ public class DbRelationship extends Relationship {
 
         // optimize for the most common single column join
         if (numJoins == 1) {
-            DbJoin join = (DbJoin) joins.get(0);
+            DbJoin join = joins.get(0);
             Object val = srcSnapshot.get(join.getSourceName());
             if (val == null) {
                 foundNulls++;
@@ -361,7 +349,7 @@ public class DbRelationship extends Relationship {
         else {
             idMap = new HashMap<String, Object>(numJoins * 2);
             for (int i = 0; i < numJoins; i++) {
-                DbJoin join = (DbJoin) joins.get(i);
+                DbJoin join = joins.get(i);
                 DbAttribute source = join.getSource();
                 Object val = srcSnapshot.get(join.getSourceName());
 
@@ -398,21 +386,20 @@ public class DbRelationship extends Relationship {
      * Common code to srcSnapshotWithTargetSnapshot. Both are functionally the same,
      * except for the name, and whether they operate on a toMany or a toOne.
      */
-    private Map srcSnapshotWithTargetSnapshot(Map targetSnapshot) {
+    private Map<String, Object> srcSnapshotWithTargetSnapshot(Map<String, Object> targetSnapshot) {
         int len = joins.size();
 
         // optimize for the most common single column join
         if (len == 1) {
-            DbJoin join = (DbJoin) joins.get(0);
+            DbJoin join = joins.get(0);
             Object val = targetSnapshot.get(join.getTargetName());
             return Collections.singletonMap(join.getSourceName(), val);
-
         }
 
         // general case
-        Map idMap = new HashMap(len * 2);
+        Map<String, Object> idMap = new HashMap<String, Object>(len * 2);
         for (int i = 0; i < len; i++) {
-            DbJoin join = (DbJoin) joins.get(i);
+            DbJoin join = joins.get(i);
             Object val = targetSnapshot.get(join.getTargetName());
             idMap.put(join.getSourceName(), val);
         }
@@ -425,7 +412,7 @@ public class DbRelationship extends Relationship {
      * relationship based on a snapshot of a target. Only "to-one" relationships are
      * supported. Throws CayenneRuntimeException if relationship is "to many".
      */
-    public Map srcFkSnapshotWithTargetSnapshot(Map targetSnapshot) {
+    public Map<String, Object> srcFkSnapshotWithTargetSnapshot(Map<String, Object> targetSnapshot) {
 
         if (isToMany()) {
             throw new CayenneRuntimeException(
@@ -440,7 +427,7 @@ public class DbRelationship extends Relationship {
      * relationship based on a snapshot of a target. Only "to-many" relationships are
      * supported. Throws CayenneRuntimeException if relationship is "to one".
      */
-    public Map srcPkSnapshotWithTargetSnapshot(Map targetSnapshot) {
+    public Map<String, Object> srcPkSnapshotWithTargetSnapshot(Map<String, Object> targetSnapshot) {
         if (!isToMany())
             throw new CayenneRuntimeException(
                     "Only 'to many' relationships support this method.");

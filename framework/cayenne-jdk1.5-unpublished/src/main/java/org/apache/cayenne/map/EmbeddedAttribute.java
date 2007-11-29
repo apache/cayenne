@@ -98,7 +98,7 @@ public class EmbeddedAttribute extends Attribute {
     }
 
     private ObjAttribute makeObjAttribute(EmbeddableAttribute embeddableAttribute) {
-        String dbPath = (String) attributeOverrides.get(embeddableAttribute.getName());
+        String dbPath = attributeOverrides.get(embeddableAttribute.getName());
         if (dbPath == null) {
             dbPath = embeddableAttribute.getDbAttributeName();
         }

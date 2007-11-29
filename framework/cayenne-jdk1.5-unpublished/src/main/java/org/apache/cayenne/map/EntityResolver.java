@@ -312,13 +312,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 3.0
      */
     public Embeddable getEmbeddable(String className) {
-        Embeddable result = (Embeddable) embeddableCache.get(className);
+        Embeddable result = embeddableCache.get(className);
 
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             constructCache();
-            result = (Embeddable) embeddableCache.get(className);
+            result = embeddableCache.get(className);
         }
 
         return result;
@@ -435,7 +435,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
                 // build inheritance tree... include nodes that
                 // have no children to avoid unneeded cache rebuilding on lookup...
-                EntityInheritanceTree node = (EntityInheritanceTree) entityInheritanceCache
+                EntityInheritanceTree node = entityInheritanceCache
                         .get(oe.getName());
                 if (node == null) {
                     node = new EntityInheritanceTree(oe);
@@ -444,12 +444,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
                 String superOEName = oe.getSuperEntityName();
                 if (superOEName != null) {
-                    EntityInheritanceTree superNode = (EntityInheritanceTree) entityInheritanceCache
+                    EntityInheritanceTree superNode = entityInheritanceCache
                             .get(superOEName);
 
                     if (superNode == null) {
                         // do direct entity lookup to avoid recursive cache rebuild
-                        ObjEntity superOE = (ObjEntity) objEntityCache.get(superOEName);
+                        ObjEntity superOE = objEntityCache.get(superOEName);
                         if (superOE != null) {
                             superNode = new EntityInheritanceTree(superOE);
                             entityInheritanceCache.put(superOEName, superNode);
@@ -529,7 +529,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public EntityInheritanceTree lookupInheritanceTree(ObjEntity entity) {
 
-        EntityInheritanceTree tree = (EntityInheritanceTree) entityInheritanceCache
+        EntityInheritanceTree tree = entityInheritanceCache
                 .get(entity.getName());
 
         if (tree == null) {
@@ -539,7 +539,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             // rebuild cache just in case some of the datamaps
             // have changed and now contain the required information
             constructCache();
-            tree = (EntityInheritanceTree) entityInheritanceCache.get(entity.getName());
+            tree = entityInheritanceCache.get(entity.getName());
         }
 
         // don't return "trivial" trees
@@ -601,12 +601,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     public Procedure lookupProcedure(String procedureName) {
 
-        Procedure result = (Procedure) procedureCache.get(procedureName);
+        Procedure result = procedureCache.get(procedureName);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             constructCache();
-            result = (Procedure) procedureCache.get(procedureName);
+            result = procedureCache.get(procedureName);
         }
 
         return result;
@@ -616,13 +616,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Returns a named query or null if no query exists for a given name.
      */
     public synchronized Query lookupQuery(String name) {
-        Query result = (Query) queryCache.get(name);
+        Query result = queryCache.get(name);
 
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             constructCache();
-            result = (Query) queryCache.get(name);
+            result = queryCache.get(name);
         }
         return result;
     }

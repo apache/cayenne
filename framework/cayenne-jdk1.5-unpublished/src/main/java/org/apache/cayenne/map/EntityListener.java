@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import java.io.Serializable;
+
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
-
-import java.io.Serializable;
 
 /**
  * A mapping descriptor of an entity listener class that declares one or more callback

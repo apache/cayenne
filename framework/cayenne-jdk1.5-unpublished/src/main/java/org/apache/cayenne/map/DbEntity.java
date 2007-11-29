@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.Transformer;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
@@ -43,6 +42,7 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+import org.apache.commons.collections.Transformer;
 
 /**
  * A DbEntity is a mapping descriptor that defines a structure of a database table.
@@ -202,15 +202,15 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
 
         DataMap map = getDataMap();
         if (map != null) {
-            Iterator ents = map.getDbEntities().iterator();
+            Iterator<DbEntity> ents = map.getDbEntities().iterator();
             while (ents.hasNext()) {
-                DbEntity ent = (DbEntity) ents.next();
-                Iterator it = ent.getRelationships().iterator();
+                DbEntity ent = ents.next();
+                Iterator<Relationship> it = ent.getRelationships().iterator();
                 while (it.hasNext()) {
                     DbRelationship rel = (DbRelationship) it.next();
-                    Iterator joins = rel.getJoins().iterator();
+                    Iterator<DbJoin> joins = rel.getJoins().iterator();
                     while (joins.hasNext()) {
-                        DbJoin join = (DbJoin) joins.next();
+                        DbJoin join = joins.next();
                         if (join.getSource() == attr || join.getTarget() == attr) {
                             joins.remove();
                         }
@@ -229,7 +229,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         this.dbAttributeRemoved(new AttributeEvent(this, null, this, MapEvent.REMOVE));
     }
 
-    public Iterator resolvePathComponents(Expression pathExp) throws ExpressionException {
+    public Iterator<Object> resolvePathComponents(Expression pathExp) throws ExpressionException {
         if (pathExp.getType() != Expression.DB_PATH) {
             throw new ExpressionException("Invalid expression type: '"
                     + pathExp.expName()
@@ -269,21 +269,16 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             DataMap map = getDataMap();
             if (map != null) {
                 // handle all of the relationship target names that need to be changed
-                Iterator ents = map.getDbEntities().iterator();
-                while (ents.hasNext()) {
-                    DbEntity dbe = (DbEntity) ents.next();
-                    Iterator rit = dbe.getRelationships().iterator();
-                    while (rit.hasNext()) {
-                        DbRelationship rel = (DbRelationship) rit.next();
+                for (DbEntity dbe : map.getDbEntities()) {
+                    for (Relationship relationship : dbe.getRelationships()) {
+                        DbRelationship rel = (DbRelationship) relationship;
                         if (rel.getTargetEntity() == this) {
                             rel.setTargetEntityName(newName);
                         }
                     }
                 }
                 // get all of the related object entities
-                ents = map.getMappedEntities(this).iterator();
-                while (ents.hasNext()) {
-                    ObjEntity oe = (ObjEntity) ents.next();
+                for (ObjEntity oe : map.getMappedEntities(this)) {
                     if (oe.getDbEntity() == this) {
                         oe.setDbEntityName(newName);
                     }
@@ -342,17 +337,12 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
 
             DataMap map = getDataMap();
             if (map != null) {
-                Iterator ents = map.getDbEntities().iterator();
-                while (ents.hasNext()) {
-                    DbEntity ent = (DbEntity) ents.next();
+                for (DbEntity ent : map.getDbEntities()) {
 
                     // handle all of the dependent object entity attribute changes
-                    Iterator it = map.getMappedEntities(ent).iterator();
-                    while (it.hasNext()) {
-                        ObjEntity oe = (ObjEntity) it.next();
-                        Iterator ait = oe.getAttributes().iterator();
-                        while (ait.hasNext()) {
-                            ObjAttribute oa = (ObjAttribute) ait.next();
+                    for (ObjEntity oe : map.getMappedEntities(ent)) {
+                        for (Attribute attr : oe.getAttributes()) {
+                            ObjAttribute oa = (ObjAttribute) attr;
                             if (oa.getDbAttribute() == dbAttribute) {
                                 oa.setDbAttributeName(newName);
                             }
@@ -361,12 +351,8 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
 
                     // handle all of the relationships / joins that use the changed
                     // attribute
-                    it = ent.getRelationships().iterator();
-                    while (it.hasNext()) {
-                        DbRelationship rel = (DbRelationship) it.next();
-                        Iterator joins = rel.getJoins().iterator();
-                        while (joins.hasNext()) {
-                            DbJoin join = (DbJoin) joins.next();
+                    for (Relationship rel : ent.getRelationships()) {
+                        for (DbJoin join : ((DbRelationship)rel).getJoins()) {
                             if (join.getSource() == dbAttribute) {
                                 join.setSourceName(newName);
                             }
@@ -458,12 +444,9 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             if (map != null) {
                 // finds all object entities with a db relationship path to the renamed
                 // relationship
-                Iterator ents = map.getObjEntities().iterator();
-                while (ents.hasNext()) {
-                    ObjEntity oe = (ObjEntity) ents.next();
-                    Iterator rit = oe.getRelationships().iterator();
-                    while (rit.hasNext()) {
-                        ObjRelationship or = (ObjRelationship) rit.next();
+                for (ObjEntity oe : map.getObjEntities()) {
+                    for (Relationship relationship : oe.getRelationships()) {
+                        ObjRelationship or = (ObjRelationship) relationship;
                         // rename the db relationship path with the new name
                         if (Util.nullSafeEquals(or.getDbRelationshipPath(), oldName)) {
                             or.setDbRelationshipPath(newName);
@@ -501,15 +484,13 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             return false;
         }
 
-        Map replacement = id.getReplacementIdMap();
-        Collection pk = getPrimaryKeys();
+        Map<String, Object> replacement = id.getReplacementIdMap();
+        Collection<DbAttribute> pk = getPrimaryKeys();
         if (pk.size() != replacement.size()) {
             return false;
         }
 
-        Iterator it = pk.iterator();
-        while (it.hasNext()) {
-            DbAttribute attribute = (DbAttribute) it.next();
+        for (DbAttribute attribute : pk) {
             if (!replacement.containsKey(attribute.getName())) {
                 return false;
             }
@@ -582,8 +563,8 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             // case (1)
             if (path.equals(relationshipPath)) {
 
-                LinkedList finalPath = new LinkedList();
-                Iterator it = resolvePathComponents(path);
+                LinkedList<String> finalPath = new LinkedList<String>();
+                Iterator<Object> it = resolvePathComponents(path);
 
                 // just do one step back and one step forward to create correct joins...
                 // find last rel...
@@ -609,11 +590,11 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             }
 
             // case (3)
-            Iterator pathIt = resolvePathComponents(path);
-            Iterator relationshipIt = resolvePathComponents(relationshipPath);
+            Iterator<Object> pathIt = resolvePathComponents(path);
+            Iterator<Object> relationshipIt = resolvePathComponents(relationshipPath);
 
             // for inserts from the both ends use LinkedList
-            LinkedList finalPath = new LinkedList();
+            LinkedList<String> finalPath = new LinkedList<String>();
 
             while (relationshipIt.hasNext() && pathIt.hasNext()) {
                 // relationship path components must be DbRelationships
@@ -625,7 +606,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
                 if (nextDBR != next) {
                     // found split point
                     // consume the last iteration components,
-                    // then break out to finish the iterators independenly
+                    // then break out to finish the iterators independently
                     prependReversedPath(finalPath, nextDBR);
                     appendPath(finalPath, next);
                     break;
@@ -649,7 +630,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             return convertToPath(finalPath);
         }
 
-        private String convertToPath(List path) {
+        private String convertToPath(List<String> path) {
             StringBuffer converted = new StringBuffer();
             int len = path.size();
             for (int i = 0; i < len; i++) {
@@ -663,7 +644,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             return converted.toString();
         }
 
-        private void prependReversedPath(LinkedList finalPath, DbRelationship relationship) {
+        private void prependReversedPath(LinkedList<String> finalPath, DbRelationship relationship) {
             DbRelationship revNextDBR = relationship.getReverseRelationship();
 
             if (revNextDBR == null) {
@@ -678,7 +659,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             finalPath.addFirst(revNextDBR.getName());
         }
 
-        private void appendPath(LinkedList finalPath, CayenneMapEntry pathComponent) {
+        private void appendPath(LinkedList<String> finalPath, CayenneMapEntry pathComponent) {
             finalPath.addLast(pathComponent.getName());
         }
     }
