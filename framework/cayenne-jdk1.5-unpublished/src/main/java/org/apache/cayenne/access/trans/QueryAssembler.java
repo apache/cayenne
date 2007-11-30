@@ -42,7 +42,7 @@ public abstract class QueryAssembler extends QueryTranslator {
     /**
      * PreparedStatement attributes matching entries in <code>values</code> list.
      */
-    protected List attributes = new ArrayList();
+    protected List<DbAttribute> attributes = new ArrayList<DbAttribute>();
 
     /** Processes a join being added. */
     public abstract void dbRelationshipAdded(DbRelationship dbRel);
@@ -93,7 +93,7 @@ public abstract class QueryAssembler extends QueryTranslator {
     public PreparedStatement createStatement() throws Exception {
         long t1 = System.currentTimeMillis();
         String sqlStr = createSqlString();
-        QueryLogger.logQuery(sqlStr, values, System.currentTimeMillis() - t1);
+        QueryLogger.logQuery(sqlStr, attributes, values, System.currentTimeMillis() - t1);
         PreparedStatement stmt = connection.prepareStatement(sqlStr);
         initStatement(stmt);
         return stmt;

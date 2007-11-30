@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.cayenne.access.jdbc.ParameterBinding;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.IDUtil;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
@@ -237,36 +238,63 @@ public class QueryLogger {
         logObj.info("*** Connecting: FAILURE.", th);
     }
 
+    private static void buildLog(StringBuffer      buffer,
+                                 String            prefix,
+                                 String            postfix,
+                                 List<DbAttribute> attributes,
+                                 List<Object>      parameters)
+    {
+        if (parameters != null && parameters.size() > 0)
+        {
+            DbAttribute attribute = null;
+            int         size      = parameters.size();
+
+            for (int i = 0; i < size; i++)
+            {
+                if (i == 0)
+                    buffer.append(prefix);
+                else
+                    buffer.append(", ");
+
+                if (attributes != null && i < attributes.size())
+                    attribute = attributes.get(i);
+
+                buffer.append(i + 1);
+
+                if (attribute != null)
+                {
+                    buffer.append("->");
+                    buffer.append(attribute.getName());
+                }
+
+                buffer.append(":");
+                sqlLiteralForObject(buffer, parameters.get(i));
+            }
+
+            buffer.append(postfix);
+        }
+    }
+
     /**
      * @since 1.2
      */
     public static void logQuery(String queryStr, List params) {
-        logQuery(queryStr, params, -1);
+        logQuery(queryStr, null, params, -1);
     }
 
     /**
      * Log query content using Log4J Category with "INFO" priority.
      * 
      * @param queryStr Query SQL string
+     * @param attrs optional list of DbAttribute (can be null)
      * @param params optional list of query parameters that are used when executing query
      *            in prepared statement.
      * @since 1.2
      */
-    public static void logQuery(String queryStr, List params, long time) {
+    public static void logQuery(String queryStr, List<DbAttribute> attrs, List params, long time) {
         if (isLoggable()) {
             StringBuffer buf = new StringBuffer(queryStr);
-            if (params != null && params.size() > 0) {
-                buf.append(" [bind: ");
-                sqlLiteralForObject(buf, params.get(0));
-
-                int len = params.size();
-                for (int i = 1; i < len; i++) {
-                    buf.append(", ");
-                    sqlLiteralForObject(buf, params.get(i));
-                }
-
-                buf.append(']');
-            }
+            buildLog(buf, " [bind: ", "]", attrs, params);
 
             // log preparation time only if it is something significant
             if (time > 5) {
@@ -280,21 +308,11 @@ public class QueryLogger {
     /**
      * @since 1.2
      */
-    public static void logQueryParameters(String label, List parameters) {
-
+    public static void logQueryParameters(String label, List<DbAttribute> attrs, List parameters) {
+        String prefix = "[" + label + ": ";
         if (isLoggable() && parameters.size() > 0) {
-            int len = parameters.size();
-            StringBuffer buf = new StringBuffer("[");
-            buf.append(label).append(": ");
-
-            sqlLiteralForObject(buf, parameters.get(0));
-
-            for (int i = 1; i < len; i++) {
-                buf.append(", ");
-                sqlLiteralForObject(buf, parameters.get(i));
-            }
-
-            buf.append(']');
+            StringBuffer buf = new StringBuffer();
+            buildLog(buf, prefix, "]", attrs, parameters);
             logObj.info(buf.toString());
         }
     }

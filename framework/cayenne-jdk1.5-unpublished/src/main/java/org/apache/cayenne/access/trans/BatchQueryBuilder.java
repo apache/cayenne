@@ -115,8 +115,7 @@ public abstract class BatchQueryBuilder {
      * @since 1.2
      */
     public List getParameterValues(BatchQuery query) {
-        List attributes = query.getDbAttributes();
-        int len = attributes.size();
+        int len = query.getDbAttributes().size();
         List values = new ArrayList(len);
         for (int i = 0; i < len; i++) {
             values.add(query.getValue(i));
