@@ -173,7 +173,7 @@ public interface QueryMetadata {
 
     /**
      * Returns query page size. Page size is a hint to Cayenne that query should be
-     * performed page by page, instead of retrieveing all results at once. If the value
+     * performed page by page, instead of retrieving all results at once. If the value
      * returned is less than or equal to zero, no paging should occur.
      */
     int getPageSize();
@@ -185,13 +185,13 @@ public interface QueryMetadata {
     int getFetchStartIndex();
 
     /**
-     * Returns the limit on the maximium number of records that can be returned by this
+     * Returns the limit on the maximum number of records that can be returned by this
      * query. If the actual number of rows in the result exceeds the fetch limit, they
      * will be discarded. One possible use of fetch limit is using it as a safeguard
      * against large result sets that may lead to the application running out of memory,
      * etc. If a fetch limit is greater or equal to zero, all rows will be returned.
      * 
-     * @return the limit on the maximium number of records that can be returned by this
+     * @return the limit on the maximum number of records that can be returned by this
      *         query
      */
     int getFetchLimit();
