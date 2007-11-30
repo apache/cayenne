@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -40,12 +39,8 @@ import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
 
 /**
- * Describes a single physical data source. This can be a database server, LDAP server,
- * etc.
- * <p>
- * <i>For more information see <a href="../../../../../../userguide/index.html"
- * target="_top">Cayenne User Guide. </a> </i>
- * </p>
+ * An abstraction of a single physical data storage. This is usually a database server,
+ * but can potentially be some other storage type like an LDAP server, etc.
  * 
  * @author Andrus Adamchik
  */
@@ -58,7 +53,7 @@ public class DataNode implements QueryEngine {
     protected String dataSourceFactory;
     protected EntityResolver entityResolver;
     protected EntitySorter entitySorter;
-    protected Map dataMaps;
+    protected Map<String, DataMap> dataMaps;
 
     TransactionDataSource readThroughDataSource;
 
@@ -74,7 +69,7 @@ public class DataNode implements QueryEngine {
      */
     public DataNode(String name) {
         this.name = name;
-        this.dataMaps = new HashMap();
+        this.dataMaps = new HashMap<String, DataMap>();
         this.readThroughDataSource = new TransactionDataSource();
 
         // since 1.2 we always implement entity sorting, regardless of the underlying DB
@@ -120,14 +115,12 @@ public class DataNode implements QueryEngine {
     /**
      * Returns an unmodifiable collection of DataMaps handled by this DataNode.
      */
-    public Collection getDataMaps() {
+    public Collection<DataMap> getDataMaps() {
         return Collections.unmodifiableCollection(dataMaps.values());
     }
 
-    public void setDataMaps(Collection dataMaps) {
-        Iterator it = dataMaps.iterator();
-        while (it.hasNext()) {
-            DataMap map = (DataMap) it.next();
+    public void setDataMaps(Collection<DataMap> dataMaps) {
+        for (DataMap map : dataMaps) {
             this.dataMaps.put(map.getName(), map);
         }
 
@@ -144,7 +137,7 @@ public class DataNode implements QueryEngine {
     }
 
     public void removeDataMap(String mapName) {
-        DataMap map = (DataMap) dataMaps.remove(mapName);
+        DataMap map = dataMaps.remove(mapName);
         if (map != null) {
             entitySorter.setDataMaps(getDataMaps());
         }
@@ -188,7 +181,9 @@ public class DataNode implements QueryEngine {
      * 
      * @since 1.1
      */
-    public void performQueries(Collection queries, OperationObserver callback) {
+    public <T extends Query> void performQueries(
+            Collection<T> queries,
+            OperationObserver callback) {
 
         int listSize = queries.size();
         if (listSize == 0) {
@@ -227,9 +222,8 @@ public class DataNode implements QueryEngine {
 
         try {
             DataNodeQueryAction queryRunner = new DataNodeQueryAction(this, callback);
-            Iterator it = queries.iterator();
-            while (it.hasNext()) {
-                Query nextQuery = (Query) it.next();
+
+            for (Query nextQuery : queries) {
 
                 // catch exceptions for each individual query
                 try {
