@@ -26,21 +26,21 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * A facade for a collection of DbAdapterFactories. Can be configured to autodetect all
+ * A facade for a collection of DbAdapterFactories. Can be configured to auto-detect all
  * adapters known to Cayenne or can work with custom factories.
  * 
  * @since 1.2
  * @author Andrus Adamchik
  */
-// TODO, Andrus 11/01/2005, how can custom adapters be autodetected? I.e. is there a way
+// TODO, Andrus 11/01/2005, how can custom adapters be auto-detected? I.e. is there a way
 // to plug a custom factory into configuration loading process? Of course users can simply
 // specify the adapter class in the modeler, so this may be a non-issue.
 class DbAdapterFactoryChain implements DbAdapterFactory {
 
-    List factories;
+    List<DbAdapterFactory> factories;
 
-    DbAdapterFactoryChain(Collection factories) {
-        this.factories = new ArrayList();
+    DbAdapterFactoryChain(Collection<DbAdapterFactory> factories) {
+        this.factories = new ArrayList<DbAdapterFactory>(factories.size());
         this.factories.addAll(factories);
     }
 
@@ -55,7 +55,7 @@ class DbAdapterFactoryChain implements DbAdapterFactory {
         // iterate in reverse order to allow custom factories to take precedence over the
         // default ones configured in constructor
         for (int i = factories.size() - 1; i >= 0; i--) {
-            DbAdapterFactory factory = (DbAdapterFactory) factories.get(i);
+            DbAdapterFactory factory = factories.get(i);
             DbAdapter adapter = factory.createAdapter(md);
 
             if (adapter != null) {
