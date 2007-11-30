@@ -715,7 +715,9 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Routes queries to appropriate DataNodes for execution.
      */
-    public void performQueries(final Collection queries, final OperationObserver callback) {
+    public <T extends Query> void performQueries(
+            final Collection<T> queries,
+            final OperationObserver callback) {
 
         runInTransaction(new Transformer() {
 
@@ -738,7 +740,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public QueryResponse onQuery(final ObjectContext context, final Query query) {
         checkStopped();
-        
+
         // transaction note:
         // we don't wrap this code in transaction to reduce transaction scope to
         // just the DB operation for better performance ... query action will start a
@@ -768,7 +770,7 @@ public class DataDomain implements QueryEngine, DataChannel {
             int syncType) {
 
         checkStopped();
-        
+
         DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction
                 .getCallbackAction(
                         getEntityResolver().getCallbackRegistry(),

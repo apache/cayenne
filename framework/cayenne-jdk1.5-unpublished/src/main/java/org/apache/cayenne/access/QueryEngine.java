@@ -22,6 +22,7 @@ package org.apache.cayenne.access;
 import java.util.Collection;
 
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.Query;
 
 /**
  * Defines methods used to run Cayenne queries.
@@ -34,13 +35,15 @@ public interface QueryEngine {
      * Executes a list of queries wrapping them in its own transaction. Results of
      * execution are passed to {@link OperationObserver}object via its callback methods.
      * 
-     * @since 1.1 The signiture has changed from List to Collection.
+     * @since 1.1 The signature has changed from List to Collection.
      */
-    public void performQueries(Collection queries, OperationObserver resultConsumer);
+    <T extends Query> void performQueries(
+            Collection<T> queries,
+            OperationObserver resultConsumer);
 
     /**
      * Returns a resolver for this query engine that is capable of resolving between
      * classes, entity names, and obj/db entities
      */
-    public EntityResolver getEntityResolver();
+    EntityResolver getEntityResolver();
 }

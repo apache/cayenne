@@ -383,7 +383,7 @@ public class OptimisticLockingTest extends LockingCase {
             fail("Optimistic lock failure expected.");
         }
         catch (OptimisticLockException ex) {
-            Map freshFailedRow = ex.getFreshSnapshot(context.getParentDataDomain());
+            Map freshFailedRow = ex.getFreshSnapshot(context);
             assertNotNull(freshFailedRow);
             assertEquals("LockTest1Updated", freshFailedRow.get("NAME"));
         }
@@ -409,7 +409,7 @@ public class OptimisticLockingTest extends LockingCase {
             fail("Optimistic lock failure expected.");
         }
         catch (OptimisticLockException ex) {
-            Map freshFailedRow = ex.getFreshSnapshot(context.getParentDataDomain());
+            Map freshFailedRow = ex.getFreshSnapshot(context);
             assertNull(freshFailedRow);
         }
     }

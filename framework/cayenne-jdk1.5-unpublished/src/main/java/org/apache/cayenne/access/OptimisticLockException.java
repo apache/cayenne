@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
@@ -65,17 +67,39 @@ public class OptimisticLockException extends CayenneRuntimeException {
     /**
      * Retrieves fresh snapshot for the failed row. Null row indicates that it was
      * deleted.
+     * 
+     * @since 3.0
      */
-    // TODO: andrus, 5/30/2006 - use DataChannel instead of QE as a parameter after 1.2
+    public Map<?, ?> getFreshSnapshot(ObjectContext context) {
+
+        Expression qualifier = null;
+        for (DbAttribute attribute : rootEntity.getPrimaryKeys()) {
+            Expression attributeQualifier = ExpressionFactory.matchDbExp(attribute
+                    .getName(), qualifierSnapshot.get(attribute.getName()));
+
+            qualifier = (qualifier != null)
+                    ? qualifier.andExp(attributeQualifier)
+                    : attributeQualifier;
+        }
+
+        SelectQuery query = new SelectQuery(rootEntity, qualifier);
+        query.setFetchingDataRows(true);
+        return (Map<?, ?>) DataObjectUtils.objectForQuery(context, query);
+    }
+    
+    /**
+     * Retrieves fresh snapshot for the failed row. Null row indicates that it was
+     * deleted.
+     * 
+     * @deprecated since 3.0 use {@link #getFreshSnapshot(ObjectContext)} instead.
+     */
     public Map getFreshSnapshot(QueryEngine engine) {
 
         // extract PK from the qualifierSnapshot and fetch a row
         // for PK, ignoring other locking attributes...
 
         Expression qualifier = null;
-        Iterator it = rootEntity.getPrimaryKeys().iterator();
-        while (it.hasNext()) {
-            DbAttribute attribute = (DbAttribute) it.next();
+        for (DbAttribute attribute : rootEntity.getPrimaryKeys()) {
             Expression attributeQualifier = ExpressionFactory.matchDbExp(attribute
                     .getName(), qualifierSnapshot.get(attribute.getName()));
 
