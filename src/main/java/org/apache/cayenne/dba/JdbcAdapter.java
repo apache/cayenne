@@ -105,7 +105,7 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.1
      */
     public URL findAdapterResource(String name) {
-        Class adapterClass = this.getClass();
+        Class<?> adapterClass = this.getClass();
 
         while (adapterClass != null && JdbcAdapter.class.isAssignableFrom(adapterClass)) {
 
@@ -144,8 +144,8 @@ public class JdbcAdapter implements DbAdapter {
         // enable Calendar
         // TODO: andrus 9/1/2006 - maybe use ExtendedTypeFactory to handle all calendar
         // subclasses at once
-        map.registerType(new CalendarType(GregorianCalendar.class));
-        map.registerType(new CalendarType(Calendar.class));
+        map.registerType(new CalendarType<GregorianCalendar>(GregorianCalendar.class));
+        map.registerType(new CalendarType<Calendar>(Calendar.class));
 
         map.registerType(new BigIntegerType());
     }
@@ -228,13 +228,13 @@ public class JdbcAdapter implements DbAdapter {
      * <code>ent</code> parameter.
      */
     public String createTable(DbEntity entity) {
- 
+
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append("CREATE TABLE ").append(entity.getFullyQualifiedName()).append(
                 " (");
 
         // columns
-        Iterator it = entity.getAttributes().iterator();
+        Iterator<?> it = entity.getAttributes().iterator();
         if (it.hasNext()) {
             boolean first = true;
             while (it.hasNext()) {
@@ -270,7 +270,7 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
-        Iterator pkit = entity.getPrimaryKeys().iterator();
+        Iterator<DbAttribute> pkit = entity.getPrimaryKeys().iterator();
         if (pkit.hasNext()) {
             sqlBuffer.append(", PRIMARY KEY (");
             boolean firstPk = true;
@@ -280,7 +280,7 @@ public class JdbcAdapter implements DbAdapter {
                 else
                     sqlBuffer.append(", ");
 
-                DbAttribute at = (DbAttribute) pkit.next();
+                DbAttribute at = pkit.next();
                 sqlBuffer.append(at.getName());
             }
             sqlBuffer.append(')');
@@ -337,7 +337,7 @@ public class JdbcAdapter implements DbAdapter {
      * 
      * @since 1.1
      */
-    public String createUniqueConstraint(DbEntity source, Collection columns) {
+    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException(
                     "Can't create UNIQUE constraint - no columns specified.");
@@ -348,12 +348,12 @@ public class JdbcAdapter implements DbAdapter {
         buf.append("ALTER TABLE ").append(source.getFullyQualifiedName()).append(
                 " ADD UNIQUE (");
 
-        Iterator it = columns.iterator();
-        DbAttribute first = (DbAttribute) it.next();
+        Iterator<DbAttribute> it = columns.iterator();
+        DbAttribute first = it.next();
         buf.append(first.getName());
 
         while (it.hasNext()) {
-            DbAttribute next = (DbAttribute) it.next();
+            DbAttribute next = it.next();
             buf.append(", ");
             buf.append(next.getName());
         }
@@ -375,10 +375,9 @@ public class JdbcAdapter implements DbAdapter {
                 ((DbEntity) rel.getSourceEntity()).getFullyQualifiedName()).append(
                 " ADD FOREIGN KEY (");
 
-        Iterator jit = rel.getJoins().iterator();
         boolean first = true;
-        while (jit.hasNext()) {
-            DbJoin join = (DbJoin) jit.next();
+
+        for (DbJoin join : rel.getJoins()) {
             if (!first) {
                 buf.append(", ");
                 refBuf.append(", ");
