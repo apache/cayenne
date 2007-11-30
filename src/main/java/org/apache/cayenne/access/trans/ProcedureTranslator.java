@@ -119,7 +119,8 @@ public class ProcedureTranslator extends QueryTranslator {
                 loggableParameters.add(val);
             }
 
-            QueryLogger.logQuery(sqlStr, loggableParameters, time);
+            // FIXME: compute proper attributes via callParams
+            QueryLogger.logQuery(sqlStr, null, loggableParameters, time);
         }
         CallableStatement stmt = connection.prepareCall(sqlStr);
         initStatement(stmt);
