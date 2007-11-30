@@ -29,11 +29,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
@@ -55,10 +55,10 @@ public class JdbcPkGenerator implements PkGenerator {
 
     public static final int DEFAULT_PK_CACHE_SIZE = 20;
 
-    protected Map pkCache = new HashMap();
+    protected Map<String, PkRange> pkCache = new HashMap<String, PkRange>();
     protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
 
-    public void createAutoPk(DataNode node, List dbEntities) throws Exception {
+    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
         // check if a table exists
 
         // create AUTO_PK_SUPPORT table
@@ -70,22 +70,18 @@ public class JdbcPkGenerator implements PkGenerator {
         runUpdate(node, pkDeleteString(dbEntities));
 
         // insert all needed entries
-        Iterator it = dbEntities.iterator();
-        while (it.hasNext()) {
-            DbEntity ent = (DbEntity) it.next();
+        for (DbEntity ent : dbEntities) {
             runUpdate(node, pkCreateString(ent.getName()));
         }
     }
 
-    public List createAutoPkStatements(List dbEntities) {
-        List list = new ArrayList();
+    public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
+        List<String> list = new ArrayList<String>(dbEntities.size() + 2);
 
         list.add(pkTableCreateString());
         list.add(pkDeleteString(dbEntities));
 
-        Iterator it = dbEntities.iterator();
-        while (it.hasNext()) {
-            DbEntity ent = (DbEntity) it.next();
+        for (DbEntity ent : dbEntities) {
             list.add(pkCreateString(ent.getName()));
         }
 
@@ -95,14 +91,14 @@ public class JdbcPkGenerator implements PkGenerator {
     /**
      * Drops table named "AUTO_PK_SUPPORT" if it exists in the database.
      */
-    public void dropAutoPk(DataNode node, List dbEntities) throws Exception {
+    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
         if (autoPkTableExists(node)) {
             runUpdate(node, dropAutoPkString());
         }
     }
 
-    public List dropAutoPkStatements(List dbEntities) {
-        List list = new ArrayList();
+    public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
+        List<String> list = new ArrayList<String>(1);
         list.add(dropAutoPkString());
         return list;
     }
@@ -119,7 +115,7 @@ public class JdbcPkGenerator implements PkGenerator {
         return buf.toString();
     }
 
-    protected String pkDeleteString(List dbEntities) {
+    protected String pkDeleteString(List<DbEntity> dbEntities) {
         StringBuffer buf = new StringBuffer();
         buf.append("DELETE FROM AUTO_PK_SUPPORT WHERE TABLE_NAME IN (");
         int len = dbEntities.size();
@@ -127,7 +123,7 @@ public class JdbcPkGenerator implements PkGenerator {
             if (i > 0) {
                 buf.append(", ");
             }
-            DbEntity ent = (DbEntity) dbEntities.get(i);
+            DbEntity ent = dbEntities.get(i);
             buf.append('\'').append(ent.getName()).append('\'');
         }
         buf.append(')');
@@ -243,10 +239,10 @@ public class JdbcPkGenerator implements PkGenerator {
         }
 
         synchronized (pkCache) {
-            PkRange r = (PkRange) pkCache.get(ent.getName());
+            PkRange r = pkCache.get(ent.getName());
 
             if (r == null) {
-                // created exhaused PkRange
+                // created exhausted PkRange
                 r = new PkRange(1, 0);
                 pkCache.put(ent.getName(), r);
             }
@@ -263,7 +259,7 @@ public class JdbcPkGenerator implements PkGenerator {
     /**
      * @return a binary PK if DbEntity has a BINARY or VARBINARY pk, null otherwise. This
      *         method will likely be deprecated in 1.1 in favor of a more generic
-     *         soultion.
+     *         solution.
      * @since 1.0.2
      */
     protected byte[] binaryPK(DbEntity entity) {
@@ -297,7 +293,7 @@ public class JdbcPkGenerator implements PkGenerator {
                 + '\'';
 
         // run queries via DataNode to utilize its transactional behavior
-        List queries = new ArrayList(2);
+        List<Query> queries = new ArrayList<Query>(2);
         queries.add(new SQLTemplate(ent, select));
         queries.add(new SQLTemplate(ent, pkUpdateString(ent.getName())));
 
@@ -358,7 +354,7 @@ public class JdbcPkGenerator implements PkGenerator {
             return id.intValue();
         }
 
-        public void nextDataRows(Query query, List dataRows) {
+        public void nextDataRows(Query query, List<DataRow> dataRows) {
 
             // process selected object, issue an update query
             if (dataRows == null || dataRows.size() == 0) {
@@ -371,7 +367,7 @@ public class JdbcPkGenerator implements PkGenerator {
                         "Error generating PK : too many rows for entity: " + entityName);
             }
 
-            Map lastPk = (Map) dataRows.get(0);
+            DataRow lastPk = dataRows.get(0);
             id = (Number) lastPk.get("NEXT_ID");
         }
 

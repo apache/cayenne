@@ -24,11 +24,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
@@ -184,7 +183,7 @@ public class ProcedureAction extends BaseSQLAction {
         long t1 = System.currentTimeMillis();
 
         // build result row...
-        Map result = null;
+        DataRow result = null;
         List parameters = getProcedure().getCallParameters();
         for (int i = 0; i < parameters.size(); i++) {
             ProcedureParameter parameter = (ProcedureParameter) parameters.get(i);
@@ -194,7 +193,7 @@ public class ProcedureAction extends BaseSQLAction {
             }
 
             if (result == null) {
-                result = new HashMap();
+                result = new DataRow(2);
             }
 
             ColumnDescriptor descriptor = new ColumnDescriptor(parameter);

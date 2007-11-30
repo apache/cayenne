@@ -36,33 +36,33 @@ public interface PkGenerator {
      * Generates necessary database objects to provide automatic primary key support.
      * 
      * @param node node that provides access to a DataSource.
-     * @param dbEntities a list of entities that require primary key autogeneration
+     * @param dbEntities a list of entities that require primary key auto-generation
      *            support
      */
-    void createAutoPk(DataNode node, List dbEntities) throws Exception;
+    void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception;
 
     /**
      * Returns a list of SQL strings needed to generates database objects to provide
      * automatic primary support for the list of entities. No actual database operations
      * are performed.
      */
-    List createAutoPkStatements(List dbEntities);
+    List<String> createAutoPkStatements(List<DbEntity> dbEntities);
 
     /**
      * Drops any common database objects associated with automatic primary key generation
      * process. This may be lookup tables, special stored procedures or sequences.
      * 
      * @param node node that provides access to a DataSource.
-     * @param dbEntities a list of entities whose primary key autogeneration support
+     * @param dbEntities a list of entities whose primary key auto-generation support
      *            should be dropped.
      */
-    void dropAutoPk(DataNode node, List dbEntities) throws Exception;
+    void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception;
 
     /**
      * Returns SQL string needed to drop database objects associated with automatic
      * primary key generation. No actual database operations are performed.
      */
-    List dropAutoPkStatements(List dbEntities);
+    List<String> dropAutoPkStatements(List<DbEntity> dbEntities);
 
     /**
      * Generates new (unique and non-repeating) primary key for specified DbEntity.
