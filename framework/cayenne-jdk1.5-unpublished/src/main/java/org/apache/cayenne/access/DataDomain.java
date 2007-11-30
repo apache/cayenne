@@ -73,15 +73,17 @@ public class DataDomain implements QueryEngine, DataChannel {
     public static final String DATA_CONTEXT_FACTORY_PROPERTY = "cayenne.DataDomain.dataContextFactory";
 
     /**
-     * Defaines a property name for storing optional {@link QueryCacheFactory}.
+     * Defines a property name for storing optional {@link QueryCacheFactory}.
      * 
      * @since 3.0
      */
     public static final String QUERY_CACHE_FACTORY_PROPERTY = "cayenne.DataDomain.queryCacheFactory";
 
     /** Stores mapping of data nodes to DataNode name keys. */
-    protected Map nodes = Collections.synchronizedMap(new TreeMap());
-    protected Map nodesByDataMapName = Collections.synchronizedMap(new HashMap());
+    protected Map<String, DataNode> nodes = Collections
+            .synchronizedMap(new TreeMap<String, DataNode>());
+    protected Map<String, DataNode> nodesByDataMapName = Collections
+            .synchronizedMap(new HashMap<String, DataNode>());
 
     /**
      * Properties configured for DataDomain. These include properties of the DataRowStore
@@ -96,7 +98,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     protected QueryCacheFactory queryCacheFactory;
     protected String name;
 
-    // these are initializable from properties...
+    // these are initialized from properties...
     protected boolean sharedCacheEnabled;
     protected boolean validatingObjectsOnCommit;
     protected boolean usingExternalTransactions;
@@ -262,8 +264,8 @@ public class DataDomain implements QueryEngine, DataChannel {
         }
     }
 
-    private Object createInstance(String className, Class implementedInterface) {
-        Class aClass;
+    private Object createInstance(String className, Class<?> implementedInterface) {
+        Class<?> aClass;
         try {
             aClass = Class.forName(className, true, Thread
                     .currentThread()
@@ -484,9 +486,7 @@ public class DataDomain implements QueryEngine, DataChannel {
         }
 
         // remove from data nodes
-        Iterator it = nodes.values().iterator();
-        while (it.hasNext()) {
-            DataNode node = (DataNode) it.next();
+        for (DataNode node : nodes.values()) {
             node.removeDataMap(mapName);
         }
 
@@ -503,12 +503,12 @@ public class DataDomain implements QueryEngine, DataChannel {
      * within domain will still be kept around, however they wan't be mapped to any node.
      */
     public synchronized void removeDataNode(String nodeName) {
-        DataNode removed = (DataNode) nodes.remove(nodeName);
+        DataNode removed = nodes.remove(nodeName);
         if (removed != null) {
 
             removed.setEntityResolver(null);
 
-            Iterator it = nodesByDataMapName.values().iterator();
+            Iterator<DataNode> it = nodesByDataMapName.values().iterator();
             while (it.hasNext()) {
                 if (it.next() == removed) {
                     it.remove();
@@ -520,14 +520,14 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Returns a collection of registered DataMaps.
      */
-    public Collection getDataMaps() {
+    public Collection<DataMap> getDataMaps() {
         return getEntityResolver().getDataMaps();
     }
 
     /**
      * Returns an unmodifiable collection of DataNodes associated with this domain.
      */
-    public Collection getDataNodes() {
+    public Collection<DataNode> getDataNodes() {
         return Collections.unmodifiableCollection(nodes.values());
     }
 
@@ -564,9 +564,7 @@ public class DataDomain implements QueryEngine, DataChannel {
         node.setEntityResolver(this.getEntityResolver());
 
         // add node to "ent name->node" map
-        Iterator nodeMaps = node.getDataMaps().iterator();
-        while (nodeMaps.hasNext()) {
-            DataMap map = (DataMap) nodeMaps.next();
+        for (DataMap map : node.getDataMaps()) {
             this.addMap(map);
             this.nodesByDataMapName.put(map.getName(), node);
         }
@@ -631,7 +629,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Returns registered DataNode whose name matches <code>name</code> parameter.
      */
     public DataNode getNode(String nodeName) {
-        return (DataNode) nodes.get(nodeName);
+        return nodes.get(nodeName);
     }
 
     /**
@@ -640,12 +638,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     public synchronized void reindexNodes() {
         nodesByDataMapName.clear();
 
-        Iterator nodes = this.getDataNodes().iterator();
-        while (nodes.hasNext()) {
-            DataNode node = (DataNode) nodes.next();
-            Iterator nodeMaps = node.getDataMaps().iterator();
-            while (nodeMaps.hasNext()) {
-                DataMap map = (DataMap) nodeMaps.next();
+        for (DataNode node : getDataNodes()) {
+            for (DataMap map : node.getDataMaps()) {
                 addMap(map);
                 nodesByDataMapName.put(map.getName(), node);
             }
@@ -659,10 +653,10 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public DataNode lookupDataNode(DataMap map) {
         synchronized (nodesByDataMapName) {
-            DataNode node = (DataNode) nodesByDataMapName.get(map.getName());
+            DataNode node = nodesByDataMapName.get(map.getName());
             if (node == null) {
                 reindexNodes();
-                return (DataNode) nodesByDataMapName.get(map.getName());
+                return nodesByDataMapName.get(map.getName());
             }
             else {
                 return node;
@@ -698,9 +692,7 @@ public class DataDomain implements QueryEngine, DataChannel {
                 this.sharedSnapshotCache.shutdown();
             }
 
-            Collection dataNodes = getDataNodes();
-            for (Iterator i = dataNodes.iterator(); i.hasNext();) {
-                DataNode node = (DataNode) i.next();
+            for (DataNode node : getDataNodes()) {
                 try {
                     node.shutdown();
                 }
