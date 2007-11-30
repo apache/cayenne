@@ -212,7 +212,7 @@ public class AutoAdapter implements DbAdapter {
         return getAdapter().createTable(entity);
     }
 
-    public String createUniqueConstraint(DbEntity source, Collection columns) {
+    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
         return getAdapter().createUniqueConstraint(source, columns);
     }
 

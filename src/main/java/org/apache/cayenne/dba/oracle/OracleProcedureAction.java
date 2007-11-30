@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
@@ -61,7 +62,7 @@ class OracleProcedureAction extends ProcedureAction {
         long t1 = System.currentTimeMillis();
 
         // build result row...
-        Map result = null;
+        DataRow result = null;
         List parameters = getProcedure().getCallParameters();
         for (int i = 0; i < parameters.size(); i++) {
             ProcedureParameter parameter = (ProcedureParameter) parameters.get(i);
@@ -91,7 +92,7 @@ class OracleProcedureAction extends ProcedureAction {
             // ==== end Oracle-specific part
             else {
                 if (result == null) {
-                    result = new HashMap();
+                    result = new DataRow(2);
                 }
 
                 ColumnDescriptor descriptor = new ColumnDescriptor(parameter);

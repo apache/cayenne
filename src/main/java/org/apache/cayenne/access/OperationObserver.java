@@ -22,6 +22,7 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -48,7 +49,7 @@ public interface OperationObserver extends OperationHints {
     /**
      * Callback method invoked for each processed ResultSet.
      */
-    public void nextDataRows(Query query, List dataRows);
+    public void nextDataRows(Query query, List<DataRow> dataRows);
 
     /**
      * Callback method invoked for each opened ResultIterator. If this observer requested
