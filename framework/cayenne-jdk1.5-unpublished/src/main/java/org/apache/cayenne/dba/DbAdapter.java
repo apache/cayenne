@@ -110,7 +110,7 @@ public interface DbAdapter {
      * 
      * @since 1.1
      */
-    public String createUniqueConstraint(DbEntity source, Collection columns);
+    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns);
 
     /**
      * Returns a SQL string that can be used to create a foreign key constraint for the
