@@ -190,7 +190,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public void initWithProperties(Map<?,?> properties) {
+    public void initWithProperties(Map<String,?> properties) {
 
         // must init defaults even if properties are empty
         if (properties == null) {
@@ -282,7 +282,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * A shortcut for {@link #queryWithParameters(Map, boolean)}that prunes parts of
      * qualifier that have no parameter value set.
      */
-    public SelectQuery queryWithParameters(Map<?,?> parameters) {
+    public SelectQuery queryWithParameters(Map<String,?> parameters) {
         return queryWithParameters(parameters, true);
     }
 
@@ -338,7 +338,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public Query createQuery(Map<?,?> parameters) {
+    public Query createQuery(Map<String,?> parameters) {
         return queryWithParameters(parameters);
     }
 

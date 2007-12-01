@@ -32,6 +32,7 @@ import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.QueryResult;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -344,6 +345,6 @@ public class SQLTemplateActionTest extends CayenneCase {
         map.put("id", new Integer(artistId));
 
         template.setParameters(map);
-        getNode().performQueries(Collections.singleton(template), new QueryResult());
+        getNode().performQueries(Collections.singleton((Query) template), new QueryResult());
     }
 }

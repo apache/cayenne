@@ -172,7 +172,7 @@ public class DataDomain implements QueryEngine, DataChannel {
                     // backwards compatibility mode... only possible in a single-node case
                     // see TODO above
                     if (nodes.size() == 1) {
-                        entitySorter = ((DataNode) nodes.values().iterator().next())
+                        entitySorter = nodes.values().iterator().next()
                                 .getEntitySorter();
                     }
                     else {
@@ -256,7 +256,7 @@ public class DataDomain implements QueryEngine, DataChannel {
         if (queryCacheFactory != null
                 && dataContextFactory != null
                 && !Util.isEmptyString(dataContextFactory.toString())) {
-            queryCacheFactory = (QueryCacheFactory) createInstance(queryCacheFactory
+            queryCacheFactory = createInstance(queryCacheFactory
                     .toString(), QueryCacheFactory.class);
         }
         else {
@@ -707,8 +707,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Routes queries to appropriate DataNodes for execution.
      */
-    public <T extends Query> void performQueries(
-            final Collection<T> queries,
+    public void performQueries(
+            final Collection<Query> queries,
             final OperationObserver callback) {
 
         runInTransaction(new Transformer() {

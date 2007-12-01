@@ -39,10 +39,10 @@ public class InsertBatchQuery extends BatchQuery {
     /**
      * @since 1.2
      */
-    protected List objectIds;
+    protected List<ObjectId> objectIds;
 
-    protected List objectSnapshots;
-    protected List dbAttributes;
+    protected List<Map> objectSnapshots;
+    protected List<DbAttribute> dbAttributes;
 
     /**
      * Creates new InsertBatchQuery for a given DbEntity and estimated capacity.
@@ -50,14 +50,14 @@ public class InsertBatchQuery extends BatchQuery {
     public InsertBatchQuery(DbEntity entity, int batchCapacity) {
         super(entity);
 
-        this.objectSnapshots = new ArrayList(batchCapacity);
-        this.objectIds = new ArrayList(batchCapacity);
+        this.objectSnapshots = new ArrayList<Map>(batchCapacity);
+        this.objectIds = new ArrayList<ObjectId>(batchCapacity);
         this.dbAttributes = new ArrayList(getDbEntity().getAttributes());
     }
 
     public Object getValue(int dbAttributeIndex) {
-        DbAttribute attribute = (DbAttribute) dbAttributes.get(dbAttributeIndex);
-        Map currentSnapshot = (Map) objectSnapshots.get(batchIndex);
+        DbAttribute attribute = dbAttributes.get(dbAttributeIndex);
+        Map currentSnapshot = objectSnapshots.get(batchIndex);
         return getValue(currentSnapshot, attribute);
     }
 
@@ -85,7 +85,7 @@ public class InsertBatchQuery extends BatchQuery {
         return objectSnapshots.size();
     }
 
-    public List getDbAttributes() {
+    public List<DbAttribute> getDbAttributes() {
         return dbAttributes;
     }
 
@@ -97,6 +97,6 @@ public class InsertBatchQuery extends BatchQuery {
      * @since 1.2
      */
     public ObjectId getObjectId() {
-        return (ObjectId) objectIds.get(batchIndex);
+        return objectIds.get(batchIndex);
     }
 }

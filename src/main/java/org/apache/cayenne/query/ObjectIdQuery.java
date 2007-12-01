@@ -54,6 +54,7 @@ public class ObjectIdQuery extends IndirectQuery {
     protected transient QueryMetadata metadata;
 
     // needed for hessian serialization
+    @SuppressWarnings("unused")
     private ObjectIdQuery() {
         this.cachePolicy = CACHE_REFRESH;
     }

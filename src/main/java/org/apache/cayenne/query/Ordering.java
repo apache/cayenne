@@ -43,7 +43,7 @@ import org.apache.commons.collections.ComparatorUtils;
  * @author Andrus Adamchik
  * @author Craig Miskell
  */
-public class Ordering implements Comparator, Serializable, XMLSerializable {
+public class Ordering implements Comparator<Object>, Serializable, XMLSerializable {
 
     /**
      * Symbolic representation of ascending ordering criterion.
@@ -68,7 +68,7 @@ public class Ordering implements Comparator, Serializable, XMLSerializable {
      * is more significant than any other Ordering with higher index. List being ordered is
      * modified in place.
      */
-    public static void orderList(List objects, List orderings) {
+    public static void orderList(List<Object> objects, List<Comparator<Object>> orderings) {
         Collections.sort(objects, ComparatorUtils.chainedComparator(orderings));
     }
 
@@ -206,7 +206,7 @@ public class Ordering implements Comparator, Serializable, XMLSerializable {
      * 
      * @param objects a List of objects to be sorted
      */
-    public void orderList(List objects) {
+    public void orderList(List<Object> objects) {
         Collections.sort(objects, this);
     }
 

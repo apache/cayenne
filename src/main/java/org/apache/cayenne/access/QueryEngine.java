@@ -37,8 +37,8 @@ public interface QueryEngine {
      * 
      * @since 1.1 The signature has changed from List to Collection.
      */
-    <T extends Query> void performQueries(
-            Collection<T> queries,
+    void performQueries(
+            Collection<Query> queries,
             OperationObserver resultConsumer);
 
     /**

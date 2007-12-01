@@ -221,7 +221,7 @@ public class DataPort {
                         // end of the batch detected... commit and start a new insert
                         // query
                         destinationNode.performQueries(
-                                Collections.singletonList(insert),
+                                Collections.singletonList((Query) insert),
                                 insertObserver);
                         insert = new InsertBatchQuery(entity, batchSize);
                         insertObserver.clear();
@@ -236,7 +236,7 @@ public class DataPort {
                 // commit remaining batch if needed
                 if (insert.size() > 0) {
                     destinationNode.performQueries(
-                            Collections.singletonList(insert),
+                            Collections.singletonList((Query) insert),
                             insertObserver);
                 }
 

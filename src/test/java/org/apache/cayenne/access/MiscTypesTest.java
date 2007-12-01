@@ -43,7 +43,7 @@ public class MiscTypesTest extends CayenneCase {
 
         DataContext context = createDataContext();
 
-        SerializableEntity test = (SerializableEntity) context
+        SerializableEntity test = context
                 .newObject(SerializableEntity.class);
 
         MockSerializable i = new MockSerializable("abc");
@@ -62,7 +62,7 @@ public class MiscTypesTest extends CayenneCase {
     public void testByteArray() {
         DataContext context = createDataContext();
 
-        ArraysEntity test = (ArraysEntity) context.newObject(ArraysEntity.class);
+        ArraysEntity test = context.newObject(ArraysEntity.class);
 
         byte[] a = new byte[] {
                 1, 2, 3
@@ -82,7 +82,7 @@ public class MiscTypesTest extends CayenneCase {
     public void testCharArray() {
         DataContext context = createDataContext();
 
-        ArraysEntity test = (ArraysEntity) context.newObject(ArraysEntity.class);
+        ArraysEntity test = context.newObject(ArraysEntity.class);
 
         char[] a = new char[] {
                 'x', 'y', 'z'
@@ -102,7 +102,7 @@ public class MiscTypesTest extends CayenneCase {
     public void testCharacterArray() {
         DataContext context = createDataContext();
 
-        ArraysEntity test = (ArraysEntity) context.newObject(ArraysEntity.class);
+        ArraysEntity test = context.newObject(ArraysEntity.class);
 
         Character[] a = new Character[] {
                 new Character('x'), new Character('y'), new Character('z')
@@ -122,7 +122,7 @@ public class MiscTypesTest extends CayenneCase {
     public void testCharacter() {
         DataContext context = createDataContext();
 
-        CharacterEntity test = (CharacterEntity) context.newObject(CharacterEntity.class);
+        CharacterEntity test = context.newObject(CharacterEntity.class);
 
         test.setCharacterField(new Character('c'));
         context.commitChanges();
@@ -139,7 +139,7 @@ public class MiscTypesTest extends CayenneCase {
     public void testByteWrapperArray() {
         DataContext context = createDataContext();
 
-        ArraysEntity test = (ArraysEntity) context.newObject(ArraysEntity.class);
+        ArraysEntity test = context.newObject(ArraysEntity.class);
 
         Byte[] a = new Byte[] {
                 new Byte((byte) 1), new Byte((byte) 2), new Byte((byte) 3)

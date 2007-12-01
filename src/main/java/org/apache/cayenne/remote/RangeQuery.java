@@ -49,6 +49,7 @@ class RangeQuery implements Query {
     private PrefetchTreeNode prefetchTree;
 
     // exists for hessian serialization.
+    @SuppressWarnings("unused")
     private RangeQuery() {
 
     }
