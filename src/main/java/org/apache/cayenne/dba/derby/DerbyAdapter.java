@@ -38,10 +38,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
 
 /**
- * DbAdapter implementation for the <a href="http://incubator.apache.org/derby/"> Derby
- * RDBMS </a>. Sample <a target="_top"
- * href="../../../../../../../developerguide/unit-tests.html">connection settings </a> to
- * use with Derby are shown below.
+ * DbAdapter implementation for the <a href="http://db.apache.org/derby/"> Derby
+ * RDBMS </a>. Sample connection settings to use with Derby are shown below.
  * <h3>Embedded</h3>
  * 
  * <pre>

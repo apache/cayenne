@@ -39,9 +39,7 @@ import org.apache.cayenne.query.SQLAction;
 
 /**
  * DbAdapter implementation for <a href="http://www.postgresql.org">PostgreSQL RDBMS </a>.
- * Sample <a target="_top"
- * href="../../../../../../../developerguide/unit-tests.html">connection settings </a> to
- * use with PostgreSQL are shown below:
+ * Sample connection settings to use with PostgreSQL are shown below:
  * 
  * <pre>
  *    

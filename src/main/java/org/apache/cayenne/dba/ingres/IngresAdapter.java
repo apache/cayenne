@@ -34,9 +34,7 @@ import org.apache.cayenne.map.DbEntity;
 
 /**
  * DbAdapter implementation for <a href="http://opensource.ca.com/projects/ingres/">Ingres</a>.
- * Sample <a target="_top"
- * href="../../../../../../../developerguide/unit-tests.html">connection settings</a> to
- * use with Ingres are shown below:
+ * Sample connection settings to use with Ingres are shown below:
  * 
  * <pre>
  *  ingres.cayenne.adapter = org.apache.cayenne.dba.ingres.IngresAdapter

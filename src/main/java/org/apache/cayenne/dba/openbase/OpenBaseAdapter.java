@@ -43,8 +43,7 @@ import org.apache.cayenne.query.SQLAction;
 
 /**
  * DbAdapter implementation for <a href="http://www.openbase.com">OpenBase</a>.
- * Sample <a target="_top" href="../../../../../../../developerguide/unit-tests.html">connection 
- * settings</a> to use with OpenBase are shown below:
+ * Sample connection settings to use with OpenBase are shown below:
  * 
 <pre>
 test-openbase.cayenne.adapter = org.apache.cayenne.dba.openbase.OpenBaseAdapter

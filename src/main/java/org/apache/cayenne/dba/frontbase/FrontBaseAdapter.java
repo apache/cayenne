@@ -35,9 +35,7 @@ import org.apache.cayenne.query.SQLAction;
 
 /**
  * DbAdapter implementation for <a href="http://www.frontbase.com/">FrontBase RDBMS</a>.
- * Sample <a target="_top"
- * href="../../../../../../../developerguide/unit-tests.html">connection settings</a> to
- * use with FrontBase are shown below:
+ * Sample connection settings to use with FrontBase are shown below:
  * 
  * <pre>
  *          fb.cayenne.adapter = org.apache.cayenne.dba.frontbase.FrontBaseAdapter
