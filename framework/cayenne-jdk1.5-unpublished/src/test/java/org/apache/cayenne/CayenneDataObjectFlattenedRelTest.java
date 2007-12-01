@@ -48,7 +48,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
         DataContext context = createDataContext();
 
         createTestData("testReadFlattenedRelationship");
-        Artist a1 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33001);
+        Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 33001);
         List groupList = a1.getGroupArray();
         assertNotNull(groupList);
         assertEquals(0, groupList.size());
@@ -59,7 +59,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
 
         createTestData("testReadFlattenedRelationship2");
 
-        Artist a1 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33001);
+        Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 33001);
         List groupList = a1.getGroupArray();
         assertNotNull(groupList);
         assertEquals(1, groupList.size());
@@ -110,7 +110,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
         createTestData("testDoubleCommitAddToFlattenedRelationship");
         DataContext context = createDataContext();
 
-        Artist a1 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33001);
+        Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 33001);
 
         SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
                 "name",
@@ -144,7 +144,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
         createTestData("testRemoveFromFlattenedRelationship");
         DataContext context = createDataContext();
 
-        Artist a1 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33001);
+        Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 33001);
 
         ArtGroup group = (ArtGroup) a1.getGroupArray().get(0);
         a1.removeFromGroupArray(group);
@@ -166,7 +166,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
     public void testRemoveFlattenedRelationshipAndRootRecord() throws Exception {
         DataContext context = createDataContext();
         createTestData("testRemoveFlattenedRelationshipAndRootRecord");
-        Artist a1 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33001);
+        Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 33001);
 
         ArtGroup group = (ArtGroup) a1.getGroupArray().get(0);
         a1.removeFromGroupArray(group); // Cause the delete of the link record

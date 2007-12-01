@@ -35,12 +35,12 @@ public class CDOOneToManyFKTest extends RelationshipCase {
         deleteTestData();
         DataContext context = createDataContext();
 
-        ToManyRoot2 src2 = (ToManyRoot2) context.newObject(ToManyRoot2.class);
-        ToManyFkRoot src = (ToManyFkRoot) context.newObject(ToManyFkRoot.class);
+        ToManyRoot2 src2 = context.newObject(ToManyRoot2.class);
+        ToManyFkRoot src = context.newObject(ToManyFkRoot.class);
 
         // this should go away when such mapping becomes fully supported
         src.setDepId(new Integer(1));
-        ToManyFkDep target = (ToManyFkDep) context.newObject(ToManyFkDep.class);
+        ToManyFkDep target = context.newObject(ToManyFkDep.class);
 
         // this should go away when such mapping becomes fully supported
         target.setDepId(new Integer(1));

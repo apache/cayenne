@@ -123,7 +123,7 @@ public abstract class CayenneCase extends BasicCase {
     }
 
     protected DataNode getNode() {
-        return (DataNode) getDomain().getDataNodes().iterator().next();
+        return getDomain().getDataNodes().iterator().next();
     }
 
     protected DataContext createDataContext() {

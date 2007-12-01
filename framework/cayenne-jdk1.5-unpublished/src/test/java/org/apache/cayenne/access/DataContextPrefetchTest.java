@@ -445,7 +445,7 @@ public class DataContextPrefetchTest extends DataContextCase {
 
     public void testPrefetchingToOneNull() throws Exception {
 
-        Painting p1 = (Painting) context.newObject(Painting.class);
+        Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("aaaa");
 
         context.commitChanges();

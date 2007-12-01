@@ -49,16 +49,16 @@ public class InheritanceTest extends PeopleCase {
     }
 
     public void testSave() throws Exception {
-        ClientCompany company = (ClientCompany) context.newObject(ClientCompany.class);
+        ClientCompany company = context.newObject(ClientCompany.class);
         company.setName("Boeing");
 
-        CustomerRepresentative rep = (CustomerRepresentative) context
+        CustomerRepresentative rep = context
                 .newObject(CustomerRepresentative.class);
         rep.setName("Joe Schmoe");
         rep.setToClientCompany(company);
         rep.setPersonType("C");
 
-        Employee employee = (Employee) context.newObject(Employee.class);
+        Employee employee = context.newObject(Employee.class);
         employee.setName("Our Joe Schmoe");
         employee.setPersonType("E");
 

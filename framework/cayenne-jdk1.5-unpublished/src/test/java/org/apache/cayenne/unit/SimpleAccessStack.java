@@ -102,7 +102,7 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
         Iterator it = domain.getDataNodes().iterator();
         while (it.hasNext()) {
             DataNode node = (DataNode) it.next();
-            deleteTestData(node, (DataMap) node.getDataMaps().iterator().next());
+            deleteTestData(node, node.getDataMaps().iterator().next());
         }
     }
 
@@ -111,7 +111,7 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
         Iterator it = domain.getDataNodes().iterator();
         while (it.hasNext()) {
             DataNode node = (DataNode) it.next();
-            dropSchema(node, (DataMap) node.getDataMaps().iterator().next());
+            dropSchema(node, node.getDataMaps().iterator().next());
         }
     }
 
@@ -122,7 +122,7 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
         Iterator it = domain.getDataNodes().iterator();
         while (it.hasNext()) {
             DataNode node = (DataNode) it.next();
-            createSchema(node, (DataMap) node.getDataMaps().iterator().next());
+            createSchema(node, node.getDataMaps().iterator().next());
         }
     }
 
@@ -130,7 +130,7 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
         Iterator it = domain.getDataNodes().iterator();
         while (it.hasNext()) {
             DataNode node = (DataNode) it.next();
-            dropPKSupport(node, (DataMap) node.getDataMaps().iterator().next());
+            dropPKSupport(node, node.getDataMaps().iterator().next());
         }
     }
 
@@ -143,7 +143,7 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
         Iterator it = domain.getDataNodes().iterator();
         while (it.hasNext()) {
             DataNode node = (DataNode) it.next();
-            createPKSupport(node, (DataMap) node.getDataMaps().iterator().next());
+            createPKSupport(node, node.getDataMaps().iterator().next());
         }
     }
 }

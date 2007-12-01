@@ -173,7 +173,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
                 && getIncoming() != null
                 && !getIncoming().getRelationship().isFlattened()) {
 
-            DbRelationship r = (DbRelationship) getIncoming()
+            DbRelationship r = getIncoming()
                     .getRelationship()
                     .getDbRelationships()
                     .get(0);
@@ -214,7 +214,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         Iterator relationships = getResolver().getEntity().getRelationships().iterator();
         while (relationships.hasNext()) {
             ObjRelationship rel = (ObjRelationship) relationships.next();
-            DbRelationship dbRel = (DbRelationship) rel.getDbRelationships().get(0);
+            DbRelationship dbRel = rel.getDbRelationships().get(0);
             Iterator dbAttributes = dbRel.getSourceAttributes().iterator();
 
             while (dbAttributes.hasNext()) {

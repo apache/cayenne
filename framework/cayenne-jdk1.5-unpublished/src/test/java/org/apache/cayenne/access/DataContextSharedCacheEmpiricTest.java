@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.query.SQLTemplate;
@@ -52,8 +51,8 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
                 Collections.EMPTY_MAP,
                 new EventManager());
 
-        c1 = new DataContext((DataChannel) getDomain(), new ObjectStore(cache));
-        c2 = new DataContext((DataChannel) getDomain(), new ObjectStore(cache));
+        c1 = new DataContext(getDomain(), new ObjectStore(cache));
+        c2 = new DataContext(getDomain(), new ObjectStore(cache));
 
         // prepare a single artist record
         SQLTemplate insert = new SQLTemplate(

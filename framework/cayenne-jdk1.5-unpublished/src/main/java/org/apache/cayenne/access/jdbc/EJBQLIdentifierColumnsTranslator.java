@@ -98,7 +98,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
             private void visitRelationship(ArcProperty property) {
                 ObjRelationship rel = property.getRelationship();
-                DbRelationship dbRel = (DbRelationship) rel.getDbRelationships().get(0);
+                DbRelationship dbRel = rel.getDbRelationships().get(0);
 
                 List joins = dbRel.getJoins();
                 int len = joins.size();

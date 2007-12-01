@@ -75,7 +75,7 @@ public class TestDataDomainTest extends CayenneCase {
         DataContext context = createDataContext();
         assertSame(getDomain(), context.getParentDataDomain());
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("aa");
         context.commitChanges();
 
@@ -100,9 +100,9 @@ public class TestDataDomainTest extends CayenneCase {
         DataContext context = createDataContext();
         assertSame(getDomain(), context.getParentDataDomain());
 
-        Painting p = (Painting) context.newObject(Painting.class);
+        Painting p = context.newObject(Painting.class);
         p.setPaintingTitle("aaaa");
-        PaintingInfo pi = (PaintingInfo) context.newObject(PaintingInfo.class);
+        PaintingInfo pi = context.newObject(PaintingInfo.class);
         pi.setPainting(p);
         context.commitChanges();
 

@@ -21,7 +21,6 @@ package org.apache.cayenne.dba.sqlserver;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.AddColumnToDb;
-import org.apache.cayenne.merge.MergeDirection;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.merge.SetColumnTypeToDb;

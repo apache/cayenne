@@ -44,7 +44,7 @@ public class DataContextCallbacksTest extends CayenneCase {
         DataContext context = createDataContext();
 
         // no callbacks
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         assertNotNull(a1);
         assertFalse(a1.isPrePersisted());
 
@@ -53,7 +53,7 @@ public class DataContextCallbacksTest extends CayenneCase {
                 Artist.class,
                 "prePersistCallback");
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         assertNotNull(a2);
         assertTrue(a2.isPrePersisted());
 
@@ -64,13 +64,13 @@ public class DataContextCallbacksTest extends CayenneCase {
                 listener2,
                 "publicCallback");
 
-        Artist a3 = (Artist) context.newObject(Artist.class);
+        Artist a3 = context.newObject(Artist.class);
         assertNotNull(a3);
         assertTrue(a3.isPrePersisted());
 
         assertSame(a3, listener2.getPublicCalledbackEntity());
 
-        Painting p3 = (Painting) context.newObject(Painting.class);
+        Painting p3 = context.newObject(Painting.class);
         assertNotNull(p3);
         assertFalse(p3.isPrePersisted());
         assertSame(a3, listener2.getPublicCalledbackEntity());
@@ -84,7 +84,7 @@ public class DataContextCallbacksTest extends CayenneCase {
         DataContext context = createDataContext();
 
         // no callbacks
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
         context.commitChanges();
         context.deleteObject(a1);
@@ -94,7 +94,7 @@ public class DataContextCallbacksTest extends CayenneCase {
         registry
                 .addListener(LifecycleEvent.PRE_REMOVE, Artist.class, "preRemoveCallback");
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("XX");
         context.commitChanges();
         context.deleteObject(a2);
@@ -108,7 +108,7 @@ public class DataContextCallbacksTest extends CayenneCase {
                 listener2,
                 "publicCallback");
 
-        Artist a3 = (Artist) context.newObject(Artist.class);
+        Artist a3 = context.newObject(Artist.class);
         a3.setArtistName("XX");
         context.commitChanges();
         context.deleteObject(a3);
@@ -117,7 +117,7 @@ public class DataContextCallbacksTest extends CayenneCase {
 
         assertSame(a3, listener2.getPublicCalledbackEntity());
 
-        Painting p3 = (Painting) context.newObject(Painting.class);
+        Painting p3 = context.newObject(Painting.class);
         p3.setPaintingTitle("XX");
         context.commitChanges();
         context.deleteObject(p3);

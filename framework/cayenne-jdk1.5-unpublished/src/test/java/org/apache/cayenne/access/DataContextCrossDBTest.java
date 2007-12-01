@@ -39,13 +39,13 @@ public class DataContextCrossDBTest extends MultiNodeCase {
         DataContext context = createDataContext();
 
         // insert
-        CrossdbM1E1 o1 = (CrossdbM1E1) context.newObject(CrossdbM1E1.class);
+        CrossdbM1E1 o1 = context.newObject(CrossdbM1E1.class);
         o1.setName("o1");
 
-        CrossdbM2E1 o2 = (CrossdbM2E1) context.newObject(CrossdbM2E1.class);
+        CrossdbM2E1 o2 = context.newObject(CrossdbM2E1.class);
         o2.setName("o2");
 
-        CrossdbM2E2 o3 = (CrossdbM2E2) context.newObject(CrossdbM2E2.class);
+        CrossdbM2E2 o3 = context.newObject(CrossdbM2E2.class);
         o3.setName("o3");
 
         o3.setToM1E1(o1);
@@ -53,7 +53,7 @@ public class DataContextCrossDBTest extends MultiNodeCase {
         context.commitChanges();
 
         // update
-        CrossdbM1E1 o11 = (CrossdbM1E1) context.newObject(CrossdbM1E1.class);
+        CrossdbM1E1 o11 = context.newObject(CrossdbM1E1.class);
         o11.setName("o11");
         o3.setToM1E1(o11);
         context.commitChanges();

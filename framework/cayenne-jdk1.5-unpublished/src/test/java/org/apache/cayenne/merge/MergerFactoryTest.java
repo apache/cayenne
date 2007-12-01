@@ -42,7 +42,7 @@ public class MergerFactoryTest extends CayenneCase {
     public void testUpToDateToDb() throws Exception {
         deleteTestData();
         createTestData("testArtists");
-        DataNode node = (DataNode) getDomain().getDataNodes().iterator().next();
+        DataNode node = getDomain().getDataNodes().iterator().next();
         DataMap map = getDomain().getMap("testmap");
         filterDataMap(node, map);
 
@@ -52,7 +52,7 @@ public class MergerFactoryTest extends CayenneCase {
     public void testAddAndDropColumnToDb() throws Exception {
         deleteTestData();
         createTestData("testArtists");
-        DataNode node = (DataNode) getDomain().getDataNodes().iterator().next();
+        DataNode node = getDomain().getDataNodes().iterator().next();
         DataMap map = getDomain().getMap("testmap");
         filterDataMap(node, map);
 
@@ -79,7 +79,7 @@ public class MergerFactoryTest extends CayenneCase {
     public void testChangeVarcharSizeToDb() throws Exception {
         deleteTestData();
         createTestData("testArtists");
-        DataNode node = (DataNode) getDomain().getDataNodes().iterator().next();
+        DataNode node = getDomain().getDataNodes().iterator().next();
         DataMap map = getDomain().getMap("testmap");
         filterDataMap(node, map);
 
@@ -114,7 +114,7 @@ public class MergerFactoryTest extends CayenneCase {
     public void testMultipleTokensToDb() throws Exception {
         deleteTestData();
         createTestData("testArtists");
-        DataNode node = (DataNode) getDomain().getDataNodes().iterator().next();
+        DataNode node = getDomain().getDataNodes().iterator().next();
         DataMap map = getDomain().getMap("testmap");
         filterDataMap(node, map);
 
@@ -156,7 +156,7 @@ public class MergerFactoryTest extends CayenneCase {
         deleteTestData();
 
         createTestData("testArtists");
-        DataNode node = (DataNode) getDomain().getDataNodes().iterator().next();
+        DataNode node = getDomain().getDataNodes().iterator().next();
         DataMap map = getDomain().getMap("testmap");
         filterDataMap(node, map);
 

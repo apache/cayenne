@@ -36,7 +36,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
     public void testReadToMany() throws Exception {
         createTestData("prepare");
 
-        CollectionToMany o1 = (CollectionToMany) DataObjectUtils.objectForPK(
+        CollectionToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 CollectionToMany.class,
                 1);
@@ -105,7 +105,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        CollectionToManyTarget newTarget = (CollectionToManyTarget) o1
+        CollectionToManyTarget newTarget = o1
                 .getObjectContext()
                 .newObject(CollectionToManyTarget.class);
 
@@ -131,7 +131,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
         Collection targets = o1.getTargets();
         assertEquals(3, targets.size());
 
-        CollectionToManyTarget target = (CollectionToManyTarget) DataObjectUtils
+        CollectionToManyTarget target = DataObjectUtils
                 .objectForPK(o1.getObjectContext(), CollectionToManyTarget.class, 2);
         o1.removeFromTargets(target);
 
@@ -158,7 +158,7 @@ public class CDOCollectionRelationshipTest extends RelationshipCase {
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        CollectionToManyTarget newTarget = (CollectionToManyTarget) o1
+        CollectionToManyTarget newTarget = o1
                 .getObjectContext()
                 .newObject(CollectionToManyTarget.class);
 

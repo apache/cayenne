@@ -352,7 +352,7 @@ public abstract class QueryAssemblerHelper {
         if (relationship != null) {
             // Can't properly handle multiple joins....
             if (relationship.getJoins().size() == 1) {
-                DbJoin join = (DbJoin) relationship.getJoins().get(0);
+                DbJoin join = relationship.getJoins().get(0);
                 return join.getSource();
             }
         }

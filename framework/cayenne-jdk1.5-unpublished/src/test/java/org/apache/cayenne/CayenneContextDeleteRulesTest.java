@@ -48,11 +48,11 @@ public class CayenneContextDeleteRulesTest extends CayenneCase {
     public void testNullifyToOne() {
         CayenneContext context = createClientContext();
 
-        ClientMtDeleteNullify object = (ClientMtDeleteNullify) context
+        ClientMtDeleteNullify object = context
                 .newObject(ClientMtDeleteNullify.class);
         object.setName("object");
 
-        ClientMtDeleteRule related = (ClientMtDeleteRule) context
+        ClientMtDeleteRule related = context
                 .newObject(ClientMtDeleteRule.class);
         object.setName("related");
 
@@ -71,9 +71,9 @@ public class CayenneContextDeleteRulesTest extends CayenneCase {
 
         CayenneContext context = createClientContext();
 
-        ClientMtDeleteDeny object = (ClientMtDeleteDeny) context
+        ClientMtDeleteDeny object = context
                 .newObject(ClientMtDeleteDeny.class);
-        ClientMtDeleteRule related = (ClientMtDeleteRule) context
+        ClientMtDeleteRule related = context
                 .newObject(ClientMtDeleteRule.class);
         object.setDeny(related);
         context.commitChanges();
@@ -94,11 +94,11 @@ public class CayenneContextDeleteRulesTest extends CayenneCase {
     public void testCascadeToOne() {
         CayenneContext context = createClientContext();
 
-        ClientMtDeleteCascade object = (ClientMtDeleteCascade) context
+        ClientMtDeleteCascade object = context
                 .newObject(ClientMtDeleteCascade.class);
         object.setName("object");
 
-        ClientMtDeleteRule related = (ClientMtDeleteRule) context
+        ClientMtDeleteRule related = context
                 .newObject(ClientMtDeleteRule.class);
         object.setName("related");
 
@@ -116,11 +116,11 @@ public class CayenneContextDeleteRulesTest extends CayenneCase {
     public void testCascadeToOneNewObject() {
         CayenneContext context = createClientContext();
 
-        ClientMtDeleteRule related = (ClientMtDeleteRule) context
+        ClientMtDeleteRule related = context
                 .newObject(ClientMtDeleteRule.class);
         context.commitChanges();
 
-        ClientMtDeleteCascade object = (ClientMtDeleteCascade) context
+        ClientMtDeleteCascade object = context
                 .newObject(ClientMtDeleteCascade.class);
         object.setName("object");
         object.setCascade(related);

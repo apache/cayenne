@@ -81,9 +81,9 @@ public class DataContextDeleteRulesTest extends CayenneCase {
      */
     public void testCascadeToManyFlattened() {
         // testing Artist.groupArray relationship
-        ArtGroup aGroup = (ArtGroup) context.newObject(ArtGroup.class);
+        ArtGroup aGroup = context.newObject(ArtGroup.class);
         aGroup.setName("Group Name");
-        Artist anArtist = (Artist) context.newObject(Artist.class);
+        Artist anArtist = context.newObject(Artist.class);
         anArtist.setArtistName("A Name");
         anArtist.addToGroupArray(aGroup);
         assertTrue(anArtist.getGroupArray().contains(aGroup));
@@ -113,9 +113,9 @@ public class DataContextDeleteRulesTest extends CayenneCase {
      */
     public void testNullifyToManyFlattened() {
         // testing ArtGroup.artistArray relationship
-        ArtGroup aGroup = (ArtGroup) context.newObject(ArtGroup.class);
+        ArtGroup aGroup = context.newObject(ArtGroup.class);
         aGroup.setName("Group Name");
-        Artist anArtist = (Artist) context.newObject(Artist.class);
+        Artist anArtist = context.newObject(Artist.class);
         anArtist.setArtistName("A Name");
         aGroup.addToArtistArray(anArtist);
 

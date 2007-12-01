@@ -47,12 +47,12 @@ public class CayenneContextValidationTest extends CayenneCase {
 
         CayenneContext c = new CayenneContext(clientChannel);
         
-        ClientMtTable1 o1 = (ClientMtTable1) c.newObject(ClientMtTable1.class);
+        ClientMtTable1 o1 = c.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("G1");
         o1.resetValidation(false);
         
         // this one is not validating
-        ClientMtTable2 o2 = (ClientMtTable2) c.newObject(ClientMtTable2.class);
+        ClientMtTable2 o2 = c.newObject(ClientMtTable2.class);
         o2.setTable1(o1);
         
         c.commitChanges();
@@ -77,7 +77,7 @@ public class CayenneContextValidationTest extends CayenneCase {
         assertTrue(o1.isValidatedForDelete());
         assertFalse(o1.isValidatedForUpdate());
         
-        ClientMtTable1 o11 = (ClientMtTable1) c.newObject(ClientMtTable1.class);
+        ClientMtTable1 o11 = c.newObject(ClientMtTable1.class);
         o11.setGlobalAttribute1("G1");
         o11.resetValidation(true);
         

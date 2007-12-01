@@ -28,7 +28,6 @@ import org.apache.cayenne.project.ProjectConfigurator;
 import org.apache.cayenne.project.ProjectException;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
 
 /**
  * A "cdeploy" Ant task providing an Ant frontend to

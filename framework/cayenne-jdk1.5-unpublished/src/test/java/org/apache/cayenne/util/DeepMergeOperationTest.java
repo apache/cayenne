@@ -36,7 +36,7 @@ public class DeepMergeOperationTest extends CayenneCase {
         DataContext context = createDataContext();
         DataContext context1 = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");
         context.commitChanges();
 
@@ -60,7 +60,7 @@ public class DeepMergeOperationTest extends CayenneCase {
         DataContext context = createDataContext();
         DataContext context1 = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");
         context.commitChanges();
 

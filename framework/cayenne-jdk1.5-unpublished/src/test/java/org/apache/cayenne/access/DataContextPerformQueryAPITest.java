@@ -149,7 +149,7 @@ public class DataContextPerformQueryAPITest extends CayenneCase {
 
     public void testPerfomQueryNonSelecting() throws Exception {
         DataContext context = createDataContext();
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("aa");
         context.commitChanges();
 

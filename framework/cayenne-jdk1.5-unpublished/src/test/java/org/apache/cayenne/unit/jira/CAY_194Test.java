@@ -46,14 +46,14 @@ public class CAY_194Test extends RelationshipCase {
     public void testQualifyOnToMany() {
         DataContext context = createDataContext();
 
-        ReflexiveAndToOne ox = (ReflexiveAndToOne) context
+        ReflexiveAndToOne ox = context
                 .newObject(ReflexiveAndToOne.class);
         ox.setName("ox");
-        ReflexiveAndToOne o1 = (ReflexiveAndToOne) context
+        ReflexiveAndToOne o1 = context
                 .newObject(ReflexiveAndToOne.class);
         o1.setName("o1");
 
-        ReflexiveAndToOne o2 = (ReflexiveAndToOne) context
+        ReflexiveAndToOne o2 = context
                 .newObject(ReflexiveAndToOne.class);
         o2.setName("o2");
         o2.setToParent(o1);
@@ -76,14 +76,14 @@ public class CAY_194Test extends RelationshipCase {
     public void testQualifyOnToOne() {
         DataContext context = createDataContext();
 
-        ReflexiveAndToOne ox = (ReflexiveAndToOne) context
+        ReflexiveAndToOne ox = context
                 .newObject(ReflexiveAndToOne.class);
         ox.setName("ox");
-        ReflexiveAndToOne o1 = (ReflexiveAndToOne) context
+        ReflexiveAndToOne o1 = context
                 .newObject(ReflexiveAndToOne.class);
         o1.setName("o1");
 
-        ReflexiveAndToOne o2 = (ReflexiveAndToOne) context
+        ReflexiveAndToOne o2 = context
                 .newObject(ReflexiveAndToOne.class);
         o2.setName("o2");
         o2.setToParent(o1);

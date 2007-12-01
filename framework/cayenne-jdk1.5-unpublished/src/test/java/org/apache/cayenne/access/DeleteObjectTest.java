@@ -161,7 +161,7 @@ public class DeleteObjectTest extends CayenneCase {
     }
 
     public void testDeleteNew() throws Exception {
-        Artist artist = (Artist) context.newObject(Artist.class);
+        Artist artist = context.newObject(Artist.class);
         artist.setArtistName("a");
 
         assertEquals(PersistenceState.NEW, artist.getPersistenceState());

@@ -38,7 +38,7 @@ public class ObjectStoreDiffRetainingTest extends CayenneCase {
         createTestData("test");
 
         DataContext context = createDataContext();
-        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 2000);
+        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 2000);
         ObjectStore objectStore = context.getObjectStore();
 
         assertNull(objectStore.getChangesByObjectId().get(a.getObjectId()));
@@ -51,7 +51,7 @@ public class ObjectStoreDiffRetainingTest extends CayenneCase {
         createTestData("test");
 
         DataContext context = createDataContext();
-        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 2000);
+        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 2000);
         ObjectStore objectStore = context.getObjectStore();
 
         assertNull(objectStore.getChangesByObjectId().get(a.getObjectId()));
@@ -61,7 +61,7 @@ public class ObjectStoreDiffRetainingTest extends CayenneCase {
         // snapshot is not retained... in testing this I am leaving some flexibility for
         // the framework to retain a snapshot when it deems appropriate...
 
-        a.addToPaintingArray((Painting) context.newObject(Painting.class));
+        a.addToPaintingArray(context.newObject(Painting.class));
         a.setArtistName("some other name");
         assertNotNull("Snapshot wasn't retained - CAY-213", objectStore
                 .getChangesByObjectId()

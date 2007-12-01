@@ -55,7 +55,7 @@ public class TransactionThreadTest extends CayenneCase {
     public void testThreadConnectionReuseOnQueryFromWillCommit() throws Exception {
         deleteTestData();
 
-        Artist a = (Artist) createDataContext().newObject(Artist.class);
+        Artist a = createDataContext().newObject(Artist.class);
         a.setArtistName("aaa");
 
         Delegate delegate = new Delegate() {

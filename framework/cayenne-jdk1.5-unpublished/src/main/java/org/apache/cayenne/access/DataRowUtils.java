@@ -177,7 +177,7 @@ class DataRowUtils {
                     // otherwise leave it alone
                     if (!isToOneTargetModified(property, object, diff)) {
 
-                        DbRelationship dbRelationship = (DbRelationship) relationship
+                        DbRelationship dbRelationship = relationship
                                 .getDbRelationships()
                                 .get(0);
 

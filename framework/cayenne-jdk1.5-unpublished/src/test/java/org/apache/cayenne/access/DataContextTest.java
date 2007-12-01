@@ -458,7 +458,7 @@ public class DataContextTest extends DataContextCase {
     }
 
     public void changeMaxConnections(int delta) {
-        DataNode node = (DataNode) context
+        DataNode node = context
                 .getParentDataDomain()
                 .getDataNodes()
                 .iterator()

@@ -380,7 +380,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 33002);
+        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33002);
 
         String ejbql = "select P from Painting P WHERE p.toArtist = :param";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -416,7 +416,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         Map key1 = new HashMap();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity a = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+        CompoundPkTestEntity a = DataObjectUtils.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 key1);
@@ -444,7 +444,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         Map key1 = new HashMap();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity a = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+        CompoundPkTestEntity a = DataObjectUtils.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 key1);
@@ -468,7 +468,7 @@ public class DataContextEJBQLQueryTest extends CayenneCase {
         Map key1 = new HashMap();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity a = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+        CompoundPkTestEntity a = DataObjectUtils.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 key1);

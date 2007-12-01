@@ -47,11 +47,11 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
     }
 
     public void testInsertJoinWithPK() throws Exception {
-        FlattenedTest1 obj01 = (FlattenedTest1) context
+        FlattenedTest1 obj01 = context
                 .newObject(FlattenedTest1.class);
-        FlattenedTest3 obj11 = (FlattenedTest3) context
+        FlattenedTest3 obj11 = context
                 .newObject(FlattenedTest3.class);
-        FlattenedTest3 obj12 = (FlattenedTest3) context
+        FlattenedTest3 obj12 = context
                 .newObject(FlattenedTest3.class);
 
         obj01.setName("t01");
@@ -66,7 +66,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
         int pk = DataObjectUtils.intPKForObject(obj01);
 
         context = createDataContext();
-        FlattenedTest1 fresh01 = (FlattenedTest1) DataObjectUtils.objectForPK(
+        FlattenedTest1 fresh01 = DataObjectUtils.objectForPK(
                 context,
                 FlattenedTest1.class,
                 pk);
@@ -87,7 +87,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
         joinSelect.setFetchingDataRows(true);
         assertEquals(3, context.performQuery(joinSelect).size());
 
-        FlattenedTest1 ft1 = (FlattenedTest1) DataObjectUtils.objectForPK(
+        FlattenedTest1 ft1 = DataObjectUtils.objectForPK(
                 context,
                 FlattenedTest1.class,
                 2);
@@ -98,7 +98,7 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
 
         assertEquals(2, related.size());
 
-        FlattenedTest3 ft3 = (FlattenedTest3) DataObjectUtils.objectForPK(
+        FlattenedTest3 ft3 = DataObjectUtils.objectForPK(
                 context,
                 FlattenedTest3.class,
                 3);
@@ -115,20 +115,20 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
     }
 
     public void testQualifyOnToManyFlattened() throws Exception {
-        FlattenedTest1 obj01 = (FlattenedTest1) context
+        FlattenedTest1 obj01 = context
                 .newObject(FlattenedTest1.class);
-        FlattenedTest2 obj02 = (FlattenedTest2) context
+        FlattenedTest2 obj02 = context
                 .newObject(FlattenedTest2.class);
-        FlattenedTest3 obj031 = (FlattenedTest3) context
+        FlattenedTest3 obj031 = context
                 .newObject(FlattenedTest3.class);
-        FlattenedTest3 obj032 = (FlattenedTest3) context
+        FlattenedTest3 obj032 = context
                 .newObject(FlattenedTest3.class);
 
-        FlattenedTest1 obj11 = (FlattenedTest1) context
+        FlattenedTest1 obj11 = context
                 .newObject(FlattenedTest1.class);
-        FlattenedTest2 obj12 = (FlattenedTest2) context
+        FlattenedTest2 obj12 = context
                 .newObject(FlattenedTest2.class);
-        FlattenedTest3 obj131 = (FlattenedTest3) context
+        FlattenedTest3 obj131 = context
                 .newObject(FlattenedTest3.class);
 
         obj01.setName("t01");

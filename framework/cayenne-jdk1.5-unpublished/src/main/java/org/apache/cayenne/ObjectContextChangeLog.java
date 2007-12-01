@@ -91,7 +91,7 @@ class ObjectContextChangeLog {
     }
 
     GraphDiff getDiffsAfterMarker(String markerTag) {
-        Integer pos = (Integer) markers.get(markerTag);
+        Integer pos = markers.get(markerTag);
         int marker = (pos == null) ? -1 : pos.intValue();
         if (marker < 0) {
             throw new IllegalStateException("No marked position for tag '"
@@ -122,7 +122,7 @@ class ObjectContextChangeLog {
     }
 
     int sizeAfterMarker(String markerTag) {
-        Integer pos = (Integer) markers.get(markerTag);
+        Integer pos = markers.get(markerTag);
         int marker = (pos == null) ? -1 : pos.intValue();
         if (marker < 0) {
             throw new IllegalStateException("No marked position for tag '"

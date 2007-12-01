@@ -34,7 +34,7 @@ public class CAY_191Test extends RelationshipCase {
         createTestData("testResolveToOneOverFKOfDifferentNumType");
 
         DataContext context = createDataContext();
-        FkOfDifferentType root = (FkOfDifferentType) DataObjectUtils.objectForPK(
+        FkOfDifferentType root = DataObjectUtils.objectForPK(
                 context,
                 FkOfDifferentType.class,
                 1);

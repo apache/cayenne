@@ -225,7 +225,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // we can assume that there is one and only one DbRelationship as
             // we previously checked that
             // "!isSourceIndependentFromTargetChange"
-            DbRelationship dbRelationship = (DbRelationship) relationship
+            DbRelationship dbRelationship = relationship
                     .getDbRelationships()
                     .get(0);
 

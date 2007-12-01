@@ -39,7 +39,7 @@ public class CompoundPkChangeTest extends CayenneCase {
     public void testCompoundPkChangeSingleElement() throws Exception {
         DataContext context = createDataContext();
 
-        CompoundPkTestEntity dao = (CompoundPkTestEntity) context
+        CompoundPkTestEntity dao = context
                 .newObject(CompoundPkTestEntity.class);
         CompoundPkTestEntity refreshedDao = null;
 
@@ -83,7 +83,7 @@ public class CompoundPkChangeTest extends CayenneCase {
     public void testCompoundPkChangeAllElements() throws Exception {
         DataContext context = createDataContext();
 
-        CompoundPkTestEntity dao = (CompoundPkTestEntity) context
+        CompoundPkTestEntity dao = context
                 .newObject(CompoundPkTestEntity.class);
         CompoundPkTestEntity refreshedDao = null;
 

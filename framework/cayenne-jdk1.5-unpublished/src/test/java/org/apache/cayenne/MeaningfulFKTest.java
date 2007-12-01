@@ -30,7 +30,7 @@ import org.apache.cayenne.validation.ValidationResult;
 public class MeaningfulFKTest extends RelationshipCase {
 
     public void testValidateForSave1() throws Exception {
-        MeaningfulFK testObject = (MeaningfulFK) createDataContext().newObject(
+        MeaningfulFK testObject = createDataContext().newObject(
                 MeaningfulFK.class);
 
         ValidationResult validation = new ValidationResult();
@@ -45,10 +45,10 @@ public class MeaningfulFKTest extends RelationshipCase {
     }
 
     public void testValidateForSave2() throws Exception {
-        MeaningfulFK testObject = (MeaningfulFK) createDataContext().newObject(
+        MeaningfulFK testObject = createDataContext().newObject(
                 MeaningfulFK.class);
 
-        RelationshipHelper related = (RelationshipHelper) testObject
+        RelationshipHelper related = testObject
                 .getObjectContext()
                 .newObject(RelationshipHelper.class);
         testObject.setToRelationshipHelper(related);

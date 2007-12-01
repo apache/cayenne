@@ -52,7 +52,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         DataContext childContext = context.createChildDataContext();
 
         Artist a = DataObjectUtils.objectForPK(childContext, Artist.class, 33001);
-        Painting p = (Painting) childContext.newObject(Painting.class);
+        Painting p = childContext.newObject(Painting.class);
         p.setPaintingTitle("X");
         a.addToPaintingArray(p);
 
@@ -75,7 +75,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         DataContext childContext = context.createChildDataContext();
         DataContext childContextPeer = context.createChildDataContext();
 
-        Painting childP1 = (Painting) DataObjectUtils.objectForPK(
+        Painting childP1 = DataObjectUtils.objectForPK(
                 childContext,
                 Painting.class,
                 33001);
@@ -225,7 +225,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
 
         assertEquals(4, objects.size());
 
-        Artist childNew = (Artist) childContext.newObject(Artist.class);
+        Artist childNew = childContext.newObject(Artist.class);
         childNew.setArtistName("NNN");
 
         Artist childModified = (Artist) objects.get(0);
@@ -365,10 +365,10 @@ public class NestedDataContextWriteTest extends CayenneCase {
         DataContext context = createDataContext();
         DataContext childContext = context.createChildDataContext();
 
-        Painting childMaster = (Painting) childContext.newObject(Painting.class);
+        Painting childMaster = childContext.newObject(Painting.class);
         childMaster.setPaintingTitle("Master");
 
-        PaintingInfo childDetail1 = (PaintingInfo) childContext
+        PaintingInfo childDetail1 = childContext
                 .newObject(PaintingInfo.class);
         childDetail1.setTextReview("Detail1");
         childDetail1.setPainting(childMaster);
@@ -406,10 +406,10 @@ public class NestedDataContextWriteTest extends CayenneCase {
         DataContext context = createDataContext();
         DataContext childContext = context.createChildDataContext();
 
-        Artist childO1 = (Artist) childContext.newObject(Artist.class);
+        Artist childO1 = childContext.newObject(Artist.class);
         childO1.setArtistName("Master");
 
-        ArtGroup childO2 = (ArtGroup) childContext.newObject(ArtGroup.class);
+        ArtGroup childO2 = childContext.newObject(ArtGroup.class);
         childO2.setName("Detail1");
         childO2.addToArtistArray(childO1);
 
@@ -450,16 +450,16 @@ public class NestedDataContextWriteTest extends CayenneCase {
         DataContext context = createDataContext();
         DataContext childContext = context.createChildDataContext();
 
-        Artist childO1 = (Artist) childContext.newObject(Artist.class);
+        Artist childO1 = childContext.newObject(Artist.class);
         childO1.setArtistName("o1");
 
-        ArtGroup childO2 = (ArtGroup) childContext.newObject(ArtGroup.class);
+        ArtGroup childO2 = childContext.newObject(ArtGroup.class);
         childO2.setName("o2");
         childO2.addToArtistArray(childO1);
 
         childContext.commitChangesToParent();
 
-        ArtGroup childO3 = (ArtGroup) childContext.newObject(ArtGroup.class);
+        ArtGroup childO3 = childContext.newObject(ArtGroup.class);
         childO3.setName("o3");
         childO1.addToGroupArray(childO3);
 

@@ -313,7 +313,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "a2");
 
-        CompoundPkTestEntity a = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+        CompoundPkTestEntity a = DataObjectUtils.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 pk);
@@ -340,7 +340,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "a2");
 
-        CompoundPkTestEntity a = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+        CompoundPkTestEntity a = DataObjectUtils.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 pk);

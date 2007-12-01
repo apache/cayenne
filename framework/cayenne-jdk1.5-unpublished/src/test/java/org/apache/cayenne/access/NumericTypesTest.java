@@ -56,7 +56,7 @@ public class NumericTypesTest extends CayenneCase {
 
     public void testLong() throws Exception {
 
-        LongEntity test = (LongEntity) context.newObject(LongEntity.class);
+        LongEntity test = context.newObject(LongEntity.class);
 
         Long i = new Long(Integer.MAX_VALUE + 10l);
         test.setLongField(i);
@@ -73,7 +73,7 @@ public class NumericTypesTest extends CayenneCase {
 
     public void testBigInteger() throws Exception {
 
-        BigIntegerEntity test = (BigIntegerEntity) context
+        BigIntegerEntity test = context
                 .newObject(BigIntegerEntity.class);
 
         BigInteger i = new BigInteger("1234567890");
@@ -91,7 +91,7 @@ public class NumericTypesTest extends CayenneCase {
 
     public void testBigDecimal() throws Exception {
 
-        BigDecimalEntity test = (BigDecimalEntity) context
+        BigDecimalEntity test = context
                 .newObject(BigDecimalEntity.class);
 
         BigDecimal i = new BigDecimal("1234567890.44");
@@ -234,7 +234,7 @@ public class NumericTypesTest extends CayenneCase {
     public void testDecimalPK() throws Exception {
 
         // populate (testing insert as well)
-        DecimalPKTestEntity object = (DecimalPKTestEntity) context
+        DecimalPKTestEntity object = context
                 .newObject(DecimalPKTestEntity.class);
 
         object.setName("o1");
@@ -249,7 +249,7 @@ public class NumericTypesTest extends CayenneCase {
     public void testDecimalPK1() throws Exception {
 
         // populate (testing insert as well)
-        DecimalPKTest1 object = (DecimalPKTest1) context.newObject(DecimalPKTest1.class);
+        DecimalPKTest1 object = context.newObject(DecimalPKTest1.class);
 
         object.setName("o2");
         object.setDecimalPK(new Double(1.25));

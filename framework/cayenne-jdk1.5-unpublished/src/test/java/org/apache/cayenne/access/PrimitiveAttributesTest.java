@@ -27,7 +27,7 @@ public class PrimitiveAttributesTest extends CayenneCase {
     public void testCommit() {
         ObjectContext context = createDataContext();
 
-        PrimitivesTestEntity e = (PrimitivesTestEntity) context
+        PrimitivesTestEntity e = context
                 .newObject(PrimitivesTestEntity.class);
         e.setBooleanColumn(true);
         e.setIntColumn(88);

@@ -39,7 +39,7 @@ public class CayenneDataObjectValidationTest extends CayenneCase {
 
     public void testValidateForSaveMandatoryToOneMissing() throws Exception {
         DataContext context = createDataContext();
-        Exhibit exhibit = (Exhibit) context.newObject(Exhibit.class);
+        Exhibit exhibit = context.newObject(Exhibit.class);
         exhibit.setOpeningDate(new Date());
         exhibit.setClosingDate(new Date());
 
@@ -56,7 +56,7 @@ public class CayenneDataObjectValidationTest extends CayenneCase {
         assertEquals(Exhibit.TO_GALLERY_PROPERTY, failure.getProperty());
 
         // fix the problem and see if it goes away
-        Gallery gallery = (Gallery) context.newObject(Gallery.class);
+        Gallery gallery = context.newObject(Gallery.class);
         exhibit.setToGallery(gallery);
         result = new ValidationResult();
         exhibit.validateForSave(result);

@@ -191,7 +191,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
             CayenneContext context = new CayenneContext(channel);
 
-            ClientMtTable1 object = (ClientMtTable1) context
+            ClientMtTable1 object = context
                     .newObject(ClientMtTable1.class);
 
             assertFalse(flag[0]);
@@ -248,11 +248,11 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
             CayenneContext context = new CayenneContext(channel);
 
-            ClientMtReflexive o1 = (ClientMtReflexive) context
+            ClientMtReflexive o1 = context
                     .newObject(ClientMtReflexive.class);
             o1.setName("parent");
 
-            ClientMtReflexive o2 = (ClientMtReflexive) context
+            ClientMtReflexive o2 = context
                     .newObject(ClientMtReflexive.class);
             o2.setName("child");
             o2.setToParent(o1);
@@ -490,7 +490,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
         ClientChannel channel = new ClientChannel(connection);
         CayenneContext context = new CayenneContext(channel);
 
-        ClientMtTable1 o = (ClientMtTable1) context.newObject(ClientMtTable1.class);
+        ClientMtTable1 o = context.newObject(ClientMtTable1.class);
         o.setGlobalAttribute1("aaa");
 
         // fetch new

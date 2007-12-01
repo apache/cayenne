@@ -45,9 +45,9 @@ public class DataContextCompoundRelTest extends CayenneCase {
     }
 
     public void testInsert() {
-        CompoundPkTestEntity master = (CompoundPkTestEntity) ctxt
+        CompoundPkTestEntity master = ctxt
                 .newObject(CompoundPkTestEntity.class);
-        CompoundFkTestEntity detail = (CompoundFkTestEntity) ctxt
+        CompoundFkTestEntity detail = ctxt
                 .newObject(CompoundFkTestEntity.class);
         master.addToCompoundFkArray(detail);
         master.setName("m1");

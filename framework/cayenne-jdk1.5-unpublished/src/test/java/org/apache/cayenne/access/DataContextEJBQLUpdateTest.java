@@ -191,15 +191,15 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
     public void testUpdateNoQualifierBoolean() throws Exception {
 
         ObjectContext context = createDataContext();
-        BooleanTestEntity o1 = (BooleanTestEntity) context
+        BooleanTestEntity o1 = context
                 .newObject(BooleanTestEntity.class);
         o1.setBooleanColumn(Boolean.TRUE);
 
-        BooleanTestEntity o2 = (BooleanTestEntity) context
+        BooleanTestEntity o2 = context
                 .newObject(BooleanTestEntity.class);
         o2.setBooleanColumn(Boolean.FALSE);
 
-        BooleanTestEntity o3 = (BooleanTestEntity) context
+        BooleanTestEntity o3 = context
                 .newObject(BooleanTestEntity.class);
         o3.setBooleanColumn(Boolean.FALSE);
 
@@ -229,7 +229,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         createTestData("prepare");
 
         ObjectContext context = createDataContext();
-        Artist object = (Artist) DataObjectUtils
+        Artist object = DataObjectUtils
                 .objectForPK(context, Artist.class, 33003);
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
@@ -261,7 +261,7 @@ public class DataContextEJBQLUpdateTest extends CayenneCase {
         Map key1 = new HashMap();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity object = (CompoundPkTestEntity) DataObjectUtils.objectForPK(
+        CompoundPkTestEntity object = DataObjectUtils.objectForPK(
                 context,
                 CompoundPkTestEntity.class,
                 key1);

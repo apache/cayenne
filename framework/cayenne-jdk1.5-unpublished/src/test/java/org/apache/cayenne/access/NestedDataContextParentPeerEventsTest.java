@@ -29,7 +29,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
     public void testPeerObjectUpdatedSimpleProperty() throws Exception {
         DataContext context = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
 
@@ -58,10 +58,10 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
 
         DataContext context = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
-        Artist altA = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
+        Artist altA = context.newObject(Artist.class);
 
-        Painting p = (Painting) context.newObject(Painting.class);
+        Painting p = context.newObject(Painting.class);
         p.setToArtist(a);
         p.setPaintingTitle("PPP");
         a.setArtistName("X");
@@ -96,14 +96,14 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
 
         DataContext context = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
 
-        Painting px = (Painting) context.newObject(Painting.class);
+        Painting px = context.newObject(Painting.class);
         px.setToArtist(a);
         px.setPaintingTitle("PX");
 
-        Painting py = (Painting) context.newObject(Painting.class);
+        Painting py = context.newObject(Painting.class);
         py.setPaintingTitle("PY");
 
         context.commitChanges();

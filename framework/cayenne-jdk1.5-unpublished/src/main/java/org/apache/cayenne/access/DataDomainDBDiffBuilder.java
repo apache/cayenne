@@ -118,7 +118,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
                 ObjRelationship relation = (ObjRelationship) objEntity
                         .getRelationship(entry.getKey().toString());
 
-                DbRelationship dbRelation = (DbRelationship) relation
+                DbRelationship dbRelation = relation
                         .getDbRelationships()
                         .get(0);
 

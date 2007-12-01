@@ -109,7 +109,7 @@ public abstract class QueryAssembler extends QueryTranslator {
             for (int i = 0; i < len; i++) {
                 Object val = values.get(i);
 
-                DbAttribute attr = (DbAttribute) attributes.get(i);
+                DbAttribute attr = attributes.get(i);
 
                 // null DbAttributes are a result of inferior qualifier processing
                 // (qualifier can't map parameters to DbAttributes and therefore
