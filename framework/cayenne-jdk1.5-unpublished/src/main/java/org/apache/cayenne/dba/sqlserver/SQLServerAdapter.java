@@ -35,14 +35,9 @@ import org.apache.cayenne.query.SQLAction;
  * </p>
  * <h3>Microsoft Driver Settings</h3>
  * <p>
- * Sample <a target="_top"
- * href="../../../../../../../developerguide/unit-tests.html">connection settings </a> to
- * use with MS SQL Server are shown below:
+ * Sample connection settings to use with MS SQL Server are shown below:
  * 
  * <pre>
- * 
- *  
- *   
  *       sqlserver.cayenne.adapter = org.apache.cayenne.dba.sqlserver.SQLServerAdapter
  *       sqlserver.jdbc.username = test
  *       sqlserver.jdbc.password = secret

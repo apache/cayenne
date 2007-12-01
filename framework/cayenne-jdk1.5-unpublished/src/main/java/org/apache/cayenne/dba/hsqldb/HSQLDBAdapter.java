@@ -39,12 +39,9 @@ import org.apache.cayenne.query.SQLAction;
 
 /**
  * DbAdapter implementation for the <a href="http://hsqldb.sourceforge.net/"> HSQLDB RDBMS
- * </a>. Sample <a target="_top"
- * href="../../../../../../../developerguide/unit-tests.html">connection settings </a> to
- * use with HSQLDB are shown below:
+ * </a>. Sample connection settings to use with HSQLDB are shown below:
  * 
  * <pre>
- *       
  *        test-hsqldb.cayenne.adapter = org.apache.cayenne.dba.hsqldb.HSQLDBAdapter
  *        test-hsqldb.jdbc.username = test
  *        test-hsqldb.jdbc.password = secret
