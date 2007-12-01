@@ -49,6 +49,7 @@ public class RelationshipQuery extends IndirectQuery {
     protected transient ArcProperty arc;
 
     // exists for deserialization with Hessian
+    @SuppressWarnings("unused")
     private RelationshipQuery() {
 
     }

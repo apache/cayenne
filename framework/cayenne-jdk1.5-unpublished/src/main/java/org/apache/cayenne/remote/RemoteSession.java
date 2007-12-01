@@ -54,6 +54,7 @@ public class RemoteSession implements Serializable {
     protected Map eventBridgeParameters;
 
     // private constructor used by hessian deserialization mechanism
+    @SuppressWarnings("unused")
     private RemoteSession() {
 
     }

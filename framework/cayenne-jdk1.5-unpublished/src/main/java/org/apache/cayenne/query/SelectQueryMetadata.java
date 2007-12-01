@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
@@ -59,10 +57,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
                 }
 
                 if (!query.getOrderings().isEmpty()) {
-                    Iterator it = query.getOrderings().iterator();
-                    while (it.hasNext()) {
-
-                        Ordering o = (Ordering) it.next();
+                   for (Ordering o : query.getOrderings()) {
                         key.append('/').append(o.getSortSpecString());
                         if (!o.isAscending()) {
                             key.append(":d");

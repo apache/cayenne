@@ -137,9 +137,7 @@ public class QueryResult extends DefaultOperationObserver {
             return Collections.EMPTY_LIST;
         }
         else {
-            Iterator it = allResults.iterator();
-            while (it.hasNext()) {
-                Object obj = it.next();
+            for (Object obj : allResults) {
                 if (obj instanceof List) {
                     return (List) obj;
                 }
@@ -162,9 +160,7 @@ public class QueryResult extends DefaultOperationObserver {
         }
 
         List list = new ArrayList(size);
-        Iterator it = allResults.iterator();
-        while (it.hasNext()) {
-            Object obj = it.next();
+        for (Object obj : allResults) {
             if (obj instanceof List) {
                 list.add(obj);
             }

@@ -31,6 +31,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
@@ -111,7 +112,7 @@ public class OptimisticLockException extends CayenneRuntimeException {
         SelectQuery query = new SelectQuery(rootEntity, qualifier);
         query.setFetchingDataRows(true);
         QueryResult observer = new QueryResult();
-        engine.performQueries(Collections.singletonList(query), observer);
+        engine.performQueries(Collections.singletonList((Query) query), observer);
         List results = observer.getFirstRows(query);
 
         if (results == null || results.isEmpty()) {

@@ -35,12 +35,12 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class DeleteBatchQuery extends BatchQuery {
 
-    protected List qualifierSnapshots;
-    protected List dbAttributes;
+    protected List<Map> qualifierSnapshots;
+    protected List<DbAttribute> dbAttributes;
     protected boolean usingOptimisticLocking;
 
     private Collection<DbAttribute> qualifierAttributes;
-    private Collection nullQualifierNames;
+    private Collection<String> nullQualifierNames;
 
     /**
      * Creates new DeleteBatchQuery. Used by
@@ -64,7 +64,7 @@ public class DeleteBatchQuery extends BatchQuery {
      * @param batchCapacity Estimated size of the batch.
      */
     public DeleteBatchQuery(DbEntity dbEntity,
-            Collection<DbAttribute> qualifierAttributes, Collection nullQualifierNames,
+            Collection<DbAttribute> qualifierAttributes, Collection<String> nullQualifierNames,
             int batchCapacity) {
 
         super(dbEntity);
@@ -74,8 +74,8 @@ public class DeleteBatchQuery extends BatchQuery {
                 ? nullQualifierNames
                 : Collections.EMPTY_SET;
 
-        qualifierSnapshots = new ArrayList(batchCapacity);
-        dbAttributes = new ArrayList(qualifierAttributes.size());
+        qualifierSnapshots = new ArrayList<Map>(batchCapacity);
+        dbAttributes = new ArrayList<DbAttribute>(qualifierAttributes.size());
         dbAttributes.addAll(qualifierAttributes);
         batchIndex = -1;
     }
@@ -113,7 +113,7 @@ public class DeleteBatchQuery extends BatchQuery {
     }
 
     public Object getValue(int dbAttributeIndex) {
-        DbAttribute attribute = (DbAttribute) dbAttributes.get(dbAttributeIndex);
+        DbAttribute attribute = dbAttributes.get(dbAttributeIndex);
         return getCurrentQualifier().get(attribute.getName());
     }
 
@@ -125,7 +125,7 @@ public class DeleteBatchQuery extends BatchQuery {
         return qualifierSnapshots.size();
     }
 
-    public List getDbAttributes() {
+    public List<DbAttribute> getDbAttributes() {
         return dbAttributes;
     }
 
@@ -135,6 +135,6 @@ public class DeleteBatchQuery extends BatchQuery {
      * @since 1.2
      */
     public Map getCurrentQualifier() {
-        return (Map) qualifierSnapshots.get(batchIndex);
+        return qualifierSnapshots.get(batchIndex);
     }
 }

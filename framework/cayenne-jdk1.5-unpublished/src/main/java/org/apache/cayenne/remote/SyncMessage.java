@@ -39,6 +39,7 @@ public class SyncMessage implements ClientMessage {
     protected GraphDiff senderChanges;
 
     // private constructor for Hessian deserialization
+    @SuppressWarnings("unused")
     private SyncMessage() {
 
     }

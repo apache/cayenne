@@ -39,17 +39,17 @@ public class UpdateBatchQuery extends BatchQuery {
     /**
      * @since 1.2
      */
-    protected List objectIds;
+    protected List<ObjectId> objectIds;
 
     protected List qualifierSnapshots;
     protected List updateSnapshots;
 
     protected boolean usingOptimisticLocking;
 
-    private List updatedAttributes;
-    private List qualifierAttributes;
-    private Collection nullQualifierNames;
-    private List dbAttributes;
+    private List<DbAttribute> updatedAttributes;
+    private List<DbAttribute> qualifierAttributes;
+    private Collection<String> nullQualifierNames;
+    private List<DbAttribute> dbAttributes;
 
     /**
      * Creates new UpdateBatchQuery.
@@ -61,8 +61,8 @@ public class UpdateBatchQuery extends BatchQuery {
      * @param updatedAttribute DbAttributes describing updated columns.
      * @param batchCapacity Estimated size of the batch.
      */
-    public UpdateBatchQuery(DbEntity dbEntity, List qualifierAttributes,
-            List updatedAttribute, Collection nullQualifierNames, int batchCapacity) {
+    public UpdateBatchQuery(DbEntity dbEntity, List<DbAttribute> qualifierAttributes,
+            List<DbAttribute> updatedAttribute, Collection<String> nullQualifierNames, int batchCapacity) {
 
         super(dbEntity);
 
@@ -74,9 +74,9 @@ public class UpdateBatchQuery extends BatchQuery {
 
         qualifierSnapshots = new ArrayList(batchCapacity);
         updateSnapshots = new ArrayList(batchCapacity);
-        objectIds = new ArrayList(batchCapacity);
+        objectIds = new ArrayList<ObjectId>(batchCapacity);
 
-        dbAttributes = new ArrayList(updatedAttributes.size()
+        dbAttributes = new ArrayList<DbAttribute>(updatedAttributes.size()
                 + qualifierAttributes.size());
         dbAttributes.addAll(updatedAttributes);
         dbAttributes.addAll(qualifierAttributes);
@@ -108,7 +108,7 @@ public class UpdateBatchQuery extends BatchQuery {
     }
 
     public Object getValue(int dbAttributeIndex) {
-        DbAttribute attribute = (DbAttribute) dbAttributes.get(dbAttributeIndex);
+        DbAttribute attribute = dbAttributes.get(dbAttributeIndex);
 
         // take value either from updated values or id's,
         // depending on the index
@@ -139,21 +139,21 @@ public class UpdateBatchQuery extends BatchQuery {
         return qualifierSnapshots.size();
     }
 
-    public List getDbAttributes() {
+    public List<DbAttribute> getDbAttributes() {
         return dbAttributes;
     }
 
     /**
      * @since 1.1
      */
-    public List getUpdatedAttributes() {
+    public List <DbAttribute> getUpdatedAttributes() {
         return Collections.unmodifiableList(updatedAttributes);
     }
 
     /**
      * @since 1.1
      */
-    public List getQualifierAttributes() {
+    public List<DbAttribute> getQualifierAttributes() {
         return Collections.unmodifiableList(qualifierAttributes);
     }
 
@@ -174,6 +174,6 @@ public class UpdateBatchQuery extends BatchQuery {
      * @since 1.2
      */
     public ObjectId getObjectId() {
-        return (ObjectId) objectIds.get(batchIndex);
+        return objectIds.get(batchIndex);
     }
 }

@@ -26,12 +26,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.Transformer;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ExpressionParser;
 import org.apache.cayenne.exp.parser.ParseException;
@@ -39,6 +37,7 @@ import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+import org.apache.commons.collections.Transformer;
 
 /**
  * Superclass of Cayenne expressions that defines basic API for expressions use.
@@ -359,12 +358,12 @@ public abstract class Expression implements Serializable, XMLSerializable {
     /**
      * Returns a list of objects that match the expression.
      */
-    public List filterObjects(List objects) {
+    public List<Object> filterObjects(List<Object> objects) {
         if (objects == null || objects.size() == 0) {
             return Collections.EMPTY_LIST;
         }
 
-        return (List) filter(objects, new LinkedList());
+        return (List<Object>) filter(objects, new LinkedList<Object>());
     }
 
     /**
@@ -373,10 +372,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
      * 
      * @since 1.1
      */
-    public Collection filter(Collection source, Collection target) {
-        Iterator it = source.iterator();
-        while (it.hasNext()) {
-            Object o = it.next();
+    public Collection<Object> filter(Collection<Object> source, Collection<Object> target) {
+        for (Object o : source) {
             if (match(o)) {
                 target.add(o);
             }

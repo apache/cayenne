@@ -22,7 +22,6 @@ package org.apache.cayenne.query;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -98,7 +97,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
             if (root != null) {
                 if (root instanceof Class) {
-                    entity = resolver.lookupObjEntity((Class) root);
+                    entity = resolver.lookupObjEntity((Class<?>) root);
 
                     if (entity != null) {
                         this.dbEntity = entity.getDbEntity();
@@ -145,7 +144,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         return false;
     }
 
-    void initWithProperties(Map properties) {
+    void initWithProperties(Map<String, ?> properties) {
         // must init defaults even if properties are empty
         if (properties == null) {
             properties = Collections.EMPTY_MAP;
@@ -414,13 +413,9 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
      * 
      * @since 1.2
      */
-    void addPrefetches(Collection prefetches, int semantics) {
-
-        if (prefetches != null && !prefetches.isEmpty()) {
-
-            Iterator it = prefetches.iterator();
-            while (it.hasNext()) {
-                String prefetch = (String) it.next();
+    void addPrefetches(Collection<String> prefetches, int semantics) {
+        if (prefetches != null) {
+            for (String prefetch : prefetches) {
                 addPrefetch(prefetch, semantics);
             }
         }

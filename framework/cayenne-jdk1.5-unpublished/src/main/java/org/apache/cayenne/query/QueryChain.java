@@ -22,7 +22,6 @@ package org.apache.cayenne.query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.EntityResolver;
@@ -37,7 +36,7 @@ import org.apache.cayenne.map.EntityResolver;
  */
 public class QueryChain implements Query {
 
-    protected Collection chain;
+    protected Collection<Query> chain;
     protected String name;
 
     /**
@@ -51,16 +50,16 @@ public class QueryChain implements Query {
      */
     public QueryChain(Query[] queries) {
         if (queries != null && queries.length > 0) {
-            this.chain = new ArrayList(Arrays.asList(queries));
+            this.chain = new ArrayList<Query>(Arrays.asList(queries));
         }
     }
 
     /**
      * Creates a new QueryChain with a collection of Queries.
      */
-    public QueryChain(Collection queries) {
+    public QueryChain(Collection<Query> queries) {
         if (queries != null && !queries.isEmpty()) {
-            this.chain = new ArrayList(queries);
+            this.chain = new ArrayList<Query>(queries);
         }
     }
 
@@ -69,7 +68,7 @@ public class QueryChain implements Query {
      */
     public void addQuery(Query query) {
         if (chain == null) {
-            chain = new ArrayList();
+            chain = new ArrayList<Query>();
         }
 
         chain.add(query);
@@ -93,9 +92,7 @@ public class QueryChain implements Query {
      */
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         if (chain != null && !chain.isEmpty()) {
-            Iterator it = chain.iterator();
-            while (it.hasNext()) {
-                Query q = (Query) it.next();
+            for (Query q : chain) {
                 q.route(router, resolver, substitutedQuery);
             }
         }

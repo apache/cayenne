@@ -21,8 +21,8 @@ package org.apache.cayenne.query;
 
 import java.util.List;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.BatchQuery;
 
 /**
  * @author Andrus Adamchik
@@ -37,7 +37,7 @@ public class MockBatchQuery extends BatchQuery {
         super(dbEntity);
     }
 
-    public List getDbAttributes() {
+    public List<DbAttribute> getDbAttributes() {
         return null;
     }
 

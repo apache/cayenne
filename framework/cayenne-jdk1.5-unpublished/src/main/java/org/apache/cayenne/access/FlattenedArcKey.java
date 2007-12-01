@@ -173,7 +173,7 @@ final class FlattenedArcKey {
 
         final List[] result = new List[1];
 
-        node.performQueries(Collections.singleton(query), new DefaultOperationObserver() {
+        node.performQueries(Collections.singleton((Query) query), new DefaultOperationObserver() {
 
             public void nextDataRows(Query query, List dataRows) {
                 result[0] = dataRows;
@@ -243,19 +243,15 @@ final class FlattenedArcKey {
         DbRelationship firstDbRel = (DbRelationship) relList.get(0);
         DbRelationship secondDbRel = (DbRelationship) relList.get(1);
 
-        Map sourceId = this.sourceId.getIdSnapshot();
-        Map destinationId = this.destinationId.getIdSnapshot();
+        Map<String, ?> sourceId = this.sourceId.getIdSnapshot();
+        Map<String, ?> destinationId = this.destinationId.getIdSnapshot();
 
-        Map snapshot = new HashMap(sourceId.size() + destinationId.size(), 1);
-        List joins = firstDbRel.getJoins();
-        for (int i = 0, numJoins = joins.size(); i < numJoins; i++) {
-            DbJoin join = (DbJoin) joins.get(i);
+        Map<String, Object> snapshot = new HashMap<String, Object>(sourceId.size() + destinationId.size(), 1);
+        for (DbJoin join : firstDbRel.getJoins()) {
             snapshot.put(join.getTargetName(), sourceId.get(join.getSourceName()));
         }
 
-        joins = secondDbRel.getJoins();
-        for (int i = 0, numJoins = joins.size(); i < numJoins; i++) {
-            DbJoin join = (DbJoin) joins.get(i);
+        for (DbJoin join : secondDbRel.getJoins()) {
             snapshot.put(join.getSourceName(), destinationId.get(join.getTargetName()));
         }
 

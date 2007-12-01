@@ -30,6 +30,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryResult;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 
 /**
@@ -106,7 +107,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
 
         SQLTemplate query = new SQLTemplate(entity, template);
         QueryResult observer = new QueryResult();
-        node.performQueries(Collections.singleton(query), observer);
+        node.performQueries(Collections.singleton((Query) query), observer);
 
         List results = observer.getFirstRows(query);
         if (results.size() != 1) {

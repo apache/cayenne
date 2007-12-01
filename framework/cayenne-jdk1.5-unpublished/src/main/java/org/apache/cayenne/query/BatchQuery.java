@@ -123,7 +123,7 @@ public abstract class BatchQuery implements Query {
     /**
      * Returns a list of DbAttributes describing batch parameters.
      */
-    public abstract List getDbAttributes();
+    public abstract List<DbAttribute> getDbAttributes();
 
     /**
      * Rewinds batch to the first parameter row.
@@ -160,7 +160,7 @@ public abstract class BatchQuery implements Query {
      * 
      * @since 1.2
      */
-    protected Object getValue(Map valueMap, DbAttribute attribute) {
+    protected Object getValue(Map<String, Object> valueMap, DbAttribute attribute) {
 
         Object value = valueMap.get(attribute.getName());
 

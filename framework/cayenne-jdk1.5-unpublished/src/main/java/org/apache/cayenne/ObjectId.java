@@ -49,6 +49,7 @@ public class ObjectId implements Serializable {
     private String singleKey;
     private Object singleValue;
 
+    // key which is used for temporary ObjectIds only
     protected byte[] key;
 
     protected Map<String, Object> replacementIdMap;
@@ -57,6 +58,7 @@ public class ObjectId implements Serializable {
     transient int hashCode;
 
     // exists for deserialization with Hessian and similar
+    @SuppressWarnings("unused")
     private ObjectId() {
     }
 
@@ -66,8 +68,7 @@ public class ObjectId implements Serializable {
      * @since 1.2
      */
     public ObjectId(String entityName) {
-        this.entityName = entityName;
-        this.key = IDUtil.pseudoUniqueByteSequence8();
+        this(entityName, IDUtil.pseudoUniqueByteSequence8());
     }
 
     /**
@@ -84,6 +85,10 @@ public class ObjectId implements Serializable {
     /**
      * Creates a portable permanent ObjectId.
      * 
+     * @param entityName The entity name which this object id is for
+     * @param key A key describing this object id, usually the attribute name for the
+     *            primary key
+     * @param value The unique value for this object id
      * @since 1.2
      */
     public ObjectId(String entityName, String key, int value) {
@@ -93,6 +98,10 @@ public class ObjectId implements Serializable {
     /**
      * Creates a portable permanent ObjectId.
      * 
+     * @param entityName The entity name which this object id is for
+     * @param key A key describing this object id, usually the attribute name for the
+     *            primary key
+     * @param value The unique value for this object id
      * @since 1.2
      */
     public ObjectId(String entityName, String key, Object value) {
@@ -103,8 +112,11 @@ public class ObjectId implements Serializable {
     }
 
     /**
-     * Creates a portable permanent ObjectId.
+     * Creates a portable permanent ObjectId as a compound primary key.
      * 
+     * @param entityName The entity name which this object id is for
+     * @param idMap Keys are usually the attribute names for each part of the primary key.
+     *            Values are unique when taken as a whole.
      * @since 1.2
      */
     public ObjectId(String entityName, Map<String, ?> idMap) {
@@ -127,6 +139,10 @@ public class ObjectId implements Serializable {
         }
     }
 
+    /**
+     * Is this is temporary object id (used for objects which are not yet persisted to the
+     * data store).
+     */
     public boolean isTemporary() {
         return key != null;
     }
@@ -138,6 +154,10 @@ public class ObjectId implements Serializable {
         return entityName;
     }
 
+    /**
+     * Get the binary temporary object id. Null if this object id is permanent (persisted
+     * to the data store).
+     */
     public byte[] getKey() {
         return key;
     }

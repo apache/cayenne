@@ -33,6 +33,7 @@ public class QueryMessage implements ClientMessage {
     protected Query query;
 
     // for hessian serialization
+    @SuppressWarnings("unused")
     private QueryMessage() {
 
     }

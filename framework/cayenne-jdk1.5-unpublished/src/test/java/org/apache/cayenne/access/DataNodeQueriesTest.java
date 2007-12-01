@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -74,7 +75,7 @@ public class DataNodeQueriesTest extends CayenneCase {
         query.setParameters(bindings);
 
         MockOperationObserver observer = new MockOperationObserver();
-        getNode().performQueries(Collections.singletonList(query), observer);
+        getNode().performQueries(Collections.singletonList((Query) query), observer);
         assertNotNull(observer.countsForQuery(query));
         assertEquals(1, observer.countsForQuery(query)[0]);
 
@@ -98,7 +99,7 @@ public class DataNodeQueriesTest extends CayenneCase {
         SQLTemplate query = new SQLTemplate(Object.class, template);
 
         MockOperationObserver observer = new MockOperationObserver();
-        getNode().performQueries(Collections.singletonList(query), observer);
+        getNode().performQueries(Collections.singletonList((Query) query), observer);
 
         List data = observer.rowsForQuery(query);
         assertEquals(DataContextCase.artistCount, data.size());
@@ -115,7 +116,7 @@ public class DataNodeQueriesTest extends CayenneCase {
         getSQLTemplateBuilder().updateSQLTemplate(query);
 
         MockOperationObserver observer = new MockOperationObserver();
-        getNode().performQueries(Collections.singletonList(query), observer);
+        getNode().performQueries(Collections.singletonList((Query) query), observer);
 
         List data = observer.rowsForQuery(query);
         assertEquals(DataContextCase.artistCount, data.size());
@@ -134,7 +135,7 @@ public class DataNodeQueriesTest extends CayenneCase {
         SQLTemplate query = new SQLTemplate(Object.class, template);
 
         MockOperationObserver observer = new MockOperationObserver();
-        getNode().performQueries(Collections.singletonList(query), observer);
+        getNode().performQueries(Collections.singletonList((Query) query), observer);
 
         List data = observer.rowsForQuery(query);
         assertEquals(DataContextCase.artistCount, data.size());
