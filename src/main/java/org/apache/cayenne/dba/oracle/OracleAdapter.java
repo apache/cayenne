@@ -23,7 +23,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.Types;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -53,15 +52,11 @@ import org.apache.cayenne.query.UpdateBatchQuery;
  * settings to use with Oracle are shown below:
  * 
  * <pre>
- *        
- *         
  *          test-oracle.cayenne.adapter = org.apache.cayenne.dba.oracle.OracleAdapter
  *          test-oracle.jdbc.username = test
  *          test-oracle.jdbc.password = secret
  *          test-oracle.jdbc.url = jdbc:oracle:thin:@//192.168.0.20:1521/ora1 
- *          test-oracle.jdbc.driver = oracle.jdbc.driver.OracleDriver
- *          
- *         
+ *          test-oracle.jdbc.driver = oracle.jdbc.driver.OracleDriver   
  * </pre>
  * 
  * @author Andrus Adamchik
@@ -94,7 +89,7 @@ public class OracleAdapter extends JdbcAdapter {
 
         // configure static information
         try {
-            Class oraTypes = Class.forName("oracle.jdbc.driver.OracleTypes");
+            Class<?> oraTypes = Class.forName("oracle.jdbc.driver.OracleTypes");
             Field cursorField = oraTypes.getField("CURSOR");
             oracleCursorType = cursorField.getInt(null);
 
@@ -136,13 +131,12 @@ public class OracleAdapter extends JdbcAdapter {
             return false;
         }
 
-        List updatedAttributes = (isInsert)
+        List<DbAttribute> updatedAttributes = (isInsert)
                 ? query.getDbAttributes()
                 : ((UpdateBatchQuery) query).getUpdatedAttributes();
 
-        Iterator it = updatedAttributes.iterator();
-        while (it.hasNext()) {
-            int type = ((DbAttribute) it.next()).getType();
+        for (DbAttribute attr : updatedAttributes) {
+            int type = attr.getType();
             if (type == Types.CLOB || type == Types.BLOB) {
                 return true;
             }

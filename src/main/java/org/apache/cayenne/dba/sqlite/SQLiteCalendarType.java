@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.sqlite;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -38,8 +39,8 @@ class SQLiteCalendarType implements ExtendedType {
     protected ExtendedType delegateCalendarType;
     protected ExtendedType delegateDateType;
 
-    public SQLiteCalendarType(Class calendarClass) {
-        this.delegateCalendarType = new CalendarType(calendarClass);
+    public <T extends Calendar> SQLiteCalendarType(Class<T> calendarClass) {
+        this.delegateCalendarType = new CalendarType<T>(calendarClass);
         this.delegateDateType = new SQLiteDateType();
     }
 

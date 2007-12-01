@@ -21,7 +21,6 @@ package org.apache.cayenne.dba.frontbase;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,35 +49,29 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
         return 0;
     }
 
-    public void createAutoPk(DataNode node, List dbEntities) throws Exception {
+    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
         // For each entity (re)set the unique counter
-        Iterator it = dbEntities.iterator();
-        while (it.hasNext()) {
-            DbEntity ent = (DbEntity) it.next();
-            runUpdate(node, pkCreateString(ent.getName()));
+        for (DbEntity entity : dbEntities) {
+            runUpdate(node, pkCreateString(entity.getName()));
         }
     }
 
-    public List createAutoPkStatements(List dbEntities) {
-        List list = new ArrayList();
-
-        Iterator it = dbEntities.iterator();
-        while (it.hasNext()) {
-            DbEntity ent = (DbEntity) it.next();
-            list.add(pkCreateString(ent.getName()));
+    public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
+        List<String> list = new ArrayList<String>();
+        for (DbEntity entity : dbEntities) {
+            list.add(pkCreateString(entity.getName()));
         }
-
         return list;
     }
 
-    public void dropAutoPk(DataNode node, List dbEntities) throws Exception {
+    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
     }
 
     protected String pkTableCreateString() {
         return "";
     }
 
-    protected String pkDeleteString(List dbEntities) {
+    protected String pkDeleteString(List<DbEntity> dbEntities) {
         return "-- The 'Drop Primary Key Support' option is unavailable";
     }
 

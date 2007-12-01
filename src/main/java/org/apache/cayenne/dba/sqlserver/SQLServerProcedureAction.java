@@ -24,9 +24,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
@@ -125,8 +125,8 @@ public class SQLServerProcedureAction extends ProcedureAction {
 
     class Observer implements OperationObserver {
 
-        List results;
-        List counts;
+        List<List<DataRow>> results;
+        List<Integer> counts;
         OperationObserver observer;
 
         Observer(OperationObserver observer) {
@@ -135,20 +135,16 @@ public class SQLServerProcedureAction extends ProcedureAction {
 
         void flushResults(Query query) {
             if (results != null) {
-                Iterator it = results.iterator();
-                while (it.hasNext()) {
-                    observer.nextDataRows(query, (List) it.next());
+                for (List<DataRow> result : results) {
+                    observer.nextDataRows(query, result);
                 }
-
                 results = null;
             }
 
             if (counts != null) {
-                Iterator it = counts.iterator();
-                while (it.hasNext()) {
-                    observer.nextCount(query, ((Number) it.next()).intValue());
+                for (Integer count : counts) {
+                    observer.nextCount(query, count);
                 }
-
                 counts = null;
             }
         }
@@ -161,17 +157,17 @@ public class SQLServerProcedureAction extends ProcedureAction {
             // does not delegate to wrapped observer
             // but instead caches results locally.
             if (counts == null) {
-                counts = new ArrayList();
+                counts = new ArrayList<Integer>();
             }
 
             counts.add(new Integer(resultCount));
         }
 
-        public void nextDataRows(Query query, List dataRows) {
+        public void nextDataRows(Query query, List<DataRow> dataRows) {
             // does not delegate to wrapped observer
             // but instead caches results locally.
             if (results == null) {
-                results = new ArrayList();
+                results = new ArrayList<List<DataRow>>();
             }
 
             results.add(dataRows);

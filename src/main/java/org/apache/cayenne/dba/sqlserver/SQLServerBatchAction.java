@@ -23,12 +23,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
-import java.util.Iterator;
 
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.jdbc.BatchAction;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
@@ -107,10 +107,8 @@ public class SQLServerBatchAction extends BatchAction {
         }
 
         // find identity attributes
-        Iterator it = query.getDbEntity().getAttributes().iterator();
-        while (it.hasNext()) {
-            DbAttribute attribute = (DbAttribute) it.next();
-            if (attribute.isGenerated()) {
+        for (Attribute attribute : query.getDbEntity().getAttributes()) {
+            if (((DbAttribute)attribute).isGenerated()) {
                 return true;
             }
         }

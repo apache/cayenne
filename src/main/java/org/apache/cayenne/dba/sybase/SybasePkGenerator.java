@@ -78,15 +78,15 @@ public class SybasePkGenerator extends JdbcPkGenerator {
      *
      *  @param node node that provides access to a DataSource.
      */
-    public void createAutoPk(DataNode node, List dbEntities) throws Exception {
+    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
     	super.createAutoPk(node, dbEntities);
     	super.runUpdate(node, safePkProcDrop());
         super.runUpdate(node, unsafePkProcCreate());
     }
     
     
-    public List createAutoPkStatements(List dbEntities) {
-		List list = super.createAutoPkStatements(dbEntities);
+    public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
+		List<String> list = super.createAutoPkStatements(dbEntities);
 		
 		// add stored procedure drop code
 		list.add(safePkProcDrop());
@@ -118,13 +118,13 @@ public class SybasePkGenerator extends JdbcPkGenerator {
      *
      *  @param node node that provides access to a DataSource.
      */
-    public void dropAutoPk(DataNode node, List dbEntities) throws Exception {
+    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
         super.runUpdate(node, safePkProcDrop());
         super.runUpdate(node, safePkTableDrop());
     }
     
-    public List dropAutoPkStatements(List dbEntities) {
-		List list = new ArrayList();
+    public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
+		List<String> list = new ArrayList<String>();
 		list.add(safePkProcDrop());
 		list.add(safePkTableDrop());
 		return list;

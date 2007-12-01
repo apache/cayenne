@@ -25,7 +25,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -82,12 +81,9 @@ public class DB2PkGenerator extends JdbcPkGenerator {
         }
     }
 
-    public void createAutoPk(DataNode node, List dbEntities) throws Exception {
-        Collection sequences = getExistingSequences(node);
-        Iterator it = dbEntities.iterator();
-
-        while (it.hasNext()) {
-            DbEntity entity = (DbEntity) it.next();
+    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+        Collection<String> sequences = getExistingSequences(node);
+       for (DbEntity entity : dbEntities) {
             if (!sequences.contains(sequenceName(entity))) {
                 this.runUpdate(node, createSequenceString(entity));
             }
@@ -97,27 +93,21 @@ public class DB2PkGenerator extends JdbcPkGenerator {
     /**
      * Creates a list of CREATE SEQUENCE statements for the list of DbEntities.
      */
-    public List createAutoPkStatements(List dbEntities) {
-        List list = new ArrayList(dbEntities.size());
-        Iterator it = dbEntities.iterator();
-
-        while (it.hasNext()) {
-            DbEntity ent = (DbEntity) it.next();
-            list.add(createSequenceString(ent));
+    public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
+        List<String> list = new ArrayList<String>(dbEntities.size());
+        for (DbEntity entity : dbEntities) {
+            list.add(createSequenceString(entity));
         }
-
         return list;
     }
 
     /**
      * Drops PK sequences for all specified DbEntities.
      */
-    public void dropAutoPk(DataNode node, List dbEntities) throws Exception {
-        Collection sequences = getExistingSequences(node);
+    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+        Collection<String> sequences = getExistingSequences(node);
 
-        Iterator it = dbEntities.iterator();
-        while (it.hasNext()) {
-            DbEntity ent = (DbEntity) it.next();
+        for (DbEntity ent : dbEntities) {
             if (sequences.contains(sequenceName(ent))) {
                 runUpdate(node, dropSequenceString(ent));
             }
@@ -127,23 +117,18 @@ public class DB2PkGenerator extends JdbcPkGenerator {
     /**
      * Creates a list of DROP SEQUENCE statements for the list of DbEntities.
      */
-    public List dropAutoPkStatements(List dbEntities) {
-
-        List list = new ArrayList(dbEntities.size());
-        Iterator it = dbEntities.iterator();
-
-        while (it.hasNext()) {
-            DbEntity entity = (DbEntity) it.next();
+    public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
+        List<String> list = new ArrayList<String>(dbEntities.size());
+        for (DbEntity entity : dbEntities) {
             list.add(dropSequenceString(entity));
         }
-
         return list;
     }
 
     /**
      * Fetches a list of existing sequences that might match Cayenne generated ones.
      */
-    protected List getExistingSequences(DataNode node) throws SQLException {
+    protected List<String> getExistingSequences(DataNode node) throws SQLException {
 
         // check existing sequences
         Connection con = node.getDataSource().getConnection();
@@ -159,7 +144,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
                 QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = sel.executeQuery(sql);
                 try {
-                    List sequenceList = new ArrayList();
+                    List<String> sequenceList = new ArrayList<String>();
                     while (rs.next()) {
                         sequenceList.add(rs.getString(1));
                     }
