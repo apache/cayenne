@@ -141,8 +141,11 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         recentFileMenu.setEnabled(recentFileMenu.getMenuComponentCount() > 0);
         fileMenu.add(recentFileMenu);
 
-        fileMenu.addSeparator();
-        fileMenu.add(getAction(ExitAction.getActionName()).buildMenu());
+        // Mac OS X doesn't use File->Exit, it uses CayenneModeler->Quit (command-Q)
+        if (!SystemUtils.IS_OS_MAC_OSX) {
+            fileMenu.addSeparator();
+            fileMenu.add(getAction(ExitAction.getActionName()).buildMenu());
+        }
 
         projectMenu.add(getAction(ValidateAction.getActionName()).buildMenu());
         projectMenu.addSeparator();
