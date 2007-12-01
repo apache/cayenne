@@ -113,7 +113,7 @@ public class ObjRelationshipValidator extends TreeNodeValidator {
                 && (rel.getDeleteRule() == DeleteRule.NULLIFY)) {
             ObjRelationship inverse = rel.getReverseRelationship();
             if (inverse != null) {
-                DbRelationship firstRel = (DbRelationship) inverse
+                DbRelationship firstRel = inverse
                         .getDbRelationships()
                         .get(0);
                 Iterator attributePairIterator = firstRel.getJoins().iterator();

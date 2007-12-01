@@ -125,15 +125,15 @@ public class ObjectStoreTest extends CayenneCase {
         DataContext context = createDataContext();
 
         // Create a gallery.
-        Gallery g = (Gallery) context.newObject(Gallery.class);
+        Gallery g = context.newObject(Gallery.class);
         g.setGalleryName("Test Gallery");
 
         // Create an artist in the same context.
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("Test Artist");
 
         // Create a painting in the same context.
-        Painting p = (Painting) context.newObject(Painting.class);
+        Painting p = context.newObject(Painting.class);
         p.setPaintingTitle("Test Painting");
 
         // Set the painting's gallery.

@@ -25,7 +25,6 @@ import org.apache.cayenne.gen.AntClassGenerator;
 import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.DefaultClassGenerator;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 
 import foundrylogic.vpp.VPPConfig;

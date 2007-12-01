@@ -50,7 +50,7 @@ public class IdentityColumnsTest extends CayenneCase {
      */
     public void testCAY823() throws Exception {
         DataContext context = createDataContext();
-        GeneratedColumnTestEntity idObject = (GeneratedColumnTestEntity) context
+        GeneratedColumnTestEntity idObject = context
                 .newObject(GeneratedColumnTestEntity.class);
 
         String name = "n_" + System.currentTimeMillis();
@@ -72,7 +72,7 @@ public class IdentityColumnsTest extends CayenneCase {
 
     public void testNewObject() throws Exception {
         DataContext context = createDataContext();
-        GeneratedColumnTestEntity idObject = (GeneratedColumnTestEntity) context
+        GeneratedColumnTestEntity idObject = context
                 .newObject(GeneratedColumnTestEntity.class);
 
         String name = "n_" + System.currentTimeMillis();
@@ -86,7 +86,7 @@ public class IdentityColumnsTest extends CayenneCase {
 
         // make sure that id is the same as id in the DB
         context.invalidateObjects(Collections.singleton(idObject));
-        GeneratedColumnTestEntity object = (GeneratedColumnTestEntity) DataObjectUtils
+        GeneratedColumnTestEntity object = DataObjectUtils
                 .objectForPK(context, GeneratedColumnTestEntity.class, id);
         assertNotNull(object);
         assertEquals(name, object.getName());
@@ -97,12 +97,12 @@ public class IdentityColumnsTest extends CayenneCase {
      */
     public void testUnrelatedUpdate() throws Exception {
         DataContext context = createDataContext();
-        GeneratedColumnTestEntity m = (GeneratedColumnTestEntity) context
+        GeneratedColumnTestEntity m = context
                 .newObject(GeneratedColumnTestEntity.class);
 
         m.setName("m");
 
-        GeneratedColumnDep d = (GeneratedColumnDep) context
+        GeneratedColumnDep d = context
                 .newObject(GeneratedColumnDep.class);
         d.setName("d");
         d.setToMaster(m);
@@ -128,11 +128,11 @@ public class IdentityColumnsTest extends CayenneCase {
     public void testMultipleNewObjectsSeparateTables() throws Exception {
         DataContext context = createDataContext();
 
-        GeneratedColumnTestEntity idObject1 = (GeneratedColumnTestEntity) context
+        GeneratedColumnTestEntity idObject1 = context
                 .newObject(GeneratedColumnTestEntity.class);
         idObject1.setName("o1");
 
-        GeneratedColumnTest2 idObject2 = (GeneratedColumnTest2) context
+        GeneratedColumnTest2 idObject2 = context
                 .newObject(GeneratedColumnTest2.class);
         idObject2.setName("o2");
 
@@ -148,11 +148,11 @@ public class IdentityColumnsTest extends CayenneCase {
         };
 
         GeneratedColumnTestEntity[] idObjects = new GeneratedColumnTestEntity[] {
-                (GeneratedColumnTestEntity) context
+                context
                         .newObject(GeneratedColumnTestEntity.class),
-                (GeneratedColumnTestEntity) context
+                context
                         .newObject(GeneratedColumnTestEntity.class),
-                (GeneratedColumnTestEntity) context
+                context
                         .newObject(GeneratedColumnTestEntity.class)
         };
 
@@ -171,7 +171,7 @@ public class IdentityColumnsTest extends CayenneCase {
         context.invalidateObjects(Arrays.asList(idObjects));
 
         for (int i = 0; i < ids.length; i++) {
-            GeneratedColumnTestEntity object = (GeneratedColumnTestEntity) DataObjectUtils
+            GeneratedColumnTestEntity object = DataObjectUtils
                     .objectForPK(context, GeneratedColumnTestEntity.class, ids[i]);
             assertNotNull(object);
             assertEquals(names[i], object.getName());
@@ -188,16 +188,16 @@ public class IdentityColumnsTest extends CayenneCase {
             String depName2 = "dep2_" + System.currentTimeMillis();
 
             DataContext context = createDataContext();
-            GeneratedColumnCompMaster master = (GeneratedColumnCompMaster) context
+            GeneratedColumnCompMaster master = context
                     .newObject(GeneratedColumnCompMaster.class);
             master.setName(masterName);
 
-            GeneratedColumnCompKey dep1 = (GeneratedColumnCompKey) context
+            GeneratedColumnCompKey dep1 = context
                     .newObject(GeneratedColumnCompKey.class);
             dep1.setName(depName1);
             dep1.setToMaster(master);
 
-            GeneratedColumnCompKey dep2 = (GeneratedColumnCompKey) context
+            GeneratedColumnCompKey dep2 = context
                     .newObject(GeneratedColumnCompKey.class);
             dep2.setName(depName2);
             dep2.setToMaster(master);
@@ -235,11 +235,11 @@ public class IdentityColumnsTest extends CayenneCase {
 
     public void testUpdateDependentWithNewMaster() throws Exception {
         DataContext context = createDataContext();
-        GeneratedColumnTestEntity master1 = (GeneratedColumnTestEntity) context
+        GeneratedColumnTestEntity master1 = context
                 .newObject(GeneratedColumnTestEntity.class);
         master1.setName("aaa");
 
-        GeneratedColumnDep dependent = (GeneratedColumnDep) context
+        GeneratedColumnDep dependent = context
                 .newObject(GeneratedColumnDep.class);
         dependent.setName("aaa");
         dependent.setToMaster(master1);
@@ -247,7 +247,7 @@ public class IdentityColumnsTest extends CayenneCase {
         context.commitChanges();
 
         // change master
-        GeneratedColumnTestEntity master2 = (GeneratedColumnTestEntity) context
+        GeneratedColumnTestEntity master2 = context
                 .newObject(GeneratedColumnTestEntity.class);
         master2.setName("bbb");
 
@@ -281,11 +281,11 @@ public class IdentityColumnsTest extends CayenneCase {
 
     public void testPropagateToDependent() throws Exception {
         DataContext context = createDataContext();
-        GeneratedColumnTestEntity idObject = (GeneratedColumnTestEntity) context
+        GeneratedColumnTestEntity idObject = context
                 .newObject(GeneratedColumnTestEntity.class);
         idObject.setName("aaa");
 
-        GeneratedColumnDep dependent = (GeneratedColumnDep) idObject
+        GeneratedColumnDep dependent = idObject
                 .getObjectContext()
                 .newObject(GeneratedColumnDep.class);
         dependent.setName("aaa");

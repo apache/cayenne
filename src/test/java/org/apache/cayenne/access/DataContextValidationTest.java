@@ -47,13 +47,13 @@ public class DataContextValidationTest extends CayenneCase {
         // test that validation is called properly
 
         context.setValidatingObjectsOnCommit(true);
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a1");
         context.commitChanges();
         assertTrue(a1.isValidateForSaveCalled());
 
         context.setValidatingObjectsOnCommit(false);
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("a2");
         context.commitChanges();
         assertFalse(a2.isValidateForSaveCalled());
@@ -67,7 +67,7 @@ public class DataContextValidationTest extends CayenneCase {
             public void validateForSave(Object object, ValidationResult validationResult) {
 
                 Artist a = (Artist) object;
-                Painting p = (Painting) a.getObjectContext().newObject(Painting.class);
+                Painting p = a.getObjectContext().newObject(Painting.class);
                 p.setPaintingTitle("XXX");
                 p.setToArtist(a);
             }
@@ -76,13 +76,13 @@ public class DataContextValidationTest extends CayenneCase {
         DataContext context = createDataContext();
 
         context.setValidatingObjectsOnCommit(true);
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setValidationDelegate(delegate);
         a1.setArtistName("a1");
 
         // add another artist to ensure that modifying context works when more than one
         // object is committed
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setValidationDelegate(delegate);
         a2.setArtistName("a2");
         context.commitChanges();

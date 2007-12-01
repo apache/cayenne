@@ -54,11 +54,11 @@ public class ToManyListTest extends CayenneCase {
                 .isFault());
         assertEquals(0, list.size());
 
-        Painting p1 = (Painting) context.newObject(Painting.class);
+        Painting p1 = context.newObject(Painting.class);
         list.add(p1);
         assertEquals(1, list.size());
 
-        Painting p2 = (Painting) context.newObject(Painting.class);
+        Painting p2 = context.newObject(Painting.class);
         list.add(p2);
         assertEquals(2, list.size());
 
@@ -76,12 +76,12 @@ public class ToManyListTest extends CayenneCase {
 
         assertTrue("List must be unresolved for an existing object", list.isFault());
 
-        Painting p1 = (Painting) context.newObject(Painting.class);
+        Painting p1 = context.newObject(Painting.class);
         list.add(p1);
         assertTrue("List must be unresolved when adding an object...", list.isFault());
         assertTrue(list.addedToUnresolved.contains(p1));
 
-        Painting p2 = (Painting) context.newObject(Painting.class);
+        Painting p2 = context.newObject(Painting.class);
         list.add(p2);
         assertTrue("List must be unresolved when adding an object...", list.isFault());
         assertTrue(list.addedToUnresolved.contains(p2));
@@ -100,7 +100,7 @@ public class ToManyListTest extends CayenneCase {
     public void testSavedUnresolvedMerge() throws Exception {
         ToManyList list = createForExistingArtist();
 
-        Painting p1 = (Painting) context.newObject(Painting.class);
+        Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("p1");
 
         // list being tested is a separate copy from
@@ -119,7 +119,7 @@ public class ToManyListTest extends CayenneCase {
         assertTrue("List must be unresolved when adding an object...", list.isFault());
         assertTrue(list.addedToUnresolved.contains(p1));
 
-        Painting p2 = (Painting) context.newObject(Painting.class);
+        Painting p2 = context.newObject(Painting.class);
         list.add(p2);
         assertTrue("List must be unresolved when adding an object...", list.isFault());
         assertTrue(list.addedToUnresolved.contains(p2));
@@ -135,9 +135,9 @@ public class ToManyListTest extends CayenneCase {
     public void testThrowOutDeleted() throws Exception {
         ToManyList list = createForExistingArtist();
 
-        Painting p1 = (Painting) context.newObject(Painting.class);
+        Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("p1");
-        Painting p2 = (Painting) context.newObject(Painting.class);
+        Painting p2 = context.newObject(Painting.class);
         p2.setPaintingTitle("p2");
 
         // list being tested is a separate copy from
@@ -181,10 +181,10 @@ public class ToManyListTest extends CayenneCase {
     }
 
     public void testRealRelationship() throws Exception {
-        Artist artist = (Artist) context.newObject(Artist.class);
+        Artist artist = context.newObject(Artist.class);
         artist.setArtistName("aaa");
 
-        Painting p1 = (Painting) context.newObject(Painting.class);
+        Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("p1");
 
         context.commitChanges();
@@ -193,7 +193,7 @@ public class ToManyListTest extends CayenneCase {
         ToManyList list = (ToManyList) artist.getPaintingArray();
         assertTrue("List must be unresolved...", list.isFault());
 
-        Painting p2 = (Painting) context.newObject(Painting.class);
+        Painting p2 = context.newObject(Painting.class);
         p2.setPaintingTitle("p2");
 
         artist.addToPaintingArray(p1);
@@ -212,10 +212,10 @@ public class ToManyListTest extends CayenneCase {
     }
 
     public void testRealRelationshipRollback() throws Exception {
-        Artist artist = (Artist) context.newObject(Artist.class);
+        Artist artist = context.newObject(Artist.class);
         artist.setArtistName("aaa");
 
-        Painting p1 = (Painting) context.newObject(Painting.class);
+        Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("p1");
         artist.addToPaintingArray(p1);
         context.commitChanges();
@@ -224,7 +224,7 @@ public class ToManyListTest extends CayenneCase {
         ToManyList list = (ToManyList) artist.getPaintingArray();
         assertTrue("List must be unresolved...", list.isFault());
 
-        Painting p2 = (Painting) context.newObject(Painting.class);
+        Painting p2 = context.newObject(Painting.class);
 
         artist.addToPaintingArray(p2);
         assertTrue("List must be unresolved...", list.isFault());

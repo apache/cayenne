@@ -31,7 +31,6 @@ import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Task;
 import org.xml.sax.InputSource;
 
 /**

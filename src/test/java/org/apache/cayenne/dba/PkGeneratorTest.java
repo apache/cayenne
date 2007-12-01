@@ -34,7 +34,7 @@ public class PkGeneratorTest extends CayenneCase {
 
     protected void setUp() throws Exception {
         deleteTestData();
-        node = (DataNode) getDomain().getDataNodes().iterator().next();
+        node = getDomain().getDataNodes().iterator().next();
         pkGen = node.getAdapter().getPkGenerator();
         paintEnt = getDbEntity("PAINTING");
         List list = new ArrayList();

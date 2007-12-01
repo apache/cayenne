@@ -345,7 +345,7 @@ public class OptimisticLockingTest extends LockingCase {
         context.commitChanges();
 
         // change relationship and save... no optimistic lock failure expected
-        SimpleLockingTestEntity object1 = (SimpleLockingTestEntity) context
+        SimpleLockingTestEntity object1 = context
                 .newObject(SimpleLockingTestEntity.class);
         object.setToSimpleLockingTest(object1);
         context.commitChanges();

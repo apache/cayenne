@@ -263,7 +263,7 @@ public class DbLoaderTest extends CayenneCase {
     }
 
     private DataMap originalMap() {
-        return (DataMap) getNode().getDataMaps().iterator().next();
+        return getNode().getDataMaps().iterator().next();
     }
 
     /**

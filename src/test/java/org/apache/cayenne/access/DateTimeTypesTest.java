@@ -45,7 +45,7 @@ public class DateTimeTypesTest extends CayenneCase {
 
     public void testCalendar() throws Exception {
 
-        CalendarEntity test = (CalendarEntity) context.newObject(CalendarEntity.class);
+        CalendarEntity test = context.newObject(CalendarEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();

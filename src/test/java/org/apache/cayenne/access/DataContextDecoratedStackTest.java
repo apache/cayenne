@@ -46,7 +46,7 @@ public class DataContextDecoratedStackTest extends CayenneCase {
         DataContext context = new DataContext(decorator, new ObjectStore(dd
                 .getSharedSnapshotCache()));
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("XXX");
         context.commitChanges();
 

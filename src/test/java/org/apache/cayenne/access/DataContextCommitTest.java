@@ -32,7 +32,7 @@ public class DataContextCommitTest extends CayenneCase {
         DataContext context = createDataContext();
         
         // commit new object
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("Test");
 
         assertTrue(context.hasChanges());
@@ -57,7 +57,7 @@ public class DataContextCommitTest extends CayenneCase {
         assertSame(a.getObjectId(), newIds[0]);
         
         // commit a mix of new and modified
-        Painting p = (Painting) context.newObject(Painting.class);
+        Painting p = context.newObject(Painting.class);
         p.setPaintingTitle("PT");
         p.setToArtist(a);
         a.setArtistName(a.getArtistName() + "_");

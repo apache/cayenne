@@ -86,7 +86,7 @@ public abstract class SimpleNode implements Node, Serializable, EJBQLExpression 
     }
 
     public EJBQLExpression getChild(int index) {
-        return (EJBQLExpression) jjtGetChild(index);
+        return jjtGetChild(index);
     }
 
     public int getChildrenCount() {
@@ -153,7 +153,7 @@ public abstract class SimpleNode implements Node, Serializable, EJBQLExpression 
                 + (text && this.text != null ? " [" + this.text + "]" : ""));
         if (children != null) {
             for (int i = 0; i < children.length; ++i) {
-                SimpleNode n = (SimpleNode) children[i];
+                SimpleNode n = children[i];
                 if (n != null) {
                     n.dump(out, prefix + " ", text);
                 }

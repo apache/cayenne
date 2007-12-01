@@ -168,7 +168,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         ObjRelationship relationship = context.getIncomingRelationship(id);
         // TODO: andrus, 8/11/2007 flattened?
-        DbRelationship correlatedJoinRelationship = (DbRelationship) relationship
+        DbRelationship correlatedJoinRelationship = relationship
                 .getDbRelationships()
                 .get(0);
         Iterator it = correlatedJoinRelationship.getJoins().iterator();
@@ -247,7 +247,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         ObjRelationship relationship = context.getIncomingRelationship(id);
         // TODO: andrus, 8/11/2007 flattened?
-        DbRelationship correlatedJoinRelationship = (DbRelationship) relationship
+        DbRelationship correlatedJoinRelationship = relationship
                 .getDbRelationships()
                 .get(0);
         Iterator it = correlatedJoinRelationship.getJoins().iterator();

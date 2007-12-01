@@ -167,7 +167,7 @@ public class DefaultType extends AbstractType {
 
     public DefaultType(String className) {
         this.className = className;
-        this.readMethod = (Method) readMethods.get(className);
+        this.readMethod = readMethods.get(className);
 
         if (readMethod == null) {
             throw new CayenneRuntimeException("Unsupported default class: "
@@ -176,7 +176,7 @@ public class DefaultType extends AbstractType {
                     + " you will need to implement ExtendedType interface yourself.");
         }
 
-        this.procReadMethod = (Method) procReadMethods.get(className);
+        this.procReadMethod = procReadMethods.get(className);
         if (procReadMethod == null) {
             throw new CayenneRuntimeException("Unsupported default class: "
                     + className

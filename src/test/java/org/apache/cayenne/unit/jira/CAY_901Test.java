@@ -35,13 +35,13 @@ public class CAY_901Test extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Painting p = (Painting) context.newObject(Painting.class);
+        Painting p = context.newObject(Painting.class);
         p.setPaintingTitle("P1");
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("A1");
 
-        Gallery g = (Gallery) context.newObject(Gallery.class);
+        Gallery g = context.newObject(Gallery.class);
         g.setGalleryName("G1");
 
         p.setToArtist(a);

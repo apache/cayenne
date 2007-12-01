@@ -31,7 +31,7 @@ public class DataContextQueryChainTest extends CayenneCase {
 
     public void testSelectQuery() {
         DataContext context = createDataContext();
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("X");
         context.commitChanges();
 

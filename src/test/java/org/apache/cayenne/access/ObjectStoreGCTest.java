@@ -56,7 +56,7 @@ public class ObjectStoreGCTest extends CayenneCase {
         final DataContext context = createDataContext();
 
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         a = null;
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
@@ -89,7 +89,7 @@ public class ObjectStoreGCTest extends CayenneCase {
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));
 
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
-        Artist a = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 1);
         a.setArtistName("Y");
         a = null;
         assertEquals(1, context.getObjectStore().registeredObjectsCount());

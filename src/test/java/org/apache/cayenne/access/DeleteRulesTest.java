@@ -93,9 +93,9 @@ public class DeleteRulesTest extends RelationshipCase {
         int oldRule = changeDeleteRule(DeleteRule.NO_ACTION);
 
         try {
-            DeleteRuleFlatA a = (DeleteRuleFlatA) context
+            DeleteRuleFlatA a = context
                     .newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = (DeleteRuleFlatB) context
+            DeleteRuleFlatB b = context
                     .newObject(DeleteRuleFlatB.class);
 
             a.addToFlatB(b);
@@ -123,9 +123,9 @@ public class DeleteRulesTest extends RelationshipCase {
         ObjRelationship reverse = unsetReverse();
 
         try {
-            DeleteRuleFlatA a = (DeleteRuleFlatA) context
+            DeleteRuleFlatA a = context
                     .newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = (DeleteRuleFlatB) context
+            DeleteRuleFlatB b = context
                     .newObject(DeleteRuleFlatB.class);
 
             a.addToFlatB(b);

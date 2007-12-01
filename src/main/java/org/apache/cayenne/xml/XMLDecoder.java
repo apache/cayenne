@@ -382,7 +382,7 @@ public class XMLDecoder {
             Collection c = (Collection) PropertyUtils.getProperty(property, xml
                     .getNodeName());
 
-            ret = (Collection) c.getClass().newInstance();
+            ret = c.getClass().newInstance();
         }
         catch (Exception ex) {
             throw new CayenneRuntimeException(

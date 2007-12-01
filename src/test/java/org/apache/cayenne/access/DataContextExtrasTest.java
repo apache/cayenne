@@ -53,7 +53,7 @@ public class DataContextExtrasTest extends CayenneCase {
         deleteTestData();
         DataContext context = createDataContext();
 
-        Artist object = (Artist) context.newObject(Artist.class);
+        Artist object = context.newObject(Artist.class);
         object.setArtistName("ABC");
         assertEquals(PersistenceState.NEW, object.getPersistenceState());
 
@@ -71,7 +71,7 @@ public class DataContextExtrasTest extends CayenneCase {
     public void testResolveFault() {
         DataContext context = createDataContext();
 
-        Artist o1 = (Artist) context.newObject(Artist.class);
+        Artist o1 = context.newObject(Artist.class);
         o1.setArtistName("a");
         context.commitChanges();
 
@@ -137,7 +137,7 @@ public class DataContextExtrasTest extends CayenneCase {
 
     public void testNewObjectWithClass() {
         DataContext context = createDataContext();
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         assertTrue(context.getGraphManager().registeredNodes().contains(a1));
         assertTrue(context.newObjects().contains(a1));
     }
@@ -198,7 +198,7 @@ public class DataContextExtrasTest extends CayenneCase {
 
         adapter.setPkGenerator(newGenerator);
         try {
-            Artist newArtist = (Artist) context.newObject(Artist.class);
+            Artist newArtist = context.newObject(Artist.class);
             newArtist.setArtistName("aaa");
             context.commitChanges();
             fail("Exception expected but not thrown due to missing PK generation routine.");
@@ -291,7 +291,7 @@ public class DataContextExtrasTest extends CayenneCase {
         List objects = context.performQuery(new SelectQuery(Artist.class));
         Artist a1 = (Artist) objects.get(0);
 
-        Painting p1 = (Painting) context.newObject(Painting.class);
+        Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("XXX");
         a1.addToPaintingArray(p1);
         a1.resetValidationFlags();
@@ -329,7 +329,7 @@ public class DataContextExtrasTest extends CayenneCase {
         Painting p1 = (Painting) objects.get(0);
 
         Artist oldArtist = p1.getToArtist();
-        Artist newArtist = (Artist) DataObjectUtils.objectForPK(
+        Artist newArtist = DataObjectUtils.objectForPK(
                 context,
                 Artist.class,
                 33002);
@@ -358,7 +358,7 @@ public class DataContextExtrasTest extends CayenneCase {
         Painting p1 = (Painting) objects.get(0);
 
         Artist oldArtist = p1.getToArtist();
-        Artist newArtist = (Artist) DataObjectUtils.objectForPK(
+        Artist newArtist = DataObjectUtils.objectForPK(
                 context,
                 Artist.class,
                 33002);

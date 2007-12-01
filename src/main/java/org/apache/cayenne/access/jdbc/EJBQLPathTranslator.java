@@ -236,7 +236,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
             resolveJoin(false);
 
             // TODO: andrus, 6/21/2007 - flattened support
-            DbRelationship dbRelationship = (DbRelationship) relationship
+            DbRelationship dbRelationship = relationship
                     .getDbRelationships()
                     .get(0);
             DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
@@ -264,7 +264,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
             // match FK against the target object
 
             // TODO: andrus, 6/21/2007 - flattened support
-            DbRelationship dbRelationship = (DbRelationship) relationship
+            DbRelationship dbRelationship = relationship
                     .getDbRelationships()
                     .get(0);
             DbEntity table = (DbEntity) dbRelationship.getSourceEntity();

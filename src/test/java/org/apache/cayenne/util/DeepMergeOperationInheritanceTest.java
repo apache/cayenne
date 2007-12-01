@@ -41,19 +41,19 @@ public class DeepMergeOperationInheritanceTest extends PeopleCase {
         DataContext context = createDataContext();
         DataContext context1 = createDataContext();
 
-        Department d1 = (Department) context.newObject(Department.class);
+        Department d1 = context.newObject(Department.class);
         d1.setName("D1");
 
         // need to do double commit as Ashwood sorter blows on Employees/Departments
         // ordering...
         context.commitChanges();
 
-        Employee e1 = (Employee) context.newObject(Employee.class);
+        Employee e1 = context.newObject(Employee.class);
         e1.setName("E1");
         e1.setPersonType("EE");
         d1.addToEmployees(e1);
 
-        Manager e2 = (Manager) context.newObject(Manager.class);
+        Manager e2 = context.newObject(Manager.class);
         e2.setName("E2");
         e2.setPersonType("EM");
         d1.addToEmployees(e2);
@@ -98,19 +98,19 @@ public class DeepMergeOperationInheritanceTest extends PeopleCase {
         DataContext context = createDataContext();
         DataContext context1 = createDataContext();
 
-        Department d1 = (Department) context.newObject(Department.class);
+        Department d1 = context.newObject(Department.class);
         d1.setName("D1");
 
         // need to do double commit as Ashwood sorter blows on Employees/Departments
         // ordering...
         context.commitChanges();
 
-        Employee e1 = (Employee) context.newObject(Employee.class);
+        Employee e1 = context.newObject(Employee.class);
         e1.setName("E1");
         e1.setPersonType("EE");
         d1.addToEmployees(e1);
 
-        Manager e2 = (Manager) context.newObject(Manager.class);
+        Manager e2 = context.newObject(Manager.class);
         e2.setName("E2");
         e2.setPersonType("EM");
         d1.addToEmployees(e2);

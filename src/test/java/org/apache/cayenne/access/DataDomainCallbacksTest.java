@@ -54,7 +54,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
                 listener,
                 "publicCallback");
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
         context.commitChanges();
         assertFalse(a1.isPostLoaded());
@@ -114,7 +114,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
         context.commitChanges();
         assertFalse(a1.isPreUpdated());
@@ -154,7 +154,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
         context.commitChanges();
         assertFalse(a1.isPostUpdated());
@@ -196,7 +196,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
 
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
         context.commitChanges();
 
@@ -225,7 +225,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
                 .getCallbackRegistry();
 
         ObjectContext context = createDataContext();
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
         context.commitChanges();
         assertFalse(a1.isPostPersisted());
@@ -247,7 +247,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
                 listener2,
                 "publicCallback");
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("XX");
         context.commitChanges();
 

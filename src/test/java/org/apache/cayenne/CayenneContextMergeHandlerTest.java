@@ -71,7 +71,7 @@ public class CayenneContextMergeHandlerTest extends CayenneCase {
                 .getClientEntityResolver());
 
         CayenneContext context = new CayenneContext(channel);
-        ClientMtTable1 o1 = (ClientMtTable1) context.newObject(ClientMtTable1.class);
+        ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
 
         CayenneContextMergeHandler handler = new CayenneContextMergeHandler(context);
 

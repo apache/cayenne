@@ -34,7 +34,7 @@ public class NestedDataContextValidationTest extends CayenneCase {
                 "Child context must have inherited the validation flag from parent",
                 childContext.isValidatingObjectsOnCommit());
 
-        Artist a1 = (Artist) childContext.newObject(Artist.class);
+        Artist a1 = childContext.newObject(Artist.class);
         try {
             childContext.commitChangesToParent();
             fail("No validation was performed");

@@ -152,7 +152,7 @@ class DataNodeSyncQualifierDescriptor {
 
                 if (relationship.isUsedForLocking()) {
                     // only care about the first DbRelationship
-                    DbRelationship dbRelationship = (DbRelationship) relationship
+                    DbRelationship dbRelationship = relationship
                             .getDbRelationships()
                             .get(0);
 

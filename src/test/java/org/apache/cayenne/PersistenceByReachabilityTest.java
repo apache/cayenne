@@ -28,7 +28,7 @@ public class PersistenceByReachabilityTest extends CayenneCase {
 
     public void testToOneTargetTransient() throws Exception {
         DataContext context = createDataContext();
-        Painting persistentDO = (Painting) context.newObject(Painting.class);
+        Painting persistentDO = context.newObject(Painting.class);
 
         Artist transientDO = new Artist();
         persistentDO.setToOneTarget(Painting.TO_ARTIST_PROPERTY, transientDO, false);
@@ -38,7 +38,7 @@ public class PersistenceByReachabilityTest extends CayenneCase {
 
     public void testToOneTargetPersistent() throws Exception {
         DataContext context = createDataContext();
-        Painting transientDO = (Painting) context.newObject(Painting.class);
+        Painting transientDO = context.newObject(Painting.class);
 
         Artist persistentDO = new Artist();
         transientDO.setToOneTarget(Painting.TO_ARTIST_PROPERTY, persistentDO, false);
@@ -48,10 +48,10 @@ public class PersistenceByReachabilityTest extends CayenneCase {
 
     public void testToOneTargetDifferentContext() throws Exception {
         DataContext context1 = createDataContext();
-        Painting doC1 = (Painting) context1.newObject(Painting.class);
+        Painting doC1 = context1.newObject(Painting.class);
 
         DataContext context2 = createDataContext();
-        Artist doC2 = (Artist) context2.newObject(Artist.class);
+        Artist doC2 = context2.newObject(Artist.class);
 
         // this is the case where exception must be thrown as DataContexts are
         // different
@@ -66,10 +66,10 @@ public class PersistenceByReachabilityTest extends CayenneCase {
 
     public void testToManyTargetDifferentContext() throws Exception {
         DataContext context1 = createDataContext();
-        Painting doC1 = (Painting) context1.newObject(Painting.class);
+        Painting doC1 = context1.newObject(Painting.class);
 
         DataContext context2 = createDataContext();
-        Artist doC2 = (Artist) context2.newObject(Artist.class);
+        Artist doC2 = context2.newObject(Artist.class);
 
         // this is the case where exception must be thrown as DataContexts are
         // different
@@ -84,7 +84,7 @@ public class PersistenceByReachabilityTest extends CayenneCase {
 
     public void testToManyTargetTransient() throws Exception {
         DataContext context = createDataContext();
-        Painting transientDO = (Painting) context.newObject(Painting.class);
+        Painting transientDO = context.newObject(Painting.class);
 
         Artist persistentDO = new Artist();
         persistentDO.addToManyTarget(Artist.PAINTING_ARRAY_PROPERTY, transientDO, false);
@@ -94,7 +94,7 @@ public class PersistenceByReachabilityTest extends CayenneCase {
 
     public void testToManyTargetPersistent() throws Exception {
         DataContext context = createDataContext();
-        Painting persistentDO = (Painting) context.newObject(Painting.class);
+        Painting persistentDO = context.newObject(Painting.class);
 
         Artist transientDO = new Artist();
         transientDO.addToManyTarget(Artist.PAINTING_ARRAY_PROPERTY, persistentDO, false);

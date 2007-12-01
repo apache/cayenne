@@ -79,7 +79,7 @@ public class DataRowUtilsTest extends CayenneCase {
         SelectQuery artistQ = new SelectQuery(Artist.class, Expression
                 .fromString("artistName = 'artist2'"));
         Artist anotherArtist = (Artist) context.performQuery(artistQ).get(0);
-        Painting painting = (Painting) context.newObject(Painting.class);
+        Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("PX");
         painting.setToArtist(anotherArtist);
 

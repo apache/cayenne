@@ -44,7 +44,7 @@ public class PregeneratedPKTest extends CayenneCase {
     public void testIntPk() throws Exception {
 
         DataContext context = createDataContext();
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("XXX");
 
         updateId(context, a.getObjectId());

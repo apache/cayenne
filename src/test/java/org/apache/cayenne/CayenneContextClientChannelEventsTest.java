@@ -57,7 +57,7 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
         CayenneContext c1 = new CayenneContext(clientChannel);
         CayenneContext c2 = new CayenneContext(clientChannel);
 
-        ClientMtTable1 o1 = (ClientMtTable1) c1.newObject(ClientMtTable1.class);
+        ClientMtTable1 o1 = c1.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("X");
         c1.commitChanges();
 
@@ -90,12 +90,12 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
         CayenneContext c2 = new CayenneContext(clientChannel);
 
         // insert, then delete - this shouldn't propagate via an event.
-        ClientMtTable1 o1 = (ClientMtTable1) c1.newObject(ClientMtTable1.class);
+        ClientMtTable1 o1 = c1.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("X");
         c1.deleteObject(o1);
 
         // introduce some other change so that commit can go ahead...
-        ClientMtTable1 o1x = (ClientMtTable1) c1.newObject(ClientMtTable1.class);
+        ClientMtTable1 o1x = c1.newObject(ClientMtTable1.class);
         o1x.setGlobalAttribute1("Y");
         c1.commitChanges();
 
@@ -124,7 +124,7 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
         // make sure c2 has uncommitted changes
         c2.newObject(ClientMtTable1.class);
 
-        ClientMtTable1 o1 = (ClientMtTable1) c1.newObject(ClientMtTable1.class);
+        ClientMtTable1 o1 = c1.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("X");
         c1.commitChanges();
 
@@ -240,7 +240,7 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
         assertEquals(1, o1.getTable2Array().size());
         assertEquals(1, o2.getTable2Array().size());
 
-        ClientMtTable2 o1r = (ClientMtTable2) c1.newObject(ClientMtTable2.class);
+        ClientMtTable2 o1r = c1.newObject(ClientMtTable2.class);
         o1r.setGlobalAttribute("X");
         o1.addToTable2Array(o1r);
 
@@ -276,7 +276,7 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
 
         assertEquals(1, o1.getTable2Array().size());
 
-        ClientMtTable2 o1r = (ClientMtTable2) c1.newObject(ClientMtTable2.class);
+        ClientMtTable2 o1r = c1.newObject(ClientMtTable2.class);
         o1r.setGlobalAttribute("X");
         o1.addToTable2Array(o1r);
 
@@ -346,8 +346,8 @@ public class CayenneContextClientChannelEventsTest extends CayenneCase {
         CayenneContext c1 = new CayenneContext(clientChannel);
         CayenneContext c2 = new CayenneContext(clientChannel);
 
-        ClientMtTable4 o1 = (ClientMtTable4) c1.newObject(ClientMtTable4.class);
-        ClientMtTable5 o1r = (ClientMtTable5) c1.newObject(ClientMtTable5.class);
+        ClientMtTable4 o1 = c1.newObject(ClientMtTable4.class);
+        ClientMtTable5 o1r = c1.newObject(ClientMtTable5.class);
         c1.commitChanges();
 
         ClientMtTable4 o2 = (ClientMtTable4) c2.localObject(o1.getObjectId(), null);

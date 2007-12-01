@@ -178,7 +178,7 @@ public class RefreshQueryInContextTest extends CayenneCase {
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
-        Painting p1 = (Painting) DataObjectUtils.objectForPK(
+        Painting p1 = DataObjectUtils.objectForPK(
                 context,
                 Painting.class,
                 33001);
@@ -240,7 +240,7 @@ public class RefreshQueryInContextTest extends CayenneCase {
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
-        Painting p1 = (Painting) DataObjectUtils.objectForPK(
+        Painting p1 = DataObjectUtils.objectForPK(
                 context,
                 Painting.class,
                 33001);
@@ -302,7 +302,7 @@ public class RefreshQueryInContextTest extends CayenneCase {
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
-        Painting p1 = (Painting) DataObjectUtils.objectForPK(
+        Painting p1 = DataObjectUtils.objectForPK(
                 context,
                 Painting.class,
                 33001);

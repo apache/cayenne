@@ -36,7 +36,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
     public void testCommitEvent() {
         DataContext context = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
 
@@ -54,7 +54,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
     public void testRollbackEvent() {
         DataContext context = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
 
@@ -72,7 +72,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
     public void testChangeEventOnChildChange() {
         DataContext context = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
 
@@ -93,7 +93,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
     public void testChangeEventOnPeerChange() throws Exception {
         DataContext context = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
 
@@ -120,7 +120,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
         DataContext context = createDataContext();
         DataContext childPeer1 = context.createChildDataContext();
 
-        Artist a = (Artist) childPeer1.newObject(Artist.class);
+        Artist a = childPeer1.newObject(Artist.class);
         a.setArtistName("X");
         childPeer1.commitChanges();
 

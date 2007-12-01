@@ -33,7 +33,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Task;
 
 /**
  * A "cdataport" Ant task implementing a frontend to DataPort allowing porting database

@@ -417,7 +417,7 @@ public class EOQuery extends SelectQuery {
             if ("EOKeyComparisonQualifier".equals(qualifierClass)) {
                 // Comparing two keys or key paths
                 key = (String) qualifierMap.get("leftValue");
-                comparisonValue = (String) qualifierMap.get("rightValue");
+                comparisonValue = qualifierMap.get("rightValue");
 
                 // FIXME: I think EOKeyComparisonQualifier sytle Expressions are not
                 // supported...
@@ -444,7 +444,7 @@ public class EOQuery extends SelectQuery {
                         Object queryVal = valueMap.get("value");
                         if ("NSNumber".equals(objClass)) {
                             // comparison to NSNumber -- cast
-                            comparisonValue = (Number) queryVal;
+                            comparisonValue = queryVal;
                         }
                         else if ("EONull".equals(objClass)) {
                             // comparison to null

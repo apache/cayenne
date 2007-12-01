@@ -601,7 +601,7 @@ public class DataContext extends BaseContext implements DataChannel {
                     return true;
                 }
 
-                DbRelationship dbRel = (DbRelationship) rel.getDbRelationships().get(0);
+                DbRelationship dbRel = rel.getDbRelationships().get(0);
                 Map fk = dbRel.srcFkSnapshotWithTargetSnapshot(idParts);
                 snapshot.putAll(fk);
                 return true;

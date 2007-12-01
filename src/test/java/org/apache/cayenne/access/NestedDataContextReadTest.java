@@ -203,8 +203,8 @@ public class NestedDataContextReadTest extends CayenneCase {
         DataContext context = createDataContext();
         DataContext childContext = context.createChildDataContext();
 
-        Artist _new = (Artist) context.newObject(Artist.class);
-        Painting _newP = (Painting) context.newObject(Painting.class);
+        Artist _new = context.newObject(Artist.class);
+        Painting _newP = context.newObject(Painting.class);
         _new.addToPaintingArray(_newP);
 
         blockQueries();
@@ -295,20 +295,20 @@ public class NestedDataContextReadTest extends CayenneCase {
         int committedTargetSrcId = 33004;
         int newTargetSrcId = 33005;
 
-        Painting hollowTargetSrc = (Painting) DataObjectUtils.objectForPK(
+        Painting hollowTargetSrc = DataObjectUtils.objectForPK(
                 parent,
                 Painting.class,
                 hollowTargetSrcId);
         Artist hollowTarget = hollowTargetSrc.getToArtist();
 
-        Painting modifiedTargetSrc = (Painting) DataObjectUtils.objectForPK(
+        Painting modifiedTargetSrc = DataObjectUtils.objectForPK(
                 parent,
                 Painting.class,
                 modifiedTargetSrcId);
         Artist modifiedTarget = modifiedTargetSrc.getToArtist();
         modifiedTarget.setArtistName("M1");
 
-        Painting deletedTargetSrc = (Painting) DataObjectUtils.objectForPK(
+        Painting deletedTargetSrc = DataObjectUtils.objectForPK(
                 parent,
                 Painting.class,
                 deletedTargetSrcId);
@@ -316,18 +316,18 @@ public class NestedDataContextReadTest extends CayenneCase {
         deletedTargetSrc.setToArtist(null);
         parent.deleteObject(deletedTarget);
 
-        Painting committedTargetSrc = (Painting) DataObjectUtils.objectForPK(
+        Painting committedTargetSrc = DataObjectUtils.objectForPK(
                 parent,
                 Painting.class,
                 committedTargetSrcId);
         Artist committedTarget = committedTargetSrc.getToArtist();
         committedTarget.getArtistName();
 
-        Painting newTargetSrc = (Painting) DataObjectUtils.objectForPK(
+        Painting newTargetSrc = DataObjectUtils.objectForPK(
                 parent,
                 Painting.class,
                 newTargetSrcId);
-        Artist newTarget = (Artist) parent.newObject(Artist.class);
+        Artist newTarget = parent.newObject(Artist.class);
         newTarget.setArtistName("N1");
         newTargetSrc.setToArtist(newTarget);
 

@@ -293,7 +293,7 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
     public void testObjectsCommittedManualOID() {
         DataContext context = createDataContext();
 
-        Artist object = (Artist) context.newObject(Artist.class);
+        Artist object = context.newObject(Artist.class);
         object.setArtistName("ABC1");
         assertEquals(PersistenceState.NEW, object.getPersistenceState());
 
@@ -309,7 +309,7 @@ public class CayenneDataObjectInCtxtTest extends CayenneCase {
         // refetch
         context.invalidateObjects(Collections.singleton(object));
 
-        Artist object2 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 3);
+        Artist object2 = DataObjectUtils.objectForPK(context, Artist.class, 3);
         assertNotNull(object2);
         assertEquals("ABC1", object2.getArtistName());
     }

@@ -47,11 +47,11 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
 
-        DateTestEntity o1 = (DateTestEntity) context.newObject(DateTestEntity.class);
+        DateTestEntity o1 = context.newObject(DateTestEntity.class);
         cal.set(year - 3, 1, 1);
         o1.setDateColumn(cal.getTime());
 
-        DateTestEntity o2 = (DateTestEntity) context.newObject(DateTestEntity.class);
+        DateTestEntity o2 = context.newObject(DateTestEntity.class);
         cal.set(year + 3, 1, 1);
         o2.setDateColumn(cal.getTime());
 
@@ -70,11 +70,11 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
 
-        DateTestEntity o1 = (DateTestEntity) context.newObject(DateTestEntity.class);
+        DateTestEntity o1 = context.newObject(DateTestEntity.class);
         cal.set(year, 1, 1, 0, 0, 0);
         o1.setTimeColumn(cal.getTime());
 
-        DateTestEntity o2 = (DateTestEntity) context.newObject(DateTestEntity.class);
+        DateTestEntity o2 = context.newObject(DateTestEntity.class);
         cal.set(year, 1, 1, 23, 59, 59);
         o2.setTimeColumn(cal.getTime());
 
@@ -95,11 +95,11 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
         int month = cal.get(Calendar.MONTH);
         int date = cal.get(Calendar.DATE);
 
-        DateTestEntity o1 = (DateTestEntity) context.newObject(DateTestEntity.class);
+        DateTestEntity o1 = context.newObject(DateTestEntity.class);
         cal.set(year, month, date, 0, 0, 0);
         o1.setTimestampColumn(cal.getTime());
 
-        DateTestEntity o2 = (DateTestEntity) context.newObject(DateTestEntity.class);
+        DateTestEntity o2 = context.newObject(DateTestEntity.class);
         cal.set(year, month, date, 23, 59, 59);
         o2.setTimestampColumn(cal.getTime());
 
@@ -115,11 +115,11 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
     public void testABS() {
         ObjectContext context = createDataContext();
 
-        BigDecimalEntity o1 = (BigDecimalEntity) context
+        BigDecimalEntity o1 = context
                 .newObject(BigDecimalEntity.class);
         o1.setBigDecimalField(new BigDecimal("4.1"));
 
-        BigDecimalEntity o2 = (BigDecimalEntity) context
+        BigDecimalEntity o2 = context
                 .newObject(BigDecimalEntity.class);
         o2.setBigDecimalField(new BigDecimal("-5.1"));
 
@@ -135,11 +135,11 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
     public void testSQRT() {
         ObjectContext context = createDataContext();
 
-        BigDecimalEntity o1 = (BigDecimalEntity) context
+        BigDecimalEntity o1 = context
                 .newObject(BigDecimalEntity.class);
         o1.setBigDecimalField(new BigDecimal("9"));
 
-        BigDecimalEntity o2 = (BigDecimalEntity) context
+        BigDecimalEntity o2 = context
                 .newObject(BigDecimalEntity.class);
         o2.setBigDecimalField(new BigDecimal("16"));
 
@@ -155,11 +155,11 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
     public void testMOD() {
         ObjectContext context = createDataContext();
 
-        BigIntegerEntity o1 = (BigIntegerEntity) context
+        BigIntegerEntity o1 = context
                 .newObject(BigIntegerEntity.class);
         o1.setBigIntegerField(new BigInteger("9"));
 
-        BigIntegerEntity o2 = (BigIntegerEntity) context
+        BigIntegerEntity o2 = context
                 .newObject(BigIntegerEntity.class);
         o2.setBigIntegerField(new BigInteger("10"));
 
@@ -175,16 +175,16 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
     public void testSIZE() {
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a1");
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("a2");
 
-        Painting p12 = (Painting) context.newObject(Painting.class);
+        Painting p12 = context.newObject(Painting.class);
         p12.setPaintingTitle("p12");
         a2.addToPaintingArray(p12);
-        Painting p22 = (Painting) context.newObject(Painting.class);
+        Painting p22 = context.newObject(Painting.class);
         p22.setPaintingTitle("p22");
         a2.addToPaintingArray(p22);
 
@@ -206,10 +206,10 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
     public void testCONCAT() {
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a1");
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("a2");
         context.commitChanges();
 
@@ -223,10 +223,10 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
     public void testSUBSTRING() {
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("12345678");
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("abcdefg");
         context.commitChanges();
 
@@ -240,14 +240,14 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
     public void testLOWER() {
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("ABCDEFG");
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("abcdefg");
         context.commitChanges();
 
-        Artist a3 = (Artist) context.newObject(Artist.class);
+        Artist a3 = context.newObject(Artist.class);
         a3.setArtistName("Xabcdefg");
         context.commitChanges();
 
@@ -262,14 +262,14 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
     public void testUPPER() {
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("ABCDEFG");
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("abcdefg");
         context.commitChanges();
 
-        Artist a3 = (Artist) context.newObject(Artist.class);
+        Artist a3 = context.newObject(Artist.class);
         a3.setArtistName("Xabcdefg");
         context.commitChanges();
 
@@ -284,13 +284,13 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
     public void testLENGTH() {
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("1234567");
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("1234567890");
 
-        Artist a3 = (Artist) context.newObject(Artist.class);
+        Artist a3 = context.newObject(Artist.class);
         a3.setArtistName("1234567890-=");
         context.commitChanges();
 
@@ -305,10 +305,10 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
     public void testLOCATE() {
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("___A___");
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("_A_____");
         context.commitChanges();
 
@@ -333,8 +333,8 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
                 "INSERT INTO ARTIST (ARTIST_ID,ARTIST_NAME) VALUES(2, 'A  ')"));
         context.performGenericQuery(inserts);
 
-        Artist a1 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 1);
-        Artist a2 = (Artist) DataObjectUtils.objectForPK(context, Artist.class, 2);
+        Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 1);
+        Artist a2 = DataObjectUtils.objectForPK(context, Artist.class, 2);
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(a.artistName) = 'A'");
@@ -373,10 +373,10 @@ public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
         
         ObjectContext context = createDataContext();
 
-        Artist a1 = (Artist) context.newObject(Artist.class);
+        Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XXXA");
 
-        Artist a2 = (Artist) context.newObject(Artist.class);
+        Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("AXXX");
         context.commitChanges();
 

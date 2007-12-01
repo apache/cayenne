@@ -95,7 +95,7 @@ public class DataContextSerializationTest extends CayenneCase {
         assertNotNull(deserializedContext.getEntityResolver());
         assertSame(context.getEntityResolver(), deserializedContext.getEntityResolver());
         
-        Artist a = (Artist) DataObjectUtils.objectForPK(deserializedContext, Artist.class, 33001);
+        Artist a = DataObjectUtils.objectForPK(deserializedContext, Artist.class, 33001);
         assertNotNull(a);
         a.setArtistName(a.getArtistName() + "___");
         deserializedContext.commitChanges();
@@ -126,7 +126,7 @@ public class DataContextSerializationTest extends CayenneCase {
                 deserializedContext.getParentDataDomain().getSharedSnapshotCache(),
                 deserializedContext.getObjectStore().getDataRowCache());
         
-        Artist a = (Artist) DataObjectUtils.objectForPK(deserializedContext, Artist.class, 33001);
+        Artist a = DataObjectUtils.objectForPK(deserializedContext, Artist.class, 33001);
         assertNotNull(a);
         a.setArtistName(a.getArtistName() + "___");
         

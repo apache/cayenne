@@ -267,7 +267,7 @@ public class CayenneDataObjectRelTest extends CayenneDOTestBase {
     }
 
     public void testNewToMany() throws Exception {
-        Artist artist = (Artist) ctxt.newObject(Artist.class);
+        Artist artist = ctxt.newObject(Artist.class);
         artist.setArtistName("test");
         assertTrue(artist.readPropertyDirectly("paintingArray") instanceof ToManyList);
 

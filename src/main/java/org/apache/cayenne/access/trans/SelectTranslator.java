@@ -156,11 +156,11 @@ public class SelectTranslator extends QueryAssembler {
 
         // append columns (unroll the loop's first element)
         int columnCount = selectColumnExpList.size();
-        queryBuf.append((String) selectColumnExpList.get(0));
+        queryBuf.append(selectColumnExpList.get(0));
         // assume there is at least 1 element
         for (int i = 1; i < columnCount; i++) {
             queryBuf.append(", ");
-            queryBuf.append((String) selectColumnExpList.get(i));
+            queryBuf.append(selectColumnExpList.get(i));
         }
 
         // append from clause
@@ -220,7 +220,7 @@ public class SelectTranslator extends QueryAssembler {
             return new ColumnDescriptor[0];
         }
 
-        return (ColumnDescriptor[]) resultColumns
+        return resultColumns
                 .toArray(new ColumnDescriptor[resultColumns.size()]);
     }
 
@@ -332,7 +332,7 @@ public class SelectTranslator extends QueryAssembler {
 
             private void visitRelationship(ArcProperty property) {
                 ObjRelationship rel = property.getRelationship();
-                DbRelationship dbRel = (DbRelationship) rel.getDbRelationships().get(0);
+                DbRelationship dbRel = rel.getDbRelationships().get(0);
 
                 List joins = dbRel.getJoins();
                 int len = joins.size();
@@ -585,7 +585,7 @@ public class SelectTranslator extends QueryAssembler {
 
             // record ObjAttribute override
             for (int i = 0; i < columns.size(); i++) {
-                ColumnDescriptor column = (ColumnDescriptor) columns.get(i);
+                ColumnDescriptor column = columns.get(i);
                 if (attribute.getName().equals(column.getName())) {
 
                     // kick out the original attribute
@@ -612,7 +612,7 @@ public class SelectTranslator extends QueryAssembler {
         queryBuf.append(ent.getFullyQualifiedName());
         // The alias should be the alias from the same index in aliasList, not that
         // returned by aliasForTable.
-        queryBuf.append(' ').append((String) aliasList.get(index));
+        queryBuf.append(' ').append(aliasList.get(index));
     }
 
     private void appendJoins(StringBuilder queryBuf, int index) {
@@ -682,7 +682,7 @@ public class SelectTranslator extends QueryAssembler {
 
         int entIndex = tableList.indexOf(ent);
         if (entIndex >= 0) {
-            return (String) aliasList.get(entIndex);
+            return aliasList.get(entIndex);
         }
         else {
             StringBuilder msg = new StringBuilder();

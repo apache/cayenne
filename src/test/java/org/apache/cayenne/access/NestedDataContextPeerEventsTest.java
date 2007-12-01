@@ -30,7 +30,7 @@ public class NestedDataContextPeerEventsTest extends CayenneCase {
         DataContext context = createDataContext();
 
         DataContext peer1 = context.createChildDataContext();
-        Artist a1 = (Artist) peer1.newObject(Artist.class);
+        Artist a1 = peer1.newObject(Artist.class);
         a1.setArtistName("Y");
         ObjectId a1TempId = a1.getObjectId();
 
@@ -48,7 +48,7 @@ public class NestedDataContextPeerEventsTest extends CayenneCase {
     public void testPeerObjectUpdatedSimpleProperty() {
         DataContext context = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
 
@@ -71,10 +71,10 @@ public class NestedDataContextPeerEventsTest extends CayenneCase {
 
         DataContext context = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
-        Artist altA = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
+        Artist altA = context.newObject(Artist.class);
 
-        Painting p = (Painting) context.newObject(Painting.class);
+        Painting p = context.newObject(Painting.class);
         p.setToArtist(a);
         p.setPaintingTitle("PPP");
         a.setArtistName("X");
@@ -103,14 +103,14 @@ public class NestedDataContextPeerEventsTest extends CayenneCase {
 
         DataContext context = createDataContext();
 
-        Artist a = (Artist) context.newObject(Artist.class);
+        Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
 
-        Painting px = (Painting) context.newObject(Painting.class);
+        Painting px = context.newObject(Painting.class);
         px.setToArtist(a);
         px.setPaintingTitle("PX");
 
-        Painting py = (Painting) context.newObject(Painting.class);
+        Painting py = context.newObject(Painting.class);
         py.setPaintingTitle("PY");
 
         context.commitChanges();

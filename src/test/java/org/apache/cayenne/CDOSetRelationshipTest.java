@@ -36,7 +36,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     public void testReadToMany() throws Exception {
         createTestData("prepare");
 
-        SetToMany o1 = (SetToMany) DataObjectUtils.objectForPK(
+        SetToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 SetToMany.class,
                 1);
@@ -105,7 +105,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        SetToManyTarget newTarget = (SetToManyTarget) o1.getObjectContext().newObject(
+        SetToManyTarget newTarget = o1.getObjectContext().newObject(
                 SetToManyTarget.class);
 
         o1.addToTargets(newTarget);
@@ -122,7 +122,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
     public void testRemoveToMany() throws Exception {
         createTestData("prepare");
 
-        SetToMany o1 = (SetToMany) DataObjectUtils.objectForPK(
+        SetToMany o1 = DataObjectUtils.objectForPK(
                 createDataContext(),
                 SetToMany.class,
                 1);
@@ -130,7 +130,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
         Set targets = o1.getTargets();
         assertEquals(3, targets.size());
 
-        SetToManyTarget target = (SetToManyTarget) DataObjectUtils.objectForPK(o1
+        SetToManyTarget target = DataObjectUtils.objectForPK(o1
                 .getObjectContext(), SetToManyTarget.class, 2);
         o1.removeFromTargets(target);
 
@@ -157,7 +157,7 @@ public class CDOSetRelationshipTest extends RelationshipCase {
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        SetToManyTarget newTarget = (SetToManyTarget) o1.getObjectContext().newObject(
+        SetToManyTarget newTarget = o1.getObjectContext().newObject(
                 SetToManyTarget.class);
 
         newTarget.setSetToMany(o1);

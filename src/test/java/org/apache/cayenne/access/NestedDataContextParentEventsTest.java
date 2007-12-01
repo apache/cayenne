@@ -28,7 +28,7 @@ public class NestedDataContextParentEventsTest extends CayenneCase {
         DataContext context = createDataContext();
         DataContext child1 = context.createChildDataContext();
 
-        Artist ac = (Artist) child1.newObject(Artist.class);
+        Artist ac = child1.newObject(Artist.class);
         ac.setArtistName("X");
         child1.commitChangesToParent();
 

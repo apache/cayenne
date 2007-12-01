@@ -84,7 +84,7 @@ public class CayenneContextMapRelationshipTest extends CayenneCase {
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        ClientMtMapToManyTarget newTarget = (ClientMtMapToManyTarget) o1
+        ClientMtMapToManyTarget newTarget = o1
                 .getObjectContext()
                 .newObject(ClientMtMapToManyTarget.class);
 

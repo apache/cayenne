@@ -239,7 +239,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
             // ignore extra joins
         }
 
-        DbJoin join = (DbJoin) rel.getJoins().get(0);
+        DbJoin join = rel.getJoins().get(0);
 
         buf
             .append("INSERT INTO _SYS_RELATIONSHIP (")
