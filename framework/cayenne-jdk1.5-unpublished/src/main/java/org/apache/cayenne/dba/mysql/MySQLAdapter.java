@@ -36,6 +36,7 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -200,10 +201,10 @@ public class MySQLAdapter extends JdbcAdapter {
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
 
         // must move generated to the front...
-        List pkList = new ArrayList(entity.getPrimaryKeys());
+        List<DbAttribute> pkList = new ArrayList<DbAttribute>(entity.getPrimaryKeys());
         Collections.sort(pkList, new PKComparator());
 
-        Iterator pkit = pkList.iterator();
+        Iterator<DbAttribute> pkit = pkList.iterator();
         if (pkit.hasNext()) {
 
             sqlBuffer.append(", PRIMARY KEY (");
@@ -214,7 +215,7 @@ public class MySQLAdapter extends JdbcAdapter {
                 else
                     sqlBuffer.append(", ");
 
-                DbAttribute at = (DbAttribute) pkit.next();
+                DbAttribute at = pkit.next();
                 sqlBuffer.append(at.getName());
             }
             sqlBuffer.append(')');
@@ -224,21 +225,20 @@ public class MySQLAdapter extends JdbcAdapter {
         // Note that according to MySQL docs, FK indexes are created automatically when
         // constraint is defined, starting at MySQL 4.1.2
         if (supportsFkConstraints()) {
-            Iterator relationships = entity.getRelationships().iterator();
-            while (relationships.hasNext()) {
-                DbRelationship relationship = (DbRelationship) relationships.next();
+            for (Relationship r :  entity.getRelationships()) {
+                DbRelationship relationship = (DbRelationship) r;
                 if (relationship.getJoins().size() > 0
                         && relationship.isToPK()
                         && !relationship.isToDependentPK()) {
 
                     sqlBuffer.append(", KEY (");
 
-                    Iterator columns = relationship.getSourceAttributes().iterator();
-                    DbAttribute column = (DbAttribute) columns.next();
+                    Iterator<DbAttribute> columns = relationship.getSourceAttributes().iterator();
+                    DbAttribute column = columns.next();
                     sqlBuffer.append(column.getName());
 
                     while (columns.hasNext()) {
-                        column = (DbAttribute) columns.next();
+                        column = columns.next();
                         sqlBuffer.append(", ").append(column.getName());
                     }
 
@@ -259,11 +259,9 @@ public class MySQLAdapter extends JdbcAdapter {
         }
     }
 
-    final class PKComparator implements Comparator {
+    final class PKComparator implements Comparator<DbAttribute> {
 
-        public int compare(Object o1, Object o2) {
-            DbAttribute a1 = (DbAttribute) o1;
-            DbAttribute a2 = (DbAttribute) o2;
+        public int compare(DbAttribute a1, DbAttribute a2) {
             if (a1.isGenerated() != a2.isGenerated()) {
                 return a1.isGenerated() ? -1 : 1;
             }

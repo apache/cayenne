@@ -88,7 +88,7 @@ public class IngresPkGenerator extends OraclePkGenerator {
         }
     }
 
-    protected List getExistingSequences(DataNode node) throws SQLException {
+    protected List<String> getExistingSequences(DataNode node) throws SQLException {
 
         // check existing sequences
         Connection connection = node.getDataSource().getConnection();
@@ -100,7 +100,7 @@ public class IngresPkGenerator extends OraclePkGenerator {
                 QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = select.executeQuery(sql);
                 try {
-                    List sequenceList = new ArrayList();
+                    List<String> sequenceList = new ArrayList<String>();
                     while (rs.next()) {
                         String name = rs.getString(1);
                         if(name != null) {

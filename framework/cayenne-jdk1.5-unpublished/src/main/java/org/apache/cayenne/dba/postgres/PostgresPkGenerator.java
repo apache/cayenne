@@ -103,7 +103,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
     /**
      * Fetches a list of existing sequences that might match Cayenne generated ones.
      */
-    protected List getExistingSequences(DataNode node) throws SQLException {
+    protected List<String> getExistingSequences(DataNode node) throws SQLException {
 
         // check existing sequences
         Connection con = node.getDataSource().getConnection();
@@ -115,7 +115,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
                 QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = sel.executeQuery(sql);
                 try {
-                    List sequenceList = new ArrayList();
+                    List<String> sequenceList = new ArrayList<String>();
                     while (rs.next()) {
                         sequenceList.add(rs.getString(1));
                     }

@@ -47,7 +47,6 @@ import org.apache.cayenne.query.SQLAction;
  *        test-hsqldb.jdbc.password = secret
  *        test-hsqldb.jdbc.url = jdbc:hsqldb:hsql://serverhostname
  *        test-hsqldb.jdbc.driver = org.hsqldb.jdbcDriver
- *        
  * </pre>
  * 
  * @author Holger Hoffstaette
@@ -97,7 +96,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * 
      * @since 1.1
      */
-    public String createUniqueConstraint(DbEntity source, Collection columns) {
+    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException(
                     "Can't create UNIQUE constraint - no columns specified.");
@@ -117,12 +116,12 @@ public class HSQLDBAdapter extends JdbcAdapter {
         buf.append((long) (System.currentTimeMillis() / (Math.random() * 100000)));
         buf.append(" UNIQUE (");
 
-        Iterator it = columns.iterator();
-        DbAttribute first = (DbAttribute) it.next();
+        Iterator<DbAttribute> it = columns.iterator();
+        DbAttribute first = it.next();
         buf.append(first.getName());
 
         while (it.hasNext()) {
-            DbAttribute next = (DbAttribute) it.next();
+            DbAttribute next = it.next();
             buf.append(", ");
             buf.append(next.getName());
         }
@@ -157,10 +156,8 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
         buf.append(" FOREIGN KEY (");
 
-        Iterator jit = rel.getJoins().iterator();
         boolean first = true;
-        while (jit.hasNext()) {
-            DbJoin join = (DbJoin) jit.next();
+        for (DbJoin join : rel.getJoins()) {
             if (!first) {
                 buf.append(", ");
                 refBuf.append(", ");

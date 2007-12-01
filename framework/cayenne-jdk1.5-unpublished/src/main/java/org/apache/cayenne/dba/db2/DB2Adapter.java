@@ -32,6 +32,7 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -82,7 +83,7 @@ public class DB2Adapter extends JdbcAdapter {
         buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");
 
         // columns
-        Iterator it = ent.getAttributes().iterator();
+        Iterator<Attribute> it = ent.getAttributes().iterator();
         boolean first = true;
         while (it.hasNext()) {
             if (first) {
@@ -143,7 +144,7 @@ public class DB2Adapter extends JdbcAdapter {
         }
 
         // primary key clause
-        Iterator pkit = ent.getPrimaryKeys().iterator();
+        Iterator<DbAttribute> pkit = ent.getPrimaryKeys().iterator();
         if (pkit.hasNext()) {
             if (first)
                 first = false;
@@ -158,7 +159,7 @@ public class DB2Adapter extends JdbcAdapter {
                 else
                     buf.append(", ");
 
-                DbAttribute at = (DbAttribute) pkit.next();
+                DbAttribute at = pkit.next();
                 buf.append(at.getName());
             }
             buf.append(')');

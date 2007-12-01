@@ -28,10 +28,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.cayenne.util.Util;
 
@@ -99,22 +97,22 @@ public class TypesMapping {
     /**
      * Keys: SQL string type names, Values: SQL int type definitions from java.sql.Types
      */
-    private static final Map sqlStringType = new HashMap();
+    private static final Map<String, Integer> sqlStringType = new HashMap<String, Integer>();
 
     /**
      * Keys: SQL int type definitions from java.sql.Types, Values: SQL string type names
      */
-    private static final Map sqlEnumType = new HashMap();
+    private static final Map<Integer, String> sqlEnumType = new HashMap<Integer, String>();
 
     /**
      * Keys: SQL int type definitions from java.sql.Types, Values: java class names
      */
-    private static final Map sqlEnumJava = new HashMap();
+    private static final Map<Integer, String> sqlEnumJava = new HashMap<Integer, String>();
 
     /**
      * Keys: java class names, Values: SQL int type definitions from java.sql.Types
      */
-    private static final Map javaSqlEnum = new HashMap();
+    private static final Map<String, Integer> javaSqlEnum = new HashMap<String, Integer>();
 
     static {
         sqlStringType.put(SQL_ARRAY, new Integer(Types.ARRAY));
@@ -261,16 +259,7 @@ public class TypesMapping {
 
     /** Returns an array of string names of the default JDBC data types. */
     public static String[] getDatabaseTypes() {
-        Set keys = sqlStringType.keySet();
-        int len = keys.size();
-        String[] types = new String[len];
-
-        Iterator it = keys.iterator();
-        for (int i = 0; i < len; i++) {
-            types[i] = (String) it.next();
-        }
-
-        return types;
+        return sqlStringType.keySet().toArray(new String[0]);
     }
 
     /**
@@ -304,7 +293,7 @@ public class TypesMapping {
             }
         }
 
-        List list = new ArrayList();
+        List<TypeInfo> list = new ArrayList<TypeInfo>();
         for (int i = 0; i < len; i++) {
             if (maxPrec == alts[i].precision) {
                 list.add(alts[i]);
@@ -314,32 +303,32 @@ public class TypesMapping {
         // work with smaller list now.....
         int slen = list.size();
         if (slen == 1)
-            return ((TypeInfo) list.get(0)).name;
+            return (list.get(0)).name;
 
         // start/end match
         for (int i = 0; i < slen; i++) {
-            String uppercase = ((TypeInfo) list.get(i)).name.toUpperCase();
+            String uppercase = (list.get(i)).name.toUpperCase();
             if (uppercase.startsWith(jdbcName) || uppercase.endsWith(jdbcName))
-                return ((TypeInfo) list.get(i)).name;
+                return (list.get(i)).name;
         }
 
         // in the middle match
         for (int i = 0; i < slen; i++) {
-            String uppercase = ((TypeInfo) list.get(i)).name.toUpperCase();
+            String uppercase = (list.get(i)).name.toUpperCase();
 
             if (uppercase.indexOf(jdbcName) >= 0)
-                return ((TypeInfo) list.get(i)).name;
+                return (list.get(i)).name;
         }
 
         // out of ideas... return the first one
-        return ((TypeInfo) list.get(0)).name;
+        return (list.get(0)).name;
     }
 
     /**
      * Returns a JDBC int type for SQL typem name.
      */
     public static int getSqlTypeByName(String typeName) {
-        Integer tmp = (Integer) sqlStringType.get(typeName);
+        Integer tmp = sqlStringType.get(typeName);
         return (null == tmp) ? NOT_DEFINED : tmp.intValue();
     }
 
@@ -347,7 +336,7 @@ public class TypesMapping {
      * Returns a String representation of the SQL type from its JDBC code.
      */
     public static String getSqlNameByType(int type) {
-        return (String) sqlEnumType.get(new Integer(type));
+        return sqlEnumType.get(new Integer(type));
     }
 
     /**
@@ -361,14 +350,14 @@ public class TypesMapping {
             return NOT_DEFINED;
         }
 
-        Integer type = (Integer) javaSqlEnum.get(className);
+        Integer type = javaSqlEnum.get(className);
         if (type != null) {
             return type.intValue();
         }
 
         // try to load a Java class - some nonstandard mappings may work
 
-        Class aClass;
+        Class<?> aClass;
         try {
             aClass = Util.getJavaClass(className);
         }
@@ -384,13 +373,13 @@ public class TypesMapping {
      * 
      * @since 1.1
      */
-    public static int getSqlTypeByJava(Class javaClass) {
+    public static int getSqlTypeByJava(Class<?> javaClass) {
         if (javaClass == null) {
             return NOT_DEFINED;
         }
 
         // check standard mapping of class and superclasses
-        Class aClass = javaClass;
+        Class<?> aClass = javaClass;
         while (aClass != null) {
 
             String name;
@@ -413,7 +402,7 @@ public class TypesMapping {
         // check non-standard JDBC types that are still supported by JPA
         if (javaClass.isArray()) {
 
-            Class elementType = javaClass.getComponentType();
+            Class<?> elementType = javaClass.getComponentType();
             if (Character.class.isAssignableFrom(elementType)
                     || Character.TYPE.isAssignableFrom(elementType)) {
                 return Types.VARCHAR;
@@ -445,7 +434,7 @@ public class TypesMapping {
      * @return Fully qualified Java type name or null if not found.
      */
     public static String getJavaBySqlType(int type) {
-        return (String) sqlEnumJava.get(new Integer(type));
+        return sqlEnumJava.get(new Integer(type));
     }
 
     /**
@@ -458,14 +447,14 @@ public class TypesMapping {
         if (type == Types.NUMERIC && precision == 0) {
             type = Types.INTEGER;
         }
-        return (String) sqlEnumJava.get(new Integer(type));
+        return sqlEnumJava.get(new Integer(type));
     }
 
     // *************************************************************
     // non-static code
     // *************************************************************
 
-    protected Map databaseTypes = new HashMap();
+    protected Map<Integer, List<TypeInfo>> databaseTypes = new HashMap<Integer, List<TypeInfo>>();
 
     public TypesMapping(DatabaseMetaData metaData) throws SQLException {
         // map database types to standard JDBC types
@@ -479,10 +468,10 @@ public class TypesMapping {
                 info.precision = rs.getLong("PRECISION");
 
                 Integer key = new Integer(info.jdbcType);
-                List infos = (List) databaseTypes.get(key);
+                List<TypeInfo> infos = databaseTypes.get(key);
 
                 if (infos == null) {
-                    infos = new ArrayList();
+                    infos = new ArrayList<TypeInfo>();
                     databaseTypes.put(key, infos);
                 }
 
@@ -498,8 +487,8 @@ public class TypesMapping {
         // 1. swap TIMESTAMP - DATE
         Integer ts = new Integer(Types.TIMESTAMP);
         Integer dt = new Integer(Types.DATE);
-        List tsInfo = (List) databaseTypes.get(ts);
-        List dtInfo = (List) databaseTypes.get(dt);
+        List<TypeInfo> tsInfo = databaseTypes.get(ts);
+        List<TypeInfo> dtInfo = databaseTypes.get(dt);
 
         if (tsInfo != null && dtInfo == null)
             databaseTypes.put(dt, tsInfo);
@@ -510,8 +499,8 @@ public class TypesMapping {
         // 2. Swap CLOB - LONGVARCHAR
         Integer clob = new Integer(Types.CLOB);
         Integer lvc = new Integer(Types.LONGVARCHAR);
-        List clobInfo = (List) databaseTypes.get(clob);
-        List lvcInfo = (List) databaseTypes.get(lvc);
+        List<TypeInfo> clobInfo = databaseTypes.get(clob);
+        List<TypeInfo> lvcInfo = databaseTypes.get(lvc);
 
         if (clobInfo != null && lvcInfo == null)
             databaseTypes.put(lvc, clobInfo);
@@ -522,8 +511,8 @@ public class TypesMapping {
         // 2. Swap BLOB - LONGVARBINARY
         Integer blob = new Integer(Types.BLOB);
         Integer lvb = new Integer(Types.LONGVARBINARY);
-        List blobInfo = (List) databaseTypes.get(blob);
-        List lvbInfo = (List) databaseTypes.get(lvb);
+        List<TypeInfo> blobInfo = databaseTypes.get(blob);
+        List<TypeInfo> lvbInfo = databaseTypes.get(lvb);
 
         if (blobInfo != null && lvbInfo == null)
             databaseTypes.put(lvb, blobInfo);
