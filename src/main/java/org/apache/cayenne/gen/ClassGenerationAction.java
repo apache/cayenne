@@ -49,7 +49,7 @@ public class ClassGenerationAction {
     public static final String SUPERCLASS_PREFIX = "_";
     private static final String WILDCARD = "*";
 
-    protected List<ObjEntity> objEntities;
+    protected List<ObjEntity> entities;
     protected String superPkg;
     protected DataMap dataMap;
     protected ClassGeneratorMode mode;
@@ -149,11 +149,11 @@ public class ClassGenerationAction {
 
         // TODO: andrus, 12/2/2007 - should we setup a dummy entity for an empty map in
         // DataMap mode?
-        if (mode != ClassGeneratorMode.entity && !objEntities.isEmpty()) {
-            return Collections.singleton(objEntities.get(0));
+        if (mode != ClassGeneratorMode.entity && !entities.isEmpty()) {
+            return Collections.singleton(entities.get(0));
         }
         else {
-            return this.objEntities;
+            return this.entities;
         }
     }
 
@@ -487,8 +487,8 @@ public class ClassGenerationAction {
         this.dataMap = dataMap;
     }
 
-    public List<ObjEntity> getObjEntities() {
-        return objEntities;
+    public List<ObjEntity> getEntities() {
+        return entities;
     }
 
     /**
@@ -496,8 +496,8 @@ public class ClassGenerationAction {
      * list to allow its independent modification and also filters out entities that do
      * not require class generation.
      */
-    public void setObjEntities(List<ObjEntity> objEntities) {
-        this.objEntities = objEntities != null
+    public void setEntities(List<ObjEntity> objEntities) {
+        this.entities = objEntities != null
                 ? new ArrayList<ObjEntity>(objEntities)
                 : new ArrayList<ObjEntity>();
     }

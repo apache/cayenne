@@ -154,7 +154,7 @@ public class CayenneGeneratorTask extends CayenneTask {
             generatorAction.setLogger(logger);
             generatorAction.setTimestamp(map.lastModified());
             generatorAction.setDataMap(loadAction.getMainDataMap());
-            generatorAction.setObjEntities((List<ObjEntity>) filterAction
+            generatorAction.setEntities((List<ObjEntity>) filterAction
                     .getFilteredEntities(loadAction.getMainDataMap()));
             generatorAction.execute();
         }
