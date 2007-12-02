@@ -25,15 +25,15 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import org.apache.oro.text.perl.Perl5Util;
-import org.apache.tools.ant.Location;
-import org.apache.tools.ant.Project;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.util.Util;
+import org.apache.oro.text.perl.Perl5Util;
+import org.apache.tools.ant.Location;
+import org.apache.tools.ant.Project;
 
-public class CayenneGeneratorTest extends CayenneCase {
+public class CayenneGeneratorTaskTest extends CayenneCase {
 
     private static final Perl5Util regexUtil = new Perl5Util();
     private static final Project project = new Project();
@@ -46,7 +46,7 @@ public class CayenneGeneratorTest extends CayenneCase {
         project.setBaseDir(baseDir);
     }
 
-    protected CayenneGenerator task;
+    protected CayenneGeneratorTask task;
 
     private static void extractFiles() {
         ResourceLocator locator = new ResourceLocator();
@@ -61,8 +61,8 @@ public class CayenneGeneratorTest extends CayenneCase {
         Util.copy(url2, template);
     }
 
-    public void setUp() throws java.lang.Exception {
-        task = new CayenneGenerator();
+    public void setUp() {
+        task = new CayenneGeneratorTask();
         task.setProject(project);
         task.setTaskName("Test");
         task.setLocation(Location.UNKNOWN_LOCATION);

@@ -26,22 +26,22 @@ import java.io.InputStreamReader;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.unit.CayenneResources;
 import org.apache.oro.text.perl.Perl5Util;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
-import org.apache.cayenne.unit.CayenneResources;
 
-public class CayenneGeneratorv1_2Test extends TestCase {
+public class CayenneGeneratorvTask1_2Test extends TestCase {
 
     private static final Perl5Util regexUtil = new Perl5Util();
     private static final Project project = new Project();
 
-    protected CayenneGenerator task;
+    protected CayenneGeneratorTask task;
 
-    public void setUp() throws java.lang.Exception {
-        task = new CayenneGenerator();
+    public void setUp() {
+        task = new CayenneGeneratorTask();
         task.setProject(project);
         task.setTaskName("Test");
         task.setLocation(Location.UNKNOWN_LOCATION);
@@ -52,9 +52,7 @@ public class CayenneGeneratorv1_2Test extends TestCase {
 
         // prepare destination directory
 
-        File destDir = new File(
-                CayenneResources.getResources().getTestDir(),
-                "cgen11");
+        File destDir = new File(CayenneResources.getResources().getTestDir(), "cgen11");
         // prepare destination directory
         if (!destDir.exists()) {
             assertTrue(destDir.mkdirs());
@@ -105,9 +103,7 @@ public class CayenneGeneratorv1_2Test extends TestCase {
     public void testCrossDataMapRelationships() throws Exception {
         // prepare destination directory
 
-        File destDir = new File(
-                CayenneResources.getResources().getTestDir(),
-                "cgen12");
+        File destDir = new File(CayenneResources.getResources().getTestDir(), "cgen12");
         // prepare destination directory
         if (!destDir.exists()) {
             assertTrue(destDir.mkdirs());
