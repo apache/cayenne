@@ -22,6 +22,8 @@ package org.apache.cayenne.conf;
 
 import java.util.Map;
 
+import org.apache.cayenne.map.DataMap;
+
 /**
  * Interface that defines callback API used by ConfigLoader to process loaded
  * configuration. Main responsibility of ConfigLoaderDelegate is to create
@@ -65,7 +67,7 @@ public interface ConfigLoaderDelegate {
     /**
      * @since 1.1
      */
-    public void shouldLoadDataMaps(String domainName, Map locations);
+    public void shouldLoadDataMaps(String domainName, Map<String, DataMap> locations);
     
     /**
      * @since 1.1

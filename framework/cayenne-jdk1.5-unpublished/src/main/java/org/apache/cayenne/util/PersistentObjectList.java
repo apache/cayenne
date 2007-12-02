@@ -46,6 +46,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
     protected LinkedList removedFromUnresolved;
 
     // exists for the benefit of manual serialization schemes such as the one in Hessian.
+    @SuppressWarnings("unused")
     private PersistentObjectList() {
 
     }

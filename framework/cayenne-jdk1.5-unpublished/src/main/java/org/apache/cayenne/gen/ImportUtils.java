@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,11 +49,11 @@ public class ImportUtils {
             Integer.class.getName()
     };
     
-    static Map classesForPrimitives = Util.toMap(primitives, primitiveClasses);
-    static Map primitivesForClasses = Util.toMap(primitiveClasses, primitives);
+    static Map<String, String> classesForPrimitives = Util.toMap(primitives, primitiveClasses);
+    static Map<String, String> primitivesForClasses = Util.toMap(primitiveClasses, primitives);
 
-    protected Map importTypesMap = new HashMap();
-    protected Map reservedImportTypesMap = new HashMap();  // Types forced to be FQN
+    protected Map<String, String> importTypesMap = new HashMap<String, String>();
+    protected Map<String, String> reservedImportTypesMap = new HashMap<String, String>();  // Types forced to be FQN
     
     protected String packageName;
     
@@ -72,7 +71,7 @@ public class ImportUtils {
         String typeClassName = stringUtils.stripPackageName(typeName);
         String typePackageName = stringUtils.stripClass(typeName);
         
-        if (typePackageName.length() == 0)  return false; // disallow non-packaged types (primatives, probably)
+        if (typePackageName.length() == 0)  return false; // disallow non-packaged types (primitives, probably)
         if ("java.lang".equals(typePackageName))  return false;
         
         // Can only have one type -- rest must use fqn
@@ -133,11 +132,11 @@ public class ImportUtils {
      */
     public String formatJavaType(String typeName, boolean usePrimitives) {
         if (usePrimitives) {
-            String primitive = (String) primitivesForClasses.get(typeName);
+            String primitive = primitivesForClasses.get(typeName);
             return (primitive != null) ? primitive : formatJavaType(typeName);
         }
         else {
-            String primitiveClass = (String) classesForPrimitives.get(typeName);
+            String primitiveClass = classesForPrimitives.get(typeName);
             return (primitiveClass != null)
                     ? formatJavaType(primitiveClass)
                     : formatJavaType(typeName);
@@ -173,7 +172,7 @@ public class ImportUtils {
      * @since 3.0
      */
     public String formatJavaTypeAsNonBooleanPrimitive(String type) {
-        String value = (String) ImportUtils.classesForPrimitives.get(type);
+        String value = ImportUtils.classesForPrimitives.get(type);
         return formatJavaType(value != null ? value : type);
     }
     
@@ -207,13 +206,10 @@ public class ImportUtils {
             outputBuffer.append(System.getProperty("line.separator"));
         }
 
-        List typesList = new ArrayList(importTypesMap.values());
-        Collections.sort(typesList, new Comparator() {
+        List<String> typesList = new ArrayList<String>(importTypesMap.values());
+        Collections.sort(typesList, new Comparator<String>() {
 
-            public int compare(Object o1, Object o2) {
-                
-                String s1 = (String)o1;
-                String s2 = (String)o2;
+            public int compare(String s1, String s2) {
                 
                 for (int index = 0; index < importOrdering.length; index++) {
                     String ordering = importOrdering[index];
@@ -229,24 +225,25 @@ public class ImportUtils {
         });
         
         String lastStringPrefix = null;
-        Iterator typesIterator = typesList.iterator();
-        while (typesIterator.hasNext()) {
-            String typeName = (String)typesIterator.next();
+        boolean firstIteration = true;
+        for (String typeName : typesList) {
 
+            if (firstIteration) {
+                firstIteration = false;
+            } else {
+                outputBuffer.append(System.getProperty("line.separator"));
+            }
             // Output another newline if we're in a different root package.
             // Find root package
             String thisStringPrefix = typeName;
             int dotIndex = typeName.indexOf('.');
-            if (-1 != dotIndex)
-            {
+            if (-1 != dotIndex) {
                 thisStringPrefix = typeName.substring(0, dotIndex);
             }
             // if this isn't the first import,
-            if (null != lastStringPrefix)
-            {
+            if (null != lastStringPrefix) {
                 // and it's different from the last import
-                if (false == thisStringPrefix.equals(lastStringPrefix))
-                {
+                if (false == thisStringPrefix.equals(lastStringPrefix)) {
                     // output a newline
                     outputBuffer.append(System.getProperty("line.separator"));
                 }
@@ -256,10 +253,6 @@ public class ImportUtils {
             outputBuffer.append("import ");
             outputBuffer.append(typeName);
             outputBuffer.append(';');
-            if (typesIterator.hasNext())
-            {
-                outputBuffer.append(System.getProperty("line.separator"));
-            }
         }
 
         return outputBuffer.toString();

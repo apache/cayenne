@@ -22,7 +22,6 @@ package org.apache.cayenne.validation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.util.Util;
@@ -37,10 +36,10 @@ import org.apache.cayenne.util.Util;
  */
 public class ValidationResult implements Serializable {
 
-    private List failures;
+    private List<ValidationFailure> failures;
 
     public ValidationResult() {
-        failures = new ArrayList();
+        failures = new ArrayList<ValidationFailure>();
     }
 
     /**
@@ -60,7 +59,7 @@ public class ValidationResult implements Serializable {
     /**
      * Returns all failures added to this result, or empty list is result has no failures.
      */
-    public List getFailures() {
+    public List<ValidationFailure> getFailures() {
         return Collections.unmodifiableList(failures);
     }
 
@@ -71,12 +70,9 @@ public class ValidationResult implements Serializable {
      * @param source it may be null.
      * @see ValidationFailure#getSource()
      */
-    public List getFailures(Object source) {
-
-        ArrayList matchingFailures = new ArrayList(5);
-        Iterator it = failures.iterator();
-        while (it.hasNext()) {
-            ValidationFailure failure = (ValidationFailure) it.next();
+    public List<ValidationFailure> getFailures(Object source) {
+        ArrayList<ValidationFailure> matchingFailures = new ArrayList<ValidationFailure>(5);
+        for (ValidationFailure failure : failures) {
             if (Util.nullSafeEquals(source, failure.getSource())) {
                 matchingFailures.add(failure);
             }
@@ -99,9 +95,7 @@ public class ValidationResult implements Serializable {
      *         otherwise.
      */
     public boolean hasFailures(Object source) {
-        Iterator it = failures.iterator();
-        while (it.hasNext()) {
-            ValidationFailure failure = (ValidationFailure) it.next();
+        for (ValidationFailure failure : failures) {
             if (Util.nullSafeEquals(source, failure.getSource())) {
                 return true;
             }
@@ -114,13 +108,11 @@ public class ValidationResult implements Serializable {
         StringBuffer ret = new StringBuffer();
         String separator = System.getProperty("line.separator");
 
-        Iterator it = getFailures().iterator();
-        while (it.hasNext()) {
+        for (ValidationFailure failure : failures) {
             if (ret.length() > 0) {
                 ret.append(separator);
             }
-
-            ret.append(it.next());
+            ret.append(failure);
         }
 
         return ret.toString();

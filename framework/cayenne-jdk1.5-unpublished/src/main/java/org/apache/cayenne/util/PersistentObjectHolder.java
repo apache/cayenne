@@ -39,6 +39,7 @@ public class PersistentObjectHolder extends RelationshipFault implements ValueHo
     protected Object value;
 
     // exists for the benefit of manual serialization schemes such as the one in Hessian.
+    @SuppressWarnings("unused")
     private PersistentObjectHolder() {
         fault = true;
     }

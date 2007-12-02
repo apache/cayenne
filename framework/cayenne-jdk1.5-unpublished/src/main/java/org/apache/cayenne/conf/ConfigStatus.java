@@ -32,12 +32,12 @@ import java.util.Iterator;
  */
 public class ConfigStatus {
 
-    protected List otherFailures = new ArrayList();
-    protected Map failedMaps = new HashMap();
-    protected Map failedAdapters = new HashMap();
-    protected Map failedDataSources = new HashMap();
-    protected List failedMapRefs = new ArrayList();
-    protected Map messages = new HashMap();
+    protected List<String> otherFailures = new ArrayList<String>();
+    protected Map<String, String> failedMaps = new HashMap<String, String>();
+    protected Map<String, String> failedAdapters = new HashMap<String, String>();
+    protected Map<String, String> failedDataSources = new HashMap<String, String>();
+    protected List<String> failedMapRefs = new ArrayList<String>();
+    protected Map<String, Object> messages = new HashMap<String, Object>();
 
     public void addFailedMap(String name, String location, Object extraMessage) {
         failedMaps.put(name, location);
@@ -94,10 +94,10 @@ public class ConfigStatus {
 
         StringBuffer buf = new StringBuffer();
 
-        Iterator it = failedMaps.keySet().iterator();
+        Iterator<String> it = failedMaps.keySet().iterator();
         while (it.hasNext()) {
-            String name = (String) it.next();
-            String location = (String) failedMaps.get(name);
+            String name = it.next();
+            String location = failedMaps.get(name);
             Object message = messages.get(getMapMessageKey(name, location));
             buf.append("\n\tdomain.map.name=").append(name).append(
                     ", domain.map.location=").append(location);
@@ -108,8 +108,8 @@ public class ConfigStatus {
 
         it = failedAdapters.keySet().iterator();
         while (it.hasNext()) {
-            String node = (String) it.next();
-            String adapter = (String) failedAdapters.get(node);
+            String node = it.next();
+            String adapter = failedAdapters.get(node);
             Object message = messages.get(getAdapterMessageKey(node, adapter));
             buf.append("\n\tdomain.node.name=").append(node).append(
                     ", domain.node.adapter=").append(adapter);
@@ -120,8 +120,8 @@ public class ConfigStatus {
 
         it = failedDataSources.keySet().iterator();
         while (it.hasNext()) {
-            String node = (String) it.next();
-            String location = (String) failedDataSources.get(node);
+            String node = it.next();
+            String location = failedDataSources.get(node);
             Object message = messages.get(getDataSourceMessageKey(node, location));
             buf.append("\n\tdomain.node.name=").append(node).append(
                     ", domain.node.datasource=").append(location);
@@ -132,7 +132,7 @@ public class ConfigStatus {
 
         it = failedMapRefs.iterator();
         while (it.hasNext()) {
-            String mapName = (String) it.next();
+            String mapName = it.next();
             // don't report failed links if the DataMap itself failed to load
             if (failedMaps.get(mapName) == null) {
                 buf.append("\n\tdomain.node.map-ref.name=").append(mapName);
@@ -148,37 +148,37 @@ public class ConfigStatus {
 
     /**
      * Returns a list of error messages not directly associated with project objects, such
-     * as XML pare exceptions, IOExceptions, etc.
+     * as XML parse exceptions, IOExceptions, etc.
      */
-    public List getOtherFailures() {
+    public List<String> getOtherFailures() {
         return otherFailures;
     }
 
     /**
      * Returns a list of map reference names that failed to load.
      */
-    public List getFailedMapRefs() {
+    public List<String> getFailedMapRefs() {
         return failedMapRefs;
     }
 
     /**
      * Returns a map of locations for names of the data maps that failed to load.
      */
-    public Map getFailedMaps() {
+    public Map<String, String> getFailedMaps() {
         return failedMaps;
     }
 
     /**
      * Returns a map of DataSource locations for node names that failed to load.
      */
-    public Map getFailedDataSources() {
+    public Map<String, String> getFailedDataSources() {
         return failedDataSources;
     }
 
     /**
      * Returns a map of adapter classes for node names that failed to load.
      */
-    public Map getFailedAdapters() {
+    public Map<String, String> getFailedAdapters() {
         return failedAdapters;
     }
 

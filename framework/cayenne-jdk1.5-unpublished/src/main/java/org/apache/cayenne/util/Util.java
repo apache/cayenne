@@ -277,7 +277,7 @@ public class Util {
      * 
      * @since 1.1
      */
-    public static int nullSafeCompare(boolean nullsFirst, Comparable o1, Object o2) {
+    public static <T> int nullSafeCompare(boolean nullsFirst, Comparable<T> o1, T o2) {
         if (o1 == null && o2 == null) {
             return 0;
         }
@@ -360,13 +360,13 @@ public class Util {
      * 
      * @since 1.2
      */
-    public static Map toMap(Object[] keys, Object[] values) {
+    public static <K,V> Map<K,V> toMap(K[] keys, V[] values) {
         int keysSize = (keys != null) ? keys.length : 0;
         int valuesSize = (values != null) ? values.length : 0;
 
         if (keysSize == 0 && valuesSize == 0) {
             // return mutable map
-            return new HashMap();
+            return new HashMap<K,V>();
         }
 
         if (keysSize != valuesSize) {
@@ -374,7 +374,7 @@ public class Util {
                     "The number of keys doesn't match the number of values.");
         }
 
-        Map map = new HashMap();
+        Map<K,V> map = new HashMap<K,V>();
         for (int i = 0; i < keysSize; i++) {
             map.put(keys[i], values[i]);
         }
@@ -503,8 +503,8 @@ public class Util {
      * since it is much less efficient then just sorting a collection that backs the
      * original iterator.
      */
-    public static Iterator sortedIterator(Iterator it, Comparator comparator) {
-        List list = new ArrayList();
+    public static <T> Iterator<T> sortedIterator(Iterator<T> it, Comparator<T> comparator) {
+        List<T> list = new ArrayList<T>();
         while (it.hasNext()) {
             list.add(it.next());
         }
@@ -516,10 +516,11 @@ public class Util {
     /**
      * Builds a hashCode of Collection.
      */
-    public static int hashCode(Collection c) {
+    public static int hashCode(Collection<?> c) {
         HashCodeBuilder builder = new HashCodeBuilder();
-        for (Iterator i = c.iterator(); i.hasNext();)
-            builder.append(i.next());
+        for (Object o : c) {
+            builder.append(o);
+        }
         return builder.toHashCode();
     }
 
@@ -550,7 +551,7 @@ public class Util {
      * 
      * @since 1.2
      */
-    public static Class getJavaClass(String className) throws ClassNotFoundException {
+    public static Class<?> getJavaClass(String className) throws ClassNotFoundException {
 
         // is there a better way to get array class from string name?
 

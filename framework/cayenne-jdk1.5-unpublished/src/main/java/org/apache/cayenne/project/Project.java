@@ -48,7 +48,7 @@ public abstract class Project {
     static final int UPGRADE_STATUS_NEW = 1;
 
     protected File projectDir;
-    protected List files = new ArrayList();
+    protected List<ProjectFile> files = new ArrayList<ProjectFile>();
     protected int upgradeStatus;
     protected List upgradeMessages;
     protected boolean modified;
@@ -159,9 +159,8 @@ public abstract class Project {
         }
 
         synchronized (files) {
-            Iterator it = files.iterator();
-            while (it.hasNext()) {
-                if (((ProjectFile) it.next()).isRenamed()) {
+            for (ProjectFile file : files) {
+                if (file.isRenamed()) {
                     return true;
                 }
             }
@@ -173,8 +172,8 @@ public abstract class Project {
     /**
      * Creates a list of project files.
      */
-    public List buildFileList() {
-        List projectFiles = new ArrayList();
+    public List<ProjectFile> buildFileList() {
+        List<ProjectFile> projectFiles = new ArrayList<ProjectFile>();
 
         Iterator nodes = treeNodes();
         while (nodes.hasNext()) {
@@ -210,9 +209,7 @@ public abstract class Project {
         // choice of collection here,
         // though normally projects have very few files...
         synchronized (files) {
-            Iterator it = files.iterator();
-            while (it.hasNext()) {
-                ProjectFile file = (ProjectFile) it.next();
+            for (ProjectFile file : files) {
                 if (file.getObject() == obj) {
                     return file;
                 }
@@ -339,29 +336,26 @@ public abstract class Project {
         }
 
         // 1. Traverse project tree to find file wrappers that require update.
-        List filesToSave = new ArrayList();
-        List wrappedObjects = new ArrayList();
+        List<ProjectFile> filesToSave = new ArrayList<ProjectFile>();
+        List<Object> wrappedObjects = new ArrayList<Object>();
         prepareSave(filesToSave, wrappedObjects);
 
         // 2. Try saving individual file wrappers
         processSave(filesToSave);
 
         // 3. Commit changes
-        List savedFiles = new ArrayList();
-        Iterator saved = filesToSave.iterator();
-        while (saved.hasNext()) {
-            ProjectFile f = (ProjectFile) saved.next();
-            savedFiles.add(f.saveCommit());
+        List<File> savedFiles = new ArrayList<File>();
+        for (ProjectFile file : filesToSave) {
+            savedFiles.add(file.saveCommit());
         }
 
         // 4. Take care of deleted
         processDelete(wrappedObjects, savedFiles);
 
         // 5. Refresh file list
-        List freshList = buildFileList();
-        Iterator it = freshList.iterator();
-        while (it.hasNext()) {
-            ((ProjectFile) it.next()).synchronizeLocation();
+        List<ProjectFile> freshList = buildFileList();
+        for (ProjectFile file : freshList) {
+            file.synchronizeLocation();
         }
 
         files = freshList;
@@ -374,7 +368,7 @@ public abstract class Project {
         setModified(false);
     }
 
-    protected void prepareSave(List filesToSave, List wrappedObjects)
+    protected void prepareSave(List<ProjectFile> filesToSave, List<Object> wrappedObjects)
             throws ProjectException {
         Iterator nodes = treeNodes();
         while (nodes.hasNext()) {
@@ -401,41 +395,31 @@ public abstract class Project {
     /**
      * Saves a list of modified files to temporary files.
      */
-    protected void processSave(List modifiedFiles) throws ProjectException {
+    protected void processSave(List<ProjectFile> modifiedFiles) throws ProjectException {
         // notify that files will be saved
-        Iterator willSave = modifiedFiles.iterator();
-        while (willSave.hasNext()) {
-            ProjectFile f = (ProjectFile) willSave.next();
-            f.willSave();
+        for (ProjectFile file : modifiedFiles) {
+            file.willSave();
         }
 
         try {
-            Iterator modified = modifiedFiles.iterator();
-            while (modified.hasNext()) {
-                ProjectFile f = (ProjectFile) modified.next();
-                f.saveTemp();
+            for (ProjectFile file : modifiedFiles) {
+                file.saveTemp();
             }
         }
         catch (Exception ex) {
-
-            // revert
-            Iterator modified = modifiedFiles.iterator();
-            while (modified.hasNext()) {
-                ProjectFile f = (ProjectFile) modified.next();
-                f.saveUndo();
+            for (ProjectFile file : modifiedFiles) {
+                file.saveUndo();
             }
 
-            throw new ProjectException("Project save failed and was canceled.", ex);
+            throw new ProjectException("Project save failed and was cancelled.", ex);
         }
     }
 
-    protected void processDelete(List existingObjects, List savedFiles) {
+    protected void processDelete(List<Object> existingObjects, List<File> savedFiles) {
 
         // check for deleted
         synchronized (files) {
-            Iterator oldFiles = files.iterator();
-            while (oldFiles.hasNext()) {
-                ProjectFile f = (ProjectFile) oldFiles.next();
+            for (ProjectFile f : files) {
                 File file = f.resolveOldFile();
 
                 // this check is needed, since a file can reuse the name

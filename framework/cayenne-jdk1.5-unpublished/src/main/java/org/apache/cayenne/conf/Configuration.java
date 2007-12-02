@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -55,14 +54,14 @@ public abstract class Configuration {
     private static Log logObj = LogFactory.getLog(Configuration.class);
 
     public static final String DEFAULT_DOMAIN_FILE = "cayenne.xml";
-    public static final Class DEFAULT_CONFIGURATION_CLASS = DefaultConfiguration.class;
+    public static final Class<DefaultConfiguration> DEFAULT_CONFIGURATION_CLASS = DefaultConfiguration.class;
 
     protected static Configuration sharedConfiguration;
 
     /**
      * Lookup map that stores DataDomains with names as keys.
      */
-    protected SortedMap dataDomains = new TreeMap();
+    protected SortedMap<String, DataDomain> dataDomains = new TreeMap<String, DataDomain>();
     protected DataSourceFactory overrideFactory;
     protected ConfigStatus loadStatus = new ConfigStatus();
     protected String domainConfigurationName = DEFAULT_DOMAIN_FILE;
@@ -70,7 +69,7 @@ public abstract class Configuration {
     protected ConfigLoaderDelegate loaderDelegate;
     protected ConfigSaverDelegate saverDelegate;
     protected ConfigurationShutdownHook configurationShutdownHook;
-    protected Map dataViewLocations = new HashMap();
+    protected Map<String, String> dataViewLocations = new HashMap<String, String>();
     protected String projectVersion;
 
     /**
@@ -124,11 +123,11 @@ public abstract class Configuration {
      * Creates and initializes a shared Configuration object of a custom Configuration
      * subclass.
      */
-    public static void initializeSharedConfiguration(Class configurationClass) {
+    public static void initializeSharedConfiguration(Class<? extends Configuration> configurationClass) {
         Configuration conf = null;
 
         try {
-            conf = (Configuration) configurationClass.newInstance();
+            conf = configurationClass.newInstance();
         }
         catch (Exception ex) {
             logObj.error("Error creating shared Configuration: ", ex);
@@ -291,7 +290,7 @@ public abstract class Configuration {
             throw new NullPointerException("Attempt to add DataDomain with no name.");
         }
         
-        Object old = dataDomains.put(domain.getName(), domain);
+        DataDomain old = dataDomains.put(domain.getName(), domain);
         if (old != null && old != domain) {
             dataDomains.put(domain.getName(), old);
             throw new IllegalArgumentException("Attempt to overwrite domain with name "
@@ -309,7 +308,7 @@ public abstract class Configuration {
      * such domain is found.
      */
     public DataDomain getDomain(String name) {
-        return (DataDomain) dataDomains.get(name);
+        return dataDomains.get(name);
     }
 
     /**
@@ -325,7 +324,7 @@ public abstract class Configuration {
             return null;
         }
         else if (size == 1) {
-            return (DataDomain) dataDomains.values().iterator().next();
+            return dataDomains.values().iterator().next();
         }
         else {
             throw new CayenneRuntimeException(
@@ -340,7 +339,7 @@ public abstract class Configuration {
      * caller to clean it up.
      */
     public void removeDomain(String name) {
-        DataDomain domain = (DataDomain) dataDomains.remove(name);
+        DataDomain domain = dataDomains.remove(name);
 
         if (domain != null) {
             domain.setEventManager(null);
@@ -350,7 +349,7 @@ public abstract class Configuration {
     /**
      * Returns an unmodifiable collection of registered DataDomains sorted by domain name.
      */
-    public Collection getDomains() {
+    public Collection<DataDomain> getDomains() {
         return Collections.unmodifiableCollection(dataDomains.values());
     }
 
@@ -422,9 +421,9 @@ public abstract class Configuration {
      * @since 1.1
      * @param dataViewLocations Map of DataView locations.
      */
-    public void setDataViewLocations(Map dataViewLocations) {
+    public void setDataViewLocations(Map<String, String> dataViewLocations) {
         if (dataViewLocations == null)
-            this.dataViewLocations = new HashMap();
+            this.dataViewLocations = new HashMap<String, String>();
         else
             this.dataViewLocations = dataViewLocations;
     }
@@ -435,7 +434,7 @@ public abstract class Configuration {
      * 
      * @since 1.1
      */
-    public Map getDataViewLocations() {
+    public Map<String, String> getDataViewLocations() {
         return dataViewLocations;
     }
 
@@ -443,9 +442,7 @@ public abstract class Configuration {
      * Shutdowns all owned domains. Invokes DataDomain.shutdown().
      */
     public void shutdown() {
-        Collection domains = getDomains();
-        for (Iterator i = domains.iterator(); i.hasNext();) {
-            DataDomain domain = (DataDomain) i.next();
+        for (DataDomain domain : getDomains()) {
             domain.shutdown();
         }
         
@@ -455,7 +452,6 @@ public abstract class Configuration {
     }
 
     private class ConfigurationShutdownHook extends Thread {
-
         public void run() {
             shutdown();
         }

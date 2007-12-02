@@ -20,8 +20,6 @@
 
 package org.apache.cayenne.gen;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
@@ -143,9 +141,7 @@ public class EntityUtils {
             return false;
         }
 
-        Iterator it = anObjEntity.getRelationships().iterator();
-        while (it.hasNext()) {
-            Relationship r = (Relationship) it.next();
+        for (Relationship r : anObjEntity.getRelationships()) {
             if (r.isToMany()) {
                 return true;
             }
@@ -175,9 +171,7 @@ public class EntityUtils {
             return false;
         }
 
-        Iterator it = anObjEntity.getDeclaredRelationships().iterator();
-        while (it.hasNext()) {
-            Relationship r = (Relationship) it.next();
+        for (Relationship r : anObjEntity.getDeclaredRelationships()) {
             if (r.isToMany()) {
                 return true;
             }
@@ -201,9 +195,7 @@ public class EntityUtils {
             return false;
         }
 
-        Iterator it = anObjEntity.getRelationships().iterator();
-        while (it.hasNext()) {
-            Relationship r = (Relationship) it.next();
+        for (Relationship r : anObjEntity.getRelationships()) {
             if (false == r.isToMany()) {
                 return true;
             }
@@ -229,9 +221,7 @@ public class EntityUtils {
             return false;
         }
 
-        Iterator it = anObjEntity.getDeclaredRelationships().iterator();
-        while (it.hasNext()) {
-            Relationship r = (Relationship) it.next();
+        for (Relationship r : anObjEntity.getDeclaredRelationships()) {
             if (!r.isToMany()) {
                 return true;
             }

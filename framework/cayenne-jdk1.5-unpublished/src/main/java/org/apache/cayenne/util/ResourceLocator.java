@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -48,8 +47,8 @@ public class ResourceLocator {
     protected boolean skipHomeDirectory;
 
     // additional lookup paths (as Strings)
-    protected List additionalClassPaths;
-    protected List additionalFilesystemPaths;
+    protected List<String> additionalClassPaths;
+    protected List<String> additionalFilesystemPaths;
 
     // ClassLoader used for resource loading
     protected ClassLoader classLoader;
@@ -215,7 +214,7 @@ public class ResourceLocator {
      * Returns a base URL as a String from which this class was loaded. This is normally a
      * JAR or a file URL, but it is ClassLoader dependent.
      */
-    public static String classBaseUrl(Class aClass) {
+    public static String classBaseUrl(Class<?> aClass) {
         String pathToClass = aClass.getName().replace('.', '/') + ".class";
         ClassLoader classLoader = aClass.getClassLoader();
 
@@ -238,8 +237,8 @@ public class ResourceLocator {
      * directory, current directory and CLASSPATH.
      */
     public ResourceLocator() {
-        this.additionalClassPaths = new ArrayList();
-        this.additionalFilesystemPaths = new ArrayList();
+        this.additionalClassPaths = new ArrayList<String>();
+        this.additionalFilesystemPaths = new ArrayList<String>();
     }
 
     /**
@@ -315,9 +314,8 @@ public class ResourceLocator {
 
         if (!additionalFilesystemPaths.isEmpty()) {
             logObj.debug("searching additional paths: " + this.additionalFilesystemPaths);
-            Iterator pi = this.additionalFilesystemPaths.iterator();
-            while (pi.hasNext()) {
-                File f = new File((String) pi.next(), name);
+            for (String filePath : this.additionalFilesystemPaths) {
+                File f = new File(filePath, name);
                 logObj.debug("searching for: " + f.getAbsolutePath());
                 if (f.exists()) {
                     try {
@@ -337,9 +335,9 @@ public class ResourceLocator {
             if (!this.additionalClassPaths.isEmpty()) {
                 logObj.debug("searching additional classpaths: "
                         + this.additionalClassPaths);
-                Iterator cpi = this.additionalClassPaths.iterator();
-                while (cpi.hasNext()) {
-                    String fullName = cpi.next() + "/" + name;
+
+                for (String classPath : this.additionalClassPaths) {
+                    String fullName = classPath + "/" + name;
                     logObj.debug("searching for: " + fullName);
                     URL url = findURLInClassLoader(fullName, getClassLoader());
                     if (url != null) {
