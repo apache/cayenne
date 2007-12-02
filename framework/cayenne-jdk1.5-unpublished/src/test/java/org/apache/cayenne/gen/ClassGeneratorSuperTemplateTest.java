@@ -23,10 +23,13 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 
+/**
+ * @deprecated since 3.0
+ */
 public class ClassGeneratorSuperTemplateTest extends ClassGeneratorTestBase {
 
     protected ClassGenerator createGenerator() throws Exception {
-        return new ClassGenerator(MapClassGenerator.SUPERCLASS_TEMPLATE, MapClassGenerator.DEFAULT_VERSION);
+        return new ClassGenerator(MapClassGenerator.SUPERCLASS_TEMPLATE, ClassGenerator.VERSION_1_1);
     }
 
     public void testNoImports() throws Exception {

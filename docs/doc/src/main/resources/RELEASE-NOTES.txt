@@ -23,6 +23,7 @@ CAY-904 Switch cayenne to Java 5: merge cayenne-jdk1.4-unpublished to cayenne-jd
 CAY-916 Ordering should be able to ignore paths with null elements
 CAY-918 An exception during in-memory sorting of IncrementalFaultList
 CAY-921 Remove DerviedDbEntity support from Cayenne
+CAY-927 Switch to version 1.2 as default generation mechanism , deprecate 1.1 generator
 
 Bug fixes since M2:
 

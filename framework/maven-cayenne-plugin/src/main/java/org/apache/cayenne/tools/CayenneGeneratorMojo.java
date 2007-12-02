@@ -196,7 +196,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * &quot;importUtils&quot; in the velocity context. (Default is
 	 * &quot;1.2&quot;.)
 	 * 
-	 * @parameter expression="${cgen.version}" default-value="1.1"
+	 * @parameter expression="${cgen.version}"
 	 */
 	private String version;
 

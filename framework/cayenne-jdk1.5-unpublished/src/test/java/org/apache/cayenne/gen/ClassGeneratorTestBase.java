@@ -26,6 +26,7 @@ import org.apache.cayenne.unit.BasicCase;
 
 /**
  * Superclass of ClassGenerator tests.
+ * @deprecated since 3.0
  */
 public abstract class ClassGeneratorTestBase extends BasicCase {
 

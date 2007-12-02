@@ -21,6 +21,10 @@ UPGRADING FROM 2.0 AND OTHER APACHE RELEASES
   - A new "cayenne-agent-x.x.x.jar" is included. It is used for class enhancement 
     with POJO's and JPA. "Classic" Cayenne users can ignore this file.
     
+* Ant class generator is using what was called "version 1.2" by default. This means that if you were
+  using custom Velocity templates in 1.1 mode, you should either change the templates or specify 'version="1.1"'
+  in the buildfile explicitly.
+
 * Cross-platform Modeler Startup is now done without a batch file or a shell script. 
   A "fat" CayenneModeler.jar is included in the "cayenne-x.x.x/bin" directory
   and can be run either by double-clicking the jar (on platforms that support that)

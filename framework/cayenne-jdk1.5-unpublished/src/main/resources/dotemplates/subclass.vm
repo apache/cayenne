@@ -22,6 +22,8 @@ package ${classGen.packageName};
 import ${classGen.superPackageName}.${classGen.superPrefix}${classGen.className};
 #end
 
+/** WARNING: This template is deprecated in Cayenne 3.0
+  */
 public class ${classGen.className} extends ${classGen.superPrefix}${classGen.className} {
 
 }

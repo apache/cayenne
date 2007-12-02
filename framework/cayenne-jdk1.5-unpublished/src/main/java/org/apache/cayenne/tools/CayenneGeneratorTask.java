@@ -27,7 +27,6 @@ import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.ClassGeneratorMode;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.gen.DefaultClassGenerator;
-import org.apache.cayenne.gen.MapClassGenerator;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
@@ -70,7 +69,6 @@ public class CayenneGeneratorTask extends CayenneTask {
         this.mode = ClassGeneratorMode.entity.name();
         this.outputPattern = "*.java";
         this.usepkgpath = true;
-        this.version = MapClassGenerator.DEFAULT_VERSION;
     }
 
     protected VelocityContext getVppContext() {
@@ -258,17 +256,6 @@ public class CayenneGeneratorTask extends CayenneTask {
      * @deprecated since 3.0
      */
     public void setVersion(String version) {
-        if (!ClassGenerator.VERSION_1_1.equals(version)
-                && !ClassGenerator.VERSION_1_2.equals(version)) {
-            throw new BuildException("'version' must be '"
-                    + ClassGenerator.VERSION_1_1
-                    + "' or '"
-                    + ClassGenerator.VERSION_1_2
-                    + "', but was '"
-                    + version
-                    + "'");
-        }
-
         this.version = version;
     }
 
@@ -325,5 +312,4 @@ public class CayenneGeneratorTask extends CayenneTask {
             vppConfig = VPPConfig.getDefaultConfig(getProject());
         }
     }
-
 }

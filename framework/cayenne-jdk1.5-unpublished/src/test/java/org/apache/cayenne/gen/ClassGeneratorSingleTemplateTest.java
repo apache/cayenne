@@ -25,11 +25,12 @@ import org.apache.cayenne.map.ObjRelationship;
 
 /**
  * @author Andrus Adamchik
+ * @deprecated since 3.0
  */
 public class ClassGeneratorSingleTemplateTest extends ClassGeneratorTestBase {
 
     protected ClassGenerator createGenerator() throws Exception {
-        return new ClassGenerator(MapClassGenerator.SINGLE_CLASS_TEMPLATE, MapClassGenerator.DEFAULT_VERSION);
+        return new ClassGenerator(MapClassGenerator.SINGLE_CLASS_TEMPLATE, ClassGenerator.VERSION_1_1);
     }
 
     public void testNoImports() throws Exception {
