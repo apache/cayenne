@@ -16,23 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.gen;
+package org.apache.cayenne.tools;
 
 import java.io.File;
 
+import org.apache.cayenne.gen.DefaultClassGenerator;
 import org.apache.tools.ant.Task;
 
 /**
- * Ant-specific extension of DefaultClassGenerator that provides logging functions.
+ * Ant-specific extension of the class generation controller.
  * 
+ * @since 3.0
  * @author Andrus Adamchik
- * @deprecated since 3.0 this class is replaced with a non-public class in the tools
- *             package.
  */
-public class AntClassGenerator extends DefaultClassGenerator {
+class AntClassGenerator extends DefaultClassGenerator {
 
-    protected Task parentTask;
+    private Task parentTask;
 
     protected File fileForSuperclass(String pkgName, String className) throws Exception {
 
@@ -53,7 +52,7 @@ public class AntClassGenerator extends DefaultClassGenerator {
         return outFile;
     }
 
-    public Task getParentTask() {
+    Task getParentTask() {
         return parentTask;
     }
 
@@ -62,7 +61,7 @@ public class AntClassGenerator extends DefaultClassGenerator {
      * 
      * @param parentTask An Ant task that provides Ant context to this generator.
      */
-    public void setParentTask(Task parentTask) {
+    void setParentTask(Task parentTask) {
         this.parentTask = parentTask;
     }
 }

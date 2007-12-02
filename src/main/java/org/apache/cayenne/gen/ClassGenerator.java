@@ -63,7 +63,7 @@ public class ClassGenerator {
     public ClassGenerator(String template, String versionString) throws Exception {
         this.versionString = versionString;
 
-        if (false == VERSION_1_1.equals(versionString)) {
+        if (!VERSION_1_1.equals(versionString)) {
             throw new IllegalStateException(
                     "Illegal Version in generateClass(Writer,ObjEntity): "
                             + versionString);
@@ -146,7 +146,8 @@ public class ClassGenerator {
      * Generates Java code for the ObjEntity. Output is written to the provided Writer.
      */
     public void generateClass(Writer out, ObjEntity entity) throws Exception {
-        if (false == VERSION_1_1.equals(versionString)) {
+        
+        if (!VERSION_1_1.equals(versionString)) {
             throw new IllegalStateException(
                     "Illegal Version in generateClass(Writer,ObjEntity): "
                             + versionString);
@@ -166,7 +167,8 @@ public class ClassGenerator {
             String fqnBaseClass,
             String fqnSuperClass,
             String fqnSubClass) throws Exception {
-        if (false == VERSION_1_2.equals(versionString)) {
+        
+        if (!VERSION_1_2.equals(versionString)) {
             throw new IllegalStateException(
                     "Illegal Version in generateClass(Writer,ObjEntity,String,String,String): "
                             + versionString);
