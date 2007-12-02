@@ -35,6 +35,8 @@ import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
  * @since 1.2
  * @author Andrus Adamchik
  */
+// must be public top-level class as it is
+// instantiated via reflection by Velocity
 public class ClassGeneratorResourceLoader extends FileResourceLoader {
 
     /**

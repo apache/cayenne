@@ -20,7 +20,6 @@ package org.apache.cayenne.tools;
 
 import java.io.File;
 
-import org.apache.cayenne.gen.AntClassGenerator;
 import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.DefaultClassGenerator;
 import org.apache.tools.ant.BuildException;
@@ -66,7 +65,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         validateAttributes();
 
         // Take care of setting up VPP for the generator.
-        if (false == ClassGenerator.VERSION_1_1.equals(generator.getVersionString())) {
+        if (!ClassGenerator.VERSION_1_1.equals(generator.getVersionString())) {
             initializeVppConfig();
             generator.setVppConfig(vppConfig);
         }
@@ -88,7 +87,7 @@ public class CayenneGeneratorTask extends CayenneTask {
     }
 
     /**
-     * Validates atttributes that are not related to internal DefaultClassGenerator.
+     * Validates attributes that are not related to internal DefaultClassGenerator.
      * Throws BuildException if attributes are invalid.
      */
     protected void validateAttributes() throws BuildException {
