@@ -40,6 +40,8 @@ import org.apache.cayenne.tools.NamePatternMatcher;
  */
 public class DefaultClassGenerator extends MapClassGenerator {
 
+    private static final String WILDCARD = "*";
+
     protected File destDir;
     protected boolean overwrite;
     protected boolean usePkgPath = true;
@@ -47,7 +49,6 @@ public class DefaultClassGenerator extends MapClassGenerator {
     protected String template;
     protected String superTemplate;
     protected long timestamp = System.currentTimeMillis();
-    private static final String WILDCARD = "*";
     protected String outputPattern = "*.java";
 
     /**

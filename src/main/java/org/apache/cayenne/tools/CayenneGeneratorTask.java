@@ -19,9 +19,11 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.DefaultClassGenerator;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
 
@@ -42,11 +44,8 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected File additionalMaps[];
     protected DefaultClassGenerator generator;
 
-    protected CayenneGeneratorUtil generatorUtil;
-
     public CayenneGeneratorTask() {
         generator = createGenerator();
-        generatorUtil = new CayenneGeneratorUtil();
     }
 
     /**
@@ -70,16 +69,21 @@ public class CayenneGeneratorTask extends CayenneTask {
             generator.setVppConfig(vppConfig);
         }
 
-        // Initialize the util generator state.
-        generatorUtil.setAdditionalMaps(additionalMaps);
-        generatorUtil.setExcludeEntitiesPattern(excludeEntitiesPattern);
-        generatorUtil.setGenerator(generator);
-        generatorUtil.setIncludeEntitiesPattern(includeEntitiesPattern);
-        generatorUtil.setLogger(new AntTaskLogger(this));
-        generatorUtil.setMap(map);
+        ILog logger = new AntTaskLogger(this);
+        CayenneGenerationMapLoader mapLoader = new CayenneGenerationMapLoader();
+        mapLoader.setNameFilter(new NamePatternMatcher(
+                logger,
+                includeEntitiesPattern,
+                excludeEntitiesPattern));
+        mapLoader.setMainDataMapFile(map);
+        mapLoader.setAdditionalDataMapFiles(additionalMaps);
 
         try {
-            generatorUtil.execute();
+            generator.setTimestamp(map.lastModified());
+            generator.setDataMap(mapLoader.getMainDataMap());
+            generator.setObjEntities((List<ObjEntity>) mapLoader.getFilteredEntities());
+            generator.validateAttributes();
+            generator.execute();
         }
         catch (Exception e) {
             throw new BuildException(e);
@@ -87,8 +91,8 @@ public class CayenneGeneratorTask extends CayenneTask {
     }
 
     /**
-     * Validates attributes that are not related to internal DefaultClassGenerator.
-     * Throws BuildException if attributes are invalid.
+     * Validates attributes that are not related to internal DefaultClassGenerator. Throws
+     * BuildException if attributes are invalid.
      */
     protected void validateAttributes() throws BuildException {
         if (map == null && this.getProject() == null) {

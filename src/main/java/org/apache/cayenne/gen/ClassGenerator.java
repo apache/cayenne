@@ -41,6 +41,7 @@ import foundrylogic.vpp.VPPConfig;
  * "classGen".
  * 
  * @author Andrus Adamchik
+ * @deprecated since 3.0 use {@link TemplateProcessor}.
  */
 public class ClassGenerator {
 
@@ -146,7 +147,7 @@ public class ClassGenerator {
      * Generates Java code for the ObjEntity. Output is written to the provided Writer.
      */
     public void generateClass(Writer out, ObjEntity entity) throws Exception {
-        
+
         if (!VERSION_1_1.equals(versionString)) {
             throw new IllegalStateException(
                     "Illegal Version in generateClass(Writer,ObjEntity): "
@@ -167,7 +168,7 @@ public class ClassGenerator {
             String fqnBaseClass,
             String fqnSuperClass,
             String fqnSubClass) throws Exception {
-        
+
         if (!VERSION_1_2.equals(versionString)) {
             throw new IllegalStateException(
                     "Illegal Version in generateClass(Writer,ObjEntity,String,String,String): "

@@ -41,9 +41,8 @@ public class NamePatternMatcher {
     protected Pattern[] itemIncludeFilters;
     protected Pattern[] itemExcludeFilters;
 
-    public NamePatternMatcher(ILog parentTask, String includePattern,
-            String excludePattern) {
-        this.logger = parentTask;
+    public NamePatternMatcher(ILog logger, String includePattern, String excludePattern) {
+        this.logger = logger;
         this.itemIncludeFilters = createPatterns(includePattern);
         this.itemExcludeFilters = createPatterns(excludePattern);
     }
@@ -128,10 +127,34 @@ public class NamePatternMatcher {
     }
 
     /**
+     * Returns true if a given object property satisfies the include/exclude patterns.
+     * 
+     * @since 3.0
+     */
+    public boolean isIncluded(String string) {
+
+        if ((itemIncludeFilters.length == 0) && (itemExcludeFilters.length == 0)) {
+            return true;
+        }
+
+        if (!passedIncludeFilter(string)) {
+            return false;
+        }
+
+        if (!passedExcludeFilter(string)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Applies preconfigured list of filters to the list, removing entities that do not
      * pass the filter.
+     * 
+     * @deprecated since 3.0
      */
-    protected List filter(List items) {
+    protected List<?> filter(List<?> items) {
         if (items == null || items.isEmpty()) {
             return items;
         }
@@ -140,7 +163,7 @@ public class NamePatternMatcher {
             return items;
         }
 
-        Iterator it = items.iterator();
+        Iterator<?> it = items.iterator();
         while (it.hasNext()) {
             CayenneMapEntry entity = (CayenneMapEntry) it.next();
 
@@ -159,8 +182,50 @@ public class NamePatternMatcher {
     }
 
     /**
+     * Returns true if an object matches any one of the "include" patterns, or if there is
+     * no "include" patterns defined.
+     * 
+     * @since 3.0
+     */
+    boolean passedIncludeFilter(String item) {
+        if (itemIncludeFilters.length == 0) {
+            return true;
+        }
+
+        for (int i = 0; i < itemIncludeFilters.length; i++) {
+            if (itemIncludeFilters[i].matcher(item).find()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if an object does not match any one of the "exclude" patterns, or if
+     * there is no "exclude" patterns defined.
+     * 
+     * @since 3.0
+     */
+    boolean passedExcludeFilter(String item) {
+        if (itemExcludeFilters.length == 0) {
+            return true;
+        }
+
+        for (int i = 0; i < itemExcludeFilters.length; i++) {
+            if (itemExcludeFilters[i].matcher(item).find()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Returns true if the entity matches any one of the "include" patterns, or if there
      * is no "include" patterns defined.
+     * 
+     * @deprecated since 3.0
      */
     protected boolean passedIncludeFilter(CayenneMapEntry item) {
         if (itemIncludeFilters.length == 0) {
@@ -180,6 +245,8 @@ public class NamePatternMatcher {
     /**
      * Returns true if the entity does not match any one of the "exclude" patterns, or if
      * there is no "exclude" patterns defined.
+     * 
+     * @deprecated since 3.0
      */
     protected boolean passedExcludeFilter(CayenneMapEntry item) {
         if (itemExcludeFilters.length == 0) {
