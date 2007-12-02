@@ -163,6 +163,8 @@ public abstract class MapClassGenerator {
     /**
      * Runs class generation. Produces a pair of Java classes for each ObjEntity in the
      * map. Uses default Cayenne templates for classes.
+     * 
+     * @deprecated since 3.0 - unused
      */
     public void generateClassPairs() throws Exception {
         generateClassPairs(
