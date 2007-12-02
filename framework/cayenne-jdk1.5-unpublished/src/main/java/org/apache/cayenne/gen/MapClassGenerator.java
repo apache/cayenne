@@ -71,10 +71,10 @@ public abstract class MapClassGenerator {
     protected static final String VERSION_1_1 = ClassGenerator.VERSION_1_1;
     protected static final String VERSION_1_2 = ClassGenerator.VERSION_1_2;
 
-    protected static final String DEFAULT_VERSION = VERSION_1_1;
+    public static final String DEFAULT_VERSION = VERSION_1_1;
 
-    protected static final String MODE_DATAMAP = "datamap";
-    protected static final String MODE_ENTITY = "entity";
+    public static final String MODE_DATAMAP = "datamap";
+    public static final String MODE_ENTITY = "entity";
 
     protected String versionString = DEFAULT_VERSION;
 

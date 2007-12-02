@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.DefaultClassGenerator;
+import org.apache.cayenne.gen.MapClassGenerator;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
@@ -42,10 +43,25 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     protected File map;
     protected File additionalMaps[];
-    protected DefaultClassGenerator generator;
+    protected boolean client;
+    protected File destDir;
+    protected String encoding;
+    protected boolean makepairs;
+    protected String mode;
+    protected String outputPattern;
+    protected boolean overwrite;
+    protected String superpkg;
+    protected String supertemplate;
+    protected String template;
+    protected boolean usepkgpath;
+    protected String version;
 
     public CayenneGeneratorTask() {
-        generator = createGenerator();
+        this.makepairs = true;
+        this.mode = MapClassGenerator.MODE_ENTITY;
+        this.outputPattern = "*.java";
+        this.usepkgpath = true;
+        this.version = MapClassGenerator.DEFAULT_VERSION;
     }
 
     /**
@@ -54,6 +70,20 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected DefaultClassGenerator createGenerator() {
         AntClassGenerator gen = new AntClassGenerator();
         gen.setParentTask(this);
+
+        gen.setClient(client);
+        gen.setDestDir(destDir);
+        gen.setEncoding(encoding);
+        gen.setMakePairs(makepairs);
+        gen.setMode(mode);
+        gen.setOutputPattern(outputPattern);
+        gen.setOverwrite(overwrite);
+        gen.setSuperPkg(superpkg);
+        gen.setSuperTemplate(supertemplate);
+        gen.setTemplate(template);
+        gen.setUsePkgPath(usepkgpath);
+        gen.setVersionString(version);
+
         return gen;
     }
 
@@ -62,6 +92,8 @@ public class CayenneGeneratorTask extends CayenneTask {
      */
     public void execute() throws BuildException {
         validateAttributes();
+        
+        DefaultClassGenerator generator = createGenerator();
 
         // Take care of setting up VPP for the generator.
         if (!ClassGenerator.VERSION_1_1.equals(generator.getVersionString())) {
@@ -76,7 +108,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         loadAction.setAdditionalDataMapFiles(additionalMaps);
 
         CayenneGeneratorEntityFilterAction filterAction = new CayenneGeneratorEntityFilterAction();
-        filterAction.setClient(generator.isClient());
+        filterAction.setClient(client);
         filterAction.setNameFilter(new NamePatternMatcher(
                 logger,
                 includeEntitiesPattern,
@@ -132,68 +164,74 @@ public class CayenneGeneratorTask extends CayenneTask {
      * Sets the destDir.
      */
     public void setDestDir(File destDir) {
-        generator.setDestDir(destDir);
+        this.destDir = destDir;
     }
 
     /**
      * Sets <code>overwrite</code> property.
      */
     public void setOverwrite(boolean overwrite) {
-        generator.setOverwrite(overwrite);
+        this.overwrite = overwrite;
     }
 
     /**
      * Sets <code>makepairs</code> property.
      */
     public void setMakepairs(boolean makepairs) {
-        generator.setMakePairs(makepairs);
+        this.makepairs = makepairs;
     }
 
     /**
      * Sets <code>template</code> property.
      */
     public void setTemplate(String template) {
-        generator.setTemplate(template);
+        this.template = template;
     }
 
     /**
      * Sets <code>supertemplate</code> property.
      */
     public void setSupertemplate(String supertemplate) {
-        generator.setSuperTemplate(supertemplate);
+        this.supertemplate = supertemplate;
     }
 
     /**
      * Sets <code>usepkgpath</code> property.
      */
     public void setUsepkgpath(boolean usepkgpath) {
-        generator.setUsePkgPath(usepkgpath);
+        this.usepkgpath = usepkgpath;
     }
 
     /**
      * Sets <code>superpkg</code> property.
      */
     public void setSuperpkg(String superpkg) {
-        generator.setSuperPkg(superpkg);
+        this.superpkg = superpkg;
     }
 
     /**
      * Sets <code>client</code> property.
      */
     public void setClient(boolean client) {
-        generator.setClient(client);
+        this.client = client;
     }
 
     /**
      * Sets <code>version</code> property.
      */
-    public void setVersion(String versionString) {
-        try {
-            generator.setVersionString(versionString);
+    public void setVersion(String version) {
+        if (!ClassGenerator.VERSION_1_1.equals(version)
+                && !ClassGenerator.VERSION_1_2.equals(version)) {
+            throw new BuildException("'version' must be '"
+                    + ClassGenerator.VERSION_1_1
+                    + "' or '"
+                    + ClassGenerator.VERSION_1_2
+                    + "', but was '"
+                    + version
+                    + "'");
         }
-        catch (IllegalStateException e) {
-            throw new BuildException(e.getMessage(), e);
-        }
+
+        this.version = version;
     }
 
     /**
@@ -201,7 +239,7 @@ public class CayenneGeneratorTask extends CayenneTask {
      * non-default encoding.
      */
     public void setEncoding(String encoding) {
-        generator.setEncoding(encoding);
+        this.encoding = encoding;
     }
 
     /**
@@ -222,14 +260,14 @@ public class CayenneGeneratorTask extends CayenneTask {
      * Sets <code>outputPattern</code> property.
      */
     public void setOutputPattern(String outputPattern) {
-        generator.setOutputPattern(outputPattern);
+        this.outputPattern = outputPattern;
     }
 
     /**
      * Sets <code>mode</code> property.
      */
     public void setMode(String mode) {
-        generator.setMode(mode);
+        this.mode = mode;
     }
 
     /**
