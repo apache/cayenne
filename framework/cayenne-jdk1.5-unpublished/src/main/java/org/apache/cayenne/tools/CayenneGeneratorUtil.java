@@ -32,8 +32,8 @@ import java.io.File;
 import java.util.*;
 
 /**
- * Utility class to perform class generation from data map. This class is used by
- * ant and Maven plugins.
+ * Utility class to perform class generation from data map. This class is used by ant and
+ * Maven plugins.
  * 
  * @author Andrus Adamchik, Kevin Menard
  * @since 3.0
@@ -41,19 +41,19 @@ import java.util.*;
 class CayenneGeneratorUtil {
 
     protected ILog logger;
-    
+
     protected MapLoader mapLoader;
     protected File map;
     protected File additionalMaps[];
     protected DefaultClassGenerator generator;
-    
+
     protected String includeEntitiesPattern;
     protected String excludeEntitiesPattern;
-    
+
     /** Loads and returns a DataMap by File. */
     public DataMap loadDataMap(File mapName) throws Exception {
         InputSource in = new InputSource(mapName.toURL().toString());
-        if(mapLoader == null) {
+        if (mapLoader == null) {
             mapLoader = new MapLoader();
         }
         return mapLoader.loadDataMap(in);
@@ -63,7 +63,7 @@ class CayenneGeneratorUtil {
     public DataMap loadDataMap() throws Exception {
         return loadDataMap(map);
     }
-    
+
     /** Loads and returns DataMap based on <code>map</code> attribute. */
     protected DataMap[] loadAdditionalDataMaps() throws Exception {
         if (null == additionalMaps) {
@@ -76,7 +76,7 @@ class CayenneGeneratorUtil {
         }
         return dataMaps;
     }
-    
+
     public void processMap() throws Exception {
 
         DataMap dataMap = loadDataMap();
@@ -90,22 +90,21 @@ class CayenneGeneratorUtil {
             additionalDataMaps[i].setNamespace(entityResolver);
         }
 
-        Collection allEntities = dataMap.getObjEntities();
-        List filteredEntities = new ArrayList(allEntities.size());
+        Collection<ObjEntity> allEntities = dataMap.getObjEntities();
+        List<ObjEntity> filteredEntities = new ArrayList<ObjEntity>(allEntities.size());
 
         // filter client entities
         if (generator.isClient()) {
             if (dataMap.isClientSupported()) {
-                Iterator it = allEntities.iterator();
-                while (it.hasNext()) {
-                    ObjEntity entity = (ObjEntity) it.next();
+                for (ObjEntity entity : allEntities) {
                     if (entity.isClientAllowed()) {
                         filteredEntities.add(entity);
                     }
                 }
             }
             else {
-                throw new CayenneRuntimeException("Cannot generate client classes because the data map is not configured to allow them.");
+                throw new CayenneRuntimeException(
+                        "Cannot generate client classes because the data map is not configured to allow them.");
             }
         }
         else {
@@ -125,9 +124,8 @@ class CayenneGeneratorUtil {
         generator.validateAttributes();
         generator.execute();
     }
-    
-    public void execute() throws Exception
-    {
+
+    public void execute() throws Exception {
         try {
             processMap();
         }
@@ -148,23 +146,23 @@ class CayenneGeneratorUtil {
     public void setAdditionalMaps(File[] additionalMaps) {
         this.additionalMaps = additionalMaps;
     }
-    
+
     public void setExcludeEntitiesPattern(String excludeEntitiesPattern) {
         this.excludeEntitiesPattern = excludeEntitiesPattern;
     }
-    
+
     public void setGenerator(DefaultClassGenerator generator) {
         this.generator = generator;
     }
-    
+
     public void setIncludeEntitiesPattern(String includeEntitiesPattern) {
         this.includeEntitiesPattern = includeEntitiesPattern;
     }
-    
+
     public void setLogger(ILog logger) {
         this.logger = logger;
     }
-    
+
     public void setMap(File map) {
         this.map = map;
     }
