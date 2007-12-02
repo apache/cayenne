@@ -57,11 +57,11 @@ public class ZipUtil {
         ZipFile zip = new ZipFile(zipFile);
 
         try {
-            Enumeration en = zip.entries();
+            Enumeration<? extends ZipEntry> en = zip.entries();
             int bufSize = 8 * 1024;
 
             while (en.hasMoreElements()) {
-                ZipEntry entry = (ZipEntry) en.nextElement();
+                ZipEntry entry = en.nextElement();
                 File file =
                     (destDir != null)
                         ? new File(destDir, entry.getName())

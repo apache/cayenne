@@ -22,7 +22,6 @@ package org.apache.cayenne.tools;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
@@ -30,6 +29,7 @@ import org.apache.cayenne.access.DataPort;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.conf.FileConfiguration;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -112,9 +112,7 @@ public class DataPortTask extends CayenneTask {
     }
 
     protected DataNode findNode(Configuration configuration, String name) {
-        Iterator domains = configuration.getDomains().iterator();
-        while (domains.hasNext()) {
-            DataDomain domain = (DataDomain) domains.next();
+        for (DataDomain domain : configuration.getDomains()) {
             DataNode node = domain.getNode(name);
             if (node != null) {
                 return node;
@@ -124,20 +122,16 @@ public class DataPortTask extends CayenneTask {
         return null;
     }
 
-    protected Collection getAllEntities(DataNode source, DataNode target) {
+    protected Collection<DbEntity> getAllEntities(DataNode source, DataNode target) {
         // use a set to exclude duplicates, though a valid project will probably have
         // none...
-        Collection allEntities = new HashSet();
+        Collection<DbEntity> allEntities = new HashSet<DbEntity>();
 
-        Iterator maps = source.getDataMaps().iterator();
-        while (maps.hasNext()) {
-            DataMap map = (DataMap) maps.next();
+        for (DataMap map : source.getDataMaps()) {
             allEntities.addAll(map.getDbEntities());
         }
 
-        maps = target.getDataMaps().iterator();
-        while (maps.hasNext()) {
-            DataMap map = (DataMap) maps.next();
+        for (DataMap map : target.getDataMaps()) {
             allEntities.addAll(map.getDbEntities());
         }
 

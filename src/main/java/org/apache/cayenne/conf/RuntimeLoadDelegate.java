@@ -21,7 +21,6 @@ package org.apache.cayenne.conf;
 
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -54,12 +53,12 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
 
     // TODO: andrus, 7/17/2006 - these variables, and project upgrade logic should be
     // refactored out of the MapLoader. In fact we should either modify raw XML during the
-    // upgrade, or implement some consistent upgrade API across variou loaders
+    // upgrade, or implement some consistent upgrade API across various loaders
     final static String _1_2_PACKAGE_PREFIX = "org.objectstyle.cayenne.";
     final static String _2_0_PACKAGE_PREFIX = "org.apache.cayenne.";
 
-    protected Map domains = new HashMap();
-    protected Map views = new HashMap();
+    protected Map<String, DataDomain> domains = new HashMap<String, DataDomain>();
+    protected Map<String, String> views = new HashMap<String, String>();
     protected ConfigStatus status;
     protected Configuration config;
     protected long startTime;
@@ -77,7 +76,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
     }
 
     protected DataDomain findDomain(String name) throws FindException {
-        DataDomain domain = (DataDomain) domains.get(name);
+        DataDomain domain = domains.get(name);
         if (domain == null) {
             throw new FindException("Can't find DataDomain: " + name);
         }
@@ -152,7 +151,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         domains.put(domainName, new DataDomain(domainName));
     }
 
-    public void shouldLoadDataMaps(String domainName, Map locations) {
+    public void shouldLoadDataMaps(String domainName, Map<String, DataMap> locations) {
         if (locations.size() == 0) {
             return;
         }
@@ -167,9 +166,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         }
 
         // load DataMaps tree
-        Iterator it = locations.keySet().iterator();
-        while (it.hasNext()) {
-            String name = (String) it.next();
+        for (String name : locations.keySet()) {
             DataMap map = domain.getMap(name);
             if (map != null) {
                 continue;
@@ -417,7 +414,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
      * 
      * @return List
      */
-    public Map getDomains() {
+    public Map<String, DataDomain> getDomains() {
         return domains;
     }
 
@@ -465,9 +462,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         }
 
         // load missing relationships and update configuration object
-        Iterator it = getDomains().values().iterator();
-        while (it.hasNext()) {
-            DataDomain domain = (DataDomain) it.next();
+        for (DataDomain domain : getDomains().values()) {
             updateDefaults(domain);
             config.addDomain(domain);
         }
@@ -489,13 +484,9 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
     protected void updateDefaults(DataDomain domain) {
 
         // connect DB layer
-        Iterator maps = domain.getDataMaps().iterator();
-        while (maps.hasNext()) {
-            DataMap map = (DataMap) maps.next();
+        for (DataMap map : domain.getDataMaps()) {
 
-            Iterator entities = map.getDbEntities().iterator();
-            while (entities.hasNext()) {
-                DbEntity entity = (DbEntity) entities.next();
+            for (DbEntity entity : map.getDbEntities()) {
 
                 // iterate by copy to avoid concurrency modification errors on reflexive
                 // relationships
@@ -520,13 +511,9 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         }
 
         // connect object layer
-        maps = domain.getDataMaps().iterator();
-        while (maps.hasNext()) {
-            DataMap map = (DataMap) maps.next();
+        for (DataMap map : domain.getDataMaps()) {
 
-            Iterator entities = map.getObjEntities().iterator();
-            while (entities.hasNext()) {
-                ObjEntity entity = (ObjEntity) entities.next();
+            for (ObjEntity entity : map.getObjEntities()) {
 
                 // iterate by copy to avoid concurrency modification errors on reflexive
                 // relationships

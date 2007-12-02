@@ -32,7 +32,7 @@ public class ProjectConfigInfo {
 	protected File sourceJar;
 	protected File destJar;
 	protected File altProjectFile;
-	protected List nodes = new ArrayList();
+	protected List<DataNodeConfigInfo> nodes = new ArrayList<DataNodeConfigInfo>();
 
 	public void addToNodes(DataNodeConfigInfo nodeInfo) {
 		nodes.add(nodeInfo);
@@ -58,7 +58,7 @@ public class ProjectConfigInfo {
 	 * Returns the nodes.
 	 * @return List
 	 */
-	public List getNodes() {
+	public List<DataNodeConfigInfo> getNodes() {
 		return nodes;
 	}
 
@@ -90,7 +90,7 @@ public class ProjectConfigInfo {
 	 * Sets the nodes.
 	 * @param nodes The nodes to set
 	 */
-	public void setNodes(List nodes) {
+	public void setNodes(List<DataNodeConfigInfo> nodes) {
 		this.nodes = nodes;
 	}
 

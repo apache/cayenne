@@ -20,7 +20,6 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
-import java.util.Iterator;
 
 import org.apache.cayenne.project.DataNodeConfigInfo;
 import org.apache.cayenne.project.ProjectConfigInfo;
@@ -102,9 +101,7 @@ public class DeploymentConfigurator extends CayenneTask {
                     + info.getAltProjectFile());
         }
 
-        Iterator nodes = info.getNodes().iterator();
-        while (nodes.hasNext()) {
-            DataNodeConfigInfo node = (DataNodeConfigInfo) nodes.next();
+        for (DataNodeConfigInfo node : info.getNodes()) {
             if (node.getName() == null) {
                 throw new BuildException("'node.name' attribute is required.");
             }

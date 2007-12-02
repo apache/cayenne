@@ -187,7 +187,7 @@ public class DbGeneratorTask extends CayenneTask {
         if (adapter != null) {
             // Try to create an instance of the DB adapter.
             try {
-                Class c = Class.forName(adapter);
+                Class<?> c = Class.forName(adapter);
                 this.adapter = (DbAdapter) c.newInstance();
             }
             catch (Exception e) {

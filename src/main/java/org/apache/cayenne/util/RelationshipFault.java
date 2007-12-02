@@ -32,7 +32,7 @@ import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.reflect.Property;
 
 /**
- * An abstract superlcass of lazily faulted to-one and to-many relationships.
+ * An abstract superclass of lazily faulted to-one and to-many relationships.
  * 
  * @since 1.2
  * @author Andrus Adamchik
