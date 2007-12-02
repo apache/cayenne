@@ -17,10 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.gen;
-
-import java.util.Iterator;
 
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
@@ -29,9 +26,9 @@ import org.apache.cayenne.util.NameConverter;
 
 /**
  * Class generation engine for ObjEntities based on <a
- * href="http://jakarta.apache.org/velocity/" target="_blank">Velocity templates
- * </a>. Instance of ClassGenerationInfo is available inside Velocity template under
- * the key "classGen".
+ * href="http://jakarta.apache.org/velocity/" target="_blank">Velocity templates </a>.
+ * Instance of ClassGenerationInfo is available inside Velocity template under the key
+ * "classGen".
  * 
  * @author Andrus Adamchik
  * @since 1.2
@@ -63,32 +60,31 @@ public class ClassGenerationInfo {
     }
 
     /**
-     * Returns <code>superPackageName</code> property that defines a
-     * superclass's package name.
+     * Returns <code>superPackageName</code> property that defines a superclass's
+     * package name.
      */
     public String getSuperPackageName() {
         return superPackageName;
     }
 
     /**
-     * Sets <code>superPackageName</code> property that defines a superclass's
-     * package name.
+     * Sets <code>superPackageName</code> property that defines a superclass's package
+     * name.
      */
     protected void setSuperPackageName(String superPackageName) {
         this.superPackageName = superPackageName;
     }
 
     /**
-     * Returns class name (without a package) of the class associated with this
-     * generator.
+     * Returns class name (without a package) of the class associated with this generator.
      */
     public String getClassName() {
         return className;
     }
 
     /**
-     * Sets class name of the class associated with this
-     * generator. Class name must not include a package.
+     * Sets class name of the class associated with this generator. Class name must not
+     * include a package.
      */
     protected void setClassName(String className) {
         this.className = className;
@@ -113,7 +109,7 @@ public class ClassGenerationInfo {
 
         return type;
     }
-    
+
     /**
      * @since 3.0
      */
@@ -121,11 +117,11 @@ public class ClassGenerationInfo {
         String value = (String) ImportUtils.classesForPrimitives.get(type);
         return formatJavaType(value != null ? value : type);
     }
-    
+
     public boolean isNonBooleanPrimitive(String type) {
         return ImportUtils.classesForPrimitives.containsKey(type) && !isBoolean(type);
     }
- 
+
     /**
      * @since 3.0
      */
@@ -136,22 +132,23 @@ public class ClassGenerationInfo {
     public String formatVariableName(String variableName) {
         if (MappingNamesHelper.getInstance().isReservedJavaKeyword(variableName)) {
             return "_" + variableName;
-        } else {
+        }
+        else {
             return variableName;
         }
     }
 
     /**
-     * Returns prefix used to distinguish between superclass and subclass when
-     * generating classes in pairs.
+     * Returns prefix used to distinguish between superclass and subclass when generating
+     * classes in pairs.
      */
     public String getSuperPrefix() {
         return superPrefix;
     }
 
     /**
-     * Sets current class property name. This method is called during template
-     * parsing for each of the class properties.
+     * Sets current class property name. This method is called during template parsing for
+     * each of the class properties.
      */
     public void setProp(String prop) {
         this.prop = prop;
@@ -160,7 +157,7 @@ public class ClassGenerationInfo {
     public String getProp() {
         return prop;
     }
-    
+
     /**
      * Capitalizes the first letter of the property name.
      * 
@@ -173,7 +170,7 @@ public class ClassGenerationInfo {
         char c = Character.toUpperCase(name.charAt(0));
         return (name.length() == 1) ? Character.toString(c) : c + name.substring(1);
     }
-    
+
     /**
      * Converts property name to Java constants naming convention.
      * 
@@ -190,11 +187,10 @@ public class ClassGenerationInfo {
     public String getCappedProp() {
         return capitalized(prop);
     }
-    
+
     /**
-     * @return a current property name converted to a format used by java static
-     *         final variables - all capitalized with underscores.
-     * 
+     * @return a current property name converted to a format used by java static final
+     *         variables - all capitalized with underscores.
      * @since 1.0.3
      */
     public String getPropAsConstantName() {
@@ -210,11 +206,9 @@ public class ClassGenerationInfo {
         if (entity == null) {
             return false;
         }
-        
-        Iterator it = entity.getDeclaredRelationships().iterator();
-        while(it.hasNext()) {
-            Relationship r = (Relationship) it.next();
-            if(r.isToMany()) {
+
+        for (Relationship r : entity.getDeclaredRelationships()) {
+            if (r.isToMany()) {
                 return true;
             }
         }
@@ -231,11 +225,9 @@ public class ClassGenerationInfo {
         if (entity == null) {
             return false;
         }
-        
-        Iterator it = entity.getRelationships().iterator();
-        while(it.hasNext()) {
-            Relationship r = (Relationship) it.next();
-            if(r.isToMany()) {
+
+        for (Relationship r : entity.getRelationships()) {
+            if (r.isToMany()) {
                 return true;
             }
         }
@@ -244,16 +236,16 @@ public class ClassGenerationInfo {
     }
 
     /**
-     * Returns <code>true</code> if a class associated with this generator is
-     * located in a package.
+     * Returns <code>true</code> if a class associated with this generator is located in
+     * a package.
      */
     public boolean isUsingPackage() {
         return packageName != null;
     }
 
     /**
-     * Returns <code>true</code> if a superclass class associated with this
-     * generator is located in a package.
+     * Returns <code>true</code> if a superclass class associated with this generator is
+     * located in a package.
      */
     public boolean isUsingSuperPackage() {
         return superPackageName != null;
@@ -272,16 +264,16 @@ public class ClassGenerationInfo {
     }
 
     /**
-     * Returns the fully qualified super class of the data object class
-     * associated with this generator
+     * Returns the fully qualified super class of the data object class associated with
+     * this generator
      */
     public String getSuperClassName() {
         return superClassName;
     }
 
     /**
-     * Sets the fully qualified super class of the data object class associated
-     * with this generator
+     * Sets the fully qualified super class of the data object class associated with this
+     * generator
      */
     protected void setSuperClassName(String value) {
         this.superClassName = value;
