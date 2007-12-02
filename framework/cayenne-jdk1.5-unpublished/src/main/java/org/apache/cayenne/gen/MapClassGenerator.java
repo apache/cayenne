@@ -21,6 +21,7 @@ package org.apache.cayenne.gen;
 
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +38,7 @@ import foundrylogic.vpp.VPPConfig;
  * Generates Java source code for ObjEntities in the DataMap. This class is abstract and
  * does not deal with filesystem issues directly. Concrete subclasses should provide ways
  * to store generated files by implementing {@link #openWriter(ObjEntity, String, String)}
- * and {@link #closeWriter(Writer)}methods.
+ * and {@link #closeWriter(Writer)} methods.
  * 
  * @author Andrus Adamchik
  */
@@ -77,7 +78,7 @@ public abstract class MapClassGenerator {
 
     protected String versionString = DEFAULT_VERSION;
 
-    protected List objEntities;
+    protected List<ObjEntity> objEntities;
     protected String superPkg;
     protected DataMap dataMap;
     protected VPPConfig vppConfig;
@@ -88,7 +89,7 @@ public abstract class MapClassGenerator {
     }
 
     public MapClassGenerator(DataMap dataMap) {
-        this(dataMap, new ArrayList(dataMap.getObjEntities()));
+        this(dataMap, new ArrayList<ObjEntity>(dataMap.getObjEntities()));
     }
 
     /**
@@ -96,7 +97,7 @@ public abstract class MapClassGenerator {
      * 
      * @since 1.2
      */
-    public MapClassGenerator(DataMap dataMap, List objEntities) {
+    public MapClassGenerator(DataMap dataMap, List<ObjEntity> objEntities) {
         this.dataMap = dataMap;
         this.setObjEntities(objEntities);
     }
@@ -220,22 +221,7 @@ public abstract class MapClassGenerator {
         mainGen.setSuperPrefix(superPrefix);
         superGen.setSuperPrefix(superPrefix);
 
-        // Iterate only once if this is datamap mode
-        Iterator it = objEntities.iterator();
-        if (MODE_ENTITY.equals(mode)) {
-            it = objEntities.iterator();
-        }
-        else {
-            if (objEntities.isEmpty()) {
-                it = objEntities.iterator();
-            }
-            else {
-                it = Collections.singleton(objEntities.get(0)).iterator();
-            }
-        }
-
-        while (it.hasNext()) {
-            ObjEntity ent = (ObjEntity) it.next();
+        for (ObjEntity ent : entitiesForCurrentMode()) {
 
             // 1. do the superclass
             initClassGenerator_1_1(superGen, ent, true);
@@ -273,22 +259,7 @@ public abstract class MapClassGenerator {
                 ClassGenerator.VERSION_1_2,
                 vppConfig);
 
-        // Iterate only once if this is datamap mode
-        Iterator it = objEntities.iterator();
-        if (MODE_ENTITY.equals(mode)) {
-            it = objEntities.iterator();
-        }
-        else {
-            if (objEntities.isEmpty()) {
-                it = objEntities.iterator();
-            }
-            else {
-                it = Collections.singleton(objEntities.get(0)).iterator();
-            }
-        }
-
-        while (it.hasNext()) {
-            ObjEntity entity = (ObjEntity) it.next();
+        for (ObjEntity entity : entitiesForCurrentMode()) {
 
             // use client name, and if not specified use regular class name
             String fqnSubClass = entity.getClientClassName();
@@ -359,22 +330,7 @@ public abstract class MapClassGenerator {
                 versionString,
                 vppConfig);
 
-        // Iterate only once if this is datamap mode
-        Iterator it = objEntities.iterator();
-        if (MODE_ENTITY.equals(mode)) {
-            it = objEntities.iterator();
-        }
-        else {
-            if (objEntities.isEmpty()) {
-                it = objEntities.iterator();
-            }
-            else {
-                it = Collections.singleton(objEntities.get(0)).iterator();
-            }
-        }
-
-        while (it.hasNext()) {
-            ObjEntity ent = (ObjEntity) it.next();
+        for (ObjEntity ent : entitiesForCurrentMode()) {
 
             String fqnSubClass = ent.getClassName();
             String fqnBaseClass = (null != ent.getSuperClassName()) ? ent
@@ -432,22 +388,7 @@ public abstract class MapClassGenerator {
     private void generateSingleClasses_1_1(String classTemplate) throws Exception {
         ClassGenerator gen = new ClassGenerator(classTemplate, versionString);
 
-        // Iterate only once if this is datamap mode
-        Iterator it = objEntities.iterator();
-        if (MODE_ENTITY.equals(mode)) {
-            it = objEntities.iterator();
-        }
-        else {
-            if (objEntities.isEmpty()) {
-                it = objEntities.iterator();
-            }
-            else {
-                it = Collections.singleton(objEntities.get(0)).iterator();
-            }
-        }
-
-        while (it.hasNext()) {
-            ObjEntity ent = (ObjEntity) it.next();
+        for (ObjEntity ent : entitiesForCurrentMode()) {
 
             initClassGenerator_1_1(gen.getClassGenerationInfo(), ent, false);
             Writer out = openWriter(
@@ -470,22 +411,7 @@ public abstract class MapClassGenerator {
             throws Exception {
         ClassGenerator gen = new ClassGenerator(classTemplate, versionString, vppConfig);
 
-        // Iterate only once if this is datamap mode
-        Iterator it = objEntities.iterator();
-        if (MODE_ENTITY.equals(mode)) {
-            it = objEntities.iterator();
-        }
-        else {
-            if (objEntities.isEmpty()) {
-                it = objEntities.iterator();
-            }
-            else {
-                it = Collections.singleton(objEntities.get(0)).iterator();
-            }
-        }
-
-        while (it.hasNext()) {
-            ObjEntity ent = (ObjEntity) it.next();
+        for (ObjEntity ent : entitiesForCurrentMode()) {
 
             String fqnSubClass = ent.getClassName();
             String fqnBaseClass = (null != ent.getSuperClassName()) ? ent
@@ -516,6 +442,17 @@ public abstract class MapClassGenerator {
                             fqnSuperClass,
                             fqnSubClass);
             closeWriter(out);
+        }
+    }
+
+    private Collection<ObjEntity> entitiesForCurrentMode() {
+
+        // Iterate only once if this is datamap mode
+        if (!MODE_ENTITY.equals(mode) && !objEntities.isEmpty()) {
+            return Collections.singleton(objEntities.get(0));
+        }
+        else {
+            return this.objEntities;
         }
     }
 
@@ -633,24 +570,24 @@ public abstract class MapClassGenerator {
         this.dataMap = dataMap;
     }
 
-    public List getObjEntities() {
+    public List<ObjEntity> getObjEntities() {
         return objEntities;
     }
 
     /**
      * Initializes internal ObjEntities list. This method creates a copy of the provided
-     * list to allow its indepdendent modification and also filters out entities that do
+     * list to allow its independent modification and also filters out entities that do
      * not require class generation.
      */
-    public void setObjEntities(List objEntities) {
+    public void setObjEntities(List<ObjEntity> objEntities) {
         this.objEntities = objEntities != null
-                ? new ArrayList(objEntities)
-                : new ArrayList();
+                ? new ArrayList<ObjEntity>(objEntities)
+                : new ArrayList<ObjEntity>();
 
         // remove generic entities...
-        Iterator it = objEntities.iterator();
+        Iterator<ObjEntity> it = objEntities.iterator();
         while (it.hasNext()) {
-            ObjEntity e = (ObjEntity) it.next();
+            ObjEntity e = it.next();
             if (e.isGeneric()) {
                 it.remove();
             }
