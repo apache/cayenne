@@ -46,7 +46,6 @@ public class EntityUtils {
 
     public EntityUtils(DataMap dataMap, ObjEntity objEntity, String fqnBaseClass,
             String fqnSuperClass, String fqnSubClass) {
-        super();
 
         StringUtils stringUtils = StringUtils.getInstance();
 

@@ -100,14 +100,13 @@ public class ClassGenerationAction {
 
         TemplateProcessor mainGenSetup = new TemplateProcessor(classTemplate, context);
         TemplateProcessor superGenSetup = new TemplateProcessor(superTemplate, context);
+        StringUtils stringUtils = StringUtils.getInstance();
 
         for (ObjEntity ent : entitiesForCurrentMode()) {
 
             String fqnSubClass = ent.getClassName();
-            String fqnBaseClass = (null != ent.getSuperClassName()) ? ent
+            String fqnBaseClass = (ent.getSuperClassName() != null) ? ent
                     .getSuperClassName() : CayenneDataObject.class.getName();
-
-            StringUtils stringUtils = StringUtils.getInstance();
 
             String subClassName = stringUtils.stripPackageName(fqnSubClass);
             String subPackageName = stringUtils.stripClass(fqnSubClass);
@@ -116,6 +115,9 @@ public class ClassGenerationAction {
                     + stringUtils.stripPackageName(fqnSubClass);
 
             String superPackageName = this.superPkg;
+            if(superPackageName == null) {
+                superPackageName = subPackageName;
+            }
             String fqnSuperClass = superPackageName + "." + superClassName;
 
             Writer superOut = openWriter(ent, superPackageName, superClassName);
