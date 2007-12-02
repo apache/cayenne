@@ -18,7 +18,7 @@
 -->
 
 <antlib>
-  <taskdef name="cgen" classname="org.apache.cayenne.tools.CayenneGenerator"/>
+  <taskdef name="cgen" classname="org.apache.cayenne.tools.CayenneGeneratorTask"/>
   <taskdef name="cdbgen" classname="org.apache.cayenne.tools.DbGeneratorTask"/>
   <taskdef name="cdeploy" classname="org.apache.cayenne.tools.DeploymentConfigurator"/>
   <taskdef name="cdataport" classname="org.apache.cayenne.tools.DataPortTask"/>
