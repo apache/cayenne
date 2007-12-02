@@ -31,8 +31,6 @@ import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.NullLogSystem;
 
-import foundrylogic.vpp.VPPConfig;
-
 /**
  * Encapsulates a class generation template that can be used repeatedly to generate a set
  * of classes.
@@ -46,22 +44,15 @@ public class TemplateProcessor {
 
     protected Template classTemplate;
     protected Context velocityContext;
+    protected boolean superclass;
 
-    /**
-     * Only used by deprecated subclasses.
-     * 
-     * @deprecated since 3.0.
-     */
-    protected TemplateProcessor() throws Exception {
-    }
+    public TemplateProcessor(String template, Context velocityContext) throws Exception {
 
-    public TemplateProcessor(String template, VPPConfig vppConfig) throws Exception {
-
-        if (vppConfig != null) {
-            velocityContext = vppConfig.getVelocityContext();
+        if (velocityContext != null) {
+            this.velocityContext = velocityContext;
         }
         else {
-            velocityContext = new VelocityContext();
+            this.velocityContext = new VelocityContext();
         }
 
         initializeClassTemplate(template);
@@ -70,8 +61,6 @@ public class TemplateProcessor {
     /**
      * Sets up VelocityEngine properties, creates a VelocityEngine instance, and fetches a
      * template using the VelocityEngine instance.
-     * 
-     * @since 1.2
      */
     protected void initializeClassTemplate(String template)
             throws CayenneRuntimeException {
@@ -102,7 +91,8 @@ public class TemplateProcessor {
     }
 
     /**
-     * Generates Java code for the ObjEntity, writing output to the provided Writer.
+     * Generates code for provided context arguments, writing output to the provided
+     * Writer.
      */
     public void generateClass(
             Writer out,
@@ -125,6 +115,19 @@ public class TemplateProcessor {
                 fqnSuperClass,
                 fqnSubClass));
         velocityContext.put("importUtils", new ImportUtils());
+
         classTemplate.merge(velocityContext, out);
+    }
+
+    public void setClassTemplate(Template classTemplate) {
+        this.classTemplate = classTemplate;
+    }
+
+    public void setVelocityContext(Context velocityContext) {
+        this.velocityContext = velocityContext;
+    }
+
+    public void setSuperclass(boolean superclass) {
+        this.superclass = superclass;
     }
 }

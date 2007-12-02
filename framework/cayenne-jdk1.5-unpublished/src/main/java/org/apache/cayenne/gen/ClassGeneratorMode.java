@@ -18,42 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
-import java.io.Writer;
-
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.ObjEntity;
-
 /**
- * Encapsulates a legacy class generation template.
+ * Defines whether generator is executed once per DataMap or once per ObjEntity.
  * 
- * @deprecated since 3.0
+ * @since 3.0
  * @author Andrus Adamchik
  */
-class TemplateProcessor1_1 extends TemplateProcessor {
+public enum ClassGeneratorMode {
 
-    private ClassGenerationInfo classGenerationInfo;
-
-    public TemplateProcessor1_1(String template) throws Exception {
-
-        super(template, null);
-        this.classGenerationInfo = new ClassGenerationInfo();
-        velocityContext.put("classGen", classGenerationInfo);
-    }
-
-    @Override
-    public void generateClass(
-            Writer out,
-            DataMap dataMap,
-            ObjEntity entity,
-            String fqnBaseClass,
-            String fqnSuperClass,
-            String fqnSubClass) throws Exception {
-
-        classGenerationInfo.setObjEntity(entity);
-        classTemplate.merge(velocityContext, out);
-    }
-
-    ClassGenerationInfo getClassGenerationInfo() {
-        return classGenerationInfo;
-    }
+    datamap, entity
 }

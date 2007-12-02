@@ -41,6 +41,7 @@ import foundrylogic.vpp.VPPConfig;
  * and {@link #closeWriter(Writer)} methods.
  * 
  * @author Andrus Adamchik
+ * @deprecated since 3.0 use {@link ClassGenerationAction} and subclasses.
  */
 public abstract class MapClassGenerator {
 

@@ -19,48 +19,87 @@
 package org.apache.cayenne.tools;
 
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.logging.Log;
 
 /**
  * @since 3.0
  */
-class MavenLogger implements ILog {
+class MavenLogger implements org.apache.commons.logging.Log {
 
-	private Log logger;
+	private org.apache.maven.plugin.logging.Log logger;
 
 	public MavenLogger(AbstractMojo parent) {
 		this.logger = parent.getLog();
 	}
 
-	public void log(String msg) {
-		logger.debug(msg);
+	public void debug(Object message, Throwable th) {
+		logger.debug(String.valueOf(message), th);
 	}
 
-	public void log(String msg, int msgLevel) {
+	public void debug(Object message) {
+		logger.debug(String.valueOf(message));
+	}
 
-		switch (msgLevel) {
-		case ILog.MSG_DEBUG:
-			logger.debug(msg);
-			break;
+	public void error(Object message, Throwable th) {
+		logger.error(String.valueOf(message), th);
+	}
 
-		case ILog.MSG_ERR:
-			logger.error(msg);
-			break;
+	public void error(Object message) {
+		logger.error(String.valueOf(message));
+	}
 
-		case ILog.MSG_INFO:
-			logger.info(msg);
-			break;
+	public void fatal(Object message, Throwable th) {
+		logger.error(String.valueOf(message), th);
+	}
 
-		case ILog.MSG_VERBOSE:
-			logger.info(msg);
-			break;
+	public void fatal(Object message) {
+		logger.error(String.valueOf(message));
+	}
 
-		case ILog.MSG_WARN:
-			logger.warn(msg);
-			break;
+	public void info(Object message, Throwable th) {
+		logger.info(String.valueOf(message), th);
+	}
 
-		default:
-			logger.debug(msg);
-		}
+	public void info(Object message) {
+		logger.info(String.valueOf(message));
+	}
+
+	public boolean isDebugEnabled() {
+		return logger.isDebugEnabled();
+	}
+
+	public boolean isErrorEnabled() {
+		return logger.isErrorEnabled();
+	}
+
+	public boolean isFatalEnabled() {
+		return logger.isErrorEnabled();
+	}
+
+	public boolean isInfoEnabled() {
+		return logger.isInfoEnabled();
+	}
+
+	public boolean isTraceEnabled() {
+		return logger.isDebugEnabled();
+	}
+
+	public boolean isWarnEnabled() {
+		return logger.isWarnEnabled();
+	}
+
+	public void trace(Object message, Throwable th) {
+		logger.debug(String.valueOf(message), th);
+	}
+
+	public void trace(Object message) {
+		logger.debug(String.valueOf(message));
+	}
+
+	public void warn(Object message, Throwable th) {
+		logger.warn(String.valueOf(message), th);
+	}
+
+	public void warn(Object message) {
+		logger.warn(String.valueOf(message));
 	}
 }

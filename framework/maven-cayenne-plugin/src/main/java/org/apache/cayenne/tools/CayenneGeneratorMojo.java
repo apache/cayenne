@@ -22,8 +22,13 @@ package org.apache.cayenne.tools;
 import java.io.File;
 import java.util.List;
 
-import org.apache.cayenne.gen.DefaultClassGenerator;
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClassGenerationAction1_1;
+import org.apache.cayenne.gen.ClassGenerator;
+import org.apache.cayenne.gen.ClassGeneratorMode;
+import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -195,8 +200,6 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 */
 	private String version;
 
-	private DefaultClassGenerator generator;
-
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		// Create the destination directory if necessary.
 		// TODO: (KJM 11/2/06) The destDir really should be added as a
@@ -205,9 +208,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			destDir.mkdirs();
 		}
 
-		generator = createGenerator();
-
-		ILog logger = new MavenLogger(this);
+		Log logger = new MavenLogger(this);
 		CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction();
 		loaderAction.setMainDataMapFile(map);
 
@@ -219,11 +220,12 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		try {
 			loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());
 
+			ClassGenerationAction generator = createGenerator();
+			generator.setLogger(logger);
 			generator.setTimestamp(map.lastModified());
 			generator.setDataMap(loaderAction.getMainDataMap());
 			generator.setObjEntities((List<ObjEntity>) filterAction
 					.getFilteredEntities(loaderAction.getMainDataMap()));
-			generator.validateAttributes();
 			generator.execute();
 		} catch (Exception e) {
 			throw new MojoExecutionException("Error generating classes: ", e);
@@ -256,22 +258,29 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Factory method to create internal class generator. Called from
 	 * constructor.
 	 */
-	protected DefaultClassGenerator createGenerator() {
-		DefaultClassGenerator gen = new DefaultClassGenerator();
+	protected ClassGenerationAction createGenerator() {
 
-		gen.setClient(client);
-		gen.setDestDir(destDir);
-		gen.setEncoding(encoding);
-		gen.setMakePairs(makePairs);
-		gen.setMode(mode);
-		gen.setOutputPattern(outputPattern);
-		gen.setOverwrite(overwrite);
-		gen.setSuperPkg(superPkg);
-		gen.setSuperTemplate(superTemplate);
-		gen.setTemplate(template);
-		gen.setUsePkgPath(usePkgPath);
-		gen.setVersionString(version);
+		ClassGenerationAction action;
+		if (client) {
+			action = new ClientClassGenerationAction();
+		} else if (ClassGenerator.VERSION_1_1.equals(version)) {
+			action = new ClassGenerationAction1_1();
+		} else {
+			action = new ClassGenerationAction();
+		}
 
-		return gen;
+		action.setDestDir(destDir);
+		action.setEncoding(encoding);
+		action.setMakePairs(makePairs);
+		action.setMode(mode != null ? ClassGeneratorMode.valueOf(mode)
+				: ClassGeneratorMode.entity);
+		action.setOutputPattern(outputPattern);
+		action.setOverwrite(overwrite);
+		action.setSuperPkg(superPkg);
+		action.setSuperTemplate(superTemplate);
+		action.setTemplate(template);
+		action.setUsePkgPath(usePkgPath);
+
+		return action;
 	}
 }

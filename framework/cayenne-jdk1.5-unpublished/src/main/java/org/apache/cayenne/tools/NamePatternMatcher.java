@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.commons.logging.Log;
 
 /**
  * Provides name pattern matching functionality.
@@ -36,12 +37,12 @@ import org.apache.cayenne.util.CayenneMapEntry;
  */
 public class NamePatternMatcher {
 
-    protected ILog logger;
+    protected Log logger;
 
     protected Pattern[] itemIncludeFilters;
     protected Pattern[] itemExcludeFilters;
 
-    public NamePatternMatcher(ILog logger, String includePattern, String excludePattern) {
+    public NamePatternMatcher(Log logger, String includePattern, String excludePattern) {
         this.logger = logger;
         this.itemIncludeFilters = createPatterns(includePattern);
         this.itemExcludeFilters = createPatterns(excludePattern);
@@ -69,10 +70,10 @@ public class NamePatternMatcher {
             catch (PatternSyntaxException e) {
 
                 if (logger != null) {
-                    logger.log("Ignoring invalid pattern ["
+                    logger.warn("Ignoring invalid pattern ["
                             + patternStrings[i]
                             + "], reason: "
-                            + e.getMessage(), ILog.MSG_WARN);
+                            + e.getMessage());
                 }
                 continue;
             }

@@ -21,12 +21,17 @@ package org.apache.cayenne.tools;
 import java.io.File;
 import java.util.List;
 
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClassGenerationAction1_1;
 import org.apache.cayenne.gen.ClassGenerator;
+import org.apache.cayenne.gen.ClassGeneratorMode;
+import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.gen.DefaultClassGenerator;
 import org.apache.cayenne.gen.MapClassGenerator;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
+import org.apache.velocity.VelocityContext;
 
 import foundrylogic.vpp.VPPConfig;
 
@@ -54,22 +59,60 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected String supertemplate;
     protected String template;
     protected boolean usepkgpath;
+
+    /**
+     * @deprecated since 3.0
+     */
     protected String version;
 
     public CayenneGeneratorTask() {
         this.makepairs = true;
-        this.mode = MapClassGenerator.MODE_ENTITY;
+        this.mode = ClassGeneratorMode.entity.name();
         this.outputPattern = "*.java";
         this.usepkgpath = true;
         this.version = MapClassGenerator.DEFAULT_VERSION;
     }
 
+    protected VelocityContext getVppContext() {
+        initializeVppConfig();
+        return vppConfig.getVelocityContext();
+    }
+
+    protected ClassGenerationAction createGeneratorAction() {
+        ClassGenerationAction action;
+        if (client) {
+            action = new ClientClassGenerationAction();
+            action.setContext(getVppContext());
+        }
+        else if (ClassGenerator.VERSION_1_1.equals(version)) {
+            action = new ClassGenerationAction1_1();
+        }
+        else {
+            action = new ClassGenerationAction();
+            action.setContext(getVppContext());
+        }
+
+        action.setDestDir(destDir);
+        action.setEncoding(encoding);
+        action.setMakePairs(makepairs);
+        action.setMode(ClassGeneratorMode.valueOf(mode));
+        action.setOutputPattern(outputPattern);
+        action.setOverwrite(overwrite);
+        action.setSuperPkg(superpkg);
+        action.setSuperTemplate(supertemplate);
+        action.setTemplate(template);
+        action.setUsePkgPath(usepkgpath);
+
+        return action;
+    }
+
     /**
      * Factory method to create internal class generator. Called from constructor.
+     * 
+     * @deprecated since 3.0. Use {@link #createGeneratorAction()}.
      */
     protected DefaultClassGenerator createGenerator() {
-        AntClassGenerator gen = new AntClassGenerator();
-        gen.setParentTask(this);
+        DefaultClassGenerator gen = new DefaultClassGenerator();
 
         gen.setClient(client);
         gen.setDestDir(destDir);
@@ -92,16 +135,8 @@ public class CayenneGeneratorTask extends CayenneTask {
      */
     public void execute() throws BuildException {
         validateAttributes();
-        
-        DefaultClassGenerator generator = createGenerator();
 
-        // Take care of setting up VPP for the generator.
-        if (!ClassGenerator.VERSION_1_1.equals(generator.getVersionString())) {
-            initializeVppConfig();
-            generator.setVppConfig(vppConfig);
-        }
-
-        ILog logger = new AntTaskLogger(this);
+        AntLogger logger = new AntLogger(this);
         CayenneGeneratorMapLoaderAction loadAction = new CayenneGeneratorMapLoaderAction();
 
         loadAction.setMainDataMapFile(map);
@@ -115,12 +150,13 @@ public class CayenneGeneratorTask extends CayenneTask {
                 excludeEntitiesPattern));
 
         try {
-            generator.setTimestamp(map.lastModified());
-            generator.setDataMap(loadAction.getMainDataMap());
-            generator.setObjEntities((List<ObjEntity>) filterAction
+            ClassGenerationAction generatorAction = createGeneratorAction();
+            generatorAction.setLogger(logger);
+            generatorAction.setTimestamp(map.lastModified());
+            generatorAction.setDataMap(loadAction.getMainDataMap());
+            generatorAction.setObjEntities((List<ObjEntity>) filterAction
                     .getFilteredEntities(loadAction.getMainDataMap()));
-            generator.validateAttributes();
-            generator.execute();
+            generatorAction.execute();
         }
         catch (Exception e) {
             throw new BuildException(e);
@@ -218,6 +254,8 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     /**
      * Sets <code>version</code> property.
+     * 
+     * @deprecated since 3.0
      */
     public void setVersion(String version) {
         if (!ClassGenerator.VERSION_1_1.equals(version)
