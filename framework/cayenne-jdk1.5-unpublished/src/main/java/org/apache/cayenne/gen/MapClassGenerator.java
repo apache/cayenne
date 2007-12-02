@@ -88,6 +88,9 @@ public abstract class MapClassGenerator {
     public MapClassGenerator() {
     }
 
+    /**
+     * @deprecated since 3.0 - unused.
+     */
     public MapClassGenerator(DataMap dataMap) {
         this(dataMap, new ArrayList<ObjEntity>(dataMap.getObjEntities()));
     }
@@ -379,6 +382,8 @@ public abstract class MapClassGenerator {
     /**
      * Runs class generation. Produces a single Java class for each ObjEntity in the map.
      * Uses default Cayenne templates for classes.
+     * 
+     * @deprecated since 3.0 - unused.
      */
     public void generateSingleClasses() throws Exception {
         generateSingleClasses(defaultSingleClassTemplate(), SUPERCLASS_PREFIX);
