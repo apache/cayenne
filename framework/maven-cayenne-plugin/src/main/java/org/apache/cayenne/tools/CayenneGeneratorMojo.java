@@ -224,7 +224,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			generator.setLogger(logger);
 			generator.setTimestamp(map.lastModified());
 			generator.setDataMap(loaderAction.getMainDataMap());
-			generator.setObjEntities((List<ObjEntity>) filterAction
+			generator.setEntities((List<ObjEntity>) filterAction
 					.getFilteredEntities(loaderAction.getMainDataMap()));
 			generator.execute();
 		} catch (Exception e) {
