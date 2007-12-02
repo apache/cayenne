@@ -37,6 +37,7 @@ import org.apache.cayenne.tools.NamePatternMatcher;
  * state of this object.
  * 
  * @author Andrus Adamchik
+ * @deprecated since 3.0 use {@link ClassGenerationAction} and subclasses.
  */
 public class DefaultClassGenerator extends MapClassGenerator {
 

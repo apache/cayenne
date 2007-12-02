@@ -59,7 +59,7 @@ class AntDataPortDelegate implements DataPortDelegate {
         this.parentTask = parentTask;
 
         this.namePatternMatcher = new NamePatternMatcher(
-                new AntTaskLogger(parentTask),
+                new AntLogger(parentTask),
                 includeEntitiesPattern,
                 excludeEntitiesPattern);
 

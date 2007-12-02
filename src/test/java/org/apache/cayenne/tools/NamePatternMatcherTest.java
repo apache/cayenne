@@ -71,7 +71,7 @@ public class NamePatternMatcherTest extends TestCase {
         String includePattern = "billing_*,user?";
         String excludePattern = null;
         NamePatternMatcher namePatternMatcher = new NamePatternMatcher(
-                new AntTaskLogger(parentTask),
+                new AntLogger(parentTask),
                 includePattern,
                 excludePattern);
 
@@ -98,7 +98,7 @@ public class NamePatternMatcherTest extends TestCase {
         String includePattern = "Organization,SecGroup,SecIndividual";
         String excludePattern = null;
         NamePatternMatcher namePatternMatcher = new NamePatternMatcher(
-                new AntTaskLogger(parentTask),
+                new AntLogger(parentTask),
                 includePattern,
                 excludePattern);
 
