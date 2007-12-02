@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,56 +25,24 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
-import org.xml.sax.InputSource;
 
 /**
- * Provides DataMap loading and ObjEntity filtering functionality to the class generation tasks.
+ * Performs entity filtering to build a collection of entities that should be used in
+ * class generation.
  * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-class CayenneGenerationMapLoader {
+class CayenneGeneratorEntityFilterAction {
 
-    private File mainDataMapFile;
-    private File[] additionalDataMapFiles;
     private NamePatternMatcher nameFilter;
     private boolean client;
 
-    private DataMap mainDataMap;
+    Collection<ObjEntity> getFilteredEntities(DataMap mainDataMap)
+            throws MalformedURLException {
 
-    DataMap getMainDataMap() throws MalformedURLException {
-        if (mainDataMap == null) {
-            MapLoader mapLoader = new MapLoader();
-
-            DataMap mainDataMap = loadDataMap(mapLoader, mainDataMapFile);
-
-            if (additionalDataMapFiles != null) {
-
-                EntityResolver entityResolver = new EntityResolver();
-                entityResolver.addDataMap(mainDataMap);
-                mainDataMap.setNamespace(entityResolver);
-
-                for (int i = 0; i < additionalDataMapFiles.length; i++) {
-
-                    DataMap dataMap = loadDataMap(mapLoader, additionalDataMapFiles[i]);
-                    entityResolver.addDataMap(dataMap);
-                    dataMap.setNamespace(entityResolver);
-                }
-            }
-
-            this.mainDataMap = mainDataMap;
-        }
-
-        return mainDataMap;
-    }
-
-    Collection<ObjEntity> getFilteredEntities() throws MalformedURLException {
-
-        List<ObjEntity> entities = new ArrayList<ObjEntity>(getMainDataMap()
-                .getObjEntities());
+        List<ObjEntity> entities = new ArrayList<ObjEntity>(mainDataMap.getObjEntities());
 
         // filter out excluded entities...
         Iterator<ObjEntity> it = entities.iterator();
@@ -94,20 +61,6 @@ class CayenneGenerationMapLoader {
         }
 
         return entities;
-    }
-
-    protected DataMap loadDataMap(MapLoader mapLoader, File dataMapFile)
-            throws MalformedURLException {
-        InputSource in = new InputSource(dataMapFile.toURL().toString());
-        return mapLoader.loadDataMap(in);
-    }
-
-    void setMainDataMapFile(File mainDataMapFile) {
-        this.mainDataMapFile = mainDataMapFile;
-    }
-
-    void setAdditionalDataMapFiles(File[] additionalDataMapFiles) {
-        this.additionalDataMapFiles = additionalDataMapFiles;
     }
 
     void setClient(boolean client) {

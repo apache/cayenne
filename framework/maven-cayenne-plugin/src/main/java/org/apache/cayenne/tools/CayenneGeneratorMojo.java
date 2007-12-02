@@ -208,18 +208,21 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		generator = createGenerator();
 
 		ILog logger = new MavenLogger(this);
-		CayenneGenerationMapLoader mapLoader = new CayenneGenerationMapLoader();
-		mapLoader.setNameFilter(new NamePatternMatcher(logger,
+		CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction();
+		loaderAction.setMainDataMapFile(map);
+
+		CayenneGeneratorEntityFilterAction filterAction = new CayenneGeneratorEntityFilterAction();
+		filterAction.setClient(client);
+		filterAction.setNameFilter(new NamePatternMatcher(logger,
 				includeEntitiesPattern, excludeEntitiesPattern));
-		mapLoader.setMainDataMapFile(map);
 
 		try {
-			mapLoader.setAdditionalDataMapFiles(convertAdditionalDataMaps());
+			loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());
 
 			generator.setTimestamp(map.lastModified());
-			generator.setDataMap(mapLoader.getMainDataMap());
-			generator.setObjEntities((List<ObjEntity>) mapLoader
-					.getFilteredEntities());
+			generator.setDataMap(loaderAction.getMainDataMap());
+			generator.setObjEntities((List<ObjEntity>) filterAction
+					.getFilteredEntities(loaderAction.getMainDataMap()));
 			generator.validateAttributes();
 			generator.execute();
 		} catch (Exception e) {

@@ -70,18 +70,23 @@ public class CayenneGeneratorTask extends CayenneTask {
         }
 
         ILog logger = new AntTaskLogger(this);
-        CayenneGenerationMapLoader mapLoader = new CayenneGenerationMapLoader();
-        mapLoader.setNameFilter(new NamePatternMatcher(
+        CayenneGeneratorMapLoaderAction loadAction = new CayenneGeneratorMapLoaderAction();
+
+        loadAction.setMainDataMapFile(map);
+        loadAction.setAdditionalDataMapFiles(additionalMaps);
+
+        CayenneGeneratorEntityFilterAction filterAction = new CayenneGeneratorEntityFilterAction();
+        filterAction.setClient(generator.isClient());
+        filterAction.setNameFilter(new NamePatternMatcher(
                 logger,
                 includeEntitiesPattern,
                 excludeEntitiesPattern));
-        mapLoader.setMainDataMapFile(map);
-        mapLoader.setAdditionalDataMapFiles(additionalMaps);
 
         try {
             generator.setTimestamp(map.lastModified());
-            generator.setDataMap(mapLoader.getMainDataMap());
-            generator.setObjEntities((List<ObjEntity>) mapLoader.getFilteredEntities());
+            generator.setDataMap(loadAction.getMainDataMap());
+            generator.setObjEntities((List<ObjEntity>) filterAction
+                    .getFilteredEntities(loadAction.getMainDataMap()));
             generator.validateAttributes();
             generator.execute();
         }
