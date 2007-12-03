@@ -45,8 +45,8 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
     public String createSqlString(BatchQuery batch) {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) batch;
         String table = batch.getDbEntity().getFullyQualifiedName();
-        List qualifierAttributes = updateBatch.getQualifierAttributes();
-        List updatedDbAttributes = updateBatch.getUpdatedAttributes();
+        List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
+        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 
         StringBuffer query = new StringBuffer("UPDATE ");
         query.append(table).append(" SET ");
@@ -57,15 +57,15 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
                 query.append(", ");
             }
 
-            DbAttribute attribute = (DbAttribute) updatedDbAttributes.get(i);
+            DbAttribute attribute = updatedDbAttributes.get(i);
             query.append(attribute.getName()).append(" = ?");
         }
 
         query.append(" WHERE ");
 
-        Iterator i = qualifierAttributes.iterator();
+        Iterator<DbAttribute> i = qualifierAttributes.iterator();
         while (i.hasNext()) {
-            DbAttribute attribute = (DbAttribute) i.next();
+            DbAttribute attribute = i.next();
             appendDbAttribute(query, attribute);
             query.append(updateBatch.isNull(attribute) ? " IS NULL" : " = ?");
 
@@ -84,15 +84,15 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
             throws SQLException, Exception {
 
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
-        List qualifierAttributes = updateBatch.getQualifierAttributes();
-        List updatedDbAttributes = updateBatch.getUpdatedAttributes();
+        List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
+        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 
         int len = updatedDbAttributes.size();
         int parameterIndex = 1;
         for (int i = 0; i < len; i++) {
             Object value = query.getValue(i);
 
-            DbAttribute attribute = (DbAttribute) updatedDbAttributes.get(i);
+            DbAttribute attribute = updatedDbAttributes.get(i);
             adapter.bindParameter(
                     statement,
                     value,
@@ -103,7 +103,7 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
 
         for (int i = 0; i < qualifierAttributes.size(); i++) {
             Object value = query.getValue(len + i);
-            DbAttribute attribute = (DbAttribute) qualifierAttributes.get(i);
+            DbAttribute attribute = qualifierAttributes.get(i);
 
             // skip null attributes... they are translated as "IS NULL"
             if (updateBatch.isNull(attribute)) {

@@ -84,7 +84,7 @@ public abstract class QueryAssemblerHelper {
     /** Processes parts of the OBJ_PATH expression. */
     protected void appendObjPath(StringBuffer buf, Expression pathExp) {
 
-        Iterator it = getObjEntity().resolvePathComponents(pathExp);
+        Iterator<Object> it = getObjEntity().resolvePathComponents(pathExp);
         ObjRelationship lastRelationship = null;
 
         while (it.hasNext()) {
@@ -100,9 +100,8 @@ public abstract class QueryAssemblerHelper {
                 }
                 else {
                     // find and add joins ....
-                    Iterator relit = rel.getDbRelationships().iterator();
-                    while (relit.hasNext()) {
-                        queryAssembler.dbRelationshipAdded((DbRelationship) relit.next());
+                    for (DbRelationship dbRel : rel.getDbRelationships()) {
+                        queryAssembler.dbRelationshipAdded(dbRel);
                     }
                 }
                 lastRelationship = rel;
@@ -110,9 +109,8 @@ public abstract class QueryAssemblerHelper {
             else {
                 ObjAttribute objAttr = (ObjAttribute) pathComp;
                 if (lastRelationship != null) {
-                    List lastDbRelList = lastRelationship.getDbRelationships();
-                    DbRelationship lastDbRel =
-                        (DbRelationship) lastDbRelList.get(lastDbRelList.size() - 1);
+                    List<DbRelationship> lastDbRelList = lastRelationship.getDbRelationships();
+                    DbRelationship lastDbRel = lastDbRelList.get(lastDbRelList.size() - 1);
                     processColumn(buf, objAttr.getDbAttribute(), lastDbRel);
                 }
                 else {
@@ -123,7 +121,7 @@ public abstract class QueryAssemblerHelper {
     }
 
     protected void appendDbPath(StringBuffer buf, Expression pathExp) {
-        Iterator it = getDbEntity().resolvePathComponents(pathExp);
+        Iterator<Object> it = getDbEntity().resolvePathComponents(pathExp);
 
         while (it.hasNext()) {
             Object pathComp = it.next();
@@ -232,7 +230,7 @@ public abstract class QueryAssemblerHelper {
                 throw new CayenneRuntimeException("Can't use NEW object as a query parameter.");
             }
 
-            Map snap = id.getIdSnapshot();
+            Map<String, Object> snap = id.getIdSnapshot();
             if (snap.size() != 1) {
                 StringBuffer msg = new StringBuffer();
                 msg
@@ -324,9 +322,9 @@ public abstract class QueryAssemblerHelper {
                     }
                     else if (last instanceof ObjRelationship) {
                         ObjRelationship objRelationship = (ObjRelationship) last;
-                        List dbPath = objRelationship.getDbRelationships();
+                        List<DbRelationship> dbPath = objRelationship.getDbRelationships();
                         if (dbPath.size() > 0) {
-                            relationship = (DbRelationship) dbPath.get(dbPath.size() - 1);
+                            relationship = dbPath.get(dbPath.size() - 1);
                             break;
                         }
                     }
@@ -367,11 +365,11 @@ public abstract class QueryAssemblerHelper {
       */
     protected void processRelTermination(StringBuffer buf, ObjRelationship rel) {
 
-        Iterator dbRels = rel.getDbRelationships().iterator();
+        Iterator<DbRelationship> dbRels = rel.getDbRelationships().iterator();
 
         // scan DbRelationships
         while (dbRels.hasNext()) {
-            DbRelationship dbRel = (DbRelationship) dbRels.next();
+            DbRelationship dbRel = dbRels.next();
 
             // if this is a last relationship in the path,
             // it needs special handling
@@ -399,7 +397,7 @@ public abstract class QueryAssemblerHelper {
         }
 
         // get last DbRelationship on the list
-        List joins = rel.getJoins();
+        List<DbJoin> joins = rel.getJoins();
         if (joins.size() != 1) {
             StringBuffer msg = new StringBuffer();
             msg
@@ -412,7 +410,7 @@ public abstract class QueryAssemblerHelper {
             throw new CayenneRuntimeException(msg.toString());
         }
 
-        DbJoin join = (DbJoin) joins.get(0);
+        DbJoin join = joins.get(0);
 
         DbAttribute attribute = null;
 

@@ -23,7 +23,6 @@ package org.apache.cayenne.access.trans;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -51,12 +50,12 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
     public void bindParameters(PreparedStatement statement, BatchQuery query)
             throws SQLException, Exception {
 
-        List dbAttributes = query.getDbAttributes();
+        List<DbAttribute> dbAttributes = query.getDbAttributes();
         int attributeCount = dbAttributes.size();
 
         // must use an independent counter "j" for prepared statement index
         for (int i = 0, j = 0; i < attributeCount; i++) {
-            DbAttribute attribute = (DbAttribute) dbAttributes.get(i);
+            DbAttribute attribute = dbAttributes.get(i);
             if (includeInBatch(attribute)) {
                 j++;
                 Object value = query.getValue(i);
@@ -72,12 +71,12 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
      * 
      * @since 1.2
      */
-    public List getParameterValues(BatchQuery query) {
-        List attributes = query.getDbAttributes();
+    public List<Object> getParameterValues(BatchQuery query) {
+        List<DbAttribute> attributes = query.getDbAttributes();
         int len = attributes.size();
-        List values = new ArrayList(len);
+        List<Object> values = new ArrayList<Object>(len);
         for (int i = 0; i < len; i++) {
-            DbAttribute attribute = (DbAttribute) attributes.get(i);
+            DbAttribute attribute = attributes.get(i);
             if (includeInBatch(attribute)) {
                 values.add(query.getValue(i));
             }
@@ -87,16 +86,13 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
 
     public String createSqlString(BatchQuery batch) {
         String table = batch.getDbEntity().getFullyQualifiedName();
-        List dbAttributes = batch.getDbAttributes();
+        List<DbAttribute> dbAttributes = batch.getDbAttributes();
 
         StringBuffer query = new StringBuffer("INSERT INTO ");
         query.append(table).append(" (");
 
         int columnCount = 0;
-        Iterator it = dbAttributes.iterator();
-
-        while (it.hasNext()) {
-            DbAttribute attribute = (DbAttribute) it.next();
+        for (DbAttribute attribute : dbAttributes) {
 
             // attribute inclusion rule - one of the rules below must be true:
             // (1) attribute not generated

@@ -122,14 +122,14 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
     public void bindParameters(PreparedStatement statement, BatchQuery query)
             throws SQLException, Exception {
 
-        List dbAttributes = query.getDbAttributes();
+        List<DbAttribute> dbAttributes = query.getDbAttributes();
         int attributeCount = dbAttributes.size();
 
         // i - attribute position in the query
         // j - PreparedStatement parameter position (starts with "1")
         for (int i = 0, j = 1; i < attributeCount; i++) {
             Object value = query.getValue(i);
-            DbAttribute attribute = (DbAttribute) dbAttributes.get(i);
+            DbAttribute attribute = dbAttributes.get(i);
             int type = attribute.getType();
 
             // TODO: (Andrus) This works as long as there is no LOBs in qualifier

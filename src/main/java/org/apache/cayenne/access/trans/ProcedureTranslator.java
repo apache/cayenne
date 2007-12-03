@@ -57,7 +57,7 @@ public class ProcedureTranslator extends QueryTranslator {
 
     private static NotInParam OUT_PARAM = new NotInParam("[OUT]");
 
-    protected List callParams;
+    protected List<ProcedureParameter> callParams;
     protected List values;
 
     /**
@@ -140,11 +140,11 @@ public class ProcedureTranslator extends QueryTranslator {
      */
     protected void initStatement(CallableStatement stmt) throws Exception {
         if (values != null && values.size() > 0) {
-            List params = getProcedure().getCallParameters();
+            List<ProcedureParameter> params = getProcedure().getCallParameters();
 
             int len = values.size();
             for (int i = 0; i < len; i++) {
-                ProcedureParameter param = (ProcedureParameter) params.get(i);
+                ProcedureParameter param = params.get(i);
 
                 // !Stored procedure parameter can be both in and out
                 // at the same time
@@ -166,9 +166,7 @@ public class ProcedureTranslator extends QueryTranslator {
         // make an assumption that a missing value is NULL
         // Any reason why this is bad?
 
-        Iterator it = callParams.iterator();
-        while (it.hasNext()) {
-            ProcedureParameter param = (ProcedureParameter) it.next();
+        for (ProcedureParameter param : callParams) {
 
             if (param.getDirection() == ProcedureParameter.OUT_PARAMETER) {
                 values.add(OUT_PARAM);

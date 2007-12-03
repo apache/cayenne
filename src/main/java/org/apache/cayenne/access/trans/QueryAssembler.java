@@ -37,7 +37,7 @@ import org.apache.cayenne.map.DbRelationship;
 public abstract class QueryAssembler extends QueryTranslator {
 
     /** PreparedStatement values. */
-    protected List values = new ArrayList();
+    protected List<Object> values = new ArrayList<Object>();
 
     /**
      * PreparedStatement attributes matching entries in <code>values</code> list.
@@ -77,7 +77,7 @@ public abstract class QueryAssembler extends QueryTranslator {
     }
 
     /**
-     * Registers <code>anObject</code> as a PreparedStatement paramter.
+     * Registers <code>anObject</code> as a PreparedStatement parameter.
      * 
      * @param anObject object that represents a value of DbAttribute
      * @param dbAttr DbAttribute being processed.

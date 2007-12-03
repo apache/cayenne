@@ -38,8 +38,8 @@ import org.apache.cayenne.map.DbRelationship;
  * @author Andrus Adamchik
  */
 public class DataObjectMatchTranslator {
-    protected Map attributes;
-    protected Map values;
+    protected Map<String, DbAttribute> attributes;
+    protected Map<String, Object> values;
     protected String operation;
     protected Expression expression;
     protected DbRelationship relationship;
@@ -66,26 +66,21 @@ public class DataObjectMatchTranslator {
      */
     public void setRelationship(DbRelationship rel) {
         this.relationship = rel;
-        attributes = new HashMap(rel.getJoins().size() * 2);
+        attributes = new HashMap<String, DbAttribute>(rel.getJoins().size() * 2);
 
         if (rel.isToMany() || !rel.isToPK()) {
 
             // match on target PK
             DbEntity ent = (DbEntity) rel.getTargetEntity();
-            Iterator pk = ent.getPrimaryKeys().iterator();
 
             // index by name
-            while (pk.hasNext()) {
-                DbAttribute pkAttr = (DbAttribute) pk.next();
+            for (DbAttribute pkAttr : ent.getPrimaryKeys()) {
                 attributes.put(pkAttr.getName(), pkAttr);
             }
         } else {
 
             // match on this FK
-            Iterator joins = rel.getJoins().iterator();
-            while (joins.hasNext()) {
-                DbJoin join = (DbJoin) joins.next();
-
+            for (DbJoin join : rel.getJoins()) {
                 // index by target name
                 attributes.put(join.getTargetName(), join.getSource());
             }
@@ -118,7 +113,7 @@ public class DataObjectMatchTranslator {
         }
     }
 
-    public Iterator keys() {
+    public Iterator<String> keys() {
         if (attributes == null) {
             throw new IllegalStateException(
                 "An attempt to use uninitialized DataObjectMatchTranslator: "
@@ -135,7 +130,7 @@ public class DataObjectMatchTranslator {
     }
 
     public DbAttribute getAttribute(String key) {
-        return (DbAttribute) attributes.get(key);
+        return attributes.get(key);
     }
 
     public Object getValue(String key) {
