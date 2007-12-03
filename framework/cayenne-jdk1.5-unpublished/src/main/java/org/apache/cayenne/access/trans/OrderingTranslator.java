@@ -36,7 +36,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class OrderingTranslator extends QueryAssemblerHelper {
 
-    protected List orderByColumnList = new ArrayList();
+    protected List<String> orderByColumnList = new ArrayList<String>();
     
     public OrderingTranslator(QueryAssembler queryAssembler) {
         super(queryAssembler);
@@ -54,23 +54,18 @@ public class OrderingTranslator extends QueryAssemblerHelper {
             return null;
 
         StringBuffer buf = new StringBuffer();
-        List list = ((SelectQuery) q).getOrderings();
-        int len = list.size();
 
-        for (int i = 0; i < len; i++) {
-            if (i > 0)
+        for (Ordering ord : ((SelectQuery) q).getOrderings()) {
+            if (buf.length() > 0)
                 buf.append(", ");
 
             StringBuffer ordComp = new StringBuffer();
-
-            Ordering ord = (Ordering) list.get(i);
-
+            
             //UPPER is (I think) part of the SQL99 standard, and I'm not convinced it's universally available
             // - should the syntax used here be defined by the Db specific adaptor perhaps, or at least
             // possibly specified by the db adaptor (a DB specific OrderingTranslator hook)?
             if (ord.isCaseInsensitive()) {
                 ordComp.append("UPPER(");
-
             }
 
             Expression exp = ord.getSortSpec();
@@ -108,7 +103,7 @@ public class OrderingTranslator extends QueryAssemblerHelper {
      * order by, an element of the list would be 
      * <code>UPPER(&lt;column reference&gt;)</code>
      */    
-    public List getOrderByColumnList() {
+    public List<String> getOrderByColumnList() {
         return orderByColumnList;
     }
 }

@@ -42,7 +42,7 @@ public class LOBBatchQueryWrapper {
 
     protected BatchQuery query;
 
-    protected List dbAttributes;
+    protected List<DbAttribute> dbAttributes;
 
     // attribute list decoders
     protected boolean[] qualifierAttributes;
@@ -79,7 +79,7 @@ public class LOBBatchQueryWrapper {
     protected void indexQualifierAttributes() {
         int len = this.dbAttributes.size();
         for (int i = 0; i < len; i++) {
-            DbAttribute attribute = (DbAttribute) this.dbAttributes.get(i);
+            DbAttribute attribute = this.dbAttributes.get(i);
             int type = attribute.getType();
             qualifierAttributes[i] = attribute.isPrimaryKey();
             allLOBAttributes[i] = (type == Types.BLOB || type == Types.CLOB);
@@ -102,7 +102,7 @@ public class LOBBatchQueryWrapper {
                     continue;
                 }
 
-                if (((DbAttribute) dbAttributes.get(i)).getType() == Types.BLOB) {
+                if (dbAttributes.get(i).getType() == Types.BLOB) {
                     updatedLOBAttributes[i] = convertToBlobValue(value);
                 }
                 else {
@@ -165,7 +165,7 @@ public class LOBBatchQueryWrapper {
     public List getDbAttributesForLOBSelectQualifier() {
 
         int len = qualifierAttributes.length;
-        List attributes = new ArrayList(len);
+        List<DbAttribute> attributes = new ArrayList<DbAttribute>(len);
 
         for (int i = 0; i < len; i++) {
             if (this.qualifierAttributes[i]) {
@@ -186,7 +186,7 @@ public class LOBBatchQueryWrapper {
         }
 
         int len = updatedLOBAttributes.length;
-        List attributes = new ArrayList(len);
+        List<DbAttribute> attributes = new ArrayList<DbAttribute>(len);
 
         for (int i = 0; i < len; i++) {
             if (this.updatedLOBAttributes[i] != null) {

@@ -43,13 +43,13 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 
         List values = new ArrayList(len);
-        List qualifierAttributes = updateBatch.getQualifierAttributes();
-        List updatedDbAttributes = updateBatch.getUpdatedAttributes();
+        List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
+        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 
         int updatedLen = updatedDbAttributes.size();
         int qualifierLen = qualifierAttributes.size();
         for (int i = 0; i < updatedLen; i++) {
-            DbAttribute attribute = (DbAttribute) updatedDbAttributes.get(i);
+            DbAttribute attribute = updatedDbAttributes.get(i);
             Object value = query.getValue(i);
             if(isUpdateableColumn(value, attribute.getType())) {
             	values.add(value);
@@ -66,8 +66,8 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
     public String createSqlString(BatchQuery batch) {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) batch;
         String table = batch.getDbEntity().getFullyQualifiedName();
-        List idDbAttributes = updateBatch.getQualifierAttributes();
-        List updatedDbAttributes = updateBatch.getUpdatedAttributes();
+        List<DbAttribute> idDbAttributes = updateBatch.getQualifierAttributes();
+        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
         StringBuffer query = new StringBuffer("UPDATE ");
         query.append(table).append(" SET ");
 
@@ -77,15 +77,15 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
                 query.append(", ");
             }
 
-            DbAttribute attribute = (DbAttribute) updatedDbAttributes.get(i);
+            DbAttribute attribute = updatedDbAttributes.get(i);
             query.append(attribute.getName()).append(" = ");
             appendUpdatedParameter(query, attribute, batch.getValue(i));
         }
 
         query.append(" WHERE ");
-        Iterator i = idDbAttributes.iterator();
+        Iterator<DbAttribute> i = idDbAttributes.iterator();
         while (i.hasNext()) {
-            DbAttribute attribute = (DbAttribute) i.next();
+            DbAttribute attribute = i.next();
             appendDbAttribute(query, attribute);
             query.append(" = ?");
             if (i.hasNext()) {

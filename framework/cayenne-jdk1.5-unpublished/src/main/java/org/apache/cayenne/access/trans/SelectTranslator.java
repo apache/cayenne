@@ -689,7 +689,7 @@ public class SelectTranslator extends QueryAssembler {
             msg.append("Alias not found, DbEntity: '").append(
                     ent != null ? ent.getName() : "<null entity>").append(
                     "'\nExisting aliases:");
-
+            
             int len = aliasList.size();
             for (int i = 0; i < len; i++) {
                 String dbeName = (tableList.get(i) != null)

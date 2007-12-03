@@ -38,13 +38,13 @@ public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
     }
 
     public List getValuesForLOBUpdateParameters(BatchQuery query) {
-        List dbAttributes = query.getDbAttributes();
+        List<DbAttribute> dbAttributes = query.getDbAttributes();
         int len = dbAttributes.size();
 
         List values = new ArrayList(len);
         for (int i = 0; i < len; i++) {
             Object value = query.getValue(i);
-            DbAttribute attribute = (DbAttribute) dbAttributes.get(i);
+            DbAttribute attribute = dbAttributes.get(i);
             if (isUpdateableColumn(value, attribute.getType())) {
                 values.add(value);
             }
@@ -55,11 +55,11 @@ public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
 
     public String createSqlString(BatchQuery batch) {
         String table = batch.getDbEntity().getFullyQualifiedName();
-        List dbAttributes = batch.getDbAttributes();
+        List<DbAttribute> dbAttributes = batch.getDbAttributes();
         StringBuffer query = new StringBuffer("INSERT INTO ");
         query.append(table).append(" (");
-        for (Iterator i = dbAttributes.iterator(); i.hasNext();) {
-            DbAttribute attribute = (DbAttribute) i.next();
+        for (Iterator<DbAttribute> i = dbAttributes.iterator(); i.hasNext();) {
+            DbAttribute attribute = i.next();
             query.append(attribute.getName());
             if (i.hasNext()) {
                 query.append(", ");
@@ -73,7 +73,7 @@ public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
 
             appendUpdatedParameter(
                 query,
-                (DbAttribute) dbAttributes.get(i),
+                dbAttributes.get(i),
                 batch.getValue(i));
         }
         query.append(')');
