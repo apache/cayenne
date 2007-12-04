@@ -68,7 +68,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
      * is more significant than any other Ordering with higher index. List being ordered is
      * modified in place.
      */
-    public static void orderList(List<Object> objects, List<Comparator<Object>> orderings) {
+    public static void orderList(List<?> objects, List<Comparator<Object>> orderings) {
         Collections.sort(objects, ComparatorUtils.chainedComparator(orderings));
     }
 
@@ -206,7 +206,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
      * 
      * @param objects a List of objects to be sorted
      */
-    public void orderList(List<Object> objects) {
+    public void orderList(List<?> objects) {
         Collections.sort(objects, this);
     }
 
