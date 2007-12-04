@@ -32,6 +32,7 @@ import org.apache.cayenne.util.NameConverter;
  * 
  * @author Andrus Adamchik
  * @since 1.2
+ * @deprecated since 3.0, as class generator version 1.1 is deprecated.
  */
 public class ClassGenerationInfo {
 
@@ -114,7 +115,7 @@ public class ClassGenerationInfo {
      * @since 3.0
      */
     public String formatJavaTypeAsNonBooleanPrimitive(String type) {
-        String value = (String) ImportUtils.classesForPrimitives.get(type);
+        String value = ImportUtils.classesForPrimitives.get(type);
         return formatJavaType(value != null ? value : type);
     }
 

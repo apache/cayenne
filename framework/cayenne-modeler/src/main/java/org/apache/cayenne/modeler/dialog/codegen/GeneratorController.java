@@ -21,6 +21,8 @@ package org.apache.cayenne.modeler.dialog.codegen;
 
 import java.awt.Component;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.swing.JButton;
@@ -28,8 +30,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import org.apache.commons.collections.Predicate;
-import org.apache.cayenne.gen.DefaultClassGenerator;
+import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -47,6 +48,7 @@ import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
+import org.apache.commons.collections.Predicate;
 
 /**
  * A mode-specific part of the code generation dialog.
@@ -96,9 +98,16 @@ public abstract class GeneratorController extends CayenneController {
     protected abstract DataMapDefaults createDefaults();
 
     /**
+     * Creates an appropriate subclass of {@link ClassGenerationAction}, returning it in
+     * an unconfigured state. Configuration is performed by {@link #createGenerator()}
+     * method.
+     */
+    protected abstract ClassGenerationAction newGenerator();
+
+    /**
      * Creates a class generator for provided selections.
      */
-    public DefaultClassGenerator createGenerator() {
+    public ClassGenerationAction createGenerator() {
 
         File outputDir = getOutputDir();
 
@@ -125,14 +134,25 @@ public abstract class GeneratorController extends CayenneController {
             return null;
         }
 
-        DefaultClassGenerator generator = new DefaultClassGenerator(getParentController()
-                .getDataMap(), getParentController().getSelectedEntities());
+        // remove generic entities...
+        Collection<ObjEntity> entities = new ArrayList<ObjEntity>(getParentController()
+                .getSelectedEntities());
+        Iterator<ObjEntity> it = entities.iterator();
+        while (it.hasNext()) {
+            if (it.next().isGeneric()) {
+                it.remove();
+            }
+        }
+
+        ClassGenerationAction generator = newGenerator();
+        generator.setDataMap(getParentController().getDataMap());
+        generator.setEntities(entities);
 
         // configure encoding from preferences
         Domain generatorPrefs = Application
                 .getInstance()
                 .getPreferenceDomain()
-                .getSubdomain(DefaultClassGenerator.class);
+                .getSubdomain(ClassGenerationAction.class);
 
         PreferenceDetail detail = generatorPrefs.getDetail(
                 GeneralPreferences.ENCODING_PREFERENCE,

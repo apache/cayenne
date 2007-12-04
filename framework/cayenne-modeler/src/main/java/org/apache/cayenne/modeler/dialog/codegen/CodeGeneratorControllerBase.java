@@ -105,8 +105,8 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         return modified;
     }
 
-    public List getSelectedEntities() {
-        List selected = new ArrayList(selectedEntities.size());
+    public List<ObjEntity> getSelectedEntities() {
+        List<ObjEntity> selected = new ArrayList<ObjEntity>(selectedEntities.size());
 
         Iterator it = entities.iterator();
         while (it.hasNext()) {

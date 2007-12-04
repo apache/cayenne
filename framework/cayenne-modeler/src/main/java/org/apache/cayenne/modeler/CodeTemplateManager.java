@@ -19,11 +19,15 @@
 
 package org.apache.cayenne.modeler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.gen.MapClassGenerator;
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClassGenerationAction1_1;
+import org.apache.cayenne.gen.ClassGenerator;
+import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.pref.Domain;
 
@@ -36,78 +40,100 @@ public class CodeTemplateManager {
 
     public static final String STANDARD_SERVER_SUPERCLASS = "Standard Server Superclass";
     public static final String STANDARD_SERVER_SUBCLASS = "Standard Server Subclass";
+    static final String STANDARD_CLIENT_SUPERCLASS = "Standard Client Superclass";
+    static final String STANDARD_CLIENT_SUBCLASS = "Standard Client Subclass";
 
-    protected Map standardSubclassTemplates;
-    protected Map standardSuperclassTemplates;
-    protected Map customTemplates;
+    protected List<String> standardSubclassTemplates;
+    protected List<String> standardSuperclassTemplates;
+    protected Map<String, String> customTemplates;
+    protected Map<String, String> standardTemplates;
+    protected Map<String, String> standardTemplates1_1;
 
     public static Domain getTemplateDomain(Application application) {
         return application.getPreferenceDomain().getSubdomain(CodeTemplateManager.class);
     }
 
     public CodeTemplateManager(Application application) {
-        standardSuperclassTemplates = new HashMap();
+        standardSuperclassTemplates = new ArrayList<String>(3);
 
-        standardSuperclassTemplates.put(
-                STANDARD_SERVER_SUPERCLASS,
-                MapClassGenerator.SUPERCLASS_TEMPLATE_1_1);
+        standardSuperclassTemplates.add(STANDARD_SERVER_SUPERCLASS);
+        standardSuperclassTemplates.add(STANDARD_CLIENT_SUPERCLASS);
 
-        standardSuperclassTemplates.put(
-                "Standard Client Superclass",
-                MapClassGenerator.CLIENT_SUPERCLASS_TEMPLATE_1_2);
-
-        standardSubclassTemplates = new HashMap();
-        standardSubclassTemplates.put(
-                STANDARD_SERVER_SUBCLASS,
-                MapClassGenerator.SUBCLASS_TEMPLATE_1_1);
-
-        standardSubclassTemplates.put(
-                "Standard Client Subclass",
-                MapClassGenerator.CLIENT_SUBCLASS_TEMPLATE_1_2);
+        standardSubclassTemplates = new ArrayList<String>(3);
+        standardSubclassTemplates.add(STANDARD_SERVER_SUBCLASS);
+        standardSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
 
         updateCustomTemplates(getTemplateDomain(application));
+
+        standardTemplates = new HashMap<String, String>();
+        standardTemplates.put(
+                STANDARD_SERVER_SUPERCLASS,
+                ClassGenerationAction.SUPERCLASS_TEMPLATE);
+        standardTemplates.put(
+                STANDARD_CLIENT_SUPERCLASS,
+                ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
+        standardTemplates.put(
+                STANDARD_SERVER_SUBCLASS,
+                ClassGenerationAction.SUBCLASS_TEMPLATE);
+        standardTemplates.put(
+                STANDARD_CLIENT_SUBCLASS,
+                ClientClassGenerationAction.SUBCLASS_TEMPLATE);
+
+        standardTemplates1_1 = new HashMap<String, String>();
+        standardTemplates1_1.put(
+                STANDARD_SERVER_SUPERCLASS,
+                ClassGenerationAction1_1.SUPERCLASS_TEMPLATE);
+        standardTemplates1_1.put(
+                STANDARD_CLIENT_SUPERCLASS,
+                ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
+        standardTemplates1_1.put(
+                STANDARD_SERVER_SUBCLASS,
+                ClassGenerationAction1_1.SUBCLASS_TEMPLATE);
+        standardTemplates1_1.put(
+                STANDARD_CLIENT_SUBCLASS,
+                ClientClassGenerationAction.SUBCLASS_TEMPLATE);
     }
 
     /**
      * Updates custom templates from preferences.
      */
     public void updateCustomTemplates(Domain preferenceDomain) {
-        Map templates = preferenceDomain.getDetailsMap(FSPath.class);
-        this.customTemplates = new HashMap(templates.size(), 1);
-        Iterator it = templates.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        Map<String, FSPath> templates = preferenceDomain.getDetailsMap(FSPath.class);
+        this.customTemplates = new HashMap<String, String>(templates.size(), 1);
 
+        for (Map.Entry<String, FSPath> entry : templates.entrySet()) {
             FSPath path = (FSPath) entry.getValue();
             customTemplates.put(entry.getKey(), path.getPath());
         }
     }
 
-    public String getTemplatePath(String name) {
+    public String getTemplatePath(String name, String version) {
         Object value = customTemplates.get(name);
         if (value != null) {
             return value.toString();
         }
 
-        value = standardSuperclassTemplates.get(name);
-
-        if (value != null) {
-            return value.toString();
+        Map<String, String> templates;
+        if (ClassGenerator.VERSION_1_1.equals(version)) {
+            templates = standardTemplates1_1;
+        }
+        else {
+            templates = standardTemplates;
         }
 
-        value = standardSubclassTemplates.get(name);
+        value = templates.get(name);
         return value != null ? value.toString() : null;
     }
 
-    public Map getCustomTemplates() {
+    public Map<String, String> getCustomTemplates() {
         return customTemplates;
     }
 
-    public Map getStandardSubclassTemplates() {
+    public List<String> getStandardSubclassTemplates() {
         return standardSubclassTemplates;
     }
 
-    public Map getStandardSuperclassTemplates() {
+    public List<String> getStandardSuperclassTemplates() {
         return standardSuperclassTemplates;
     }
 }

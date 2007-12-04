@@ -28,8 +28,10 @@ import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
 
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClassGenerationAction1_1;
 import org.apache.cayenne.gen.ClassGenerator;
-import org.apache.cayenne.gen.DefaultClassGenerator;
+import org.apache.cayenne.gen.ClassGeneratorMode;
 import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
@@ -51,7 +53,7 @@ public class CustomModeController extends GeneratorController {
     static final String DATA_MAP_MODE_LABEL = "One run per DataMap";
     static final String ENTITY_MODE_LABEL = "One run per each selected Entity";
 
-    static final Map modesByLabel = new HashMap();
+    static final Map<String, String> modesByLabel = new HashMap<String, String>();
     static {
         modesByLabel.put(DATA_MAP_MODE_LABEL, MODE_DATAMAP);
         modesByLabel.put(ENTITY_MODE_LABEL, MODE_ENTITY);
@@ -72,7 +74,7 @@ public class CustomModeController extends GeneratorController {
         view.getGenerationMode().setModel(new DefaultComboBoxModel(modeChoices));
 
         Object[] versionChoices = new Object[] {
-                ClassGenerator.VERSION_1_1, ClassGenerator.VERSION_1_2
+                ClassGenerator.VERSION_1_2, ClassGenerator.VERSION_1_1
         };
         view.getGeneratorVersion().setModel(new DefaultComboBoxModel(versionChoices));
 
@@ -92,7 +94,7 @@ public class CustomModeController extends GeneratorController {
         }
 
         if (Util.isEmptyString(preferences.getProperty("version"))) {
-            preferences.setProperty("version", ClassGenerator.VERSION_1_1);
+            preferences.setProperty("version", ClassGenerator.VERSION_1_2);
         }
 
         if (Util.isEmptyString(preferences.getProperty("overwrite"))) {
@@ -171,20 +173,18 @@ public class CustomModeController extends GeneratorController {
     protected void updateTemplates() {
         this.templateManager = getApplication().getCodeTemplateManager();
 
-        List customTemplates = new ArrayList(templateManager
+        List<String> customTemplates = new ArrayList<String>(templateManager
                 .getCustomTemplates()
                 .keySet());
         Collections.sort(customTemplates);
 
-        List superTemplates = new ArrayList(templateManager
-                .getStandardSuperclassTemplates()
-                .keySet());
+        List<String> superTemplates = new ArrayList<String>(templateManager
+                .getStandardSuperclassTemplates());
         Collections.sort(superTemplates);
         superTemplates.addAll(customTemplates);
 
-        List subTemplates = new ArrayList(templateManager
-                .getStandardSubclassTemplates()
-                .keySet());
+        List<String> subTemplates = new ArrayList<String>(templateManager
+                .getStandardSubclassTemplates());
         Collections.sort(subTemplates);
         subTemplates.addAll(customTemplates);
 
@@ -206,29 +206,35 @@ public class CustomModeController extends GeneratorController {
         return view;
     }
 
-    public DefaultClassGenerator createGenerator() {
+    private String getVersion() {
+        return (String) view.getGeneratorVersion().getSelectedItem();
+    }
 
-        DefaultClassGenerator generator = super.createGenerator();
+    @Override
+    protected ClassGenerationAction newGenerator() {
+        return ClassGenerator.VERSION_1_1.equals(getVersion())
+                ? new ClassGenerationAction1_1()
+                : new ClassGenerationAction();
+    }
+
+    public ClassGenerationAction createGenerator() {
+
+        ClassGenerationAction generator = super.createGenerator();
 
         String mode = modesByLabel
                 .get(view.getGenerationMode().getSelectedItem())
                 .toString();
-        generator.setMode(mode);
+        generator.setMode(ClassGeneratorMode.valueOf(mode));
+        
+        String version = getVersion();
 
         String superKey = view.getSuperclassTemplate().getSelectedItem().toString();
-        String superTemplate = templateManager.getTemplatePath(superKey);
+        String superTemplate = templateManager.getTemplatePath(superKey, version);
         generator.setSuperTemplate(superTemplate);
 
         String subKey = view.getSubclassTemplate().getSelectedItem().toString();
-        String subTemplate = templateManager.getTemplatePath(subKey);
+        String subTemplate = templateManager.getTemplatePath(subKey, version);
         generator.setTemplate(subTemplate);
-
-        if (view.getGeneratorVersion().getSelectedItem() != null) {
-            generator.setVersionString(view
-                    .getGeneratorVersion()
-                    .getSelectedItem()
-                    .toString());
-        }
 
         generator.setOverwrite(view.getOverwrite().isSelected());
         generator.setUsePkgPath(view.getUsePackagePath().isSelected());

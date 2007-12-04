@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.dialog.codegen;
 
 import java.awt.Component;
 
+import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.swing.BindingBuilder;
 
@@ -58,5 +59,10 @@ public class StandardModeController extends GeneratorController {
 
     public Component getView() {
         return view;
+    }
+    
+    @Override
+    protected ClassGenerationAction newGenerator() {
+        return new ClassGenerationAction();
     }
 }

@@ -33,18 +33,18 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
     public static final String SUPERCLASS_TEMPLATE = "dotemplates/v1_2/client-superclass.vm";
 
     @Override
-    protected String defaultSingleClassTemplate() {
+    public String defaultSingleClassTemplate() {
         throw new IllegalStateException(
                 "Default generation for single classes on the client is not supported.");
     }
 
     @Override
-    protected String defaultSubclassTemplate() {
+    public String defaultSubclassTemplate() {
         return ClientClassGenerationAction.SUBCLASS_TEMPLATE;
     }
 
     @Override
-    protected String defaultSuperclassTemplate() {
+    public String defaultSuperclassTemplate() {
         return ClientClassGenerationAction.SUPERCLASS_TEMPLATE;
     }
 

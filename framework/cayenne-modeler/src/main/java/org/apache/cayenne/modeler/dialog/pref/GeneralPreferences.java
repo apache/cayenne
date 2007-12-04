@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.dialog.pref;
 
 import java.awt.Component;
 
-import org.apache.cayenne.gen.DefaultClassGenerator;
+import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.CayennePreferenceService;
@@ -71,7 +71,7 @@ public class GeneralPreferences extends CayenneController {
     protected void initBindings() {
         // init model objects
         Domain classGeneratorDomain = editor.editableInstance(getApplication()
-                .getPreferenceDomain()).getSubdomain(DefaultClassGenerator.class);
+                .getPreferenceDomain()).getSubdomain(ClassGenerationAction.class);
         this.classGeneratorPreferences = classGeneratorDomain
                 .getDetail(ENCODING_PREFERENCE, true);
 

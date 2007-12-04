@@ -23,12 +23,12 @@ import java.awt.Component;
 
 import javax.swing.JOptionPane;
 
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.PredicateUtils;
-import org.apache.cayenne.gen.DefaultClassGenerator;
+import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
 
 /**
  * A controller for the class generator dialog.
@@ -118,7 +118,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
     }
 
     public void generateAction() {
-        DefaultClassGenerator generator = generatorSelector.getGenerator();
+        ClassGenerationAction generator = generatorSelector.getGenerator();
 
         if (generator != null) {
             try {

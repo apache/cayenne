@@ -20,6 +20,8 @@
 package org.apache.cayenne.modeler.dialog.codegen;
 
 import org.apache.commons.collections.Predicate;
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.gen.DefaultClassGenerator;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
@@ -70,14 +72,9 @@ public class ClientModeController extends StandardModeController {
         return prefs;
     }
 
-    public DefaultClassGenerator createGenerator() {
-        DefaultClassGenerator generator = super.createGenerator();
-
-        if (generator != null) {
-            generator.setClient(true);
-        }
-
-        return generator;
+    @Override
+    protected ClassGenerationAction newGenerator() {
+        return new ClientClassGenerationAction();
     }
 
     public Predicate getDefaultEntityFilter() {

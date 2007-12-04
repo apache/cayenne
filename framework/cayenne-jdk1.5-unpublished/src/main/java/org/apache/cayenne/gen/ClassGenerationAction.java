@@ -26,7 +26,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
@@ -49,7 +48,7 @@ public class ClassGenerationAction {
     public static final String SUPERCLASS_PREFIX = "_";
     private static final String WILDCARD = "*";
 
-    protected List<ObjEntity> entities;
+    protected Collection<ObjEntity> entities;
     protected String superPkg;
     protected DataMap dataMap;
     protected ClassGeneratorMode mode;
@@ -74,15 +73,15 @@ public class ClassGenerationAction {
         this.makePairs = true;
     }
 
-    protected String defaultSingleClassTemplate() {
+    public String defaultSingleClassTemplate() {
         return ClassGenerationAction.SINGLE_CLASS_TEMPLATE;
     }
 
-    protected String defaultSubclassTemplate() {
+    public String defaultSubclassTemplate() {
         return ClassGenerationAction.SUBCLASS_TEMPLATE;
     }
 
-    protected String defaultSuperclassTemplate() {
+    public String defaultSuperclassTemplate() {
         return ClassGenerationAction.SUPERCLASS_TEMPLATE;
     }
 
@@ -115,7 +114,7 @@ public class ClassGenerationAction {
                     + stringUtils.stripPackageName(fqnSubClass);
 
             String superPackageName = this.superPkg;
-            if(superPackageName == null) {
+            if (superPackageName == null) {
                 superPackageName = subPackageName;
             }
             String fqnSuperClass = superPackageName + "." + superClassName;
@@ -152,7 +151,7 @@ public class ClassGenerationAction {
         // TODO: andrus, 12/2/2007 - should we setup a dummy entity for an empty map in
         // DataMap mode?
         if (mode != ClassGeneratorMode.entity && !entities.isEmpty()) {
-            return Collections.singleton(entities.get(0));
+            return Collections.singleton(entities.iterator().next());
         }
         else {
             return this.entities;
@@ -489,7 +488,7 @@ public class ClassGenerationAction {
         this.dataMap = dataMap;
     }
 
-    public List<ObjEntity> getEntities() {
+    public Collection<ObjEntity> getEntities() {
         return entities;
     }
 
@@ -498,7 +497,7 @@ public class ClassGenerationAction {
      * list to allow its independent modification and also filters out entities that do
      * not require class generation.
      */
-    public void setEntities(List<ObjEntity> objEntities) {
+    public void setEntities(Collection<ObjEntity> objEntities) {
         this.entities = objEntities != null
                 ? new ArrayList<ObjEntity>(objEntities)
                 : new ArrayList<ObjEntity>();
@@ -508,6 +507,10 @@ public class ClassGenerationAction {
         this.mode = mode;
     }
 
+    /**
+     * Sets an optional shared VelocityContext. Useful with tools like VPP that can set
+     * custom values in the context, not known to Cayenne.
+     */
     public void setContext(VelocityContext context) {
         this.context = context;
     }

@@ -36,17 +36,17 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
     public static final String SUPERCLASS_TEMPLATE = "dotemplates/superclass.vm";
 
     @Override
-    protected String defaultSingleClassTemplate() {
+    public String defaultSingleClassTemplate() {
         return ClassGenerationAction1_1.SINGLE_CLASS_TEMPLATE;
     }
 
     @Override
-    protected String defaultSubclassTemplate() {
+    public String defaultSubclassTemplate() {
         return ClassGenerationAction1_1.SUBCLASS_TEMPLATE;
     }
 
     @Override
-    protected String defaultSuperclassTemplate() {
+    public String defaultSuperclassTemplate() {
         return ClassGenerationAction1_1.SUPERCLASS_TEMPLATE;
     }
 

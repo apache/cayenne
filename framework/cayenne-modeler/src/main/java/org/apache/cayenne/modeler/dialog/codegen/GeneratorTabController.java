@@ -23,7 +23,7 @@ import java.awt.Component;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.gen.DefaultClassGenerator;
+import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.PreferenceDetail;
 import org.apache.cayenne.swing.BindingBuilder;
@@ -108,7 +108,7 @@ public class GeneratorTabController extends CayenneController {
         return (GeneratorController) controllers.get(name);
     }
 
-    public DefaultClassGenerator getGenerator() {
+    public ClassGenerationAction getGenerator() {
         GeneratorController modeController = getGeneratorController();
         return (modeController != null) ? modeController.createGenerator() : null;
     }
