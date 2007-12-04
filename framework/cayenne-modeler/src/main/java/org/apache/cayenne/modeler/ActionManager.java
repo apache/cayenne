@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.Action;
@@ -83,66 +82,67 @@ import org.apache.cayenne.modeler.util.CayenneAction;
  */
 public class ActionManager {
 
-    static final Collection SPECIAL_ACTIONS = new HashSet(Arrays.asList(new String[] {
-            SaveAction.getActionName(), RevertAction.getActionName()
-    }));
+    static final Collection<String> SPECIAL_ACTIONS = Arrays.asList(SaveAction
+            .getActionName());
 
     // search action added to project actions
-    static final Collection PROJECT_ACTIONS = Arrays.asList(new String[] {
-            CreateDomainAction.getActionName(), ProjectAction.getActionName(),
-            ValidateAction.getActionName(), SaveAsAction.getActionName(),
-            FindAction.getActionName()
-    });
+    static final Collection<String> PROJECT_ACTIONS = Arrays.asList(RevertAction
+            .getActionName(), CreateDomainAction.getActionName(), ProjectAction
+            .getActionName(), ValidateAction.getActionName(), SaveAsAction
+            .getActionName(), FindAction.getActionName());
 
-    static final Collection DOMAIN_ACTIONS = new HashSet(PROJECT_ACTIONS);
+    static final Collection<String> DOMAIN_ACTIONS = new HashSet<String>(PROJECT_ACTIONS);
     static {
-        DOMAIN_ACTIONS.addAll(Arrays.asList(new String[] {
-                ImportDataMapAction.getActionName(), CreateDataMapAction.getActionName(),
-                RemoveAction.getActionName(), CreateNodeAction.getActionName(),
-                ImportDBAction.getActionName(), ImportEOModelAction.getActionName()
-        }));
+        DOMAIN_ACTIONS.addAll(Arrays.asList(
+                ImportDataMapAction.getActionName(),
+                CreateDataMapAction.getActionName(),
+                RemoveAction.getActionName(),
+                CreateNodeAction.getActionName(),
+                ImportDBAction.getActionName(),
+                ImportEOModelAction.getActionName()));
     }
 
-    static final Collection DATA_MAP_ACTIONS = new HashSet(DOMAIN_ACTIONS);
+    static final Collection<String> DATA_MAP_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
     static {
-        DATA_MAP_ACTIONS.addAll(Arrays.asList(new String[] {
+        DATA_MAP_ACTIONS.addAll(Arrays.asList(
                 GenerateCodeAction.getActionName(),
                 CreateObjEntityAction.getActionName(),
                 CreateDbEntityAction.getActionName(),
-                CreateQueryAction.getActionName(), CreateProcedureAction.getActionName(),
-                GenerateDBAction.getActionName(), MigrateAction.getActionName()
-        }));
+                CreateQueryAction.getActionName(),
+                CreateProcedureAction.getActionName(),
+                GenerateDBAction.getActionName(),
+                MigrateAction.getActionName()));
     }
 
-    static final Collection OBJ_ENTITY_ACTIONS = new HashSet(DATA_MAP_ACTIONS);
+    static final Collection<String> OBJ_ENTITY_ACTIONS = new HashSet<String>(
+            DATA_MAP_ACTIONS);
     static {
-        OBJ_ENTITY_ACTIONS.addAll(Arrays.asList(new String[] {
+        OBJ_ENTITY_ACTIONS.addAll(Arrays.asList(
                 ObjEntitySyncAction.getActionName(),
                 CreateAttributeAction.getActionName(),
-                CreateRelationshipAction.getActionName()
-        }));
+                CreateRelationshipAction.getActionName()));
     }
 
-    static final Collection DB_ENTITY_ACTIONS = new HashSet(DATA_MAP_ACTIONS);
+    static final Collection<String> DB_ENTITY_ACTIONS = new HashSet<String>(
+            DATA_MAP_ACTIONS);
     static {
-        DB_ENTITY_ACTIONS.addAll(Arrays.asList(new String[] {
+        DB_ENTITY_ACTIONS.addAll(Arrays.asList(
                 CreateAttributeAction.getActionName(),
                 CreateRelationshipAction.getActionName(),
-                DbEntitySyncAction.getActionName()
-        }));
+                DbEntitySyncAction.getActionName()));
     }
 
-    static final Collection PROCEDURE_ACTIONS = new HashSet(DATA_MAP_ACTIONS);
+    static final Collection<String> PROCEDURE_ACTIONS = new HashSet<String>(
+            DATA_MAP_ACTIONS);
     static {
-        PROCEDURE_ACTIONS.addAll(Arrays.asList(new String[] {
-            CreateProcedureParameterAction.getActionName()
-        }));
+        PROCEDURE_ACTIONS.addAll(Arrays.asList(CreateProcedureParameterAction
+                .getActionName()));
     }
 
-    protected Map actionMap;
+    protected Map<String, Action> actionMap;
 
     public ActionManager(Application application) {
-        this.actionMap = new HashMap();
+        this.actionMap = new HashMap<String, Action>(40);
 
         registerAction(new ProjectAction(application));
         registerAction(new NewProjectAction(application)).setAlwaysOn(true);
@@ -175,7 +175,8 @@ public class ActionManager {
         registerAction(new RemoveCallbackMethodForListenerAction(application));
         registerAction(new RemoveCallbackMethodForDataMapListenerAction(application));
         registerAction(new CreateObjEntityListenerAction(application)).setAlwaysOn(true);
-        registerAction(new CreateDataMapEntityListenerAction(application)).setAlwaysOn(true);
+        registerAction(new CreateDataMapEntityListenerAction(application)).setAlwaysOn(
+                true);
         registerAction(new RemoveEntityListenerAction(application));
         registerAction(new RemoveEntityListenerForDataMapAction(application));
         // end callback-related actions
@@ -201,6 +202,7 @@ public class ActionManager {
 
     /**
      * Returns an action for key.
+     * 
      * @param key action name
      * @return action
      */
@@ -222,7 +224,7 @@ public class ActionManager {
     }
 
     /**
-     * Updates actions state to reflect DataDomain selecttion.
+     * Updates actions state to reflect DataDomain selection.
      */
     public void domainSelected() {
         processActionsState(DOMAIN_ACTIONS);
@@ -249,7 +251,7 @@ public class ActionManager {
         processActionsState(DB_ENTITY_ACTIONS);
         getAction(RemoveAction.getActionName()).setName("Remove DbEntity");
     }
-    
+
     public void derivedDbEntitySelected() {
         processActionsState(DB_ENTITY_ACTIONS);
         getAction(RemoveAction.getActionName()).setName("Remove Derived DbEntity");
@@ -268,16 +270,14 @@ public class ActionManager {
     /**
      * Sets the state of all controlled actions, flipping it to "enabled" for all actions
      * in provided collection and to "disabled" for the rest.
+     * 
      * @param namesOfEnabled action names
      */
-    protected void processActionsState(Collection namesOfEnabled) {
-        Iterator it = actionMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+    protected void processActionsState(Collection<String> namesOfEnabled) {
+        for (Map.Entry<String, Action> entry : actionMap.entrySet()) {
 
             if (!SPECIAL_ACTIONS.contains(entry.getKey())) {
-                ((Action) entry.getValue()).setEnabled(namesOfEnabled.contains(entry
-                        .getKey()));
+                entry.getValue().setEnabled(namesOfEnabled.contains(entry.getKey()));
             }
         }
     }
