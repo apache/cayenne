@@ -35,6 +35,7 @@ CAY-913 ToMany Map relationships cause ClassCastExceptions on commit when the so
 CAY-914 cdataport classloader trouble
 CAY-920 ClassCastException when processing delete rules for Map relationships
 CAY-924 Update CayenneModeler for OS X Leopard
+CAY-926 Refactoring class generator classes
 
 ----------------------------------
 Release: 3.0M2
