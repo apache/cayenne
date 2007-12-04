@@ -27,9 +27,7 @@ import javax.swing.*;
  * Data map editing tabs container
  *
  * @author Vasil Tarasevich
- * @version 1.0 Oct 28, 2007
  */
-
 public class DataMapTabbedView extends JTabbedPane {
     ProjectController mediator;
 
