@@ -73,15 +73,15 @@ public class ClassGenerationAction {
         this.makePairs = true;
     }
 
-    public String defaultSingleClassTemplate() {
+    protected String defaultSingleClassTemplate() {
         return ClassGenerationAction.SINGLE_CLASS_TEMPLATE;
     }
 
-    public String defaultSubclassTemplate() {
+    protected String defaultSubclassTemplate() {
         return ClassGenerationAction.SUBCLASS_TEMPLATE;
     }
 
-    public String defaultSuperclassTemplate() {
+    protected String defaultSuperclassTemplate() {
         return ClassGenerationAction.SUPERCLASS_TEMPLATE;
     }
 
