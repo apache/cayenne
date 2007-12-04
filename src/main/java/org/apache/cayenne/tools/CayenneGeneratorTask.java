@@ -105,8 +105,6 @@ public class CayenneGeneratorTask extends CayenneTask {
     }
 
     /**
-     * Factory method to create internal class generator. Called from constructor.
-     * 
      * @deprecated since 3.0. Use {@link #createGeneratorAction()}.
      */
     protected DefaultClassGenerator createGenerator() {
