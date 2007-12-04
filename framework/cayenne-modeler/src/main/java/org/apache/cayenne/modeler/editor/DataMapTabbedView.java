@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
+import java.awt.Color;
+
 import org.apache.cayenne.modeler.ProjectController;
 
 import javax.swing.*;
@@ -45,12 +47,14 @@ public class DataMapTabbedView extends JTabbedPane {
      * create tabs
      */
     private void initView() {
+      
         setTabPlacement(JTabbedPane.TOP);
 
         // add panels to tabs
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
         JScrollPane dataMapView = new JScrollPane(new DataMapView(mediator));
+        dataMapView.setBackground(Color.WHITE);
         addTab("DataMap", dataMapView);
 
         DataMapCallbackListenersTab listenersPanel = new DataMapCallbackListenersTab(mediator);

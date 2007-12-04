@@ -146,7 +146,7 @@ public class DataMapView extends JPanel {
 
         // assemble
         FormLayout layout = new FormLayout(
-                "right:70dlu, 3dlu, fill:110dlu, 3dlu, fill:90",
+                "right:70dlu, 3dlu, fill:110dlu, 3dlu, fill:100",
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();

@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.editor.datanode;
 
 import java.awt.Component;
 
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 import org.apache.cayenne.modeler.ProjectController;
@@ -37,7 +38,7 @@ public class DataNodeEditor extends CayenneController {
         super(parent);
 
         this.view = new JTabbedPane();
-        view.addTab("Main", new MainDataNodeEditor(parent).getView());
+        view.addTab("Main", new JScrollPane(new MainDataNodeEditor(parent).getView()));
         view.addTab("Adapter", new AdapterEditor(parent).getView());
     }
 
