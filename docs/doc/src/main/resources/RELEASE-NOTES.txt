@@ -24,6 +24,7 @@ CAY-916 Ordering should be able to ignore paths with null elements
 CAY-918 An exception during in-memory sorting of IncrementalFaultList
 CAY-921 Remove DerviedDbEntity support from Cayenne
 CAY-927 Switch to version 1.2 as default generation mechanism , deprecate 1.1 generator
+CAY-931 Enable revert action even for projects that are not modified
 
 Bug fixes since M2:
 
