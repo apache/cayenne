@@ -107,6 +107,8 @@ public class CodeTemplateManager {
         }
     }
 
+    // TODO: andrus, 12/5/2007 - this should also take a "pairs" parameter to correctly
+    // assign standard templates
     public String getTemplatePath(String name, String version) {
         Object value = customTemplates.get(name);
         if (value != null) {
