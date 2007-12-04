@@ -54,7 +54,6 @@ public class DataMapTabbedView extends JTabbedPane {
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
         JScrollPane dataMapView = new JScrollPane(new DataMapView(mediator));
-        dataMapView.setBackground(Color.WHITE);
         addTab("DataMap", dataMapView);
 
         DataMapCallbackListenersTab listenersPanel = new DataMapCallbackListenersTab(mediator);
