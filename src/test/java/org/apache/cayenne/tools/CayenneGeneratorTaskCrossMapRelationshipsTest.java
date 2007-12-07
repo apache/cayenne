@@ -33,7 +33,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
 
-public class CayenneGeneratorvTask1_2Test extends TestCase {
+public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
 
     private static final Perl5Util regexUtil = new Perl5Util();
     private static final Project project = new Project();
@@ -47,7 +47,11 @@ public class CayenneGeneratorvTask1_2Test extends TestCase {
         task.setLocation(Location.UNKNOWN_LOCATION);
     }
 
-    /** Test pairs generation with a cross-DataMap relationship (v1.1). */
+    /**
+     * Test pairs generation with a cross-DataMap relationship (v1.1).
+     * 
+     * @deprecated since 3.0 1.1 version is deprecated.
+     */
     public void testCrossDataMapRelationships_v1_1() throws Exception {
 
         // prepare destination directory
@@ -126,7 +130,6 @@ public class CayenneGeneratorvTask1_2Test extends TestCase {
         // setup task
         task.setMap(map);
         task.setAdditionalMaps(additionalMapsPath);
-        task.setVersion("1.2");
         task.setMakepairs(true);
         task.setOverwrite(false);
         task.setMode("entity");
