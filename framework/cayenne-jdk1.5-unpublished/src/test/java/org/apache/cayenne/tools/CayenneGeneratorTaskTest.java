@@ -25,7 +25,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.BasicCase;
 import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.util.Util;
@@ -33,12 +33,13 @@ import org.apache.oro.text.perl.Perl5Util;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 
-public class CayenneGeneratorTaskTest extends CayenneCase {
+public class CayenneGeneratorTaskTest extends BasicCase {
 
     private static final Perl5Util regexUtil = new Perl5Util();
     private static final Project project = new Project();
     private static final File baseDir = CayenneResources.getResources().getTestDir();
     private static final File map = new File(baseDir, "antmap.xml");
+    private static final File mapEmbeddables = new File(baseDir, "antmap-embeddables.xml");
     private static final File template = new File(baseDir, "velotemplate.vm");
 
     static {
@@ -59,6 +60,9 @@ public class CayenneGeneratorTaskTest extends CayenneCase {
         Util.copy(url1, map);
         URL url2 = locator.findResource("testtemplate.vm");
         Util.copy(url2, template);
+
+        URL url3 = locator.findResource("embeddable.map.xml");
+        Util.copy(url3, mapEmbeddables);
     }
 
     public void setUp() {
@@ -224,6 +228,37 @@ public class CayenneGeneratorTaskTest extends CayenneCase {
         File _a = new File(mapDir, convertPath("org/apache/superart/_Artist.java"));
         assertTrue(_a.exists());
         assertContents(_a, "_Artist", "org.apache.superart", "CayenneDataObject");
+    }
+
+    public void testPairsEmbeddable3() throws Exception {
+        // prepare destination directory
+        File mapDir = new File(baseDir, "pairs-embeddables3-split");
+        assertTrue(mapDir.mkdirs());
+
+        // setup task
+        task.setDestDir(mapDir);
+        task.setMap(mapEmbeddables);
+        task.setMakepairs(true);
+        task.setUsepkgpath(true);
+        task.setSuperpkg("org.apache.cayenne.testdo.embeddable.auto");
+
+        // run task
+        task.execute();
+
+        // check results
+        File a = new File(
+                mapDir,
+                convertPath("org/apache/cayenne/testdo/embeddable/EmbedEntity1.java"));
+        assertTrue(a.isFile());
+        assertContents(
+                a,
+                "EmbedEntity1",
+                "org.apache.cayenne.testdo.embeddable",
+                "_EmbedEntity1");
+
+        File _a = new File(mapDir, convertPath("org/apache/cayenne/testdo/embeddable/auto/_EmbedEntity1.java"));
+        assertTrue(_a.exists());
+        assertContents(_a, "_EmbedEntity1", "org.apache.cayenne.testdo.embeddable.auto", "CayenneDataObject");
     }
 
     private String convertPath(String unixPath) {
