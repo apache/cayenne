@@ -117,12 +117,4 @@ public class TemplateProcessor {
 
         classTemplate.merge(velocityContext, out);
     }
-
-    public void setClassTemplate(Template classTemplate) {
-        this.classTemplate = classTemplate;
-    }
-
-    public void setVelocityContext(Context velocityContext) {
-        this.velocityContext = velocityContext;
-    }
 }
