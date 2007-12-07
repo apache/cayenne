@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.unit;
 
-import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.art.StringET1ExtendedType;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.UnitTestDomain;
@@ -59,10 +59,11 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
     protected void initNode(DataMap map) throws Exception {
         DataNode node = resources.newDataNode(map.getName());
 
+        // setup test extended types
+        node.getAdapter().getExtendedTypes().registerType(new StringET1ExtendedType());
+
         // tweak mapping with a delegate
-        Iterator procedures = map.getProcedures().iterator();
-        while (procedures.hasNext()) {
-            Procedure proc = (Procedure) procedures.next();
+        for (Procedure proc : map.getProcedures()) {
             getAdapter(node).tweakProcedure(proc);
         }
 
@@ -79,7 +80,6 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
         }
 
         domain.addNode(node);
-
     }
 
     /**
@@ -89,7 +89,7 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
         return domain;
     }
 
-    public void createTestData(Class testCase, String testName, Map parameters)
+    public void createTestData(Class<?> testCase, String testName, Map parameters)
             throws Exception {
         Query query = dataSetFactory.getDataSetQuery(testCase, testName, parameters);
         getDataDomain().onQuery(null, query);
@@ -99,18 +99,14 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
      * Deletes all data from the database tables mentioned in the DataMap.
      */
     public void deleteTestData() throws Exception {
-        Iterator it = domain.getDataNodes().iterator();
-        while (it.hasNext()) {
-            DataNode node = (DataNode) it.next();
+        for (DataNode node : domain.getDataNodes()) {
             deleteTestData(node, node.getDataMaps().iterator().next());
         }
     }
 
     /** Drops all test tables. */
     public void dropSchema() throws Exception {
-        Iterator it = domain.getDataNodes().iterator();
-        while (it.hasNext()) {
-            DataNode node = (DataNode) it.next();
+        for (DataNode node : domain.getDataNodes()) {
             dropSchema(node, node.getDataMaps().iterator().next());
         }
     }
@@ -119,17 +115,13 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
      * Creates all test tables in the database.
      */
     public void createSchema() throws Exception {
-        Iterator it = domain.getDataNodes().iterator();
-        while (it.hasNext()) {
-            DataNode node = (DataNode) it.next();
+        for (DataNode node : domain.getDataNodes()) {
             createSchema(node, node.getDataMaps().iterator().next());
         }
     }
 
     public void dropPKSupport() throws Exception {
-        Iterator it = domain.getDataNodes().iterator();
-        while (it.hasNext()) {
-            DataNode node = (DataNode) it.next();
+        for (DataNode node : domain.getDataNodes()) {
             dropPKSupport(node, node.getDataMaps().iterator().next());
         }
     }
@@ -140,9 +132,7 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
      * primary key support.
      */
     public void createPKSupport() throws Exception {
-        Iterator it = domain.getDataNodes().iterator();
-        while (it.hasNext()) {
-            DataNode node = (DataNode) it.next();
+        for (DataNode node : domain.getDataNodes()) {
             createPKSupport(node, node.getDataMaps().iterator().next());
         }
     }

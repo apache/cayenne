@@ -31,6 +31,11 @@
 		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
 		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
 	</db-entity>
+	<db-entity name="ARTIST_CT">
+		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
+		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
+	</db-entity>
 	<db-entity name="ARTIST_EXHIBIT">
 		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -38,11 +43,6 @@
 	<db-entity name="ARTIST_GROUP">
 		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="ARTIS_CT">
-		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
-		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
 	</db-entity>
 	<db-entity name="BIGDECIMAL_ENTITY">
 		<db-attribute name="BIGDECIMAL_FIELD" type="NUMERIC" length="12" scale="2"/>
@@ -120,6 +120,10 @@
 		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="GALLERY_ID" type="INTEGER" isMandatory="true"/>
 		<db-attribute name="OPENING_DATE" type="TIMESTAMP" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="EXTENDED_TYPE_TEST">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
 	</db-entity>
 	<db-entity name="FLOAT_TEST">
 		<db-attribute name="FLOAT_COL" type="FLOAT"/>
@@ -227,12 +231,7 @@
 		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
 	</obj-entity>
-	<obj-entity name="ArtistCallbackTest" 
-		 className="org.apache.art.ArtistCallbackTest"
-                 dbEntityName="ARTIST_CT"
-                 exclude-superclass-listeners="true"
-                 exclude-default-listeners="true">
-
+	<obj-entity name="ArtistCallbackTest" className="org.apache.art.ArtistCallbackTest" dbEntityName="ARTIST_CT" exclude-superclass-listeners="true" exclude-default-listeners="true">
 		<obj-attribute name="artistName" type="java.lang.String"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date"/>
 		<entity-listener class="org.apache.art.EntityListenerObjEntity">
@@ -325,6 +324,9 @@
 	<obj-entity name="Exhibit" className="org.apache.art.Exhibit" dbEntityName="EXHIBIT">
 		<obj-attribute name="closingDate" type="java.util.Date" db-attribute-path="CLOSING_DATE"/>
 		<obj-attribute name="openingDate" type="java.util.Date" db-attribute-path="OPENING_DATE"/>
+	</obj-entity>
+	<obj-entity name="ExtendedTypeEntity" className="org.apache.art.ExtendedTypeEntity" dbEntityName="EXTENDED_TYPE_TEST">
+		<obj-attribute name="name" type="org.apache.art.StringET1" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="Gallery" className="org.apache.art.Gallery" dbEntityName="GALLERY">
 		<obj-attribute name="galleryName" type="java.lang.String" db-attribute-path="GALLERY_NAME"/>

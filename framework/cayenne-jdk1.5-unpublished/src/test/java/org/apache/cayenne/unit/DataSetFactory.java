@@ -33,5 +33,5 @@ public interface DataSetFactory {
     /**
      * Returns a query for creation of the data set.
      */
-    Query getDataSetQuery(Class testCase, String testName, Map parameters);
+    Query getDataSetQuery(Class<?> testCase, String testName, Map parameters);
 }
