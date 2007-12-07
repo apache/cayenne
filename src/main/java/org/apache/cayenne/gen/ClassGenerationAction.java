@@ -119,7 +119,7 @@ public class ClassGenerationAction {
             }
             String fqnSuperClass = superPackageName + "." + superClassName;
 
-            Writer superOut = openWriter(ent, superPackageName, superClassName);
+            Writer superOut = openWriter(superPackageName, superClassName);
 
             if (superOut != null) {
                 superGenSetup.generateClass(
@@ -132,7 +132,7 @@ public class ClassGenerationAction {
                 superOut.close();
             }
 
-            Writer mainOut = openWriter(ent, subPackageName, subClassName);
+            Writer mainOut = openWriter(subPackageName, subClassName);
             if (mainOut != null) {
                 mainGenSetup.generateClass(
                         mainOut,
@@ -183,7 +183,7 @@ public class ClassGenerationAction {
             String superPackageName = this.superPkg;
             String fqnSuperClass = superPackageName + "." + superClassName;
 
-            Writer out = openWriter(ent, subPackageName, subClassName);
+            Writer out = openWriter(subPackageName, subClassName);
             if (out == null) {
                 continue;
             }
@@ -287,8 +287,7 @@ public class ClassGenerationAction {
      * Opens a Writer to write generated output. Writer encoding is determined from the
      * value of the "encoding" property.
      */
-    protected Writer openWriter(ObjEntity entity, String pkgName, String className)
-            throws Exception {
+    protected Writer openWriter(String pkgName, String className) throws Exception {
 
         boolean superclass = className.startsWith(SUPERCLASS_PREFIX);
         File outFile = (superclass)

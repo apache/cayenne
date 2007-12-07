@@ -71,7 +71,7 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
             // 1. do the superclass
             initClassGenerator(superGen, entity, true);
 
-            Writer superOut = openWriter(entity, superGen.getPackageName(), superPrefix
+            Writer superOut = openWriter(superGen.getPackageName(), superPrefix
                     + superGen.getClassName());
 
             if (superOut != null) {
@@ -87,7 +87,7 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
 
             // 2. do the main class
             initClassGenerator(mainGen, entity, false);
-            Writer mainOut = openWriter(entity, mainGen.getPackageName(), mainGen
+            Writer mainOut = openWriter(mainGen.getPackageName(), mainGen
                     .getClassName());
             if (mainOut != null) {
                 mainGenerator.generateClass(
@@ -111,7 +111,7 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
         for (ObjEntity entity : entitiesForCurrentMode()) {
 
             initClassGenerator(generator.getClassGenerationInfo(), entity, false);
-            Writer out = openWriter(entity, generator
+            Writer out = openWriter(generator
                     .getClassGenerationInfo()
                     .getPackageName(), generator.getClassGenerationInfo().getClassName());
             if (out == null) {

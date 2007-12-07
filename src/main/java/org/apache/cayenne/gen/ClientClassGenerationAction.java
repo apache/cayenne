@@ -87,7 +87,7 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
             String superPackageName = this.superPkg;
             String fqnSuperClass = superPackageName + "." + superClassName;
 
-            Writer superOut = openWriter(entity, superPackageName, superClassName);
+            Writer superOut = openWriter(superPackageName, superClassName);
 
             if (superOut != null) {
                 superGenSetup.generateClass(
@@ -100,7 +100,7 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
                 superOut.close();
             }
 
-            Writer mainOut = openWriter(entity, subPackageName, subClassName);
+            Writer mainOut = openWriter(subPackageName, subClassName);
             if (mainOut != null) {
                 mainGenSetup.generateClass(
                         mainOut,
