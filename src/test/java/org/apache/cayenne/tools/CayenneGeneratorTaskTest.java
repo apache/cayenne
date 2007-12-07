@@ -245,7 +245,7 @@ public class CayenneGeneratorTaskTest extends BasicCase {
         // run task
         task.execute();
 
-        // check results
+        // check entity results
         File a = new File(
                 mapDir,
                 convertPath("org/apache/cayenne/testdo/embeddable/EmbedEntity1.java"));
@@ -256,9 +256,36 @@ public class CayenneGeneratorTaskTest extends BasicCase {
                 "org.apache.cayenne.testdo.embeddable",
                 "_EmbedEntity1");
 
-        File _a = new File(mapDir, convertPath("org/apache/cayenne/testdo/embeddable/auto/_EmbedEntity1.java"));
+        File _a = new File(
+                mapDir,
+                convertPath("org/apache/cayenne/testdo/embeddable/auto/_EmbedEntity1.java"));
         assertTrue(_a.exists());
-        assertContents(_a, "_EmbedEntity1", "org.apache.cayenne.testdo.embeddable.auto", "CayenneDataObject");
+        assertContents(
+                _a,
+                "_EmbedEntity1",
+                "org.apache.cayenne.testdo.embeddable.auto",
+                "CayenneDataObject");
+
+        // check embeddable results
+//        File e = new File(
+//                mapDir,
+//                convertPath("org/apache/cayenne/testdo/embeddable/Embeddable1.java"));
+//        assertTrue(e.isFile());
+//        assertContents(
+//                e,
+//                "Embeddable1",
+//                "org.apache.cayenne.testdo.embeddable",
+//                "_Embeddable1");
+//
+//        File _e = new File(
+//                mapDir,
+//                convertPath("org/apache/cayenne/testdo/embeddable/auto/_Embeddable1.java"));
+//        assertTrue(_e.exists());
+//        assertContents(
+//                _e,
+//                "_Embeddable1",
+//                "org.apache.cayenne.testdo.embeddable.auto",
+//                "Object");
     }
 
     private String convertPath(String unixPath) {

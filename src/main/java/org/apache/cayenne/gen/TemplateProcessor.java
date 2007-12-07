@@ -44,7 +44,6 @@ public class TemplateProcessor {
 
     protected Template classTemplate;
     protected Context velocityContext;
-    protected boolean superclass;
 
     public TemplateProcessor(String template, Context velocityContext) throws Exception {
 
@@ -125,9 +124,5 @@ public class TemplateProcessor {
 
     public void setVelocityContext(Context velocityContext) {
         this.velocityContext = velocityContext;
-    }
-
-    public void setSuperclass(boolean superclass) {
-        this.superclass = superclass;
     }
 }
