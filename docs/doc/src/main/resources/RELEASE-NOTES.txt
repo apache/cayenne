@@ -15,6 +15,7 @@ Date:
 Changes/New Features Since M2:
 
 CAY-263 cdbgen (DbGeneratorTask) must support classpath and classpathref
+CAY-735 Embeddable class support in the org.apache.cayenne.map package
 CAY-879 Storing lifecycle listeners and callbacks in the *.map.xml and loading them back
 CAY-885 merge changes between model and db
 CAY-900 Create CayenneModeler Swing UI for managing callbacks and lifecycle listeners
