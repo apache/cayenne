@@ -19,7 +19,6 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
-import java.util.List;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationAction1_1;
@@ -27,7 +26,6 @@ import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.ClassGeneratorMode;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.gen.DefaultClassGenerator;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
 import org.apache.velocity.VelocityContext;
@@ -150,8 +148,8 @@ public class CayenneGeneratorTask extends CayenneTask {
             generatorAction.setLogger(logger);
             generatorAction.setTimestamp(map.lastModified());
             generatorAction.setDataMap(loadAction.getMainDataMap());
-            generatorAction.setEntities((List<ObjEntity>) filterAction
-                    .getFilteredEntities(loadAction.getMainDataMap()));
+            generatorAction.setEntities(filterAction.getFilteredEntities(loadAction
+                    .getMainDataMap()));
             generatorAction.execute();
         }
         catch (Exception e) {
