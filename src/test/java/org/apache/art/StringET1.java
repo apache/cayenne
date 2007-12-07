@@ -16,34 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.unit;
-
-import java.util.Map;
-
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.UnitTestDomain;
+package org.apache.art;
 
 /**
- * DataDomain wrapper used for testing a specific Cayenne stack configuration.
- * 
- * @author Andrus Adamchik
+ * A test extended type.
  */
-public interface AccessStack {
+public class StringET1 {
 
-    AccessStackAdapter getAdapter(DataNode node);
+    protected String string;
 
-    UnitTestDomain getDataDomain();
+    public StringET1(String string) {
+        this.string = string;
+    }
 
-    void createTestData(Class<?> testCase, String testName, Map parameters) throws Exception;
-
-    void deleteTestData() throws Exception;
-
-    void dropSchema() throws Exception;
-
-    void createSchema() throws Exception;
-
-    void dropPKSupport() throws Exception;
-
-    void createPKSupport() throws Exception;
+    public String getString() {
+        return string;
+    }
 }
