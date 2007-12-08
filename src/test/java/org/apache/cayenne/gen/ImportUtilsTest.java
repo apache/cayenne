@@ -32,6 +32,12 @@ public class ImportUtilsTest extends TestCase {
         super.setUp();
         importUtils = new ImportUtils();
     }
+    
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        importUtils = null;
+    }
 
     public void testSetPackageGeneratesPackageStatement() throws Exception {
         final String packageName = "org.myPackage";
