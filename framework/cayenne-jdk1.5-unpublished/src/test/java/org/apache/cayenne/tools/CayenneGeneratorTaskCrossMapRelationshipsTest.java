@@ -46,6 +46,12 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
         task.setTaskName("Test");
         task.setLocation(Location.UNKNOWN_LOCATION);
     }
+    
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        task = null;
+    }
 
     /**
      * Test pairs generation with a cross-DataMap relationship (v1.1).

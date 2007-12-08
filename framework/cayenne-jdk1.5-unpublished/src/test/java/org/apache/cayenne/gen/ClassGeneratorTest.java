@@ -37,6 +37,12 @@ public class ClassGeneratorTest extends BasicCase {
         cgen = new ClassGenerationInfo();
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        cgen = null;
+    }
+
     public void testFormatVariableName() {
         assertEquals("abc", cgen.formatVariableName("abc"));
 
@@ -85,7 +91,7 @@ public class ClassGeneratorTest extends BasicCase {
                 return true;
             }
         };
-        
+
         cgen.entity.addRelationship(toMany);
         assertTrue(toMany.isToMany());
         assertTrue(cgen.isContainingListProperties());

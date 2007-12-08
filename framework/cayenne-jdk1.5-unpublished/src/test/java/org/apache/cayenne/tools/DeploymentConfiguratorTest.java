@@ -101,6 +101,14 @@ public class DeploymentConfiguratorTest extends CayenneCase {
         assertSame(dest, task.getInfo().getDestJar());
         assertSame(src, task.getInfo().getSourceJar());
     }
+    
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        task = null;
+        project = null;
+        dest = null;
+    }
 
     public void testPassThrough() throws Exception {
         // run task

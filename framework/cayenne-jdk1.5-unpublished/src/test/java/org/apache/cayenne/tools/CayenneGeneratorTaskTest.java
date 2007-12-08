@@ -72,6 +72,12 @@ public class CayenneGeneratorTaskTest extends BasicCase {
         task.setLocation(Location.UNKNOWN_LOCATION);
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        task = null;
+    }
+
     /** Test single classes with a non-standard template. */
     public void testSingleClassesCustTemplate() throws Exception {
         // prepare destination directory
@@ -267,25 +273,25 @@ public class CayenneGeneratorTaskTest extends BasicCase {
                 "CayenneDataObject");
 
         // check embeddable results
-//        File e = new File(
-//                mapDir,
-//                convertPath("org/apache/cayenne/testdo/embeddable/Embeddable1.java"));
-//        assertTrue(e.isFile());
-//        assertContents(
-//                e,
-//                "Embeddable1",
-//                "org.apache.cayenne.testdo.embeddable",
-//                "_Embeddable1");
-//
-//        File _e = new File(
-//                mapDir,
-//                convertPath("org/apache/cayenne/testdo/embeddable/auto/_Embeddable1.java"));
-//        assertTrue(_e.exists());
-//        assertContents(
-//                _e,
-//                "_Embeddable1",
-//                "org.apache.cayenne.testdo.embeddable.auto",
-//                "Object");
+        // File e = new File(
+        // mapDir,
+        // convertPath("org/apache/cayenne/testdo/embeddable/Embeddable1.java"));
+        // assertTrue(e.isFile());
+        // assertContents(
+        // e,
+        // "Embeddable1",
+        // "org.apache.cayenne.testdo.embeddable",
+        // "_Embeddable1");
+        //
+        // File _e = new File(
+        // mapDir,
+        // convertPath("org/apache/cayenne/testdo/embeddable/auto/_Embeddable1.java"));
+        // assertTrue(_e.exists());
+        // assertContents(
+        // _e,
+        // "_Embeddable1",
+        // "org.apache.cayenne.testdo.embeddable.auto",
+        // "Object");
     }
 
     private String convertPath(String unixPath) {
