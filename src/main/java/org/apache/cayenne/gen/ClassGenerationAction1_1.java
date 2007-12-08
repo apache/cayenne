@@ -75,28 +75,15 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
                     + superGen.getClassName());
 
             if (superOut != null) {
-                superGenerator.generateClass(
-                        superOut,
-                        getDataMap(),
-                        entity,
-                        null,
-                        null,
-                        null);
+                superGenerator.generateClass(superOut, dataMap, entity, null, null, null);
                 superOut.close();
             }
 
             // 2. do the main class
             initClassGenerator(mainGen, entity, false);
-            Writer mainOut = openWriter(mainGen.getPackageName(), mainGen
-                    .getClassName());
+            Writer mainOut = openWriter(mainGen.getPackageName(), mainGen.getClassName());
             if (mainOut != null) {
-                mainGenerator.generateClass(
-                        mainOut,
-                        getDataMap(),
-                        entity,
-                        null,
-                        null,
-                        null);
+                mainGenerator.generateClass(mainOut, dataMap, entity, null, null, null);
                 mainOut.close();
             }
         }
@@ -111,14 +98,14 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
         for (ObjEntity entity : entitiesForCurrentMode()) {
 
             initClassGenerator(generator.getClassGenerationInfo(), entity, false);
-            Writer out = openWriter(generator
-                    .getClassGenerationInfo()
-                    .getPackageName(), generator.getClassGenerationInfo().getClassName());
+            Writer out = openWriter(
+                    generator.getClassGenerationInfo().getPackageName(),
+                    generator.getClassGenerationInfo().getClassName());
             if (out == null) {
                 continue;
             }
 
-            generator.generateClass(out, getDataMap(), entity, null, null, null);
+            generator.generateClass(out, dataMap, entity, null, null, null);
             out.close();
         }
     }
