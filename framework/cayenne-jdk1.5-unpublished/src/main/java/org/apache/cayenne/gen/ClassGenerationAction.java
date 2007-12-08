@@ -306,8 +306,8 @@ public class ClassGenerationAction {
         // return writer with specified encoding
         FileOutputStream out = new FileOutputStream(outFile);
 
-        return (getEncoding() != null)
-                ? new OutputStreamWriter(out, getEncoding())
+        return (encoding != null)
+                ? new OutputStreamWriter(out, encoding)
                 : new OutputStreamWriter(out);
     }
 
@@ -388,7 +388,7 @@ public class ClassGenerationAction {
      * this class generator.
      */
     protected boolean isOld(File file) {
-        return file.lastModified() <= getTimestamp();
+        return file.lastModified() <= timestamp;
     }
 
     /**
@@ -432,23 +432,8 @@ public class ClassGenerationAction {
         return (superTemplate != null) ? superTemplate : defaultSuperclassTemplate();
     }
 
-    /**
-     * Returns internal timestamp of this generator used to make decisions about
-     * overwriting individual files.
-     */
-    public long getTimestamp() {
-        return timestamp;
-    }
-
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-    }
-
-    /**
-     * Returns file encoding for the generated files.
-     */
-    public String getEncoding() {
-        return encoding;
     }
 
     /**
@@ -459,14 +444,6 @@ public class ClassGenerationAction {
     }
 
     /**
-     * Returns "superPkg" property value - a name of a superclass package that should be
-     * used for all generated superclasses.
-     */
-    public String getSuperPkg() {
-        return superPkg;
-    }
-
-    /**
      * Sets "superPkg" property value.
      */
     public void setSuperPkg(String superPkg) {
@@ -474,21 +451,10 @@ public class ClassGenerationAction {
     }
 
     /**
-     * @return Returns the dataMap.
-     */
-    public DataMap getDataMap() {
-        return dataMap;
-    }
-
-    /**
      * @param dataMap The dataMap to set.
      */
     public void setDataMap(DataMap dataMap) {
         this.dataMap = dataMap;
-    }
-
-    public Collection<ObjEntity> getEntities() {
-        return entities;
     }
 
     /**
