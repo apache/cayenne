@@ -18,143 +18,233 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
+import java.io.File;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.commons.logging.Log;
 import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
 
 /**
+ * A backwards compatible class generation action that delegates to the deprecated
+ * {@link DefaultClassGenerator}.
+ * 
  * @since 3.0
  * @author Andrus Adamchik
  * @deprecated since 3.0
  */
 public class ClassGenerationAction1_1 extends ClassGenerationAction {
 
-    public static final String SINGLE_CLASS_TEMPLATE = "dotemplates/singleclass.vm";
-    public static final String SUBCLASS_TEMPLATE = "dotemplates/subclass.vm";
-    public static final String SUPERCLASS_TEMPLATE = "dotemplates/superclass.vm";
+    public static final String SINGLE_CLASS_TEMPLATE = MapClassGenerator.SINGLE_CLASS_TEMPLATE_1_1;
+    public static final String SUBCLASS_TEMPLATE = MapClassGenerator.SUBCLASS_TEMPLATE_1_1;
+    public static final String SUPERCLASS_TEMPLATE = MapClassGenerator.SUPERCLASS_TEMPLATE_1_1;
 
-    @Override
-    protected String defaultSingleClassTemplateName() {
-        return ClassGenerationAction1_1.SINGLE_CLASS_TEMPLATE;
+    protected DefaultClassGenerator generator;
+    protected List<ObjEntity> entities;
+    protected Log logger;
+
+    public ClassGenerationAction1_1() {
+        this.generator = new LoggingGenerator();
+        this.generator.setVersionString(ClassGenerator.VERSION_1_1);
+        this.entities = new ArrayList<ObjEntity>();
     }
 
     @Override
-    protected String defaultSubclassTemplateName() {
-        return ClassGenerationAction1_1.SUBCLASS_TEMPLATE;
+    public void addEmbeddables(Collection<Embeddable> embeddables) {
+        throw new UnsupportedOperationException(
+                "Embeddables are not supported in 1.1 mode");
     }
 
     @Override
-    protected String defaultSuperclassTemplateName() {
-        return ClassGenerationAction1_1.SUPERCLASS_TEMPLATE;
+    public void addEntities(Collection<ObjEntity> entities) {
+        if (entities != null) {
+            this.entities.addAll(entities);
+            generator.setObjEntities(this.entities);
+        }
     }
 
     @Override
-    protected void generateClassPairs() throws Exception {
+    protected String customTemplateName(TemplateType type) {
+        throw new UnsupportedOperationException("Not supported in 1.1 mode");
+    }
 
-        Template superTemplate = superclassTemplate();
-        Template classTemplate = subclassTemplate();
-        String superPrefix = getSuperclassPrefix();
-        
-        ClassGenerationInfo mainGen = new ClassGenerationInfo();
-        ClassGenerationInfo superGen = new ClassGenerationInfo();
+    @Override
+    protected String defaultTemplateName(TemplateType type) {
+        throw new UnsupportedOperationException("Not supported in 1.1 mode");
+    }
 
-        // prefix is needed for both generators
-        mainGen.setSuperPrefix(superPrefix);
-        superGen.setSuperPrefix(superPrefix);
+    @Override
+    public void execute() throws Exception {
+        generator.execute();
+    }
 
-        for (ObjEntity entity : entitiesForCurrentMode()) {
+    @Override
+    protected void execute(Artifact artifact) throws Exception {
+        throw new UnsupportedOperationException("Not supported in 1.1 mode");
+    }
 
-            // 1. do the superclass
-            initClassGenerator(superGen, entity, true);
+    @Override
+    protected File fileForClass() throws Exception {
+        throw new UnsupportedOperationException("Not supported in 1.1 mode");
+    }
 
-            Writer superOut = openWriter(superGen.getPackageName(), superPrefix
-                    + superGen.getClassName());
+    @Override
+    protected File fileForSuperclass() throws Exception {
+        throw new UnsupportedOperationException("Not supported in 1.1 mode");
+    }
 
-            if (superOut != null) {
-                superTemplate.merge(context, superOut);
-                superOut.close();
+    @Override
+    protected String getSuperclassPrefix() {
+        return super.getSuperclassPrefix();
+    }
+
+    @Override
+    protected Template getTemplate(TemplateType type) throws Exception {
+        throw new UnsupportedOperationException("Not supported in 1.1 mode");
+    }
+
+    @Override
+    protected void resetContextForArtifact(Artifact artifact) {
+        throw new UnsupportedOperationException("Not supported in 1.1 mode");
+    }
+
+    @Override
+    protected boolean isOld(File file) {
+        throw new UnsupportedOperationException("Not supported in 1.1 mode");
+    }
+
+    @Override
+    protected File mkpath(File dest, String pkgName) throws Exception {
+        throw new UnsupportedOperationException("Not supported in 1.1 mode");
+    }
+
+    @Override
+    protected Writer openWriter(TemplateType templateType) throws Exception {
+        throw new UnsupportedOperationException("Not supported in 1.1 mode");
+    }
+
+    @Override
+    public void setArtifactsGenerationMode(ArtifactsGenerationMode artifactsGenerationMode) {
+        if (artifactsGenerationMode == null) {
+            artifactsGenerationMode = ArtifactsGenerationMode.entity;
+        }
+        generator.setMode(artifactsGenerationMode.name());
+    }
+
+    @Override
+    public void setContext(VelocityContext context) {
+        // noop...
+    }
+
+    @Override
+    public void setDataMap(DataMap dataMap) {
+        generator.setDataMap(dataMap);
+    }
+
+    @Override
+    public void setDestDir(File destDir) {
+        generator.setDestDir(destDir);
+    }
+
+    @Override
+    public void setEmbeddableSuperTemplate(String embeddableSuperTemplate) {
+        // noop
+    }
+
+    @Override
+    public void setEmbeddableTemplate(String embeddableTemplate) {
+        // noop
+    }
+
+    @Override
+    public void setEncoding(String encoding) {
+        generator.setEncoding(encoding);
+    }
+
+    @Override
+    public void setLogger(Log logger) {
+        this.logger = logger;
+    }
+
+    @Override
+    public void setMakePairs(boolean makePairs) {
+        generator.setMakePairs(makePairs);
+    }
+
+    @Override
+    public void setOutputPattern(String outputPattern) {
+        generator.setOutputPattern(outputPattern);
+    }
+
+    @Override
+    public void setOverwrite(boolean overwrite) {
+        generator.setOverwrite(overwrite);
+    }
+
+    @Override
+    public void setSuperPkg(String superPkg) {
+        generator.setSuperPkg(superPkg);
+    }
+
+    @Override
+    public void setSuperTemplate(String superTemplate) {
+        generator.setSuperTemplate(superTemplate);
+    }
+
+    @Override
+    public void setTemplate(String template) {
+        generator.setTemplate(template);
+    }
+
+    @Override
+    public void setTimestamp(long timestamp) {
+        generator.setTimestamp(timestamp);
+    }
+
+    @Override
+    public void setUsePkgPath(boolean usePkgPath) {
+        generator.setUsePkgPath(usePkgPath);
+    }
+
+    @Override
+    protected void validateAttributes() {
+        try {
+            generator.validateAttributes();
+        }
+        catch (Exception e) {
+            throw new CayenneRuntimeException(e);
+        }
+    }
+
+    final class LoggingGenerator extends DefaultClassGenerator {
+
+        @Override
+        protected File fileForClass(String pkgName, String className) throws Exception {
+
+            File outFile = super.fileForClass(pkgName, className);
+            if (outFile != null && logger != null) {
+                logger.info("Generating class file: " + outFile.getCanonicalPath());
             }
 
-            // 2. do the main class
-            initClassGenerator(mainGen, entity, false);
-            Writer mainOut = openWriter(mainGen.getPackageName(), mainGen.getClassName());
-            if (mainOut != null) {
-                classTemplate.merge(context, mainOut);
-                mainOut.close();
+            return outFile;
+        }
+
+        @Override
+        protected File fileForSuperclass(String pkgName, String className)
+                throws Exception {
+            File outFile = super.fileForSuperclass(pkgName, className);
+            if (outFile != null && logger != null) {
+                logger.info("Generating superclass file: " + outFile.getCanonicalPath());
             }
+
+            return outFile;
         }
-
-        context.remove("classGen");
-    }
-
-    @Override
-    protected void generateSingleClasses()
-            throws Exception {
-
-        Template classTemplate = singleClassTemplate();
-        ClassGenerationInfo mainGen = new ClassGenerationInfo();
-
-        for (ObjEntity entity : entitiesForCurrentMode()) {
-
-            initClassGenerator(mainGen, entity, false);
-            Writer out = openWriter(mainGen.getPackageName(), mainGen.getClassName());
-            if (out != null) {
-                classTemplate.merge(context, out);
-                out.close();
-            }
-        }
-    }
-
-    /**
-     * Initializes ClassGenerationInfo with class name and package of a generated class.
-     */
-    private void initClassGenerator(
-            ClassGenerationInfo generatorInfo,
-            ObjEntity entity,
-            boolean superclass) {
-
-        // figure out generator properties
-        String fullClassName = entity.getClassName();
-        int i = fullClassName.lastIndexOf(".");
-
-        String pkg = null;
-        String spkg = null;
-        String cname = null;
-
-        // dot in first or last position is invalid
-        if (i == 0 || i + 1 == fullClassName.length()) {
-            throw new CayenneRuntimeException("Invalid class mapping: " + fullClassName);
-        }
-        else if (i < 0) {
-            pkg = (superclass) ? superPkg : null;
-            spkg = (superclass) ? null : superPkg;
-            cname = fullClassName;
-        }
-        else {
-            cname = fullClassName.substring(i + 1);
-            pkg = (superclass && superPkg != null) ? superPkg : fullClassName.substring(
-                    0,
-                    i);
-
-            spkg = (!superclass && superPkg != null && !pkg.equals(superPkg))
-                    ? superPkg
-                    : null;
-        }
-
-        generatorInfo.setPackageName(pkg);
-        generatorInfo.setClassName(cname);
-        if (entity.getSuperClassName() != null) {
-            generatorInfo.setSuperClassName(entity.getSuperClassName());
-        }
-        else {
-            generatorInfo.setSuperClassName(CayenneDataObject.class.getName());
-        }
-        generatorInfo.setSuperPackageName(spkg);
-
-        generatorInfo.setObjEntity(entity);
-        context.put("classGen", generatorInfo);
     }
 }

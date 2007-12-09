@@ -20,14 +20,12 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
-import java.util.List;
 
+import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationAction1_1;
 import org.apache.cayenne.gen.ClassGenerator;
-import org.apache.cayenne.gen.ClassGeneratorMode;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -224,8 +222,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			generator.setLogger(logger);
 			generator.setTimestamp(map.lastModified());
 			generator.setDataMap(loaderAction.getMainDataMap());
-			generator.setEntities((List<ObjEntity>) filterAction
-					.getFilteredEntities(loaderAction.getMainDataMap()));
+			generator.addEntities(filterAction.getFilteredEntities(loaderAction
+					.getMainDataMap()));
 			generator.execute();
 		} catch (Exception e) {
 			throw new MojoExecutionException("Error generating classes: ", e);
@@ -272,8 +270,10 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		action.setDestDir(destDir);
 		action.setEncoding(encoding);
 		action.setMakePairs(makePairs);
-		action.setMode(mode != null ? ClassGeneratorMode.valueOf(mode)
-				: ClassGeneratorMode.entity);
+		action
+				.setArtifactsGenerationMode(mode != null ? ArtifactsGenerationMode
+						.valueOf(mode.toLowerCase())
+						: ArtifactsGenerationMode.entity);
 		action.setOutputPattern(outputPattern);
 		action.setOverwrite(overwrite);
 		action.setSuperPkg(superPkg);

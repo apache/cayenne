@@ -146,7 +146,7 @@ public abstract class GeneratorController extends CayenneController {
 
         ClassGenerationAction generator = newGenerator();
         generator.setDataMap(getParentController().getDataMap());
-        generator.setEntities(entities);
+        generator.addEntities(entities);
 
         // configure encoding from preferences
         Domain generatorPrefs = Application
