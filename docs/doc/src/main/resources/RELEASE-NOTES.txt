@@ -26,6 +26,7 @@ CAY-918 An exception during in-memory sorting of IncrementalFaultList
 CAY-921 Remove DerviedDbEntity support from Cayenne
 CAY-927 Switch to version 1.2 as default generation mechanism , deprecate 1.1 generator
 CAY-931 Enable revert action even for projects that are not modified
+CAY-933 Embeddable classes - support class generation
 
 Bug fixes since M2:
 
