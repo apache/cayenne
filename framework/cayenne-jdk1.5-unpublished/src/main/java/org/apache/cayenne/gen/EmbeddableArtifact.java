@@ -48,7 +48,19 @@ public class EmbeddableArtifact implements Artifact {
     }
 
     public TemplateType[] getTemplateTypes(ArtifactGenerationMode mode) {
-        return null;
+        switch (mode) {
+            case SINGLE_CLASS:
+                return new TemplateType[] {
+                    TemplateType.EMBEDDABLE_SINGLE_CLASS
+                };
+            case GENERATION_GAP:
+                return new TemplateType[] {
+                        TemplateType.EMBEDDABLE_SUPERCLASS,
+                        TemplateType.EMBEDDABLE_SUBCLASS
+                };
+            default:
+                return new TemplateType[0];
+        }
     }
 
     public void postInitContext(VelocityContext context) {

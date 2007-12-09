@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -38,6 +39,26 @@ class CayenneGeneratorEntityFilterAction {
 
     private NamePatternMatcher nameFilter;
     private boolean client;
+
+    Collection<Embeddable> getFilteredEmbeddables(DataMap mainDataMap) {
+        List<Embeddable> embeddables = new ArrayList<Embeddable>(mainDataMap
+                .getEmbeddables());
+
+        // filter out excluded entities...
+        Iterator<Embeddable> it = embeddables.iterator();
+
+        while (it.hasNext()) {
+            Embeddable e = it.next();
+
+            // note that unlike entity, embeddable is matched by class name as it doesn't
+            // have a symbolic name...
+            if (!nameFilter.isIncluded(e.getClassName())) {
+                it.remove();
+            }
+        }
+
+        return embeddables;
+    }
 
     Collection<ObjEntity> getFilteredEntities(DataMap mainDataMap)
             throws MalformedURLException {

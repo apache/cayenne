@@ -15,16 +15,31 @@
 ##  specific language governing permissions and limitations
 ##  under the License.
 ##
-##Terminology:
+##  Terminology:
+## 
 ##	Base class - super superclass of embeddable, usually java.lang.Object
 ##  Super class - superclass of embeddable, ie,  org.apache.cayenne.art.auto._Embeddable
 ##	Sub class - class of entity, ie, org.apache.cayenne.art.Embeddable
 ##
-##  Classes available in template
-##    embeddable - the Embeddable class: See org.apache.cayenne.map.Embeddable
+##  Keys of objects available in template are defined in 'org.apache.cayenne.gen.Artifact', namely:
+## 
+##    object - the Embeddable class: See org.apache.cayenne.map.Embeddable
 ##    stringUtils - class for string "helper" functions: See org.apache.cayenne.gen.StringUtils
-##    entityUtils - class for entity "helper" functions: See org.apache.cayenne.gen.EntityUtils
 ##    importUtils - class for import statement management: See org.apache.cayenne.gen.ImportUtils
+##    superClassName
+##    superPackageName
+##    subClassName
+##    subPackageName
+##    baseClassName
+##    basePackageName 
 ##
 ##
-// subclass
+${importUtils.setPackage($subPackageName)}##
+${importUtils.addReservedType("${subPackageName}.${subClassName}")}##
+${importUtils.addType("${superPackageName}.${superClassName}")}##
+${importUtils.generate()}
+
+
+public class ${subClassName} extends ${superClassName} {
+
+}

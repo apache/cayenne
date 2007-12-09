@@ -26,6 +26,7 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationAction1_1;
 import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
+import org.apache.cayenne.map.DataMap;
 import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -218,12 +219,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		try {
 			loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());
 
+			DataMap dataMap = loaderAction.getMainDataMap();
+			
 			ClassGenerationAction generator = createGenerator();
 			generator.setLogger(logger);
 			generator.setTimestamp(map.lastModified());
-			generator.setDataMap(loaderAction.getMainDataMap());
-			generator.addEntities(filterAction.getFilteredEntities(loaderAction
-					.getMainDataMap()));
+			generator.setDataMap(dataMap);
+			generator.addEntities(filterAction.getFilteredEntities(dataMap));
+			generator.addEmbeddables(filterAction.getFilteredEmbeddables(dataMap));
 			generator.execute();
 		} catch (Exception e) {
 			throw new MojoExecutionException("Error generating classes: ", e);
