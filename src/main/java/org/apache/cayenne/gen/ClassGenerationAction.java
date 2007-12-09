@@ -24,14 +24,13 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.tools.NamePatternMatcher;
 import org.apache.commons.logging.Log;
@@ -51,73 +50,83 @@ public class ClassGenerationAction {
     public static final String SUBCLASS_TEMPLATE = "dotemplates/v1_2/subclass.vm";
     public static final String SUPERCLASS_TEMPLATE = "dotemplates/v1_2/superclass.vm";
 
+    public static final String EMBEDDABLE_SINGLE_CLASS_TEMPLATE = "dotemplates/v1_2/embeddable-singleclass.vm";
+    public static final String EMBEDDABLE_SUBCLASS_TEMPLATE = "dotemplates/v1_2/embeddable-subclass.vm";
+    public static final String EMBEDDABLE_SUPERCLASS_TEMPLATE = "dotemplates/v1_2/embeddable-superclass.vm";
+
     public static final String SUPERCLASS_PREFIX = "_";
     private static final String WILDCARD = "*";
 
-    protected Collection<ObjEntity> entities;
+    protected Collection<Artifact> artifacts;
+
     protected String superPkg;
     protected DataMap dataMap;
-    protected ClassGeneratorMode mode;
-    protected VelocityContext context;
-    protected Map<String, Template> templateCache;
+
+    protected ArtifactsGenerationMode artifactsGenerationMode;
+    protected boolean makePairs;
 
     protected Log logger;
     protected File destDir;
     protected boolean overwrite;
     protected boolean usePkgPath;
-    protected boolean makePairs;
+
     protected String template;
     protected String superTemplate;
+    protected String embeddableTemplate;
+    protected String embeddableSuperTemplate;
     protected long timestamp;
     protected String outputPattern;
     protected String encoding;
 
+    // runtime ivars
+    protected VelocityContext context;
+    protected Map<String, Template> templateCache;
+
     public ClassGenerationAction() {
-        this.mode = ClassGeneratorMode.entity;
         this.outputPattern = "*.java";
         this.timestamp = System.currentTimeMillis();
         this.usePkgPath = true;
         this.makePairs = true;
         this.context = new VelocityContext();
         this.templateCache = new HashMap<String, Template>(5);
+
+        this.artifacts = new ArrayList<Artifact>();
     }
 
-    protected String defaultSingleClassTemplateName() {
-        return ClassGenerationAction.SINGLE_CLASS_TEMPLATE;
+    protected String defaultTemplateName(TemplateType type) {
+        switch (type) {
+            case ENTITY_SINGLE_CLASS:
+                return ClassGenerationAction.SINGLE_CLASS_TEMPLATE;
+            case ENTITY_SUBCLASS:
+                return ClassGenerationAction.SUBCLASS_TEMPLATE;
+            case ENTITY_SUPERCLASS:
+                return ClassGenerationAction.SUPERCLASS_TEMPLATE;
+            case EMBEDDABLE_SUBCLASS:
+                return ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE;
+            case EMBEDDABLE_SUPERCLASS:
+                return ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
+            case EMBEDDABLE_SINGLE_CLASS:
+                return ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE;
+            default:
+                throw new IllegalArgumentException("Invalid template type: " + type);
+        }
     }
 
-    protected String defaultSubclassTemplateName() {
-        return ClassGenerationAction.SUBCLASS_TEMPLATE;
-    }
-
-    protected String defaultSuperclassTemplateName() {
-        return ClassGenerationAction.SUPERCLASS_TEMPLATE;
-    }
-
-    /**
-     * Returns template file path for Java class when generating single classes.
-     */
-    protected Template singleClassTemplate() throws Exception {
-        String name = (template != null) ? template : defaultSingleClassTemplateName();
-        return getTemplate(name);
-    }
-
-    /**
-     * Returns template file path for Java subclass when generating class pairs.
-     */
-    protected Template subclassTemplate() throws Exception {
-        String name = (template != null) ? template : defaultSubclassTemplateName();
-        return getTemplate(name);
-    }
-
-    /**
-     * Returns template file path for Java superclass when generating class pairs.
-     */
-    protected Template superclassTemplate() throws Exception {
-        String name = (superTemplate != null)
-                ? superTemplate
-                : defaultSuperclassTemplateName();
-        return getTemplate(name);
+    protected String customTemplateName(TemplateType type) {
+        switch (type) {
+            case ENTITY_SINGLE_CLASS:
+                return template;
+            case ENTITY_SUBCLASS:
+                return template;
+            case ENTITY_SUPERCLASS:
+                return superTemplate;
+            case EMBEDDABLE_SUBCLASS:
+                return embeddableTemplate;
+            case EMBEDDABLE_SUPERCLASS:
+                return embeddableSuperTemplate;
+            default:
+                throw new IllegalArgumentException("Invalid template type: " + type);
+        }
     }
 
     /**
@@ -128,98 +137,68 @@ public class ClassGenerationAction {
         return ClassGenerationAction.SUPERCLASS_PREFIX;
     }
 
-    protected GenerationMetadata initContext(ObjEntity entity) {
+    /**
+     * VelocityContext initialization method called once per artifact.
+     */
+    protected void resetContextForArtifact(Artifact artifact) {
         StringUtils stringUtils = StringUtils.getInstance();
-        String fqnSubClass = entity.getClassName();
-        String fqnBaseClass = (entity.getSuperClassName() != null) ? entity
-                .getSuperClassName() : CayenneDataObject.class.getName();
 
-        String subPackageName = stringUtils.stripClass(fqnSubClass);
+        String qualifiedClassName = artifact.getQualifiedClassName();
+        String packageName = stringUtils.stripClass(qualifiedClassName);
+        String className = stringUtils.stripPackageName(qualifiedClassName);
+
+        String qualifiedBaseClassName = artifact.getQualifiedBaseClassName();
+        String basePackageName = stringUtils.stripClass(qualifiedBaseClassName);
+        String baseClassName = stringUtils.stripPackageName(qualifiedBaseClassName);
+
         String superClassName = getSuperclassPrefix()
-                + stringUtils.stripPackageName(fqnSubClass);
+                + stringUtils.stripPackageName(qualifiedClassName);
 
         String superPackageName = this.superPkg;
         if (superPackageName == null) {
-            superPackageName = subPackageName;
+            superPackageName = packageName;
         }
-        String fqnSuperClass = superPackageName + "." + superClassName;
 
-        EntityUtils metadata = new EntityUtils(
-                dataMap,
-                entity,
-                fqnBaseClass,
-                fqnSuperClass,
-                fqnSubClass);
+        context.put(Artifact.BASE_CLASS_KEY, baseClassName);
+        context.put(Artifact.BASE_PACKAGE_KEY, basePackageName);
 
-        context.put("objEntity", entity);
-        context.put("stringUtils", StringUtils.getInstance());
-        context.put("entityUtils", metadata);
-        context.put("importUtils", new ImportUtils());
-        return metadata;
+        context.put(Artifact.SUB_CLASS_KEY, className);
+        context.put(Artifact.SUB_PACKAGE_KEY, packageName);
+
+        context.put(Artifact.SUPER_CLASS_KEY, superClassName);
+        context.put(Artifact.SUPER_PACKAGE_KEY, superPackageName);
+
+        context.put(Artifact.OBJECT_KEY, artifact.getObject());
+        context.put(Artifact.STRING_UTILS_KEY, stringUtils);
     }
 
     /**
-     * Runs class generation. Produces a pair of Java classes for each ObjEntity in the
-     * map. This allows developers to use generated <b>subclass </b> for their custom
-     * code, while generated <b>superclass </b> will contain Cayenne code. Superclass will
-     * be generated in the same package, its class name will be derived from the class
-     * name by adding a <code>superPrefix</code>.
+     * VelocityContext initialization method called once per each artifact and template
+     * type combination.
      */
-    protected void generateClassPairs() throws Exception {
-
-        Template superTemplate = superclassTemplate();
-        Template classTemplate = subclassTemplate();
-
-        for (ObjEntity entity : entitiesForCurrentMode()) {
-
-            GenerationMetadata metadata = initContext(entity);
-            Writer superOut = openWriter(metadata.getSuperPackageName(), metadata
-                    .getSuperClassName());
-            if (superOut != null) {
-                superTemplate.merge(context, superOut);
-                superOut.close();
-            }
-
-            Writer mainOut = openWriter(metadata.getSubPackageName(), metadata
-                    .getSubClassName());
-            if (mainOut != null) {
-                classTemplate.merge(context, mainOut);
-                mainOut.close();
-            }
-        }
+    protected void resetContextForArtifactTemplate(
+            Artifact artifact,
+            TemplateType templateType) {
+        context.put(Artifact.IMPORT_UTILS_KEY, new ImportUtils());
+        artifact.postInitContext(context);
     }
 
     /**
-     * Runs class generation. Produces a single Java class for each ObjEntity in the map.
-     */
-    protected void generateSingleClasses() throws Exception {
-
-        Template classTemplate = singleClassTemplate();
-
-        for (ObjEntity entity : entitiesForCurrentMode()) {
-
-            GenerationMetadata metadata = initContext(entity);
-            Writer out = openWriter(metadata.getSubPackageName(), metadata
-                    .getSubClassName());
-            if (out != null) {
-                classTemplate.merge(context, out);
-                out.close();
-            }
-        }
-    }
-
-    /**
-     * Runs class generation.
+     * Executes class generation once per each artifact.
      */
     public void execute() throws Exception {
+
         validateAttributes();
 
         try {
-            if (makePairs) {
-                generateClassPairs();
-            }
-            else {
-                generateSingleClasses();
+            for (Artifact artifact : artifacts) {
+                execute(artifact);
+
+                if (artifactsGenerationMode == ArtifactsGenerationMode.datamap) {
+                    // TODO: andrus 12/9/2007 - should we run at least once if there are
+                    // no artifacts? Current behavior is copied from the legacy code.
+                    break;
+                }
             }
         }
         finally {
@@ -229,12 +208,42 @@ public class ClassGenerationAction {
         }
     }
 
-    protected Template getTemplate(String name) throws Exception {
+    /**
+     * Executes class generation for a single artifact.
+     */
+    protected void execute(Artifact artifact) throws Exception {
+
+        resetContextForArtifact(artifact);
+
+        ArtifactGenerationMode artifactMode = makePairs
+                ? ArtifactGenerationMode.GENERATION_GAP
+                : ArtifactGenerationMode.SINGLE_CLASS;
+
+        TemplateType[] templateTypes = artifact.getTemplateTypes(artifactMode);
+        for (TemplateType type : templateTypes) {
+
+            Writer out = openWriter(type);
+            if (out != null) {
+
+                resetContextForArtifactTemplate(artifact, type);
+                getTemplate(type).merge(context, out);
+                out.close();
+            }
+        }
+    }
+
+    protected Template getTemplate(TemplateType type) throws Exception {
+
+        String templateName = customTemplateName(type);
+        if (templateName == null) {
+            templateName = defaultTemplateName(type);
+        }
+
         // Velocity < 1.5 has some memory problems, so we will create a VelocityEngine
         // every time, and store templates in an internal cache, to avoid uncontrolled
         // memory leaks... Presumably 1.5 fixes it.
 
-        Template template = templateCache.get(name);
+        Template template = templateCache.get(templateName);
 
         if (template == null) {
 
@@ -251,23 +260,11 @@ public class ClassGenerationAction {
             VelocityEngine velocityEngine = new VelocityEngine();
             velocityEngine.init(props);
 
-            template = velocityEngine.getTemplate(name);
-            templateCache.put(name, template);
+            template = velocityEngine.getTemplate(templateName);
+            templateCache.put(templateName, template);
         }
 
         return template;
-    }
-
-    protected Collection<ObjEntity> entitiesForCurrentMode() {
-
-        // TODO: andrus, 12/2/2007 - should we setup a dummy entity for an empty map in
-        // DataMap mode?
-        if (mode != ClassGeneratorMode.entity && !entities.isEmpty()) {
-            return Collections.singleton(entities.iterator().next());
-        }
-        else {
-            return this.entities;
-        }
     }
 
     /**
@@ -340,21 +337,20 @@ public class ClassGenerationAction {
 
     /**
      * Opens a Writer to write generated output. Writer encoding is determined from the
-     * value of the "encoding" property.
+     * value of the "encoding" property. Output file is determined from the current state
+     * of VelocityContext and the TemplateType passed as a parameter.
      */
-    protected Writer openWriter(String pkgName, String className) throws Exception {
+    protected Writer openWriter(TemplateType templateType) throws Exception {
 
-        boolean superclass = className.startsWith(SUPERCLASS_PREFIX);
-        File outFile = (superclass)
-                ? fileForSuperclass(pkgName, className)
-                : fileForClass(pkgName, className);
-
+        File outFile = (templateType.isSuperclass())
+                ? fileForSuperclass()
+                : fileForClass();
         if (outFile == null) {
             return null;
         }
 
         if (logger != null) {
-            String label = superclass ? "superclass" : "class";
+            String label = templateType.isSuperclass() ? "superclass" : "class";
             logger.info("Generating " + label + " file: " + outFile.getCanonicalPath());
         }
 
@@ -370,13 +366,16 @@ public class ClassGenerationAction {
      * Returns a target file where a generated superclass must be saved. If null is
      * returned, class shouldn't be generated.
      */
-    protected File fileForSuperclass(String pkgName, String className) throws Exception {
+    protected File fileForSuperclass() throws Exception {
+
+        String packageName = (String) context.get(Artifact.SUPER_PACKAGE_KEY);
+        String className = (String) context.get(Artifact.SUPER_CLASS_KEY);
 
         String filename = NamePatternMatcher.replaceWildcardInStringWithString(
                 WILDCARD,
                 outputPattern,
                 className);
-        File dest = new File(mkpath(destDir, pkgName), filename);
+        File dest = new File(mkpath(destDir, packageName), filename);
 
         // Ignore if the destination is newer than the map
         // (internal timestamp), i.e. has been generated after the map was
@@ -400,13 +399,16 @@ public class ClassGenerationAction {
      * Returns a target file where a generated class must be saved. If null is returned,
      * class shouldn't be generated.
      */
-    protected File fileForClass(String pkgName, String className) throws Exception {
+    protected File fileForClass() throws Exception {
+
+        String packageName = (String) context.get(Artifact.SUB_PACKAGE_KEY);
+        String className = (String) context.get(Artifact.SUB_CLASS_KEY);
 
         String filename = NamePatternMatcher.replaceWildcardInStringWithString(
                 WILDCARD,
                 outputPattern,
                 className);
-        File dest = new File(mkpath(destDir, pkgName), filename);
+        File dest = new File(mkpath(destDir, packageName), filename);
 
         if (dest.exists()) {
             // no overwrite of subclasses
@@ -492,18 +494,22 @@ public class ClassGenerationAction {
     }
 
     /**
-     * Initializes internal ObjEntities list. This method creates a copy of the provided
-     * list to allow its independent modification and also filters out entities that do
-     * not require class generation.
+     * Adds entities to the internal entity list.
      */
-    public void setEntities(Collection<ObjEntity> objEntities) {
-        this.entities = objEntities != null
-                ? new ArrayList<ObjEntity>(objEntities)
-                : new ArrayList<ObjEntity>();
+    public void addEntities(Collection<ObjEntity> entities) {
+        if (entities != null) {
+            for (ObjEntity entity : entities) {
+                artifacts.add(new EntityArtifact(entity));
+            }
+        }
     }
 
-    public void setMode(ClassGeneratorMode mode) {
-        this.mode = mode;
+    public void addEmbeddables(Collection<Embeddable> embeddables) {
+        if (embeddables != null) {
+            for (Embeddable embeddable : embeddables) {
+                artifacts.add(new EmbeddableArtifact(embeddable));
+            }
+        }
     }
 
     /**
@@ -520,5 +526,17 @@ public class ClassGenerationAction {
      */
     public void setLogger(Log logger) {
         this.logger = logger;
+    }
+
+    public void setEmbeddableTemplate(String embeddableTemplate) {
+        this.embeddableTemplate = embeddableTemplate;
+    }
+
+    public void setEmbeddableSuperTemplate(String embeddableSuperTemplate) {
+        this.embeddableSuperTemplate = embeddableSuperTemplate;
+    }
+
+    public void setArtifactsGenerationMode(ArtifactsGenerationMode artifactsGenerationMode) {
+        this.artifactsGenerationMode = artifactsGenerationMode;
     }
 }

@@ -18,7 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.PersistentObject;
+import java.util.Collection;
+
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -31,56 +32,27 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
     public static final String SUPERCLASS_TEMPLATE = "dotemplates/v1_2/client-superclass.vm";
 
     @Override
-    protected String defaultSingleClassTemplateName() {
-        throw new IllegalStateException(
-                "Default generation for single classes on the client is not supported.");
-    }
-
-    @Override
-    protected String defaultSubclassTemplateName() {
-        return ClientClassGenerationAction.SUBCLASS_TEMPLATE;
-    }
-
-    @Override
-    protected String defaultSuperclassTemplateName() {
-        return ClientClassGenerationAction.SUPERCLASS_TEMPLATE;
-    }
-
-    @Override
-    protected GenerationMetadata initContext(ObjEntity entity) {
-        StringUtils stringUtils = StringUtils.getInstance();
-
-        // use client name, and if not specified use regular class name
-        String fqnSubClass = entity.getClientClassName();
-        if (fqnSubClass == null) {
-            fqnSubClass = entity.getClassName();
+    protected String defaultTemplateName(TemplateType type) {
+        switch (type) {
+            case ENTITY_SUBCLASS:
+                return ClientClassGenerationAction.SUBCLASS_TEMPLATE;
+            case ENTITY_SUPERCLASS:
+                return ClientClassGenerationAction.SUPERCLASS_TEMPLATE;
+            case EMBEDDABLE_SUBCLASS:
+                return ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE;
+            case EMBEDDABLE_SUPERCLASS:
+                return ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
+            default:
+                throw new IllegalArgumentException("Unsupported template type: " + type);
         }
+    }
 
-        // use PersistentObject instead of CayenneDataObject as base ...
-        String fqnBaseClass = (entity.getClientSuperClassName() != null) ? entity
-                .getClientSuperClassName() : PersistentObject.class.getName();
-
-        String subPackageName = stringUtils.stripClass(fqnSubClass);
-        String superClassName = getSuperclassPrefix()
-                + stringUtils.stripPackageName(fqnSubClass);
-
-        String superPackageName = this.superPkg;
-        if (superPackageName == null) {
-            superPackageName = subPackageName;
+    @Override
+    public void addEntities(Collection<ObjEntity> entities) {
+        if (entities != null) {
+            for (ObjEntity entity : entities) {
+                artifacts.add(new ClientEntityArtifact(entity));
+            }
         }
-        String fqnSuperClass = superPackageName + "." + superClassName;
-
-        EntityUtils metadata = new EntityUtils(
-                dataMap,
-                entity,
-                fqnBaseClass,
-                fqnSuperClass,
-                fqnSubClass);
-
-        context.put("objEntity", entity);
-        context.put("stringUtils", StringUtils.getInstance());
-        context.put("entityUtils", metadata);
-        context.put("importUtils", new ImportUtils());
-        return metadata;
     }
 }

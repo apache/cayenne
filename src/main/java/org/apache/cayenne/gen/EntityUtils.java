@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.map.DataMap;
@@ -31,7 +30,7 @@ import org.apache.cayenne.map.Relationship;
  * @since 1.2
  * @author Mike Kienenberger
  */
-public class EntityUtils implements GenerationMetadata {
+public class EntityUtils {
 
     // template substitution values
     protected String subClassName;
@@ -55,6 +54,22 @@ public class EntityUtils implements GenerationMetadata {
         this.superPackageName = stringUtils.stripClass(fqnSuperClass);
         this.subClassName = stringUtils.stripPackageName(fqnSubClass);
         this.subPackageName = stringUtils.stripClass(fqnSubClass);
+
+        this.primaryDataMap = dataMap;
+
+        this.objEntity = objEntity;
+    }
+
+    EntityUtils(DataMap dataMap, ObjEntity objEntity, String baseClassName,
+            String basePackageName, String superClassName, String superPackageName,
+            String subClassName, String subPackageName) {
+
+        this.baseClassName = baseClassName;
+        this.basePackageName = basePackageName;
+        this.superClassName = superClassName;
+        this.superPackageName = superPackageName;
+        this.subClassName = subClassName;
+        this.subPackageName = subPackageName;
 
         this.primaryDataMap = dataMap;
 
@@ -150,8 +165,8 @@ public class EntityUtils implements GenerationMetadata {
     }
 
     /**
-     * Returns true if current ObjEntity contains at least one toMany relationship, ignoring
-     * those declared in superentities.
+     * Returns true if current ObjEntity contains at least one toMany relationship,
+     * ignoring those declared in superentities.
      * 
      * @since 1.2
      */
@@ -204,8 +219,8 @@ public class EntityUtils implements GenerationMetadata {
     }
 
     /**
-     * Returns true if current ObjEntity contains at least one toOne relationship, ignoring
-     * those declared in superentities.
+     * Returns true if current ObjEntity contains at least one toOne relationship,
+     * ignoring those declared in superentities.
      */
     public boolean hasToOneDeclaredRelationships() {
         return hasToOneDeclaredRelationships(objEntity);

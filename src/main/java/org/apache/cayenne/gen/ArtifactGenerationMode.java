@@ -19,12 +19,11 @@
 package org.apache.cayenne.gen;
 
 /**
- * Defines whether generator is executed once per DataMap or once per ObjEntity.
+ * Code generator execution mode for a single artifact.
  * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-public enum ClassGeneratorMode {
-
-    datamap, entity
+public enum ArtifactGenerationMode {
+    SINGLE_CLASS, GENERATION_GAP
 }

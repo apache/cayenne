@@ -23,7 +23,7 @@ import java.io.File;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationAction1_1;
 import org.apache.cayenne.gen.ClassGenerator;
-import org.apache.cayenne.gen.ClassGeneratorMode;
+import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.gen.DefaultClassGenerator;
 import org.apache.tools.ant.BuildException;
@@ -64,7 +64,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     public CayenneGeneratorTask() {
         this.makepairs = true;
-        this.mode = ClassGeneratorMode.entity.name();
+        this.mode = ArtifactsGenerationMode.entity.name();
         this.outputPattern = "*.java";
         this.usepkgpath = true;
     }
@@ -91,7 +91,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         action.setDestDir(destDir);
         action.setEncoding(encoding);
         action.setMakePairs(makepairs);
-        action.setMode(ClassGeneratorMode.valueOf(mode));
+        action.setArtifactsGenerationMode(ArtifactsGenerationMode.valueOf(mode.toLowerCase()));
         action.setOutputPattern(outputPattern);
         action.setOverwrite(overwrite);
         action.setSuperPkg(superpkg);
@@ -148,7 +148,7 @@ public class CayenneGeneratorTask extends CayenneTask {
             generatorAction.setLogger(logger);
             generatorAction.setTimestamp(map.lastModified());
             generatorAction.setDataMap(loadAction.getMainDataMap());
-            generatorAction.setEntities(filterAction.getFilteredEntities(loadAction
+            generatorAction.addEntities(filterAction.getFilteredEntities(loadAction
                     .getMainDataMap()));
             generatorAction.execute();
         }
