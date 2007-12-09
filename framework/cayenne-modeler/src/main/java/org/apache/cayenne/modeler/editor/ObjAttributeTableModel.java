@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
@@ -231,8 +232,8 @@ public class ObjAttributeTableModel extends CayenneTableModel {
 
     final class AttributeComparator implements Comparator {
         public int compare(Object o1, Object o2) {
-            ObjAttribute a1 = (ObjAttribute) o1;
-            ObjAttribute a2 = (ObjAttribute) o2;
+            Attribute a1 = (Attribute) o1;
+            Attribute a2 = (Attribute) o2;
 
             int delta = getWeight(a1) - getWeight(a2);
 
@@ -241,7 +242,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                 : Util.nullSafeCompare(true, a1.getName(), a2.getName());
         }
 
-        private int getWeight(ObjAttribute a) {
+        private int getWeight(Attribute a) {
             return a.getEntity() == entity ? 1 : -1;
         }
     }

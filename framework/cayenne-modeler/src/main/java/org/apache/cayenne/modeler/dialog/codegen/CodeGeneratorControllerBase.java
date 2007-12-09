@@ -21,17 +21,19 @@ package org.apache.cayenne.modeler.dialog.codegen;
 
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.Predicate;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
+import org.apache.commons.collections.Predicate;
 
 /**
  * A base superclass of a top controller for the code generator. Defines all common model
@@ -103,6 +105,12 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         }
 
         return modified;
+    }
+
+    public Collection<Embeddable> getSelectedEmbeddables() {
+        // TODO: andrus, 12/9/2007 - until Modeler filtering of embeddables is
+        // implemented, show all embeddables we have
+        return dataMap.getEmbeddables();
     }
 
     public List<ObjEntity> getSelectedEntities() {

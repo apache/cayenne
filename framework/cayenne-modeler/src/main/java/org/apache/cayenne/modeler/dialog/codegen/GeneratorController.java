@@ -31,6 +31,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -147,6 +150,7 @@ public abstract class GeneratorController extends CayenneController {
         ClassGenerationAction generator = newGenerator();
         generator.setDataMap(getParentController().getDataMap());
         generator.addEntities(entities);
+        generator.addEmbeddables(getParentController().getSelectedEmbeddables());
 
         // configure encoding from preferences
         Domain generatorPrefs = Application
@@ -187,10 +191,20 @@ public abstract class GeneratorController extends CayenneController {
             return;
         }
 
-        {
-            Iterator it = entity.getAttributes().iterator();
-            while (it.hasNext()) {
-                ValidationFailure failure = validateAttribute((ObjAttribute) it.next());
+        for (Attribute attribute : entity.getAttributes()) {
+            if (attribute instanceof EmbeddedAttribute) {
+                EmbeddedAttribute embeddedAttribute = (EmbeddedAttribute) attribute;
+                for (ObjAttribute subAttribute : embeddedAttribute.getAttributes()) {
+                    ValidationFailure failure = validateAttribute(subAttribute);
+                    if (failure != null) {
+                        validationBuffer.addFailure(failure);
+                        return;
+                    }
+                }
+            }
+            else {
+
+                ValidationFailure failure = validateAttribute((ObjAttribute) attribute);
                 if (failure != null) {
                     validationBuffer.addFailure(failure);
                     return;
