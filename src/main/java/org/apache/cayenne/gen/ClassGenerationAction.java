@@ -20,7 +20,6 @@ package org.apache.cayenne.gen;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -83,16 +82,50 @@ public class ClassGenerationAction {
         this.templateCache = new HashMap<String, Template>(5);
     }
 
-    protected String defaultSingleClassTemplate() {
+    protected String defaultSingleClassTemplateName() {
         return ClassGenerationAction.SINGLE_CLASS_TEMPLATE;
     }
 
-    protected String defaultSubclassTemplate() {
+    protected String defaultSubclassTemplateName() {
         return ClassGenerationAction.SUBCLASS_TEMPLATE;
     }
 
-    protected String defaultSuperclassTemplate() {
+    protected String defaultSuperclassTemplateName() {
         return ClassGenerationAction.SUPERCLASS_TEMPLATE;
+    }
+
+    /**
+     * Returns template file path for Java class when generating single classes.
+     */
+    protected Template singleClassTemplate() throws Exception {
+        String name = (template != null) ? template : defaultSingleClassTemplateName();
+        return getTemplate(name);
+    }
+
+    /**
+     * Returns template file path for Java subclass when generating class pairs.
+     */
+    protected Template subclassTemplate() throws Exception {
+        String name = (template != null) ? template : defaultSubclassTemplateName();
+        return getTemplate(name);
+    }
+
+    /**
+     * Returns template file path for Java superclass when generating class pairs.
+     */
+    protected Template superclassTemplate() throws Exception {
+        String name = (superTemplate != null)
+                ? superTemplate
+                : defaultSuperclassTemplateName();
+        return getTemplate(name);
+    }
+
+    /**
+     * Returns a String used to prefix class name to create a generated superclass.
+     * Default value is "_".
+     */
+    protected String getSuperclassPrefix() {
+        return ClassGenerationAction.SUPERCLASS_PREFIX;
     }
 
     /**
@@ -102,12 +135,12 @@ public class ClassGenerationAction {
      * be generated in the same package, its class name will be derived from the class
      * name by adding a <code>superPrefix</code>.
      */
-    public void generateClassPairs(
-            String classTemplate,
-            String superTemplate,
-            String superPrefix) throws Exception {
+    protected void generateClassPairs() throws Exception {
 
         StringUtils stringUtils = StringUtils.getInstance();
+        Template superTemplate = superclassTemplate();
+        Template classTemplate = subclassTemplate();
+        String superPrefix = getSuperclassPrefix();
 
         for (ObjEntity entity : entitiesForCurrentMode()) {
 
@@ -129,25 +162,33 @@ public class ClassGenerationAction {
 
             Writer superOut = openWriter(superPackageName, superClassName);
             if (superOut != null) {
-                generate(
-                        superOut,
-                        superTemplate,
+                context.put("objEntity", entity);
+                context.put("stringUtils", StringUtils.getInstance());
+                context.put("entityUtils", new EntityUtils(
+                        dataMap,
                         entity,
                         fqnBaseClass,
                         fqnSuperClass,
-                        fqnSubClass);
+                        fqnSubClass));
+                context.put("importUtils", new ImportUtils());
+
+                superTemplate.merge(context, superOut);
                 superOut.close();
             }
 
             Writer mainOut = openWriter(subPackageName, subClassName);
             if (mainOut != null) {
-                generate(
-                        mainOut,
-                        classTemplate,
+                context.put("objEntity", entity);
+                context.put("stringUtils", StringUtils.getInstance());
+                context.put("entityUtils", new EntityUtils(
+                        dataMap,
                         entity,
                         fqnBaseClass,
                         fqnSuperClass,
-                        fqnSubClass);
+                        fqnSubClass));
+                context.put("importUtils", new ImportUtils());
+
+                classTemplate.merge(context, mainOut);
                 mainOut.close();
             }
         }
@@ -156,8 +197,10 @@ public class ClassGenerationAction {
     /**
      * Runs class generation. Produces a single Java class for each ObjEntity in the map.
      */
-    public void generateSingleClasses(String classTemplate, String superPrefix)
-            throws Exception {
+    protected void generateSingleClasses() throws Exception {
+
+        Template classTemplate = singleClassTemplate();
+        String superPrefix = getSuperclassPrefix();
 
         for (ObjEntity entity : entitiesForCurrentMode()) {
 
@@ -178,13 +221,17 @@ public class ClassGenerationAction {
 
             Writer out = openWriter(subPackageName, subClassName);
             if (out != null) {
-                generate(
-                        out,
-                        classTemplate,
+                context.put("objEntity", entity);
+                context.put("stringUtils", StringUtils.getInstance());
+                context.put("entityUtils", new EntityUtils(
+                        dataMap,
                         entity,
                         fqnBaseClass,
                         fqnSuperClass,
-                        fqnSubClass);
+                        fqnSubClass));
+                context.put("importUtils", new ImportUtils());
+
+                classTemplate.merge(context, out);
                 out.close();
             }
         }
@@ -198,12 +245,10 @@ public class ClassGenerationAction {
 
         try {
             if (makePairs) {
-                String t = getTemplateForPairs();
-                String st = getSupertemplateForPairs();
-                generateClassPairs(t, st, SUPERCLASS_PREFIX);
+                generateClassPairs();
             }
             else {
-                generateSingleClasses(getTemplateForSingles(), SUPERCLASS_PREFIX);
+                generateSingleClasses();
             }
         }
         finally {
@@ -431,30 +476,6 @@ public class ClassGenerationAction {
     }
 
     /**
-     * Merges a template with prebuilt context, writing output to provided writer.
-     */
-    protected void generate(
-            Writer out,
-            String template,
-            ObjEntity entity,
-            String fqnBaseClass,
-            String fqnSuperClass,
-            String fqnSubClass) throws Exception {
-
-        context.put("objEntity", entity);
-        context.put("stringUtils", StringUtils.getInstance());
-        context.put("entityUtils", new EntityUtils(
-                dataMap,
-                entity,
-                fqnBaseClass,
-                fqnSuperClass,
-                fqnSubClass));
-        context.put("importUtils", new ImportUtils());
-
-        getTemplate(template).merge(context, out);
-    }
-
-    /**
      * Returns a File object corresponding to a directory where files that belong to
      * <code>pkgName</code> package should reside. Creates any missing diectories below
      * <code>dest</code>.
@@ -472,27 +493,6 @@ public class ClassGenerationAction {
         }
 
         return fullPath;
-    }
-
-    /**
-     * Returns template file path for Java class when generating single classes.
-     */
-    protected String getTemplateForSingles() throws IOException {
-        return (template != null) ? template : defaultSingleClassTemplate();
-    }
-
-    /**
-     * Returns template file path for Java subclass when generating class pairs.
-     */
-    protected String getTemplateForPairs() throws IOException {
-        return (template != null) ? template : defaultSubclassTemplate();
-    }
-
-    /**
-     * Returns template file path for Java superclass when generating class pairs.
-     */
-    protected String getSupertemplateForPairs() throws IOException {
-        return (superTemplate != null) ? superTemplate : defaultSuperclassTemplate();
     }
 
     public void setTimestamp(long timestamp) {
