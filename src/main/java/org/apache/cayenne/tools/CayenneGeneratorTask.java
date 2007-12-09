@@ -56,6 +56,8 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected String superpkg;
     protected String supertemplate;
     protected String template;
+    protected String embeddabletemplate;
+    protected String embeddablesupertemplate;
     protected boolean usepkgpath;
 
     /**
@@ -99,6 +101,8 @@ public class CayenneGeneratorTask extends CayenneTask {
         action.setSuperPkg(superpkg);
         action.setSuperTemplate(supertemplate);
         action.setTemplate(template);
+        action.setEmbeddableSuperTemplate(embeddablesupertemplate);
+        action.setEmbeddableTemplate(embeddabletemplate);
         action.setUsePkgPath(usepkgpath);
 
         return action;
@@ -294,6 +298,14 @@ public class CayenneGeneratorTask extends CayenneTask {
      */
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public void setEmbeddabletemplate(String embeddabletemplate) {
+        this.embeddabletemplate = embeddabletemplate;
+    }
+
+    public void setEmbeddablesupertemplate(String embeddablesupertemplate) {
+        this.embeddablesupertemplate = embeddablesupertemplate;
     }
 
     /**
