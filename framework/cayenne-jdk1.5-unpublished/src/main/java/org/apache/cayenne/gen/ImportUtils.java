@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.gen;
 
 import java.util.ArrayList;
@@ -37,93 +36,108 @@ import org.apache.cayenne.util.Util;
 public class ImportUtils {
 
     public static final String importOrdering[] = new String[] {
-        "java.", "javax.", "org.", "com." };
+            "java.", "javax.", "org.", "com."
+    };
 
     static final String primitives[] = new String[] {
             "long", "double", "byte", "boolean", "float", "short", "int"
     };
-    
+
     static final String primitiveClasses[] = new String[] {
             Long.class.getName(), Double.class.getName(), Byte.class.getName(),
             Boolean.class.getName(), Float.class.getName(), Short.class.getName(),
             Integer.class.getName()
     };
-    
-    static Map<String, String> classesForPrimitives = Util.toMap(primitives, primitiveClasses);
-    static Map<String, String> primitivesForClasses = Util.toMap(primitiveClasses, primitives);
+
+    static Map<String, String> classesForPrimitives = Util.toMap(
+            primitives,
+            primitiveClasses);
+    static Map<String, String> primitivesForClasses = Util.toMap(
+            primitiveClasses,
+            primitives);
 
     protected Map<String, String> importTypesMap = new HashMap<String, String>();
-    protected Map<String, String> reservedImportTypesMap = new HashMap<String, String>();  // Types forced to be FQN
-    
+    protected Map<String, String> reservedImportTypesMap = new HashMap<String, String>(); // Types
+                                                                                            // forced
+                                                                                            // to
+                                                                                            // be
+                                                                                            // FQN
+
     protected String packageName;
-    
-    public ImportUtils()
-    {
+
+    public ImportUtils() {
         super();
     }
-    
-    protected boolean canRegisterType(String typeName)
-    {
+
+    protected boolean canRegisterType(String typeName) {
         // Not sure why this would ever happen, but it did
-        if (null == typeName)  return false;
-        
+        if (null == typeName)
+            return false;
+
         StringUtils stringUtils = StringUtils.getInstance();
         String typeClassName = stringUtils.stripPackageName(typeName);
         String typePackageName = stringUtils.stripClass(typeName);
-        
-        if (typePackageName.length() == 0)  return false; // disallow non-packaged types (primitives, probably)
-        if ("java.lang".equals(typePackageName))  return false;
-        
+
+        if (typePackageName.length() == 0)
+            return false; // disallow non-packaged types (primitives, probably)
+        if ("java.lang".equals(typePackageName))
+            return false;
+
         // Can only have one type -- rest must use fqn
-        if (reservedImportTypesMap.containsKey(typeClassName))  return false;
-        if (importTypesMap.containsKey(typeClassName))  return false;
-        
+        if (reservedImportTypesMap.containsKey(typeClassName))
+            return false;
+        if (importTypesMap.containsKey(typeClassName))
+            return false;
+
         return true;
     }
-    
+
     /**
-     * Reserve a fully-qualified data type class name so it cannot be used by another class.
-     * No import statements will be generated for reserved types.
-     * Typically, this is the fully-qualified class name of the class being generated.
+     * Reserve a fully-qualified data type class name so it cannot be used by another
+     * class. No import statements will be generated for reserved types. Typically, this
+     * is the fully-qualified class name of the class being generated.
+     * 
      * @param typeName FQ data type class name.
      */
-    public void addReservedType(String typeName)
-    {
-        if (! canRegisterType(typeName))  return;
-        
+    public void addReservedType(String typeName) {
+        if (!canRegisterType(typeName))
+            return;
+
         StringUtils stringUtils = StringUtils.getInstance();
         String typeClassName = stringUtils.stripPackageName(typeName);
-        
+
         reservedImportTypesMap.put(typeClassName, typeName);
     }
-    
+
     /**
-     * Register a fully-qualified data type class name.
-     * For example, org.apache.cayenne.CayenneDataObject
+     * Register a fully-qualified data type class name. For example,
+     * org.apache.cayenne.CayenneDataObject.
+     * 
      * @param typeName FQ data type class name.
      */
-    public void addType(String typeName)
-    {
-        if (! canRegisterType(typeName))  return;
-        
+    public void addType(String typeName) {
+        if (!canRegisterType(typeName))
+            return;
+
         StringUtils stringUtils = StringUtils.getInstance();
         String typePackageName = stringUtils.stripClass(typeName);
         String typeClassName = stringUtils.stripPackageName(typeName);
-        
-        if (typePackageName.equals(packageName))  return;
+
+        if (typePackageName.equals(packageName))
+            return;
 
         importTypesMap.put(typeClassName, typeName);
     }
-    
+
     /**
      * Add the package name to use for this importUtil invocation.
+     * 
      * @param packageName
      */
-    public void setPackage(String packageName)
-    {
+    public void setPackage(String packageName) {
         this.packageName = packageName;
     }
-    
+
     /**
      * Performs processing similar to <code>formatJavaType(String)</code>, with special
      * handling of primitive types and their Java class counterparts. This method allows
@@ -142,32 +156,33 @@ public class ImportUtils {
                     : formatJavaType(typeName);
         }
     }
-    
+
     /**
-     * Removes registered package and non-reserved registered type name prefixes from java types 
+     * Removes registered package and non-reserved registered type name prefixes from java
+     * types
      */
     public String formatJavaType(String typeName) {
         if (typeName != null) {
             StringUtils stringUtils = StringUtils.getInstance();
             String typeClassName = stringUtils.stripPackageName(typeName);
-            
-            if (! reservedImportTypesMap.containsKey(typeClassName))
-            {
-                if (importTypesMap.containsKey(typeClassName))
-                {
-                    if (typeName.equals(importTypesMap.get(typeClassName)))  return typeClassName;
+
+            if (!reservedImportTypesMap.containsKey(typeClassName)) {
+                if (importTypesMap.containsKey(typeClassName)) {
+                    if (typeName.equals(importTypesMap.get(typeClassName)))
+                        return typeClassName;
                 }
             }
-            
+
             String typePackageName = stringUtils.stripClass(typeName);
-            if ("java.lang".equals(typePackageName))  return typeClassName;
+            if ("java.lang".equals(typePackageName))
+                return typeClassName;
             if ((null != packageName) && (packageName.equals(typePackageName)))
-            	return typeClassName;
+                return typeClassName;
         }
 
         return typeName;
     }
-    
+
     /**
      * @since 3.0
      */
@@ -175,30 +190,28 @@ public class ImportUtils {
         String value = ImportUtils.classesForPrimitives.get(type);
         return formatJavaType(value != null ? value : type);
     }
-    
+
     /**
      * @since 3.0
      */
     public boolean isNonBooleanPrimitive(String type) {
         return ImportUtils.classesForPrimitives.containsKey(type) && !isBoolean(type);
     }
-    
+
     /**
      * @since 3.0
      */
     public boolean isBoolean(String type) {
         return "boolean".equals(type);
     }
-    
+
     /**
      * Generate package and list of import statements based on the registered types.
      */
-    public String generate()
-    {
+    public String generate() {
         StringBuffer outputBuffer = new StringBuffer();
 
-        if (null != packageName)
-        {
+        if (null != packageName) {
             outputBuffer.append("package ");
             outputBuffer.append(packageName);
             outputBuffer.append(';');
@@ -210,27 +223,28 @@ public class ImportUtils {
         Collections.sort(typesList, new Comparator<String>() {
 
             public int compare(String s1, String s2) {
-                
+
                 for (int index = 0; index < importOrdering.length; index++) {
                     String ordering = importOrdering[index];
-                    
-                    if ( (s1.startsWith(ordering)) && (!s2.startsWith(ordering)) )
+
+                    if ((s1.startsWith(ordering)) && (!s2.startsWith(ordering)))
                         return -1;
-                    if ( (!s1.startsWith(ordering)) && (s2.startsWith(ordering)) )
+                    if ((!s1.startsWith(ordering)) && (s2.startsWith(ordering)))
                         return 1;
                 }
-                    
+
                 return s1.compareTo(s2);
             }
         });
-        
+
         String lastStringPrefix = null;
         boolean firstIteration = true;
         for (String typeName : typesList) {
 
             if (firstIteration) {
                 firstIteration = false;
-            } else {
+            }
+            else {
                 outputBuffer.append(System.getProperty("line.separator"));
             }
             // Output another newline if we're in a different root package.

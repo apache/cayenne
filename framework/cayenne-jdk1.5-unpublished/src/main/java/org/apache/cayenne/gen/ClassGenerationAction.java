@@ -336,9 +336,10 @@ public class ClassGenerationAction {
     }
 
     /**
-     * Opens a Writer to write generated output. Writer encoding is determined from the
-     * value of the "encoding" property. Output file is determined from the current state
-     * of VelocityContext and the TemplateType passed as a parameter.
+     * Opens a Writer to write generated output. Returned Writer is mapped to a filesystem
+     * file (although subclasses may override that). File location is determined from the
+     * current state of VelocityContext and the TemplateType passed as a parameter. Writer
+     * encoding is determined from the value of the "encoding" property.
      */
     protected Writer openWriter(TemplateType templateType) throws Exception {
 
