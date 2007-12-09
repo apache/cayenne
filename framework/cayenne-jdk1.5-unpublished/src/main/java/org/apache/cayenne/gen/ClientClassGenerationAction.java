@@ -22,6 +22,7 @@ import java.io.Writer;
 
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.velocity.Template;
 
 /**
  * @since 3.0
@@ -33,33 +34,33 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
     public static final String SUPERCLASS_TEMPLATE = "dotemplates/v1_2/client-superclass.vm";
 
     @Override
-    protected String defaultSingleClassTemplate() {
+    protected String defaultSingleClassTemplateName() {
         throw new IllegalStateException(
                 "Default generation for single classes on the client is not supported.");
     }
 
     @Override
-    protected String defaultSubclassTemplate() {
+    protected String defaultSubclassTemplateName() {
         return ClientClassGenerationAction.SUBCLASS_TEMPLATE;
     }
 
     @Override
-    protected String defaultSuperclassTemplate() {
+    protected String defaultSuperclassTemplateName() {
         return ClientClassGenerationAction.SUPERCLASS_TEMPLATE;
     }
 
     @Override
-    public void generateSingleClasses(String classTemplate, String superPrefix)
-            throws Exception {
+    protected void generateSingleClasses() throws Exception {
         throw new IllegalStateException(
                 "Single classes generation is not supported for the client.");
     }
 
     @Override
-    public void generateClassPairs(
-            String classTemplate,
-            String superTemplate,
-            String superPrefix) throws Exception {
+    protected void generateClassPairs() throws Exception {
+
+        Template superTemplate = superclassTemplate();
+        Template classTemplate = subclassTemplate();
+        String superPrefix = getSuperclassPrefix();
 
         for (ObjEntity entity : entitiesForCurrentMode()) {
 
@@ -87,25 +88,33 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
             Writer superOut = openWriter(superPackageName, superClassName);
 
             if (superOut != null) {
-                generate(
-                        superOut,
-                        superTemplate,
+                context.put("objEntity", entity);
+                context.put("stringUtils", StringUtils.getInstance());
+                context.put("entityUtils", new EntityUtils(
+                        dataMap,
                         entity,
                         fqnBaseClass,
                         fqnSuperClass,
-                        fqnSubClass);
+                        fqnSubClass));
+                context.put("importUtils", new ImportUtils());
+
+                superTemplate.merge(context, superOut);
                 superOut.close();
             }
 
             Writer mainOut = openWriter(subPackageName, subClassName);
             if (mainOut != null) {
-                generate(
-                        mainOut,
-                        classTemplate,
+                context.put("objEntity", entity);
+                context.put("stringUtils", StringUtils.getInstance());
+                context.put("entityUtils", new EntityUtils(
+                        dataMap,
                         entity,
                         fqnBaseClass,
                         fqnSuperClass,
-                        fqnSubClass);
+                        fqnSubClass));
+                context.put("importUtils", new ImportUtils());
+
+                classTemplate.merge(context, mainOut);
                 mainOut.close();
             }
         }
