@@ -128,6 +128,36 @@ public class ClassGenerationAction {
         return ClassGenerationAction.SUPERCLASS_PREFIX;
     }
 
+    protected GenerationMetadata initContext(ObjEntity entity) {
+        StringUtils stringUtils = StringUtils.getInstance();
+        String fqnSubClass = entity.getClassName();
+        String fqnBaseClass = (entity.getSuperClassName() != null) ? entity
+                .getSuperClassName() : CayenneDataObject.class.getName();
+
+        String subPackageName = stringUtils.stripClass(fqnSubClass);
+        String superClassName = getSuperclassPrefix()
+                + stringUtils.stripPackageName(fqnSubClass);
+
+        String superPackageName = this.superPkg;
+        if (superPackageName == null) {
+            superPackageName = subPackageName;
+        }
+        String fqnSuperClass = superPackageName + "." + superClassName;
+
+        EntityUtils metadata = new EntityUtils(
+                dataMap,
+                entity,
+                fqnBaseClass,
+                fqnSuperClass,
+                fqnSubClass);
+
+        context.put("objEntity", entity);
+        context.put("stringUtils", StringUtils.getInstance());
+        context.put("entityUtils", metadata);
+        context.put("importUtils", new ImportUtils());
+        return metadata;
+    }
+
     /**
      * Runs class generation. Produces a pair of Java classes for each ObjEntity in the
      * map. This allows developers to use generated <b>subclass </b> for their custom
@@ -137,57 +167,22 @@ public class ClassGenerationAction {
      */
     protected void generateClassPairs() throws Exception {
 
-        StringUtils stringUtils = StringUtils.getInstance();
         Template superTemplate = superclassTemplate();
         Template classTemplate = subclassTemplate();
-        String superPrefix = getSuperclassPrefix();
 
         for (ObjEntity entity : entitiesForCurrentMode()) {
 
-            String fqnSubClass = entity.getClassName();
-            String fqnBaseClass = (entity.getSuperClassName() != null) ? entity
-                    .getSuperClassName() : CayenneDataObject.class.getName();
-
-            String subClassName = stringUtils.stripPackageName(fqnSubClass);
-            String subPackageName = stringUtils.stripClass(fqnSubClass);
-
-            String superClassName = superPrefix
-                    + stringUtils.stripPackageName(fqnSubClass);
-
-            String superPackageName = this.superPkg;
-            if (superPackageName == null) {
-                superPackageName = subPackageName;
-            }
-            String fqnSuperClass = superPackageName + "." + superClassName;
-
-            Writer superOut = openWriter(superPackageName, superClassName);
+            GenerationMetadata metadata = initContext(entity);
+            Writer superOut = openWriter(metadata.getSuperPackageName(), metadata
+                    .getSuperClassName());
             if (superOut != null) {
-                context.put("objEntity", entity);
-                context.put("stringUtils", StringUtils.getInstance());
-                context.put("entityUtils", new EntityUtils(
-                        dataMap,
-                        entity,
-                        fqnBaseClass,
-                        fqnSuperClass,
-                        fqnSubClass));
-                context.put("importUtils", new ImportUtils());
-
                 superTemplate.merge(context, superOut);
                 superOut.close();
             }
 
-            Writer mainOut = openWriter(subPackageName, subClassName);
+            Writer mainOut = openWriter(metadata.getSubPackageName(), metadata
+                    .getSubClassName());
             if (mainOut != null) {
-                context.put("objEntity", entity);
-                context.put("stringUtils", StringUtils.getInstance());
-                context.put("entityUtils", new EntityUtils(
-                        dataMap,
-                        entity,
-                        fqnBaseClass,
-                        fqnSuperClass,
-                        fqnSubClass));
-                context.put("importUtils", new ImportUtils());
-
                 classTemplate.merge(context, mainOut);
                 mainOut.close();
             }
@@ -200,37 +195,13 @@ public class ClassGenerationAction {
     protected void generateSingleClasses() throws Exception {
 
         Template classTemplate = singleClassTemplate();
-        String superPrefix = getSuperclassPrefix();
 
         for (ObjEntity entity : entitiesForCurrentMode()) {
 
-            String fqnSubClass = entity.getClassName();
-            String fqnBaseClass = (null != entity.getSuperClassName()) ? entity
-                    .getSuperClassName() : CayenneDataObject.class.getName();
-
-            StringUtils stringUtils = StringUtils.getInstance();
-
-            String subClassName = stringUtils.stripPackageName(fqnSubClass);
-            String subPackageName = stringUtils.stripClass(fqnSubClass);
-
-            String superClassName = superPrefix
-                    + stringUtils.stripPackageName(fqnSubClass);
-
-            String superPackageName = this.superPkg;
-            String fqnSuperClass = superPackageName + "." + superClassName;
-
-            Writer out = openWriter(subPackageName, subClassName);
+            GenerationMetadata metadata = initContext(entity);
+            Writer out = openWriter(metadata.getSubPackageName(), metadata
+                    .getSubClassName());
             if (out != null) {
-                context.put("objEntity", entity);
-                context.put("stringUtils", StringUtils.getInstance());
-                context.put("entityUtils", new EntityUtils(
-                        dataMap,
-                        entity,
-                        fqnBaseClass,
-                        fqnSuperClass,
-                        fqnSubClass));
-                context.put("importUtils", new ImportUtils());
-
                 classTemplate.merge(context, out);
                 out.close();
             }

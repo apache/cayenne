@@ -31,7 +31,7 @@ import org.apache.cayenne.map.Relationship;
  * @since 1.2
  * @author Mike Kienenberger
  */
-public class EntityUtils {
+public class EntityUtils implements GenerationMetadata {
 
     // template substitution values
     protected String subClassName;

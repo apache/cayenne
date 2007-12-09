@@ -18,11 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
-import java.io.Writer;
-
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.velocity.Template;
 
 /**
  * @since 3.0
@@ -50,73 +47,40 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
     }
 
     @Override
-    protected void generateSingleClasses() throws Exception {
-        throw new IllegalStateException(
-                "Single classes generation is not supported for the client.");
-    }
+    protected GenerationMetadata initContext(ObjEntity entity) {
+        StringUtils stringUtils = StringUtils.getInstance();
 
-    @Override
-    protected void generateClassPairs() throws Exception {
-
-        Template superTemplate = superclassTemplate();
-        Template classTemplate = subclassTemplate();
-        String superPrefix = getSuperclassPrefix();
-
-        for (ObjEntity entity : entitiesForCurrentMode()) {
-
-            // use client name, and if not specified use regular class name
-            String fqnSubClass = entity.getClientClassName();
-            if (fqnSubClass == null) {
-                fqnSubClass = entity.getClassName();
-            }
-
-            // use PersistentObject instead of CayenneDataObject as base ...
-            String fqnBaseClass = (entity.getClientSuperClassName() != null) ? entity
-                    .getClientSuperClassName() : PersistentObject.class.getName();
-
-            StringUtils stringUtils = StringUtils.getInstance();
-
-            String subClassName = stringUtils.stripPackageName(fqnSubClass);
-            String subPackageName = stringUtils.stripClass(fqnSubClass);
-
-            String superClassName = superPrefix
-                    + stringUtils.stripPackageName(fqnSubClass);
-
-            String superPackageName = this.superPkg;
-            String fqnSuperClass = superPackageName + "." + superClassName;
-
-            Writer superOut = openWriter(superPackageName, superClassName);
-
-            if (superOut != null) {
-                context.put("objEntity", entity);
-                context.put("stringUtils", StringUtils.getInstance());
-                context.put("entityUtils", new EntityUtils(
-                        dataMap,
-                        entity,
-                        fqnBaseClass,
-                        fqnSuperClass,
-                        fqnSubClass));
-                context.put("importUtils", new ImportUtils());
-
-                superTemplate.merge(context, superOut);
-                superOut.close();
-            }
-
-            Writer mainOut = openWriter(subPackageName, subClassName);
-            if (mainOut != null) {
-                context.put("objEntity", entity);
-                context.put("stringUtils", StringUtils.getInstance());
-                context.put("entityUtils", new EntityUtils(
-                        dataMap,
-                        entity,
-                        fqnBaseClass,
-                        fqnSuperClass,
-                        fqnSubClass));
-                context.put("importUtils", new ImportUtils());
-
-                classTemplate.merge(context, mainOut);
-                mainOut.close();
-            }
+        // use client name, and if not specified use regular class name
+        String fqnSubClass = entity.getClientClassName();
+        if (fqnSubClass == null) {
+            fqnSubClass = entity.getClassName();
         }
+
+        // use PersistentObject instead of CayenneDataObject as base ...
+        String fqnBaseClass = (entity.getClientSuperClassName() != null) ? entity
+                .getClientSuperClassName() : PersistentObject.class.getName();
+
+        String subPackageName = stringUtils.stripClass(fqnSubClass);
+        String superClassName = getSuperclassPrefix()
+                + stringUtils.stripPackageName(fqnSubClass);
+
+        String superPackageName = this.superPkg;
+        if (superPackageName == null) {
+            superPackageName = subPackageName;
+        }
+        String fqnSuperClass = superPackageName + "." + superClassName;
+
+        EntityUtils metadata = new EntityUtils(
+                dataMap,
+                entity,
+                fqnBaseClass,
+                fqnSuperClass,
+                fqnSubClass);
+
+        context.put("objEntity", entity);
+        context.put("stringUtils", StringUtils.getInstance());
+        context.put("entityUtils", metadata);
+        context.put("importUtils", new ImportUtils());
+        return metadata;
     }
 }
