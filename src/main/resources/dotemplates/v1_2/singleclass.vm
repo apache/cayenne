@@ -21,45 +21,49 @@
 ##	Sub class - class of entity, ie, org.apache.cayenne.art.Artist
 ##
 ##  Classes available in template
-##    objEntity - the ObjEntity class: See org.apache.cayenne.map.ObjectEntity
+##    object (duplicated as 'objEntity') - the ObjEntity class: See org.apache.cayenne.map.ObjectEntity
 ##    stringUtils - class for string "helper" functions: See org.apache.cayenne.gen.StringUtils
 ##    entityUtils - class for entity "helper" functions: See org.apache.cayenne.gen.EntityUtils
 ##    importUtils - class for import statement management: See org.apache.cayenne.gen.ImportUtils
+##    superClassName
+##    superPackageName
+##    subClassName
+##    subPackageName
+##    baseClassName
+##    basePackageName 
 ##
 ##
-${importUtils.setPackage($entityUtils.subPackageName)}##
-${importUtils.addReservedType("${entityUtils.subPackageName}.${entityUtils.subClassName}")}##
-${importUtils.addType("${entityUtils.basePackageName}.${entityUtils.baseClassName}")}##
-#foreach( $attr in ${objEntity.DeclaredAttributes} )
+${importUtils.setPackage($subPackageName)}##
+${importUtils.addReservedType("${subPackageName}.${subClassName}")}##
+${importUtils.addType("${basePackageName}.${baseClassName}")}##
+#foreach( $attr in ${object.DeclaredAttributes} )
 $importUtils.addType(${attr.Type})##
 #end
-#foreach( $rel in ${objEntity.DeclaredRelationships} )
+#foreach( $rel in ${object.DeclaredRelationships} )
 $importUtils.addType(${rel.TargetEntity.ClassName})##
-#end
-#if( ${entityUtils.hasToManyRelationships()} )
-${importUtils.addType('java.util.List')}##
+$importUtils.addType(${rel.CollectionType})##
 #end
 ${importUtils.generate()}
 
-public class ${entityUtils.subClassName} extends ${entityUtils.baseClassName} {
+public class ${subClassName} extends ${baseClassName} {
 
 ## Create property names
-#foreach( $attr in ${objEntity.DeclaredAttributes} )
+#foreach( $attr in ${object.DeclaredAttributes} )
     public static final String ${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY = "${attr.Name}";
 #end
-#foreach( $rel in ${objEntity.DeclaredRelationships} )
+#foreach( $rel in ${object.DeclaredRelationships} )
     public static final String ${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY = "${rel.Name}";
 #end
 
-#if( $objEntity.DbEntity )
-#foreach( $idAttr in ${objEntity.DbEntity.PrimaryKey} )
+#if( $object.DbEntity )
+#foreach( $idAttr in ${object.DbEntity.PrimaryKey} )
     public static final String ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = "${idAttr.Name}";
 #end
 #end
 
 ## Create attribute set/get methods
-#foreach( $attr in ${objEntity.DeclaredAttributes} )
-#if ("true" != "${objEntity.isReadOnly()}")
+#foreach( $attr in ${object.DeclaredAttributes} )
+#if ("true" != "${object.isReadOnly()}")
     public void set${stringUtils.capitalized($attr.Name)}($importUtils.formatJavaType(${attr.Type}) $stringUtils.formatVariableName(${attr.Name})) {
         writeProperty("${attr.Name}", $stringUtils.formatVariableName(${attr.Name}));
     }
@@ -72,7 +76,7 @@ public class ${entityUtils.subClassName} extends ${entityUtils.baseClassName} {
 #end
 ##
 ## Create list add/remove/get methods
-#foreach( $rel in ${objEntity.DeclaredRelationships} )
+#foreach( $rel in ${object.DeclaredRelationships} )
 #if( $rel.ToMany )
 #if ( ! $rel.ReadOnly )    public void addTo${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClassName}) obj) {
         addToManyTarget("${rel.name}", obj, true);
@@ -81,11 +85,11 @@ public class ${entityUtils.subClassName} extends ${entityUtils.baseClassName} {
         removeToManyTarget("${rel.name}", obj, true);
     }
 #end
-    public List get${stringUtils.capitalized($rel.Name)}() {
-        return (List)readProperty("${rel.name}");
+    public $importUtils.formatJavaType($rel.CollectionType) get${stringUtils.capitalized($rel.Name)}() {
+        return ($importUtils.formatJavaType($rel.CollectionType))readProperty("${rel.name}");
     }
 #else
-#if ( ! ${objEntity.isReadOnly()} && ! $rel.ReadOnly )
+#if ( ! ${object.isReadOnly()} && ! $rel.ReadOnly )
     public void set${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClassName}) $stringUtils.formatVariableName(${rel.name})) {
         setToOneTarget("${rel.name}", $stringUtils.formatVariableName(${rel.name}), true);
     }
