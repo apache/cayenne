@@ -31,7 +31,6 @@ import javax.swing.DefaultComboBoxModel;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationAction1_1;
 import org.apache.cayenne.gen.ClassGenerator;
-import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
@@ -224,8 +223,8 @@ public class CustomModeController extends GeneratorController {
         String mode = modesByLabel
                 .get(view.getGenerationMode().getSelectedItem())
                 .toString();
-        generator.setArtifactsGenerationMode(ArtifactsGenerationMode.valueOf(mode));
-        
+        generator.setArtifactsGenerationMode(mode);
+
         String version = getVersion();
 
         String superKey = view.getSuperclassTemplate().getSelectedItem().toString();

@@ -293,10 +293,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		action.setDestDir(destDir);
 		action.setEncoding(encoding);
 		action.setMakePairs(makePairs);
-		action
-				.setArtifactsGenerationMode(mode != null ? ArtifactsGenerationMode
-						.valueOf(mode.toLowerCase())
-						: ArtifactsGenerationMode.entity);
+		action.setArtifactsGenerationMode(mode);
 		action.setOutputPattern(outputPattern);
 		action.setOverwrite(overwrite);
 		action.setSuperPkg(superPkg);

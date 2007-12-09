@@ -26,6 +26,7 @@ import org.apache.cayenne.gen.ClassGenerationAction1_1;
 import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.gen.DefaultClassGenerator;
+import org.apache.cayenne.gen.MapClassGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
@@ -67,7 +68,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     public CayenneGeneratorTask() {
         this.makepairs = true;
-        this.mode = ArtifactsGenerationMode.entity.name();
+        this.mode = ArtifactsGenerationMode.RUN_PER_ARTIFACT.getLabel();
         this.outputPattern = "*.java";
         this.usepkgpath = true;
     }
@@ -94,8 +95,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         action.setDestDir(destDir);
         action.setEncoding(encoding);
         action.setMakePairs(makepairs);
-        action.setArtifactsGenerationMode(ArtifactsGenerationMode.valueOf(mode
-                .toLowerCase()));
+        action.setArtifactsGenerationMode(mode);
         action.setOutputPattern(outputPattern);
         action.setOverwrite(overwrite);
         action.setSuperPkg(superpkg);
