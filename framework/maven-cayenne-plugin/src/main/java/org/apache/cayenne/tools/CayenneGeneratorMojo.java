@@ -44,7 +44,7 @@ import org.apache.maven.project.MavenProject;
  * @goal cgen
  */
 public class CayenneGeneratorMojo extends AbstractMojo {
-	
+
 	/**
 	 * Project instance used to add generated source code to the build.
 	 * 
@@ -169,13 +169,13 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	private String superTemplate;
 
 	/**
-	 * Location of Velocity template file for Entity class generation. If omitted,
-	 * default template is used.
+	 * Location of Velocity template file for Entity class generation. If
+	 * omitted, default template is used.
 	 * 
 	 * @parameter expression="${cgen.template}"
 	 */
 	private String template;
-	
+
 	/**
 	 * Location of Velocity template file for Embeddable superclass generation.
 	 * Ignored unless <code>makepairs</code> set to <code>true</code>. If
@@ -186,13 +186,12 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	private String embeddableSuperTemplate;
 
 	/**
-	 * Location of Velocity template file for Embeddable class generation. If omitted,
-	 * default template is used.
+	 * Location of Velocity template file for Embeddable class generation. If
+	 * omitted, default template is used.
 	 * 
 	 * @parameter expression="${cgen.embeddableTemplate}"
 	 */
 	private String embeddableTemplate;
-
 
 	/**
 	 * If set to <code>true</code> (default), a directory tree will be
@@ -215,6 +214,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * &quot;1.2&quot;.)
 	 * 
 	 * @parameter expression="${cgen.version}"
+	 * @deprecated since 3.0 as 1.1 mode is deprecated.
 	 */
 	private String version;
 
@@ -239,13 +239,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());
 
 			DataMap dataMap = loaderAction.getMainDataMap();
-			
+
 			ClassGenerationAction generator = createGenerator();
 			generator.setLogger(logger);
 			generator.setTimestamp(map.lastModified());
 			generator.setDataMap(dataMap);
 			generator.addEntities(filterAction.getFilteredEntities(dataMap));
-			generator.addEmbeddables(filterAction.getFilteredEmbeddables(dataMap));
+			generator.addEmbeddables(filterAction
+					.getFilteredEmbeddables(dataMap));
 			generator.execute();
 		} catch (Exception e) {
 			throw new MojoExecutionException("Error generating classes: ", e);
