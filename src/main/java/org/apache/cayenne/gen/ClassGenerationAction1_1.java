@@ -130,12 +130,9 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
     }
 
     @Override
-    public void setArtifactsGenerationMode(ArtifactsGenerationMode artifactsGenerationMode) {
-        if (artifactsGenerationMode == null) {
-            artifactsGenerationMode = ArtifactsGenerationMode.entity;
-        }
-        generator.setMode(artifactsGenerationMode.name());
-    }
+    public void setArtifactsGenerationMode(String mode) {
+        generator.setMode(mode);
+    };
 
     @Override
     public void setContext(VelocityContext context) {

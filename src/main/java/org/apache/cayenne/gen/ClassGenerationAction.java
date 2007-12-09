@@ -194,7 +194,7 @@ public class ClassGenerationAction {
             for (Artifact artifact : artifacts) {
                 execute(artifact);
 
-                if (artifactsGenerationMode == ArtifactsGenerationMode.datamap) {
+                if (artifactsGenerationMode == ArtifactsGenerationMode.SINGLE_RUN) {
                     // TODO: andrus 12/9/2007 - should we run at least once if there are
                     // no artifacts? Current behavior is copied from the legacy code.
                     break;
@@ -536,7 +536,11 @@ public class ClassGenerationAction {
         this.embeddableSuperTemplate = embeddableSuperTemplate;
     }
 
-    public void setArtifactsGenerationMode(ArtifactsGenerationMode artifactsGenerationMode) {
-        this.artifactsGenerationMode = artifactsGenerationMode;
+    public void setArtifactsGenerationMode(String mode) {
+        this.artifactsGenerationMode = ArtifactsGenerationMode.RUN_PER_ARTIFACT
+                .getLabel()
+                .equalsIgnoreCase(mode)
+                ? ArtifactsGenerationMode.RUN_PER_ARTIFACT
+                : ArtifactsGenerationMode.SINGLE_RUN;
     }
 }
