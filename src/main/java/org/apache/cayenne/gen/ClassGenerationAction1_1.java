@@ -56,11 +56,8 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
             String superTemplate,
             String superPrefix) throws Exception {
 
-        TemplateProcessor1_1 mainGenerator = new TemplateProcessor1_1(classTemplate);
-        TemplateProcessor1_1 superGenerator = new TemplateProcessor1_1(superTemplate);
-
-        ClassGenerationInfo mainGen = mainGenerator.getClassGenerationInfo();
-        ClassGenerationInfo superGen = superGenerator.getClassGenerationInfo();
+        ClassGenerationInfo mainGen = new ClassGenerationInfo();
+        ClassGenerationInfo superGen = new ClassGenerationInfo();
 
         // prefix is needed for both generators
         mainGen.setSuperPrefix(superPrefix);
@@ -75,7 +72,7 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
                     + superGen.getClassName());
 
             if (superOut != null) {
-                superGenerator.generateClass(superOut, dataMap, entity, null, null, null);
+                generate(superOut, superTemplate, entity, null, null, null);
                 superOut.close();
             }
 
@@ -83,30 +80,28 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
             initClassGenerator(mainGen, entity, false);
             Writer mainOut = openWriter(mainGen.getPackageName(), mainGen.getClassName());
             if (mainOut != null) {
-                mainGenerator.generateClass(mainOut, dataMap, entity, null, null, null);
+                generate(mainOut, classTemplate, entity, null, null, null);
                 mainOut.close();
             }
         }
+
+        context.remove("classGen");
     }
 
     @Override
     public void generateSingleClasses(String classTemplate, String superPrefix)
             throws Exception {
 
-        TemplateProcessor1_1 generator = new TemplateProcessor1_1(classTemplate);
+        ClassGenerationInfo mainGen = new ClassGenerationInfo();
 
         for (ObjEntity entity : entitiesForCurrentMode()) {
 
-            initClassGenerator(generator.getClassGenerationInfo(), entity, false);
-            Writer out = openWriter(
-                    generator.getClassGenerationInfo().getPackageName(),
-                    generator.getClassGenerationInfo().getClassName());
-            if (out == null) {
-                continue;
+            initClassGenerator(mainGen, entity, false);
+            Writer out = openWriter(mainGen.getPackageName(), mainGen.getClassName());
+            if (out != null) {
+                generate(out, classTemplate, entity, null, null, null);
+                out.close();
             }
-
-            generator.generateClass(out, dataMap, entity, null, null, null);
-            out.close();
         }
     }
 
@@ -155,5 +150,8 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
             generatorInfo.setSuperClassName(CayenneDataObject.class.getName());
         }
         generatorInfo.setSuperPackageName(spkg);
+
+        generatorInfo.setObjEntity(entity);
+        context.put("classGen", generatorInfo);
     }
 }

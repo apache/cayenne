@@ -26,6 +26,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
@@ -33,7 +36,11 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.tools.NamePatternMatcher;
 import org.apache.commons.logging.Log;
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.NullLogSystem;
 
 /**
  * @since 3.0
@@ -53,6 +60,7 @@ public class ClassGenerationAction {
     protected DataMap dataMap;
     protected ClassGeneratorMode mode;
     protected VelocityContext context;
+    protected Map<String, Template> templateCache;
 
     protected Log logger;
     protected File destDir;
@@ -71,6 +79,8 @@ public class ClassGenerationAction {
         this.timestamp = System.currentTimeMillis();
         this.usePkgPath = true;
         this.makePairs = true;
+        this.context = new VelocityContext();
+        this.templateCache = new HashMap<String, Template>(5);
     }
 
     protected String defaultSingleClassTemplate() {
@@ -97,14 +107,12 @@ public class ClassGenerationAction {
             String superTemplate,
             String superPrefix) throws Exception {
 
-        TemplateProcessor mainGenSetup = new TemplateProcessor(classTemplate, context);
-        TemplateProcessor superGenSetup = new TemplateProcessor(superTemplate, context);
         StringUtils stringUtils = StringUtils.getInstance();
 
-        for (ObjEntity ent : entitiesForCurrentMode()) {
+        for (ObjEntity entity : entitiesForCurrentMode()) {
 
-            String fqnSubClass = ent.getClassName();
-            String fqnBaseClass = (ent.getSuperClassName() != null) ? ent
+            String fqnSubClass = entity.getClassName();
+            String fqnBaseClass = (entity.getSuperClassName() != null) ? entity
                     .getSuperClassName() : CayenneDataObject.class.getName();
 
             String subClassName = stringUtils.stripPackageName(fqnSubClass);
@@ -120,12 +128,11 @@ public class ClassGenerationAction {
             String fqnSuperClass = superPackageName + "." + superClassName;
 
             Writer superOut = openWriter(superPackageName, superClassName);
-
             if (superOut != null) {
-                superGenSetup.generateClass(
+                generate(
                         superOut,
-                        dataMap,
-                        ent,
+                        superTemplate,
+                        entity,
                         fqnBaseClass,
                         fqnSuperClass,
                         fqnSubClass);
@@ -134,27 +141,15 @@ public class ClassGenerationAction {
 
             Writer mainOut = openWriter(subPackageName, subClassName);
             if (mainOut != null) {
-                mainGenSetup.generateClass(
+                generate(
                         mainOut,
-                        dataMap,
-                        ent,
+                        classTemplate,
+                        entity,
                         fqnBaseClass,
                         fqnSuperClass,
                         fqnSubClass);
                 mainOut.close();
             }
-        }
-    }
-
-    protected Collection<ObjEntity> entitiesForCurrentMode() {
-
-        // TODO: andrus, 12/2/2007 - should we setup a dummy entity for an empty map in
-        // DataMap mode?
-        if (mode != ClassGeneratorMode.entity && !entities.isEmpty()) {
-            return Collections.singleton(entities.iterator().next());
-        }
-        else {
-            return this.entities;
         }
     }
 
@@ -164,12 +159,10 @@ public class ClassGenerationAction {
     public void generateSingleClasses(String classTemplate, String superPrefix)
             throws Exception {
 
-        TemplateProcessor generator = new TemplateProcessor(classTemplate, context);
+        for (ObjEntity entity : entitiesForCurrentMode()) {
 
-        for (ObjEntity ent : entitiesForCurrentMode()) {
-
-            String fqnSubClass = ent.getClassName();
-            String fqnBaseClass = (null != ent.getSuperClassName()) ? ent
+            String fqnSubClass = entity.getClassName();
+            String fqnBaseClass = (null != entity.getSuperClassName()) ? entity
                     .getSuperClassName() : CayenneDataObject.class.getName();
 
             StringUtils stringUtils = StringUtils.getInstance();
@@ -184,18 +177,16 @@ public class ClassGenerationAction {
             String fqnSuperClass = superPackageName + "." + superClassName;
 
             Writer out = openWriter(subPackageName, subClassName);
-            if (out == null) {
-                continue;
+            if (out != null) {
+                generate(
+                        out,
+                        classTemplate,
+                        entity,
+                        fqnBaseClass,
+                        fqnSuperClass,
+                        fqnSubClass);
+                out.close();
             }
-
-            generator.generateClass(
-                    out,
-                    dataMap,
-                    ent,
-                    fqnBaseClass,
-                    fqnSuperClass,
-                    fqnSubClass);
-            out.close();
         }
     }
 
@@ -205,13 +196,61 @@ public class ClassGenerationAction {
     public void execute() throws Exception {
         validateAttributes();
 
-        if (makePairs) {
-            String t = getTemplateForPairs();
-            String st = getSupertemplateForPairs();
-            generateClassPairs(t, st, SUPERCLASS_PREFIX);
+        try {
+            if (makePairs) {
+                String t = getTemplateForPairs();
+                String st = getSupertemplateForPairs();
+                generateClassPairs(t, st, SUPERCLASS_PREFIX);
+            }
+            else {
+                generateSingleClasses(getTemplateForSingles(), SUPERCLASS_PREFIX);
+            }
+        }
+        finally {
+            // must reset engine at the end of class generator run to avoid memory
+            // leaks and stale templates
+            this.templateCache.clear();
+        }
+    }
+
+    protected Template getTemplate(String name) throws Exception {
+        // Velocity < 1.5 has some memory problems, so we will create a VelocityEngine
+        // every time, and store templates in an internal cache, to avoid uncontrolled
+        // memory leaks... Presumably 1.5 fixes it.
+
+        Template template = templateCache.get(name);
+
+        if (template == null) {
+
+            Properties props = new Properties();
+
+            // null logger that will prevent velocity.log from being generated
+            props.put(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, NullLogSystem.class
+                    .getName());
+            props.put("resource.loader", "cayenne");
+            props.put("cayenne.resource.loader.class", ClassGeneratorResourceLoader.class
+                    .getName());
+            props.put("cayenne.resource.loader.cache", "false");
+
+            VelocityEngine velocityEngine = new VelocityEngine();
+            velocityEngine.init(props);
+
+            template = velocityEngine.getTemplate(name);
+            templateCache.put(name, template);
+        }
+
+        return template;
+    }
+
+    protected Collection<ObjEntity> entitiesForCurrentMode() {
+
+        // TODO: andrus, 12/2/2007 - should we setup a dummy entity for an empty map in
+        // DataMap mode?
+        if (mode != ClassGeneratorMode.entity && !entities.isEmpty()) {
+            return Collections.singleton(entities.iterator().next());
         }
         else {
-            generateSingleClasses(getTemplateForSingles(), SUPERCLASS_PREFIX);
+            return this.entities;
         }
     }
 
@@ -389,6 +428,30 @@ public class ClassGenerationAction {
      */
     protected boolean isOld(File file) {
         return file.lastModified() <= timestamp;
+    }
+
+    /**
+     * Merges a template with prebuilt context, writing output to provided writer.
+     */
+    protected void generate(
+            Writer out,
+            String template,
+            ObjEntity entity,
+            String fqnBaseClass,
+            String fqnSuperClass,
+            String fqnSubClass) throws Exception {
+
+        context.put("objEntity", entity);
+        context.put("stringUtils", StringUtils.getInstance());
+        context.put("entityUtils", new EntityUtils(
+                dataMap,
+                entity,
+                fqnBaseClass,
+                fqnSuperClass,
+                fqnSubClass));
+        context.put("importUtils", new ImportUtils());
+
+        getTemplate(template).merge(context, out);
     }
 
     /**

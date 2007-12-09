@@ -61,9 +61,6 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
             String superTemplate,
             String superPrefix) throws Exception {
 
-        TemplateProcessor mainGenSetup = new TemplateProcessor(classTemplate, context);
-        TemplateProcessor superGenSetup = new TemplateProcessor(superTemplate, context);
-
         for (ObjEntity entity : entitiesForCurrentMode()) {
 
             // use client name, and if not specified use regular class name
@@ -90,9 +87,9 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
             Writer superOut = openWriter(superPackageName, superClassName);
 
             if (superOut != null) {
-                superGenSetup.generateClass(
+                generate(
                         superOut,
-                        dataMap,
+                        superTemplate,
                         entity,
                         fqnBaseClass,
                         fqnSuperClass,
@@ -102,9 +99,9 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
 
             Writer mainOut = openWriter(subPackageName, subClassName);
             if (mainOut != null) {
-                mainGenSetup.generateClass(
+                generate(
                         mainOut,
-                        dataMap,
+                        classTemplate,
                         entity,
                         fqnBaseClass,
                         fqnSuperClass,

@@ -41,7 +41,7 @@ import foundrylogic.vpp.VPPConfig;
  * "classGen".
  * 
  * @author Andrus Adamchik
- * @deprecated since 3.0 use {@link TemplateProcessor}.
+ * @deprecated since 3.0 template logic is merged into the code generation action.
  */
 public class ClassGenerator {
 
