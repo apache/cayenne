@@ -79,17 +79,15 @@ public abstract class ${subClassName} extends ${baseClassName} {
     }
 #if ( $importUtils.isBoolean(${attr.Type}) )
 	public boolean is${stringUtils.capitalized($attr.Name)}() {
-        Boolean value = (Boolean)readProperty("${attr.Name}");
-        return (value != null) ? value.booleanValue() : false;
+        return $stringUtils.formatVariableName(${attr.Name});
     }
 #elseif ( $importUtils.isNonBooleanPrimitive(${attr.Type}) )
     public $classGen.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
-        Object value = readProperty("${attr.Name}");
-        return (value != null) ? ($importUtils.formatJavaTypeAsNonBooleanPrimitive(${attr.Type})) value : 0; 
+        return $stringUtils.formatVariableName(${attr.Name});
     }
 #else
     public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
-        return ($importUtils.formatJavaType(${attr.Type}))readProperty("${attr.Name}");
+        return $stringUtils.formatVariableName(${attr.Name});
     }
 #end
 
