@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.project.validator.MappingNamesHelper;
@@ -30,30 +29,25 @@ import org.apache.cayenne.util.NameConverter;
  */
 public class StringUtils {
 
-    private static StringUtils sharedInstance = null;
-    
-    public static StringUtils getInstance()
-    {
-        if (null == sharedInstance)
-        {
+    private static StringUtils sharedInstance;
+
+    public static StringUtils getInstance() {
+        if (null == sharedInstance) {
             sharedInstance = new StringUtils();
         }
-        
+
         return sharedInstance;
     }
-    
-    public StringUtils()
-    {
-        super();
-    }
-    
+
     /**
-     * Prepends underscore to variable name if necessary to remove conflict with reserved keywords.
+     * Prepends underscore to variable name if necessary to remove conflict with reserved
+     * keywords.
      */
     public String formatVariableName(String variableName) {
         if (MappingNamesHelper.getInstance().isReservedJavaKeyword(variableName)) {
             return "_" + variableName;
-        } else {
+        }
+        else {
             return variableName;
         }
     }
@@ -63,34 +57,34 @@ public class StringUtils {
      * 
      * @since 1.2
      */
-   public String stripPackageName(String aString)
-   {
-       if (aString == null || aString.length() == 0)
-           return aString;
+    public String stripPackageName(String aString) {
+        if (aString == null || aString.length() == 0)
+            return aString;
 
-       int lastDot = aString.lastIndexOf('.');
-       
-       if ((-1 == lastDot) || ((aString.length() - 1) == lastDot) )  return aString;
+        int lastDot = aString.lastIndexOf('.');
 
-       return aString.substring(lastDot + 1);
-   }
+        if ((-1 == lastDot) || ((aString.length() - 1) == lastDot))
+            return aString;
 
-   /**
-    * Removes base name, leaving package name.
-    * 
-    * @since 1.2
-    */
-  public String stripClass(String aString)
-  {
-      if (aString == null || aString.length() == 0)
-          return aString;
+        return aString.substring(lastDot + 1);
+    }
 
-      int lastDot = aString.lastIndexOf('.');
-      
-      if (-1 == lastDot)  return "";
-      
-      return aString.substring(0, lastDot);
-  }
+    /**
+     * Removes base name, leaving package name.
+     * 
+     * @since 1.2
+     */
+    public String stripClass(String aString) {
+        if (aString == null || aString.length() == 0)
+            return aString;
+
+        int lastDot = aString.lastIndexOf('.');
+
+        if (-1 == lastDot)
+            return "";
+
+        return aString.substring(0, lastDot);
+    }
 
     /**
      * Capitalizes the first letter of the property name.
@@ -104,21 +98,20 @@ public class StringUtils {
         char c = Character.toUpperCase(name.charAt(0));
         return (name.length() == 1) ? Character.toString(c) : c + name.substring(1);
     }
-    
+
     /**
      * Returns string with lowercased first letter
      * 
      * @since 1.2
      */
-   public static String uncapitalized(String aString)
-   {
-       if (aString == null || aString.length() == 0)
-           return aString;
+    public static String uncapitalized(String aString) {
+        if (aString == null || aString.length() == 0)
+            return aString;
 
-       char c = Character.toLowerCase(aString.charAt(0));
-       return (aString.length() == 1) ? Character.toString(c) : c + aString.substring(1);
-   }
-   
+        char c = Character.toLowerCase(aString.charAt(0));
+        return (aString.length() == 1) ? Character.toString(c) : c + aString.substring(1);
+    }
+
     /**
      * Converts property name to Java constants naming convention.
      * 
