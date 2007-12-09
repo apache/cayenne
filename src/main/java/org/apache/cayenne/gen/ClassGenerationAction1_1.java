@@ -58,8 +58,7 @@ public class ClassGenerationAction1_1 extends ClassGenerationAction {
 
     @Override
     public void addEmbeddables(Collection<Embeddable> embeddables) {
-        throw new UnsupportedOperationException(
-                "Embeddables are not supported in 1.1 mode");
+        // noop - no embeddables support
     }
 
     @Override

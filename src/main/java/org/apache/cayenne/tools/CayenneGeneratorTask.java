@@ -20,12 +20,13 @@ package org.apache.cayenne.tools;
 
 import java.io.File;
 
+import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationAction1_1;
 import org.apache.cayenne.gen.ClassGenerator;
-import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.gen.DefaultClassGenerator;
+import org.apache.cayenne.map.DataMap;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
 import org.apache.velocity.VelocityContext;
@@ -91,7 +92,8 @@ public class CayenneGeneratorTask extends CayenneTask {
         action.setDestDir(destDir);
         action.setEncoding(encoding);
         action.setMakePairs(makepairs);
-        action.setArtifactsGenerationMode(ArtifactsGenerationMode.valueOf(mode.toLowerCase()));
+        action.setArtifactsGenerationMode(ArtifactsGenerationMode.valueOf(mode
+                .toLowerCase()));
         action.setOutputPattern(outputPattern);
         action.setOverwrite(overwrite);
         action.setSuperPkg(superpkg);
@@ -144,12 +146,15 @@ public class CayenneGeneratorTask extends CayenneTask {
                 excludeEntitiesPattern));
 
         try {
+
+            DataMap dataMap = loadAction.getMainDataMap();
+
             ClassGenerationAction generatorAction = createGeneratorAction();
             generatorAction.setLogger(logger);
             generatorAction.setTimestamp(map.lastModified());
-            generatorAction.setDataMap(loadAction.getMainDataMap());
-            generatorAction.addEntities(filterAction.getFilteredEntities(loadAction
-                    .getMainDataMap()));
+            generatorAction.setDataMap(dataMap);
+            generatorAction.addEntities(filterAction.getFilteredEntities(dataMap));
+            generatorAction.addEmbeddables(filterAction.getFilteredEmbeddables(dataMap));
             generatorAction.execute();
         }
         catch (Exception e) {
