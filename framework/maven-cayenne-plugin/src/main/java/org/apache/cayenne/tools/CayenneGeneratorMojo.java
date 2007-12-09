@@ -44,6 +44,7 @@ import org.apache.maven.project.MavenProject;
  * @goal cgen
  */
 public class CayenneGeneratorMojo extends AbstractMojo {
+	
 	/**
 	 * Project instance used to add generated source code to the build.
 	 * 
@@ -159,7 +160,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	private String superPkg;
 
 	/**
-	 * Location of Velocity template file for Java superclass generation.
+	 * Location of Velocity template file for Entity superclass generation.
 	 * Ignored unless <code>makepairs</code> set to <code>true</code>. If
 	 * omitted, default template is used.
 	 * 
@@ -168,12 +169,30 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	private String superTemplate;
 
 	/**
-	 * Location of Velocity template file for Java class generation. If omitted,
+	 * Location of Velocity template file for Entity class generation. If omitted,
 	 * default template is used.
 	 * 
 	 * @parameter expression="${cgen.template}"
 	 */
 	private String template;
+	
+	/**
+	 * Location of Velocity template file for Embeddable superclass generation.
+	 * Ignored unless <code>makepairs</code> set to <code>true</code>. If
+	 * omitted, default template is used.
+	 * 
+	 * @parameter expression="${cgen.embeddableSuperTemplate}"
+	 */
+	private String embeddableSuperTemplate;
+
+	/**
+	 * Location of Velocity template file for Embeddable class generation. If omitted,
+	 * default template is used.
+	 * 
+	 * @parameter expression="${cgen.embeddableTemplate}"
+	 */
+	private String embeddableTemplate;
+
 
 	/**
 	 * If set to <code>true</code> (default), a directory tree will be
@@ -282,6 +301,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		action.setSuperPkg(superPkg);
 		action.setSuperTemplate(superTemplate);
 		action.setTemplate(template);
+		action.setEmbeddableSuperTemplate(embeddableSuperTemplate);
+		action.setEmbeddableTemplate(embeddableTemplate);
 		action.setUsePkgPath(usePkgPath);
 
 		return action;
