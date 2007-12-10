@@ -26,6 +26,7 @@ import org.apache.cayenne.merge.SetColumnTypeToDb;
 
 public class DerbyMergerFactory extends MergerFactory {
 
+    @Override
     public MergerToken createSetColumnTypeToDb(
             final DbEntity entity,
             DbAttribute columnOriginal,

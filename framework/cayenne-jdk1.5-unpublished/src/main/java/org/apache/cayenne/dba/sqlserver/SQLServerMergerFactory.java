@@ -27,6 +27,7 @@ import org.apache.cayenne.merge.SetColumnTypeToDb;
 
 public class SQLServerMergerFactory extends MergerFactory {
 
+    @Override
     public MergerToken createSetColumnTypeToDb(
             final DbEntity entity,
             DbAttribute columnOriginal,
@@ -45,6 +46,7 @@ public class SQLServerMergerFactory extends MergerFactory {
         };
     }
 
+    @Override
     public MergerToken createAddColumnToDb(
             final DbEntity entity,
             final DbAttribute column) {
