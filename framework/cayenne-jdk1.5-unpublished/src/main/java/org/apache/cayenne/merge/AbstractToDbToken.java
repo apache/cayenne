@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import java.util.List;
+
 import org.apache.cayenne.dba.DbAdapter;
 
 /**
@@ -33,9 +35,11 @@ public abstract class AbstractToDbToken implements MergerToken {
     }
 
     public void execute(MergerContext mergerContext) {
-        mergerContext.executeSql(createSql(mergerContext.getAdapter()));
+        for (String sql : createSql(mergerContext.getAdapter())) {
+            mergerContext.executeSql(sql);
+        }
     }
 
-    public abstract String createSql(DbAdapter adapter);
+    public abstract List<String> createSql(DbAdapter adapter);
 
 }

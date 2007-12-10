@@ -26,12 +26,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class MergerFactoryTest extends CayenneCase {
@@ -168,6 +173,7 @@ public class MergerFactoryTest extends CayenneCase {
 
         DbAttribute column1 = new DbAttribute("ID", Types.INTEGER, dbEntity);
         column1.setMandatory(true);
+        column1.setPrimaryKey(true);
         dbEntity.addAttribute(column1);
 
         DbAttribute column2 = new DbAttribute("NAME", Types.VARCHAR, dbEntity);
@@ -179,9 +185,29 @@ public class MergerFactoryTest extends CayenneCase {
 
         mergeToDb(node, map, 1);
         assertInSync(node, map);
+        
+        ObjEntity objEntity = new ObjEntity("NewTable");
+        objEntity.setDbEntity(dbEntity);
+        ObjAttribute oatr1 = new ObjAttribute("name");
+        oatr1.setDbAttribute(column2);
+        oatr1.setType("java.lang.String");
+        objEntity.addAttribute(oatr1);
+        map.addObjEntity(objEntity);
+        
+        // try to insert some rows to check that pk stuff is working
+        DataContext ctxt = createDataContext();
+        for (int i = 0; i < 5; i++) {
+            CayenneDataObject dao = (CayenneDataObject) ctxt.newObject(objEntity
+                    .getName());
+            dao.writeProperty(oatr1.getName(), "test " + i);
+        }
+        ctxt.commitChanges();
 
         // clear up
+        map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
+        ctxt.getEntityResolver().clearCache();
+        assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
         // TODO: mergeToDb(node, map, 1);
@@ -219,7 +245,9 @@ public class MergerFactoryTest extends CayenneCase {
                 .mergerFactory()
                 .createDropTableToDb(entity);
         try {
-            executeSql(t.createSql(node.getAdapter()));
+            for (String sql : t.createSql(node.getAdapter())) {
+                executeSql(sql);
+            }
         }
         catch (Exception e) {
         }

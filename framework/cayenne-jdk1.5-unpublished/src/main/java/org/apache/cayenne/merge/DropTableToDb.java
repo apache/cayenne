@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
 
@@ -29,8 +32,9 @@ public class DropTableToDb extends AbstractToDbToken {
         this.entity = entity;
     }
 
-    public String createSql(DbAdapter adapter) {
-        return adapter.dropTable(entity);
+    @Override
+    public List<String> createSql(DbAdapter adapter) {
+        return Collections.singletonList(adapter.dropTable(entity));
     }
 
     public String getTokenName() {
