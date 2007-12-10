@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.graph.GraphChangeHandler;
@@ -31,6 +27,10 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * A processor of ObjectStore indirect changes, such as flattened relationships and
@@ -92,8 +92,8 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
             if (relationship.isFlattened()) {
                 if (relationship.isReadOnly()) {
                     throw new CayenneRuntimeException(
-                            "Cannot set the read-only flattened relationship "
-                                    + relationship.getName());
+                            "Cannot set the read-only flattened relationship '"
+                                + relationship.getName() + "' in ObjEntity '" + relationship.getSourceEntity().getName() + "'.");
                 }
 
                 // Register this combination (so we can remove it later if an insert
