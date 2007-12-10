@@ -23,19 +23,25 @@
 ##  Sub class - class of entity, ie, org.apache.cayenne.art.Artist
 ##
 ##  Classes available in template
-##    objEntity - the ObjEntity class: See org.apache.cayenne.map.ObjectEntity
+##    object (duplicated as 'objEntity') - the ObjEntity class: See org.apache.cayenne.map.ObjectEntity
 ##    stringUtils - class for string "helper" functions: See org.apache.cayenne.gen.StringUtils
 ##    entityUtils - class for entity "helper" functions: See org.apache.cayenne.gen.EntityUtils
 ##    importUtils - class for import statement management: See org.apache.cayenne.gen.ImportUtils
+##    superClassName
+##    superPackageName
+##    subClassName
+##    subPackageName
+##    baseClassName
+##    basePackageName 
 ##
-${importUtils.setPackage($entityUtils.subPackageName)}##
-${importUtils.addReservedType("${$entityUtils.subPackageName}.${entityUtils.subClassName}")}##
-${importUtils.addType("${entityUtils.superPackageName}.${entityUtils.superClassName}")}##
+${importUtils.setPackage($subPackageName)}##
+${importUtils.addReservedType("${$subPackageName}.${subClassName}")}##
+${importUtils.addType("${superPackageName}.${superClassName}")}##
 ${importUtils.generate()}
 
 /**
- * A persistent class mapped as "${objEntity.name}" Cayenne entity.
+ * A persistent class mapped as "${object.name}" Cayenne entity.
  */
-public class ${entityUtils.subClassName} extends ${entityUtils.superClassName} {
+public class ${subClassName} extends ${superClassName} {
 
 }
