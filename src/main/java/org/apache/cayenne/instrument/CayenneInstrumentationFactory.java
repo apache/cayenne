@@ -33,7 +33,7 @@ public class CayenneInstrumentationFactory implements InstrumentationFactory {
 
     public Instrumentation getInstrumentation() {
         try {
-            Class agent = Class.forName(AGENT_CLASS, false, Thread
+            Class<?> agent = Class.forName(AGENT_CLASS, false, Thread
                     .currentThread()
                     .getContextClassLoader());
 
