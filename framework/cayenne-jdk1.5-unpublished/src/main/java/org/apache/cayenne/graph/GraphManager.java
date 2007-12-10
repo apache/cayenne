@@ -37,7 +37,7 @@ public interface GraphManager extends GraphChangeHandler {
     Object getNode(Object nodeId);
 
     /**
-     * "Registers" a graph node, usually striong the node in some internal map using its
+     * "Registers" a graph node, usually storing the node in some internal map using its
      * id as a key.
      */
     void registerNode(Object nodeId, Object nodeObject);
@@ -48,7 +48,7 @@ public interface GraphManager extends GraphChangeHandler {
     Object unregisterNode(Object nodeId);
 
     /**
-     * Returns all graph nodes regsitered with GraphManager.
+     * Returns all graph nodes registered with GraphManager.
      */
     Collection registeredNodes();
 }

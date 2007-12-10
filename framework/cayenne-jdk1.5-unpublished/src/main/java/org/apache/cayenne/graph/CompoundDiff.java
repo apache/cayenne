@@ -22,7 +22,6 @@ package org.apache.cayenne.graph;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -34,7 +33,7 @@ import java.util.ListIterator;
  */
 public class CompoundDiff implements GraphDiff {
 
-    protected List diffs;
+    protected List<GraphDiff> diffs;
 
     /**
      * Creates an empty CompoundDiff instance.
@@ -46,7 +45,7 @@ public class CompoundDiff implements GraphDiff {
      * Creates CompoundDiff instance. Note that a List is not cloned in this constructor,
      * so subsequent calls to add and addAll would modify the original list.
      */
-    public CompoundDiff(List diffs) {
+    public CompoundDiff(List<GraphDiff> diffs) {
         this.diffs = diffs;
     }
 
@@ -58,17 +57,15 @@ public class CompoundDiff implements GraphDiff {
             return true;
         }
 
-        Iterator it = diffs.iterator();
-        while (it.hasNext()) {
-            if (!((GraphDiff) it.next()).isNoop()) {
+        for (GraphDiff diff : diffs) {
+            if (! diff.isNoop()) {
                 return false;
             }
         }
-
         return true;
     }
 
-    public List getDiffs() {
+    public List<GraphDiff> getDiffs() {
         return (diffs != null)
                 ? Collections.unmodifiableList(diffs)
                 : Collections.EMPTY_LIST;
@@ -78,7 +75,7 @@ public class CompoundDiff implements GraphDiff {
         nonNullDiffs().add(diff);
     }
 
-    public void addAll(Collection diffs) {
+    public void addAll(Collection<GraphDiff> diffs) {
         nonNullDiffs().addAll(diffs);
     }
 
@@ -91,9 +88,7 @@ public class CompoundDiff implements GraphDiff {
         }
 
         // implements a naive linear commit - simply replay stored operations
-        Iterator it = diffs.iterator();
-        while (it.hasNext()) {
-            GraphDiff change = (GraphDiff) it.next();
+        for (GraphDiff change : diffs) {
             change.apply(tracker);
         }
     }
@@ -106,18 +101,18 @@ public class CompoundDiff implements GraphDiff {
             return;
         }
 
-        ListIterator it = diffs.listIterator(diffs.size());
+        ListIterator<GraphDiff> it = diffs.listIterator(diffs.size());
         while (it.hasPrevious()) {
-            GraphDiff change = (GraphDiff) it.previous();
+            GraphDiff change = it.previous();
             change.undo(tracker);
         }
     }
 
-    List nonNullDiffs() {
+    List<GraphDiff> nonNullDiffs() {
         if (diffs == null) {
             synchronized (this) {
                 if (diffs == null) {
-                    diffs = new ArrayList();
+                    diffs = new ArrayList<GraphDiff>();
                 }
             }
         }

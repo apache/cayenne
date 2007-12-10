@@ -411,9 +411,7 @@ public class SelectTranslator extends QueryAssembler {
                         dbRelationshipAdded(relationship);
                     }
 
-                    Iterator joins = relationship.getJoins().iterator();
-                    while (joins.hasNext()) {
-                        DbJoin j = (DbJoin) joins.next();
+                    for (DbJoin j : relationship.getJoins()) {
 
                         DbAttribute attribute = relationship.isToMany()
                                 ? j.getTarget()

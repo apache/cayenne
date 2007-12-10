@@ -25,7 +25,7 @@ package org.apache.cayenne.graph;
  * @since 1.2
  * @author Andrus Adamchik
  */
-public abstract class NodeDiff implements GraphDiff, Comparable {
+public abstract class NodeDiff implements GraphDiff, Comparable<NodeDiff> {
 
     protected int diffId;
     protected Object nodeId;
@@ -70,11 +70,7 @@ public abstract class NodeDiff implements GraphDiff, Comparable {
     /**
      * Implements a Comparable interface method to compare based on diffId property.
      */
-    public int compareTo(Object o) {
-        if (!(o instanceof NodeDiff)) {
-            throw new IllegalArgumentException("Can't compare to " + o);
-        }
-
-        return diffId - ((NodeDiff) o).getDiffId();
+    public int compareTo(NodeDiff o) {
+        return diffId - o.getDiffId();
     }
 }
