@@ -26,6 +26,7 @@ import org.apache.cayenne.merge.SetColumnTypeToDb;
 
 public class PostgresMergerFactory extends MergerFactory {
 
+    @Override
     public MergerToken createSetColumnTypeToDb(final DbEntity entity, DbAttribute columnOriginal, final DbAttribute columnNew) {
 
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
