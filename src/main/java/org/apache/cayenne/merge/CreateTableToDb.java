@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
 
@@ -29,8 +33,13 @@ public class CreateTableToDb extends AbstractToDbToken {
         this.entity = entity;
     }
 
-    public String createSql(DbAdapter adapter) {
-        return adapter.createTable(entity);
+    @Override
+    public List<String> createSql(DbAdapter adapter) {
+        List<String> sqls = new ArrayList<String>();
+        sqls.addAll(adapter.getPkGenerator().createAutoPkStatements(
+                Collections.singletonList(entity)));
+        sqls.add(adapter.createTable(entity));
+        return sqls;
     }
 
     public String getTokenName() {

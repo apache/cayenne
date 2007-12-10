@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
@@ -45,7 +48,7 @@ public class AddColumnToDb extends AbstractToDbToken {
         sqlBuffer.append(" ");
     }
 
-    public String createSql(DbAdapter adapter) {
+    public List<String> createSql(DbAdapter adapter) {
         StringBuffer sqlBuffer = new StringBuffer();
 
         appendPrefix(sqlBuffer);
@@ -90,7 +93,7 @@ public class AddColumnToDb extends AbstractToDbToken {
         // use separate token to set value and not null if needed
         // sqlBuffer.append(" NULL");
 
-        return sqlBuffer.toString();
+        return Collections.singletonList(sqlBuffer.toString());
     }
 
     public String getTokenName() {

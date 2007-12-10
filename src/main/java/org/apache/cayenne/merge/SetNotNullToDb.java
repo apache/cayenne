@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -37,7 +40,8 @@ public class SetNotNullToDb extends AbstractToDbToken {
         this.column = column;
     }
 
-    public String createSql(DbAdapter adapter) {
+    @Override
+    public List<String> createSql(DbAdapter adapter) {
         StringBuffer sqlBuffer = new StringBuffer();
 
         sqlBuffer.append("ALTER TABLE ");
@@ -46,7 +50,7 @@ public class SetNotNullToDb extends AbstractToDbToken {
         sqlBuffer.append(column.getName());
         sqlBuffer.append(" SET NOT NULL");
 
-        return sqlBuffer.toString();
+        return Collections.singletonList(sqlBuffer.toString());
     }
 
     public String getTokenName() {
