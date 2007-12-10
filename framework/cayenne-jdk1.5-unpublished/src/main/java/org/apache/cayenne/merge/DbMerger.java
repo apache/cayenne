@@ -36,6 +36,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -79,11 +80,9 @@ public class DbMerger {
                     null,
                     new DataMap());
 
-            Map dbEntityToDropByName = new HashMap(detectedDataMap.getDbEntityMap());
+            Map<String, DbEntity> dbEntityToDropByName = new HashMap<String, DbEntity>(detectedDataMap.getDbEntityMap());
 
-            for (Iterator it = dataMap.getDbEntities().iterator(); it.hasNext();) {
-                DbEntity dbEntity = (DbEntity) it.next();
-
+            for (DbEntity dbEntity : dataMap.getDbEntities()) {
                 String tableName = dbEntity.getName();
 
                 // look for table
@@ -132,7 +131,7 @@ public class DbMerger {
     private void checkRows(List<MergerToken> tokens, DbEntity dbEntity, DbEntity detectedEntity) {
 
         // columns to drop
-        for (Iterator it = detectedEntity.getAttributes().iterator(); it.hasNext();) {
+        for (Iterator<Attribute> it = detectedEntity.getAttributes().iterator(); it.hasNext();) {
             DbAttribute detected = (DbAttribute) it.next();
             if (findDbAttribute(dbEntity, detected.getName()) == null) {
                 tokens.add(factory.createDropColumToDb(dbEntity, detected));
@@ -140,7 +139,7 @@ public class DbMerger {
         }
 
         // columns to add or modify
-        for (Iterator it = dbEntity.getAttributes().iterator(); it.hasNext();) {
+        for (Iterator<Attribute> it = dbEntity.getAttributes().iterator(); it.hasNext();) {
             DbAttribute attr = (DbAttribute) it.next();
             String columnName = attr.getName().toUpperCase();
 
@@ -183,8 +182,7 @@ public class DbMerger {
      */
     private DbEntity findDbEntity(DataMap map, String caseInsensitiveName) {
         // TODO: create a Map with upper case keys?
-        for (Iterator it = map.getDbEntities().iterator(); it.hasNext();) {
-            DbEntity e = (DbEntity) it.next();
+        for (DbEntity e : map.getDbEntities()) {
             if (e.getName().equalsIgnoreCase(caseInsensitiveName)) {
                 return e;
             }
@@ -196,7 +194,7 @@ public class DbMerger {
      * case insensitive search for a {@link DbAttribute} in a {@link DbEntity} by name
      */
     private DbAttribute findDbAttribute(DbEntity entity, String caseInsensitiveName) {
-        for (Iterator it = entity.getAttributes().iterator(); it.hasNext();) {
+        for (Iterator<Attribute> it = entity.getAttributes().iterator(); it.hasNext();) {
             DbAttribute a = (DbAttribute) it.next();
             if (a.getName().equalsIgnoreCase(caseInsensitiveName)) {
                 return a;
