@@ -79,6 +79,9 @@ public class EntityUtils {
     /**
      * Returns class name (without a package) of the sub class associated with this
      * generator.
+     * 
+     * @deprecated since 3.0 This value is a part of velocity context and therefore is
+     *             redundant here.
      */
     public String getSubClassName() {
         return subClassName;
@@ -87,6 +90,9 @@ public class EntityUtils {
     /**
      * Returns the super class (without a package) of the data object class associated
      * with this generator
+     * 
+     * @deprecated since 3.0 This value is a part of velocity context and therefore is
+     *             redundant here.
      */
     public String getSuperClassName() {
         return superClassName;
@@ -95,6 +101,9 @@ public class EntityUtils {
     /**
      * Returns the base class (without a package) of the data object class associated with
      * this generator. Class name must not include a package.
+     * 
+     * @deprecated since 3.0 This value is a part of velocity context and therefore is
+     *             redundant here.
      */
     public String getBaseClassName() {
         return baseClassName;
@@ -102,6 +111,9 @@ public class EntityUtils {
 
     /**
      * Returns Java package name of the class associated with this generator.
+     * 
+     * @deprecated since 3.0 This value is a part of velocity context and therefore is
+     *             redundant here.
      */
     public String getSubPackageName() {
         return subPackageName;
@@ -110,6 +122,9 @@ public class EntityUtils {
     /**
      * Returns <code>superPackageName</code> property that defines a superclass's
      * package name.
+     * 
+     * @deprecated since 3.0 This value is a part of velocity context and therefore is
+     *             redundant here.
      */
     public String getSuperPackageName() {
         return superPackageName;
@@ -118,6 +133,9 @@ public class EntityUtils {
     /**
      * Returns <code>basePackageName</code> property that defines a baseclass's
      * (superclass superclass) package name.
+     * 
+     * @deprecated since 3.0 This value is a part of velocity context and therefore is
+     *             redundant here.
      */
     public String getBasePackageName() {
         return basePackageName;

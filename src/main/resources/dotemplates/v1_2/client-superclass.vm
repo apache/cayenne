@@ -21,20 +21,27 @@
 ##	Sub class - class of entity, ie, org.apache.cayenne.art.Artist
 ##
 ##  Classes available in template
-##    objEntity - the ObjEntity class: See org.apache.cayenne.map.ObjectEntity
+##    object (duplicated as 'objEntity') - the ObjEntity class: See org.apache.cayenne.map.ObjectEntity
 ##    stringUtils - class for string "helper" functions: See org.apache.cayenne.gen.StringUtils
 ##    entityUtils - class for entity "helper" functions: See org.apache.cayenne.gen.EntityUtils
 ##    importUtils - class for import statement management: See org.apache.cayenne.gen.ImportUtils
+##    superClassName
+##    superPackageName
+##    subClassName
+##    subPackageName
+##    baseClassName
+##    basePackageName 
 ##
 ##
-${importUtils.setPackage($entityUtils.superPackageName)}##
-${importUtils.addReservedType("${$entityUtils.superPackageName}.${entityUtils.superClassName}")}##
-${importUtils.addType("${entityUtils.basePackageName}.${entityUtils.baseClassName}")}##
-#foreach( $attr in ${objEntity.DeclaredAttributes} )
+${importUtils.setPackage($superPackageName)}##
+${importUtils.addReservedType("${$superPackageName}.${superClassName}")}##
+${importUtils.addType("${basePackageName}.${baseClassName}")}##
+#foreach( $attr in ${object.DeclaredAttributes} )
 $importUtils.addType(${attr.Type})##
 #end
-#foreach( $rel in ${objEntity.DeclaredRelationships} )
+#foreach( $rel in ${object.DeclaredRelationships} )
 $importUtils.addType(${rel.TargetEntity.ClientClassName})##
+$importUtils.addType(${rel.CollectionType})##
 #end
 #if( ${entityUtils.hasToOneDeclaredRelationships()} )
 ${importUtils.addType('org.apache.cayenne.ValueHolder')}##
@@ -42,34 +49,34 @@ ${importUtils.addType('org.apache.cayenne.ValueHolder')}##
 ${importUtils.generate()}
 
 /**
- * A generated persistent class mapped as "${objEntity.name}" Cayenne entity. It is a good idea to
+ * A generated persistent class mapped as "${object.name}" Cayenne entity. It is a good idea to
  * avoid changing this class manually, since it will be overwritten next time code is
  * regenerated. If you need to make any customizations, put them in a subclass.
  */
-public abstract class ${entityUtils.superClassName} extends ${entityUtils.baseClassName} {
+public abstract class ${superClassName} extends ${baseClassName} {
 
 ## Create ivars names
-#foreach( $attr in ${objEntity.DeclaredAttributes} )
+#foreach( $attr in ${object.DeclaredAttributes} )
     public static final String ${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY = "${attr.Name}";
 #end
-#foreach( $rel in ${objEntity.DeclaredRelationships} )
+#foreach( $rel in ${object.DeclaredRelationships} )
     public static final String ${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY = "${rel.Name}";
 #end
 
 ## Create ivars
-#foreach( $attr in ${objEntity.DeclaredAttributes} )
+#foreach( $attr in ${object.DeclaredAttributes} )
     protected $importUtils.formatJavaType(${attr.Type}) ${attr.Name};
 #end
-#foreach( $rel in ${objEntity.DeclaredRelationships} )
+#foreach( $rel in ${object.DeclaredRelationships} )
 #if( $rel.ToMany )
-    protected ${rel.CollectionType} ${rel.Name};
+    protected $importUtils.formatJavaType($rel.CollectionType) ${rel.Name};
 #else
     protected ValueHolder ${rel.Name};
 #end
 #end
 
 ## Create attribute set/get methods
-#foreach( $attr in ${objEntity.DeclaredAttributes} )
+#foreach( $attr in ${object.DeclaredAttributes} )
     public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${attr.Name}", false);
@@ -77,7 +84,7 @@ public abstract class ${entityUtils.superClassName} extends ${entityUtils.baseCl
         
         return ${attr.Name};
     }
-#if ("true" != "${objEntity.isReadOnly()}")
+#if ("true" != "${object.isReadOnly()}")
     public void set${stringUtils.capitalized($attr.Name)}($importUtils.formatJavaType(${attr.Type}) $stringUtils.formatVariableName(${attr.Name})) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${attr.Name}", false);
@@ -98,9 +105,9 @@ public abstract class ${entityUtils.superClassName} extends ${entityUtils.baseCl
 ##
 ##
 ## Create list add/remove/get methods
-#foreach( $rel in ${objEntity.DeclaredRelationships} )
+#foreach( $rel in ${object.DeclaredRelationships} )
 #if( $rel.ToMany )
-    public ${rel.CollectionType} get${stringUtils.capitalized($rel.Name)}() {
+    public $importUtils.formatJavaType($rel.CollectionType) get${stringUtils.capitalized($rel.Name)}() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
         }
@@ -148,7 +155,7 @@ public abstract class ${entityUtils.superClassName} extends ${entityUtils.baseCl
         
         return ($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName})) ${rel.Name}.getValue();
     }
-#if ( !${objEntity.isReadOnly()} && !$rel.ReadOnly )
+#if ( !${object.isReadOnly()} && !$rel.ReadOnly )
     public void set${stringUtils.capitalized($rel.Name)}(${importUtils.formatJavaType($rel.TargetEntity.ClientClassName)} $stringUtils.formatVariableName(${rel.Name})) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
