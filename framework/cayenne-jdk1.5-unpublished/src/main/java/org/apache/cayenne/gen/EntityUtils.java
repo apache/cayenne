@@ -19,10 +19,8 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.MappingNamespace;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.map.*;
 
 /**
  * Attributes and Methods for working with ObjEntities.
@@ -260,5 +258,34 @@ public class EntityUtils {
         }
 
         return false;
+    }
+
+    /**
+     * Returns the map key type for a collection relationship of type java.util.Map.
+     *
+     * @param relationship The relationship to look up type information for.
+     *
+     * @return The type of the attribute keyed on.
+     */
+    public String getMapKeyType(final ObjRelationship relationship) {
+
+        // If the map key is null, then we're doing look-ups by actual object key.
+        if (relationship.getMapKey() == null) {
+
+            // If it's a multi-column key, then the return type is always ObjectId.
+            DbEntity dbEntity = objEntity.getDbEntity();
+            if ((dbEntity != null) && (dbEntity.getPrimaryKeys().size() > 1)) {
+                return ObjectId.class.getName();
+            }
+
+            // If it's a single column key or no key exists at all, then we really don't know what the key type is,
+            // so default to Object.
+            return Object.class.getName();
+        }
+
+        // If the map key is a non-default attribute, then fetch the attributue and return its type.
+        final ObjAttribute attribute = (ObjAttribute) objEntity.getAttribute(relationship.getMapKey());
+
+        return attribute.getType();
     }
 }
