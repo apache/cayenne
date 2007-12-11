@@ -132,16 +132,18 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
                 semantics += ", read-only";
             }
 
-            String collection = "list";
-            if (relationship.getCollectionType() != null) {
-                int dot = relationship.getCollectionType().lastIndexOf('.');
-                collection = relationship
-                        .getCollectionType()
-                        .substring(dot + 1)
-                        .toLowerCase();
-            }
+            if (relationship.isToMany()) {
+                String collection = "list";
+                if (relationship.getCollectionType() != null) {
+                    int dot = relationship.getCollectionType().lastIndexOf('.');
+                    collection = relationship
+                            .getCollectionType()
+                            .substring(dot + 1)
+                            .toLowerCase();
+                }
 
-            semantics += ", " + collection;
+                semantics += ", " + collection;
+            }
 
             return semantics;
         }
