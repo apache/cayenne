@@ -30,7 +30,7 @@
 ##    subClassName
 ##    subPackageName
 ##    baseClassName
-##    basePackageName 
+##    basePackageName
 ##
 ##
 ${importUtils.setPackage($superPackageName)}##
@@ -69,7 +69,11 @@ public abstract class ${superClassName} extends ${baseClassName} {
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
 #if( $rel.ToMany )
-    protected $importUtils.formatJavaType($rel.CollectionType) ${rel.Name};
+#if ( ${rel.CollectionType} == "java.util.Map")
+    protected $importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClientClassName)> ${rel.Name};
+#else
+    protected $importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClientClassName)> ${rel.Name};
+#end
 #else
     protected ValueHolder ${rel.Name};
 #end
@@ -81,7 +85,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${attr.Name}", false);
         }
-        
+
         return ${attr.Name};
     }
 #if ("true" != "${object.isReadOnly()}")
@@ -89,29 +93,33 @@ public abstract class ${superClassName} extends ${baseClassName} {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${attr.Name}", false);
         }
-        
+
         Object oldValue = this.${stringUtils.formatVariableName($attr.Name)};
         this.${stringUtils.formatVariableName($attr.Name)} = ${stringUtils.formatVariableName($attr.Name)};
-        
+
         // notify objectContext about simple property change
         if(objectContext != null) {
             objectContext.propertyChanged(this, "${attr.Name}", oldValue, ${stringUtils.formatVariableName($attr.Name)});
         }
     }
 #end
-    
-    
+
+
 #end
 ##
 ##
 ## Create list add/remove/get methods
 #foreach( $rel in ${object.DeclaredRelationships} )
 #if( $rel.ToMany )
-    public $importUtils.formatJavaType($rel.CollectionType) get${stringUtils.capitalized($rel.Name)}() {
+#if ( ${rel.CollectionType} == "java.util.Map")
+    public $importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClientClassName)> get${stringUtils.capitalized($rel.Name)}() {
+#else
+    public $importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClientClassName)> get${stringUtils.capitalized($rel.Name)}() {
+#end
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
         }
-        
+
         return ${rel.Name};
     }
 #if ( ! $rel.ReadOnly )
@@ -120,14 +128,14 @@ public abstract class ${superClassName} extends ${baseClassName} {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
         }
-        
+
         this.${rel.Name}.put(getMapKey("${rel.Name}", object), object);
     }
     public void removeFrom${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
         }
-        
+
         this.${rel.Name}.remove(getMapKey("${rel.Name}", object));
     }
 #else
@@ -135,14 +143,14 @@ public abstract class ${superClassName} extends ${baseClassName} {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
         }
-        
+
         this.${rel.Name}.add(object);
     }
     public void removeFrom${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
         }
-        
+
         this.${rel.Name}.remove(object);
     }
 #end
@@ -152,7 +160,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
         }
-        
+
         return ($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName})) ${rel.Name}.getValue();
     }
 #if ( !${object.isReadOnly()} && !$rel.ReadOnly )
@@ -160,11 +168,11 @@ public abstract class ${superClassName} extends ${baseClassName} {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
         }
-        
+
         this.${stringUtils.formatVariableName($rel.Name)}.setValue(${stringUtils.formatVariableName($rel.Name)});
     }
 #end
 #end
-    
+
 #end
 }
