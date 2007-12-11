@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EventListener;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ExpressionException;
@@ -34,6 +27,8 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import java.util.*;
 
 /**
  * Describes navigational association between two Java classes, represented as source and
@@ -746,7 +741,10 @@ public class ObjRelationship extends Relationship implements EventListener {
     /**
      * Returns a property name of a target entity used to create a relationship map. Only
      * has effect if collectionType property is set to "java.util.Map".
-     * 
+     *
+     * @return The attribute name used for the map key or <code>null</code> if the default (PK) is used
+     * as the map key.
+     *
      * @since 3.0
      */
     public String getMapKey() {
