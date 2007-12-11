@@ -19,6 +19,13 @@
 
 package org.apache.cayenne.map;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EventListener;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ExpressionException;
@@ -28,7 +35,6 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import java.util.*;
 
 /**
  * Describes navigational association between two Java classes, represented as source and

@@ -20,7 +20,13 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.MappingNamespace;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Relationship;
 
 /**
  * Attributes and Methods for working with ObjEntities.
