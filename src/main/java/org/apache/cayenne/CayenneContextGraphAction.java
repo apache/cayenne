@@ -35,12 +35,14 @@ import org.apache.cayenne.util.ObjectContextGraphAction;
  */
 class CayenneContextGraphAction extends ObjectContextGraphAction {
 
-    ThreadLocal<Boolean> arcChangeInProcess;
+    static final ThreadLocal<Boolean> arcChangeInProcess = new ThreadLocal<Boolean>() {
+        protected synchronized Boolean initialValue() {
+            return Boolean.FALSE;
+        }
+    };
 
     CayenneContextGraphAction(ObjectContext context) {
         super(context);
-        this.arcChangeInProcess = new ThreadLocal<Boolean>();
-        this.arcChangeInProcess.set(Boolean.FALSE);
     }
 
     protected void handleArcPropertyChange(
