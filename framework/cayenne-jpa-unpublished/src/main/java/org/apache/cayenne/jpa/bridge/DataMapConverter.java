@@ -27,9 +27,12 @@ import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
 import org.apache.cayenne.jpa.map.AccessType;
 import org.apache.cayenne.jpa.map.JpaAttribute;
+import org.apache.cayenne.jpa.map.JpaAttributeOverride;
 import org.apache.cayenne.jpa.map.JpaAttributes;
 import org.apache.cayenne.jpa.map.JpaBasic;
 import org.apache.cayenne.jpa.map.JpaColumn;
+import org.apache.cayenne.jpa.map.JpaEmbeddable;
+import org.apache.cayenne.jpa.map.JpaEmbedded;
 import org.apache.cayenne.jpa.map.JpaEntity;
 import org.apache.cayenne.jpa.map.JpaEntityListener;
 import org.apache.cayenne.jpa.map.JpaEntityListeners;
@@ -53,6 +56,9 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.EntityListener;
 import org.apache.cayenne.map.ObjAttribute;
@@ -147,6 +153,7 @@ public class DataMapConverter {
 
         BaseTreeVisitor visitor = new BaseTreeVisitor();
         visitor.addChildVisitor(JpaEntity.class, new JpaEntityVisitor());
+        visitor.addChildVisitor(JpaEmbeddable.class, new JpaEmbeddableVisitor());
         visitor.addChildVisitor(JpaNamedQuery.class, new JpaNamedQueryVisitor());
         visitor.addChildVisitor(JpaPersistenceUnitMetadata.class, metadataVisitor);
         return visitor;
@@ -192,6 +199,23 @@ public class DataMapConverter {
         return listener;
     }
 
+    Field lookupFieldInHierarchy(Class<?> beanClass, String fieldName)
+            throws SecurityException, NoSuchFieldException {
+
+        try {
+            return beanClass.getDeclaredField(fieldName);
+        }
+        catch (NoSuchFieldException e) {
+
+            Class<?> superClass = beanClass.getSuperclass();
+            if (superClass == null || superClass.getName().equals(Object.class.getName())) {
+                throw e;
+            }
+
+            return lookupFieldInHierarchy(superClass, fieldName);
+        }
+    }
+
     class JpaDefaultEntityListenerVisitor extends BaseTreeVisitor {
 
         @Override
@@ -217,6 +241,78 @@ public class DataMapConverter {
             entity.addEntityListener(listener);
 
             return false;
+        }
+    }
+
+    class JpaEmbeddedVisitor extends NestedVisitor {
+
+        @Override
+        Object createObject(ProjectPath path) {
+            JpaEmbedded jpaEmbedded = (JpaEmbedded) path.getObject();
+
+            ObjEntity parentCayenneEntity = (ObjEntity) targetPath.getObject();
+
+            EmbeddedAttribute embedded = new EmbeddedAttribute(jpaEmbedded.getName());
+            embedded.setType(jpaEmbedded.getPropertyDescriptor().getType().getName());
+
+            for (JpaAttributeOverride override : jpaEmbedded.getAttributeOverrides()) {
+                embedded.addAttributeOverride(override.getName(), override
+                        .getColumn()
+                        .getName());
+            }
+            parentCayenneEntity.addAttribute(embedded);
+
+            return embedded;
+        }
+    }
+
+    class JpaEmbeddedBasicVisitor extends NestedVisitor {
+
+        @Override
+        Object createObject(ProjectPath path) {
+            JpaBasic jpaBasic = (JpaBasic) path.getObject();
+
+            Embeddable embeddable = (Embeddable) targetPath.getObject();
+
+            EmbeddableAttribute attribute = new EmbeddableAttribute(jpaBasic.getName());
+            attribute.setType(getAttributeType(path, jpaBasic.getName()).getName());
+            attribute.setDbAttributeName(jpaBasic.getColumn().getName());
+
+            embeddable.addAttribute(attribute);
+            return attribute;
+        }
+
+        Class<?> getAttributeType(ProjectPath path, String name) {
+            AccessType access = null;
+
+            JpaManagedClass entity = path.firstInstanceOf(JpaManagedClass.class);
+            access = entity.getAccess();
+
+            if (access == null) {
+                JpaEntityMap map = path.firstInstanceOf(JpaEntityMap.class);
+                access = map.getAccess();
+            }
+
+            Class<?> objectClass = targetPath
+                    .firstInstanceOf(Embeddable.class)
+                    .getJavaClass();
+
+            try {
+                if (access == AccessType.FIELD) {
+                    return lookupFieldInHierarchy(objectClass, name).getType();
+                }
+                else {
+                    return new PropertyDescriptor(name, objectClass).getPropertyType();
+                }
+            }
+            catch (Exception e) {
+                throw new JpaProviderException("Error resolving attribute '"
+                        + name
+                        + "', access type:"
+                        + access
+                        + ", class: "
+                        + objectClass.getName(), e);
+            }
         }
     }
 
@@ -271,23 +367,6 @@ public class DataMapConverter {
             }
         }
 
-        Field lookupFieldInHierarchy(Class<?> beanClass, String fieldName)
-                throws SecurityException, NoSuchFieldException {
-
-            try {
-                return beanClass.getDeclaredField(fieldName);
-            }
-            catch (NoSuchFieldException e) {
-
-                Class<?> superClass = beanClass.getSuperclass();
-                if (superClass == null
-                        || superClass.getName().equals(Object.class.getName())) {
-                    throw e;
-                }
-
-                return lookupFieldInHierarchy(superClass, fieldName);
-            }
-        }
     }
 
     class JpaVersionVisitor extends JpaBasicVisitor {
@@ -313,6 +392,12 @@ public class DataMapConverter {
         @Override
         public boolean onStartNode(ProjectPath path) {
             JpaColumn jpaColumn = (JpaColumn) path.getObject();
+
+            // skip embeddable columns
+            if (path.firstInstanceOf(JpaEmbeddable.class) != null) {
+                return false;
+            }
+
             JpaAttribute attribute = (JpaAttribute) path.getObjectParent();
 
             DbAttribute dbAttribute = new DbAttribute(jpaColumn.getName());
@@ -464,6 +549,27 @@ public class DataMapConverter {
         }
     }
 
+    class JpaEmbeddableVisitor extends NestedVisitor {
+
+        JpaEmbeddableVisitor() {
+
+            BaseTreeVisitor attributeVisitor = new BaseTreeVisitor();
+
+            JpaEmbeddedBasicVisitor basicVisitor = new JpaEmbeddedBasicVisitor();
+            basicVisitor.addChildVisitor(JpaColumn.class, new JpaColumnVisitor());
+            attributeVisitor.addChildVisitor(JpaBasic.class, basicVisitor);
+            addChildVisitor(JpaAttributes.class, attributeVisitor);
+        }
+
+        @Override
+        Object createObject(ProjectPath path) {
+            JpaEmbeddable jpaEmbeddable = (JpaEmbeddable) path.getObject();
+            Embeddable embeddable = new Embeddable(jpaEmbeddable.getClassName());
+            ((DataMap) targetPath.getObject()).addEmbeddable(embeddable);
+            return embeddable;
+        }
+    }
+
     class JpaEntityVisitor extends NestedVisitor {
 
         JpaEntityVisitor() {
@@ -489,6 +595,9 @@ public class DataMapConverter {
             basicVisitor.addChildVisitor(JpaColumn.class, new JpaColumnVisitor());
             attributeVisitor.addChildVisitor(JpaBasic.class, basicVisitor);
 
+            JpaEmbeddedVisitor embeddedVisitor = new JpaEmbeddedVisitor();
+            attributeVisitor.addChildVisitor(JpaEmbedded.class, embeddedVisitor);
+
             JpaVersionVisitor versionVisitor = new JpaVersionVisitor();
             versionVisitor.addChildVisitor(JpaColumn.class, new JpaColumnVisitor());
             attributeVisitor.addChildVisitor(JpaVersion.class, versionVisitor);
@@ -497,7 +606,7 @@ public class DataMapConverter {
             idVisitor.addChildVisitor(JpaColumn.class, new JpaIdColumnVisitor());
             attributeVisitor.addChildVisitor(JpaId.class, idVisitor);
 
-            // TODO: andrus 8/6/2006 - handle Embedded, EmbeddedId, AttributeOverride
+            // TODO: andrus 8/6/2006 - handle EmbeddedId, AttributeOverride
 
             addChildVisitor(JpaAttributes.class, attributeVisitor);
             addChildVisitor(JpaTable.class, new JpaTableVisitor());
@@ -681,9 +790,10 @@ public class DataMapConverter {
                 try {
 
                     // query class is not enhanced, so use normal class loader
-                    Class<?> cayenneQueryClass = Class.forName(hint.getValue(), true, Thread
-                            .currentThread()
-                            .getContextClassLoader());
+                    Class<?> cayenneQueryClass = Class.forName(
+                            hint.getValue(),
+                            true,
+                            Thread.currentThread().getContextClassLoader());
 
                     if (!JpaIndirectQuery.class.isAssignableFrom(cayenneQueryClass)) {
                         recordConflict(path, "Unknown type for Cayenne query '"

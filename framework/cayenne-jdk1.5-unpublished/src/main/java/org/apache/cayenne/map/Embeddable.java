@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -48,6 +50,23 @@ public class Embeddable implements XMLSerializable, Serializable {
     public Embeddable(String className) {
         this.attributes = new TreeMap<String, EmbeddableAttribute>();
         this.className = className;
+    }
+
+    /**
+     * Returns Java class of the embeddable.
+     */
+    public Class<?> getJavaClass() {
+        String name = getClassName();
+
+        try {
+            return Util.getJavaClass(name);
+        }
+        catch (ClassNotFoundException e) {
+            throw new CayenneRuntimeException("Failed to load class "
+                    + name
+                    + ": "
+                    + e.getMessage(), e);
+        }
     }
 
     /**

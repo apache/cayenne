@@ -35,6 +35,7 @@ import org.apache.cayenne.jpa.map.JpaAttributes;
 import org.apache.cayenne.jpa.map.JpaBasic;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
 import org.apache.cayenne.jpa.map.JpaColumn;
+import org.apache.cayenne.jpa.map.JpaEmbeddable;
 import org.apache.cayenne.jpa.map.JpaEntity;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
 import org.apache.cayenne.jpa.map.JpaId;
@@ -193,6 +194,26 @@ public class EntityMapDefaultsProcessor {
         }
     }
 
+    class EmbeddableBasicVisitor extends BaseTreeVisitor {
+
+        EmbeddableBasicVisitor() {
+            addChildVisitor(JpaColumn.class, new ColumnVisitor());
+        }
+
+        @Override
+        public boolean onStartNode(ProjectPath path) {
+            JpaBasic jpaBasic = (JpaBasic) path.getObject();
+            if (jpaBasic.getColumn() == null) {
+                JpaColumn column = new JpaColumn(AnnotationPrototypes.getColumn());
+                column.setName(jpaBasic.getName());
+                column.setNullable(jpaBasic.isOptional());
+                jpaBasic.setColumn(column);
+            }
+
+            return true;
+        }
+    }
+
     class BasicVisitor extends BaseTreeVisitor {
 
         BasicVisitor() {
@@ -311,6 +332,7 @@ public class EntityMapDefaultsProcessor {
         EntityMapVisitor() {
             addChildVisitor(JpaEntity.class, new EntityVisitor());
             addChildVisitor(JpaMappedSuperclass.class, new MappedSuperclassVisitor());
+            addChildVisitor(JpaEmbeddable.class, new EmbeddableVisitor());
         }
 
         @Override
@@ -323,6 +345,15 @@ public class EntityMapDefaultsProcessor {
             entityMap.setAccess(AccessType.FIELD);
 
             return true;
+        }
+    }
+
+    final class EmbeddableVisitor extends BaseTreeVisitor {
+
+        EmbeddableVisitor() {
+            BaseTreeVisitor attributeVisitor = new BaseTreeVisitor();
+            attributeVisitor.addChildVisitor(JpaBasic.class, new EmbeddableBasicVisitor());
+            addChildVisitor(JpaAttributes.class, attributeVisitor);
         }
     }
 
