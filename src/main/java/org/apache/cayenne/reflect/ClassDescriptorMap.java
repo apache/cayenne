@@ -39,13 +39,13 @@ import org.apache.cayenne.map.EntityResolver;
 public class ClassDescriptorMap {
 
     protected EntityResolver resolver;
-    protected Map descriptors;
-    protected List factories;
+    protected Map<String, ClassDescriptor> descriptors;
+    protected List<ClassDescriptorFactory> factories;
 
     public ClassDescriptorMap(EntityResolver resolver) {
-        this.descriptors = new HashMap();
+        this.descriptors = new HashMap<String, ClassDescriptor>();
         this.resolver = resolver;
-        this.factories = new ArrayList();
+        this.factories = new ArrayList<ClassDescriptorFactory>();
     }
 
     public EntityResolver getResolver() {
@@ -95,7 +95,7 @@ public class ClassDescriptorMap {
             throw new NullPointerException("Null 'entityName'");
         }
 
-        ClassDescriptor cached = (ClassDescriptor) descriptors.get(entityName);
+        ClassDescriptor cached = descriptors.get(entityName);
         if (cached != null) {
             return cached;
         }
@@ -122,9 +122,10 @@ public class ClassDescriptorMap {
         // scan the factory chain until some factory returns a non-null descriptor;
         // scanning is done in reverse order so that the factories added last take higher
         // precedence...
-        ListIterator it = factories.listIterator(factories.size());
+        ListIterator<ClassDescriptorFactory> it = factories
+                .listIterator(factories.size());
         while (it.hasPrevious()) {
-            ClassDescriptorFactory factory = (ClassDescriptorFactory) it.previous();
+            ClassDescriptorFactory factory = it.previous();
             ClassDescriptor descriptor = factory.getDescriptor(entityName);
 
             if (descriptor != null) {

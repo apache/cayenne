@@ -52,8 +52,8 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
         this.faultFactory = faultFactory;
     }
 
-    protected ClassDescriptor getDescriptor(ObjEntity entity, Class entityClass) {
-        // check whether we are dealing with enhaced pojo
+    protected ClassDescriptor getDescriptor(ObjEntity entity, Class<?> entityClass) {
+        // check whether we are dealing with enhanced pojo
         try {
             Integer.TYPE.equals(entityClass
                     .getDeclaredField(PERSISTENCE_STATE_FIELD)

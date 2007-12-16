@@ -73,7 +73,10 @@ public class PropertyUtils {
                 if (value == null) {
                     // null value in the middle....
                     throw new UnresolvablePathException(
-                            "Null value in the middle of the path, failed on " + nestedPropertyName + " from " + object);
+                            "Null value in the middle of the path, failed on "
+                                    + nestedPropertyName
+                                    + " from "
+                                    + object);
                 }
 
                 value = getSimpleProperty(value, pathSegment);
@@ -155,12 +158,12 @@ public class PropertyUtils {
                         + "'");
             }
 
-            return reader.invoke(object, null);
+            return reader.invoke(object, (Object[]) null);
         }
         // note that Map has two traditional bean properties - 'empty' and 'class', so
         // do a check here only after descriptor lookup failed.
         else if (object instanceof Map) {
-            return ((Map) object).get(pathSegment);
+            return ((Map<?, ?>) object).get(pathSegment);
         }
         else {
             throw new IntrospectionException("No property '"
@@ -201,7 +204,7 @@ public class PropertyUtils {
         // note that Map has two traditional bean properties - 'empty' and 'class', so
         // do a check here only after descriptor lookup failed.
         else if (object instanceof Map) {
-            ((Map) object).put(pathSegment, value);
+            ((Map<Object, Object>) object).put(pathSegment, value);
         }
         else {
             throw new IntrospectionException("No property '"
@@ -211,8 +214,9 @@ public class PropertyUtils {
         }
     }
 
-    static PropertyDescriptor getPropertyDescriptor(Class beanClass, String propertyName)
-            throws IntrospectionException {
+    static PropertyDescriptor getPropertyDescriptor(
+            Class<?> beanClass,
+            String propertyName) throws IntrospectionException {
         // bean info is cached by introspector, so this should have reasonable
         // performance...
         BeanInfo info = Introspector.getBeanInfo(beanClass);
@@ -230,7 +234,7 @@ public class PropertyUtils {
     /**
      * "Normalizes" passed type, converting primitive types to their object counterparts.
      */
-    static Class normalizeType(Class type) {
+    static Class<?> normalizeType(Class<?> type) {
         if (type.isPrimitive()) {
 
             String className = type.getName();
@@ -264,7 +268,7 @@ public class PropertyUtils {
      * Returns default value that should be used for nulls. For non-primitive types, null
      * is returned. For primitive types a default such as zero or false is returned.
      */
-    static Object defaultNullValueForType(Class type) {
+    static Object defaultNullValueForType(Class<?> type) {
         if (type.isPrimitive()) {
 
             String className = type.getName();
