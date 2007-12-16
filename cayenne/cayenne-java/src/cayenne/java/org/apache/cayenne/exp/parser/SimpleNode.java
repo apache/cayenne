@@ -261,7 +261,9 @@ public abstract class SimpleNode extends Expression implements Node {
     protected void connectChildren() {
         if (children != null) {
             for (int i = 0; i < children.length; i++) {
-                children[i].jjtSetParent(this);
+                if (children[i] != null) {
+                    children[i].jjtSetParent(this);
+                }
             }
         }
     }

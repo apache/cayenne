@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.cayenne.unit.CayenneTestCase;
 
 public class ExpressionFactoryTst extends CayenneTestCase {
+
     // non-existent type
     private static final int badType = -50;
 
@@ -34,7 +35,7 @@ public class ExpressionFactoryTst extends CayenneTestCase {
             fail();
         }
         catch (ExpressionException ex) {
-            // exception expected   
+            // exception expected
         }
     }
 
@@ -77,7 +78,9 @@ public class ExpressionFactoryTst extends CayenneTestCase {
     }
 
     public void testInExp1() throws Exception {
-        Object[] v = new Object[] { "a", "b" };
+        Object[] v = new Object[] {
+                "a", "b"
+        };
         Expression exp = ExpressionFactory.inExp("abc", v);
         assertEquals(Expression.IN, exp.getType());
     }
@@ -105,4 +108,15 @@ public class ExpressionFactoryTst extends CayenneTestCase {
         Expression exp = ExpressionFactory.notLikeIgnoreCaseExp("abc", v);
         assertEquals(Expression.NOT_LIKE_IGNORE_CASE, exp.getType());
     }
+
+    // testing CAY-941 bug
+    public void testLikeExpNull() throws Exception {
+        Expression exp = ExpressionFactory.likeExp("abc", null);
+        assertEquals(Expression.LIKE, exp.getType());
+
+        Expression path = (Expression) exp.getOperand(0);
+        assertEquals(Expression.OBJ_PATH, path.getType());
+        assertNull(exp.getOperand(1));
+    }
+
 }
