@@ -26,7 +26,7 @@ public class _2_1_5_EmbeddableTest extends EntityManagerCase {
 
     public void testEmbeddable() throws Exception {
         getDbHelper().deleteAll("EmbeddedEntity");
-        
+
         EmbeddedEntity o1 = new EmbeddedEntity();
         Embeddable1 o2 = new Embeddable1();
         o2.setProperty1("p1");
@@ -35,7 +35,6 @@ public class _2_1_5_EmbeddableTest extends EntityManagerCase {
         getEntityManager().persist(o1);
         getEntityManager().getTransaction().commit();
 
-        // TODO: andrus 8/10/2006 - fails
-        // assertEquals("p1", ItestDBUtils.getSingleValue("EmbeddedEntity", "property1"));
+        // assertEquals("p1", getDbHelper().getObject("EmbeddedEntity", "property1"));
     }
 }

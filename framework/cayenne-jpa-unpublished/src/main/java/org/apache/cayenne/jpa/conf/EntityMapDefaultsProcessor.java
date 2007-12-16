@@ -277,14 +277,14 @@ public class EntityMapDefaultsProcessor {
         public boolean onStartNode(ProjectPath path) {
             JpaColumn column = (JpaColumn) path.getObject();
 
-            JpaAttribute parent = (JpaAttribute) path.firstInstanceOf(JpaAttribute.class);
+            JpaAttribute parent = path.firstInstanceOf(JpaAttribute.class);
 
             if (column.getName() == null) {
                 column.setName(parent.getName());
             }
 
             if (column.getTable() == null) {
-                JpaEntity entity = (JpaEntity) path.firstInstanceOf(JpaEntity.class);
+                JpaEntity entity = path.firstInstanceOf(JpaEntity.class);
 
                 // parent can be a mapped superclass
                 if (entity != null) {
@@ -362,7 +362,7 @@ public class EntityMapDefaultsProcessor {
             JpaJoinColumn column = (JpaJoinColumn) path.getObject();
 
             if (column.getTable() == null) {
-                JpaEntity entity = (JpaEntity) path.firstInstanceOf(JpaEntity.class);
+                JpaEntity entity = path.firstInstanceOf(JpaEntity.class);
                 column.setTable(entity.getTable().getName());
             }
 
@@ -374,7 +374,7 @@ public class EntityMapDefaultsProcessor {
             // the primary key column in table B. The foreign key column has the
             // same type as the primary key of table B.
 
-            JpaEntityMap map = (JpaEntityMap) path.firstInstanceOf(JpaEntityMap.class);
+            JpaEntityMap map = path.firstInstanceOf(JpaEntityMap.class);
             JpaEntity target = map.entityForClass(relationship.getTargetEntityName());
 
             if (target == null) {
@@ -480,7 +480,7 @@ public class EntityMapDefaultsProcessor {
                 JpaClassDescriptor srcDescriptor = relationshipOwner.getClassDescriptor();
                 JpaPropertyDescriptor property = srcDescriptor.getProperty(name);
 
-                Class targetEntityType = property.getTargetEntityType();
+                Class<?> targetEntityType = property.getTargetEntityType();
 
                 if (targetEntityType == null) {
                     context.recordConflict(new SimpleValidationFailure(property

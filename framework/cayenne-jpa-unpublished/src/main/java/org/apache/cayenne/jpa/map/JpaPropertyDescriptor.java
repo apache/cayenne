@@ -39,9 +39,9 @@ public class JpaPropertyDescriptor {
 
     protected AnnotatedElement member;
     protected String name;
-    protected Class type;
+    protected Class<?> type;
     protected Type genericType;
-    protected Class targetEntityType;
+    protected Class<?> targetEntityType;
 
     public JpaPropertyDescriptor(Field field) {
         this.member = field;
@@ -73,7 +73,7 @@ public class JpaPropertyDescriptor {
                 Type[] types = pType.getActualTypeArguments();
 
                 if (types.length == 1 && types[0] instanceof Class) {
-                    this.targetEntityType = (Class) types[0];
+                    this.targetEntityType = (Class<?>) types[0];
                     return;
                 }
             }
@@ -85,7 +85,7 @@ public class JpaPropertyDescriptor {
                 Type[] types = pType.getActualTypeArguments();
 
                 if (types.length == 2 && types[1] instanceof Class) {
-                    this.targetEntityType = (Class) types[1];
+                    this.targetEntityType = (Class<?>) types[1];
                     return;
                 }
             }
@@ -103,11 +103,11 @@ public class JpaPropertyDescriptor {
         return name;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
-    public Class getTargetEntityType() {
+    public Class<?> getTargetEntityType() {
         return Void.TYPE.equals(targetEntityType) ? null : targetEntityType;
     }
 
@@ -130,7 +130,7 @@ public class JpaPropertyDescriptor {
         return isDefaultNonRelationalType(getTargetEntityType());
     }
 
-    boolean isDefaultNonRelationalType(Class type) {
+    boolean isDefaultNonRelationalType(Class<?> type) {
 
         if (type.isPrimitive() || type.isEnum()) {
             return true;

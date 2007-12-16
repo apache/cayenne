@@ -39,9 +39,9 @@ public class ProcedureErrorMsg extends ValidationDisplayHandler {
 
     public void displayField(ProjectController mediator, JFrame frame) {
 		ProjectPath path = super.validationInfo.getPath();
-		DataDomain domain = (DataDomain)path.firstInstanceOf(DataDomain.class);
-		DataMap map = (DataMap)path.firstInstanceOf(DataMap.class);
-		Procedure procedure = (Procedure)path.firstInstanceOf(Procedure.class);
+		DataDomain domain = path.firstInstanceOf(DataDomain.class);
+		DataMap map = path.firstInstanceOf(DataMap.class);
+		Procedure procedure = path.firstInstanceOf(Procedure.class);
 	
         ProcedureDisplayEvent event =
             new ProcedureDisplayEvent(frame, procedure, map, domain);

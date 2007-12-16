@@ -104,11 +104,8 @@ public class DataMapConverter {
 
         // connect relationships paired via "mappedBy"; if any other reverse relationships
         // are missing, Cayenne runtime downstream should take care of it
-        Iterator entities = dataMap.getDbEntities().iterator();
-        while (entities.hasNext()) {
-
-            DbEntity entity = (DbEntity) entities.next();
-            Iterator it = entity.getRelationships().iterator();
+        for (DbEntity entity : dataMap.getDbEntities()) {
+            Iterator<?> it = entity.getRelationships().iterator();
             while (it.hasNext()) {
                 JpaDbRelationship relationship = (JpaDbRelationship) it.next();
                 if (relationship.getMappedBy() != null) {
@@ -117,9 +114,7 @@ public class DataMapConverter {
                             .getRelationship(relationship.getMappedBy());
 
                     if (owner != null) {
-                        Iterator joins = owner.getJoins().iterator();
-                        while (joins.hasNext()) {
-                            DbJoin join = (DbJoin) joins.next();
+                        for (DbJoin join : owner.getJoins()) {
                             DbJoin reverse = join.createReverseJoin();
                             reverse.setRelationship(relationship);
                             relationship.addJoin(reverse);
@@ -216,7 +211,7 @@ public class DataMapConverter {
         @Override
         public boolean onStartNode(ProjectPath path) {
             JpaEntityListener jpaListener = (JpaEntityListener) path.getObject();
-            
+
             EntityListener listener = makeEntityListener(jpaListener);
             ObjEntity entity = (ObjEntity) targetPath.firstInstanceOf(ObjEntity.class);
             entity.addEntityListener(listener);
@@ -243,20 +238,19 @@ public class DataMapConverter {
             return cayenneAttribute;
         }
 
-        Class getAttributeType(ProjectPath path, String name) {
+        Class<?> getAttributeType(ProjectPath path, String name) {
             AccessType access = null;
 
-            JpaManagedClass entity = (JpaManagedClass) path
-                    .firstInstanceOf(JpaManagedClass.class);
+            JpaManagedClass entity = path.firstInstanceOf(JpaManagedClass.class);
             access = entity.getAccess();
 
             if (access == null) {
-                JpaEntityMap map = (JpaEntityMap) path
-                        .firstInstanceOf(JpaEntityMap.class);
+                JpaEntityMap map = path.firstInstanceOf(JpaEntityMap.class);
                 access = map.getAccess();
             }
 
-            Class objectClass = ((ObjEntity) targetPath.firstInstanceOf(ObjEntity.class))
+            Class<?> objectClass = targetPath
+                    .firstInstanceOf(ObjEntity.class)
                     .getJavaClass();
 
             try {
@@ -277,7 +271,7 @@ public class DataMapConverter {
             }
         }
 
-        Field lookupFieldInHierarchy(Class beanClass, String fieldName)
+        Field lookupFieldInHierarchy(Class<?> beanClass, String fieldName)
                 throws SecurityException, NoSuchFieldException {
 
             try {
@@ -285,7 +279,7 @@ public class DataMapConverter {
             }
             catch (NoSuchFieldException e) {
 
-                Class superClass = beanClass.getSuperclass();
+                Class<?> superClass = beanClass.getSuperclass();
                 if (superClass == null
                         || superClass.getName().equals(Object.class.getName())) {
                     throw e;
@@ -350,8 +344,8 @@ public class DataMapConverter {
                         + jpaColumn.getName());
             }
 
-            DbEntity entity = ((DataMap) targetPath.firstInstanceOf(DataMap.class))
-                    .getDbEntity(jpaColumn.getTable());
+            DbEntity entity = targetPath.firstInstanceOf(DataMap.class).getDbEntity(
+                    jpaColumn.getTable());
 
             if (entity == null) {
                 throw new JpaProviderException("No DbEntity defined for table  "
@@ -390,7 +384,7 @@ public class DataMapConverter {
 
             DbAttribute dbAttribute = new DbAttribute(jpaColumn.getName());
 
-            JpaId jpaId = (JpaId) path.firstInstanceOf(JpaId.class);
+            JpaId jpaId = path.firstInstanceOf(JpaId.class);
 
             dbAttribute.setType(jpaId.getDefaultJdbcType());
 
@@ -413,8 +407,8 @@ public class DataMapConverter {
                 return false;
             }
 
-            DbEntity entity = ((DataMap) targetPath.firstInstanceOf(DataMap.class))
-                    .getDbEntity(jpaColumn.getTable());
+            DbEntity entity = targetPath.firstInstanceOf(DataMap.class).getDbEntity(
+                    jpaColumn.getTable());
 
             if (entity == null) {
                 recordConflict(path, "Invalid table definition for JpaColumn: "
@@ -586,7 +580,8 @@ public class DataMapConverter {
 
                 objRelationship.setCollectionType(jpaRelationship
                         .getPropertyDescriptor()
-                        .getType().getName());
+                        .getType()
+                        .getName());
             }
             return relationship;
         }
@@ -686,7 +681,7 @@ public class DataMapConverter {
                 try {
 
                     // query class is not enhanced, so use normal class loader
-                    Class cayenneQueryClass = Class.forName(hint.getValue(), true, Thread
+                    Class<?> cayenneQueryClass = Class.forName(hint.getValue(), true, Thread
                             .currentThread()
                             .getContextClassLoader());
 

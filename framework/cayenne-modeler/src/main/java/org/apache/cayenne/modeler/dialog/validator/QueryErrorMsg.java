@@ -41,9 +41,9 @@ public class QueryErrorMsg extends ValidationDisplayHandler {
 
     public void displayField(ProjectController mediator, JFrame frame) {
         ProjectPath path = super.validationInfo.getPath();
-        DataDomain domain = (DataDomain) path.firstInstanceOf(DataDomain.class);
-        DataMap map = (DataMap) path.firstInstanceOf(DataMap.class);
-        Query query = (Query) path.firstInstanceOf(Query.class);
+        DataDomain domain = path.firstInstanceOf(DataDomain.class);
+        DataMap map = path.firstInstanceOf(DataMap.class);
+        Query query = path.firstInstanceOf(Query.class);
 
         QueryDisplayEvent event = new QueryDisplayEvent(frame, query, map, domain);
         mediator.fireQueryDisplayEvent(event);

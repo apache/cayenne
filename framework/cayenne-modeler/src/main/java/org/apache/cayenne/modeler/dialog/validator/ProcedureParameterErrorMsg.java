@@ -42,25 +42,27 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
 
     public void displayField(ProjectController mediator, JFrame frame) {
         ProjectPath path = super.validationInfo.getPath();
-        DataDomain domain = (DataDomain) path.firstInstanceOf(DataDomain.class);
-        DataMap map = (DataMap) path.firstInstanceOf(DataMap.class);
-        Procedure procedure = (Procedure) path.firstInstanceOf(Procedure.class);
-        ProcedureParameter procedureParameter =
-            (ProcedureParameter) path.firstInstanceOf(ProcedureParameter.class);
+        DataDomain domain = path.firstInstanceOf(DataDomain.class);
+        DataMap map = path.firstInstanceOf(DataMap.class);
+        Procedure procedure = path.firstInstanceOf(Procedure.class);
+        ProcedureParameter procedureParameter = path
+                .firstInstanceOf(ProcedureParameter.class);
 
         // Race condition between the two events...?
-        
+
         // first display the stored procedure
         // for whatever reason, other validators do not require this step
         // (E.g. DbAttributeErrorMsg)
-        ProcedureDisplayEvent procedureEvent =
-            new ProcedureDisplayEvent(frame, procedure, map, domain);
+        ProcedureDisplayEvent procedureEvent = new ProcedureDisplayEvent(
+                frame,
+                procedure,
+                map,
+                domain);
         procedureEvent.setTabReset(true);
         mediator.fireProcedureDisplayEvent(procedureEvent);
 
         // now show the failed parameter
-        ProcedureParameterDisplayEvent event =
-            new ProcedureParameterDisplayEvent(
+        ProcedureParameterDisplayEvent event = new ProcedureParameterDisplayEvent(
                 frame,
                 procedureParameter,
                 procedure,
