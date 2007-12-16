@@ -72,11 +72,10 @@ import org.objectstyle.cayenne.property.SingleObjectArcProperty;
 class CayenneContextGraphAction {
 
     CayenneContext context;
-    ThreadLocal arcChangeInProcess;
+    static final ThreadLocal arcChangeInProcess = new ThreadLocal();
 
     CayenneContextGraphAction(CayenneContext context) {
         this.context = context;
-        this.arcChangeInProcess = new ThreadLocal();
     }
 
     /**
