@@ -21,7 +21,6 @@ package org.apache.cayenne.exp;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +61,7 @@ import org.apache.cayenne.exp.parser.SimpleNode;
  */
 public class ExpressionFactory {
 
-    private static Class[] typeLookup;
+    private static Class<?>[] typeLookup;
 
     static {
         // make sure all types are small integers, then we can use
@@ -128,7 +127,7 @@ public class ExpressionFactory {
         typeLookup[Expression.OBJ_PATH] = ASTObjPath.class;
         typeLookup[Expression.DB_PATH] = ASTDbPath.class;
         typeLookup[Expression.LIST] = ASTList.class;
-        
+
         typeLookup[Expression.TRUE] = ASTTrue.class;
         typeLookup[Expression.FALSE] = ASTFalse.class;
     }
@@ -165,7 +164,7 @@ public class ExpressionFactory {
      */
     protected static Object wrapPathOperand(Object op) {
         if (op instanceof Collection) {
-            return new ASTList((Collection) op);
+            return new ASTList((Collection<?>) op);
         }
         else if (op instanceof Object[]) {
             return new ASTList((Object[]) op);
@@ -179,16 +178,13 @@ public class ExpressionFactory {
      * Creates an expression that matches any of the key-values pairs in <code>map</code>.
      * <p>
      * For each pair <code>pairType</code> operator is used to build a binary
-     * expression. Key is considered to be a DB_PATH expression. Therefore all keys must
-     * be java.lang.String objects, or ClassCastException is thrown. OR is used to join
-     * pair binary expressions.
+     * expression. Key is considered to be a DB_PATH expression. OR is used to join pair
+     * binary expressions.
      */
-    public static Expression matchAnyDbExp(Map map, int pairType) {
-        List pairs = new ArrayList();
+    public static Expression matchAnyDbExp(Map<String, ?> map, int pairType) {
+        List<Expression> pairs = new ArrayList<Expression>(map.size());
 
-        Iterator it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
             Expression exp = expressionOfType(pairType);
             exp.setOperand(0, new ASTDbPath(entry.getKey()));
             exp.setOperand(1, wrapPathOperand(entry.getValue()));
@@ -202,17 +198,13 @@ public class ExpressionFactory {
      * Creates an expression that matches all key-values pairs in <code>map</code>.
      * <p>
      * For each pair <code>pairType</code> operator is used to build a binary
-     * expression. Key is considered to be a DB_PATH expression. Therefore all keys must
-     * be java.lang.String objects, or ClassCastException is thrown. AND is used to join
-     * pair binary expressions.
+     * expression. Key is considered to be a DB_PATH expression. AND is used to join pair
+     * binary expressions.
      */
-    public static Expression matchAllDbExp(Map map, int pairType) {
-        List pairs = new ArrayList();
+    public static Expression matchAllDbExp(Map<String, ?> map, int pairType) {
+        List<Expression> pairs = new ArrayList<Expression>(map.size());
 
-        Iterator it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
             Expression exp = expressionOfType(pairType);
             exp.setOperand(0, new ASTDbPath(entry.getKey()));
             exp.setOperand(1, wrapPathOperand(entry.getValue()));
@@ -227,16 +219,13 @@ public class ExpressionFactory {
      * <code>map</code>.
      * <p>
      * For each pair <code>pairType</code> operator is used to build a binary
-     * expression. Key is considered to be a OBJ_PATH expression. Therefore all keys must
-     * be java.lang.String objects, or ClassCastException is thrown. OR is used to join
-     * pair binary expressions.
+     * expression. Key is considered to be a OBJ_PATH expression. OR is used to join pair
+     * binary expressions.
      */
-    public static Expression matchAnyExp(Map map, int pairType) {
-        List pairs = new ArrayList();
+    public static Expression matchAnyExp(Map<String, ?> map, int pairType) {
+        List<Expression> pairs = new ArrayList<Expression>(map.size());
 
-        Iterator it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
 
             Expression exp = expressionOfType(pairType);
             exp.setOperand(0, new ASTObjPath(entry.getKey()));
@@ -251,16 +240,13 @@ public class ExpressionFactory {
      * Creates an expression that matches all key-values pairs in <code>map</code>.
      * <p>
      * For each pair <code>pairType</code> operator is used to build a binary
-     * expression. Key is considered to be a OBJ_PATH expression. Therefore all keys must
-     * be java.lang.String objects, or ClassCastException is thrown. AND is used to join
-     * pair binary expressions.
+     * expression. Key is considered to be a OBJ_PATH expression. AND is used to join pair
+     * binary expressions.
      */
-    public static Expression matchAllExp(Map map, int pairType) {
-        List pairs = new ArrayList();
+    public static Expression matchAllExp(Map<String, ?> map, int pairType) {
+        List<Expression> pairs = new ArrayList<Expression>(map.size());
 
-        Iterator it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
 
             Expression exp = expressionOfType(pairType);
             exp.setOperand(0, new ASTObjPath(entry.getKey()));
@@ -305,7 +291,7 @@ public class ExpressionFactory {
     public static Expression lessExp(String pathSpec, Object value) {
         return new ASTLess(new ASTObjPath(pathSpec), value);
     }
-    
+
     /**
      * A convenience method to create an DB_PATH "less than" expression.
      * 
@@ -321,7 +307,7 @@ public class ExpressionFactory {
     public static Expression lessOrEqualExp(String pathSpec, Object value) {
         return new ASTLessOrEqual(new ASTObjPath(pathSpec), value);
     }
-    
+
     /**
      * A convenience method to create an DB_PATH "less than or equal to" expression.
      * 
@@ -337,7 +323,7 @@ public class ExpressionFactory {
     public static Expression greaterExp(String pathSpec, Object value) {
         return new ASTGreater(new ASTObjPath(pathSpec), value);
     }
-    
+
     /**
      * A convenience method to create an DB_PATH "greater than" expression.
      * 
@@ -353,7 +339,7 @@ public class ExpressionFactory {
     public static Expression greaterOrEqualExp(String pathSpec, Object value) {
         return new ASTGreaterOrEqual(new ASTObjPath(pathSpec), value);
     }
-    
+
     /**
      * A convenience method to create an DB_PATH "greater than or equal to" expression.
      * 
@@ -367,7 +353,7 @@ public class ExpressionFactory {
      * A convenience shortcut for building IN expression. Return ASTFalse for empty
      * collection.
      */
-    public static Expression inExp(String pathSpec, Object[] values) {
+    public static Expression inExp(String pathSpec, Object... values) {
         if (values.length == 0) {
             return new ASTFalse();
         }
@@ -378,7 +364,7 @@ public class ExpressionFactory {
      * A convenience shortcut for building IN DB expression. Return ASTFalse for empty
      * collection.
      */
-    public static Expression inDbExp(String pathSpec, Object[] values) {
+    public static Expression inDbExp(String pathSpec, Object... values) {
         if (values.length == 0) {
             return new ASTFalse();
         }
@@ -389,7 +375,7 @@ public class ExpressionFactory {
      * A convenience shortcut for building IN expression. Return ASTFalse for empty
      * collection.
      */
-    public static Expression inExp(String pathSpec, Collection values) {
+    public static Expression inExp(String pathSpec, Collection<?> values) {
         if (values.isEmpty()) {
             return new ASTFalse();
         }
@@ -400,7 +386,7 @@ public class ExpressionFactory {
      * A convenience shortcut for building IN DB expression. Return ASTFalse for empty
      * collection.
      */
-    public static Expression inDbExp(String pathSpec, Collection values) {
+    public static Expression inDbExp(String pathSpec, Collection<?> values) {
         if (values.isEmpty()) {
             return new ASTFalse();
         }
@@ -411,26 +397,25 @@ public class ExpressionFactory {
      * A convenience shortcut for building NOT_IN expression. Return ASTTrue for empty
      * collection.
      */
-    public static Expression notInExp(String pathSpec, Collection values) {
+    public static Expression notInExp(String pathSpec, Collection<?> values) {
         if (values.isEmpty()) {
             return new ASTTrue();
         }
         return new ASTNotIn(new ASTObjPath(pathSpec), new ASTList(values));
     }
-    
+
     /**
      * A convenience shortcut for building NOT_IN expression. Return ASTTrue for empty
      * collection.
      * 
      * @since 3.0
      */
-    public static Expression notInDbExp(String pathSpec, Collection values) {
+    public static Expression notInDbExp(String pathSpec, Collection<?> values) {
         if (values.isEmpty()) {
             return new ASTTrue();
         }
         return new ASTNotIn(new ASTDbPath(pathSpec), new ASTList(values));
     }
-
 
     /**
      * A convenience shortcut for building NOT_IN expression. Return ASTTrue for empty
@@ -438,20 +423,20 @@ public class ExpressionFactory {
      * 
      * @since 1.0.6
      */
-    public static Expression notInExp(String pathSpec, Object[] values) {
+    public static Expression notInExp(String pathSpec, Object... values) {
         if (values.length == 0) {
             return new ASTTrue();
         }
         return new ASTNotIn(new ASTObjPath(pathSpec), new ASTList(values));
     }
-    
+
     /**
      * A convenience shortcut for building NOT_IN expression. Return ASTTrue for empty
      * collection.
      * 
      * @since 3.0
      */
-    public static Expression notInDbExp(String pathSpec, Object[] values) {
+    public static Expression notInDbExp(String pathSpec, Object... values) {
         if (values.length == 0) {
             return new ASTTrue();
         }
@@ -464,7 +449,7 @@ public class ExpressionFactory {
     public static Expression betweenExp(String pathSpec, Object value1, Object value2) {
         return new ASTBetween(new ASTObjPath(pathSpec), value1, value2);
     }
-    
+
     /**
      * A convenience shortcut for building BETWEEN expressions.
      * 
@@ -480,7 +465,7 @@ public class ExpressionFactory {
     public static Expression notBetweenExp(String pathSpec, Object value1, Object value2) {
         return new ASTNotBetween(new ASTObjPath(pathSpec), value1, value2);
     }
-    
+
     /**
      * A convenience shortcut for building NOT_BETWEEN expressions.
      * 
@@ -496,7 +481,7 @@ public class ExpressionFactory {
     public static Expression likeExp(String pathSpec, Object value) {
         return new ASTLike(new ASTObjPath(pathSpec), value);
     }
-    
+
     /**
      * A convenience shortcut for building LIKE DB_PATH expression.
      * 
@@ -512,7 +497,7 @@ public class ExpressionFactory {
     public static Expression notLikeExp(String pathSpec, Object value) {
         return new ASTNotLike(new ASTObjPath(pathSpec), value);
     }
-    
+
     /**
      * A convenience shortcut for building NOT_LIKE expression.
      * 
@@ -528,7 +513,7 @@ public class ExpressionFactory {
     public static Expression likeIgnoreCaseExp(String pathSpec, Object value) {
         return new ASTLikeIgnoreCase(new ASTObjPath(pathSpec), value);
     }
-    
+
     /**
      * A convenience shortcut for building LIKE_IGNORE_CASE expression.
      * 
@@ -544,7 +529,7 @@ public class ExpressionFactory {
     public static Expression notLikeIgnoreCaseExp(String pathSpec, Object value) {
         return new ASTNotLikeIgnoreCase(new ASTObjPath(pathSpec), value);
     }
-    
+
     /**
      * A convenience shortcut for building NOT_LIKE_IGNORE_CASE expression.
      * 
@@ -582,12 +567,12 @@ public class ExpressionFactory {
      * any of the expressions.
      * </p>
      */
-    public static Expression joinExp(int type, List expressions) {
+    public static Expression joinExp(int type, List<Expression> expressions) {
         int len = expressions.size();
         if (len == 0)
             return null;
 
-        Expression currentExp = (Expression) expressions.get(0);
+        Expression currentExp = expressions.get(0);
         if (len == 1) {
             return currentExp;
         }

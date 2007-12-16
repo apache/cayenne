@@ -34,6 +34,7 @@ import org.apache.cayenne.map.Entity;
  * @author Andrus Adamchik
  */
 public class ASTDbPath extends ASTPath {
+
     ASTDbPath(int id) {
         super(id);
     }
@@ -54,13 +55,13 @@ public class ASTDbPath extends ASTPath {
             return evaluateEntityNode((Entity) o);
         }
 
-        Map map = toMap(o);
+        Map<?, ?> map = toMap(o);
         return (map != null) ? map.get(path) : null;
     }
 
-    protected Map toMap(Object o) {
+    protected Map<?, ?> toMap(Object o) {
         if (o instanceof Map) {
-            return (Map) o;
+            return (Map<?, ?>) o;
         }
         else if (o instanceof ObjectId) {
             return ((ObjectId) o).getIdSnapshot();

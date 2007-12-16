@@ -40,7 +40,7 @@ class QueryMetadataWrapper implements QueryMetadata {
     static final String CACHE_KEY_PROPERTY = "QueryMetadataWrapper.CacheKey";
 
     QueryMetadata info;
-    Map overrides;
+    Map<String, Object> overrides;
 
     public QueryMetadataWrapper(QueryMetadata info) {
         this.info = info;
@@ -52,7 +52,7 @@ class QueryMetadataWrapper implements QueryMetadata {
      */
     void override(String key, Object value) {
         if (overrides == null) {
-            overrides = new HashMap();
+            overrides = new HashMap<String, Object>();
         }
 
         overrides.put(key, value);

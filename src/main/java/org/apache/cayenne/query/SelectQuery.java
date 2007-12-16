@@ -190,7 +190,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public void initWithProperties(Map<String,?> properties) {
+    public void initWithProperties(Map<String, ?> properties) {
 
         // must init defaults even if properties are empty
         if (properties == null) {
@@ -282,7 +282,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * A shortcut for {@link #queryWithParameters(Map, boolean)}that prunes parts of
      * qualifier that have no parameter value set.
      */
-    public SelectQuery queryWithParameters(Map<String,?> parameters) {
+    public SelectQuery queryWithParameters(Map<String, ?> parameters) {
         return queryWithParameters(parameters, true);
     }
 
@@ -293,7 +293,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @see org.apache.cayenne.exp.Expression#expWithParameters(java.util.Map, boolean)
      *      parameter substitution.
      */
-    public SelectQuery queryWithParameters(Map<?,?> parameters, boolean pruneMissing) {
+    public SelectQuery queryWithParameters(Map<String, ?> parameters, boolean pruneMissing) {
         // create a query replica
         SelectQuery query = new SelectQuery();
         query.setDistinct(distinct);
@@ -338,7 +338,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public Query createQuery(Map<String,?> parameters) {
+    public Query createQuery(Map<String, ?> parameters) {
         return queryWithParameters(parameters);
     }
 
@@ -551,8 +551,8 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * @since 3.0
      */
-    public void setCacheGroups(String[] cachGroups) {
-        this.selectInfo.setCacheGroups(cachGroups);
+    public void setCacheGroups(String... cacheGroups) {
+        this.selectInfo.setCacheGroups(cacheGroups);
     }
 
     /**

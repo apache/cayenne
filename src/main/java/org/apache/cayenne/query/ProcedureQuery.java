@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.QueryBuilder;
@@ -68,9 +67,9 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     /**
      * @since 1.2
      */
-    protected Class resultClass;
+    protected Class<?> resultClass;
 
-    protected Map parameters = new HashMap();
+    protected Map<String, Object> parameters = new HashMap<String, Object>();
 
     ProcedureQueryMetadata metaData = new ProcedureQueryMetadata();
 
@@ -79,7 +78,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     /**
      * @since 1.2
      */
-    protected List resultDescriptors;
+    protected List<ColumnDescriptor[]> resultDescriptors;
 
     /**
      * Creates an empty procedure query.
@@ -156,8 +155,8 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     }
 
     /**
-     * Returns a List of #{@link RowDescriptor} objects describing query ResultSets in
-     * the order they are returned by the stored procedure.
+     * Returns a List of descriptors for query ResultSets in the order they are returned
+     * by the stored procedure.
      * <p>
      * <i>Note that if a procedure returns ResultSet in an OUT parameter, it is returned
      * prior to any other result sets (though in practice database engines usually support
@@ -166,7 +165,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.2
      */
-    public List getResultDescriptors() {
+    public List<ColumnDescriptor[]> getResultDescriptors() {
         return resultDescriptors != null ? resultDescriptors : Collections.EMPTY_LIST;
     }
 
@@ -179,7 +178,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      */
     public synchronized void addResultDescriptor(ColumnDescriptor[] descriptor) {
         if (resultDescriptors == null) {
-            resultDescriptors = new ArrayList(2);
+            resultDescriptors = new ArrayList<ColumnDescriptor[]>(2);
         }
 
         resultDescriptors.add(descriptor);
@@ -268,7 +267,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public Query createQuery(Map parameters) {
+    public Query createQuery(Map<String, ?> parameters) {
         // create a query replica
         ProcedureQuery query = new ProcedureQuery();
 
@@ -293,7 +292,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     public void setCachePolicy(String policy) {
         this.metaData.setCachePolicy(policy);
     }
-    
+
     /**
      * @since 3.0
      */
@@ -369,7 +368,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public Map getParameters() {
+    public Map<String, ?> getParameters() {
         return parameters;
     }
 
@@ -378,7 +377,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public synchronized void setParameters(Map parameters) {
+    public synchronized void setParameters(Map<String, ?> parameters) {
         this.parameters.clear();
 
         if (parameters != null) {
@@ -426,7 +425,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.2
      */
-    public void addPrefetches(Collection prefetches) {
+    public void addPrefetches(Collection<String> prefetches) {
         metaData.addPrefetches(prefetches, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
     }
 
