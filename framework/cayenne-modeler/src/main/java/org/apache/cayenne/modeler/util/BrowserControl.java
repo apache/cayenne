@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.io.IOException;
+import java.lang.reflect.Method;
+
+import org.apache.commons.lang.SystemUtils;
 
 /**
  * Opens a URL in the system default browser.
@@ -28,8 +30,6 @@ import java.io.IOException;
  */
 public class BrowserControl {
 
-    // Used to identify the windows platform.
-    private static final String WIN_ID = "Windows";
     // The default system browser under windows.
     private static final String WIN_PATH = "rundll32";
     // The flag to display a url.
@@ -46,36 +46,35 @@ public class BrowserControl {
      * 
      * @param url the file's url (the url must start with either "http://" or "file://").
      */
+    // see public domain code at
+    // http://www.centerkey.com/java/browser/myapp/BareBonesBrowserLaunch.java
     public static void displayURL(String url) {
-        boolean windows = isWindowsPlatform();
-        String cmd = null;
         try {
-            if (windows) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 // cmd = 'rundll32 url.dll,FileProtocolHandler http://...'
-                cmd = WIN_PATH + " " + WIN_FLAG + " " + url;
+                String cmd = WIN_PATH + " " + WIN_FLAG + " " + url;
                 Runtime.getRuntime().exec(cmd);
             }
-            else {
-                // unsupported...
+            else if (SystemUtils.IS_OS_MAC_OSX) {
+                Class<?> fileManager = Class.forName("com.apple.eio.FileManager");
+                Method openURL = fileManager.getDeclaredMethod("openURL", new Class[] {String.class});
+                openURL.invoke(null, new Object[] {url});
+            }
+            else { // assume Unix or Linux
+                String[] browsers = {
+                        "firefox", "opera", "konqueror", "epiphany", "mozilla",
+                        "netscape"
+                };
+                for (String browser : browsers) {
+                    if (Runtime.getRuntime().exec(new String[] {"which", browser}).waitFor() == 0) {
+                        Runtime.getRuntime().exec(new String[] {browser, url});
+                        break;
+                    }
+                }
             }
         }
-        catch (IOException ex) {
-            ex.printStackTrace();
+        catch (Exception ex) {
+            // could not open browser. Fail silently.
         }
-    }
-
-    /**
-     * Try to determine whether this application is running under Windows or some other
-     * platform by examing the "os.name" property.
-     * 
-     * @return true if this application is running under a Windows OS
-     */
-    public static boolean isWindowsPlatform() {
-        String os = System.getProperty("os.name");
-        if (os != null && os.startsWith(WIN_ID))
-            return true;
-        else
-            return false;
-
     }
 }

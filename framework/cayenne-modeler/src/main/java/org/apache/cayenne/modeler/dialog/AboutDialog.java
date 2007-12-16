@@ -134,6 +134,7 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
         info.setText(getInfoString());
         
         this.pack();
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
     

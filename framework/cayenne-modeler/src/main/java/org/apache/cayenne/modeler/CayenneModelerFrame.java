@@ -47,6 +47,7 @@ import org.apache.cayenne.modeler.action.CreateNodeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
+import org.apache.cayenne.modeler.action.DocumentationAction;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.FindAction;
 import org.apache.cayenne.modeler.action.GenerateCodeAction;
@@ -172,7 +173,8 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolMenu.add(getAction(ConfigurePreferencesAction.getActionName()).buildMenu());
 
         helpMenu.add(getAction(AboutAction.getActionName()).buildMenu());
-
+        helpMenu.add(getAction(DocumentationAction.getActionName()).buildMenu());
+        
         JMenuBar menuBar = new JMenuBar();
 
         menuBar.add(fileMenu);

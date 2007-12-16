@@ -46,6 +46,7 @@ import org.apache.cayenne.modeler.action.CreateProcedureParameterAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.DbEntitySyncAction;
+import org.apache.cayenne.modeler.action.DocumentationAction;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.FindAction;
 import org.apache.cayenne.modeler.action.GenerateCodeAction;
@@ -187,6 +188,7 @@ public class ActionManager {
         registerAction(new GenerateDBAction(application));
         registerAction(new MigrateAction(application));
         registerAction(new AboutAction(application)).setAlwaysOn(true);
+        registerAction(new DocumentationAction(application)).setAlwaysOn(true);
         registerAction(new ConfigurePreferencesAction(application)).setAlwaysOn(true);
         registerAction(new ExitAction(application)).setAlwaysOn(true);
         registerAction(new NavigateBackwardAction(application)).setAlwaysOn(true);
