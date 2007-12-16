@@ -44,5 +44,6 @@
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.BidiOneToOneOwned</class>
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.BidiOneToManyOwner</class>
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.BidiOneToManyOwned</class>
+		<class>org.apache.cayenne.jpa.itest.ch2.entity.Embeddable1</class>
 	</persistence-unit>
 </persistence>

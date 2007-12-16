@@ -159,10 +159,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 embeddableName,
                 attribute.getJavaClass());
 
-        // TODO: andrus, 11/19/2007 = avoid creation of descriptor for every property of
-        // embeddable; look up reusable descriptor instead.
-        EmbeddableDescriptor embeddableDescriptor = new FieldEmbeddableDescriptor(
-                embeddedAttribute.getEmbeddable());
+        EmbeddableDescriptor embeddableDescriptor = createEmbeddableDescriptor(embeddedAttribute);
 
         Accessor accessor = new EmbeddedFieldAccessor(
                 embeddableDescriptor,
@@ -243,5 +240,15 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             String propertyName,
             Class<?> propertyType) {
         return new FieldAccessor(embeddableClass, propertyName, propertyType);
+    }
+
+    protected EmbeddableDescriptor createEmbeddableDescriptor(
+            EmbeddedAttribute embeddedAttribute) {
+        // TODO: andrus, 11/19/2007 = avoid creation of descriptor for every property of
+        // embeddable; look up reusable descriptor instead.
+        return new FieldEmbeddableDescriptor(
+                embeddedAttribute.getEmbeddable(),
+                "owner",
+                "embeddedProperty");
     }
 }

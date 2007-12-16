@@ -35,6 +35,6 @@ public class _2_1_5_EmbeddableTest extends EntityManagerCase {
         getEntityManager().persist(o1);
         getEntityManager().getTransaction().commit();
 
-        // assertEquals("p1", getDbHelper().getObject("EmbeddedEntity", "property1"));
+        assertEquals("p1", getDbHelper().getObject("EmbeddedEntity", "property1"));
     }
 }

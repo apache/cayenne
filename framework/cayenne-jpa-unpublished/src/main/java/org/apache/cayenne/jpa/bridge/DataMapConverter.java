@@ -23,6 +23,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
 import org.apache.cayenne.jpa.map.AccessType;
@@ -250,7 +251,7 @@ public class DataMapConverter {
         Object createObject(ProjectPath path) {
             JpaEmbedded jpaEmbedded = (JpaEmbedded) path.getObject();
 
-            ObjEntity parentCayenneEntity = (ObjEntity) targetPath.getObject();
+            ObjEntity entity = (ObjEntity) targetPath.getObject();
 
             EmbeddedAttribute embedded = new EmbeddedAttribute(jpaEmbedded.getName());
             embedded.setType(jpaEmbedded.getPropertyDescriptor().getType().getName());
@@ -260,7 +261,14 @@ public class DataMapConverter {
                         .getColumn()
                         .getName());
             }
-            parentCayenneEntity.addAttribute(embedded);
+            entity.addAttribute(embedded);
+
+            DbEntity dbEntity = entity.getDbEntity();
+            for (ObjAttribute attribute : embedded.getAttributes()) {
+                DbAttribute dbAttribute = new DbAttribute(attribute.getDbAttributeName());
+                dbAttribute.setType(TypesMapping.getSqlTypeByJava(attribute.getType()));
+                dbEntity.addAttribute(dbAttribute);
+            }
 
             return embedded;
         }
@@ -393,7 +401,7 @@ public class DataMapConverter {
         public boolean onStartNode(ProjectPath path) {
             JpaColumn jpaColumn = (JpaColumn) path.getObject();
 
-            // skip embeddable columns
+            // skip embeddable columns - they are mapped per entity
             if (path.firstInstanceOf(JpaEmbeddable.class) != null) {
                 return false;
             }
