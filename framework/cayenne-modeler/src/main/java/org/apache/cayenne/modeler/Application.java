@@ -85,6 +85,9 @@ public class Application {
     protected BindingFactory bindingFactory;
     protected AdapterMapping adapterMapping;
 
+    // This is for OS X support
+    private boolean isQuittingApplication = false;
+
     public static Application getInstance() {
         return instance;
     }
@@ -354,5 +357,15 @@ public class Application {
         protected Window getDefaultParentWindow() {
             return frame;
         }
+    }
+
+    
+    public boolean isQuittingApplication() {
+        return isQuittingApplication;
+    }
+
+    
+    public void setQuittingApplication(boolean isQuittingApplication) {
+        this.isQuittingApplication = isQuittingApplication;
     }
 }

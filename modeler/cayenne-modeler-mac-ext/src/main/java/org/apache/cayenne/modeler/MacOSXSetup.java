@@ -53,8 +53,12 @@ class MacOSXSetup {
 
         public void handleQuit(ApplicationEvent e) {
             if (!e.isHandled()) {
+                Application.getInstance().setQuittingApplication(true);
                 ((ExitAction) getAction(ExitAction.getActionName())).exit();
-                e.setHandled(true);
+                if (Application.getInstance().isQuittingApplication())
+                    e.setHandled(true);
+                else
+                    Application.getInstance().setQuittingApplication(false);
             }
         }
 
