@@ -36,7 +36,7 @@ public interface AnnotationProcessorStack {
 
     Object peek();
 
-    void recordConflict(AnnotatedElement element, Class annotatedType, String message);
+    void recordConflict(AnnotatedElement element, Class<?> annotatedType, String message);
 
     int depth();
 }

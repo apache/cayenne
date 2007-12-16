@@ -78,7 +78,7 @@ class ClassAnnotationProcessorFactory extends AnnotationProcessorFactory {
             Entity entityAnnotation = element.getAnnotation(Entity.class);
 
             JpaEntity entity = new JpaEntity();
-            entity.setClassName(((Class) element).getName());
+            entity.setClassName(((Class<?>) element).getName());
             entity.setAttributes(new JpaAttributes());
 
             if (!Util.isEmptyString(entityAnnotation.name())) {
@@ -104,7 +104,7 @@ class ClassAnnotationProcessorFactory extends AnnotationProcessorFactory {
                 AnnotationProcessorStack context) {
 
             JpaEmbeddable embeddable = new JpaEmbeddable();
-            embeddable.setClassName(((Class) element).getName());
+            embeddable.setClassName(((Class<?>) element).getName());
             embeddable.setAttributes(new JpaAttributes());
             context.push(embeddable);
         }
@@ -125,7 +125,7 @@ class ClassAnnotationProcessorFactory extends AnnotationProcessorFactory {
                 AnnotationProcessorStack context) {
 
             JpaMappedSuperclass superclass = new JpaMappedSuperclass();
-            superclass.setClassName(((Class) element).getName());
+            superclass.setClassName(((Class<?>) element).getName());
             superclass.setAttributes(new JpaAttributes());
             context.push(superclass);
         }

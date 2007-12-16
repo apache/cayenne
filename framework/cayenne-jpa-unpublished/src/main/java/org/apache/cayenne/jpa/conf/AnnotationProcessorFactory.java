@@ -53,7 +53,7 @@ abstract class AnnotationProcessorFactory {
     /**
      * Dervies processor inner class name, applying naming conventions.
      */
-    static Class processorClass(Class factoryClass, String annotationFQN) {
+    static Class<?> processorClass(Class<?> factoryClass, String annotationFQN) {
         if (annotationFQN.startsWith(ANNOTATIONS_PACKAGE)) {
 
             // derive the processor name from the annotation unqualified name, so that we
@@ -87,7 +87,7 @@ abstract class AnnotationProcessorFactory {
     /**
      * Returns an annotation class handled by the processor, applying naming conventions.
      */
-    static Class annotationClass(Class processorClass) {
+    static Class<?> annotationClass(Class<?> processorClass) {
         String name = processorClass.getName();
         if (!name.endsWith(PROCESSOR_NAME_SUFFIX)) {
             return null;
@@ -111,7 +111,7 @@ abstract class AnnotationProcessorFactory {
         }
         catch (Exception e) {
             // there are a few unsupported annotations in the JPA package related
-            // to Java EE conatiners
+            // to Java EE containers
             return null;
         }
     }
@@ -144,7 +144,7 @@ abstract class AnnotationProcessorFactory {
      */
     AnnotationProcessor createProcessor(String annotationFQN) {
 
-        Class processorClass = processorClass(getClass(), annotationFQN);
+        Class<?> processorClass = processorClass(getClass(), annotationFQN);
 
         if (processorClass != null) {
 

@@ -171,7 +171,7 @@ public class EntityMapAnnotationLoader {
      * Processes annotations of a single Java class, loading ORM mapping information to
      * the provided entity map.
      */
-    public void loadClassMapping(Class managedClass) throws JpaProviderException {
+    public void loadClassMapping(Class<?> managedClass) throws JpaProviderException {
 
         // avoid duplicates loaded from annotations per CAY-756
         if (context.getEntityMap().containsManagedClass(managedClass.getName())) {
@@ -335,7 +335,7 @@ public class EntityMapAnnotationLoader {
      * Returns a collection of methods that match an 'entity callback" pattern, i.e. "void
      * <METHOD>()".
      */
-    protected Collection<Method> getEntityCallbacks(Class managedClass) {
+    protected Collection<Method> getEntityCallbacks(Class<?> managedClass) {
 
         Collection<Method> callbacks = new ArrayList<Method>(3);
 
@@ -351,7 +351,7 @@ public class EntityMapAnnotationLoader {
                 continue;
             }
 
-            Class[] params = methods[i].getParameterTypes();
+            Class<?>[] params = methods[i].getParameterTypes();
             if (params.length != 0) {
                 continue;
             }
@@ -386,7 +386,7 @@ public class EntityMapAnnotationLoader {
 
     final class AnnotationContext implements AnnotationProcessorStack {
 
-        LinkedList stack = new LinkedList();
+        LinkedList<Object> stack = new LinkedList<Object>();
         JpaClassDescriptor classDescriptor;
         JpaPropertyDescriptor propertyDescriptor;
 
@@ -427,7 +427,7 @@ public class EntityMapAnnotationLoader {
 
         public void recordConflict(
                 AnnotatedElement element,
-                Class annotatedType,
+                Class<?> annotatedType,
                 String message) {
 
             StringBuilder buffer = new StringBuilder();

@@ -145,7 +145,7 @@ public class EntityMapLoader {
 
         EntityMapMergeProcessor merger = new EntityMapMergeProcessor(context);
 
-        Set loadedLocations = new HashSet();
+        Set<String> loadedLocations = new HashSet<String>();
         EntityMapXMLLoader loader = new EntityMapXMLLoader(
                 context.getTempClassLoader(),
                 false);
@@ -187,7 +187,7 @@ public class EntityMapLoader {
      */
     protected void loadFromAnnotations(PersistenceUnitInfo persistenceUnit) {
 
-        Map<String, Class> managedClassMap = new HashMap<String, Class>();
+        Map<String, Class<?>> managedClassMap = new HashMap<String, Class<?>>();
 
         // must use Unit class loader to prevent loading an un-enahnced class in the
         // app ClassLoader
@@ -198,7 +198,7 @@ public class EntityMapLoader {
         if (explicitClasses != null) {
             for (String className : explicitClasses) {
 
-                Class managedClass;
+                Class<?> managedClass;
                 try {
                     managedClass = Class.forName(className, true, loader);
                 }
@@ -219,7 +219,7 @@ public class EntityMapLoader {
                     continue;
                 }
 
-                Class managedClass;
+                Class<?> managedClass;
                 try {
                     managedClass = Class.forName(className, true, loader);
                 }
@@ -239,7 +239,7 @@ public class EntityMapLoader {
 
             EntityMapAnnotationLoader annotationLoader = new EntityMapAnnotationLoader(
                     context);
-            for (Class managedClass : managedClassMap.values()) {
+            for (Class<?> managedClass : managedClassMap.values()) {
                 annotationLoader.loadClassMapping(managedClass);
             }
         }

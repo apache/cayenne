@@ -56,7 +56,7 @@ public class EntityListenerAnnotationLoader {
      * Returns a listener methods descriptor for the annotated listener, or null if none
      * of the class methods are properly annotated.
      */
-    public JpaEntityListener getEntityListener(Class listenerClass) {
+    public JpaEntityListener getEntityListener(Class<?> listenerClass) {
         JpaEntityListener listener = new JpaEntityListener();
 
         boolean hasAnnotations = false;
@@ -92,7 +92,7 @@ public class EntityListenerAnnotationLoader {
             return false;
         }
 
-        Class[] params = m.getParameterTypes();
+        Class<?>[] params = m.getParameterTypes();
         if (params.length != 1 || !Object.class.equals(params[0])) {
             return false;
         }
