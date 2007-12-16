@@ -13,3 +13,5 @@ Changes:
 CAY-263 cdbgen (DbGeneratorTask) must support classpath and classpathref
 
 Bug Fixes:
+
+CAY-941 NPE in SimpleNode.connectChildren()
