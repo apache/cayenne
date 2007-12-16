@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
+
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.modeler.Application;

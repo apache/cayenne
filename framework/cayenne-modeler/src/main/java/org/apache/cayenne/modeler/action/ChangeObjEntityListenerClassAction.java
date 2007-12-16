@@ -18,13 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.modeler.util.CayenneAction;
+import java.awt.event.ActionEvent;
+
+import javax.swing.JOptionPane;
+
+import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.EntityListenerEvent;
-import org.apache.cayenne.map.event.MapEvent;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
+import org.apache.cayenne.modeler.util.CayenneAction;
 
 
 /**

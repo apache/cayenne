@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.event.CallbackMethodEvent;
-import org.apache.cayenne.modeler.editor.CallbackType;
+import java.awt.event.ActionEvent;
+
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.event.MapEvent;
-
-import java.awt.event.ActionEvent;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.editor.CallbackType;
+import org.apache.cayenne.modeler.event.CallbackMethodEvent;
+import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
  * Base class for creating callback methods

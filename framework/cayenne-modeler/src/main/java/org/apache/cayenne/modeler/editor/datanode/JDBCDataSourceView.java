@@ -21,8 +21,6 @@ package org.apache.cayenne.modeler.editor.datanode;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Map;
 import java.util.TreeMap;
 

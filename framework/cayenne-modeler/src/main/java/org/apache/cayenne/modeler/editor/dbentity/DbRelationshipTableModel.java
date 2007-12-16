@@ -30,7 +30,6 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
-//import org.apache.cayenne.modeler.util.ProjectUtil;
 
 /**
  * Table model for DbRelationship table.

@@ -20,8 +20,11 @@
 package org.apache.cayenne.modeler.action;
 
 import javax.sql.DataSource;
+
 import junit.framework.TestCase;
+
 import org.apache.cayenne.access.DataNode;
+
 import com.mockrunner.mock.jdbc.MockDataSource;
 
 public class ModelerProjectLoaderDelegateTest extends TestCase {

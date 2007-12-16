@@ -18,15 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.action.*;
-import org.apache.cayenne.modeler.event.*;
+import java.util.List;
+
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.EntityListener;
-
-import java.util.List;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.AbstractRemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.action.CreateCallbackMethodForListenerAction;
+import org.apache.cayenne.modeler.action.CreateObjEntityListenerAction;
+import org.apache.cayenne.modeler.action.RemoveCallbackMethodForListenerAction;
+import org.apache.cayenne.modeler.action.RemoveEntityListenerAction;
+import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
  * Tab for editing entity listeners of an ObjEntity

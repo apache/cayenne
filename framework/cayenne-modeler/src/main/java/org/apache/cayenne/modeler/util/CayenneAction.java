@@ -21,11 +21,13 @@
 package org.apache.cayenne.modeler.util;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.AWTEventListener;
-import java.awt.event.KeyEvent;
-import java.awt.*;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;

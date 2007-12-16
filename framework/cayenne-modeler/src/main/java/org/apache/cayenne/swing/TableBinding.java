@@ -34,8 +34,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import org.apache.commons.collections.map.SingletonMap;
 import org.apache.cayenne.util.Util;
+import org.apache.commons.collections.map.SingletonMap;
 
 /**
  * A binding for a JTable.

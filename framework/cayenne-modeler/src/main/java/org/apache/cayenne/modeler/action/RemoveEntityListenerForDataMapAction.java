@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
+import java.awt.event.ActionEvent;
+
+import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.EntityListenerEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.map.event.MapEvent;
-
-import java.awt.event.ActionEvent;
 
 
 /**

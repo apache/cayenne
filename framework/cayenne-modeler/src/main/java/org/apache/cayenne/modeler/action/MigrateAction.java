@@ -23,8 +23,8 @@ import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.MergerOptions;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
+import org.apache.cayenne.modeler.dialog.db.MergerOptions;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.project.ProjectPath;
 

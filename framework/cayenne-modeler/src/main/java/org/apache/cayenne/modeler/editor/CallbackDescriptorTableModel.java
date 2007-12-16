@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import org.apache.cayenne.modeler.util.CayenneTableModel;
+import java.util.List;
+
+import org.apache.cayenne.map.CallbackDescriptor;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.CallbackDescriptor;
-import org.apache.cayenne.map.event.MapEvent;
-
-import java.util.List;
+import org.apache.cayenne.modeler.util.CayenneTableModel;
 
 
 /**

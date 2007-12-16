@@ -32,7 +32,6 @@ import javax.swing.JTextField;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;

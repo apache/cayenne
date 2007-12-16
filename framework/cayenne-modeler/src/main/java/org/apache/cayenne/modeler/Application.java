@@ -30,8 +30,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneDialog;
@@ -43,6 +41,8 @@ import org.apache.cayenne.pref.PreferenceService;
 import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.swing.BindingFactory;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 import org.scopemvc.controller.basic.ViewContext;
 import org.scopemvc.controller.swing.SwingContext;
 import org.scopemvc.core.View;

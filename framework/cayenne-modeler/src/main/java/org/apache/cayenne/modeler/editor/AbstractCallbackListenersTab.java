@@ -18,21 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
-import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.event.*;
-import org.apache.cayenne.map.EntityListener;
-import org.apache.cayenne.map.event.MapEvent;
-
-import javax.swing.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+
+import org.apache.cayenne.map.EntityListener;
+import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.event.EntityListenerEvent;
+import org.apache.cayenne.modeler.event.EntityListenerListener;
+import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 

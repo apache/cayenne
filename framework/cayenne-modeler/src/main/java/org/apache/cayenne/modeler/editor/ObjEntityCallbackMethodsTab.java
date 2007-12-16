@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import org.apache.cayenne.map.CallbackMap;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+
+import org.apache.cayenne.map.CallbackMap;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 
 
 /**

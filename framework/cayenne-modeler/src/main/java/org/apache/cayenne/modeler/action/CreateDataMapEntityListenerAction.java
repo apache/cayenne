@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.map.EntityListener;
+import org.apache.cayenne.modeler.Application;
 
 
 /**

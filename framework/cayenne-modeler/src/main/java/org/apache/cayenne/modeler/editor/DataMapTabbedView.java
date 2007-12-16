@@ -18,11 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.Color;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 
 import org.apache.cayenne.modeler.ProjectController;
-
-import javax.swing.*;
 
 
 /**

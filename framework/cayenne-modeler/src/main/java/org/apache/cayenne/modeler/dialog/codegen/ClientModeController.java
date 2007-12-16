@@ -19,14 +19,13 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import org.apache.commons.collections.Predicate;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
-import org.apache.cayenne.gen.DefaultClassGenerator;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
+import org.apache.commons.collections.Predicate;
 
 public class ClientModeController extends StandardModeController {
 

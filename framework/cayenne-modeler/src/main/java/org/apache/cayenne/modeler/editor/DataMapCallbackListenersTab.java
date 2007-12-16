@@ -18,15 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.action.*;
-import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.event.*;
+import java.util.List;
+
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.EntityListener;
-
-import java.util.List;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.AbstractRemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.action.CreateCallbackMethodForDataMapListenerAction;
+import org.apache.cayenne.modeler.action.CreateDataMapEntityListenerAction;
+import org.apache.cayenne.modeler.action.RemoveCallbackMethodForDataMapListenerAction;
+import org.apache.cayenne.modeler.action.RemoveEntityListenerForDataMapAction;
+import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.DataMapDisplayListener;
+import org.apache.cayenne.modeler.util.CayenneAction;
 
 
 /**

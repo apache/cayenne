@@ -4,9 +4,14 @@ package org.apache.cayenne.modeler.editor;
  * StringTransferHandler.java is used by the 1.4
  * ExtendedDnDDemo.java example.
  */
-import java.awt.datatransfer.*;
-import javax.swing.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+
+import javax.swing.JComponent;
+import javax.swing.TransferHandler;
 
 public abstract class StringTransferHandler extends TransferHandler {
 

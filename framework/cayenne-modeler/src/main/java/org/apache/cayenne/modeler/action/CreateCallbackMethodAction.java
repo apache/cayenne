@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.map.CallbackMap;
+import org.apache.cayenne.modeler.Application;
 
 /**
  * Action class for creating callback methods on ObjEntity
