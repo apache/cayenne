@@ -203,7 +203,7 @@ public class Provider implements PersistenceProvider {
     public synchronized EntityManagerFactory createContainerEntityManagerFactory(
             PersistenceUnitInfo unit,
             Map map) {
-        
+
         if (logger.isInfoEnabled() && map != null) {
             logger.info("Extra container PersistenceUnitInfo properties: " + map);
         }
@@ -235,11 +235,11 @@ public class Provider implements PersistenceProvider {
 
             // add transformer before DataMapConverter starts loading the classes via app
             // class loader
+            ClassFileTransformer enhancer = new Enhancer(new JpaEnhancerVisitorFactory(
+                    loader.getEntityMap()));
             Map<String, JpaClassDescriptor> managedClasses = loader
                     .getEntityMap()
                     .getMangedClasses();
-            ClassFileTransformer enhancer = new Enhancer(new JpaEnhancerVisitorFactory(
-                    managedClasses));
             unit.addTransformer(new UnitClassTransformer(managedClasses, loader
                     .getContext()
                     .getTempClassLoader(), enhancer));
@@ -327,16 +327,16 @@ public class Provider implements PersistenceProvider {
      */
     protected void loadSchema(DataSource dataSource, DbAdapter adapter, DataMap map) {
 
-        Collection tables = map.getDbEntities();
+        Collection<DbEntity> tables = map.getDbEntities();
         if (tables.isEmpty()) {
             return;
         }
 
-        // sniff a first table precense
+        // sniff a first table presence
 
         // TODO: andrus 9/1/2006 - should we make this check a part of DbGenerator (and
         // query - a part of DbAdapter)?
-        DbEntity table = (DbEntity) tables.iterator().next();
+        DbEntity table = tables.iterator().next();
 
         try {
             Connection c = dataSource.getConnection();

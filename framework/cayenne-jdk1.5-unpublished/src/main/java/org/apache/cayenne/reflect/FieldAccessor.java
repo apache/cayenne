@@ -36,7 +36,7 @@ public class FieldAccessor implements Accessor {
     protected Field field;
     protected Object nullValue;
 
-    public FieldAccessor(Class objectClass, String propertyName, Class propertyType) {
+    public FieldAccessor(Class<?> objectClass, String propertyName, Class<?> propertyType) {
         // sanity check
         if (objectClass == null) {
             throw new IllegalArgumentException("Null objectClass");
@@ -93,7 +93,7 @@ public class FieldAccessor implements Accessor {
      * Finds a field for the property, ensuring that direct access via reflection is
      * possible.
      */
-    protected Field prepareField(Class beanClass, String propertyName, Class propertyType) {
+    protected Field prepareField(Class<?> beanClass, String propertyName, Class<?> propertyType) {
         Field field;
 
         // locate field
@@ -144,7 +144,7 @@ public class FieldAccessor implements Accessor {
     /**
      * Recursively looks for a named field in a class hierarchy.
      */
-    protected Field lookupFieldInHierarchy(Class beanClass, String fieldName)
+    protected Field lookupFieldInHierarchy(Class<?> beanClass, String fieldName)
             throws SecurityException, NoSuchFieldException {
 
         // TODO: support property names following other common naming patterns, such as
@@ -155,7 +155,7 @@ public class FieldAccessor implements Accessor {
         }
         catch (NoSuchFieldException e) {
 
-            Class superClass = beanClass.getSuperclass();
+            Class<?> superClass = beanClass.getSuperclass();
             if (superClass == null || superClass.getName().equals(Object.class.getName())) {
                 throw e;
             }

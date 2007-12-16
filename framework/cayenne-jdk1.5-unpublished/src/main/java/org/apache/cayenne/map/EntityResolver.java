@@ -273,6 +273,18 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
         return c;
     }
+    
+    /**
+     * @since 3.0
+     */
+    public Collection<Embeddable> getEmbeddables() {
+        CompositeCollection c = new CompositeCollection();
+        for (DataMap map : getDataMaps()) {
+            c.addComposited(map.getEmbeddables());
+        }
+
+        return c;
+    }
 
     public Collection<Procedure> getProcedures() {
         CompositeCollection c = new CompositeCollection();

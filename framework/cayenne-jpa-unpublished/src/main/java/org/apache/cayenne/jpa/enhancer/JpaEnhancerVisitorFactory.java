@@ -18,11 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.jpa.enhancer;
 
-import java.util.Map;
-
+import org.apache.cayenne.enhancer.EmbeddableVisitor;
 import org.apache.cayenne.enhancer.EnhancerVisitorFactory;
 import org.apache.cayenne.enhancer.PersistentInterfaceVisitor;
-import org.apache.cayenne.jpa.map.JpaClassDescriptor;
+import org.apache.cayenne.jpa.map.JpaEmbeddable;
+import org.apache.cayenne.jpa.map.JpaEntity;
+import org.apache.cayenne.jpa.map.JpaEntityMap;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
 
@@ -33,29 +34,46 @@ import org.objectweb.asm.commons.SerialVersionUIDAdder;
  */
 public class JpaEnhancerVisitorFactory implements EnhancerVisitorFactory {
 
-    private Map<String, JpaClassDescriptor> managedClasses;
+    private JpaEntityMap entityMap;
 
-    public JpaEnhancerVisitorFactory(Map<String, JpaClassDescriptor> managedClasses) {
-        this.managedClasses = managedClasses;
+    public JpaEnhancerVisitorFactory(JpaEntityMap entityMap) {
+        this.entityMap = entityMap;
     }
 
     public ClassVisitor createVisitor(String className, ClassVisitor out) {
-        JpaClassDescriptor descriptor = managedClasses.get(className.replace('/', '.'));
-        if (descriptor == null) {
-            return null;
+
+        String key = className.replace('/', '.');
+
+        JpaEntity entity = entityMap.entityForClass(key);
+        if (entity != null) {
+
+            // create enhancer chain
+            PersistentInterfaceVisitor e1 = new PersistentInterfaceVisitor(out);
+            JpaAccessorVisitor e2 = new JpaAccessorVisitor(e1, entity
+                    .getClassDescriptor());
+
+            // this ensures that both enhanced and original classes have compatible
+            // serialized
+            // format even if no serialVersionUID is defined by the user
+            SerialVersionUIDAdder e3 = new SerialVersionUIDAdder(e2);
+
+            return e3;
         }
 
-        // from here the code is copied essentially verbatim
-        // from CayenneEnhancerVisitorFactory.
+        JpaEmbeddable embeddable = entityMap.embeddableForClass(key);
+        if (embeddable != null) {
+            // create enhancer chain
+            EmbeddableVisitor e1 = new EmbeddableVisitor(out);
 
-        // create enhancer chain
-        PersistentInterfaceVisitor e1 = new PersistentInterfaceVisitor(out);
-        JpaAccessorVisitor e2 = new JpaAccessorVisitor(e1, descriptor);
+            // TODO: andrus 12/16/2007 - setter visitor...
 
-        // this ensures that both enhanced and original classes have compatible serialized
-        // format even if no serialVersionUID is defined by the user
-        SerialVersionUIDAdder e3 = new SerialVersionUIDAdder(e2);
+            // this ensures that both enhanced and original classes have compatible
+            // serialized
+            // format even if no serialVersionUID is defined by the user
+            SerialVersionUIDAdder e2 = new SerialVersionUIDAdder(e1);
+            return e2;
+        }
 
-        return e3;
+        return null;
     }
 }

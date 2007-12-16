@@ -173,16 +173,12 @@ public class JpaEntityMap implements XMLSerializable {
 
         if (entities != null) {
             for (JpaEntity object : entities) {
-                // TODO: andrus, 5/1/2006 - need not enhance entities extending mapped
-                // superclasses
                 managedClasses.put(object.getClassName(), object.getClassDescriptor());
             }
         }
 
         if (embeddables != null) {
             for (JpaEmbeddable object : embeddables) {
-                // TODO: andrus, 5/1/2006 - need not enhance entities extending mapped
-                // superclasses
                 managedClasses.put(object.getClassName(), object.getClassDescriptor());
             }
         }
@@ -193,7 +189,7 @@ public class JpaEntityMap implements XMLSerializable {
     /**
      * Returns a JpaEntity describing a given persistent class.
      */
-    public JpaEntity entityForClass(Class entityClass) {
+    public JpaEntity entityForClass(Class<?> entityClass) {
 
         if (entityClass == null) {
             throw new IllegalArgumentException("Null entity class");
@@ -209,6 +205,10 @@ public class JpaEntityMap implements XMLSerializable {
         if (entityClassName == null) {
             throw new IllegalArgumentException("Null entity class name");
         }
+        
+        if(entities == null) {
+            return null;
+        }
 
         for (JpaEntity entity : entities) {
             if (entityClassName.equals(entity.getClassName())) {
@@ -218,6 +218,40 @@ public class JpaEntityMap implements XMLSerializable {
 
         return null;
     }
+    
+    /**
+     * Returns a JpaEmbeddable describing a given embeddable class.
+     */
+    public JpaEmbeddable embeddableForClass(Class<?> embeddableClass) {
+
+        if (embeddableClass == null) {
+            throw new IllegalArgumentException("Null embeddable class");
+        }
+
+        return embeddableForClass(embeddableClass.getName());
+    }
+    
+    /**
+     * Returns a JpaEmbeddable describing a given embeddable class.
+     */
+    public JpaEmbeddable embeddableForClass(String embeddableClassName) {
+        if (embeddableClassName == null) {
+            throw new IllegalArgumentException("Null embeddable class name");
+        }
+        
+        if(embeddables == null) {
+            return null;
+        }
+
+        for (JpaEmbeddable embeddable : embeddables) {
+            if (embeddableClassName.equals(embeddable.getClassName())) {
+                return embeddable;
+            }
+        }
+
+        return null;
+    }
+
 
     public AccessType getAccess() {
         return access;
