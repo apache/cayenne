@@ -46,7 +46,7 @@ public class JpaClassDescriptor {
 
     protected Collection<JpaPropertyDescriptor> fieldDescriptors;
     protected Collection<JpaPropertyDescriptor> propertyDescriptors;
-    protected Class managedClass;
+    protected Class<?> managedClass;
     protected AccessType access;
 
     public static String propertyNameForGetter(String getterName) {
@@ -68,11 +68,11 @@ public class JpaClassDescriptor {
         return null;
     }
 
-    public JpaClassDescriptor(Class managedClass) {
+    public JpaClassDescriptor(Class<?> managedClass) {
         this.managedClass = managedClass;
     }
 
-    public Class getManagedClass() {
+    public Class<?> getManagedClass() {
         return managedClass;
     }
 
@@ -206,8 +206,8 @@ public class JpaClassDescriptor {
             }
 
             String name = methods[i].getName();
-            Class[] parameters = methods[i].getParameterTypes();
-            Class returnType = methods[i].getReturnType();
+            Class<?>[] parameters = methods[i].getParameterTypes();
+            Class<?> returnType = methods[i].getReturnType();
             boolean isVoid = Void.TYPE.equals(returnType);
 
             if (!isVoid && parameters.length == 0) {
