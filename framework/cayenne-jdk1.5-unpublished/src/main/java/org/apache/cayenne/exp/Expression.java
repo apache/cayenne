@@ -231,7 +231,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
     /**
      * A shortcut for <code>expWithParams(params, true)</code>.
      */
-    public Expression expWithParameters(Map parameters) {
+    public Expression expWithParameters(Map<String, ?> parameters) {
         return expWithParameters(parameters, true);
     }
 
@@ -253,7 +253,9 @@ public abstract class Expression implements Serializable, XMLSerializable {
      * @return Expression resulting from the substitution of parameters with real values,
      *         or null if the whole expression was pruned, due to the missing parameters.
      */
-    public Expression expWithParameters(final Map parameters, final boolean pruneMissing) {
+    public Expression expWithParameters(
+            final Map<String, ?> parameters,
+            final boolean pruneMissing) {
 
         // create transformer for named parameters
         Transformer transformer = new Transformer() {

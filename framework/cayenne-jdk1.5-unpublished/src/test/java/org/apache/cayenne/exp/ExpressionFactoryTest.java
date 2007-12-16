@@ -146,7 +146,7 @@ public class ExpressionFactoryTest extends TestCase {
         Object[] v = new Object[] {
                 "a", "b"
         };
-        Expression exp = ExpressionFactory.inExp("abc", v);
+        Expression exp = ExpressionFactory.inExp("abc", "a", "b");
         assertEquals(Expression.IN, exp.getType());
     }
 
