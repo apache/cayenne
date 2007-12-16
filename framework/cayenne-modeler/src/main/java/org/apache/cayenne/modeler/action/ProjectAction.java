@@ -95,7 +95,6 @@ public class ProjectAction extends CayenneAction {
      * Returns false if cancel closing the window, true otherwise.
      */
     public boolean checkSaveOnClose() {
-        System.out.println("mrg mrg mrg 1");
         ProjectController projectController = getProjectController();
         if (projectController != null && projectController.isDirty()) {
             UnsavedChangesDialog dialog = new UnsavedChangesDialog(Application.getFrame());
@@ -103,7 +102,6 @@ public class ProjectAction extends CayenneAction {
 
             if (dialog.shouldCancel()) {
                 // discard changes and DO NOT close
-                System.out.println("mrg mrg mrg 2");
                 Application.getInstance().setQuittingApplication(false);
                 return false;
             }
