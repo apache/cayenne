@@ -40,6 +40,7 @@ CAY-914 cdataport classloader trouble
 CAY-920 ClassCastException when processing delete rules for Map relationships
 CAY-924 Update CayenneModeler for OS X Leopard
 CAY-926 Refactoring class generator classes
+CAY-932 Cancel doesn't cancel when quitting CM with a modified model
 
 ----------------------------------
 Release: 3.0M2
