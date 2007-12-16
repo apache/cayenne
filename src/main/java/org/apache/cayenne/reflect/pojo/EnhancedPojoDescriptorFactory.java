@@ -23,13 +23,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.cayenne.enhancer.EnhancementHelper;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorFactory;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
+import org.apache.cayenne.reflect.EmbeddableDescriptor;
 import org.apache.cayenne.reflect.FaultFactory;
+import org.apache.cayenne.reflect.FieldEmbeddableDescriptor;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.reflect.PersistentDescriptorFactory;
 import org.apache.cayenne.reflect.Property;
@@ -45,11 +49,13 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
     static final String PERSISTENCE_STATE_FIELD = "$cay_persistenceState";
 
     protected FaultFactory faultFactory;
+    protected EnhancementHelper fieldNameMapper;
 
     public EnhancedPojoDescriptorFactory(ClassDescriptorMap descriptorMap,
             FaultFactory faultFactory) {
         super(descriptorMap);
         this.faultFactory = faultFactory;
+        this.fieldNameMapper = new EnhancementHelper(null);
     }
 
     protected ClassDescriptor getDescriptor(ObjEntity entity, Class<?> entityClass) {
@@ -154,5 +160,18 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
                 accessor,
                 reverseName,
                 faultFactory.getToOneFault()));
+    }
+
+    @Override
+    protected EmbeddableDescriptor createEmbeddableDescriptor(
+            EmbeddedAttribute embeddedAttribute) {
+        
+        // TODO: andrus, 11/19/2007 = avoid creation of descriptor for every property of
+        // embeddable; look up reusable descriptor instead.
+
+        return new FieldEmbeddableDescriptor(
+                embeddedAttribute.getEmbeddable(),
+                fieldNameMapper.getPropertyField("owner"),
+                fieldNameMapper.getPropertyField("embeddedProperty"));
     }
 }

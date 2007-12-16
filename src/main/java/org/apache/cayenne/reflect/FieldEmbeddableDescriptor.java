@@ -34,7 +34,8 @@ public class FieldEmbeddableDescriptor implements EmbeddableDescriptor {
     protected Accessor ownerAccessor;
     protected Accessor embeddedPropertyAccessor;
 
-    public FieldEmbeddableDescriptor(Embeddable embeddable) {
+    public FieldEmbeddableDescriptor(Embeddable embeddable, String ownerProperty,
+            String embeddedPropertyProperty) {
         this.embeddable = embeddable;
         try {
             this.embeddableClass = Class.forName(embeddable.getClassName(), true, Thread
@@ -45,10 +46,13 @@ public class FieldEmbeddableDescriptor implements EmbeddableDescriptor {
             throw new PropertyException("Class not found", e);
         }
 
-        this.ownerAccessor = new FieldAccessor(embeddableClass, "owner", Persistent.class);
+        this.ownerAccessor = new FieldAccessor(
+                embeddableClass,
+                ownerProperty,
+                Persistent.class);
         this.embeddedPropertyAccessor = new FieldAccessor(
                 embeddableClass,
-                "embeddedProperty",
+                embeddedPropertyProperty,
                 String.class);
     }
 

@@ -40,7 +40,7 @@ public class EmbeddableVisitor extends ClassAdapter {
 
     @Override
     public void visitEnd() {
-        helper.createProperty(Persistent.class, "owner");
-        helper.createProperty(String.class, "embeddedProperty");
+        helper.createField(Persistent.class, "owner");
+        helper.createField(String.class, "embeddedProperty");
     }
 }
