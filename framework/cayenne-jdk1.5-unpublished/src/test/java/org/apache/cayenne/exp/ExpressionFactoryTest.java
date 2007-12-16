@@ -151,7 +151,7 @@ public class ExpressionFactoryTest extends TestCase {
     }
 
     public void testInExp2() throws Exception {
-        List v = new ArrayList();
+        List<Object> v = new ArrayList<Object>();
         v.add("a");
         v.add("b");
         Expression exp = ExpressionFactory.inExp("abc", v);
@@ -159,7 +159,7 @@ public class ExpressionFactoryTest extends TestCase {
     }
 
     public void testInExp3() throws Exception {
-        List v = new ArrayList();
+        List<Object> v = new ArrayList<Object>();
         Expression exp = ExpressionFactory.inExp("abc", v);
         assertEquals(Expression.FALSE, exp.getType());
     }
@@ -204,5 +204,15 @@ public class ExpressionFactoryTest extends TestCase {
         String v = "abc";
         Expression exp = ExpressionFactory.notLikeIgnoreCaseExp("abc", v);
         assertEquals(Expression.NOT_LIKE_IGNORE_CASE, exp.getType());
+    }
+    
+    // testing CAY-941 bug
+    public void testLikeExpNull() throws Exception {
+        Expression exp = ExpressionFactory.likeExp("abc", null);
+        assertEquals(Expression.LIKE, exp.getType());
+
+        Expression path = (Expression) exp.getOperand(0);
+        assertEquals(Expression.OBJ_PATH, path.getType());
+        assertNull(exp.getOperand(1));
     }
 }

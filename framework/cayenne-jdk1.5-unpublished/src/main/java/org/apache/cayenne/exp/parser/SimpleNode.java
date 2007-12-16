@@ -280,7 +280,11 @@ public abstract class SimpleNode extends Expression implements Node {
     protected void connectChildren() {
         if (children != null) {
             for (int i = 0; i < children.length; i++) {
-                children[i].jjtSetParent(this);
+                // although nulls are expected to be wrapped in scalar, still doing a
+                // check here to make it more robust
+                if (children[i] != null) {
+                    children[i].jjtSetParent(this);
+                }
             }
         }
     }
