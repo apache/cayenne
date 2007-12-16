@@ -169,10 +169,15 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolMenu.add(getAction(GenerateCodeAction.getActionName()).buildMenu());
         toolMenu.add(getAction(GenerateDBAction.getActionName()).buildMenu());
         toolMenu.add(getAction(MigrateAction.getActionName()).buildMenu());
-        toolMenu.addSeparator();
-        toolMenu.add(getAction(ConfigurePreferencesAction.getActionName()).buildMenu());
+        // Mac OS X has it's own Preferences menu item under the application menu
+        if (!SystemUtils.IS_OS_MAC_OSX) {
+            toolMenu.addSeparator();
+            toolMenu.add(getAction(ConfigurePreferencesAction.getActionName()).buildMenu());
+        }
 
-        helpMenu.add(getAction(AboutAction.getActionName()).buildMenu());
+        // Mac OS X "About CayenneModeler" appears under the application menu, per Apple GUI standards
+        if (!SystemUtils.IS_OS_MAC_OSX)
+            helpMenu.add(getAction(AboutAction.getActionName()).buildMenu());
         helpMenu.add(getAction(DocumentationAction.getActionName()).buildMenu());
         
         JMenuBar menuBar = new JMenuBar();

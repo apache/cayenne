@@ -21,6 +21,7 @@
 package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.modeler.action.AboutAction;
+import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
@@ -37,9 +38,12 @@ import com.apple.eawt.ApplicationEvent;
 class MacOSXSetup {
 
     static void configureMacOSX() {
-        // Application.getApplication().setEnabledPreferencesMenu(true);
-        com.apple.eawt.Application.getApplication().addApplicationListener(
-                new MacEventsAdapter());
+        com.apple.eawt.Application.getApplication().addAboutMenuItem();
+        com.apple.eawt.Application.getApplication().addPreferencesMenuItem();
+        com.apple.eawt.Application.getApplication().setEnabledAboutMenu(true);
+        com.apple.eawt.Application.getApplication().setEnabledPreferencesMenu(true);
+
+        com.apple.eawt.Application.getApplication().addApplicationListener(new MacEventsAdapter());
     }
 
     static class MacEventsAdapter extends ApplicationAdapter {
@@ -49,6 +53,11 @@ class MacOSXSetup {
                 ((AboutAction) getAction(AboutAction.getActionName())).showAboutDialog();
                 e.setHandled(true);
             }
+        }
+
+        public void handlePreferences(ApplicationEvent e) {
+            ((ConfigurePreferencesAction) getAction(ConfigurePreferencesAction.getActionName())).showPreferencesDialog();
+            e.setHandled(true);
         }
 
         public void handleQuit(ApplicationEvent e) {
