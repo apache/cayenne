@@ -41,7 +41,7 @@ public interface ClassDescriptor {
     /**
      * Returns a class mapped by this descriptor.
      */
-    Class getObjectClass();
+    Class<?> getObjectClass();
 
     /**
      * Returns a descriptor of the mapped superclass or null if the descriptor's entity
@@ -57,7 +57,7 @@ public interface ClassDescriptor {
      * this.getObjectClass().isAssignableFrom(objectClass)
      * </pre>
      */
-    ClassDescriptor getSubclassDescriptor(Class objectClass);
+    ClassDescriptor getSubclassDescriptor(Class<?> objectClass);
 
     /**
      * Creates a new instance of a class described by this object.
@@ -98,14 +98,14 @@ public interface ClassDescriptor {
      * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
      *             instead.
      */
-    Iterator getProperties();
+    Iterator<Property> getProperties();
 
     /**
      * Returns an iterator over the properties mapped to id columns.
      * 
      * @since 3.0
      */
-    Iterator getIdProperties();
+    Iterator<Property> getIdProperties();
 
     /**
      * Returns an iterator over the arc properties whose reverse arcs are to-many maps.

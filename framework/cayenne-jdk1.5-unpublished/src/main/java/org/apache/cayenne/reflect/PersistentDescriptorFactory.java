@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Relationship;
 
 /**
  * A convenience superclass for {@link ClassDescriptorFactory} implementors.
@@ -47,11 +47,11 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             throw new CayenneRuntimeException("Unmapped entity: " + entityName);
         }
 
-        Class entityClass = entity.getJavaClass();
+        Class<?> entityClass = entity.getJavaClass();
         return getDescriptor(entity, entityClass);
     }
 
-    protected ClassDescriptor getDescriptor(ObjEntity entity, Class entityClass) {
+    protected ClassDescriptor getDescriptor(ObjEntity entity, Class<?> entityClass) {
         String superEntityName = entity.getSuperEntityName();
 
         ClassDescriptor superDescriptor = (superEntityName != null) ? descriptorMap
@@ -68,45 +68,41 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 Integer.TYPE));
 
         // only include this entity attributes and skip superclasses...
-        Iterator attributes = descriptor.getEntity().getDeclaredAttributes().iterator();
-        while (attributes.hasNext()) {
-            Object attribute = attributes.next();
+        for (Attribute attribute : descriptor.getEntity().getDeclaredAttributes()) {
 
             if (attribute instanceof ObjAttribute) {
                 createAttributeProperty(descriptor, (ObjAttribute) attribute);
             }
             else if (attribute instanceof EmbeddedAttribute) {
                 EmbeddedAttribute embedded = (EmbeddedAttribute) attribute;
-                Iterator embeddedAttributes = embedded.getAttributes().iterator();
-                while (embeddedAttributes.hasNext()) {
-                    createEmbeddedAttributeProperty(
-                            descriptor,
-                            embedded,
-                            (ObjAttribute) embeddedAttributes.next());
+                for (ObjAttribute objAttribute : embedded.getAttributes()) {
+                    createEmbeddedAttributeProperty(descriptor, embedded, objAttribute);
                 }
             }
         }
 
         // only include this entity relationships and skip superclasses...
-        Iterator it = descriptor.getEntity().getDeclaredRelationships().iterator();
-        while (it.hasNext()) {
+        for (Relationship relationship : descriptor
+                .getEntity()
+                .getDeclaredRelationships()) {
 
-            ObjRelationship relationship = (ObjRelationship) it.next();
+            ObjRelationship objRelationship = (ObjRelationship) relationship;
+
             if (relationship.isToMany()) {
 
-                String collectionType = relationship.getCollectionType();
+                String collectionType = objRelationship.getCollectionType();
                 if (collectionType == null
                         || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
-                    createToManyListProperty(descriptor, relationship);
+                    createToManyListProperty(descriptor, objRelationship);
                 }
                 else if (collectionType.equals("java.util.Map")) {
-                    createToManyMapProperty(descriptor, relationship);
+                    createToManyMapProperty(descriptor, objRelationship);
                 }
                 else if (collectionType.equals("java.util.Set")) {
-                    createToManySetProperty(descriptor, relationship);
+                    createToManySetProperty(descriptor, objRelationship);
                 }
                 else if (collectionType.equals("java.util.Collection")) {
-                    createToManyCollectionProperty(descriptor, relationship);
+                    createToManyCollectionProperty(descriptor, objRelationship);
                 }
                 else {
                     throw new IllegalArgumentException(
@@ -114,7 +110,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 }
             }
             else {
-                createToOneProperty(descriptor, relationship);
+                createToOneProperty(descriptor, objRelationship);
             }
         }
 
@@ -133,7 +129,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     protected void createAttributeProperty(
             PersistentDescriptor descriptor,
             ObjAttribute attribute) {
-        Class propertyType = attribute.getJavaClass();
+        Class<?> propertyType = attribute.getJavaClass();
         Accessor accessor = createAccessor(descriptor, attribute.getName(), propertyType);
         descriptor.addDeclaredProperty(new SimpleAttributeProperty(
                 descriptor,
@@ -146,7 +142,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             EmbeddedAttribute embeddedAttribute,
             ObjAttribute attribute) {
 
-        Class embeddableClass = embeddedAttribute.getJavaClass();
+        Class<?> embeddableClass = embeddedAttribute.getJavaClass();
 
         String propertyPath = attribute.getName();
         int lastDot = propertyPath.lastIndexOf('.');
@@ -204,9 +200,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
 
         if (inheritanceTree != null) {
 
-            Iterator it = inheritanceTree.getChildren().iterator();
-            while (it.hasNext()) {
-                EntityInheritanceTree child = (EntityInheritanceTree) it.next();
+            for (EntityInheritanceTree child : inheritanceTree.getChildren()) {
                 descriptor.addSubclassDescriptor(descriptorMap.getDescriptor(child
                         .getEntity()
                         .getName()));
@@ -222,7 +216,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     protected Accessor createAccessor(
             PersistentDescriptor descriptor,
             String propertyName,
-            Class propertyType) throws PropertyException {
+            Class<?> propertyType) throws PropertyException {
         return new FieldAccessor(descriptor.getObjectClass(), propertyName, propertyType);
     }
 
@@ -245,9 +239,9 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
      * Creates an accessor for the property of the embeddable class.
      */
     protected Accessor createEmbeddableAccessor(
-            Class embeddableClass,
+            Class<?> embeddableClass,
             String propertyName,
-            Class propertyType) {
+            Class<?> propertyType) {
         return new FieldAccessor(embeddableClass, propertyName, propertyType);
     }
 }

@@ -31,5 +31,5 @@ abstract class Converter {
     /**
      * Converts object to supported class without doing any type checking.
      */
-    abstract Object convert(Object value, Class type);
+    abstract Object convert(Object value, Class<?> type);
 }

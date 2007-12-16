@@ -33,7 +33,7 @@ class EnhancedPojoPropertyFaultHandler {
 
     private Accessor faultResolvedFlagAccessor;
 
-    EnhancedPojoPropertyFaultHandler(Class objectClass, String propertyName) {
+    EnhancedPojoPropertyFaultHandler(Class<?> objectClass, String propertyName) {
         this.faultResolvedFlagAccessor = new FieldAccessor(
                 objectClass,
                 FAULT_FIELD_PREFIX + propertyName,
