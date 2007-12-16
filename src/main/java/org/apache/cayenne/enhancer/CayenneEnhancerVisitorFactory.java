@@ -21,6 +21,7 @@ package org.apache.cayenne.enhancer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.objectweb.asm.ClassVisitor;
@@ -35,6 +36,7 @@ import org.objectweb.asm.commons.SerialVersionUIDAdder;
 public class CayenneEnhancerVisitorFactory implements EnhancerVisitorFactory {
 
     protected Map<String, ObjEntity> entitiesByClass;
+    protected Map<String, Embeddable> embeddablesByClass;
 
     public CayenneEnhancerVisitorFactory(EntityResolver entityResolver) {
         indexEntities(entityResolver);
@@ -46,25 +48,47 @@ public class CayenneEnhancerVisitorFactory implements EnhancerVisitorFactory {
         // manually
 
         this.entitiesByClass = new HashMap<String, ObjEntity>();
-        for (Object object : entityResolver.getObjEntities()) {
-            ObjEntity entity = (ObjEntity) object;
+        for (ObjEntity entity : entityResolver.getObjEntities()) {
             entitiesByClass.put(entity.getClassName(), entity);
+        }
+
+        this.embeddablesByClass = new HashMap<String, Embeddable>();
+        for (Embeddable embeddable : entityResolver.getEmbeddables()) {
+            embeddablesByClass.put(embeddable.getClassName(), embeddable);
         }
     }
 
     public ClassVisitor createVisitor(String className, ClassVisitor out) {
-        ObjEntity entity = entitiesByClass.get(className.replace('/', '.'));
-        if (entity == null) {
-            return null;
+        String key = className.replace('/', '.');
+
+        ObjEntity entity = entitiesByClass.get(key);
+        if (entity != null) {
+
+            // create enhancer chain
+            PersistentInterfaceVisitor e1 = new PersistentInterfaceVisitor(out);
+            PersistentAccessorVisitor e2 = new PersistentAccessorVisitor(e1, entity);
+
+            // this ensures that both enhanced and original classes have compatible
+            // serialized
+            // format even if no serialVersionUID is defined by the user
+            SerialVersionUIDAdder e3 = new SerialVersionUIDAdder(e2);
+            return e3;
         }
 
-        // create enhancer chain
-        PersistentInterfaceVisitor e1 = new PersistentInterfaceVisitor(out);
-        PersistentAccessorVisitor e2 = new PersistentAccessorVisitor(e1, entity);
+        Embeddable embeddable = embeddablesByClass.get(key);
+        if (embeddable != null) {
+            // create enhancer chain
+            EmbeddableVisitor e1 = new EmbeddableVisitor(out);
 
-        // this ensures that both enhanced and original classes have compatible serialized
-        // format even if no serialVersionUID is defined by the user
-        SerialVersionUIDAdder e3 = new SerialVersionUIDAdder(e2);
-        return e3;
+            // TODO: andrus 12/16/2007 - setter visitor...
+
+            // this ensures that both enhanced and original classes have compatible
+            // serialized
+            // format even if no serialVersionUID is defined by the user
+            SerialVersionUIDAdder e2 = new SerialVersionUIDAdder(e1);
+            return e2;
+        }
+
+        return null;
     }
 }
