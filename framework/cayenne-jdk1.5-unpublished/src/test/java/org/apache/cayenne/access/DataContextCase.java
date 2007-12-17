@@ -130,4 +130,9 @@ public class DataContextCase extends CayenneCase {
 
         return painting;
     }
+    
+    // dummy test case so junit does not complain about missing tests
+    public void testNoOperation() {
+        assertTrue(true);
+    }
 }

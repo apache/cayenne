@@ -127,4 +127,10 @@ public class CayenneDOTestBase extends CayenneCase {
         List pts = ctxt.performQuery(q);
         return (pts.size() > 0) ? (PaintingInfo) pts.get(0) : null;
     }
+    
+    // dummy test case so junit does not complain about missing tests
+    public void testNoOperation() {
+        assertTrue(true);
+    }
+
 }

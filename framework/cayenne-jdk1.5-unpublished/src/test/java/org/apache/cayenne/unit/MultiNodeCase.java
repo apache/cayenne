@@ -58,4 +58,9 @@ public class MultiNodeCase extends CayenneCase {
     public DataNode getNode2() {
         return accessStack.getDataDomain().getNode(NODE2);
     }
+    
+    // dummy test case so junit does not complain about missing tests
+    public void testNoOperation() {
+        assertTrue(true);
+    }
 }
