@@ -66,6 +66,11 @@
 			<groupId>asm</groupId>
 			<artifactId>asm-commons</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jpa_3.0_spec</artifactId>
+		</dependency>
                 
 		<dependency>
 			<groupId>commons-collections</groupId>
