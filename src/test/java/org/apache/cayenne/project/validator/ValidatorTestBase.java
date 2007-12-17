@@ -105,4 +105,9 @@ public class ValidatorTestBase extends TestCase {
 
         return oa1;
     }
+    
+    // dummy test case so junit does not complain about missing tests
+    public void testNoOperation() {
+        assertTrue(true);
+    }
 }
