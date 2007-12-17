@@ -35,7 +35,7 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * @author Andrus Adamchik
  */
-public class DataContextCase extends CayenneCase {
+public abstract class DataContextCase extends CayenneCase {
 
     public static final int artistCount = 25;
     public static final int galleryCount = 10;
@@ -129,10 +129,5 @@ public class DataContextCase extends CayenneCase {
         context.commitChanges();
 
         return painting;
-    }
-    
-    // dummy test case so junit does not complain about missing tests
-    public void testNoOperation() {
-        assertTrue(true);
     }
 }

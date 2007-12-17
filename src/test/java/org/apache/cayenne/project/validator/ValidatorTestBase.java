@@ -36,7 +36,7 @@ import org.apache.cayenne.project.ApplicationProject;
 /**
  * @author Andrus Adamchik
  */
-public class ValidatorTestBase extends TestCase {
+public abstract class ValidatorTestBase extends TestCase {
 
     protected static int counter = 1;
 
@@ -104,10 +104,5 @@ public class ValidatorTestBase extends TestCase {
         oa1.setDbAttribute(a1);
 
         return oa1;
-    }
-    
-    // dummy test case so junit does not complain about missing tests
-    public void testNoOperation() {
-        assertTrue(true);
     }
 }
