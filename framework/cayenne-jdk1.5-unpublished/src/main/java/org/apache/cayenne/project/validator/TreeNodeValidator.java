@@ -25,6 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -69,6 +70,10 @@ public abstract class TreeNodeValidator {
     public static void validate(ProjectPath path, Validator validator) {
         Object validatedObj = path.getObject();
         TreeNodeValidator validatorObj = null;
+        if (validatedObj instanceof EmbeddedAttribute) {
+            //TODO
+            return;
+        }
         if (validatedObj instanceof ObjAttribute) {
             validatorObj = objAttrValidator;
         }

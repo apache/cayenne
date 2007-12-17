@@ -34,6 +34,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.NodeIdChangeOperation;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ArcProperty;
@@ -122,16 +123,11 @@ abstract class DataDomainSyncBucket {
 
             // Note that this logic won't allow flattened attributes to span multiple
             // databases...
-            Iterator j = descriptor.getEntity().getAttributeMap().values().iterator();
-            while (j.hasNext()) {
-                Object next = j.next();
-
+            for (ObjAttribute objAttribute : descriptor.getEntity().getAttributeMap().values()) {
                 // TODO: andrus, 2/10/2007 - handle embedded
-                if (!(next instanceof ObjAttribute)) {
+                if (objAttribute instanceof EmbeddedAttribute) {
                     continue;
                 }
-
-                ObjAttribute objAttribute = (ObjAttribute) next;
                 if (!objAttribute.isCompound()) {
                     continue;
                 }

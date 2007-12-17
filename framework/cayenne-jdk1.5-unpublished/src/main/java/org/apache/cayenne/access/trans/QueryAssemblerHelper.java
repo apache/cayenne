@@ -33,6 +33,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -316,6 +317,10 @@ public abstract class QueryAssemblerHelper {
                 Expression expression = (Expression) op;
                 if (expression.getType() == Expression.OBJ_PATH) {
                     Object last = getObjEntity().lastPathComponent(expression);
+                    //TODO: handle EmbeddableAttribute
+                    if (last instanceof EmbeddableAttribute)
+                        break;
+                    
                     if (last instanceof ObjAttribute) {
                         attribute = ((ObjAttribute) last).getDbAttribute();
                         break;

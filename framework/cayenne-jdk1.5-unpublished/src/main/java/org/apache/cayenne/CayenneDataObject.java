@@ -35,6 +35,7 @@ import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -563,7 +564,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
         for (Object next : objEntity.getAttributes()) {
 
             // TODO: andrus, 2/20/2007 - handle embedded attribute
-            if (!(next instanceof ObjAttribute)) {
+            if (next instanceof EmbeddedAttribute) {
                 continue;
             }
 
