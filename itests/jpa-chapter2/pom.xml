@@ -68,6 +68,7 @@
 
 				<configuration>
 					<forkMode>once</forkMode>
+					<useSystemClassLoader>true</useSystemClassLoader>
 					<argLine>
 						-javaagent:${settings.localRepository}/org/apache/cayenne/cayenne-agent/${version}/cayenne-agent-${version}.jar
 					</argLine>
