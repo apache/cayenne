@@ -37,6 +37,7 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /** 
  * Translates parts of the query to SQL.
@@ -85,11 +86,11 @@ public abstract class QueryAssemblerHelper {
     /** Processes parts of the OBJ_PATH expression. */
     protected void appendObjPath(StringBuffer buf, Expression pathExp) {
 
-        Iterator<Object> it = getObjEntity().resolvePathComponents(pathExp);
+        Iterator<CayenneMapEntry> it = getObjEntity().resolvePathComponents(pathExp);
         ObjRelationship lastRelationship = null;
 
         while (it.hasNext()) {
-            Object pathComp = it.next();
+            CayenneMapEntry pathComp = it.next();
 
             if (pathComp instanceof ObjRelationship) {
                 ObjRelationship rel = (ObjRelationship) pathComp;
@@ -122,10 +123,10 @@ public abstract class QueryAssemblerHelper {
     }
 
     protected void appendDbPath(StringBuffer buf, Expression pathExp) {
-        Iterator<Object> it = getDbEntity().resolvePathComponents(pathExp);
+        Iterator<CayenneMapEntry> it = getDbEntity().resolvePathComponents(pathExp);
 
         while (it.hasNext()) {
-            Object pathComp = it.next();
+            CayenneMapEntry pathComp = it.next();
             if (pathComp instanceof DbRelationship) {
                 DbRelationship rel = (DbRelationship) pathComp;
 

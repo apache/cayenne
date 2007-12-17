@@ -22,6 +22,7 @@ package org.apache.cayenne.map;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.IteratorUtils;
@@ -138,15 +139,15 @@ public class ObjAttribute extends Attribute {
      * Returns a DbAttribute mapped by this ObjAttribute.
      */
     public DbAttribute getDbAttribute() {
-        Iterator<Object> pathIterator = getDbPathIterator();
-        Object o = null;
+        Iterator<CayenneMapEntry> pathIterator = getDbPathIterator();
+        CayenneMapEntry o = null;
         while (pathIterator.hasNext()) {
             o = pathIterator.next();
         }
         return (DbAttribute) o;
     }
 
-    public Iterator<Object> getDbPathIterator() {
+    public Iterator<CayenneMapEntry> getDbPathIterator() {
         if (dbAttributePath == null) {
             return IteratorUtils.EMPTY_ITERATOR;
         }
@@ -163,7 +164,7 @@ public class ObjAttribute extends Attribute {
 
         int lastPartStart = dbAttributePath.lastIndexOf('.');
         if (lastPartStart < 0) {
-            Attribute attribute = dbEnt.getAttribute(dbAttributePath);
+            DbAttribute attribute = (DbAttribute) dbEnt.getAttribute(dbAttributePath);
             if (attribute == null) {
                 return IteratorUtils.EMPTY_ITERATOR;
             }

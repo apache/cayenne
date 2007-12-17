@@ -26,6 +26,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 
 public class EntityTest extends CayenneCase {
@@ -168,7 +169,7 @@ public class EntityTest extends CayenneCase {
         // itertator should be returned, but when trying to read 1st component,
         // it should throw an exception....
         ObjEntity galleryEnt = getObjEntity("Gallery");
-        Iterator it = galleryEnt.resolvePathComponents(pathExpr);
+        Iterator<CayenneMapEntry> it = galleryEnt.resolvePathComponents(pathExpr);
         assertTrue(it.hasNext());
 
         try {
@@ -200,7 +201,7 @@ public class EntityTest extends CayenneCase {
         pathExpr.setOperand(0, "galleryName");
 
         ObjEntity galleryEnt = getObjEntity("Gallery");
-        Iterator it = galleryEnt.resolvePathComponents(pathExpr);
+        Iterator<CayenneMapEntry> it = galleryEnt.resolvePathComponents(pathExpr);
 
         // iterator must contain a single ObjAttribute
         assertNotNull(it);
@@ -221,7 +222,7 @@ public class EntityTest extends CayenneCase {
         entity.addAttribute(attribute1);
         entity.addAttribute(attribute2);
 
-        Collection attributes = entity.getAttributes();
+        Collection<? extends Attribute> attributes = entity.getAttributes();
         assertEquals(2, attributes.size());
 
         entity.removeAttribute("a1");

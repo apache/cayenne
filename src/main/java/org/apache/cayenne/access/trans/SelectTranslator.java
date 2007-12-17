@@ -49,6 +49,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * A builder of JDBC PreparedStatements based on Cayenne SelectQueries. Translates
@@ -377,10 +378,10 @@ public class SelectTranslator extends QueryAssembler {
                 String path = (String) extraPaths.next();
                 Expression pathExp = oe.translateToDbPath(Expression.fromString(path));
 
-                Iterator it = table.resolvePathComponents(pathExp);
+                Iterator<CayenneMapEntry> it = table.resolvePathComponents(pathExp);
 
                 // add joins and find terminating element
-                Object pathComponent = null;
+                CayenneMapEntry pathComponent = null;
                 while (it.hasNext()) {
                     pathComponent = it.next();
 
@@ -430,13 +431,7 @@ public class SelectTranslator extends QueryAssembler {
         // handle joint prefetches directly attached to this query...
         if (query.getPrefetchTree() != null) {
 
-            Iterator jointPrefetches = query
-                    .getPrefetchTree()
-                    .adjacentJointNodes()
-                    .iterator();
-
-            while (jointPrefetches.hasNext()) {
-                PrefetchTreeNode prefetch = (PrefetchTreeNode) jointPrefetches.next();
+            for (PrefetchTreeNode prefetch : query.getPrefetchTree().adjacentJointNodes()) {
 
                 // for each prefetch add all joins plus columns from the target entity
                 Expression prefetchExp = Expression.fromString(prefetch.getPath());

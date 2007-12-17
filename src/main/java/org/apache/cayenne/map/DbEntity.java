@@ -258,7 +258,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         return (Collection<DbRelationship>) super.getRelationships();
     }
 
-    public Iterator<Object> resolvePathComponents(Expression pathExp)
+    public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp)
             throws ExpressionException {
         if (pathExp.getType() != Expression.DB_PATH) {
             throw new ExpressionException("Invalid expression type: '"
@@ -603,7 +603,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             if (path.equals(relationshipPath)) {
 
                 LinkedList<String> finalPath = new LinkedList<String>();
-                Iterator<Object> it = resolvePathComponents(path);
+                Iterator<CayenneMapEntry> it = resolvePathComponents(path);
 
                 // just do one step back and one step forward to create correct joins...
                 // find last rel...
@@ -629,8 +629,8 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             }
 
             // case (3)
-            Iterator<Object> pathIt = resolvePathComponents(path);
-            Iterator<Object> relationshipIt = resolvePathComponents(relationshipPath);
+            Iterator<CayenneMapEntry> pathIt = resolvePathComponents(path);
+            Iterator<CayenneMapEntry> relationshipIt = resolvePathComponents(relationshipPath);
 
             // for inserts from the both ends use LinkedList
             LinkedList<String> finalPath = new LinkedList<String>();
@@ -640,7 +640,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
                 DbRelationship nextDBR = (DbRelationship) relationshipIt.next();
 
                 // expression components may be attributes or relationships
-                CayenneMapEntry next = (CayenneMapEntry) pathIt.next();
+                CayenneMapEntry next = pathIt.next();
 
                 if (nextDBR != next) {
                     // found split point
@@ -662,7 +662,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
 
             while (pathIt.hasNext()) {
                 // components may be attributes or relationships
-                CayenneMapEntry next = (CayenneMapEntry) pathIt.next();
+                CayenneMapEntry next = pathIt.next();
                 appendPath(finalPath, next);
             }
 
