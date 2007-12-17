@@ -33,7 +33,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
-public class CayenneDOTestBase extends CayenneCase {
+public abstract class CayenneDOTestBase extends CayenneCase {
 
     public static final String artistName = "artist with one painting";
     public static final String galleryName = "my gallery";
@@ -127,10 +127,4 @@ public class CayenneDOTestBase extends CayenneCase {
         List pts = ctxt.performQuery(q);
         return (pts.size() > 0) ? (PaintingInfo) pts.get(0) : null;
     }
-    
-    // dummy test case so junit does not complain about missing tests
-    public void testNoOperation() {
-        assertTrue(true);
-    }
-
 }

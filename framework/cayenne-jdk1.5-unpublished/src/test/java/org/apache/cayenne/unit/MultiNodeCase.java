@@ -28,7 +28,7 @@ import org.apache.cayenne.access.DataNode;
  * 
  * @author Andrus Adamchik
  */
-public class MultiNodeCase extends CayenneCase {
+public abstract class MultiNodeCase extends CayenneCase {
 
     static final String NODE1 = "map-db1";
     static final String NODE2 = "map-db2";
@@ -57,10 +57,5 @@ public class MultiNodeCase extends CayenneCase {
 
     public DataNode getNode2() {
         return accessStack.getDataDomain().getNode(NODE2);
-    }
-    
-    // dummy test case so junit does not complain about missing tests
-    public void testNoOperation() {
-        assertTrue(true);
     }
 }
