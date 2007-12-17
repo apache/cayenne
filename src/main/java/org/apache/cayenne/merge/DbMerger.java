@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +35,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -65,7 +63,10 @@ public class DbMerger {
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DbAdapter adapter, DataSource dataSource, DataMap dataMap) {
+    public List<MergerToken> createMergeTokens(
+            DbAdapter adapter,
+            DataSource dataSource,
+            DataMap dataMap) {
         factory = adapter.mergerFactory();
 
         List<MergerToken> tokens = new ArrayList<MergerToken>();
@@ -80,7 +81,8 @@ public class DbMerger {
                     null,
                     new DataMap());
 
-            Map<String, DbEntity> dbEntityToDropByName = new HashMap<String, DbEntity>(detectedDataMap.getDbEntityMap());
+            Map<String, DbEntity> dbEntityToDropByName = new HashMap<String, DbEntity>(
+                    detectedDataMap.getDbEntityMap());
 
             for (DbEntity dbEntity : dataMap.getDbEntities()) {
                 String tableName = dbEntity.getName();
@@ -128,19 +130,20 @@ public class DbMerger {
         return tokens;
     }
 
-    private void checkRows(List<MergerToken> tokens, DbEntity dbEntity, DbEntity detectedEntity) {
+    private void checkRows(
+            List<MergerToken> tokens,
+            DbEntity dbEntity,
+            DbEntity detectedEntity) {
 
         // columns to drop
-        for (Iterator<Attribute> it = detectedEntity.getAttributes().iterator(); it.hasNext();) {
-            DbAttribute detected = (DbAttribute) it.next();
+        for (DbAttribute detected : detectedEntity.getAttributes()) {
             if (findDbAttribute(dbEntity, detected.getName()) == null) {
                 tokens.add(factory.createDropColumToDb(dbEntity, detected));
             }
         }
 
         // columns to add or modify
-        for (Iterator<Attribute> it = dbEntity.getAttributes().iterator(); it.hasNext();) {
-            DbAttribute attr = (DbAttribute) it.next();
+        for (DbAttribute attr : dbEntity.getAttributes()) {
             String columnName = attr.getName().toUpperCase();
 
             DbAttribute detected = findDbAttribute(detectedEntity, columnName);
@@ -170,7 +173,10 @@ public class DbMerger {
                 case Types.VARCHAR:
                 case Types.CHAR:
                     if (attr.getMaxLength() != detected.getMaxLength()) {
-                        tokens.add(factory.createSetColumnTypeToDb(dbEntity, detected, attr));
+                        tokens.add(factory.createSetColumnTypeToDb(
+                                dbEntity,
+                                detected,
+                                attr));
                     }
                     break;
             }
@@ -194,8 +200,7 @@ public class DbMerger {
      * case insensitive search for a {@link DbAttribute} in a {@link DbEntity} by name
      */
     private DbAttribute findDbAttribute(DbEntity entity, String caseInsensitiveName) {
-        for (Iterator<Attribute> it = entity.getAttributes().iterator(); it.hasNext();) {
-            DbAttribute a = (DbAttribute) it.next();
+        for (DbAttribute a : entity.getAttributes()) {
             if (a.getName().equalsIgnoreCase(caseInsensitiveName)) {
                 return a;
             }

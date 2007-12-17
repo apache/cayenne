@@ -213,7 +213,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable map of relationships sorted by name.
      */
-    public SortedMap<String, Relationship> getRelationshipMap() {
+    public SortedMap<String, ? extends Relationship> getRelationshipMap() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableSortedMap(relationships);
@@ -240,7 +240,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable collection of Relationships that exist in this entity.
      */
-    public Collection<Relationship> getRelationships() {
+    public Collection<? extends Relationship> getRelationships() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableCollection(relationships.values());
@@ -249,7 +249,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable sorted map of entity attributes.
      */
-    public SortedMap<String, Attribute> getAttributeMap() {
+    public SortedMap<String, ? extends Attribute> getAttributeMap() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableSortedMap(attributes);
@@ -258,7 +258,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable collection of entity attributes.
      */
-    public Collection<Attribute> getAttributes() {
+    public Collection<? extends Attribute> getAttributes() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableCollection(attributes.values());

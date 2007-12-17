@@ -35,7 +35,7 @@ import org.apache.cayenne.util.XMLEncoder;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class EmbeddedAttribute extends Attribute {
+public class EmbeddedAttribute extends ObjAttribute {
 
     protected String type;
     protected SortedMap<String, String> attributeOverrides;

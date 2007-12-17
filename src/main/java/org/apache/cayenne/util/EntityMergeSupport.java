@@ -94,12 +94,12 @@ public class EntityMergeSupport {
                 Iterator rait = getMeaningfulFKs(entity).iterator();
                 while (rait.hasNext()) {
                     DbAttribute da = (DbAttribute) rait.next();
-                    ObjAttribute oa = entity.getAttributeForDbAttribute(da);
+                    ObjAttribute oa = (ObjAttribute) entity.getAttributeForDbAttribute(da);
                     while (oa != null) {
                         String attrName = oa.getName();
                         entity.removeAttribute(attrName);
                         changed = true;
-                        oa = entity.getAttributeForDbAttribute(da);
+                        oa = (ObjAttribute) entity.getAttributeForDbAttribute(da);
                     }
                 }
             }

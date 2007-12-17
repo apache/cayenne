@@ -105,7 +105,7 @@ public class RuntimeSaveDelegate implements ConfigSaverDelegate {
      * @since 1.1
      */
     public String viewLocation(String dataViewName) {
-        return (String) config.getDataViewLocations().get(dataViewName);
+        return config.getDataViewLocations().get(dataViewName);
     }
 
     public Iterator propertyNames(String domainName) {

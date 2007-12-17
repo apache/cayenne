@@ -171,7 +171,7 @@ public class ObjRelationshipTest extends CayenneCase {
         relationship.refreshFromPath(false);
         assertFalse(relationship.dbRelationshipsRefreshNeeded);
 
-        List resolvedPath = relationship.getDbRelationships();
+        List<DbRelationship> resolvedPath = relationship.getDbRelationships();
         assertEquals(2, resolvedPath.size());
         assertSame(dummyR, resolvedPath.get(0));
         assertSame(pathR, resolvedPath.get(1));

@@ -49,7 +49,7 @@ public class PrefetchSelectQuery extends SelectQuery {
 
     // TODO, Andrus 11/17/2005 - i guess we should deprecate
     // SelectQuery.customDbAttribute, replacing it with "resultPaths" mechanism.
-    protected Collection resultPaths;
+    protected Collection<String> resultPaths;
 
     /**
      * Creates a new disjoint prefetch select query.
@@ -155,7 +155,7 @@ public class PrefetchSelectQuery extends SelectQuery {
      * 
      * @since 1.2
      */
-    public Collection getResultPaths() {
+    public Collection<String> getResultPaths() {
         return resultPaths != null
                 ? Collections.unmodifiableCollection(resultPaths)
                 : Collections.EMPTY_SET;
@@ -167,9 +167,9 @@ public class PrefetchSelectQuery extends SelectQuery {
      * 
      * @since 1.2
      */
-    Collection nonNullResultPaths() {
+    Collection<String> nonNullResultPaths() {
         if (resultPaths == null) {
-            resultPaths = new HashSet();
+            resultPaths = new HashSet<String>();
         }
 
         return resultPaths;

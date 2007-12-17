@@ -202,23 +202,16 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         }
 
         // add class attributes
-        Iterator attributes = getResolver().getEntity().getAttributes().iterator();
-        while (attributes.hasNext()) {
-            ObjAttribute attribute = (ObjAttribute) attributes.next();
+        for (ObjAttribute attribute : getResolver().getEntity().getAttributes()) {
             String target = attribute.getDbAttributePath();
 
             appendColumn(targetSource, target, prefix + target);
         }
 
         // add relationships
-        Iterator relationships = getResolver().getEntity().getRelationships().iterator();
-        while (relationships.hasNext()) {
-            ObjRelationship rel = (ObjRelationship) relationships.next();
+        for (ObjRelationship rel : getResolver().getEntity().getRelationships()) {
             DbRelationship dbRel = rel.getDbRelationships().get(0);
-            Iterator dbAttributes = dbRel.getSourceAttributes().iterator();
-
-            while (dbAttributes.hasNext()) {
-                DbAttribute attribute = (DbAttribute) dbAttributes.next();
+            for (DbAttribute attribute : dbRel.getSourceAttributes() ){
                 String target = attribute.getName();
 
                 appendColumn(targetSource, target, prefix + target);
@@ -226,9 +219,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         }
 
         // add unmapped PK
-        Iterator pks = getResolver().getEntity().getDbEntity().getPrimaryKeys().iterator();
-        while (pks.hasNext()) {
-            DbAttribute pk = (DbAttribute) pks.next();
+        for (DbAttribute pk : getResolver().getEntity().getDbEntity().getPrimaryKeys()) {
             appendColumn(targetSource, pk.getName(), prefix + pk.getName());
         }
 

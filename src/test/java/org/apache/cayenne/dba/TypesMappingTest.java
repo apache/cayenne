@@ -97,7 +97,7 @@ public class TypesMappingTest extends CayenneCase {
         TypesMapping map = createTypesMapping();
         Iterator it = map.databaseTypes.keySet().iterator();
         while (it.hasNext()) {
-            List vals = (List) map.databaseTypes.get(it.next());
+            List vals = map.databaseTypes.get(it.next());
             actualLen += vals.size();
         }
 
