@@ -31,6 +31,7 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -539,7 +540,7 @@ public class ObjRelationship extends Relationship implements EventListener {
         StringBuffer validPath = new StringBuffer();
 
         try {
-            Iterator<Object> it = entity.resolvePathComponents(new ASTDbPath(path));
+            Iterator<CayenneMapEntry> it = entity.resolvePathComponents(new ASTDbPath(path));
             while (it.hasNext()) {
                 DbRelationship relationship = (DbRelationship) it.next();
 
@@ -594,7 +595,7 @@ public class ObjRelationship extends Relationship implements EventListener {
 
                 try {
                     // add new relationships from path
-                    Iterator<Object> it = entity.resolvePathComponents(new ASTDbPath(
+                    Iterator<CayenneMapEntry> it = entity.resolvePathComponents(new ASTDbPath(
                             this.dbRelationshipPath));
 
                     while (it.hasNext()) {

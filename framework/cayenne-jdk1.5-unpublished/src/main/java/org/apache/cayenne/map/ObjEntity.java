@@ -812,7 +812,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         return (superEntity != null) ? superEntity.isSubentityOf(entity) : false;
     }
 
-    public Iterator<Object> resolvePathComponents(Expression pathExp) throws ExpressionException {
+    public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp) throws ExpressionException {
 
         // resolve DB_PATH if we can
         if (pathExp.getType() == Expression.DB_PATH) {
@@ -896,7 +896,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
 
         // TODO: make it a public method - resolveDBPathComponents or something...
         // seems generally useful
-        String toDbPath(Iterator<Object> objectPathComponents) {
+        String toDbPath(Iterator<CayenneMapEntry> objectPathComponents) {
             StringBuffer buf = new StringBuffer();
             while (objectPathComponents.hasNext()) {
                 Object component = objectPathComponents.next();

@@ -281,8 +281,8 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * @see #resolvePathComponents(Expression)
      */
     public Object lastPathComponent(Expression pathExp) {
-        Object last = null;
-        Iterator<Object> it = resolvePathComponents(pathExp);
+        CayenneMapEntry last = null;
+        Iterator<CayenneMapEntry> it = resolvePathComponents(pathExp);
         while (it.hasNext()) {
             last = it.next();
         }
@@ -297,7 +297,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * return an Iterator, but an attempt to read the first invalid path component will
      * result in ExpressionException.
      */
-    public abstract Iterator<Object> resolvePathComponents(Expression pathExp)
+    public abstract Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp)
             throws ExpressionException;
 
     /**
@@ -306,13 +306,13 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * entity, this method will still return an Iterator, but an attempt to read the first
      * invalid path component will result in ExpressionException.
      */
-    public Iterator<Object> resolvePathComponents(String path) throws ExpressionException {
+    public Iterator<CayenneMapEntry> resolvePathComponents(String path) throws ExpressionException {
         return new PathIterator(path);
     }
 
     // An iterator resolving mapping components represented by the path string.
     // This entity is assumed to be the root of the path.
-    final class PathIterator implements Iterator<Object> {
+    final class PathIterator implements Iterator<CayenneMapEntry> {
 
         private StringTokenizer toks;
         private Entity currentEnt;
@@ -329,7 +329,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
             return toks.hasMoreTokens();
         }
 
-        public Object next() {
+        public CayenneMapEntry next() {
             String pathComp = toks.nextToken();
 
             // see if this is an attribute
