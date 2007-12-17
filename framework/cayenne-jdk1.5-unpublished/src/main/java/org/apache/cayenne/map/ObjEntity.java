@@ -605,12 +605,12 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * Returns a SortedMap of all attributes that either belong to this ObjEntity or
      * inherited.
      */
-    public SortedMap<String, Attribute> getAttributeMap() {
+    public SortedMap<String, ObjAttribute> getAttributeMap() {
         if (superEntityName == null) {
-            return super.getAttributeMap();
+            return (SortedMap<String, ObjAttribute>) super.getAttributeMap();
         }
 
-        SortedMap<String, Attribute> attributeMap = new TreeMap<String, Attribute>();
+        SortedMap<String, ObjAttribute> attributeMap = new TreeMap<String, ObjAttribute>();
         appendAttributes(attributeMap);
         return attributeMap;
     }
@@ -618,8 +618,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
     /**
      * Recursively appends all attributes in the entity inheritance hierarchy.
      */
-    final void appendAttributes(Map<String, Attribute> map) {
-        map.putAll(super.getAttributeMap());
+    final void appendAttributes(Map<String, ObjAttribute> map) {
+        map.putAll((Map<String, ObjAttribute>) super.getAttributeMap());
 
         ObjEntity superEntity = getSuperEntity();
         if (superEntity != null) {
@@ -631,9 +631,9 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * Returns a Collection of all attributes that either belong to this ObjEntity or
      * inherited.
      */
-    public Collection<Attribute> getAttributes() {
+    public Collection<ObjAttribute> getAttributes() {
         if (superEntityName == null) {
-            return super.getAttributes();
+            return (Collection<ObjAttribute>) super.getAttributes();
         }
 
         return getAttributeMap().values();
@@ -645,8 +645,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * 
      * @since 1.1
      */
-    public Collection<Attribute> getDeclaredAttributes() {
-        return super.getAttributes();
+    public Collection<ObjAttribute> getDeclaredAttributes() {
+        return (Collection<ObjAttribute>) super.getAttributes();
     }
 
     /**
@@ -654,7 +654,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * Returns null if no matching attribute is found.
      */
     public Relationship getRelationship(String name) {
-        Relationship relationship = super.getRelationship(name);
+        ObjRelationship relationship = (ObjRelationship) super.getRelationship(name);
         if (relationship != null) {
             return relationship;
         }
@@ -667,12 +667,12 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         return (superEntity != null) ? superEntity.getRelationship(name) : null;
     }
 
-    public SortedMap<String, Relationship> getRelationshipMap() {
+    public SortedMap<String, ObjRelationship> getRelationshipMap() {
         if (superEntityName == null) {
-            return super.getRelationshipMap();
+            return (SortedMap<String, ObjRelationship>) super.getRelationshipMap();
         }
 
-        SortedMap<String, Relationship> relationshipMap = new TreeMap<String, Relationship>();
+        SortedMap<String, ObjRelationship> relationshipMap = new TreeMap<String, ObjRelationship>();
         appendRelationships(relationshipMap);
         return relationshipMap;
     }
@@ -680,8 +680,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
     /**
      * Recursively appends all relationships in the entity inheritance hierarchy.
      */
-    final void appendRelationships(Map<String, Relationship> map) {
-        map.putAll(super.getRelationshipMap());
+    final void appendRelationships(Map<String, ObjRelationship> map) {
+        map.putAll((Map<String, ObjRelationship>) super.getRelationshipMap());
 
         ObjEntity superEntity = getSuperEntity();
         if (superEntity != null) {
@@ -689,9 +689,9 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         }
     }
 
-    public Collection<Relationship> getRelationships() {
+    public Collection<ObjRelationship> getRelationships() {
         if (superEntityName == null) {
-            return super.getRelationships();
+            return (Collection<ObjRelationship>) super.getRelationships();
         }
 
         return getRelationshipMap().values();
@@ -703,8 +703,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * 
      * @since 1.1
      */
-    public Collection<Relationship> getDeclaredRelationships() {
-        return super.getRelationships();
+    public Collection<ObjRelationship> getDeclaredRelationships() {
+        return (Collection<ObjRelationship>) super.getRelationships();
     }
 
     /**
@@ -739,9 +739,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      */
     public ObjRelationship getRelationshipForDbRelationship(DbRelationship dbRelationship) {
         
-        for (Map.Entry<String, Relationship> entry : getRelationshipMap().entrySet()) {
-            ObjRelationship objRel = (ObjRelationship) entry.getValue();
-
+        for (ObjRelationship objRel : getRelationshipMap().values()) {
             List<DbRelationship> relList = objRel.getDbRelationships();
             if (relList.size() != 1) {
                 continue;

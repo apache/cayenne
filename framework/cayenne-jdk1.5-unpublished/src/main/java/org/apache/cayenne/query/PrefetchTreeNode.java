@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import org.apache.cayenne.map.Entity;
@@ -55,7 +54,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     // lookup by segment) is a reasonable tradeoff considering that
     // each node has no more than a few children and lookup by name doesn't happen on
     // traversal, only during creation.
-    protected Collection children;
+    protected Collection<PrefetchTreeNode> children;
 
     /**
      * Creates a root node of the prefetch tree. Children can be added to the parent by
@@ -119,8 +118,8 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
      * same query as the current node. Result excludes this node, regardless of its
      * semantics.
      */
-    public Collection adjacentJointNodes() {
-        Collection c = new ArrayList();
+    public Collection<PrefetchTreeNode> adjacentJointNodes() {
+        Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
         traverse(new AdjacentJoinsOperation(c));
         return c;
     }
@@ -128,8 +127,8 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     /**
      * Returns a collection of PrefetchTreeNodes in this tree with joint semantics.
      */
-    public Collection jointNodes() {
-        Collection c = new ArrayList();
+    public Collection<PrefetchTreeNode> jointNodes() {
+        Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
         traverse(new CollectionBuilderOperation(c, false, true, false, false));
         return c;
     }
@@ -137,8 +136,8 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     /**
      * Returns a collection of PrefetchTreeNodes with disjoint semantics.
      */
-    public Collection disjointNodes() {
-        Collection c = new ArrayList();
+    public Collection<PrefetchTreeNode> disjointNodes() {
+        Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
         traverse(new CollectionBuilderOperation(c, true, false, false, false));
         return c;
     }
@@ -146,8 +145,8 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     /**
      * Returns a collection of PrefetchTreeNodes that are not phantoms.
      */
-    public Collection nonPhantomNodes() {
-        Collection c = new ArrayList();
+    public Collection<PrefetchTreeNode> nonPhantomNodes() {
+        Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
         traverse(new CollectionBuilderOperation(c, true, true, true, false));
         return c;
     }
@@ -175,9 +174,8 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 
         // process children unless processing is blocked...
         if (result && children != null) {
-            Iterator it = children.iterator();
-            while (it.hasNext()) {
-                ((PrefetchTreeNode) it.next()).traverse(processor);
+            for (PrefetchTreeNode child : children) {
+                child.traverse(processor);
             }
         }
 
@@ -268,7 +266,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
         }
 
         if (children == null) {
-            children = new ArrayList(4);
+            children = new ArrayList<PrefetchTreeNode>(4);
         }
 
         children.add(child);
@@ -293,11 +291,9 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 
     protected PrefetchTreeNode getChild(String segment) {
         if (children != null) {
-            Iterator it = children.iterator();
-            while (it.hasNext()) {
-                PrefetchTreeNode next = (PrefetchTreeNode) it.next();
-                if (segment.equals(next.getName())) {
-                    return next;
+            for (PrefetchTreeNode child : children) {
+                if (segment.equals(child.getName())) {
+                    return child;
                 }
             }
         }
@@ -312,7 +308,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     /**
      * Returns an unmodifiable collection of children.
      */
-    public Collection getChildren() {
+    public Collection<PrefetchTreeNode> getChildren() {
         return children == null ? Collections.EMPTY_SET : Collections
                 .unmodifiableCollection(children);
     }
@@ -356,9 +352,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     private Object readResolve() throws ObjectStreamException {
 
         if (hasChildren()) {
-            Iterator it = children.iterator();
-            while (it.hasNext()) {
-                PrefetchTreeNode child = (PrefetchTreeNode) it.next();
+            for (PrefetchTreeNode child : children) {
                 child.parent = this;
             }
         }
@@ -412,13 +406,13 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     // An operation that collects all nodes in a single collection.
     class CollectionBuilderOperation implements PrefetchProcessor {
 
-        Collection nodes;
+        Collection<PrefetchTreeNode> nodes;
         boolean includePhantom;
         boolean includeDisjoint;
         boolean includeJoint;
         boolean includeUnknown;
 
-        CollectionBuilderOperation(Collection nodes, boolean includeDisjoint,
+        CollectionBuilderOperation(Collection<PrefetchTreeNode> nodes, boolean includeDisjoint,
                 boolean includeJoint, boolean includeUnknown, boolean includePhantom) {
             this.nodes = nodes;
 
@@ -463,9 +457,9 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 
     class AdjacentJoinsOperation implements PrefetchProcessor {
 
-        Collection nodes;
+        Collection<PrefetchTreeNode> nodes;
 
-        AdjacentJoinsOperation(Collection nodes) {
+        AdjacentJoinsOperation(Collection<PrefetchTreeNode> nodes) {
             this.nodes = nodes;
         }
 

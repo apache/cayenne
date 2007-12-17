@@ -44,7 +44,7 @@ import org.apache.cayenne.map.ObjRelationship;
  */
 class DataNodeSyncQualifierDescriptor {
 
-    private List attributes;
+    private List<DbAttribute> attributes;
     private List valueTransformers;
     private boolean usingOptimisticLocking;
 
@@ -52,7 +52,7 @@ class DataNodeSyncQualifierDescriptor {
         return usingOptimisticLocking;
     }
 
-    List getAttributes() {
+    List<DbAttribute> getAttributes() {
         return attributes;
     }
 
@@ -61,7 +61,7 @@ class DataNodeSyncQualifierDescriptor {
 
         Map map = new HashMap(len * 2);
         for (int i = 0; i < len; i++) {
-            DbAttribute attribute = (DbAttribute) attributes.get(i);
+            DbAttribute attribute = attributes.get(i);
             if (!map.containsKey(attribute.getName())) {
 
                 Object value = ((Transformer) valueTransformers.get(i)).transform(diff);
@@ -73,15 +73,13 @@ class DataNodeSyncQualifierDescriptor {
     }
 
     void reset(ObjEntity entity, DbEntity dbEntity) {
-        attributes = new ArrayList(3);
+        attributes = new ArrayList<DbAttribute>(3);
         valueTransformers = new ArrayList(3);
         usingOptimisticLocking = entity.getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
 
         // master PK columns
         if (entity.getDbEntity() == dbEntity) {
-            Iterator pkIt = entity.getDbEntity().getPrimaryKeys().iterator();
-            while (pkIt.hasNext()) {
-                final DbAttribute attribute = (DbAttribute) pkIt.next();
+            for (final DbAttribute attribute : entity.getDbEntity().getPrimaryKeys() ) {
                 attributes.add(attribute);
                 valueTransformers.add(new Transformer() {
 
@@ -99,10 +97,7 @@ class DataNodeSyncQualifierDescriptor {
                     dbEntity);
 
             if (masterDependentDbRel != null) {
-
-                Iterator joinsIterator = masterDependentDbRel.getJoins().iterator();
-                while (joinsIterator.hasNext()) {
-                    final DbJoin dbAttrPair = (DbJoin) joinsIterator.next();
+                for (final DbJoin dbAttrPair : masterDependentDbRel.getJoins()) {
                     DbAttribute dbAttribute = dbAttrPair.getTarget();
                     if (!attributes.contains(dbAttribute)) {
 
@@ -147,8 +142,7 @@ class DataNodeSyncQualifierDescriptor {
 
             Iterator relationshipIt = entity.getRelationships().iterator();
             while (relationshipIt.hasNext()) {
-                final ObjRelationship relationship = (ObjRelationship) relationshipIt
-                        .next();
+                final ObjRelationship relationship = (ObjRelationship) relationshipIt.next();
 
                 if (relationship.isUsedForLocking()) {
                     // only care about the first DbRelationship
@@ -156,9 +150,7 @@ class DataNodeSyncQualifierDescriptor {
                             .getDbRelationships()
                             .get(0);
 
-                    Iterator joinsIterator = dbRelationship.getJoins().iterator();
-                    while (joinsIterator.hasNext()) {
-                        final DbJoin dbAttrPair = (DbJoin) joinsIterator.next();
+                    for (final DbJoin dbAttrPair : dbRelationship.getJoins()) {
                         DbAttribute dbAttribute = dbAttrPair.getSource();
 
                         // relationship transformers override attribute transformers for

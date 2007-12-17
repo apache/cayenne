@@ -136,7 +136,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                 }
 
                 // handle meaningful PK
-                ObjAttribute objAttr = objEntity.getAttributeForDbAttribute(dbAttr);
+                ObjAttribute objAttr = (ObjAttribute) objEntity.getAttributeForDbAttribute(dbAttr);
                 if (objAttr != null) {
 
                     Object value = descriptor

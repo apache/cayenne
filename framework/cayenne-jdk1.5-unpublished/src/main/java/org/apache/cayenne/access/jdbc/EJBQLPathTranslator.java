@@ -194,8 +194,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
     private void processLastPathComponent() {
 
-        ObjAttribute attribute = (ObjAttribute) currentEntity
-                .getAttribute(lastPathComponent);
+        ObjAttribute attribute = (ObjAttribute) currentEntity.getAttribute(lastPathComponent);
 
         if (attribute != null) {
             processTerminatingAttribute(attribute);

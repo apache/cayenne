@@ -162,12 +162,20 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     public Collection<DbAttribute> getPrimaryKeys() {
         return Collections.unmodifiableCollection(primaryKey);
     }
-    
+
     /**
      * @deprecated since 3.0 use {@link #getPrimaryKeys()} that returns a collection.
      */
     public List<DbAttribute> getPrimaryKey() {
         return new ArrayList<DbAttribute>(getPrimaryKeys());
+    }
+
+    /**
+     * Returns a Collection of all attributes that either belong to this DbEntity or
+     * inherited.
+     */
+    public Collection<DbAttribute> getAttributes() {
+        return (Collection<DbAttribute>) super.getAttributes();
     }
 
     /**
@@ -181,8 +189,26 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     }
 
     /**
-     * Overrides super to fire an AttributeEvent.
+     * Adds a new attribute to this entity.
+     * 
+     * @throws IllegalArgumentException if Attribute has no name or there is an existing
+     *             attribute with the same name
+     * @throws IllegalArgumentException if a relationship has the same name as this
+     *             attribute
+     * @since 3.0
      */
+    public void addAttribute(DbAttribute attr) {
+        super.addAttribute(attr);
+        this.dbAttributeAdded(new AttributeEvent(this, attr, this, MapEvent.ADD));
+    }
+
+    /**
+     * Overrides super to fire an AttributeEvent.
+     * 
+     * @deprecated in favour of {@link #addAttribute(DbAttribute attr)}. Scheduled for
+     *             removal in Cayenne 4.
+     */
+    @Deprecated
     public void addAttribute(Attribute attr) {
         super.addAttribute(attr);
         this.dbAttributeAdded(new AttributeEvent(this, attr, this, MapEvent.ADD));
@@ -190,7 +216,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
 
     /**
      * Removes attribute from the entity, removes any relationship joins containing this
-     * attribute.
+     * attribute. Does nothing if the attribute name is not found.
      * 
      * @see org.apache.cayenne.map.Entity#removeAttribute(String)
      */
@@ -202,13 +228,9 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
 
         DataMap map = getDataMap();
         if (map != null) {
-            Iterator<DbEntity> ents = map.getDbEntities().iterator();
-            while (ents.hasNext()) {
-                DbEntity ent = ents.next();
-                Iterator<Relationship> it = ent.getRelationships().iterator();
-                while (it.hasNext()) {
-                    DbRelationship rel = (DbRelationship) it.next();
-                    Iterator<DbJoin> joins = rel.getJoins().iterator();
+            for (DbEntity ent : map.getDbEntities()) {
+                for (DbRelationship relationship : ent.getRelationships()) {
+                    Iterator<DbJoin> joins = relationship.getJoins().iterator();
                     while (joins.hasNext()) {
                         DbJoin join = joins.next();
                         if (join.getSource() == attr || join.getTarget() == attr) {
@@ -229,7 +251,15 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         this.dbAttributeRemoved(new AttributeEvent(this, null, this, MapEvent.REMOVE));
     }
 
-    public Iterator<Object> resolvePathComponents(Expression pathExp) throws ExpressionException {
+    /**
+     * Returns a Collection of relationships from this entity or inherited.
+     */
+    public Collection<DbRelationship> getRelationships() {
+        return (Collection<DbRelationship>) super.getRelationships();
+    }
+
+    public Iterator<Object> resolvePathComponents(Expression pathExp)
+            throws ExpressionException {
         if (pathExp.getType() != Expression.DB_PATH) {
             throw new ExpressionException("Invalid expression type: '"
                     + pathExp.expName()
@@ -239,6 +269,10 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         return new PathIterator((String) pathExp.getOperand(0));
     }
 
+    /**
+     * Set the primary key generator for this entity. If null is passed, nothing is
+     * changed.
+     */
     public void setPrimaryKeyGenerator(DbKeyGenerator primaryKeyGenerator) {
         this.primaryKeyGenerator = primaryKeyGenerator;
         if (primaryKeyGenerator != null) {
@@ -246,13 +280,16 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         }
     }
 
+    /**
+     * Return the primary key generator for this entity.
+     */
     public DbKeyGenerator getPrimaryKeyGenerator() {
         return primaryKeyGenerator;
     }
 
     /**
-     * DbEntity property changed. May be name, attribute or relationship added or removed,
-     * etc. Attribute and relationship property changes are handled in respective
+     * DbEntity property changed event. May be name, attribute or relationship added or
+     * removed, etc. Attribute and relationship property changes are handled in respective
      * listeners.
      * 
      * @since 1.2
@@ -270,10 +307,9 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             if (map != null) {
                 // handle all of the relationship target names that need to be changed
                 for (DbEntity dbe : map.getDbEntities()) {
-                    for (Relationship relationship : dbe.getRelationships()) {
-                        DbRelationship rel = (DbRelationship) relationship;
-                        if (rel.getTargetEntity() == this) {
-                            rel.setTargetEntityName(newName);
+                    for (DbRelationship relationship : dbe.getRelationships()) {
+                        if (relationship.getTargetEntity() == this) {
+                            relationship.setTargetEntityName(newName);
                         }
                     }
                 }
@@ -287,12 +323,16 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         }
     }
 
-    /** New entity has been created/added. */
+    /**
+     * New entity has been created/added.
+     */
     public void dbEntityAdded(EntityEvent e) {
         // does nothing currently
     }
 
-    /** Entity has been removed. */
+    /**
+     * Entity has been removed.
+     */
     public void dbEntityRemoved(EntityEvent e) {
         // does nothing currently
     }
@@ -341,10 +381,9 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
 
                     // handle all of the dependent object entity attribute changes
                     for (ObjEntity oe : map.getMappedEntities(ent)) {
-                        for (Attribute attr : oe.getAttributes()) {
-                            ObjAttribute oa = (ObjAttribute) attr;
-                            if (oa.getDbAttribute() == dbAttribute) {
-                                oa.setDbAttributeName(newName);
+                        for (ObjAttribute attr : oe.getAttributes()) {
+                            if (attr.getDbAttribute() == dbAttribute) {
+                                attr.setDbAttributeName(newName);
                             }
                         }
                     }
@@ -352,7 +391,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
                     // handle all of the relationships / joins that use the changed
                     // attribute
                     for (Relationship rel : ent.getRelationships()) {
-                        for (DbJoin join : ((DbRelationship)rel).getJoins()) {
+                        for (DbJoin join : ((DbRelationship) rel).getJoins()) {
                             if (join.getSource() == dbAttribute) {
                                 join.setSourceName(newName);
                             }
@@ -644,7 +683,9 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             return converted.toString();
         }
 
-        private void prependReversedPath(LinkedList<String> finalPath, DbRelationship relationship) {
+        private void prependReversedPath(
+                LinkedList<String> finalPath,
+                DbRelationship relationship) {
             DbRelationship revNextDBR = relationship.getReverseRelationship();
 
             if (revNextDBR == null) {
@@ -659,7 +700,9 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
             finalPath.addFirst(revNextDBR.getName());
         }
 
-        private void appendPath(LinkedList<String> finalPath, CayenneMapEntry pathComponent) {
+        private void appendPath(
+                LinkedList<String> finalPath,
+                CayenneMapEntry pathComponent) {
             finalPath.addLast(pathComponent.getName());
         }
     }

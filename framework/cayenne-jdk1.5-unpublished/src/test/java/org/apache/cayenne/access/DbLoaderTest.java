@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.objectstyle.ashwood.dbutil.Table;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -33,6 +32,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneCase;
+import org.objectstyle.ashwood.dbutil.Table;
 
 public class DbLoaderTest extends CayenneCase {
 

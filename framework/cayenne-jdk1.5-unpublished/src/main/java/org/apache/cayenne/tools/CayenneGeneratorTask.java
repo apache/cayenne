@@ -26,7 +26,6 @@ import org.apache.cayenne.gen.ClassGenerationAction1_1;
 import org.apache.cayenne.gen.ClassGenerator;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.gen.DefaultClassGenerator;
-import org.apache.cayenne.gen.MapClassGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;

@@ -119,12 +119,12 @@ public class EntityInheritanceTree {
         return entity;
     }
 
-    public Collection<Attribute> allAttributes() {
+    public Collection<ObjAttribute> allAttributes() {
         if (subentities == null) {
             return entity.getAttributes();
         }
 
-        Collection<Attribute> c = new ArrayList<Attribute>();
+        Collection<ObjAttribute> c = new ArrayList<ObjAttribute>();
         appendDeclaredAttributes(c);
 
         // add base attributes if any
@@ -136,12 +136,12 @@ public class EntityInheritanceTree {
         return c;
     }
 
-    public Collection<Relationship> allRelationships() {
+    public Collection<ObjRelationship> allRelationships() {
         if (subentities == null) {
             return entity.getRelationships();
         }
 
-        Collection<Relationship> c = new ArrayList<Relationship>();
+        Collection<ObjRelationship> c = new ArrayList<ObjRelationship>();
         appendDeclaredRelationships(c);
 
         // add base relationships if any
@@ -153,7 +153,7 @@ public class EntityInheritanceTree {
         return c;
     }
 
-    protected void appendDeclaredAttributes(Collection<Attribute> c) {
+    protected void appendDeclaredAttributes(Collection<ObjAttribute> c) {
         c.addAll(entity.getDeclaredAttributes());
 
         if (subentities != null) {
@@ -163,7 +163,7 @@ public class EntityInheritanceTree {
         }
     }
 
-    protected void appendDeclaredRelationships(Collection<Relationship> c) {
+    protected void appendDeclaredRelationships(Collection<ObjRelationship> c) {
         c.addAll(entity.getDeclaredRelationships());
 
         if (subentities != null) {

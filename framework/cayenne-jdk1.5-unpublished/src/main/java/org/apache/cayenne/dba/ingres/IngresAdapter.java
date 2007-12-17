@@ -29,7 +29,6 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -62,17 +61,15 @@ public class IngresAdapter extends JdbcAdapter {
         buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");
 
         // columns
-        Iterator<Attribute> it = ent.getAttributes().iterator();
+        Iterator<DbAttribute> it = ent.getAttributes().iterator();
         boolean first = true;
         while (it.hasNext()) {
-            if (first) {
+            if (first)
                 first = false;
-            }
-            else {
+            else
                 buf.append(", ");
-            }
 
-            DbAttribute at = (DbAttribute) it.next();
+            DbAttribute at = it.next();
 
             // attribute may not be fully valid, do a simple check
             if (at.getType() == TypesMapping.NOT_DEFINED) {
