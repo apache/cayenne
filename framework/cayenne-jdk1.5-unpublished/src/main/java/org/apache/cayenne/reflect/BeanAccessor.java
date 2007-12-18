@@ -36,7 +36,7 @@ public class BeanAccessor implements Accessor {
     protected Method writeMethod;
     protected Object nullValue;
 
-    public BeanAccessor(Class objectClass, String propertyName, Class propertyType) {
+    public BeanAccessor(Class<?> objectClass, String propertyName, Class<?> propertyType) {
         if (objectClass == null) {
             throw new IllegalArgumentException("Null objectClass");
         }
@@ -57,10 +57,7 @@ public class BeanAccessor implements Accessor {
             this.writeMethod = descriptor.getWriteMethod();
         }
         catch (IntrospectionException e) {
-            throw new PropertyException(
-                    "Invalid bean property: " + propertyName,
-                    this,
-                    e);
+            throw new PropertyException("Invalid bean property: " + propertyName, this, e);
         }
     }
 
@@ -73,13 +70,14 @@ public class BeanAccessor implements Accessor {
      */
     public Object getValue(Object object) throws PropertyException {
         if (readMethod == null) {
-            throw new PropertyException("Property '"
-                    + propertyName
-                    + "' is not readable", this, object);
+            throw new PropertyException(
+                    "Property '" + propertyName + "' is not readable",
+                    this,
+                    object);
         }
 
         try {
-            return readMethod.invoke(object, null);
+            return readMethod.invoke(object, (Object[]) null);
         }
         catch (Throwable th) {
             throw new PropertyException(
@@ -96,9 +94,10 @@ public class BeanAccessor implements Accessor {
     public void setValue(Object object, Object newValue) throws PropertyException {
 
         if (writeMethod == null) {
-            throw new PropertyException("Property '"
-                    + propertyName
-                    + "' is not writable", this, object);
+            throw new PropertyException(
+                    "Property '" + propertyName + "' is not writable",
+                    this,
+                    object);
         }
 
         // this will take care of primitives.
