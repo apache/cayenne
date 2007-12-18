@@ -66,18 +66,18 @@ public class DbGenerator {
     protected DataDomain domain;
 
     // stores generated SQL statements
-    protected Map dropTables;
-    protected Map createTables;
-    protected Map createConstraints;
-    protected List createPK;
-    protected List dropPK;
+    protected Map<String, String> dropTables;
+    protected Map<String, String> createTables;
+    protected Map<String, List<String>> createConstraints;
+    protected List<String> createPK;
+    protected List<String> dropPK;
 
     /**
      * Contains all DbEntities ordered considering their interdependencies.
      * DerivedDbEntities are filtered out of this list.
      */
-    protected List dbEntitiesInInsertOrder;
-    protected List dbEntitiesRequiringAutoPK;
+    protected List<DbEntity> dbEntitiesInInsertOrder;
+    protected List<DbEntity> dbEntitiesRequiringAutoPK;
 
     protected boolean shouldDropTables;
     protected boolean shouldCreateTables;
@@ -91,7 +91,7 @@ public class DbGenerator {
      * Creates and initializes new DbGenerator.
      */
     public DbGenerator(DbAdapter adapter, DataMap map) {
-        this(adapter, map, Collections.EMPTY_LIST);
+        this(adapter, map, Collections.emptyList());
     }
 
     /**
@@ -148,14 +148,14 @@ public class DbGenerator {
      * this method.
      */
     protected void buildStatements() {
-        dropTables = new HashMap();
-        createTables = new HashMap();
-        createConstraints = new HashMap();
+        dropTables = new HashMap<String, String>();
+        createTables = new HashMap<String, String>();
+        createConstraints = new HashMap<String, List<String>>();
 
         DbAdapter adapter = getAdapter();
-        Iterator it = dbEntitiesInInsertOrder.iterator();
+        Iterator<DbEntity> it = dbEntitiesInInsertOrder.iterator();
         while (it.hasNext()) {
-            DbEntity dbe = (DbEntity) it.next();
+            DbEntity dbe = it.next();
 
             String name = dbe.getName();
 
@@ -204,31 +204,31 @@ public class DbGenerator {
      * Returns a list of all schema statements that should be executed with the current
      * configuration.
      */
-    public List configuredStatements() {
-        List list = new ArrayList();
+    public List<String> configuredStatements() {
+        List<String> list = new ArrayList<String>();
 
         if (shouldDropTables) {
-            ListIterator it = dbEntitiesInInsertOrder
+            ListIterator<DbEntity> it = dbEntitiesInInsertOrder
                     .listIterator(dbEntitiesInInsertOrder.size());
             while (it.hasPrevious()) {
-                DbEntity ent = (DbEntity) it.previous();
+                DbEntity ent = it.previous();
                 list.add(dropTables.get(ent.getName()));
             }
         }
 
         if (shouldCreateTables) {
-            Iterator it = dbEntitiesInInsertOrder.iterator();
+            Iterator<DbEntity> it = dbEntitiesInInsertOrder.iterator();
             while (it.hasNext()) {
-                DbEntity ent = (DbEntity) it.next();
+                DbEntity ent = it.next();
                 list.add(createTables.get(ent.getName()));
             }
         }
 
         if (shouldCreateFKConstraints) {
-            Iterator it = dbEntitiesInInsertOrder.iterator();
+            Iterator<DbEntity> it = dbEntitiesInInsertOrder.iterator();
             while (it.hasNext()) {
-                DbEntity ent = (DbEntity) it.next();
-                List fks = (List) createConstraints.get(ent.getName());
+                DbEntity ent = it.next();
+                List<String> fks = createConstraints.get(ent.getName());
                 list.addAll(fks);
             }
         }
@@ -278,39 +278,39 @@ public class DbGenerator {
 
             // drop tables
             if (shouldDropTables) {
-                ListIterator it = dbEntitiesInInsertOrder
+                ListIterator<DbEntity> it = dbEntitiesInInsertOrder
                         .listIterator(dbEntitiesInInsertOrder.size());
                 while (it.hasPrevious()) {
-                    DbEntity ent = (DbEntity) it.previous();
-                    safeExecute(connection, (String) dropTables.get(ent.getName()));
+                    DbEntity ent = it.previous();
+                    safeExecute(connection, dropTables.get(ent.getName()));
                 }
             }
 
             // create tables
-            List createdTables = new ArrayList();
+            List<String> createdTables = new ArrayList<String>();
             if (shouldCreateTables) {
-                Iterator it = dbEntitiesInInsertOrder.iterator();
+                Iterator<DbEntity> it = dbEntitiesInInsertOrder.iterator();
                 while (it.hasNext()) {
-                    DbEntity ent = (DbEntity) it.next();
+                    DbEntity ent = it.next();
 
                     // only create missing tables
 
-                    safeExecute(connection, (String) createTables.get(ent.getName()));
+                    safeExecute(connection, createTables.get(ent.getName()));
                     createdTables.add(ent.getName());
                 }
             }
 
             // create FK
             if (shouldCreateTables && shouldCreateFKConstraints) {
-                Iterator it = dbEntitiesInInsertOrder.iterator();
+                Iterator<DbEntity> it = dbEntitiesInInsertOrder.iterator();
                 while (it.hasNext()) {
-                    DbEntity ent = (DbEntity) it.next();
+                    DbEntity ent = it.next();
 
                     if (createdTables.contains(ent.getName())) {
-                        List fks = (List) createConstraints.get(ent.getName());
-                        Iterator fkIt = fks.iterator();
+                        List<String> fks = createConstraints.get(ent.getName());
+                        Iterator<String> fkIt = fks.iterator();
                         while (fkIt.hasNext()) {
-                            safeExecute(connection, (String) fkIt.next());
+                            safeExecute(connection, fkIt.next());
                         }
                     }
                 }
@@ -318,22 +318,22 @@ public class DbGenerator {
 
             // drop PK
             if (shouldDropPKSupport) {
-                List dropAutoPKSQL = getAdapter().getPkGenerator().dropAutoPkStatements(
+                List<String> dropAutoPKSQL = getAdapter().getPkGenerator().dropAutoPkStatements(
                         dbEntitiesRequiringAutoPK);
-                Iterator it = dropAutoPKSQL.iterator();
+                Iterator<String> it = dropAutoPKSQL.iterator();
                 while (it.hasNext()) {
-                    safeExecute(connection, (String) it.next());
+                    safeExecute(connection, it.next());
                 }
             }
 
             // create pk
             if (shouldCreatePKSupport) {
-                List createAutoPKSQL = getAdapter()
+                List<String> createAutoPKSQL = getAdapter()
                         .getPkGenerator()
                         .createAutoPkStatements(dbEntitiesRequiringAutoPK);
-                Iterator it = createAutoPKSQL.iterator();
+                Iterator<String> it = createAutoPKSQL.iterator();
                 while (it.hasNext()) {
-                    safeExecute(connection, (String) it.next());
+                    safeExecute(connection, it.next());
                 }
             }
 
@@ -379,7 +379,7 @@ public class DbGenerator {
      * @deprecated since 3.0 as this method is used to generate both FK and UNIQUE
      *             constraints, use 'createConstraintsQueries' instead.
      */
-    public List createFkConstraintsQueries(DbEntity table) {
+    public List<String> createFkConstraintsQueries(DbEntity table) {
         return createConstraintsQueries(table);
     }
 
@@ -388,11 +388,11 @@ public class DbGenerator {
      * 
      * @since 3.0
      */
-    public List createConstraintsQueries(DbEntity table) {
-        List list = new ArrayList();
-        Iterator it = table.getRelationships().iterator();
+    public List<String> createConstraintsQueries(DbEntity table) {
+        List<String> list = new ArrayList<String>();
+        Iterator<DbRelationship> it = table.getRelationships().iterator();
         while (it.hasNext()) {
-            DbRelationship rel = (DbRelationship) it.next();
+            DbRelationship rel = it.next();
 
             if (rel.isToMany()) {
                 continue;
@@ -513,17 +513,17 @@ public class DbGenerator {
      * Helper method that orders DbEntities to satisfy referential constraints and returns
      * an ordered list. It also filters out DerivedDbEntities.
      */
-    private void prepareDbEntities(Collection excludedEntities) {
+    private void prepareDbEntities(Collection<DbEntity> excludedEntities) {
         if (excludedEntities == null) {
-            excludedEntities = Collections.EMPTY_LIST;
+            excludedEntities = Collections.emptyList();
         }
 
         // remove derived db entities
-        List tables = new ArrayList();
-        List tablesWithAutoPk = new ArrayList();
-        Iterator it = map.getDbEntities().iterator();
+        List<DbEntity> tables = new ArrayList<DbEntity>();
+        List<DbEntity> tablesWithAutoPk = new ArrayList<DbEntity>();
+        Iterator<DbEntity> it = map.getDbEntities().iterator();
         while (it.hasNext()) {
-            DbEntity nextEntity = (DbEntity) it.next();
+            DbEntity nextEntity = it.next();
 
             // do sanity checks...
 
@@ -542,9 +542,9 @@ public class DbGenerator {
 
             // tables with invalid DbAttributes are not included
             boolean invalidAttributes = false;
-            Iterator nextDbAtributes = nextEntity.getAttributes().iterator();
+            Iterator<DbAttribute> nextDbAtributes = nextEntity.getAttributes().iterator();
             while (nextDbAtributes.hasNext()) {
-                DbAttribute attr = (DbAttribute) nextDbAtributes.next();
+                DbAttribute attr = nextDbAtributes.next();
                 if (attr.getType() == TypesMapping.NOT_DEFINED) {
                     logObj.info("Skipping entity, attribute type is undefined: "
                             + nextEntity.getName()
@@ -562,13 +562,13 @@ public class DbGenerator {
 
             // check if an automatic PK generation can be potentially supported
             // in this entity. For now simply check that the key is not propagated
-            Iterator relationships = nextEntity.getRelationships().iterator();
+            Iterator<DbRelationship> relationships = nextEntity.getRelationships().iterator();
 
             // create a copy of the original PK list,
             // since the list will be modified locally
-            List pkAttributes = new ArrayList(nextEntity.getPrimaryKeys());
+            List<DbAttribute> pkAttributes = new ArrayList<DbAttribute>(nextEntity.getPrimaryKeys());
             while (pkAttributes.size() > 0 && relationships.hasNext()) {
-                DbRelationship nextRelationship = (DbRelationship) relationships.next();
+                DbRelationship nextRelationship = relationships.next();
                 if (!nextRelationship.isToMasterPK()) {
                     continue;
                 }
@@ -576,15 +576,15 @@ public class DbGenerator {
                 // supposedly all source attributes of the relationship
                 // to master entity must be a part of primary key,
                 // so
-                Iterator joins = nextRelationship.getJoins().iterator();
+                Iterator<DbJoin> joins = nextRelationship.getJoins().iterator();
                 while (joins.hasNext()) {
-                    DbJoin join = (DbJoin) joins.next();
+                    DbJoin join = joins.next();
                     pkAttributes.remove(join.getSource());
                 }
             }
 
             // primary key is needed only if at least one of the primary key attributes
-            // is not propagated via releationship
+            // is not propagated via relationship
             if (pkAttributes.size() > 0) {
                 tablesWithAutoPk.add(nextEntity);
             }
