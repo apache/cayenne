@@ -25,6 +25,9 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -42,6 +45,38 @@ import org.apache.cayenne.util.Util;
  * @author Andrus Adamchik
  */
 public class PropertyUtils {
+
+    /**
+     * Compiles an accessor that can be used for fast access for the nested property of
+     * the objects of a given class.
+     * 
+     * @since 3.0
+     */
+    public static Accessor createAccessor(Class<?> objectClass, String nestedPropertyName) {
+        if (objectClass == null) {
+            throw new IllegalArgumentException("Null class.");
+        }
+
+        if (Util.isEmptyString(nestedPropertyName)) {
+            throw new IllegalArgumentException("Null or empty property name.");
+        }
+
+        StringTokenizer path = new StringTokenizer(
+                nestedPropertyName,
+                Entity.PATH_SEPARATOR);
+
+        if (path.countTokens() == 1) {
+            return new BeanAccessor(objectClass, nestedPropertyName, null);
+        }
+
+        NestedBeanAccessor accessor = new NestedBeanAccessor(nestedPropertyName);
+        while (path.hasMoreTokens()) {
+            String token = path.nextToken();
+            accessor.addAccessor(new BeanAccessor(objectClass, token, null));
+        }
+
+        return accessor;
+    }
 
     /**
      * Returns object property using JavaBean-compatible introspection with one addition -
@@ -269,7 +304,7 @@ public class PropertyUtils {
      * is returned. For primitive types a default such as zero or false is returned.
      */
     static Object defaultNullValueForType(Class<?> type) {
-        if (type.isPrimitive()) {
+        if (type != null && type.isPrimitive()) {
 
             String className = type.getName();
             if ("byte".equals(className)) {
@@ -300,5 +335,56 @@ public class PropertyUtils {
 
     private PropertyUtils() {
         super();
+    }
+
+    static final class NestedBeanAccessor implements Accessor {
+
+        private Collection<Accessor> accessors;
+        private String name;
+
+        NestedBeanAccessor(String name) {
+            accessors = new ArrayList<Accessor>();
+            this.name = name;
+        }
+
+        void addAccessor(Accessor accessor) {
+            accessors.add(accessor);
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Object getValue(Object object) throws PropertyException {
+
+            Object value = object;
+            for (Accessor accessor : accessors) {
+                if (value == null) {
+                    throw new IllegalArgumentException(
+                            "Null object at the end of the segment '"
+                                    + accessor.getName()
+                                    + "'");
+                }
+
+                value = accessor.getValue(value);
+            }
+
+            return value;
+        }
+
+        public void setValue(Object object, Object newValue) throws PropertyException {
+            Object value = object;
+            Iterator<Accessor> accessors = this.accessors.iterator();
+            while (accessors.hasNext()) {
+                Accessor accessor = accessors.next();
+
+                if (accessors.hasNext()) {
+                    value = accessor.getValue(value);
+                }
+                else {
+                    accessor.setValue(value, newValue);
+                }
+            }
+        }
     }
 }

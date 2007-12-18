@@ -31,6 +31,23 @@ import junit.framework.TestCase;
 
 public class PropertyUtilsTest extends TestCase {
 
+    public void testCreateAccessor() {
+
+        Accessor accessor = PropertyUtils.createAccessor(
+                TestJavaBean.class,
+                "byteArrayField");
+        assertNotNull(accessor);
+
+        TestJavaBean o1 = createBean();
+        assertSame(o1.getByteArrayField(), accessor.getValue(o1));
+        
+        TestJavaBean o2 = new TestJavaBean();
+        assertNull(o2.getByteArrayField());
+        accessor.setValue(o2, o1.getByteArrayField());
+        assertNotNull(o2.getByteArrayField());
+        assertSame(o1.getByteArrayField(), o2.getByteArrayField());
+    }
+
     public void testGetProperty() {
         TestJavaBean o1 = createBean();
 
@@ -64,15 +81,18 @@ public class PropertyUtilsTest extends TestCase {
     public void testGetPropertyMap() {
         Map o1 = createMap();
 
-        assertSame(o1.get("byteArrayField"), PropertyUtils.getProperty(o1, "byteArrayField"));
+        assertSame(o1.get("byteArrayField"), PropertyUtils.getProperty(
+                o1,
+                "byteArrayField"));
         assertSame(o1.get("integerField"), PropertyUtils.getProperty(o1, "integerField"));
         assertEquals(o1.get("intField"), PropertyUtils.getProperty(o1, "intField"));
         assertSame(o1.get("numberField"), PropertyUtils.getProperty(o1, "numberField"));
         assertSame(o1.get("objectField"), PropertyUtils.getProperty(o1, "objectField"));
         assertSame(o1.get("stringField"), PropertyUtils.getProperty(o1, "stringField"));
-        assertEquals(o1.get("booleanField"), PropertyUtils.getProperty(o1, "booleanField"));
+        assertEquals(o1.get("booleanField"), PropertyUtils
+                .getProperty(o1, "booleanField"));
     }
-    
+
     public void testSetPropertyMap() {
         Map o1 = createMap();
         Map o2 = new HashMap();
@@ -84,10 +104,9 @@ public class PropertyUtilsTest extends TestCase {
         PropertyUtils.setProperty(o2, "objectField", o1.get("objectField"));
         PropertyUtils.setProperty(o2, "stringField", o1.get("stringField"));
         PropertyUtils.setProperty(o2, "booleanField", o1.get("booleanField"));
-        
+
         assertEquals(o1, o2);
     }
-
 
     public void testSetConverted() {
         TestJavaBean o1 = new TestJavaBean();
@@ -105,8 +124,6 @@ public class PropertyUtilsTest extends TestCase {
         PropertyUtils.setProperty(o1, "intField", "28");
         assertEquals(28, o1.getIntField());
     }
-    
-    
 
     public void testSetNull() {
         TestJavaBean o1 = new TestJavaBean();
@@ -119,20 +136,18 @@ public class PropertyUtilsTest extends TestCase {
         PropertyUtils.setProperty(o1, "intField", null);
         assertEquals(0, o1.getIntField());
     }
-    
-    
+
     public void testSetConvertedEnum() {
         MockEnumHolder o1 = new MockEnumHolder();
 
         // String to Enum
         PropertyUtils.setProperty(o1, "mockEnum", "b");
         assertSame(MockEnum.b, o1.getMockEnum());
-        
+
         // check that regular converters still work
         PropertyUtils.setProperty(o1, "number", "445");
         assertEquals(445, o1.getNumber());
     }
-
 
     protected TestJavaBean createBean() {
         TestJavaBean o1 = new TestJavaBean();
