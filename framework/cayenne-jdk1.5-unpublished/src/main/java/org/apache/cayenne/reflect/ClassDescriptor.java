@@ -79,7 +79,7 @@ public interface ClassDescriptor {
     /**
      * Returns a property descriptor matching property name, or null if no such property
      * is found. Lookup includes properties from this descriptor and all its superclass
-     * decsriptors. Returned property can be any one of {@link AttributeProperty},
+     * descriptors. Returned property can be any one of {@link AttributeProperty},
      * {@link ToManyProperty}, {@link ToOneProperty}.
      */
     Property getProperty(String propertyName);
