@@ -40,12 +40,36 @@ public class PropertyUtilsTest extends TestCase {
 
         TestJavaBean o1 = createBean();
         assertSame(o1.getByteArrayField(), accessor.getValue(o1));
-        
+
         TestJavaBean o2 = new TestJavaBean();
         assertNull(o2.getByteArrayField());
         accessor.setValue(o2, o1.getByteArrayField());
         assertNotNull(o2.getByteArrayField());
         assertSame(o1.getByteArrayField(), o2.getByteArrayField());
+    }
+
+    public void testCreateAccessorNested() {
+
+        Accessor accessor = PropertyUtils.createAccessor(
+                TestJavaBean.class,
+                "related.byteArrayField");
+        assertNotNull(accessor);
+
+        TestJavaBean o1 = createBean();
+        o1.setRelated(new TestJavaBean());
+        o1.getRelated().setByteArrayField(new byte[] {
+                3, 4, 5
+        });
+        assertSame(o1.getRelated().getByteArrayField(), accessor.getValue(o1));
+
+        TestJavaBean o2 = new TestJavaBean();
+        o2.setRelated(new TestJavaBean());
+
+        byte[] b1 = new byte[] {
+                6, 7, 8
+        };
+        accessor.setValue(o2, b1);
+        assertSame(b1, o2.getRelated().getByteArrayField());
     }
 
     public void testGetProperty() {

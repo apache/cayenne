@@ -28,6 +28,7 @@ public class TestJavaBean extends Object {
     protected Number numberField;
     protected byte[] byteArrayField;
     protected Object objectField;
+    protected TestJavaBean related;
 
     public byte[] getByteArrayField() {
         return byteArrayField;
@@ -85,5 +86,15 @@ public class TestJavaBean extends Object {
     
     public void setBooleanField(boolean booleanField) {
         this.booleanField = booleanField;
+    }
+
+    
+    public TestJavaBean getRelated() {
+        return related;
+    }
+
+    
+    public void setRelated(TestJavaBean related) {
+        this.related = related;
     }
 }
