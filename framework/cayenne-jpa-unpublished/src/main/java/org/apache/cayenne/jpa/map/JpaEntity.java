@@ -290,7 +290,7 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
     @TreeNodeChild(type = JpaNamedNativeQuery.class)
     public Collection<JpaNamedNativeQuery> getNamedNativeQueries() {
         if (namedNativeQueries == null) {
-            namedNativeQueries = new ArrayList();
+            namedNativeQueries = new ArrayList<JpaNamedNativeQuery>();
         }
         return namedNativeQueries;
     }
@@ -298,7 +298,7 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
     @TreeNodeChild(type = JpaNamedQuery.class)
     public Collection<JpaNamedQuery> getNamedQueries() {
         if (namedQueries == null) {
-            namedQueries = new ArrayList();
+            namedQueries = new ArrayList<JpaNamedQuery>();
         }
         return namedQueries;
     }
@@ -311,7 +311,7 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
     @TreeNodeChild(type = JpaPrimaryKeyJoinColumn.class)
     public Collection<JpaPrimaryKeyJoinColumn> getPrimaryKeyJoinColumns() {
         if (primaryKeyJoinColumns == null) {
-            primaryKeyJoinColumns = new ArrayList();
+            primaryKeyJoinColumns = new ArrayList<JpaPrimaryKeyJoinColumn>();
         }
         return primaryKeyJoinColumns;
     }
@@ -319,7 +319,7 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
     @TreeNodeChild(type = JpaSecondaryTable.class)
     public Collection<JpaSecondaryTable> getSecondaryTables() {
         if (secondaryTables == null) {
-            secondaryTables = new ArrayList();
+            secondaryTables = new ArrayList<JpaSecondaryTable>();
         }
         return secondaryTables;
     }
