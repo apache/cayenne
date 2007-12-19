@@ -360,12 +360,12 @@ public abstract class Expression implements Serializable, XMLSerializable {
     /**
      * Returns a list of objects that match the expression.
      */
-    public List<Object> filterObjects(List<Object> objects) {
+    public <T> List<T> filterObjects(List<T> objects) {
         if (objects == null || objects.size() == 0) {
             return Collections.EMPTY_LIST;
         }
 
-        return (List<Object>) filter(objects, new LinkedList<Object>());
+        return (List<T>) filter(objects, new LinkedList<T>());
     }
 
     /**
@@ -374,8 +374,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
      * 
      * @since 1.1
      */
-    public Collection<Object> filter(Collection<Object> source, Collection<Object> target) {
-        for (Object o : source) {
+    public <T> Collection<?> filter(Collection<T> source, Collection<T> target) {
+        for (T o : source) {
             if (match(o)) {
                 target.add(o);
             }
