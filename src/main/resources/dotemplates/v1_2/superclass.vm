@@ -102,6 +102,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
         removeToManyTarget("${rel.name}", obj, true);
     }
 #end
+    @SuppressWarnings("unchecked")
 #if ( ${rel.CollectionType} == "java.util.Map")
     public $importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClassName)> get${stringUtils.capitalized($rel.Name)}() {
         return ($importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClassName)>)readProperty("${rel.name}");
