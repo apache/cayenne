@@ -35,6 +35,7 @@ public class SQLServerMergerFactory extends MergerFactory {
 
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
+            @Override
             protected void appendPrefix(StringBuffer sqlBuffer) {
                 // http://msdn2.microsoft.com/en-us/library/ms190273.aspx
                 sqlBuffer.append("ALTER TABLE ");
@@ -47,11 +48,10 @@ public class SQLServerMergerFactory extends MergerFactory {
     }
 
     @Override
-    public MergerToken createAddColumnToDb(
-            final DbEntity entity,
-            final DbAttribute column) {
+    public MergerToken createAddColumnToDb(final DbEntity entity, final DbAttribute column) {
         return new AddColumnToDb(entity, column) {
 
+            @Override
             protected void appendPrefix(StringBuffer sqlBuffer) {
                 // http://msdn2.microsoft.com/en-us/library/ms190273.aspx
                 sqlBuffer.append("ALTER TABLE ");
@@ -62,4 +62,5 @@ public class SQLServerMergerFactory extends MergerFactory {
             }
         };
     }
+
 }

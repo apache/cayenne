@@ -54,7 +54,7 @@ public class DropRelationshipToDb extends AbstractToDbToken {
         StringBuilder buf = new StringBuilder();
         buf.append("ALTER TABLE ");
         buf.append(entity.getFullyQualifiedName());
-        buf.append(" DROP FOREIGN KEY ");
+        buf.append(" DROP CONSTRAINT ");
         buf.append(fkName);
 
         return Collections.singletonList(buf.toString());
