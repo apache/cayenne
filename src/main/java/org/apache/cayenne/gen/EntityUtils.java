@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -275,22 +276,32 @@ public class EntityUtils {
      */
     public String getMapKeyType(final ObjRelationship relationship) {
 
+        ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
+
         // If the map key is null, then we're doing look-ups by actual object key.
         if (relationship.getMapKey() == null) {
 
             // If it's a multi-column key, then the return type is always ObjectId.
-            DbEntity dbEntity = objEntity.getDbEntity();
+            DbEntity dbEntity = targetEntity.getDbEntity();
             if ((dbEntity != null) && (dbEntity.getPrimaryKeys().size() > 1)) {
                 return ObjectId.class.getName();
             }
 
-            // If it's a single column key or no key exists at all, then we really don't know what the key type is,
+            // If it's a single column key or no key exists at all, then we really don't
+            // know what the key type is,
             // so default to Object.
             return Object.class.getName();
         }
 
-        // If the map key is a non-default attribute, then fetch the attributue and return its type.
-        final ObjAttribute attribute = (ObjAttribute) objEntity.getAttribute(relationship.getMapKey());
+        // If the map key is a non-default attribute, then fetch the attribute and return
+        // its type.
+        ObjAttribute attribute = (ObjAttribute) targetEntity.getAttribute(relationship
+                .getMapKey());
+        if (attribute == null) {
+            throw new CayenneRuntimeException("Invalid map key '"
+                    + relationship.getMapKey()
+                    + "', no matching attribute found");
+        }
 
         return attribute.getType();
     }
