@@ -21,6 +21,7 @@ package org.apache.cayenne.merge;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 
 /**
  * All {@link MergerToken}s should be created from a {@link MergerFactory} obtained from
@@ -91,5 +92,21 @@ public class MergerFactory {
             DbAttribute columnOriginal,
             DbAttribute columnNew) {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew);
+    }
+    
+    public MergerToken createAddRelationshipToDb(DbEntity entity, DbRelationship rel) {
+        return new AddRelationshipToDb(entity, rel);
+    }
+
+    public MergerToken createAddRelationshipToModel(DbEntity entity, DbRelationship rel) {
+        return new AddRelationshipToModel(entity, rel);
+    }
+
+    public MergerToken createDropRelationshipToDb(DbEntity entity, DbRelationship rel) {
+        return new DropRelationshipToDb(entity, rel);
+    }
+
+    public MergerToken createDropRelationshipToModel(DbEntity entity, DbRelationship rel) {
+        return new DropRelationshipToModel(entity, rel);
     }
 }

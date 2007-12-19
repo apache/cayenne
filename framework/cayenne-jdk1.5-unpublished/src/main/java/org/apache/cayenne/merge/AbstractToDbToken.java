@@ -40,6 +40,17 @@ public abstract class AbstractToDbToken implements MergerToken {
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder ts = new StringBuilder();
+        ts.append(getTokenName());
+        ts.append(' ');
+        ts.append(getTokenValue());
+        ts.append(' ');
+        ts.append(getDirection());
+        return ts.toString();
+    }
+
     public abstract List<String> createSql(DbAdapter adapter);
 
 }

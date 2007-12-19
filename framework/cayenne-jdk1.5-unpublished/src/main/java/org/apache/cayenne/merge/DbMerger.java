@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,8 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -91,11 +94,16 @@ public class DbMerger {
                 DbEntity detectedEntity = findDbEntity(detectedDataMap, tableName);
                 if (detectedEntity == null) {
                     tokens.add(factory.createCreateTableToDb(dbEntity));
+                    // TODO: does this work properly with createReverse?
+                    for (DbRelationship rel : dbEntity.getRelationships()) {
+                        tokens.add(factory.createAddRelationshipToDb(dbEntity, rel));
+                    }
                     continue;
                 }
                 dbEntityToDropByName.remove(detectedEntity.getName());
 
                 checkRows(tokens, dbEntity, detectedEntity);
+                checkRelationships(adapter, tokens, dbEntity, detectedEntity);
             }
 
             // drop table
@@ -183,6 +191,65 @@ public class DbMerger {
         }
     }
 
+    private void checkRelationships(
+            DbAdapter adapter,
+            List<MergerToken> tokens,
+            DbEntity dbEntity,
+            DbEntity detectedEntity) {
+
+        // relationships to drop
+        for (DbRelationship detected : detectedEntity.getRelationships()) {
+            if (findDbRelationship(dbEntity, detected) == null) {
+
+                // alter detected relationship to match entity and attribute names.
+                // (case sensitively)
+
+                DbEntity targetEntity = findDbEntity(dbEntity.getDataMap(), detected
+                        .getTargetEntityName());
+                if (targetEntity == null) {
+                    continue;
+                }
+
+                detected.setSourceEntity(dbEntity);
+                detected.setTargetEntity(targetEntity);
+
+                // manipulate the joins to match the DbAttributes in the model
+                for (DbJoin join : detected.getJoins()) {
+                    DbAttribute sattr = findDbAttribute(dbEntity, join.getSourceName());
+                    if (sattr != null) {
+                        join.setSourceName(sattr.getName());
+                    }
+                    DbAttribute tattr = findDbAttribute(targetEntity, join
+                            .getTargetName());
+                    if (tattr != null) {
+                        join.setTargetName(tattr.getName());
+                    }
+                }
+
+                MergerToken token = factory
+                        .createDropRelationshipToDb(dbEntity, detected);
+                if (detected.isToMany()) {
+                    // default toModel as we can not do drop a toMany in the db. only
+                    // toOne are represented using foreign key
+                    token = token.createReverse(factory);
+                }
+                tokens.add(token);
+            }
+        }
+
+        // relationships to add
+        for (DbRelationship rel : dbEntity.getRelationships()) {
+            if (findDbRelationship(detectedEntity, rel) == null) {
+                // TODO: very ugly. perhaps MergerToken should have a .isNoOp()?
+                AbstractToDbToken t = (AbstractToDbToken) factory
+                        .createAddRelationshipToDb(dbEntity, rel);
+                if (!t.createSql(adapter).isEmpty()) {
+                    tokens.add(factory.createAddRelationshipToDb(dbEntity, rel));
+                }
+            }
+        }
+    }
+
     /**
      * case insensitive search for a {@link DbEntity} in a {@link DataMap} by name
      */
@@ -206,6 +273,55 @@ public class DbMerger {
             }
         }
         return null;
+    }
+
+    /**
+     * search for a {@link DbRelationship} like rel in the given {@link DbEntity}
+     */
+    private DbRelationship findDbRelationship(DbEntity entity, DbRelationship rel) {
+        for (DbRelationship candidate : entity.getRelationships()) {
+            if (equalDbJoinCollections(candidate.getJoins(), rel.getJoins())) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Return true if the two unordered {@link Collection}s of {@link DbJoin}s are
+     * equal. Entity and Attribute names are compared case insensitively.
+     */
+    private static boolean equalDbJoinCollections(
+            Collection<DbJoin> j1s,
+            Collection<DbJoin> j2s) {
+        if (j1s.size() != j2s.size()) {
+            return false;
+        }
+
+        for (DbJoin j1 : j1s) {
+            for (DbJoin j2 : j2s) {
+                // check entity name
+                if (!j1.getSource().getEntity().getName().equalsIgnoreCase(
+                        j2.getSource().getEntity().getName())) {
+                    continue;
+                }
+                if (!j1.getTarget().getEntity().getName().equalsIgnoreCase(
+                        j2.getTarget().getEntity().getName())) {
+                    continue;
+                }
+                // check attribute name
+                if (!j1.getSourceName().equalsIgnoreCase(j2.getSourceName())) {
+                    continue;
+                }
+                if (!j1.getTargetName().equalsIgnoreCase(j2.getTargetName())) {
+                    continue;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static final class LoaderDelegate implements DbLoaderDelegate {

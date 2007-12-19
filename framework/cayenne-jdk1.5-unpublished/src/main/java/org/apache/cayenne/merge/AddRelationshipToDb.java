@@ -18,40 +18,54 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 
-public class DropTableToDb extends AbstractToDbToken {
+public class AddRelationshipToDb extends AbstractToDbToken {
 
     private DbEntity entity;
+    private DbRelationship rel;
 
-    public DropTableToDb(DbEntity entity) {
+    public AddRelationshipToDb(DbEntity entity, DbRelationship rel) {
         this.entity = entity;
+        this.rel = rel;
     }
 
+    /**
+     * @see DbGenerator#createConstraintsQueries(org.apache.cayenne.map.DbEntity)
+     */
     @Override
     public List<String> createSql(DbAdapter adapter) {
-        List<String> sqls = new ArrayList<String>();
-        sqls.addAll(adapter.getPkGenerator().dropAutoPkStatements(
-                Collections.singletonList(entity)));
-        sqls.add(adapter.dropTable(entity));
-        return sqls;
-    }
+        // TODO: skip FK to a different DB
 
-    public String getTokenName() {
-        return "Drop Table";
-    }
-
-    public String getTokenValue() {
-        return entity.getName();
+        if (!rel.isToMany() && rel.isToPK() && !rel.isToDependentPK()) {
+            String fksql = adapter.createFkConstraint(rel);
+            if (fksql != null) {
+                return Collections.singletonList(fksql);
+            }
+        }
+        return Collections.emptyList();
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createCreateTableToModel(entity);
+        return factory.createDropRelationshipToModel(entity, rel);
+    }
+
+    public String getTokenName() {
+        return "Add Relationship";
+    }
+
+    public String getTokenValue() {
+        StringBuilder s = new StringBuilder();
+        s.append(rel.getSourceEntity().getName());
+        s.append("->");
+        s.append(rel.getTargetEntityName());
+        return s.toString();
     }
 
 }

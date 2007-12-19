@@ -42,6 +42,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.DbRelationshipDetected;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
@@ -556,7 +557,7 @@ public class DbLoader {
             // is found in the result set (which should be ordered by table name among
             // other things)
             DbRelationship forwardRelationship = null;
-            DbRelationship reverseRelationship = null;
+            DbRelationshipDetected reverseRelationship = null;
             DbEntity fkEntity = null;
 
             do {
@@ -570,6 +571,7 @@ public class DbLoader {
 
                     // start new entity
                     String fkEntityName = rs.getString("FKTABLE_NAME");
+                    String fkName = rs.getString("FK_NAME");
 
                     fkEntity = map.getDbEntity(fkEntityName);
 
@@ -592,10 +594,11 @@ public class DbLoader {
                         forwardRelationship.setTargetEntity(fkEntity);
                         pkEntity.addRelationship(forwardRelationship);
 
-                        reverseRelationship = new DbRelationship(uniqueRelName(
+                        reverseRelationship = new DbRelationshipDetected(uniqueRelName(
                                 fkEntity,
                                 pkEntName,
                                 false));
+                        reverseRelationship.setFkName(fkName);
                         reverseRelationship.setToMany(false);
                         reverseRelationship.setSourceEntity(fkEntity);
                         reverseRelationship.setTargetEntity(pkEntity);

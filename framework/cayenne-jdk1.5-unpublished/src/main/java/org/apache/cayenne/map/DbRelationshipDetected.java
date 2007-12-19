@@ -16,29 +16,34 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.merge;
+package org.apache.cayenne.map;
+
 
 /**
- * Common abstract superclass for all {@link MergerToken}s going from the database to the
- * model.
+ * A subclass of {@link DbRelationship} to hold some extra runtime information.
  * 
  * @author halset
  */
-public abstract class AbstractToModelToken implements MergerToken {
+public class DbRelationshipDetected extends DbRelationship {
 
-    public MergeDirection getDirection() {
-        return MergeDirection.TO_MODEL;
+    private String fkName;
+
+    public DbRelationshipDetected(String uniqueRelName) {
+        super(uniqueRelName);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder ts = new StringBuilder();
-        ts.append(getTokenName());
-        ts.append(' ');
-        ts.append(getTokenValue());
-        ts.append(' ');
-        ts.append(getDirection());
-        return ts.toString();
+    /**
+     * Set the name of the underlying foreign key. Typically FK_NAME from jdbc metadata.
+     */
+    public void setFkName(String fkName) {
+        this.fkName = fkName;
+    }
+
+    /**
+     * Get the name of the underlying foreign key. Typically FK_NAME from jdbc metadata.
+     */
+    public String getFkName() {
+        return fkName;
     }
 
 }
