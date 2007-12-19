@@ -18,8 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.dba.postgres;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.merge.DropRelationshipToDb;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.merge.SetColumnTypeToDb;
@@ -27,10 +33,14 @@ import org.apache.cayenne.merge.SetColumnTypeToDb;
 public class PostgresMergerFactory extends MergerFactory {
 
     @Override
-    public MergerToken createSetColumnTypeToDb(final DbEntity entity, DbAttribute columnOriginal, final DbAttribute columnNew) {
+    public MergerToken createSetColumnTypeToDb(
+            final DbEntity entity,
+            DbAttribute columnOriginal,
+            final DbAttribute columnNew) {
 
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
+            @Override
             protected void appendPrefix(StringBuffer sqlBuffer) {
                 // http://www.postgresql.org/docs/8.2/static/sql-altertable.html
                 sqlBuffer.append("ALTER TABLE ");
@@ -38,6 +48,33 @@ public class PostgresMergerFactory extends MergerFactory {
                 sqlBuffer.append(" ALTER ");
                 sqlBuffer.append(columnNew.getName());
                 sqlBuffer.append(" TYPE ");
+            }
+        };
+    }
+
+    @Override
+    public MergerToken createDropRelationshipToDb(
+            final DbEntity entity,
+            final DbRelationship rel) {
+
+        return new DropRelationshipToDb(entity, rel) {
+
+            @Override
+            public List<String> createSql(DbAdapter adapter) {
+                String fkName = getFkName();
+                
+                if (fkName == null) {
+                    return Collections.emptyList();
+                }
+
+                // http://www.postgresql.org/docs/8.2/static/sql-altertable.html
+                StringBuilder buf = new StringBuilder();
+                buf.append("ALTER TABLE ");
+                buf.append(entity.getFullyQualifiedName());
+                buf.append(" DROP CONSTRAINT ");
+                buf.append(fkName);
+
+                return Collections.singletonList(buf.toString());
             }
         };
     }

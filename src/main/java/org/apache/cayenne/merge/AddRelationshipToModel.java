@@ -18,27 +18,38 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-/**
- * Common abstract superclass for all {@link MergerToken}s going from the database to the
- * model.
- * 
- * @author halset
- */
-public abstract class AbstractToModelToken implements MergerToken {
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 
-    public MergeDirection getDirection() {
-        return MergeDirection.TO_MODEL;
+public class AddRelationshipToModel extends AbstractToModelToken {
+
+    private DbEntity entity;
+    private DbRelationship rel;
+
+    public AddRelationshipToModel(DbEntity entity, DbRelationship rel) {
+        this.entity = entity;
+        this.rel = rel;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder ts = new StringBuilder();
-        ts.append(getTokenName());
-        ts.append(' ');
-        ts.append(getTokenValue());
-        ts.append(' ');
-        ts.append(getDirection());
-        return ts.toString();
+    public MergerToken createReverse(MergerFactory factory) {
+        return factory.createDropRelationshipToDb(entity, rel);
+    }
+
+    public void execute(MergerContext mergerContext) {
+        entity.addRelationship(rel);
+        // TODO: add reverse as well?
+    }
+
+    public String getTokenName() {
+        return "Add Relationship";
+    }
+
+    public String getTokenValue() {
+        StringBuilder s = new StringBuilder();
+        s.append(rel.getSourceEntity().getName());
+        s.append("->");
+        s.append(rel.getTargetEntityName());
+        return s.toString();
     }
 
 }
