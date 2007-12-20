@@ -133,7 +133,7 @@ public final class DataObjectUtils {
             int pk) {
         return (T) objectForPK(
                 context,
-                buildId(context, dataObjectClass, new Integer(pk)));
+                buildId(context, dataObjectClass, Integer.valueOf(pk)));
     }
 
     /**
@@ -189,7 +189,7 @@ public final class DataObjectUtils {
      * @see #objectForPK(ObjectContext, ObjectId)
      */
     public static Object objectForPK(ObjectContext context, String objEntityName, int pk) {
-        return objectForPK(context, buildId(context, objEntityName, new Integer(pk)));
+        return objectForPK(context, buildId(context, objEntityName, Integer.valueOf(pk)));
     }
 
     /**

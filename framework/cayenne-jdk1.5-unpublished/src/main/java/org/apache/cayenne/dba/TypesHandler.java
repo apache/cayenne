@@ -104,7 +104,7 @@ public class TypesHandler {
     }
 
     public String[] externalTypesForJdbcType(int type) {
-        return (String[]) typesMap.get(new Integer(type));
+        return (String[]) typesMap.get(Integer.valueOf(type));
     }
 
     /** 
@@ -151,7 +151,7 @@ public class TypesHandler {
             if (JDBC_TYPE_TAG.equals(localName)
                 && currentType != TypesMapping.NOT_DEFINED) {
                 String[] typesAsArray = new String[currentTypes.size()];
-                types.put(new Integer(currentType), currentTypes.toArray(typesAsArray));
+                types.put(Integer.valueOf(currentType), currentTypes.toArray(typesAsArray));
             }
         }
     }

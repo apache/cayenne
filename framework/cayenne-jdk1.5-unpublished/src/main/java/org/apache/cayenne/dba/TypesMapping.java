@@ -115,103 +115,103 @@ public class TypesMapping {
     private static final Map<String, Integer> javaSqlEnum = new HashMap<String, Integer>();
 
     static {
-        sqlStringType.put(SQL_ARRAY, new Integer(Types.ARRAY));
-        sqlStringType.put(SQL_BIGINT, new Integer(Types.BIGINT));
-        sqlStringType.put(SQL_BINARY, new Integer(Types.BINARY));
-        sqlStringType.put(SQL_BIT, new Integer(Types.BIT));
-        sqlStringType.put(SQL_BLOB, new Integer(Types.BLOB));
-        sqlStringType.put(SQL_BOOLEAN, new Integer(Types.BOOLEAN));
-        sqlStringType.put(SQL_CLOB, new Integer(Types.CLOB));
-        sqlStringType.put(SQL_CHAR, new Integer(Types.CHAR));
-        sqlStringType.put(SQL_DATE, new Integer(Types.DATE));
-        sqlStringType.put(SQL_DECIMAL, new Integer(Types.DECIMAL));
-        sqlStringType.put(SQL_DOUBLE, new Integer(Types.DOUBLE));
-        sqlStringType.put(SQL_FLOAT, new Integer(Types.FLOAT));
-        sqlStringType.put(SQL_INTEGER, new Integer(Types.INTEGER));
-        sqlStringType.put(SQL_LONGVARCHAR, new Integer(Types.LONGVARCHAR));
-        sqlStringType.put(SQL_LONGVARBINARY, new Integer(Types.LONGVARBINARY));
-        sqlStringType.put(SQL_NUMERIC, new Integer(Types.NUMERIC));
-        sqlStringType.put(SQL_REAL, new Integer(Types.REAL));
-        sqlStringType.put(SQL_SMALLINT, new Integer(Types.SMALLINT));
-        sqlStringType.put(SQL_TINYINT, new Integer(Types.TINYINT));
-        sqlStringType.put(SQL_TIME, new Integer(Types.TIME));
-        sqlStringType.put(SQL_TIMESTAMP, new Integer(Types.TIMESTAMP));
-        sqlStringType.put(SQL_VARBINARY, new Integer(Types.VARBINARY));
-        sqlStringType.put(SQL_VARCHAR, new Integer(Types.VARCHAR));
-        sqlStringType.put(SQL_OTHER, new Integer(Types.OTHER));
+        sqlStringType.put(SQL_ARRAY, Integer.valueOf(Types.ARRAY));
+        sqlStringType.put(SQL_BIGINT, Integer.valueOf(Types.BIGINT));
+        sqlStringType.put(SQL_BINARY, Integer.valueOf(Types.BINARY));
+        sqlStringType.put(SQL_BIT, Integer.valueOf(Types.BIT));
+        sqlStringType.put(SQL_BLOB, Integer.valueOf(Types.BLOB));
+        sqlStringType.put(SQL_BOOLEAN, Integer.valueOf(Types.BOOLEAN));
+        sqlStringType.put(SQL_CLOB, Integer.valueOf(Types.CLOB));
+        sqlStringType.put(SQL_CHAR, Integer.valueOf(Types.CHAR));
+        sqlStringType.put(SQL_DATE, Integer.valueOf(Types.DATE));
+        sqlStringType.put(SQL_DECIMAL, Integer.valueOf(Types.DECIMAL));
+        sqlStringType.put(SQL_DOUBLE, Integer.valueOf(Types.DOUBLE));
+        sqlStringType.put(SQL_FLOAT, Integer.valueOf(Types.FLOAT));
+        sqlStringType.put(SQL_INTEGER, Integer.valueOf(Types.INTEGER));
+        sqlStringType.put(SQL_LONGVARCHAR, Integer.valueOf(Types.LONGVARCHAR));
+        sqlStringType.put(SQL_LONGVARBINARY, Integer.valueOf(Types.LONGVARBINARY));
+        sqlStringType.put(SQL_NUMERIC, Integer.valueOf(Types.NUMERIC));
+        sqlStringType.put(SQL_REAL, Integer.valueOf(Types.REAL));
+        sqlStringType.put(SQL_SMALLINT, Integer.valueOf(Types.SMALLINT));
+        sqlStringType.put(SQL_TINYINT, Integer.valueOf(Types.TINYINT));
+        sqlStringType.put(SQL_TIME, Integer.valueOf(Types.TIME));
+        sqlStringType.put(SQL_TIMESTAMP, Integer.valueOf(Types.TIMESTAMP));
+        sqlStringType.put(SQL_VARBINARY, Integer.valueOf(Types.VARBINARY));
+        sqlStringType.put(SQL_VARCHAR, Integer.valueOf(Types.VARCHAR));
+        sqlStringType.put(SQL_OTHER, Integer.valueOf(Types.OTHER));
 
-        sqlEnumType.put(new Integer(Types.ARRAY), SQL_ARRAY);
-        sqlEnumType.put(new Integer(Types.BIGINT), SQL_BIGINT);
-        sqlEnumType.put(new Integer(Types.BINARY), SQL_BINARY);
-        sqlEnumType.put(new Integer(Types.BIT), SQL_BIT);
-        sqlEnumType.put(new Integer(Types.BOOLEAN), SQL_BOOLEAN);
-        sqlEnumType.put(new Integer(Types.BLOB), SQL_BLOB);
-        sqlEnumType.put(new Integer(Types.CLOB), SQL_CLOB);
-        sqlEnumType.put(new Integer(Types.CHAR), SQL_CHAR);
-        sqlEnumType.put(new Integer(Types.DATE), SQL_DATE);
-        sqlEnumType.put(new Integer(Types.DECIMAL), SQL_DECIMAL);
-        sqlEnumType.put(new Integer(Types.DOUBLE), SQL_DOUBLE);
-        sqlEnumType.put(new Integer(Types.FLOAT), SQL_FLOAT);
-        sqlEnumType.put(new Integer(Types.INTEGER), SQL_INTEGER);
-        sqlEnumType.put(new Integer(Types.LONGVARCHAR), SQL_LONGVARCHAR);
-        sqlEnumType.put(new Integer(Types.LONGVARBINARY), SQL_LONGVARBINARY);
-        sqlEnumType.put(new Integer(Types.NUMERIC), SQL_NUMERIC);
-        sqlEnumType.put(new Integer(Types.REAL), SQL_REAL);
-        sqlEnumType.put(new Integer(Types.SMALLINT), SQL_SMALLINT);
-        sqlEnumType.put(new Integer(Types.TINYINT), SQL_TINYINT);
-        sqlEnumType.put(new Integer(Types.TIME), SQL_TIME);
-        sqlEnumType.put(new Integer(Types.TIMESTAMP), SQL_TIMESTAMP);
-        sqlEnumType.put(new Integer(Types.VARBINARY), SQL_VARBINARY);
-        sqlEnumType.put(new Integer(Types.VARCHAR), SQL_VARCHAR);
-        sqlEnumType.put(new Integer(Types.OTHER), SQL_OTHER);
+        sqlEnumType.put(Integer.valueOf(Types.ARRAY), SQL_ARRAY);
+        sqlEnumType.put(Integer.valueOf(Types.BIGINT), SQL_BIGINT);
+        sqlEnumType.put(Integer.valueOf(Types.BINARY), SQL_BINARY);
+        sqlEnumType.put(Integer.valueOf(Types.BIT), SQL_BIT);
+        sqlEnumType.put(Integer.valueOf(Types.BOOLEAN), SQL_BOOLEAN);
+        sqlEnumType.put(Integer.valueOf(Types.BLOB), SQL_BLOB);
+        sqlEnumType.put(Integer.valueOf(Types.CLOB), SQL_CLOB);
+        sqlEnumType.put(Integer.valueOf(Types.CHAR), SQL_CHAR);
+        sqlEnumType.put(Integer.valueOf(Types.DATE), SQL_DATE);
+        sqlEnumType.put(Integer.valueOf(Types.DECIMAL), SQL_DECIMAL);
+        sqlEnumType.put(Integer.valueOf(Types.DOUBLE), SQL_DOUBLE);
+        sqlEnumType.put(Integer.valueOf(Types.FLOAT), SQL_FLOAT);
+        sqlEnumType.put(Integer.valueOf(Types.INTEGER), SQL_INTEGER);
+        sqlEnumType.put(Integer.valueOf(Types.LONGVARCHAR), SQL_LONGVARCHAR);
+        sqlEnumType.put(Integer.valueOf(Types.LONGVARBINARY), SQL_LONGVARBINARY);
+        sqlEnumType.put(Integer.valueOf(Types.NUMERIC), SQL_NUMERIC);
+        sqlEnumType.put(Integer.valueOf(Types.REAL), SQL_REAL);
+        sqlEnumType.put(Integer.valueOf(Types.SMALLINT), SQL_SMALLINT);
+        sqlEnumType.put(Integer.valueOf(Types.TINYINT), SQL_TINYINT);
+        sqlEnumType.put(Integer.valueOf(Types.TIME), SQL_TIME);
+        sqlEnumType.put(Integer.valueOf(Types.TIMESTAMP), SQL_TIMESTAMP);
+        sqlEnumType.put(Integer.valueOf(Types.VARBINARY), SQL_VARBINARY);
+        sqlEnumType.put(Integer.valueOf(Types.VARCHAR), SQL_VARCHAR);
+        sqlEnumType.put(Integer.valueOf(Types.OTHER), SQL_OTHER);
 
-        sqlEnumJava.put(new Integer(Types.BIGINT), JAVA_LONG);
-        sqlEnumJava.put(new Integer(Types.BINARY), JAVA_BYTES);
-        sqlEnumJava.put(new Integer(Types.BIT), JAVA_BOOLEAN);
-        sqlEnumJava.put(new Integer(Types.BOOLEAN), JAVA_BOOLEAN);
-        sqlEnumJava.put(new Integer(Types.BLOB), JAVA_BYTES);
-        sqlEnumJava.put(new Integer(Types.CLOB), JAVA_STRING);
-        sqlEnumJava.put(new Integer(Types.CHAR), JAVA_STRING);
-        sqlEnumJava.put(new Integer(Types.DATE), JAVA_UTILDATE);
-        sqlEnumJava.put(new Integer(Types.DECIMAL), JAVA_BIGDECIMAL);
-        sqlEnumJava.put(new Integer(Types.DOUBLE), JAVA_DOUBLE);
-        sqlEnumJava.put(new Integer(Types.FLOAT), JAVA_FLOAT);
-        sqlEnumJava.put(new Integer(Types.INTEGER), JAVA_INTEGER);
-        sqlEnumJava.put(new Integer(Types.LONGVARCHAR), JAVA_STRING);
-        sqlEnumJava.put(new Integer(Types.LONGVARBINARY), JAVA_BYTES);
-        sqlEnumJava.put(new Integer(Types.NUMERIC), JAVA_BIGDECIMAL);
-        sqlEnumJava.put(new Integer(Types.REAL), JAVA_FLOAT);
-        sqlEnumJava.put(new Integer(Types.SMALLINT), JAVA_SHORT);
-        sqlEnumJava.put(new Integer(Types.TINYINT), JAVA_BYTE);
-        sqlEnumJava.put(new Integer(Types.TIME), JAVA_UTILDATE);
-        sqlEnumJava.put(new Integer(Types.TIMESTAMP), JAVA_UTILDATE);
-        sqlEnumJava.put(new Integer(Types.VARBINARY), JAVA_BYTES);
-        sqlEnumJava.put(new Integer(Types.VARCHAR), JAVA_STRING);
+        sqlEnumJava.put(Integer.valueOf(Types.BIGINT), JAVA_LONG);
+        sqlEnumJava.put(Integer.valueOf(Types.BINARY), JAVA_BYTES);
+        sqlEnumJava.put(Integer.valueOf(Types.BIT), JAVA_BOOLEAN);
+        sqlEnumJava.put(Integer.valueOf(Types.BOOLEAN), JAVA_BOOLEAN);
+        sqlEnumJava.put(Integer.valueOf(Types.BLOB), JAVA_BYTES);
+        sqlEnumJava.put(Integer.valueOf(Types.CLOB), JAVA_STRING);
+        sqlEnumJava.put(Integer.valueOf(Types.CHAR), JAVA_STRING);
+        sqlEnumJava.put(Integer.valueOf(Types.DATE), JAVA_UTILDATE);
+        sqlEnumJava.put(Integer.valueOf(Types.DECIMAL), JAVA_BIGDECIMAL);
+        sqlEnumJava.put(Integer.valueOf(Types.DOUBLE), JAVA_DOUBLE);
+        sqlEnumJava.put(Integer.valueOf(Types.FLOAT), JAVA_FLOAT);
+        sqlEnumJava.put(Integer.valueOf(Types.INTEGER), JAVA_INTEGER);
+        sqlEnumJava.put(Integer.valueOf(Types.LONGVARCHAR), JAVA_STRING);
+        sqlEnumJava.put(Integer.valueOf(Types.LONGVARBINARY), JAVA_BYTES);
+        sqlEnumJava.put(Integer.valueOf(Types.NUMERIC), JAVA_BIGDECIMAL);
+        sqlEnumJava.put(Integer.valueOf(Types.REAL), JAVA_FLOAT);
+        sqlEnumJava.put(Integer.valueOf(Types.SMALLINT), JAVA_SHORT);
+        sqlEnumJava.put(Integer.valueOf(Types.TINYINT), JAVA_BYTE);
+        sqlEnumJava.put(Integer.valueOf(Types.TIME), JAVA_UTILDATE);
+        sqlEnumJava.put(Integer.valueOf(Types.TIMESTAMP), JAVA_UTILDATE);
+        sqlEnumJava.put(Integer.valueOf(Types.VARBINARY), JAVA_BYTES);
+        sqlEnumJava.put(Integer.valueOf(Types.VARCHAR), JAVA_STRING);
 
-        javaSqlEnum.put(JAVA_LONG, new Integer(Types.BIGINT));
-        javaSqlEnum.put(JAVA_BYTES, new Integer(Types.BINARY));
-        javaSqlEnum.put(JAVA_BOOLEAN, new Integer(Types.BIT));
-        javaSqlEnum.put(JAVA_STRING, new Integer(Types.VARCHAR));
-        javaSqlEnum.put(JAVA_SQLDATE, new Integer(Types.DATE));
-        javaSqlEnum.put(JAVA_TIMESTAMP, new Integer(Types.TIMESTAMP));
-        javaSqlEnum.put(JAVA_BIGDECIMAL, new Integer(Types.DECIMAL));
-        javaSqlEnum.put(JAVA_DOUBLE, new Integer(Types.DOUBLE));
-        javaSqlEnum.put(JAVA_FLOAT, new Integer(Types.FLOAT));
-        javaSqlEnum.put(JAVA_INTEGER, new Integer(Types.INTEGER));
-        javaSqlEnum.put(JAVA_SHORT, new Integer(Types.SMALLINT));
-        javaSqlEnum.put(JAVA_BYTE, new Integer(Types.TINYINT));
-        javaSqlEnum.put(JAVA_TIME, new Integer(Types.TIME));
-        javaSqlEnum.put(JAVA_TIMESTAMP, new Integer(Types.TIMESTAMP));
+        javaSqlEnum.put(JAVA_LONG, Integer.valueOf(Types.BIGINT));
+        javaSqlEnum.put(JAVA_BYTES, Integer.valueOf(Types.BINARY));
+        javaSqlEnum.put(JAVA_BOOLEAN, Integer.valueOf(Types.BIT));
+        javaSqlEnum.put(JAVA_STRING, Integer.valueOf(Types.VARCHAR));
+        javaSqlEnum.put(JAVA_SQLDATE, Integer.valueOf(Types.DATE));
+        javaSqlEnum.put(JAVA_TIMESTAMP, Integer.valueOf(Types.TIMESTAMP));
+        javaSqlEnum.put(JAVA_BIGDECIMAL, Integer.valueOf(Types.DECIMAL));
+        javaSqlEnum.put(JAVA_DOUBLE, Integer.valueOf(Types.DOUBLE));
+        javaSqlEnum.put(JAVA_FLOAT, Integer.valueOf(Types.FLOAT));
+        javaSqlEnum.put(JAVA_INTEGER, Integer.valueOf(Types.INTEGER));
+        javaSqlEnum.put(JAVA_SHORT, Integer.valueOf(Types.SMALLINT));
+        javaSqlEnum.put(JAVA_BYTE, Integer.valueOf(Types.TINYINT));
+        javaSqlEnum.put(JAVA_TIME, Integer.valueOf(Types.TIME));
+        javaSqlEnum.put(JAVA_TIMESTAMP, Integer.valueOf(Types.TIMESTAMP));
 
         // add primitives
-        javaSqlEnum.put("byte", new Integer(Types.TINYINT));
-        javaSqlEnum.put("int", new Integer(Types.INTEGER));
-        javaSqlEnum.put("short", new Integer(Types.SMALLINT));
-        javaSqlEnum.put("char", new Integer(Types.CHAR));
-        javaSqlEnum.put("double", new Integer(Types.DOUBLE));
-        javaSqlEnum.put("long", new Integer(Types.BIGINT));
-        javaSqlEnum.put("float", new Integer(Types.FLOAT));
-        javaSqlEnum.put("boolean", new Integer(Types.BIT));
+        javaSqlEnum.put("byte", Integer.valueOf(Types.TINYINT));
+        javaSqlEnum.put("int", Integer.valueOf(Types.INTEGER));
+        javaSqlEnum.put("short", Integer.valueOf(Types.SMALLINT));
+        javaSqlEnum.put("char", Integer.valueOf(Types.CHAR));
+        javaSqlEnum.put("double", Integer.valueOf(Types.DOUBLE));
+        javaSqlEnum.put("long", Integer.valueOf(Types.BIGINT));
+        javaSqlEnum.put("float", Integer.valueOf(Types.FLOAT));
+        javaSqlEnum.put("boolean", Integer.valueOf(Types.BIT));
     }
 
     /**
@@ -336,7 +336,7 @@ public class TypesMapping {
      * Returns a String representation of the SQL type from its JDBC code.
      */
     public static String getSqlNameByType(int type) {
-        return sqlEnumType.get(new Integer(type));
+        return sqlEnumType.get(Integer.valueOf(type));
     }
 
     /**
@@ -434,7 +434,7 @@ public class TypesMapping {
      * @return Fully qualified Java type name or null if not found.
      */
     public static String getJavaBySqlType(int type) {
-        return sqlEnumJava.get(new Integer(type));
+        return sqlEnumJava.get(Integer.valueOf(type));
     }
 
     /**
@@ -447,7 +447,7 @@ public class TypesMapping {
         if (type == Types.NUMERIC && precision == 0) {
             type = Types.INTEGER;
         }
-        return sqlEnumJava.get(new Integer(type));
+        return sqlEnumJava.get(Integer.valueOf(type));
     }
 
     // *************************************************************
@@ -467,7 +467,7 @@ public class TypesMapping {
                 info.jdbcType = rs.getInt("DATA_TYPE");
                 info.precision = rs.getLong("PRECISION");
 
-                Integer key = new Integer(info.jdbcType);
+                Integer key = Integer.valueOf(info.jdbcType);
                 List<TypeInfo> infos = databaseTypes.get(key);
 
                 if (infos == null) {
@@ -485,8 +485,8 @@ public class TypesMapping {
         // do some tricks to substitute for missing datatypes
 
         // 1. swap TIMESTAMP - DATE
-        Integer ts = new Integer(Types.TIMESTAMP);
-        Integer dt = new Integer(Types.DATE);
+        Integer ts = Integer.valueOf(Types.TIMESTAMP);
+        Integer dt = Integer.valueOf(Types.DATE);
         List<TypeInfo> tsInfo = databaseTypes.get(ts);
         List<TypeInfo> dtInfo = databaseTypes.get(dt);
 
@@ -497,8 +497,8 @@ public class TypesMapping {
             databaseTypes.put(ts, dtInfo);
 
         // 2. Swap CLOB - LONGVARCHAR
-        Integer clob = new Integer(Types.CLOB);
-        Integer lvc = new Integer(Types.LONGVARCHAR);
+        Integer clob = Integer.valueOf(Types.CLOB);
+        Integer lvc = Integer.valueOf(Types.LONGVARCHAR);
         List<TypeInfo> clobInfo = databaseTypes.get(clob);
         List<TypeInfo> lvcInfo = databaseTypes.get(lvc);
 
@@ -509,8 +509,8 @@ public class TypesMapping {
             databaseTypes.put(clob, lvcInfo);
 
         // 2. Swap BLOB - LONGVARBINARY
-        Integer blob = new Integer(Types.BLOB);
-        Integer lvb = new Integer(Types.LONGVARBINARY);
+        Integer blob = Integer.valueOf(Types.BLOB);
+        Integer lvb = Integer.valueOf(Types.LONGVARBINARY);
         List<TypeInfo> blobInfo = databaseTypes.get(blob);
         List<TypeInfo> lvbInfo = databaseTypes.get(lvb);
 

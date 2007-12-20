@@ -63,7 +63,7 @@ public class ByteType extends AbstractType {
             int precision) throws Exception {
 
         if (widenBytes && (val instanceof Byte)) {
-            val = new Integer(((Byte) val).intValue());
+            val = Integer.valueOf(((Byte) val).intValue());
         }
 
         super.setJdbcObject(st, val, pos, type, precision);

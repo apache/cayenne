@@ -242,7 +242,7 @@ public class EJBQLTranslationContext {
     }
 
     String bindPositionalParameter(int position) {
-        return bindParameter(parameters.get(new Integer(position)));
+        return bindParameter(parameters.get(Integer.valueOf(position)));
     }
 
     String bindNamedParameter(String name) {

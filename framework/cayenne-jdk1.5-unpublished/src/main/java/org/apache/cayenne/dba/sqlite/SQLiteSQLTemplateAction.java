@@ -83,7 +83,7 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
             }
             else {                
                 int updateCount = statement.executeUpdate();
-                updateCounts.add(new Integer(updateCount));
+                updateCounts.add(Integer.valueOf(updateCount));
                 QueryLogger.logUpdateCount(updateCount);
             }
 

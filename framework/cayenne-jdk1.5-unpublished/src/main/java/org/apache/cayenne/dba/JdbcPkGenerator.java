@@ -235,7 +235,7 @@ public class JdbcPkGenerator implements PkGenerator {
 
         // if no caching, always generate fresh
         if (cacheSize <= 1) {
-            return new Integer(pkFromDatabase(node, ent));
+            return Integer.valueOf(pkFromDatabase(node, ent));
         }
 
         synchronized (pkCache) {

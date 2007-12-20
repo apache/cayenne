@@ -53,7 +53,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
         if (binPK != null) {
             return binPK;
         }
-        return new Integer(pkFromDatabase(node, entity));
+        return Integer.valueOf(pkFromDatabase(node, entity));
     }
 
     /**
