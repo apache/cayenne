@@ -239,7 +239,7 @@ public class Provider implements PersistenceProvider {
                     loader.getEntityMap()));
             Map<String, JpaClassDescriptor> managedClasses = loader
                     .getEntityMap()
-                    .getMangedClasses();
+                    .getManagedClasses();
             unit.addTransformer(new UnitClassTransformer(managedClasses, loader
                     .getContext()
                     .getTempClassLoader(), enhancer));

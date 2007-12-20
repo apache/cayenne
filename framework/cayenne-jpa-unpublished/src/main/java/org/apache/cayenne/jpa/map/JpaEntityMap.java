@@ -162,7 +162,7 @@ public class JpaEntityMap implements XMLSerializable {
      * for entities, managed superclasses and embeddables. Note that class name key in the
      * map uses slashes, not dots, to separate package components.
      */
-    public Map<String, JpaClassDescriptor> getMangedClasses() {
+    public Map<String, JpaClassDescriptor> getManagedClasses() {
         Map<String, JpaClassDescriptor> managedClasses = new HashMap<String, JpaClassDescriptor>();
 
         if (mappedSuperclasses != null) {
