@@ -91,7 +91,7 @@ class ConverterFactory {
 
             Object convert(Object object, Class type) {
                 if (object == null) {
-                    return type.isPrimitive() ? new Byte((byte) 0) : null;
+                    return type.isPrimitive() ? Byte.valueOf((byte) 0) : null;
                 }
 
                 if (object instanceof Byte) {
@@ -106,7 +106,7 @@ class ConverterFactory {
 
             Object convert(Object object, Class type) {
                 if (object == null) {
-                    return type.isPrimitive() ? new Short((short) 0) : null;
+                    return type.isPrimitive() ? Short.valueOf((short) 0) : null;
                 }
 
                 if (object instanceof Short) {
@@ -121,7 +121,7 @@ class ConverterFactory {
 
             Object convert(Object object, Class type) {
                 if (object == null) {
-                    return type.isPrimitive() ? new Character((char) 0) : null;
+                    return type.isPrimitive() ? Character.valueOf((char) 0) : null;
                 }
 
                 if (object instanceof Character) {
@@ -129,7 +129,7 @@ class ConverterFactory {
                 }
 
                 String string = object.toString();
-                return new Character(string.length() > 0 ? string.charAt(0) : 0);
+                return Character.valueOf(string.length() > 0 ? string.charAt(0) : 0);
             }
         };
 

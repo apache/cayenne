@@ -52,7 +52,7 @@ public class ByteType extends AbstractType {
     public Object materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         byte b = st.getByte(index);
-        return (st.wasNull()) ? null : new Byte(b);
+        return (st.wasNull()) ? null : Byte.valueOf(b);
     }
 
     public void setJdbcObject(

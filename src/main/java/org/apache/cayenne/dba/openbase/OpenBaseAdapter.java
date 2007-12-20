@@ -273,7 +273,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
 
             // read value as int, and then narrow it down
             int val = rs.getInt(index);
-            return (rs.wasNull()) ? null : new Byte((byte) val);
+            return (rs.wasNull()) ? null : Byte.valueOf((byte) val);
         }
     }
 
