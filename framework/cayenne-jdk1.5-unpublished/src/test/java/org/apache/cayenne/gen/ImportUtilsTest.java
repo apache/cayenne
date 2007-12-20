@@ -67,7 +67,7 @@ public class ImportUtilsTest extends TestCase {
                 + generatedStatements
                 + "> does not contain <"
                 + expectedImportStatement
-                + ">", -1 == generatedStatements.indexOf(expectedImportStatement));
+                + ">", !generatedStatements.contains(expectedImportStatement));
         assertEquals("import statement appears multiple times.", generatedStatements
                 .lastIndexOf(expectedImportStatement), generatedStatements
                 .lastIndexOf(expectedImportStatement));
@@ -143,7 +143,7 @@ public class ImportUtilsTest extends TestCase {
                 + generatedStatements
                 + "> does not contain <"
                 + expectedImportStatement
-                + ">", -1 == generatedStatements.indexOf(expectedImportStatement));
+                + ">", !generatedStatements.contains(expectedImportStatement));
         assertEquals("import statement appears multiple times.", generatedStatements
                 .lastIndexOf(expectedImportStatement), generatedStatements
                 .lastIndexOf(expectedImportStatement));

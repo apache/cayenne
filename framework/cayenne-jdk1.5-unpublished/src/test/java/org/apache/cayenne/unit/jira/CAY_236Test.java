@@ -60,7 +60,7 @@ public class CAY_236Test extends BasicCase {
         file.saveTemp();
 
         String contents = fileContents(mapFile, "UTF-8");
-        assertTrue(contents.indexOf(TABLE1_BY) >= 0);
+        assertTrue(contents.contains(TABLE1_BY));
     }
 
     String fileContents(File f, String encoding) throws IOException {

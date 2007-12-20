@@ -85,7 +85,7 @@ public class OrderingTranslatorTest extends CayenneCase {
             String orderBySql = new OrderingTranslator(qa).doTranslation();
 
             assertNotNull(orderBySql);
-            assertTrue(orderBySql.indexOf("UPPER(") != -1);
+            assertTrue(orderBySql.contains("UPPER("));
             tstCase.assertTranslatedWell(orderBySql);
         }
         finally {

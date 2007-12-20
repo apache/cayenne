@@ -38,7 +38,7 @@ public class XMLEncoderTest extends TestCase {
     static final boolean windows;
     
     static {
-        if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") >= 0) {
+        if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
             windows = true;
         }
         else {

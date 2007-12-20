@@ -172,7 +172,7 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
         try {
             String s = null;
             while ((s = in.readLine()) != null) {
-                if (s.indexOf(content) >= 0)
+                if (s.contains(content))
                     return;
             }
 
@@ -208,7 +208,7 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
         String s = null;
         while ((s = in.readLine()) != null) {
             if (regexUtil.match("/^package\\s+([^\\s;]+);/", s + '\n')) {
-                assertTrue(s.indexOf(packageName) >= 0);
+                assertTrue(s.contains(packageName));
                 return;
             }
         }
@@ -222,8 +222,8 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
         String s = null;
         while ((s = in.readLine()) != null) {
             if (regexUtil.match("/class\\s+([^\\s]+)\\s+extends\\s+([^\\s]+)/", s + '\n')) {
-                assertTrue(s.indexOf(className) >= 0);
-                assertTrue(s.indexOf(extendsName) >= 0);
+                assertTrue(s.contains(className));
+                assertTrue(s.contains(extendsName));
                 assertTrue(s.indexOf(className) < s.indexOf(extendsName));
                 return;
             }

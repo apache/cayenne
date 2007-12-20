@@ -150,8 +150,8 @@ public class DeploymentConfiguratorTest extends CayenneCase {
         File newRoot = new File(project.getBaseDir(), Configuration.DEFAULT_DOMAIN_FILE);
 
         String fileContents = Util.stringFromFile(newRoot);
-        assertTrue(fileContents.indexOf(node.getName()) >= 0);
-        assertTrue(fileContents.indexOf(node.getAdapter()) >= 0);
+        assertTrue(fileContents.contains(node.getName()));
+        assertTrue(fileContents.contains(node.getAdapter()));
     }
 
     public void testSameJar() throws Exception {

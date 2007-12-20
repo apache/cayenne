@@ -84,29 +84,25 @@ public class ConfigSaverTest extends CayenneCase {
 		if (info.getDataSourceUrl() != null) {
 			assertTrue(
 				"URL not saved: " + info.getDataSourceUrl(),
-				buf.toString().indexOf("<url value=\"" + info.getDataSourceUrl() + "\"/>")
-					>= 0);
+                    buf.toString().contains("<url value=\"" + info.getDataSourceUrl() + "\"/>"));
 		}
 		
 		if (info.getJdbcDriver() != null) {
 			assertTrue(
 				"Driver not saved: " + info.getJdbcDriver(),
-				buf.toString().indexOf("<driver project-version=\"" + Project.CURRENT_PROJECT_VERSION + "\" class=\"" + info.getJdbcDriver() + "\">")
-					>= 0);
+                    buf.toString().contains("<driver project-version=\"" + Project.CURRENT_PROJECT_VERSION + "\" class=\"" + info.getJdbcDriver() + "\">"));
 		}
 		
 		if (info.getUserName() != null) {
 			assertTrue(
 				"User name not saved: " + info.getUserName(),
-				buf.toString().indexOf("userName=\"" + info.getUserName() + "\"")
-					>= 0);
+                    buf.toString().contains("userName=\"" + info.getUserName() + "\""));
 		}
 		
 		if (info.getPassword() != null) {
 			assertTrue(
 				"Password not saved: " + info.getPassword(),
-				buf.toString().indexOf("password=\"" + info.getPassword() + "\"")
-					>= 0);
+                    buf.toString().contains("password=\"" + info.getPassword() + "\""));
 		}
 	}
 	

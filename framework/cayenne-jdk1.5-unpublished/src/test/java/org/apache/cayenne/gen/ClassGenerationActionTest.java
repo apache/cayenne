@@ -70,15 +70,14 @@ public class ClassGenerationActionTest extends BasicCase {
         assertEquals(2, generated.size());
 
         String superclass = generated.get(0);
-        assertTrue(superclass, superclass.indexOf("package org.example.auto;") >= 0);
-        assertTrue(superclass, superclass
-                .indexOf("import org.apache.cayenne.CayenneDataObject;") >= 0);
+        assertTrue(superclass, superclass.contains("package org.example.auto;"));
+        assertTrue(superclass, superclass.contains("import org.apache.cayenne.CayenneDataObject;"));
 
         String subclass = generated.get(1);
-        assertTrue(subclass, subclass.indexOf("package org.example;") >= 0);
+        assertTrue(subclass, subclass.contains("package org.example;"));
         assertTrue(
                 subclass,
-                subclass.indexOf("import org.example.auto._TestClass1;") >= 0);
+                subclass.contains("import org.example.auto._TestClass1;"));
     }
 
     public void testExecuteArtifactPairsMapRelationships() throws Exception {
@@ -111,7 +110,7 @@ public class ClassGenerationActionTest extends BasicCase {
         assertEquals(2, generated.size());
 
         String superclass = generated.get(0);
-        assertTrue(superclass, superclass.indexOf("import java.util.Map;") >= 0);
+        assertTrue(superclass, superclass.contains("import java.util.Map;"));
     }
 
     protected List<String> execute(Artifact artifact) throws Exception {
