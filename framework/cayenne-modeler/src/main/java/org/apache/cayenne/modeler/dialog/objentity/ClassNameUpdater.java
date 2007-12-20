@@ -65,7 +65,7 @@ public class ClassNameUpdater extends CayenneController {
         else if (suggestedServerName == null || suggestedServerName.equals(oldServerName)) {
             askForServerUpdate = false;
         }
-        else if (oldServerName.indexOf("UntitledObjEntity") >= 0) {
+        else if (oldServerName.contains("UntitledObjEntity")) {
 
             // update without user interaction
             entity.setClassName(suggestedServerName);
@@ -81,7 +81,7 @@ public class ClassNameUpdater extends CayenneController {
         }
         else if (oldClientName == null
                 || oldClientName.length() == 0
-                || oldClientName.indexOf("UntitledObjEntity") >= 0) {
+                || oldClientName.contains("UntitledObjEntity")) {
 
             // update without user interaction
             entity.setClientClassName(suggestedClientName);

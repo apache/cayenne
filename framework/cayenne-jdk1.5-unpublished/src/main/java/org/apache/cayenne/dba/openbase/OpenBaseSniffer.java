@@ -35,7 +35,7 @@ public class OpenBaseSniffer implements DbAdapterFactory {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        return dbName != null && dbName.toUpperCase().indexOf("OPENBASE") >= 0
+        return dbName != null && dbName.toUpperCase().contains("OPENBASE")
                 ? new OpenBaseAdapter()
                 : null;
     }

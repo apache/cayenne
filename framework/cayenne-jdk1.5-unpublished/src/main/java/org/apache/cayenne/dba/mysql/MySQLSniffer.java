@@ -37,7 +37,7 @@ public class MySQLSniffer implements DbAdapterFactory {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || dbName.toUpperCase().indexOf("MYSQL") < 0) {
+        if (dbName == null || !dbName.toUpperCase().contains("MYSQL")) {
             return null;
         }
 

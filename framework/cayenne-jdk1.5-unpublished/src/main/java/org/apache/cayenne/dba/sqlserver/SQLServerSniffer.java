@@ -35,7 +35,7 @@ public class SQLServerSniffer implements DbAdapterFactory {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || dbName.toUpperCase().indexOf("MICROSOFT SQL SERVER") < 0) {
+        if (dbName == null || !dbName.toUpperCase().contains("MICROSOFT SQL SERVER")) {
             return null;
         }
 

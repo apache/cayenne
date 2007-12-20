@@ -33,7 +33,7 @@ public class PostgresSniffer implements DbAdapterFactory {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        return dbName != null && dbName.toUpperCase().indexOf("POSTGRESQL") >= 0
+        return dbName != null && dbName.toUpperCase().contains("POSTGRESQL")
                 ? new PostgresAdapter()
                 : null;
     }

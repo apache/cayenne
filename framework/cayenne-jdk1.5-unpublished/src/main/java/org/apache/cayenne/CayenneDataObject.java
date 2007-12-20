@@ -165,7 +165,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
         }
 
         // take a shortcut for simple properties
-        if (path.indexOf(".") < 0) {
+        if (!path.contains(".")) {
             return new String[] {
                 path
             };
