@@ -308,16 +308,16 @@ public class PropertyUtils {
 
             String className = type.getName();
             if ("byte".equals(className)) {
-                return new Byte((byte) 0);
+                return Byte.valueOf((byte) 0);
             }
             else if ("int".equals(className)) {
                 return Integer.valueOf(0);
             }
             else if ("short".equals(className)) {
-                return new Short((short) 0);
+                return Short.valueOf((short) 0);
             }
             else if ("char".equals(className)) {
-                return new Character((char) 0);
+                return Character.valueOf((char) 0);
             }
             else if ("double".equals(className)) {
                 return new Double(0.0d);

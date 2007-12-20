@@ -46,13 +46,13 @@ public class ShortType extends AbstractType {
 
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         short s = rs.getShort(index);
-        return (rs.wasNull()) ? null : new Short(s);
+        return (rs.wasNull()) ? null : Short.valueOf(s);
     }
 
     public Object materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         short s = st.getShort(index);
-        return (st.wasNull()) ? null : new Short(s);
+        return (st.wasNull()) ? null : Short.valueOf(s);
     }
 
     public void setJdbcObject(

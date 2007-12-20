@@ -92,7 +92,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             }
 
             String string = object.toString();
-            return (string.length() > 0) ? new Character(string.charAt(0)) : null;
+            return (string.length() > 0) ? Character.valueOf(string.charAt(0)) : null;
         }
     }
 
@@ -147,7 +147,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             String string = object.toString();
             Character[] chars = new Character[string.length()];
             for (int i = 0; i < string.length(); i++) {
-                chars[i] = new Character(string.charAt(i));
+                chars[i] = Character.valueOf(string.charAt(i));
             }
 
             return chars;
@@ -187,7 +187,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             Byte[] byteWrappers = new Byte[bytes.length];
 
             for (int i = 0; i < bytes.length; i++) {
-                byteWrappers[i] = new Byte(bytes[i]);
+                byteWrappers[i] = Byte.valueOf(bytes[i]);
             }
 
             return byteWrappers;
