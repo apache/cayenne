@@ -46,13 +46,18 @@ public class _2_1_1_PeristentFieldsAndPropertiesTest extends EntityManagerCase {
                 "property1"));
     }
 
-    // TODO: andrus 8/10/2006 - fails
-    public void _testPropertyBasedPersistence() {
+    public void testPropertyBasedPersistence() throws Exception {
+        getDbHelper().deleteAll("PropertyPersistenceEntity");
+
         PropertyPersistenceEntity o1 = new PropertyPersistenceEntity();
         o1.setProperty1("p1");
         o1.setProperty2(true);
         getEntityManager().persist(o1);
         getEntityManager().getTransaction().commit();
+
+        assertEquals("p1", getDbHelper().getObject(
+                "PropertyPersistenceEntity",
+                "property1"));
     }
 
     public void testSkipTransientProperties() {

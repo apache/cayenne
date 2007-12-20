@@ -19,6 +19,7 @@
 package org.apache.cayenne.jpa.enhancer;
 
 import org.apache.cayenne.enhancer.AccessorVisitor;
+import org.apache.cayenne.jpa.map.AccessType;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
 import org.apache.cayenne.jpa.map.JpaPropertyDescriptor;
 import org.objectweb.asm.ClassVisitor;
@@ -37,7 +38,8 @@ class JpaAccessorVisitor extends AccessorVisitor {
 
     @Override
     protected boolean isEnhancedProperty(String property) {
-        return descriptor.getProperty(property) != null;
+        return descriptor.getAccess() != AccessType.PROPERTY
+                && descriptor.getProperty(property) != null;
     }
 
     @Override

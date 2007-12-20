@@ -24,20 +24,51 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.cayenne.jpa.map.AccessType;
+import org.apache.cayenne.jpa.map.JpaEntityMap;
+import org.apache.cayenne.jpa.map.JpaManagedClass;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.Accessor;
+import org.apache.cayenne.reflect.BeanAccessor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.pojo.EnhancedPojoDescriptorFactory;
 
 public class JpaClassDescriptorFactory extends EnhancedPojoDescriptorFactory {
 
-    public JpaClassDescriptorFactory(ClassDescriptorMap descriptorMap,
-            FaultFactory faultFactory) {
+    protected JpaEntityMap entityMap;
+
+    public JpaClassDescriptorFactory(JpaEntityMap entityMap,
+            ClassDescriptorMap descriptorMap, FaultFactory faultFactory) {
         super(descriptorMap, faultFactory);
+        this.entityMap = entityMap;
+    }
+
+    @Override
+    protected Accessor createAccessor(
+            PersistentDescriptor descriptor,
+            String propertyName,
+            Class<?> propertyType) throws PropertyException {
+
+        String className = descriptor.getObjectClass().getName();
+        JpaManagedClass managedClass = entityMap.getManagedClass(className);
+        if (managedClass == null) {
+            throw new IllegalArgumentException("Not a managed class: " + className);
+        }
+
+        if (managedClass.getAccess() == AccessType.PROPERTY) {
+            return new BeanAccessor(
+                    descriptor.getObjectClass(),
+                    propertyName,
+                    propertyType);
+        }
+        else {
+            return super.createAccessor(descriptor, propertyName, propertyType);
+        }
     }
 
     protected void createToManyListProperty(

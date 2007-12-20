@@ -109,12 +109,12 @@ public class JpaEntityMap implements XMLSerializable {
         if (mappedSuperclasses != null) {
             encoder.print(mappedSuperclasses);
         }
-        
-        if(entities != null) {
+
+        if (entities != null) {
             encoder.print(entities);
         }
-        
-        if(embeddables != null) {
+
+        if (embeddables != null) {
             encoder.print(embeddables);
         }
 
@@ -123,9 +123,9 @@ public class JpaEntityMap implements XMLSerializable {
     }
 
     /**
-     * Returns true if a given managed class is already loaded.
+     * Returns an existing managed class, or null if no match is found.
      */
-    public boolean containsManagedClass(String className) {
+    public JpaManagedClass getManagedClass(String className) {
         if (className == null) {
             throw new IllegalArgumentException("Null class name");
         }
@@ -133,7 +133,7 @@ public class JpaEntityMap implements XMLSerializable {
         if (mappedSuperclasses != null) {
             for (JpaMappedSuperclass object : mappedSuperclasses) {
                 if (className.equals(object.getClassName())) {
-                    return true;
+                    return object;
                 }
             }
         }
@@ -141,7 +141,7 @@ public class JpaEntityMap implements XMLSerializable {
         if (entities != null) {
             for (JpaEntity object : entities) {
                 if (className.equals(object.getClassName())) {
-                    return true;
+                    return object;
                 }
             }
         }
@@ -149,12 +149,12 @@ public class JpaEntityMap implements XMLSerializable {
         if (embeddables != null) {
             for (JpaEmbeddable object : embeddables) {
                 if (className.equals(object.getClassName())) {
-                    return true;
+                    return object;
                 }
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -205,8 +205,8 @@ public class JpaEntityMap implements XMLSerializable {
         if (entityClassName == null) {
             throw new IllegalArgumentException("Null entity class name");
         }
-        
-        if(entities == null) {
+
+        if (entities == null) {
             return null;
         }
 
@@ -218,7 +218,7 @@ public class JpaEntityMap implements XMLSerializable {
 
         return null;
     }
-    
+
     /**
      * Returns a JpaEmbeddable describing a given embeddable class.
      */
@@ -230,7 +230,7 @@ public class JpaEntityMap implements XMLSerializable {
 
         return embeddableForClass(embeddableClass.getName());
     }
-    
+
     /**
      * Returns a JpaEmbeddable describing a given embeddable class.
      */
@@ -238,8 +238,8 @@ public class JpaEntityMap implements XMLSerializable {
         if (embeddableClassName == null) {
             throw new IllegalArgumentException("Null embeddable class name");
         }
-        
-        if(embeddables == null) {
+
+        if (embeddables == null) {
             return null;
         }
 
@@ -251,7 +251,6 @@ public class JpaEntityMap implements XMLSerializable {
 
         return null;
     }
-
 
     public AccessType getAccess() {
         return access;

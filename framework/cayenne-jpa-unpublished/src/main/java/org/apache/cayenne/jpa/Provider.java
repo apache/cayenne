@@ -220,17 +220,6 @@ public class Provider implements PersistenceProvider {
 
             boolean isJTA = isJta(unit, map);
 
-            // configure Cayenne domain
-            domain = new DataDomain(name);
-            ClassDescriptorMap descriptors = domain
-                    .getEntityResolver()
-                    .getClassDescriptorMap();
-            FaultFactory faultFactory = new SingletonFaultFactory();
-            descriptors.addFactory(new JpaClassDescriptorFactory(
-                    descriptors,
-                    faultFactory));
-            configuration.addDomain(domain);
-
             EntityMapLoader loader = new EntityMapLoader(unit);
 
             // add transformer before DataMapConverter starts loading the classes via app
@@ -246,6 +235,18 @@ public class Provider implements PersistenceProvider {
 
             DataMapConverter converter = new DataMapConverter();
             DataMap cayenneMap = converter.toDataMap(name, loader.getContext());
+
+            // configure Cayenne domain
+            domain = new DataDomain(name);
+            ClassDescriptorMap descriptors = domain
+                    .getEntityResolver()
+                    .getClassDescriptorMap();
+            FaultFactory faultFactory = new SingletonFaultFactory();
+            descriptors.addFactory(new JpaClassDescriptorFactory(
+                    loader.getEntityMap(),
+                    descriptors,
+                    faultFactory));
+            configuration.addDomain(domain);
 
             // TODO: andrus, 2/3/2007 - clarify this logic.... JTA EM may not always mean
             // JTA DS?

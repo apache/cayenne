@@ -174,7 +174,7 @@ public class EntityMapAnnotationLoader {
     public void loadClassMapping(Class<?> managedClass) throws JpaProviderException {
 
         // avoid duplicates loaded from annotations per CAY-756
-        if (context.getEntityMap().containsManagedClass(managedClass.getName())) {
+        if (context.getEntityMap().getManagedClass(managedClass.getName()) != null) {
             context.recordConflict(new SimpleValidationFailure(
                     managedClass.getName(),
                     "Duplicate managed class declaration " + managedClass.getName()));
