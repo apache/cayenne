@@ -33,7 +33,7 @@ public class OracleSniffer implements DbAdapterFactory {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || dbName.toUpperCase().indexOf("ORACLE") < 0) {
+        if (dbName == null || !dbName.toUpperCase().contains("ORACLE")) {
             return null;
         }
 

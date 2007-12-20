@@ -44,7 +44,7 @@ public class SybaseSniffer implements DbAdapterFactory {
     	}
     	else {
             String dbName = md.getDatabaseProductName();
-            return dbName != null && dbName.toUpperCase().indexOf("ADAPTIVE SERVER") >= 0
+            return dbName != null && dbName.toUpperCase().contains("ADAPTIVE SERVER")
                     ? new SybaseAdapter()
                     : null;
     	}

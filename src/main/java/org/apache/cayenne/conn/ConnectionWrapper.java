@@ -56,7 +56,7 @@ public class ConnectionWrapper implements Connection {
             throws SQLException {
 
         String s = e.getMessage().toLowerCase();
-        if (s.indexOf("set chained command not allowed") >= 0) {
+        if (s.contains("set chained command not allowed")) {
             c.commit();
             c.setAutoCommit(autoCommit); // Shouldn't fail now.
         }

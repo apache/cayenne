@@ -33,7 +33,7 @@ public class DB2Sniffer implements DbAdapterFactory {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        return dbName != null && dbName.toUpperCase().indexOf("DB2") >= 0
+        return dbName != null && dbName.toUpperCase().contains("DB2")
                 ? new DB2Adapter()
                 : null;
     }

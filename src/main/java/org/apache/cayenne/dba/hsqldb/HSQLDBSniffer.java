@@ -35,7 +35,7 @@ public class HSQLDBSniffer implements DbAdapterFactory {
 
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || dbName.toUpperCase().indexOf("HSQL") < 0) {
+        if (dbName == null || !dbName.toUpperCase().contains("HSQL")) {
             return null;
         }
 

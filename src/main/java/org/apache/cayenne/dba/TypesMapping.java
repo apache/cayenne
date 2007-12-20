@@ -316,7 +316,7 @@ public class TypesMapping {
         for (int i = 0; i < slen; i++) {
             String uppercase = (list.get(i)).name.toUpperCase();
 
-            if (uppercase.indexOf(jdbcName) >= 0)
+            if (uppercase.contains(jdbcName))
                 return (list.get(i)).name;
         }
 
