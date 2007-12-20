@@ -665,11 +665,11 @@ public class IncrementalFaultList<E> implements List<E> {
     /**
      * @see java.util.List#set(int, Object)
      */
-    public Object set(int index, Object element) {
+    public E set(int index, Object element) {
         validateListObject(element);
 
         synchronized (elements) {
-            return elements.set(index, element);
+            return (E) elements.set(index, element);
         }
     }
 
