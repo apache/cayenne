@@ -41,7 +41,7 @@ public class DataRowStoreTest extends CayenneCase {
                 new EventManager());
         assertEquals("cacheXYZ", cache.getName());
         assertNotNull(cache.getSnapshotEventSubject());
-        assertTrue(cache.getSnapshotEventSubject().getSubjectName().indexOf("cacheXYZ") >= 0);
+        assertTrue(cache.getSnapshotEventSubject().getSubjectName().contains("cacheXYZ"));
 
         assertEquals(DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
                 .isNotifyingRemoteListeners());
