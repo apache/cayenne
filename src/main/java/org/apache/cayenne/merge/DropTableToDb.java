@@ -19,7 +19,6 @@
 package org.apache.cayenne.merge;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -36,8 +35,11 @@ public class DropTableToDb extends AbstractToDbToken {
     @Override
     public List<String> createSql(DbAdapter adapter) {
         List<String> sqls = new ArrayList<String>();
+        // TODO: fix. some adapters drop the complete AUTO_PK_SUPPORT here
+        /*
         sqls.addAll(adapter.getPkGenerator().dropAutoPkStatements(
                 Collections.singletonList(entity)));
+         */
         sqls.add(adapter.dropTable(entity));
         return sqls;
     }
