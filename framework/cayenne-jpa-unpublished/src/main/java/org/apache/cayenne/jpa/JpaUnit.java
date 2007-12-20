@@ -223,7 +223,7 @@ public abstract class JpaUnit implements PersistenceUnitInfo {
         this.persistenceUnitRootUrl = persistenceUnitRootUrl;
     }
 
-    public void addProperties(Map properties) {
+    public void addProperties(Map<?, ?> properties) {
         this.properties.putAll(properties);
     }
 

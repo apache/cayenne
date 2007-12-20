@@ -25,7 +25,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 
-
 public class MockPersistenceProvider implements PersistenceProvider {
 
     protected String unitName;
@@ -38,12 +37,14 @@ public class MockPersistenceProvider implements PersistenceProvider {
         this.unitName = unitName;
     }
 
+    @SuppressWarnings("unchecked")
     public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
         return unitName != null && unitName.equals(emName)
                 ? new MockEntityManagerFactory(emName, map)
                 : null;
     }
 
+    @SuppressWarnings("unchecked")
     public EntityManagerFactory createContainerEntityManagerFactory(
             PersistenceUnitInfo info,
             Map map) {

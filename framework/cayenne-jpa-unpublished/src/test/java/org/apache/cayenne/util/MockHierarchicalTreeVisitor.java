@@ -31,7 +31,7 @@ public class MockHierarchicalTreeVisitor implements HierarchicalTreeVisitor {
     public void onFinishNode(ProjectPath path) {
     }
 
-    public HierarchicalTreeVisitor childVisitor(ProjectPath path, Class childType) {
+    public HierarchicalTreeVisitor childVisitor(ProjectPath path, Class<?> childType) {
         return null;
     }
 }

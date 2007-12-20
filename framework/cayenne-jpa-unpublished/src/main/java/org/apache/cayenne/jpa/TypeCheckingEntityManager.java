@@ -43,7 +43,7 @@ public class TypeCheckingEntityManager implements CayenneEntityManager {
         this.entityManager = entityManager;
     }
 
-    protected void checkEntityType(Class entityClass) throws IllegalArgumentException {
+    protected void checkEntityType(Class<?> entityClass) throws IllegalArgumentException {
         if (entityClass == null) {
             throw new IllegalArgumentException("Null entity class");
         }
@@ -65,10 +65,6 @@ public class TypeCheckingEntityManager implements CayenneEntityManager {
         }
     }
 
-    protected void enhance(Class entityClass) {
-
-    }
-
     public void clear() {
         entityManager.clear();
     }
@@ -86,6 +82,7 @@ public class TypeCheckingEntityManager implements CayenneEntityManager {
         return entityManager.createNamedQuery(name);
     }
 
+    @SuppressWarnings("unchecked")
     public Query createNativeQuery(String sqlString, Class resultClass) {
         checkEntityType(resultClass);
         return entityManager.createNativeQuery(sqlString, resultClass);

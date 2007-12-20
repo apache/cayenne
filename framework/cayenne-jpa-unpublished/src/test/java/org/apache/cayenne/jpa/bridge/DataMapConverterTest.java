@@ -79,9 +79,11 @@ public class DataMapConverterTest extends TestCase {
         listeners.getEntityListeners().add(l2);
 
         DataMap cayenneMap = new DataMapConverter().toDataMap("n1", context);
-        Collection entityListeners = cayenneMap.getDefaultEntityListeners();
+        Collection<EntityListener> entityListeners = cayenneMap
+                .getDefaultEntityListeners();
         assertEquals(2, entityListeners.size());
-        Collection defaultListeners = cayenneMap.getDefaultEntityListeners();
+        Collection<EntityListener> defaultListeners = cayenneMap
+                .getDefaultEntityListeners();
         assertEquals(2, defaultListeners.size());
 
         EntityListener cl1 = cayenneMap.getDefaultEntityListener("abc.C1");
@@ -153,7 +155,7 @@ public class DataMapConverterTest extends TestCase {
         ObjEntity entity = cayenneMap.getObjEntity("E1");
         assertNotNull(entity);
 
-        Collection entityListeners = entity.getEntityListeners();
+        Collection<EntityListener> entityListeners = entity.getEntityListeners();
         assertEquals(2, entityListeners.size());
 
         EntityListener cl1 = entity.getEntityListener("abc.C1");

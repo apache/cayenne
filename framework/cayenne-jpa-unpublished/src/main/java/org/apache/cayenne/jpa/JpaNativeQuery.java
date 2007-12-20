@@ -29,7 +29,7 @@ public class JpaNativeQuery extends JpaQuery {
 
     private static final String POSITIONAL_PARAM_PREFIX = "positional_";
 
-    public JpaNativeQuery(ObjectContext context, String sqlString, Class resultClass) {
+    public JpaNativeQuery(ObjectContext context, String sqlString, Class<?> resultClass) {
         super(context);
         setQuery(new SQLTemplate(resultClass, processSQLString(sqlString)));
     }

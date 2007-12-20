@@ -29,14 +29,14 @@ import javax.persistence.spi.PersistenceUnitInfo;
 public class MockEntityManagerFactory implements EntityManagerFactory {
 
     protected String persistenceUnitName;
-    protected Map properties;
+    protected Map<?, ?> properties;
     protected PersistenceUnitInfo info;
 
     public MockEntityManagerFactory() {
 
     }
 
-    public MockEntityManagerFactory(String persistenceUnitName, Map properties) {
+    public MockEntityManagerFactory(String persistenceUnitName, Map<?, ?> properties) {
         this.persistenceUnitName = persistenceUnitName;
         this.properties = properties;
     }
@@ -50,6 +50,7 @@ public class MockEntityManagerFactory implements EntityManagerFactory {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public EntityManager createEntityManager(Map parameters) {
         return null;
     }
@@ -65,7 +66,7 @@ public class MockEntityManagerFactory implements EntityManagerFactory {
         return persistenceUnitName;
     }
 
-    public Map getProperties() {
+    public Map<?, ?> getProperties() {
         return properties;
     }
 

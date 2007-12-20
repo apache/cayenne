@@ -39,7 +39,7 @@ public class TraversalUtil {
     static final ClassTraversalDescriptor noopDescriptor = new ClassTraversalDescriptor();
     static final Map<String, ClassTraversalDescriptor> descriptors = new HashMap<String, ClassTraversalDescriptor>();
 
-    private static Method[] traversableGetters(Class nodeType) {
+    private static Method[] traversableGetters(Class<?> nodeType) {
 
         Collection<Method> getters = null;
 
@@ -59,7 +59,7 @@ public class TraversalUtil {
         return getters != null ? getters.toArray(new Method[getters.size()]) : null;
     }
 
-    static synchronized ClassTraversalDescriptor getDescriptor(Class nodeType) {
+    static synchronized ClassTraversalDescriptor getDescriptor(Class<?> nodeType) {
         String typeName = nodeType.getName();
         ClassTraversalDescriptor descriptor = descriptors.get(typeName);
         if (descriptor == null) {
@@ -92,7 +92,7 @@ public class TraversalUtil {
         if (visitor.onStartNode(path)) {
 
             ClassTraversalDescriptor descriptor = getDescriptor(node.getClass());
-            Class[] childTypes = descriptor.getTraversableChildTypes();
+            Class<?>[] childTypes = descriptor.getTraversableChildTypes();
             if (childTypes != null && childTypes.length > 0) {
                 for (int i = 0; i < childTypes.length; i++) {
 
@@ -106,7 +106,7 @@ public class TraversalUtil {
                             continue;
                         }
                         else if (child instanceof Collection) {
-                            Collection children = (Collection) child;
+                            Collection<?> children = (Collection<?>) child;
 
                             if (children != null && !children.isEmpty()) {
                                 for (Object collectionChild : children) {
@@ -127,7 +127,7 @@ public class TraversalUtil {
 
     static class ClassTraversalDescriptor {
 
-        Class[] traversableChildTypes;
+        Class<?>[] traversableChildTypes;
         Method[] traversableGetters;
 
         ClassTraversalDescriptor() {
@@ -138,7 +138,7 @@ public class TraversalUtil {
             this.traversableGetters = traversableChildGetters;
             this.traversableChildTypes = new Class[traversableChildGetters.length];
             for (int i = 0; i < traversableChildGetters.length; i++) {
-                Class type = traversableChildGetters[i].getReturnType();
+                Class<?> type = traversableChildGetters[i].getReturnType();
                 if (Collection.class.isAssignableFrom(type)) {
                     type = traversableChildGetters[i]
                             .getAnnotation(TreeNodeChild.class)
@@ -156,7 +156,7 @@ public class TraversalUtil {
             }
         }
 
-        Class[] getTraversableChildTypes() {
+        Class<?>[] getTraversableChildTypes() {
             return traversableChildTypes;
         }
 

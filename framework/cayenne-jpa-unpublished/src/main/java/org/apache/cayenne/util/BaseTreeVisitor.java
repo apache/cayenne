@@ -33,7 +33,7 @@ import org.apache.cayenne.project.ProjectPath;
 // TODO, andrus, 4/24/2006 - move to Cayenne core in 2.0
 public class BaseTreeVisitor implements HierarchicalTreeVisitor {
 
-    protected Map childVisitors;
+    protected Map<String, HierarchicalTreeVisitor> childVisitors;
     protected boolean terminatingOnNoChildVisitor;
 
     public BaseTreeVisitor() {
@@ -48,13 +48,12 @@ public class BaseTreeVisitor implements HierarchicalTreeVisitor {
         this.terminatingOnNoChildVisitor = terminatingOnNoChildVisitor;
     }
 
-    public HierarchicalTreeVisitor childVisitor(ProjectPath path, Class childType) {
+    public HierarchicalTreeVisitor childVisitor(ProjectPath path, Class<?> childType) {
         if (childVisitors == null) {
             return terminatingOnNoChildVisitor ? null : this;
         }
 
-        HierarchicalTreeVisitor childVisitor = (HierarchicalTreeVisitor) childVisitors
-                .get(childType.getName());
+        HierarchicalTreeVisitor childVisitor = childVisitors.get(childType.getName());
         return childVisitor != null ? childVisitor : terminatingOnNoChildVisitor
                 ? null
                 : this;
@@ -67,9 +66,9 @@ public class BaseTreeVisitor implements HierarchicalTreeVisitor {
         return true;
     }
 
-    public void addChildVisitor(Class childClass, HierarchicalTreeVisitor visitor) {
+    public void addChildVisitor(Class<?> childClass, HierarchicalTreeVisitor visitor) {
         if (childVisitors == null) {
-            childVisitors = new HashMap();
+            childVisitors = new HashMap<String, HierarchicalTreeVisitor>();
         }
 
         childVisitors.put(childClass.getName(), visitor);

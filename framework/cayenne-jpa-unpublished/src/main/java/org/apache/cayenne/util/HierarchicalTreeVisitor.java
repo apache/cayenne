@@ -46,5 +46,5 @@ public interface HierarchicalTreeVisitor {
      * Returns an instance of the child visitor for a given project path and a type of
      * child. Returning null would result in skipping the particular child type.
      */
-    HierarchicalTreeVisitor childVisitor(ProjectPath path, Class childType);
+    HierarchicalTreeVisitor childVisitor(ProjectPath path, Class<?> childType);
 }

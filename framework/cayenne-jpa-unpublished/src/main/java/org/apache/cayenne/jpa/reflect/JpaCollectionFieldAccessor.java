@@ -26,8 +26,8 @@ import org.apache.cayenne.reflect.PropertyException;
 
 class JpaCollectionFieldAccessor extends FieldAccessor {
 
-    public JpaCollectionFieldAccessor(Class objectClass, String propertyName,
-            Class propertyType) {
+    public JpaCollectionFieldAccessor(Class<?> objectClass, String propertyName,
+            Class<?> propertyType) {
         super(objectClass, propertyName, propertyType);
 
         if (!Persistent.class.isAssignableFrom(objectClass)) {

@@ -596,7 +596,7 @@ public class MappingAssertion extends Assert {
         assertNotNull(a2.getCascade());
         Collection<CascadeType> cascades = a2.getCascade().getCascades();
         assertEquals(2, cascades.size());
-        Iterator cascades1It = cascades.iterator();
+        Iterator<CascadeType> cascades1It = cascades.iterator();
         assertSame(CascadeType.REMOVE, cascades1It.next());
         assertSame(CascadeType.REFRESH, cascades1It.next());
 
@@ -610,7 +610,7 @@ public class MappingAssertion extends Assert {
         assertEquals("mb2", a3.getMappedBy());
         assertNotNull(a3.getCascade());
         assertEquals(2, a3.getCascade().getCascades().size());
-        Iterator cascades2It = a3.getCascade().getCascades().iterator();
+        Iterator<CascadeType> cascades2It = a3.getCascade().getCascades().iterator();
         assertSame(CascadeType.PERSIST, cascades2It.next());
         assertSame(CascadeType.MERGE, cascades2It.next());
 

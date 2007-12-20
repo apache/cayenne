@@ -45,10 +45,10 @@ public class EntityMapTraversalTest extends TestCase {
 
         JpaId a2 = new JpaId();
         e1.getAttributes().getIds().add(a2);
-        
+
         JpaColumn c1 = new JpaColumn();
         a1.setColumn(c1);
-        
+
         JpaColumn c2 = new JpaColumn();
         a2.setColumn(c2);
 
@@ -69,9 +69,9 @@ public class EntityMapTraversalTest extends TestCase {
 
     class TestVisitor implements HierarchicalTreeVisitor {
 
-        protected Collection visitedNodes = new ArrayList();
+        protected Collection<Object> visitedNodes = new ArrayList<Object>();
 
-        public HierarchicalTreeVisitor childVisitor(ProjectPath path, Class childType) {
+        public HierarchicalTreeVisitor childVisitor(ProjectPath path, Class<?> childType) {
             return this;
         }
 

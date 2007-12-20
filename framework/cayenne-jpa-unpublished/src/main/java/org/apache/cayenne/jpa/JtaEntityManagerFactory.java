@@ -91,6 +91,7 @@ public class JtaEntityManagerFactory extends ResourceLocalEntityManagerFactory {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public EntityManager createEntityManager(Map map) {
         checkClosed();
         CayenneEntityManager em = new JtaEntityManager(createObjectContext(), this);

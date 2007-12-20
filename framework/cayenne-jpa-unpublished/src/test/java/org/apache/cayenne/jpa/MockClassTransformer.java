@@ -40,7 +40,7 @@ public class MockClassTransformer implements ClassTransformer {
         this.transformed = new ArrayList<String>();
     }
 
-    public Collection getTransformed() {
+    public Collection<String> getTransformed() {
         return transformed;
     }
 

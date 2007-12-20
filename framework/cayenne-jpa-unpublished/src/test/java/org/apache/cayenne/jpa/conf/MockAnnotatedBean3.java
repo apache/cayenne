@@ -49,7 +49,7 @@ public class MockAnnotatedBean3 {
 
     @OneToMany
     // no collection type - must result in a failure
-    protected Collection toBean2s2;
+    protected Collection<?> toBean2s2;
     
     // date w/o Temporal annotation must resolve to TIMESTAMP
     protected Date date;

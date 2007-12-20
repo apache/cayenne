@@ -44,7 +44,7 @@ class JpaUnitClassLoader extends SecureClassLoader {
             return super.loadClass(name, resolve);
         }
 
-        Class c = findLoadedClass(name);
+        Class<?> c = findLoadedClass(name);
 
         if (c == null) {
             c = findClass(name);

@@ -92,6 +92,7 @@ public class JpaQuery implements Query {
      * @return a list of the results
      * @throws IllegalStateException if called for an EJB QL UPDATE or DELETE statement
      */
+    @SuppressWarnings("unchecked")
     public List getResultList() {
         return context.performQuery(queryWithParameters());
     }
@@ -129,7 +130,7 @@ public class JpaQuery implements Query {
      * @throws IllegalStateException if called for an EJB QL UPDATE or DELETE statement
      */
     public Object getSingleResult() {
-        List rows = getResultList();
+        List<?> rows = getResultList();
         if (rows.size() == 0) {
             throw new NoResultException();
         }

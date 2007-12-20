@@ -43,7 +43,7 @@ public class UnitDescriptorParserTest extends TestCase {
                 .currentThread()
                 .getContextClassLoader()
                 .getResourceAsStream("xml-samples/persistence1.xml");
-        Collection units = parser.getPersistenceUnits(new InputSource(in), root);
+        Collection<JpaUnit> units = parser.getPersistenceUnits(new InputSource(in), root);
 
         assertEquals(1, units.size());
 
@@ -74,7 +74,7 @@ public class UnitDescriptorParserTest extends TestCase {
                 .currentThread()
                 .getContextClassLoader()
                 .getResourceAsStream("xml-samples/persistence-schema-headers.xml");
-        Collection units = parser.getPersistenceUnits(new InputSource(in), root);
+        Collection<JpaUnit> units = parser.getPersistenceUnits(new InputSource(in), root);
 
         assertEquals(1, units.size());
 
@@ -105,13 +105,13 @@ public class UnitDescriptorParserTest extends TestCase {
                 .currentThread()
                 .getContextClassLoader()
                 .getResourceAsStream("xml-samples/persistence2.xml");
-        Collection units = parser.getPersistenceUnits(new InputSource(in), root);
+        Collection<JpaUnit> units = parser.getPersistenceUnits(new InputSource(in), root);
 
         assertEquals(3, units.size());
 
-        Iterator it = units.iterator();
+        Iterator<JpaUnit> it = units.iterator();
         for (int i = 1; i <= 3; i++) {
-            JpaUnit info = (JpaUnit) it.next();
+            JpaUnit info = it.next();
 
             assertEquals("Unit" + i, info.getPersistenceUnitName());
             assertEquals(root, info.getPersistenceUnitRootUrl());
@@ -131,11 +131,11 @@ public class UnitDescriptorParserTest extends TestCase {
                 .currentThread()
                 .getContextClassLoader()
                 .getResourceAsStream("xml-samples/persistence3.xml");
-        Collection units = parser.getPersistenceUnits(new InputSource(in), root);
+        Collection<JpaUnit> units = parser.getPersistenceUnits(new InputSource(in), root);
 
         assertEquals(1, units.size());
 
-        JpaUnit info = (JpaUnit) units.iterator().next();
+        JpaUnit info = units.iterator().next();
 
         assertEquals("OrderManagement4", info.getPersistenceUnitName());
         assertEquals(PersistenceUnitTransactionType.RESOURCE_LOCAL, info
@@ -163,15 +163,15 @@ public class UnitDescriptorParserTest extends TestCase {
                 .currentThread()
                 .getContextClassLoader()
                 .getResourceAsStream("xml-samples/persistence-schema-headers.xml");
-        Collection units = parser.getPersistenceUnits(new InputSource(in), root);
+        Collection<JpaUnit> units = parser.getPersistenceUnits(new InputSource(in), root);
 
         assertEquals(1, units.size());
 
-        JpaUnit info = (JpaUnit) units.iterator().next();
+        JpaUnit info = units.iterator().next();
 
         assertEquals("OrderManagement", info.getPersistenceUnitName());
 
-        // JTA is the default when type is ommitted
+        // JTA is the default when type is omitted
         assertEquals(PersistenceUnitTransactionType.JTA, info.getTransactionType());
         assertEquals(root, info.getPersistenceUnitRootUrl());
         assertTrue(info.getDescription().startsWith("This unit manages orders"));

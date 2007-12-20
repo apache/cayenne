@@ -158,6 +158,7 @@ public class Provider implements PersistenceProvider {
      * a {@link JpaUnit} and calls
      * {@link #createContainerEntityManagerFactory(PersistenceUnitInfo, Map)}.
      */
+    @SuppressWarnings("unchecked")
     public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
 
         JpaUnit ui = loadUnit(emName);
@@ -200,6 +201,7 @@ public class Provider implements PersistenceProvider {
      * provider will ignore all but 'javax.persistence.transactionType' property in the
      * passed property map.
      */
+    @SuppressWarnings("unchecked")
     public synchronized EntityManagerFactory createContainerEntityManagerFactory(
             PersistenceUnitInfo unit,
             Map map) {
@@ -309,7 +311,7 @@ public class Provider implements PersistenceProvider {
      * Returns whether provided configuration specifies a JTA or RESOURCE_LOCAL
      * EntityManager.
      */
-    private boolean isJta(PersistenceUnitInfo unit, Map overrides) {
+    private boolean isJta(PersistenceUnitInfo unit, Map<?, ?> overrides) {
         PersistenceUnitTransactionType txType;
         String txTypeOverride = (overrides != null) ? (String) overrides
                 .get(TRANSACTION_TYPE_PROPERTY) : null;
@@ -403,7 +405,7 @@ public class Provider implements PersistenceProvider {
 
         try {
             // adapter class is not enhanced, so use a normal class loader
-            Class dbAdapterClass = Class.forName(adapterClass, true, Thread
+            Class<?> dbAdapterClass = Class.forName(adapterClass, true, Thread
                     .currentThread()
                     .getContextClassLoader());
             return (DbAdapter) dbAdapterClass.newInstance();

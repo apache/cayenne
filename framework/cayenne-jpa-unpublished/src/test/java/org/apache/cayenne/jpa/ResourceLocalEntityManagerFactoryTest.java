@@ -52,7 +52,7 @@ public class ResourceLocalEntityManagerFactoryTest extends TestCase {
         }
 
         try {
-            f.createEntityManager(new HashMap());
+            f.createEntityManager(new HashMap<Object, Object>());
             fail("Closed EntityManagerFactory is supposed to throw");
         }
         catch (IllegalStateException e) {

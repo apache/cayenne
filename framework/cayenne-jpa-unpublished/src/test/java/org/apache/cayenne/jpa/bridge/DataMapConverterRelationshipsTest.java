@@ -113,12 +113,12 @@ public class DataMapConverterRelationshipsTest extends TestCase {
         assertSame(dbr1, dbr2.getReverseRelationship());
     }
 
-    private DataMap load(Class... classes) {
+    private DataMap load(Class<?>... classes) {
         EntityMapLoaderContext context = new EntityMapLoaderContext(
                 new MockPersistenceUnitInfo());
         EntityMapAnnotationLoader loader = new EntityMapAnnotationLoader(context);
 
-        for (Class c : classes) {
+        for (Class<?> c : classes) {
             loader.loadClassMapping(c);
         }
 
@@ -126,10 +126,6 @@ public class DataMapConverterRelationshipsTest extends TestCase {
         assertFalse("Found conflicts: " + context.getConflicts(), context
                 .getConflicts()
                 .hasFailures());
-
-        // PrintWriter out = new PrintWriter(System.out);
-        // context.getEntityMap().encodeAsXML(new XMLEncoder(out, "\t"));
-        // out.flush();
 
         DataMap dataMap = new DataMapConverter().toDataMap("n1", context);
         assertFalse("Found DataMap conflicts: " + context.getConflicts(), context

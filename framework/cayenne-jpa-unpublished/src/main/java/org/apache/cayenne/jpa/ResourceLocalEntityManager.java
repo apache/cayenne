@@ -285,6 +285,7 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
         return new JpaQuery(context, name);
     }
 
+    @SuppressWarnings("unchecked")
     public Query createNativeQuery(String sqlString, Class resultClass) {
         checkClosed();
         return new JpaNativeQuery(context, sqlString, resultClass);

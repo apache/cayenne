@@ -104,6 +104,7 @@ public class ResourceLocalEntityManagerFactory implements EntityManagerFactory {
      * 
      * @return a new EntityManager instance.
      */
+    @SuppressWarnings("unchecked")
     public EntityManager createEntityManager(Map map) {
         checkClosed();
         CayenneEntityManager em = new ResourceLocalEntityManager(

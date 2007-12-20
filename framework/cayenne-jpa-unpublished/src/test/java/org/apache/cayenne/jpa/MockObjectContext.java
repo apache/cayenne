@@ -31,7 +31,6 @@ import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
-
 public class MockObjectContext implements ObjectContext {
 
     public void commitChanges() {
@@ -43,7 +42,7 @@ public class MockObjectContext implements ObjectContext {
     public void deleteObject(Object object) throws DeleteDenyException {
     }
 
-    public Collection deletedObjects() {
+    public Collection<?> deletedObjects() {
         return null;
     }
 
@@ -63,15 +62,15 @@ public class MockObjectContext implements ObjectContext {
         return null;
     }
 
-    public Collection modifiedObjects() {
+    public Collection<?> modifiedObjects() {
         return null;
     }
 
-    public Persistent newObject(Class persistentClass) {
+    public <T> T newObject(Class<T> persistentClass) {
         return null;
     }
 
-    public Collection newObjects() {
+    public Collection<?> newObjects() {
         return null;
     }
 
@@ -79,7 +78,7 @@ public class MockObjectContext implements ObjectContext {
         return null;
     }
 
-    public List performQuery(Query query) {
+    public List<?> performQuery(Query query) {
         return null;
     }
 
@@ -105,7 +104,7 @@ public class MockObjectContext implements ObjectContext {
     public void rollbackChangesLocally() {
     }
 
-    public Collection uncommittedObjects() {
+    public Collection<?> uncommittedObjects() {
         return null;
     }
 

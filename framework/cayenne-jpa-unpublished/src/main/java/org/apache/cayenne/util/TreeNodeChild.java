@@ -33,5 +33,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TreeNodeChild {
 
-    Class type() default void.class;
+    Class<?> type() default void.class;
 }

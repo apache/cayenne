@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.bridge;
 
 import java.util.Map;
@@ -41,9 +40,9 @@ public abstract class JpaIndirectQuery extends IndirectQuery implements
     protected JpaNamedQuery jpaQuery;
     protected DataMap parentMap;
     protected ObjEntity parentEntity;
-    protected Map parameters;
+    protected Map<String, ?> parameters;
 
-    public Query createQuery(Map parameters) {
+    public Query createQuery(Map<String, ?> parameters) {
         JpaIndirectQuery clone;
         try {
             clone = (JpaIndirectQuery) getClass().newInstance();
