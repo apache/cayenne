@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
@@ -38,35 +39,46 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.Util;
 
-public class MergerFactoryTestDisabled extends CayenneCase {
+public class MergerFactoryTest extends CayenneCase {
 
     private DataNode node;
     private DataMap map;
 
+    private List<String> tableNames = Arrays.asList("ARTIST", "PAINTING", "NEW_TABLE");
+
+    public DbMerger createMerger() {
+        return new DbMerger() {
+
+            @Override
+            public boolean includeTableName(String tableName) {
+                return tableNames.contains(tableName.toUpperCase());
+            }
+        };
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+
+        // getAccessStack().dropSchema();
+        // getAccessStack().dropPKSupport();
 
         deleteTestData();
         createTestData("testArtists");
         node = getDomain().getDataNodes().iterator().next();
         map = getDomain().getMap("testmap");
 
-        // clone the DataMap so that we can manipulate it without worries
-        map = (DataMap) Util.cloneViaSerialization(map);
-
         filterDataMap(node, map);
 
-        DbMerger merger = new DbMerger();
+        DbMerger merger = createMerger();
         List<MergerToken> tokens = merger.createMergeTokens(node, map);
         execute(map, node, tokens);
 
         assertTokensAndExecute(node, map, 0, 0);
     }
 
-    public void XXtestAddAndDropColumnToDb() throws Exception {
+    public void testAddAndDropColumnToDb() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
 
@@ -86,7 +98,7 @@ public class MergerFactoryTestDisabled extends CayenneCase {
         assertTokensAndExecute(node, map, 0, 0);
     }
 
-    public void XXtestChangeVarcharSizeToDb() throws Exception {
+    public void testChangeVarcharSizeToDb() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
 
@@ -115,7 +127,7 @@ public class MergerFactoryTestDisabled extends CayenneCase {
         assertTokensAndExecute(node, map, 0, 0);
     }
 
-    public void XXtestMultipleTokensToDb() throws Exception {
+    public void testMultipleTokensToDb() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
 
@@ -195,10 +207,12 @@ public class MergerFactoryTestDisabled extends CayenneCase {
         assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
+
+        assertTokensAndExecute(node, map, 1, 0);
         assertTokensAndExecute(node, map, 0, 0);
     }
 
-    public void XXtestAddForeignKeyWithTable() throws Exception {
+    public void testAddForeignKeyWithTable() throws Exception {
         dropTableIfPresent(node, "NEW_TABLE");
 
         assertTokensAndExecute(node, map, 0, 0);
@@ -259,10 +273,12 @@ public class MergerFactoryTestDisabled extends CayenneCase {
         // assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
+        
+        assertTokensAndExecute(node, map, 1, 0);
         assertTokensAndExecute(node, map, 0, 0);
     }
 
-    public void XXtestAddForeignKeyAfterTable() throws Exception {
+    public void testAddForeignKeyAfterTable() throws Exception {
         dropTableIfPresent(node, "NEW_TABLE");
 
         assertTokensAndExecute(node, map, 0, 0);
@@ -326,6 +342,8 @@ public class MergerFactoryTestDisabled extends CayenneCase {
         // assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
+        
+        assertTokensAndExecute(node, map, 1, 0);
         assertTokensAndExecute(node, map, 0, 0);
     }
 
@@ -334,7 +352,7 @@ public class MergerFactoryTestDisabled extends CayenneCase {
             DataMap map,
             int expectedToDb,
             int expectedToModel) throws Exception {
-        DbMerger merger = new DbMerger();
+        DbMerger merger = createMerger();
         List<MergerToken> tokens = merger.createMergeTokens(node, map);
 
         assertTokens(tokens, expectedToDb, expectedToModel);

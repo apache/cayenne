@@ -53,6 +53,10 @@ import org.apache.cayenne.map.ObjEntity;
 public class DbMerger {
 
     private MergerFactory factory;
+    
+    public boolean includeTableName(String tableName){
+        return true;
+    }
 
     /**
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
@@ -89,6 +93,10 @@ public class DbMerger {
 
             for (DbEntity dbEntity : dataMap.getDbEntities()) {
                 String tableName = dbEntity.getName();
+                
+                if(!includeTableName(tableName)){
+                    continue;
+                }
 
                 // look for table
                 DbEntity detectedEntity = findDbEntity(detectedDataMap, tableName);
@@ -108,11 +116,14 @@ public class DbMerger {
 
             // drop table
             // TODO: support drop table. currently, too many tables are marked for drop
-            /*
-             * for (Iterator it = dbEntityToDropByName.values().iterator(); it.hasNext();) {
-             * DbEntity e = (DbEntity) it.next();
-             * tokens.addToken(factory.createDropTable(e)); }
-             */
+            for (DbEntity e : dbEntityToDropByName.values()) {
+                
+                if(!includeTableName(e.getName())){
+                    continue;
+                }
+                
+                tokens.add(factory.createDropTableToDb(e));
+            }
 
         }
         catch (SQLException e) {
