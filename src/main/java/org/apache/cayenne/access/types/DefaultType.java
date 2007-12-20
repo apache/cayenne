@@ -191,7 +191,7 @@ public class DefaultType extends AbstractType {
 
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         Object val = readMethod.invoke(rs, new Object[] {
-            new Integer(index)
+            Integer.valueOf(index)
         });
         return (rs.wasNull()) ? null : val;
     }
@@ -199,7 +199,7 @@ public class DefaultType extends AbstractType {
     public Object materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         Object val = procReadMethod.invoke(st, new Object[] {
-            new Integer(index)
+            Integer.valueOf(index)
         });
         return (st.wasNull()) ? null : val;
     }

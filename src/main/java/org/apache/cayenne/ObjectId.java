@@ -92,7 +92,7 @@ public class ObjectId implements Serializable {
      * @since 1.2
      */
     public ObjectId(String entityName, String key, int value) {
-        this(entityName, key, new Integer(value));
+        this(entityName, key, Integer.valueOf(value));
     }
 
     /**

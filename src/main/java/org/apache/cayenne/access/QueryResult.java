@@ -191,7 +191,7 @@ public class QueryResult extends DefaultOperationObserver {
             else if (object instanceof int[]) {
                 int[] ints = (int[]) object;
                 for (int i = 0; i < ints.length; i++) {
-                    list.add(new Integer(ints[i]));
+                    list.add(Integer.valueOf(ints[i]));
                 }
             }
         }
@@ -241,7 +241,7 @@ public class QueryResult extends DefaultOperationObserver {
             queries.put(query, list);
         }
 
-        list.add(new Integer(resultCount));
+        list.add(Integer.valueOf(resultCount));
     }
 
     public void nextDataRows(Query query, List dataRows) {

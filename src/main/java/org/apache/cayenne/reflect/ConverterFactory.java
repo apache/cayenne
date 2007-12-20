@@ -76,7 +76,7 @@ class ConverterFactory {
 
             Object convert(Object object, Class type) {
                 if (object == null) {
-                    return type.isPrimitive() ? new Integer(0) : null;
+                    return type.isPrimitive() ? Integer.valueOf(0) : null;
                 }
 
                 if (object instanceof Integer) {

@@ -40,7 +40,7 @@ public class OracleSelectTranslator extends SelectTranslator {
     private static Method statementSetRowPrefetch;
 
     private static final Object[] rowPrefetchArgs = new Object[] {
-        new Integer(100)
+        Integer.valueOf(100)
     };
 
     public String createSqlString() throws Exception {

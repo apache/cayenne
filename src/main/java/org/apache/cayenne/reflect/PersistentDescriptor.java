@@ -39,9 +39,9 @@ import org.apache.commons.collections.IteratorUtils;
  */
 public class PersistentDescriptor implements ClassDescriptor {
 
-    static final Integer TRANSIENT_STATE = new Integer(PersistenceState.TRANSIENT);
-    static final Integer HOLLOW_STATE = new Integer(PersistenceState.HOLLOW);
-    static final Integer COMMITTED_STATE = new Integer(PersistenceState.COMMITTED);
+    static final Integer TRANSIENT_STATE = Integer.valueOf(PersistenceState.TRANSIENT);
+    static final Integer HOLLOW_STATE = Integer.valueOf(PersistenceState.HOLLOW);
+    static final Integer COMMITTED_STATE = Integer.valueOf(PersistenceState.COMMITTED);
 
     protected ClassDescriptor superclassDescriptor;
 

@@ -268,20 +268,20 @@ public class EOQuery extends SelectQuery {
             if (null == selectorToExpressionBridge) {
                 // initialize selectorToExpressionBridge
                 selectorToExpressionBridge = new HashMap(8);
-                selectorToExpressionBridge.put(IS_EQUAL_TO, new Integer(
+                selectorToExpressionBridge.put(IS_EQUAL_TO, Integer.valueOf(
                         Expression.EQUAL_TO));
-                selectorToExpressionBridge.put(IS_NOT_EQUAL_TO, new Integer(
+                selectorToExpressionBridge.put(IS_NOT_EQUAL_TO, Integer.valueOf(
                         Expression.NOT_EQUAL_TO));
-                selectorToExpressionBridge.put(IS_LIKE, new Integer(Expression.LIKE));
-                selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE, new Integer(
+                selectorToExpressionBridge.put(IS_LIKE, Integer.valueOf(Expression.LIKE));
+                selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE, Integer.valueOf(
                         Expression.LIKE_IGNORE_CASE));
-                selectorToExpressionBridge.put(IS_LESS_THAN, new Integer(
+                selectorToExpressionBridge.put(IS_LESS_THAN, Integer.valueOf(
                         Expression.LESS_THAN));
-                selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO, new Integer(
+                selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO, Integer.valueOf(
                         Expression.LESS_THAN_EQUAL_TO));
-                selectorToExpressionBridge.put(IS_GREATER_THAN, new Integer(
+                selectorToExpressionBridge.put(IS_GREATER_THAN, Integer.valueOf(
                         Expression.GREATER_THAN));
-                selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO, new Integer(
+                selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO, Integer.valueOf(
                         Expression.GREATER_THAN_EQUAL_TO));
             }
             return selectorToExpressionBridge;

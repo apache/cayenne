@@ -175,7 +175,7 @@ public class SQLTemplateAction implements SQLAction {
                         break;
                     }
 
-                    updateCounts.add(new Integer(updateCount));
+                    updateCounts.add(Integer.valueOf(updateCount));
                     QueryLogger.logUpdateCount(updateCount);
                 }
             }

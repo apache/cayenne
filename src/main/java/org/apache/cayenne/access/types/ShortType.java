@@ -63,7 +63,7 @@ public class ShortType extends AbstractType {
             int precision) throws Exception {
 
         if (widenShorts && (val instanceof Short)) {
-            val = new Integer(((Short) val).intValue());
+            val = Integer.valueOf(((Short) val).intValue());
         }
 
         super.setJdbcObject(st, val, pos, type, precision);

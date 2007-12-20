@@ -145,7 +145,7 @@ public class EJBQLQuery implements Query {
             parameters = new HashMap<Object, Object>();
         }
 
-        parameters.put(new Integer(position), object);
+        parameters.put(Integer.valueOf(position), object);
     }
 
     /**

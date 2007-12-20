@@ -160,7 +160,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
                 counts = new ArrayList<Integer>();
             }
 
-            counts.add(new Integer(resultCount));
+            counts.add(Integer.valueOf(resultCount));
         }
 
         public void nextDataRows(Query query, List<DataRow> dataRows) {

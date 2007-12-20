@@ -311,7 +311,7 @@ public class PropertyUtils {
                 return new Byte((byte) 0);
             }
             else if ("int".equals(className)) {
-                return new Integer(0);
+                return Integer.valueOf(0);
             }
             else if ("short".equals(className)) {
                 return new Short((short) 0);

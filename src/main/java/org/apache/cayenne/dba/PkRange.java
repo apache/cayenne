@@ -49,6 +49,6 @@ public final class PkRange {
 			throw new RuntimeException("PkRange is exhausted and can not be used anymore.");
 		}
 
-		return new Integer(curValue++);
+		return Integer.valueOf(curValue++);
 	}
 }
