@@ -95,8 +95,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     };
 
     protected String defaultTemplate;
-    protected Map templates;
-    protected Map[] parameters;
+    protected Map<String, String> templates;
+    protected Map<String, ?>[] parameters;
     protected String columnNamesCapitalization;
 
     SQLTemplateMetadata selectInfo = new SQLTemplateMetadata();
@@ -130,7 +130,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     /**
      * @since 1.2
      */
-    public SQLTemplate(Class rootClass, String defaultTemplate) {
+    public SQLTemplate(Class<?> rootClass, String defaultTemplate) {
         setDefaultTemplate(defaultTemplate);
         setRoot(rootClass);
     }
@@ -200,7 +200,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         }
         else if (root instanceof Class) {
             rootType = QueryBuilder.JAVA_CLASS_ROOT;
-            rootString = ((Class) root).getName();
+            rootString = ((Class<?>) root).getName();
         }
         else if (root instanceof DataMap) {
             rootType = QueryBuilder.DATA_MAP_ROOT;
@@ -235,17 +235,15 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 
         // encode adapter SQL
         if (templates != null && !templates.isEmpty()) {
-            Iterator it = templates.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                Object key = entry.getKey();
-                Object value = entry.getValue();
+            for (Map.Entry<String, String> entry : templates.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
 
                 if (key != null && value != null) {
-                    String sql = value.toString().trim();
+                    String sql = value.trim();
                     if (sql.length() > 0) {
                         encoder.print("<sql adapter-class=\"");
-                        encoder.print(key.toString());
+                        encoder.print(key);
                         encoder.print("\"><![CDATA[");
                         encoder.print(sql);
                         encoder.println("]]></sql>");
@@ -265,7 +263,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public void initWithProperties(Map properties) {
+    public void initWithProperties(Map<String, ?> properties) {
         // must init defaults even if properties are empty
         selectInfo.initWithProperties(properties);
 
@@ -284,7 +282,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * Returns an iterator over parameter sets. Each element returned from the iterator is
      * a java.util.Map.
      */
-    public Iterator parametersIterator() {
+    public Iterator<?> parametersIterator() {
         return (parameters == null || parameters.length == 0) ? IteratorUtils
                 .emptyIterator() : IteratorUtils.transformedIterator(IteratorUtils
                 .arrayIterator(parameters), nullMapTransformer);
@@ -301,7 +299,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * Returns a new query built using this query as a prototype and a new set of
      * parameters.
      */
-    public SQLTemplate queryWithParameters(Map parameters) {
+    public SQLTemplate queryWithParameters(Map<String, ?> parameters) {
         return queryWithParameters(new Map[] {
             parameters
         });
@@ -311,7 +309,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * Returns a new query built using this query as a prototype and a new set of
      * parameters.
      */
-    public SQLTemplate queryWithParameters(Map[] parameters) {
+    public SQLTemplate queryWithParameters(Map<String, ?>[] parameters) {
         // create a query replica
         SQLTemplate query = new SQLTemplate();
 
@@ -319,7 +317,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         query.setDefaultTemplate(getDefaultTemplate());
 
         if (templates != null) {
-            query.templates = new HashMap(templates);
+            query.templates = new HashMap<String, String>(templates);
         }
 
         query.selectInfo.copyFromInfo(this.selectInfo);
@@ -331,7 +329,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         // problem reported in CAY-360.
 
         if (!Util.isEmptyString(name)) {
-            StringBuffer buffer = new StringBuffer(name);
+            StringBuilder buffer = new StringBuilder(name);
 
             if (parameters != null) {
                 for (int i = 0; i < parameters.length; i++) {
@@ -353,7 +351,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public Query createQuery(Map parameters) {
+    public Query createQuery(Map<String, ?> parameters) {
         return queryWithParameters(parameters);
     }
 
@@ -442,7 +440,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
             return defaultTemplate;
         }
 
-        String template = (String) templates.get(key);
+        String template = templates.get(key);
         return (template != null) ? template : defaultTemplate;
     }
 
@@ -452,7 +450,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * as a failover strategy, rather it returns null.
      */
     public synchronized String getCustomTemplate(String key) {
-        return (templates != null) ? (String) templates.get(key) : null;
+        return (templates != null) ? templates.get(key) : null;
     }
 
     /**
@@ -466,7 +464,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      */
     public synchronized void setTemplate(String key, String template) {
         if (templates == null) {
-            templates = new HashMap();
+            templates = new HashMap<String, String>();
         }
 
         templates.put(key, template);
@@ -481,7 +479,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     /**
      * Returns a collection of configured template keys.
      */
-    public synchronized Collection getTemplateKeys() {
+    public synchronized Collection<String> getTemplateKeys() {
         return (templates != null) ? Collections.unmodifiableCollection(templates
                 .keySet()) : Collections.EMPTY_LIST;
     }
@@ -490,8 +488,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * Utility method to get the first set of parameters, since most queries will only
      * have one.
      */
-    public Map getParameters() {
-        Map map = (parameters != null && parameters.length > 0) ? parameters[0] : null;
+    public Map<String, ?> getParameters() {
+        Map<String, ?> map = (parameters != null && parameters.length > 0) ? parameters[0] : null;
         return (map != null) ? map : Collections.EMPTY_MAP;
     }
 
@@ -500,13 +498,13 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * since most queries will only have one set. Internally calls
      * {@link #setParameters(Map[])}.
      */
-    public void setParameters(Map map) {
+    public void setParameters(Map<String, ?> map) {
         setParameters(map != null ? new Map[] {
             map
         } : null);
     }
 
-    public void setParameters(Map[] parameters) {
+    public void setParameters(Map<String, ?>[] parameters) {
 
         if (parameters == null) {
             this.parameters = null;
@@ -517,8 +515,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
             this.parameters = new Map[parameters.length];
             for (int i = 0; i < parameters.length; i++) {
                 this.parameters[i] = parameters[i] != null
-                        ? new HashMap(parameters[i])
-                        : new HashMap();
+                        ? new HashMap<String, Object>(parameters[i])
+                        : new HashMap<String, Object>();
             }
         }
     }
@@ -554,7 +552,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.2
      */
-    public void addPrefetches(Collection prefetches) {
+    public void addPrefetches(Collection<String> prefetches) {
         selectInfo.addPrefetches(prefetches, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
     }
 

@@ -100,7 +100,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     /**
      * Creates a ProcedureQuery based on a stored procedure.
      * <p>
-     * Performance Note: with current EntityResolver implementation it is preferrable to
+     * Performance Note: with current EntityResolver implementation it is preferable to
      * use Procedure object instead of String as a query root. String root can cause
      * unneeded EntityResolver reindexing on every call. See this mailing list thread: <a
      * href="http://objectstyle.org/cayenne/lists/cayenne-user/2005/01/0109.html">
@@ -120,7 +120,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     /**
      * @since 1.1
      */
-    public ProcedureQuery(Procedure procedure, Class resultType) {
+    public ProcedureQuery(Procedure procedure, Class<?> resultType) {
         setRoot(procedure);
 
         this.resultClass = resultType;
@@ -128,7 +128,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
 
     /**
      * <p>
-     * Performance Note: with current EntityResolver implementation it is preferrable to
+     * Performance Note: with current EntityResolver implementation it is preferable to
      * use Procedure object instead of String as a query root. String root can cause
      * unneeded EntityResolver reindexing on every call. See this mailing list thread: <a
      * href="http://objectstyle.org/cayenne/lists/cayenne-user/2005/01/0109.html">
@@ -137,7 +137,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public ProcedureQuery(String procedureName, Class resultType) {
+    public ProcedureQuery(String procedureName, Class<?> resultType) {
         setRoot(procedureName);
 
         this.resultClass = resultType;
@@ -209,7 +209,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      */
-    public void initWithProperties(Map properties) {
+    public void initWithProperties(Map<String, ?> properties) {
 
         // must init defaults even if properties are empty
         if (properties == null) {
