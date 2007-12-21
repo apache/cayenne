@@ -35,7 +35,7 @@ import java.util.List;
 public class SQLResultSetMapping {
 
     protected String name;
-    protected List columnResults;
+    protected List<String> columnResults;
 
     public SQLResultSetMapping() {
 
@@ -56,7 +56,7 @@ public class SQLResultSetMapping {
     /**
      * Returns a collection of mapped columns.
      */
-    public List getColumnResults() {
+    public List<String> getColumnResults() {
         return columnResults != null ? columnResults : Collections.EMPTY_LIST;
     }
 
@@ -65,7 +65,7 @@ public class SQLResultSetMapping {
      */
     public void addColumnResult(String column) {
         if (columnResults == null) {
-            columnResults = new ArrayList(3);
+            columnResults = new ArrayList<String>(3);
         }
 
         columnResults.add(column);

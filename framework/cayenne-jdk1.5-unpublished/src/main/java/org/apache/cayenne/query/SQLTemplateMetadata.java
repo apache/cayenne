@@ -20,7 +20,6 @@ package org.apache.cayenne.query;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -32,13 +31,13 @@ import org.apache.cayenne.map.ObjEntity;
  * @author Andrus Adamchik
  */
 class SQLTemplateMetadata extends BaseQueryMetadata {
-    
+
     private SQLResultSetMapping resultSetMapping;
-    
+
     void setResultSetMapping(SQLResultSetMapping resultSetMapping) {
         this.resultSetMapping = resultSetMapping;
     }
-    
+
     public SQLResultSetMapping getResultSetMapping() {
         return resultSetMapping;
     }
@@ -58,7 +57,7 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
 
                 // create a unique key based on entity, SQL, and parameters
 
-                StringBuffer key = new StringBuffer();
+                StringBuilder key = new StringBuilder();
                 ObjEntity entity = getObjEntity();
                 if (entity != null) {
                     key.append(entity.getName());
@@ -71,15 +70,13 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
                     key.append('/').append(query.getDefaultTemplate());
                 }
 
-                Map parameters = query.getParameters();
+                Map<String, ?> parameters = query.getParameters();
                 if (!parameters.isEmpty()) {
 
-                    List keys = new ArrayList(parameters.keySet());
+                    List<String> keys = new ArrayList<String>(parameters.keySet());
                     Collections.sort(keys);
 
-                    Iterator it = keys.iterator();
-                    while (it.hasNext()) {
-                        Object parameterKey = it.next();
+                    for (String parameterKey : keys) {
                         key.append('/').append(parameterKey).append('=').append(
                                 parameters.get(parameterKey));
                     }
