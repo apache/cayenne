@@ -42,7 +42,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
                 // create a unique key based on entity, qualifier, ordering and fetch
                 // limit
 
-                StringBuffer key = new StringBuffer();
+                StringBuilder key = new StringBuilder();
 
                 ObjEntity entity = getObjEntity();
                 if (entity != null) {

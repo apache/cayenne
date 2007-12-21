@@ -57,7 +57,7 @@ public class NamedQuery extends IndirectQuery {
     public NamedQuery(String name, Map<String, ?> parameters) {
         this.name = name;
 
-        // copy parameters map (among other things to make hessian serilaization work).
+        // copy parameters map (among other things to make hessian serialization work).
         if (parameters != null && !parameters.isEmpty()) {
             this.parameters = new HashMap<String, Object>(parameters);
         }

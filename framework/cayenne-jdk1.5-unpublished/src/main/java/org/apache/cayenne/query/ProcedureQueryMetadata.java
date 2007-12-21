@@ -21,7 +21,6 @@ package org.apache.cayenne.query;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -75,20 +74,18 @@ class ProcedureQueryMetadata extends BaseQueryMetadata {
 
                 // create a unique key based on procedure and parameters
 
-                StringBuffer key = new StringBuffer("proc:");
+                StringBuilder key = new StringBuilder("proc:");
                 if (procedure != null) {
                     key.append(procedure.getName());
                 }
 
-                Map parameters = query.getParameters();
+                Map<String, ?> parameters = query.getParameters();
                 if (!parameters.isEmpty()) {
 
-                    List keys = new ArrayList(parameters.keySet());
+                    List<String> keys = new ArrayList<String>(parameters.keySet());
                     Collections.sort(keys);
 
-                    Iterator it = keys.iterator();
-                    while (it.hasNext()) {
-                        Object parameterKey = it.next();
+                    for(String parameterKey : keys) {
                         key.append('/').append(parameterKey).append('=').append(
                                 parameters.get(parameterKey));
                     }
