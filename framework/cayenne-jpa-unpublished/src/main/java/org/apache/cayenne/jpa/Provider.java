@@ -79,6 +79,7 @@ public class Provider implements PersistenceProvider {
     public static final String NON_JTA_DATA_SOURCE_PROPERTY = "javax.persistence.nonJtaDataSource";
 
     // provider-specific properties. Must use provider namespace per ch. 7.1.3.1.
+    public static final String DROP_SCHEMA_PROPERTY = "org.apache.cayenne.schema.drop";
     public static final String CREATE_SCHEMA_PROPERTY = "org.apache.cayenne.schema.create";
     public static final String DATA_SOURCE_FACTORY_PROPERTY = "org.apache.cayenne.jpa.jpaDataSourceFactory";
 
@@ -276,6 +277,11 @@ public class Provider implements PersistenceProvider {
             domain.setUsingExternalTransactions(isJTA);
 
             if ("true".equalsIgnoreCase(unit.getProperties().getProperty(
+                    DROP_SCHEMA_PROPERTY))) {
+                dropSchema(dataSource, adapter, cayenneMap);
+            }
+
+            if ("true".equalsIgnoreCase(unit.getProperties().getProperty(
                     CREATE_SCHEMA_PROPERTY))) {
                 loadSchema(dataSource, adapter, cayenneMap);
             }
@@ -326,6 +332,39 @@ public class Provider implements PersistenceProvider {
     }
 
     /**
+     * Drops database schema if it exists.
+     */
+    protected void dropSchema(DataSource dataSource, DbAdapter adapter, DataMap map) {
+
+        Collection<DbEntity> tables = map.getDbEntities();
+        if (tables.isEmpty()) {
+            return;
+        }
+
+        if (!existingTablesDetected(dataSource, tables)) {
+            logger.debug("did not find at least one table; will skip dropping schema.");
+            return;
+        }
+
+        logger.debug("detected existings schema;; will continue with schema generation.");
+
+        // run generator
+        DbGenerator generator = new DbGenerator(adapter, map);
+        generator.setShouldCreateFKConstraints(false);
+        generator.setShouldCreatePKSupport(false);
+        generator.setShouldCreateTables(false);
+        generator.setShouldDropPKSupport(true);
+        generator.setShouldDropTables(true);
+
+        try {
+            generator.runGenerator(dataSource);
+        }
+        catch (Exception e) {
+
+        }
+    }
+
+    /**
      * Loads database schema if it doesn't yet exist.
      */
     protected void loadSchema(DataSource dataSource, DbAdapter adapter, DataMap map) {
@@ -335,10 +374,43 @@ public class Provider implements PersistenceProvider {
             return;
         }
 
-        // sniff a first table presence
+        if (existingTablesDetected(dataSource, tables)) {
+            logger.debug("detected existings schema; will skip schema generation.");
+            return;
+        }
 
-        // TODO: andrus 9/1/2006 - should we make this check a part of DbGenerator (and
-        // query - a part of DbAdapter)?
+        logger.debug("did not find at least one table; "
+                + "will continue with schema generation.");
+
+        // run generator
+        DbGenerator generator = new DbGenerator(adapter, map);
+        generator.setShouldCreateFKConstraints(true);
+        generator.setShouldCreatePKSupport(true);
+        generator.setShouldCreateTables(true);
+        generator.setShouldDropPKSupport(false);
+        generator.setShouldDropTables(false);
+
+        try {
+            generator.runGenerator(dataSource);
+        }
+        catch (Exception e) {
+
+        }
+    }
+
+    /**
+     * Checks that at least one table in the collection of DbEntities is present in the
+     * DB. Negative or unknown outcomes result in false being returned.
+     */
+    protected boolean existingTablesDetected(
+            DataSource dataSource,
+            Collection<DbEntity> tables) {
+
+        if (tables.isEmpty()) {
+            return false;
+        }
+
+        // sniff a first table presence
         DbEntity table = tables.iterator().next();
 
         try {
@@ -358,10 +430,7 @@ public class Provider implements PersistenceProvider {
                     while (rs.next()) {
                         String sqlName = rs.getString("TABLE_NAME");
                         if (tableName.equals(sqlName.toLowerCase())) {
-                            logger.debug("table "
-                                    + table.getFullyQualifiedName()
-                                    + " is present; will skip schema generation.");
-                            return;
+                            return true;
                         }
                     }
                 }
@@ -373,24 +442,12 @@ public class Provider implements PersistenceProvider {
                 c.close();
             }
         }
-        catch (SQLException e1) {
+        catch (SQLException e) {
             // db exists
-            logger.debug("error generating schema, assuming schema exists.");
-            return;
+            logger.debug("error checking schema", e);
         }
 
-        logger.debug("table "
-                + table.getFullyQualifiedName()
-                + " is absent; will continue with schema generation.");
-
-        // run generator
-        DbGenerator generator = new DbGenerator(adapter, map);
-        try {
-            generator.runGenerator(dataSource);
-        }
-        catch (Exception e) {
-
-        }
+        return false;
     }
 
     protected DbAdapter createCustomAdapter(
