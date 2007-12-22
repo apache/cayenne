@@ -524,7 +524,7 @@ public class DataMapConverter {
             JpaRelationship jpaRelationship = (JpaRelationship) path.getObjectParent();
             JpaEntity targetEntity = context.getEntityMap().entityForClass(
                     jpaRelationship.getTargetEntityName());
-            JpaId jpaTargetId = targetEntity.getAttributes().getId(
+            JpaId jpaTargetId = targetEntity.getAttributes().getIdForColumnName(
                     jpaJoin.getReferencedColumnName());
 
             if (jpaTargetId == null) {

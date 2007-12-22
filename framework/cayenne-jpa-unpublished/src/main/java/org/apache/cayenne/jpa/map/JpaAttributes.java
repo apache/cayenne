@@ -211,6 +211,24 @@ public class JpaAttributes implements XMLSerializable {
         return null;
     }
 
+    public JpaId getIdForColumnName(String idColumnName) {
+        if (idColumnName == null) {
+            throw new IllegalArgumentException("Null id column name");
+        }
+
+        if (ids != null) {
+            for (JpaId id : ids) {
+
+                if (id.getColumn() != null
+                        && idColumnName.equals(id.getColumn().getName())) {
+                    return id;
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Returns a JpaAttribute for a given property name
      */
