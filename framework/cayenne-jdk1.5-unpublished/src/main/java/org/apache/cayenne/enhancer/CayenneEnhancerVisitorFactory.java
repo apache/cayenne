@@ -28,7 +28,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
 
 /**
- * A factory of enhacing visitors.
+ * EnhancerVisitorFactory implementation based on Cayenne mapping.
  * 
  * @since 3.0
  * @author Andrus Adamchik
@@ -65,7 +65,7 @@ public class CayenneEnhancerVisitorFactory implements EnhancerVisitorFactory {
         if (entity != null) {
 
             // create enhancer chain
-            PersistentInterfaceVisitor e1 = new PersistentInterfaceVisitor(out);
+            PojoVisitor e1 = new CayennePojoVisitor(out, entity);
             PersistentAccessorVisitor e2 = new PersistentAccessorVisitor(e1, entity);
 
             // this ensures that both enhanced and original classes have compatible
@@ -79,8 +79,6 @@ public class CayenneEnhancerVisitorFactory implements EnhancerVisitorFactory {
         if (embeddable != null) {
             // create enhancer chain
             EmbeddableVisitor e1 = new EmbeddableVisitor(out);
-
-            // TODO: andrus 12/16/2007 - setter visitor...
 
             // this ensures that both enhanced and original classes have compatible
             // serialized

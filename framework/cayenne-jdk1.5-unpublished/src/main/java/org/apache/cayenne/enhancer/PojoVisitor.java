@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.enhancer;
 
+import java.util.Collection;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -26,19 +28,19 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Type;
 
 /**
- * Enhances classes passed through the visitor to add {@link Persistent} interface to
- * them, and fields and methods to support its implementation.
+ * Enhances classes passed through the visitor, ensuring that the resulting class
+ * implements {@link Persistent} interface as well as supports lazy faulting.
  * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class PersistentInterfaceVisitor extends ClassAdapter {
+public abstract class PojoVisitor extends ClassAdapter {
 
     static String ENHANCED_INTERFACE_SIG = Type.getInternalName(Persistent.class);
 
     protected EnhancementHelper helper;
 
-    public PersistentInterfaceVisitor(ClassVisitor visitor) {
+    public PojoVisitor(ClassVisitor visitor) {
         super(visitor);
         this.helper = new EnhancementHelper(this);
     }
@@ -65,15 +67,19 @@ public class PersistentInterfaceVisitor extends ClassAdapter {
 
         helper.reset(name);
         interfaces = helper.addInterface(interfaces, Persistent.class);
-
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
     @Override
     public void visitEnd() {
-        // per ASM docs, 'visitEnd' is the only correct place to add class members
         helper.createProperty(ObjectId.class, "objectId");
         helper.createProperty(ObjectContext.class, "objectContext", true);
         helper.createProperty(Integer.TYPE, "persistenceState");
+
+        for (String property : getLazilyFaultedProperties()) {
+            helper.createField(Boolean.TYPE, "faultResolved_" + property, true);
+        }
     }
+
+    protected abstract Collection<String> getLazilyFaultedProperties();
 }

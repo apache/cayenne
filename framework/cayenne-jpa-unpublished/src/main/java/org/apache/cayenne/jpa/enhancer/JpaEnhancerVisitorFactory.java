@@ -20,7 +20,7 @@ package org.apache.cayenne.jpa.enhancer;
 
 import org.apache.cayenne.enhancer.EmbeddableVisitor;
 import org.apache.cayenne.enhancer.EnhancerVisitorFactory;
-import org.apache.cayenne.enhancer.PersistentInterfaceVisitor;
+import org.apache.cayenne.enhancer.PojoVisitor;
 import org.apache.cayenne.jpa.map.JpaEmbeddable;
 import org.apache.cayenne.jpa.map.JpaEntity;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
@@ -28,9 +28,10 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
 
 /**
- * Class enhancer used for JPA.
+ * EnhancerVisitorFactory implementation based on JPA mapping.
  * 
  * @author Andrus Adamchik
+ * @since 3.0
  */
 public class JpaEnhancerVisitorFactory implements EnhancerVisitorFactory {
 
@@ -48,12 +49,11 @@ public class JpaEnhancerVisitorFactory implements EnhancerVisitorFactory {
         if (entity != null) {
 
             // create enhancer chain
-            PersistentInterfaceVisitor e1 = new PersistentInterfaceVisitor(out);
+            PojoVisitor e1 = new JpaPojoVisitor(out, entity);
             JpaAccessorVisitor e2 = new JpaAccessorVisitor(e1, entity);
 
             // this ensures that both enhanced and original classes have compatible
-            // serialized
-            // format even if no serialVersionUID is defined by the user
+            // serialized format even if no serialVersionUID is defined by the user
             SerialVersionUIDAdder e3 = new SerialVersionUIDAdder(e2);
 
             return e3;
@@ -61,10 +61,9 @@ public class JpaEnhancerVisitorFactory implements EnhancerVisitorFactory {
 
         JpaEmbeddable embeddable = entityMap.embeddableForClass(key);
         if (embeddable != null) {
+
             // create enhancer chain
             EmbeddableVisitor e1 = new EmbeddableVisitor(out);
-
-            // TODO: andrus 12/16/2007 - setter visitor...
 
             // this ensures that both enhanced and original classes have compatible
             // serialized

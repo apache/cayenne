@@ -21,6 +21,8 @@ package org.apache.cayenne.jpa.map;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.persistence.FetchType;
+
 import org.apache.cayenne.util.TreeNodeChild;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -94,6 +96,52 @@ public class JpaAttributes implements XMLSerializable {
 
         encoder.indent(-1);
         encoder.println("</attributes>");
+    }
+
+    /**
+     * Returns the names of attributes that are fetched lazily.
+     */
+    public Collection<String> getLazyAttributeNames() {
+        Collection<String> lazyAttributes = new ArrayList<String>();
+
+        if (basicAttributes != null) {
+            for (JpaBasic attribute : basicAttributes) {
+                if (attribute.getFetch() == FetchType.LAZY) {
+                    lazyAttributes.add(attribute.getName());
+                }
+            }
+        }
+
+        // TODO: andrus 12/22/2007 - since Cayenne fetches all relationships lazily unless
+        // query specifies a prefetch, for now we'll treat all relationships as LAZY (even
+        // though JPA defines all one-to-one relationships as EAGER). To be JPA compliant
+        // we need to change that at some point...
+
+        if (oneToOneRelationships != null) {
+            for (JpaOneToOne attribute : oneToOneRelationships) {
+                lazyAttributes.add(attribute.getName());
+            }
+        }
+
+        if (oneToManyRelationships != null) {
+            for (JpaOneToMany attribute : oneToManyRelationships) {
+                lazyAttributes.add(attribute.getName());
+            }
+        }
+
+        if (manyToOneRelationships != null) {
+            for (JpaManyToOne attribute : manyToOneRelationships) {
+                lazyAttributes.add(attribute.getName());
+            }
+        }
+
+        if (manyToManyRelationships != null) {
+            for (JpaManyToMany attribute : manyToManyRelationships) {
+                lazyAttributes.add(attribute.getName());
+            }
+        }
+
+        return lazyAttributes;
     }
 
     public JpaAttribute getAttribute(String name) {
