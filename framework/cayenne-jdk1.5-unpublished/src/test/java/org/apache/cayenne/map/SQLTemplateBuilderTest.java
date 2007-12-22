@@ -48,7 +48,7 @@ public class SQLTemplateBuilderTest extends TestCase {
         map.addObjEntity(entity);
 
         SQLTemplateBuilder builder = new SQLTemplateBuilder();
-        builder.setRoot(map, QueryBuilder.OBJ_ENTITY_ROOT, "A");
+        builder.setRoot(map, QueryLoader.OBJ_ENTITY_ROOT, "A");
 
         Query query = builder.getQuery();
         assertTrue(query instanceof SQLTemplate);

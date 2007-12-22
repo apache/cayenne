@@ -34,10 +34,10 @@ import org.apache.cayenne.query.Query;
  * defined in cayenne-data-map*.dtd. This abstract builder supports values declared in the
  * DTD, allowing subclasses to define their own Query creation logic.
  * 
- * @since 1.1
+ * @since 3.0
  * @author Andrus Adamchik
  */
-public abstract class QueryBuilder {
+public abstract class QueryLoader {
 
     public static final String OBJ_ENTITY_ROOT = "obj-entity";
     public static final String DB_ENTITY_ROOT = "db-entity";

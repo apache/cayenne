@@ -29,7 +29,7 @@ import java.util.Map;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryBuilder;
+import org.apache.cayenne.map.QueryLoader;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -231,7 +231,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
         encoder.print("org.apache.cayenne.map.ProcedureQueryBuilder");
 
         encoder.print("\" root=\"");
-        encoder.print(QueryBuilder.PROCEDURE_ROOT);
+        encoder.print(QueryLoader.PROCEDURE_ROOT);
 
         String rootString = null;
 

@@ -28,7 +28,7 @@ import org.apache.cayenne.query.SelectQuery;
  * @since 1.1
  * @author Andrus Adamchik
  */
-class SelectQueryBuilder extends QueryBuilder {
+class SelectQueryBuilder extends QueryLoader {
 
     /**
      * Creates a SelectQuery.
