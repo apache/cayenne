@@ -49,7 +49,7 @@ public class SelectQueryBuilderTest extends TestCase {
         map.addObjEntity(entity);
 
         SelectQueryBuilder builder = new SelectQueryBuilder();
-        builder.setRoot(map, QueryLoader.OBJ_ENTITY_ROOT, "A");
+        builder.setRoot(map, MapLoader.OBJ_ENTITY_ROOT, "A");
 
         assertTrue(builder.getQuery() instanceof SelectQuery);
         assertSame(entity, ((SelectQuery) builder.getQuery()).getRoot());

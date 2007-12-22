@@ -25,7 +25,7 @@ import org.apache.cayenne.unit.BasicCase;
 /**
  * @author Andrus Adamchik
  */
-public class QueryBuilderTest extends BasicCase {
+public class QueryLoaderTest extends BasicCase {
 
     protected QueryLoader builder;
 
@@ -48,7 +48,7 @@ public class QueryBuilderTest extends BasicCase {
         DbEntity entity = new DbEntity("DB1");
         map.addDbEntity(entity);
 
-        builder.setRoot(map, QueryLoader.DB_ENTITY_ROOT, "DB1");
+        builder.setRoot(map, MapLoader.DB_ENTITY_ROOT, "DB1");
         assertSame(entity, builder.getRoot());
     }
 
@@ -57,14 +57,14 @@ public class QueryBuilderTest extends BasicCase {
         ObjEntity entity = new ObjEntity("OBJ1");
         map.addObjEntity(entity);
 
-        builder.setRoot(map, QueryLoader.OBJ_ENTITY_ROOT, "OBJ1");
+        builder.setRoot(map, MapLoader.OBJ_ENTITY_ROOT, "OBJ1");
         assertSame(entity, builder.getRoot());
     }
 
     public void testSetRootDataMap() throws Exception {
         DataMap map = new DataMap("map");
 
-        builder.setRoot(map, QueryLoader.DATA_MAP_ROOT, null);
+        builder.setRoot(map, MapLoader.DATA_MAP_ROOT, null);
         assertSame(map, builder.getRoot());
     }
 }

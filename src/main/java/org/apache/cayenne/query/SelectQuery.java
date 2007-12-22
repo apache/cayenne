@@ -28,9 +28,9 @@ import java.util.Map;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryLoader;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -222,23 +222,23 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         String rootType = null;
 
         if (root instanceof String) {
-            rootType = QueryLoader.OBJ_ENTITY_ROOT;
+            rootType = MapLoader.OBJ_ENTITY_ROOT;
             rootString = root.toString();
         }
         else if (root instanceof ObjEntity) {
-            rootType = QueryLoader.OBJ_ENTITY_ROOT;
+            rootType = MapLoader.OBJ_ENTITY_ROOT;
             rootString = ((ObjEntity) root).getName();
         }
         else if (root instanceof DbEntity) {
-            rootType = QueryLoader.DB_ENTITY_ROOT;
+            rootType = MapLoader.DB_ENTITY_ROOT;
             rootString = ((DbEntity) root).getName();
         }
         else if (root instanceof Procedure) {
-            rootType = QueryLoader.PROCEDURE_ROOT;
+            rootType = MapLoader.PROCEDURE_ROOT;
             rootString = ((Procedure) root).getName();
         }
         else if (root instanceof Class) {
-            rootType = QueryLoader.JAVA_CLASS_ROOT;
+            rootType = MapLoader.JAVA_CLASS_ROOT;
             rootString = ((Class<?>) root).getName();
         }
 
