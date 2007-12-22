@@ -74,7 +74,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         return descriptor.getEntity();
     }
 
-    public Class getObjectClass() {
+    public Class<?> getObjectClass() {
         checkDescriptorInitialized();
         return descriptor.getObjectClass();
     }
@@ -83,17 +83,17 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
      * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
      *             instead.
      */
-    public Iterator getProperties() {
+    public Iterator<Property> getProperties() {
         checkDescriptorInitialized();
         return descriptor.getProperties();
     }
 
-    public Iterator getIdProperties() {
+    public Iterator<Property> getIdProperties() {
         checkDescriptorInitialized();
         return descriptor.getIdProperties();
     }
     
-    public Iterator getMapArcProperties() {
+    public Iterator<ArcProperty> getMapArcProperties() {
         checkDescriptorInitialized();
         return descriptor.getMapArcProperties();
     }
@@ -103,7 +103,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         return descriptor.getProperty(propertyName);
     }
 
-    public ClassDescriptor getSubclassDescriptor(Class objectClass) {
+    public ClassDescriptor getSubclassDescriptor(Class<?> objectClass) {
         checkDescriptorInitialized();
         return descriptor.getSubclassDescriptor(objectClass);
     }
