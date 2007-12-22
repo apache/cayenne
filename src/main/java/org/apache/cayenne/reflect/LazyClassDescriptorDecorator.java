@@ -75,6 +75,17 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
     }
 
     public Class<?> getObjectClass() {
+        
+        // note that we can resolve Object class without triggering descriptor resolution.
+        // This is very helpful when compiling POJO relationships
+        if (descriptor == null) {
+
+            ObjEntity entity = descriptorMap.getResolver().getObjEntity(entityName);
+            if (entity != null) {
+                return entity.getJavaClass();
+            }
+        }
+
         checkDescriptorInitialized();
         return descriptor.getObjectClass();
     }
@@ -92,7 +103,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         checkDescriptorInitialized();
         return descriptor.getIdProperties();
     }
-    
+
     public Iterator<ArcProperty> getMapArcProperties() {
         checkDescriptorInitialized();
         return descriptor.getMapArcProperties();
