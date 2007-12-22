@@ -565,7 +565,7 @@ class MemberAnnotationProcessorFactory extends AnnotationProcessorFactory {
                 ((JpaManyToOne) attribute).setJoinTable(joinTable);
             }
             else if (attribute instanceof JpaManyToMany) {
-                ((JpaManyToOne) attribute).setJoinTable(joinTable);
+                ((JpaManyToMany) attribute).setJoinTable(joinTable);
             }
             else {
                 super.onAttribute(attribute, element, context);
