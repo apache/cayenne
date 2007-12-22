@@ -233,10 +233,27 @@ public class _3_1_1_EntityManagerTest extends EntityManagerCase {
 
         Query query = getEntityManager().createQuery("select x from SimpleEntity x");
         assertNotNull(query);
-        List result = query.getResultList();
+        List<?> result = query.getResultList();
         assertNotNull(result);
         assertEquals(1, result.size());
         assertTrue(result.get(0) instanceof SimpleEntity);
         assertEquals("XXX", ((SimpleEntity) result.get(0)).getProperty1());
+    }
+
+    public void testCreateNativeQuery() throws Exception {
+        getDbHelper().deleteAll("SimpleEntity");
+
+        getDbHelper().insert("SimpleEntity", new String[] {
+                "id", "property1"
+        }, new Object[] {
+                15, "XXX"
+        });
+
+        Query query = getEntityManager().createNativeQuery(
+                "DELETE FROM SimpleEntity WHERE id = 15");
+        assertNotNull(query);
+        assertEquals(1, query.executeUpdate());
+
+        assertEquals(0, getDbHelper().getRowCount("SimpleEntity"));
     }
 }
