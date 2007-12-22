@@ -28,7 +28,7 @@ import org.apache.cayenne.query.Query;
  * @since 1.1
  * @author Andrus Adamchik
  */
-class ProcedureQueryBuilder extends QueryBuilder {
+class ProcedureQueryBuilder extends QueryLoader {
 
     /**
      * Returns a ProcedureQuery.

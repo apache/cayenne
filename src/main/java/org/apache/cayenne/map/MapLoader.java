@@ -124,7 +124,7 @@ public class MapLoader extends DefaultHandler {
     private ObjRelationship objRelationship;
     private DbAttribute attrib;
     private Procedure procedure;
-    private QueryBuilder queryBuilder;
+    private QueryLoader queryBuilder;
     private String sqlKey;
     private String descending;
     private String ignoreCase;
@@ -999,7 +999,7 @@ public class MapLoader extends DefaultHandler {
         }
 
         try {
-            queryBuilder = (QueryBuilder) Class.forName(builder).newInstance();
+            queryBuilder = (QueryLoader) Class.forName(builder).newInstance();
         }
         catch (Exception ex) {
             throw new SAXException(

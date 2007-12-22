@@ -30,7 +30,7 @@ import org.apache.cayenne.query.SQLTemplate;
  * @since 1.1
  * @author Andrus Adamchik
  */
-class SQLTemplateBuilder extends QueryBuilder {
+class SQLTemplateBuilder extends QueryLoader {
 
     /**
      * Builds a SQLTemplate query.
