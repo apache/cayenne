@@ -16,7 +16,6 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.map;
 
 import java.util.ArrayList;
@@ -34,10 +33,17 @@ import org.apache.cayenne.query.Query;
  * defined in cayenne-data-map*.dtd. This abstract builder supports values declared in the
  * DTD, allowing subclasses to define their own Query creation logic.
  * 
- * @since 3.0
+ * @since 1.1
  * @author Andrus Adamchik
+ * @deprecated since 3.0 replaced by a non-public class.
  */
-abstract class QueryLoader {
+public abstract class QueryBuilder {
+
+    public static final String OBJ_ENTITY_ROOT = "obj-entity";
+    public static final String DB_ENTITY_ROOT = "db-entity";
+    public static final String PROCEDURE_ROOT = "procedure";
+    public static final String DATA_MAP_ROOT = "data-map";
+    public static final String JAVA_CLASS_ROOT = "java-class";
 
     protected String name;
     protected Map<String, String> properties;
@@ -54,9 +60,9 @@ abstract class QueryLoader {
     /**
      * Builds a Query object based on internal configuration information.
      */
-    abstract Query getQuery();
+    public abstract Query getQuery();
 
-    void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -70,21 +76,19 @@ abstract class QueryLoader {
 
         Object root = null;
 
-        if (rootType == null
-                || MapLoader.DATA_MAP_ROOT.equals(rootType)
-                || rootName == null) {
+        if (rootType == null || DATA_MAP_ROOT.equals(rootType) || rootName == null) {
             root = dataMap;
         }
-        else if (MapLoader.OBJ_ENTITY_ROOT.equals(rootType)) {
+        else if (OBJ_ENTITY_ROOT.equals(rootType)) {
             root = dataMap.getObjEntity(rootName);
         }
-        else if (MapLoader.DB_ENTITY_ROOT.equals(rootType)) {
+        else if (DB_ENTITY_ROOT.equals(rootType)) {
             root = dataMap.getDbEntity(rootName);
         }
-        else if (MapLoader.PROCEDURE_ROOT.equals(rootType)) {
+        else if (PROCEDURE_ROOT.equals(rootType)) {
             root = dataMap.getProcedure(rootName);
         }
-        else if (MapLoader.JAVA_CLASS_ROOT.equals(rootType)) {
+        else if (JAVA_CLASS_ROOT.equals(rootType)) {
             // setting root to ObjEntity, since creating a Class requires
             // the knowledge of the ClassLoader
             root = dataMap.getObjEntityForJavaClass(rootName);
@@ -93,14 +97,14 @@ abstract class QueryLoader {
         return (root != null) ? root : dataMap;
     }
 
-    void setResultEntity(String resultEntity) {
+    public void setResultEntity(String resultEntity) {
         this.resultEntity = resultEntity;
     }
 
     /**
      * Sets the information pertaining to the root of the query.
      */
-    void setRoot(DataMap dataMap, String rootType, String rootName) {
+    public void setRoot(DataMap dataMap, String rootType, String rootName) {
         this.dataMap = dataMap;
         this.rootType = rootType;
         this.rootName = rootName;
@@ -110,7 +114,7 @@ abstract class QueryLoader {
      * Adds raw sql. If adapterClass parameter is not null, sets the SQL string to be
      * adapter-specific. Otherwise it is used as a default SQL string.
      */
-    void addSql(String sql, String adapterClass) {
+    public void addSql(String sql, String adapterClass) {
         if (adapterClass == null) {
             this.sql = sql;
         }
@@ -123,7 +127,7 @@ abstract class QueryLoader {
         }
     }
 
-    void setQualifier(String qualifier) {
+    public void setQualifier(String qualifier) {
         if (qualifier == null || qualifier.trim().length() == 0) {
             this.qualifier = null;
         }
@@ -132,7 +136,7 @@ abstract class QueryLoader {
         }
     }
 
-    void addProperty(String name, String value) {
+    public void addProperty(String name, String value) {
         if (properties == null) {
             properties = new HashMap<String, String>();
         }
@@ -140,7 +144,7 @@ abstract class QueryLoader {
         properties.put(name, value);
     }
 
-    void addOrdering(String path, String descending, String ignoreCase) {
+    public void addOrdering(String path, String descending, String ignoreCase) {
         if (orderings == null) {
             orderings = new ArrayList<Ordering>();
         }
@@ -153,7 +157,7 @@ abstract class QueryLoader {
         orderings.add(new Ordering(path, !isDescending, isIgnoringCase));
     }
 
-    void addPrefetch(String path) {
+    public void addPrefetch(String path) {
         if (path == null || (path != null && path.trim().length() == 0)) {
             // throw??
             return;

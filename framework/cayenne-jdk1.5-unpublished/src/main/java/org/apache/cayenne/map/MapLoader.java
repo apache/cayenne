@@ -112,6 +112,32 @@ public class MapLoader extends DefaultHandler {
     public static final String DB_GENERATOR_TYPE_TAG = "db-generator-type";
     public static final String DB_GENERATOR_NAME_TAG = "db-generator-name";
     public static final String DB_KEY_CACHE_SIZE_TAG = "db-key-cache-size";
+    
+    /**
+     * @since 3.0
+     */
+    public static final String OBJ_ENTITY_ROOT = "obj-entity";
+    
+    /**
+     * @since 3.0
+     */
+    public static final String DB_ENTITY_ROOT = "db-entity";
+    
+    /**
+     * @since 3.0
+     */
+    public static final String PROCEDURE_ROOT = "procedure";
+    
+    /**
+     * @since 3.0
+     */
+    public static final String DATA_MAP_ROOT = "data-map";
+    
+    /**
+     * @since 3.0
+     */
+    public static final String JAVA_CLASS_ROOT = "java-class";
+
 
     // Reading from XML
     private DataMap dataMap;
