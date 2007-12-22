@@ -91,7 +91,7 @@ public class DbGenerator {
      * Creates and initializes new DbGenerator.
      */
     public DbGenerator(DbAdapter adapter, DataMap map) {
-        this(adapter, map, Collections.emptyList());
+        this(adapter, map, Collections.<DbEntity> emptyList());
     }
 
     /**
@@ -101,7 +101,8 @@ public class DbGenerator {
      * @param map DataMap whose entities will be used in schema generation
      * @param excludedEntities entities that should be ignored during schema generation
      */
-    public DbGenerator(DbAdapter adapter, DataMap map, Collection excludedEntities) {
+    public DbGenerator(DbAdapter adapter, DataMap map,
+            Collection<DbEntity> excludedEntities) {
         this(adapter, map, excludedEntities, null);
     }
 
@@ -114,8 +115,8 @@ public class DbGenerator {
      * @param domain optional DataDomain used to detect cross-database relationships.
      * @since 1.2
      */
-    public DbGenerator(DbAdapter adapter, DataMap map, Collection excludedEntities,
-            DataDomain domain) {
+    public DbGenerator(DbAdapter adapter, DataMap map,
+            Collection<DbEntity> excludedEntities, DataDomain domain) {
         // sanity check
         if (adapter == null) {
             throw new IllegalArgumentException("Adapter must not be null.");
@@ -318,8 +319,9 @@ public class DbGenerator {
 
             // drop PK
             if (shouldDropPKSupport) {
-                List<String> dropAutoPKSQL = getAdapter().getPkGenerator().dropAutoPkStatements(
-                        dbEntitiesRequiringAutoPK);
+                List<String> dropAutoPKSQL = getAdapter()
+                        .getPkGenerator()
+                        .dropAutoPkStatements(dbEntitiesRequiringAutoPK);
                 Iterator<String> it = dropAutoPKSQL.iterator();
                 while (it.hasNext()) {
                     safeExecute(connection, it.next());
@@ -562,11 +564,14 @@ public class DbGenerator {
 
             // check if an automatic PK generation can be potentially supported
             // in this entity. For now simply check that the key is not propagated
-            Iterator<DbRelationship> relationships = nextEntity.getRelationships().iterator();
+            Iterator<DbRelationship> relationships = nextEntity
+                    .getRelationships()
+                    .iterator();
 
             // create a copy of the original PK list,
             // since the list will be modified locally
-            List<DbAttribute> pkAttributes = new ArrayList<DbAttribute>(nextEntity.getPrimaryKeys());
+            List<DbAttribute> pkAttributes = new ArrayList<DbAttribute>(nextEntity
+                    .getPrimaryKeys());
             while (pkAttributes.size() > 0 && relationships.hasNext()) {
                 DbRelationship nextRelationship = relationships.next();
                 if (!nextRelationship.isToMasterPK()) {
