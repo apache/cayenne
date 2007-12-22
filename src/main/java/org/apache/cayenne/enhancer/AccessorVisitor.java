@@ -90,8 +90,6 @@ public abstract class AccessorVisitor extends ClassAdapter {
 
         if (isEnhancedProperty(property)) {
             if (isLazyFaulted(property)) {
-                // inject fault flag field
-                helper.createField(Boolean.TYPE, "faultResolved_" + property, true);
                 return new GetterVisitor(mv, helper, property, true);
             }
             else {
