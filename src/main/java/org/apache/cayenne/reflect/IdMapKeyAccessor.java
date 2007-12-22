@@ -47,9 +47,9 @@ public class IdMapKeyAccessor implements Accessor {
                 return id;
             }
 
-            Map map = id.getIdSnapshot();
+            Map<?, ?> map = id.getIdSnapshot();
             if (map.size() == 1) {
-                Map.Entry pkEntry = (Map.Entry) map.entrySet().iterator().next();
+                Map.Entry<?, ?> pkEntry = map.entrySet().iterator().next();
                 return pkEntry.getValue();
             }
 

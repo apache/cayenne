@@ -47,7 +47,7 @@ public class IndexedListProperty extends ListProperty {
      */
     protected ValueHolder createCollectionValueHolder(Object object)
             throws PropertyException {
-        List unordered = (List) super.createCollectionValueHolder(object);
+        List<?> unordered = (List<?>) super.createCollectionValueHolder(object);
         return new IndexPropertyList(indexPropertyName, unordered, true);
     }
 }
