@@ -26,10 +26,14 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.enhancer.EnhancementHelper;
 
 /**
@@ -44,10 +48,23 @@ public class JpaClassDescriptor {
             .compile("^(is|get)([A-Z])(.*)$");
     private static final Pattern SETTER_PATTERN = Pattern.compile("^set([A-Z])(.*)$");
 
+    static final Set<String> reservedProperties;
+
+    static {
+        reservedProperties = new HashSet<String>();
+        reservedProperties.add(propertyKey("objectId", ObjectId.class));
+        reservedProperties.add(propertyKey("persistenceState", Integer.TYPE));
+        reservedProperties.add(propertyKey("objectContext", ObjectContext.class));
+    }
+
     protected Collection<JpaPropertyDescriptor> fieldDescriptors;
     protected Collection<JpaPropertyDescriptor> propertyDescriptors;
     protected Class<?> managedClass;
     protected AccessType access;
+
+    static String propertyKey(String propertyName, Class<?> propertyType) {
+        return propertyName + ':' + propertyType.getName();
+    }
 
     public static String propertyNameForGetter(String getterName) {
         Matcher getMatch = GETTER_PATTERN.matcher(getterName);
@@ -214,7 +231,12 @@ public class JpaClassDescriptor {
                 String propertyName = propertyNameForGetter(name);
 
                 if (propertyName != null) {
-                    String key = propertyName + ":" + returnType.getName();
+                    String key = propertyKey(propertyName, returnType);
+
+                    if (reservedProperties.contains(key)) {
+                        continue;
+                    }
+
                     PropertyTuple t = properties.get(key);
                     if (t == null) {
                         t = new PropertyTuple();
@@ -254,7 +276,7 @@ public class JpaClassDescriptor {
         }
     }
 
-    final class PropertyTuple {
+    static final class PropertyTuple {
 
         String name;
         Method getter;

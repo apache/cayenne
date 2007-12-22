@@ -47,6 +47,7 @@ public class EntityMapDefaultsProcessorTest extends TestCase {
         EntityMapAnnotationLoader loader = new EntityMapAnnotationLoader(context);
         loader.loadClassMapping(MockAnnotatedBean1.class);
         loader.loadClassMapping(MockAnnotatedBean3.class);
+        loader.loadClassMapping(MockAnnotatedBean5.class);
 
         // apply defaults
         EntityMapDefaultsProcessor defaultsProcessor = new EntityMapDefaultsProcessor();
@@ -68,6 +69,15 @@ public class EntityMapDefaultsProcessorTest extends TestCase {
 
         assertNotNull(entity.getAttributes().getBasicAttribute("attribute1"));
         assertNull(entity.getAttributes().getBasicAttribute("attribute2"));
+    }
+
+    public void testSkipCayennePersistentProperties() throws Exception {
+
+        JpaEntity e5 = context.getEntityMap().entityForClass(MockAnnotatedBean5.class);
+        assertNotNull(e5);
+
+        assertNotNull(e5.getAttributes().getBasicAttribute("attribute1"));
+        assertNull(e5.getAttributes().getBasicAttribute("objectId"));
     }
 
     public void testTargetEntityNameToOne() {

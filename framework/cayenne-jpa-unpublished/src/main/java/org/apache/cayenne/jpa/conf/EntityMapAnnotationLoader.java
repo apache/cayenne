@@ -188,7 +188,7 @@ public class EntityMapAnnotationLoader {
 
         JpaClassDescriptor descriptor = new JpaClassDescriptor(managedClass);
 
-        // initially set access to the map level access - may be overriden below
+        // initially set access to the map level access - may be overridden below
         descriptor.setAccess(context.getEntityMap().getAccess());
 
         AnnotationContext stack = new AnnotationContext(descriptor);

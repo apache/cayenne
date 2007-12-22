@@ -20,7 +20,7 @@ package org.apache.cayenne.jpa.enhancer;
 
 import org.apache.cayenne.enhancer.AccessorVisitor;
 import org.apache.cayenne.jpa.map.AccessType;
-import org.apache.cayenne.jpa.map.JpaClassDescriptor;
+import org.apache.cayenne.jpa.map.JpaManagedClass;
 import org.apache.cayenne.jpa.map.JpaPropertyDescriptor;
 import org.objectweb.asm.ClassVisitor;
 
@@ -29,22 +29,24 @@ import org.objectweb.asm.ClassVisitor;
  */
 class JpaAccessorVisitor extends AccessorVisitor {
 
-    private JpaClassDescriptor descriptor;
+    private JpaManagedClass managedClass;
 
-    public JpaAccessorVisitor(ClassVisitor visitor, JpaClassDescriptor descriptor) {
+    public JpaAccessorVisitor(ClassVisitor visitor, JpaManagedClass managedClass) {
         super(visitor);
-        this.descriptor = descriptor;
+        this.managedClass = managedClass;
     }
 
     @Override
     protected boolean isEnhancedProperty(String property) {
-        return descriptor.getAccess() != AccessType.PROPERTY
-                && descriptor.getProperty(property) != null;
+        return managedClass.getAccess() != AccessType.PROPERTY
+                && managedClass.getAttributes().getAttribute(property) != null;
     }
 
     @Override
     protected boolean isLazyFaulted(String property) {
-        JpaPropertyDescriptor propertyDescriptor = descriptor.getProperty(property);
+        JpaPropertyDescriptor propertyDescriptor = managedClass
+                .getClassDescriptor()
+                .getProperty(property);
 
         // TODO: andrus, 10/14/2006 - this should access Jpa LAZY vs. EAGER flag
         // instead of using Cayenne default logic of lazy relationships

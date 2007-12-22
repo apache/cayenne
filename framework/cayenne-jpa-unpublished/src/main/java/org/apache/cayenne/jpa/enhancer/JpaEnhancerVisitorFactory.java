@@ -49,8 +49,7 @@ public class JpaEnhancerVisitorFactory implements EnhancerVisitorFactory {
 
             // create enhancer chain
             PersistentInterfaceVisitor e1 = new PersistentInterfaceVisitor(out);
-            JpaAccessorVisitor e2 = new JpaAccessorVisitor(e1, entity
-                    .getClassDescriptor());
+            JpaAccessorVisitor e2 = new JpaAccessorVisitor(e1, entity);
 
             // this ensures that both enhanced and original classes have compatible
             // serialized
