@@ -30,6 +30,7 @@ CAY-931 Enable revert action even for projects that are not modified
 CAY-933 Embeddable classes - support class generation
 CAY-936 Update Velocity templates for generics.
 CAY-945 PropertyUtils support for "compiled" property access
+CAY-946 JPA: property-based access to persistent objects
 
 Bug fixes since M2:
 
