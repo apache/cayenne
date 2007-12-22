@@ -23,7 +23,7 @@ import java.util.Iterator;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * A ClassDescriptor wrapper that compiles decoarated descriptor lazily on first access.
+ * A ClassDescriptor wrapper that compiles decorated descriptor lazily on first access.
  * 
  * @since 3.0
  * @author Andrus Adamchik
