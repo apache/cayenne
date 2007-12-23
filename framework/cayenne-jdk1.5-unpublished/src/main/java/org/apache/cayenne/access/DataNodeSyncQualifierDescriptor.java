@@ -21,11 +21,9 @@ package org.apache.cayenne.access;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.Transformer;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.DbAttribute;
@@ -35,6 +33,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.commons.collections.Transformer;
 
 /**
  * Builds update qualifier snapshots, including optimistic locking.
@@ -45,7 +44,7 @@ import org.apache.cayenne.map.ObjRelationship;
 class DataNodeSyncQualifierDescriptor {
 
     private List<DbAttribute> attributes;
-    private List valueTransformers;
+    private List<Transformer> valueTransformers;
     private boolean usingOptimisticLocking;
 
     public boolean isUsingOptimisticLocking() {
@@ -64,7 +63,7 @@ class DataNodeSyncQualifierDescriptor {
             DbAttribute attribute = attributes.get(i);
             if (!map.containsKey(attribute.getName())) {
 
-                Object value = ((Transformer) valueTransformers.get(i)).transform(diff);
+                Object value = valueTransformers.get(i).transform(diff);
                 map.put(attribute.getName(), value);
             }
         }
@@ -74,12 +73,12 @@ class DataNodeSyncQualifierDescriptor {
 
     void reset(ObjEntity entity, DbEntity dbEntity) {
         attributes = new ArrayList<DbAttribute>(3);
-        valueTransformers = new ArrayList(3);
+        valueTransformers = new ArrayList<Transformer>(3);
         usingOptimisticLocking = entity.getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
 
         // master PK columns
         if (entity.getDbEntity() == dbEntity) {
-            for (final DbAttribute attribute : entity.getDbEntity().getPrimaryKeys() ) {
+            for (final DbAttribute attribute : entity.getDbEntity().getPrimaryKeys()) {
                 attributes.add(attribute);
                 valueTransformers.add(new Transformer() {
 
@@ -116,9 +115,7 @@ class DataNodeSyncQualifierDescriptor {
 
         if (usingOptimisticLocking) {
 
-            Iterator attributeIt = entity.getAttributes().iterator();
-            while (attributeIt.hasNext()) {
-                final ObjAttribute attribute = (ObjAttribute) attributeIt.next();
+            for (final ObjAttribute attribute : entity.getAttributes()) {
 
                 if (attribute.isUsedForLocking()) {
                     // only care about first step in a flattened attribute
@@ -140,9 +137,7 @@ class DataNodeSyncQualifierDescriptor {
                 }
             }
 
-            Iterator relationshipIt = entity.getRelationships().iterator();
-            while (relationshipIt.hasNext()) {
-                final ObjRelationship relationship = (ObjRelationship) relationshipIt.next();
+            for (final ObjRelationship relationship : entity.getRelationships()) {
 
                 if (relationship.isUsedForLocking()) {
                     // only care about the first DbRelationship
@@ -154,14 +149,14 @@ class DataNodeSyncQualifierDescriptor {
                         DbAttribute dbAttribute = dbAttrPair.getSource();
 
                         // relationship transformers override attribute transformers for
-                        // meaningful FK's... why meanigful FKs can go out of sync is
+                        // meaningful FK's... why meaningful FKs can go out of sync is
                         // another story (CAY-595)
                         int index = attributes.indexOf(dbAttribute);
                         if (index >= 0 && !dbAttribute.isForeignKey()) {
                             continue;
                         }
 
-                        Object transformer = new Transformer() {
+                        Transformer transformer = new Transformer() {
 
                             public Object transform(Object input) {
                                 ObjectId targetId = ((ObjectDiff) input)
@@ -188,10 +183,7 @@ class DataNodeSyncQualifierDescriptor {
             DbEntity masterDbEntity,
             DbEntity dependentDbEntity) {
 
-        Iterator it = masterDbEntity.getRelationshipMap().values().iterator();
-        while (it.hasNext()) {
-
-            DbRelationship relationship = (DbRelationship) it.next();
+        for (DbRelationship relationship : masterDbEntity.getRelationships()) {
             if (dependentDbEntity.equals(relationship.getTargetEntity())
                     && relationship.isToDependentPK()) {
 
