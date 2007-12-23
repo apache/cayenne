@@ -323,6 +323,18 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
         }
         return secondaryTables;
     }
+    
+    public JpaSecondaryTable getSecondaryTable(String name) {
+        if (secondaryTables != null) {
+            for(JpaSecondaryTable table : secondaryTables) {
+                if(name.equals(table.getName())) {
+                    return table;
+                }
+            }
+        }
+        
+        return null;
+    }
 
     @Override
     public String toString() {

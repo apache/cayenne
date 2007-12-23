@@ -50,6 +50,7 @@ import org.apache.cayenne.jpa.map.JpaPersistenceUnitDefaults;
 import org.apache.cayenne.jpa.map.JpaPersistenceUnitMetadata;
 import org.apache.cayenne.jpa.map.JpaQueryHint;
 import org.apache.cayenne.jpa.map.JpaRelationship;
+import org.apache.cayenne.jpa.map.JpaSecondaryTable;
 import org.apache.cayenne.jpa.map.JpaTable;
 import org.apache.cayenne.jpa.map.JpaVersion;
 import org.apache.cayenne.map.DataMap;
@@ -158,6 +159,10 @@ public class DataMapConverter {
         visitor.addChildVisitor(JpaNamedQuery.class, new JpaNamedQueryVisitor());
         visitor.addChildVisitor(JpaPersistenceUnitMetadata.class, metadataVisitor);
         return visitor;
+    }
+
+    private String getSecondaryTableDbRelationshipName(String secondaryTableName) {
+        return "$cay_secondary_" + secondaryTableName;
     }
 
     private EntityListener makeEntityListener(JpaEntityListener jpaListener) {
@@ -329,6 +334,7 @@ public class DataMapConverter {
         @Override
         Object createObject(ProjectPath path) {
 
+            JpaManagedClass entity = path.firstInstanceOf(JpaManagedClass.class);
             JpaBasic jpaBasic = (JpaBasic) path.getObject();
 
             ObjEntity parentCayenneEntity = (ObjEntity) targetPath.getObject();
@@ -336,7 +342,8 @@ public class DataMapConverter {
             ObjAttribute cayenneAttribute = new ObjAttribute(jpaBasic.getName());
             cayenneAttribute
                     .setType(getAttributeType(path, jpaBasic.getName()).getName());
-            cayenneAttribute.setDbAttributeName(jpaBasic.getColumn().getName());
+            cayenneAttribute.setDbAttributePath(getAttributePath(path, entity, jpaBasic
+                    .getColumn()));
 
             parentCayenneEntity.addAttribute(cayenneAttribute);
             return cayenneAttribute;
@@ -375,6 +382,38 @@ public class DataMapConverter {
             }
         }
 
+        protected String getAttributePath(
+                ProjectPath path,
+                JpaManagedClass managedClass,
+                JpaColumn column) {
+
+            if (managedClass instanceof JpaEntity) {
+                JpaEntity entity = (JpaEntity) managedClass;
+
+                if (column.getTable().equals(entity.getTable().getName())) {
+                    return column.getName();
+                }
+
+                JpaSecondaryTable table = entity.getSecondaryTable(column.getTable());
+                if (table == null) {
+                    recordConflict(path, "Unrecognized secondary table: '"
+                            + column.getTable()
+                            + "'");
+                    return column.getName();
+                }
+
+                return getSecondaryTableDbRelationshipName(table.getName())
+                        + '.'
+                        + column.getName();
+            }
+            else {
+                // TODO: andrus, 12/23/2007 this would miss a case if a user decides to
+                // specify a secondary table on an abstract superclass that is not linked
+                // to a table yet ... which would be quite crazy, but still...
+                return column.getName();
+            }
+        }
+
     }
 
     class JpaVersionVisitor extends JpaBasicVisitor {
@@ -382,13 +421,15 @@ public class DataMapConverter {
         @Override
         Object createObject(ProjectPath path) {
 
+            JpaManagedClass entity = path.firstInstanceOf(JpaManagedClass.class);
             JpaVersion version = (JpaVersion) path.getObject();
 
             ObjEntity parentCayenneEntity = (ObjEntity) targetPath.getObject();
 
             ObjAttribute cayenneAttribute = new ObjAttribute(version.getName());
             cayenneAttribute.setType(getAttributeType(path, version.getName()).getName());
-            cayenneAttribute.setDbAttributeName(version.getColumn().getName());
+            cayenneAttribute.setDbAttributePath(getAttributePath(path, entity, version
+                    .getColumn()));
 
             parentCayenneEntity.addAttribute(cayenneAttribute);
             return cayenneAttribute;
@@ -462,7 +503,9 @@ public class DataMapConverter {
 
             ObjAttribute cayenneAttribute = new ObjAttribute(id.getName());
             cayenneAttribute.setType(getAttributeType(path, id.getName()).getName());
-            cayenneAttribute.setDbAttributeName(id.getColumn().getName());
+
+            // assuming id's can not be flattened to another table...
+            cayenneAttribute.setDbAttributePath(id.getColumn().getName());
 
             parentCayenneEntity.addAttribute(cayenneAttribute);
             return cayenneAttribute;
@@ -618,6 +661,7 @@ public class DataMapConverter {
 
             addChildVisitor(JpaAttributes.class, attributeVisitor);
             addChildVisitor(JpaTable.class, new JpaTableVisitor());
+            addChildVisitor(JpaSecondaryTable.class, new JpaSecondaryTableVisitor());
             addChildVisitor(JpaNamedQuery.class, new JpaNamedQueryVisitor());
             addChildVisitor(JpaEntityListeners.class, listenersVisitor);
         }
@@ -858,13 +902,44 @@ public class DataMapConverter {
                     jpaTable.getName());
             if (cayenneEntity == null) {
                 cayenneEntity = new DbEntity(jpaTable.getName());
+                cayenneEntity.setCatalog(jpaTable.getCatalog());
+                cayenneEntity.setSchema(jpaTable.getSchema());
                 parentCayenneEntity.getDataMap().addDbEntity(cayenneEntity);
             }
 
-            cayenneEntity.setCatalog(jpaTable.getCatalog());
-            cayenneEntity.setSchema(jpaTable.getSchema());
-
             parentCayenneEntity.setDbEntity(cayenneEntity);
+            return cayenneEntity;
+        }
+    }
+
+    class JpaSecondaryTableVisitor extends NestedVisitor {
+
+        @Override
+        Object createObject(ProjectPath path) {
+
+            JpaSecondaryTable jpaTable = (JpaSecondaryTable) path.getObject();
+            ObjEntity parentCayenneEntity = (ObjEntity) targetPath.getObject();
+
+            DbEntity cayenneEntity = parentCayenneEntity.getDataMap().getDbEntity(
+                    jpaTable.getName());
+            if (cayenneEntity == null) {
+                cayenneEntity = new DbEntity(jpaTable.getName());
+                cayenneEntity.setCatalog(jpaTable.getCatalog());
+                cayenneEntity.setSchema(jpaTable.getSchema());
+
+                parentCayenneEntity.getDataMap().addDbEntity(cayenneEntity);
+            }
+
+            // create a relationship between master DbEntity and a secondary DbEntity...
+            DbEntity masterEntity = parentCayenneEntity.getDbEntity();
+
+            JpaDbRelationship dbRelationship = new JpaDbRelationship(
+                    getSecondaryTableDbRelationshipName(cayenneEntity.getName()));
+            dbRelationship.setTargetEntityName(cayenneEntity.getName());
+            dbRelationship.setToMany(false);
+
+            masterEntity.addRelationship(dbRelationship);
+
             return cayenneEntity;
         }
     }
