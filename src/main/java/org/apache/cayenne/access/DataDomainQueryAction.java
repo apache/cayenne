@@ -77,8 +77,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     QueryResponse response;
     GenericResponse fullResponse;
     Map prefetchResultsByPath;
-    Map queriesByNode;
-    Map queriesByExecutedQueries;
+    Map<QueryEngine, Collection<Query>> queriesByNode;
+    Map<Query, Query> queriesByExecutedQueries;
     boolean noObjectConversion;
 
     /*
@@ -225,9 +225,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // we can assume that there is one and only one DbRelationship as
             // we previously checked that
             // "!isSourceIndependentFromTargetChange"
-            DbRelationship dbRelationship = relationship
-                    .getDbRelationships()
-                    .get(0);
+            DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
 
             ObjectId targetId = sourceRow.createTargetObjectId(relationship
                     .getTargetEntityName(), dbRelationship);
@@ -282,7 +280,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return DONE;
             }
 
-            Collection objects = refreshQuery.getObjects();
+            Collection<?> objects = refreshQuery.getObjects();
             if (objects != null && !objects.isEmpty()) {
 
                 Collection ids = new ArrayList(objects.size());
@@ -437,11 +435,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         // run categorized queries
         if (queriesByNode != null) {
-            Iterator nodeIt = queriesByNode.entrySet().iterator();
-            while (nodeIt.hasNext()) {
-                Map.Entry entry = (Map.Entry) nodeIt.next();
-                QueryEngine nextNode = (QueryEngine) entry.getKey();
-                Collection nodeQueries = (Collection) entry.getValue();
+            for (Map.Entry<QueryEngine, Collection<Query>> entry : queriesByNode
+                    .entrySet()) {
+                QueryEngine nextNode = entry.getKey();
+                Collection<Query> nodeQueries = entry.getValue();
                 nextNode.performQueries(nodeQueries, this);
             }
         }
@@ -560,27 +557,27 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     public void route(QueryEngine engine, Query query, Query substitutedQuery) {
 
-        List queries = null;
+        Collection<Query> queries = null;
         if (queriesByNode == null) {
-            queriesByNode = new HashMap();
+            queriesByNode = new HashMap<QueryEngine, Collection<Query>>();
         }
         else {
-            queries = (List) queriesByNode.get(engine);
+            queries = queriesByNode.get(engine);
         }
 
         if (queries == null) {
-            queries = new ArrayList(5);
+            queries = new ArrayList<Query>(5);
             queriesByNode.put(engine, queries);
         }
 
         queries.add(query);
 
-        // handle case when routing resuled in an "exectable" query different from the
+        // handle case when routing resulted in an "executable" query different from the
         // original query.
         if (substitutedQuery != null && substitutedQuery != query) {
 
             if (queriesByExecutedQueries == null) {
-                queriesByExecutedQueries = new HashMap();
+                queriesByExecutedQueries = new HashMap<Query, Query>();
             }
 
             queriesByExecutedQueries.put(query, substitutedQuery);
@@ -609,7 +606,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         fullResponse.addBatchUpdateCount(resultCount);
     }
 
-    public void nextDataRows(Query query, List dataRows) {
+    public void nextDataRows(Query query, List<DataRow> dataRows) {
 
         // exclude prefetched rows in the main result
         if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery) {
