@@ -26,6 +26,7 @@ import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.art.Artist;
 import org.apache.art.CompoundPainting;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -65,7 +66,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
             PreparedStatement stmt = conn.prepareStatement(insertArtist);
             long dateBase = System.currentTimeMillis();
             for (int i = 1; i <= artistCount; i++) {
-                stmt.setInt(1, i);
+                stmt.setInt(1, i + 1);
                 stmt.setString(2, "artist" + i);
                 stmt.setDate(3, new java.sql.Date(dateBase + 1000 * 60 * 60 * 24 * i));
                 stmt.executeUpdate();
@@ -74,7 +75,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
 
             stmt = conn.prepareStatement(insertGal);
             for (int i = 1; i <= galleryCount; i++) {
-                stmt.setInt(1, i);
+                stmt.setInt(1, i + 2);
                 stmt.setString(2, "gallery" + i);
                 stmt.executeUpdate();
             }
@@ -84,12 +85,12 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
             for (int i = 1; i <= paintCount; i++) {
                 stmt.setInt(1, i);
                 stmt.setString(2, "painting" + i);
-                stmt.setInt(3, (i - 1) % artistCount + 1);
+                stmt.setInt(3, (i - 1) % artistCount + 2);
                 stmt.setBigDecimal(4, new BigDecimal(1000d));
                 if (i == 3)
                     stmt.setNull(5, Types.INTEGER);
                 else
-                    stmt.setInt(5, (i - 1) % galleryCount + 1);
+                    stmt.setInt(5, (i - 1) % galleryCount + 3);
                 stmt.executeUpdate();
             }
             stmt.close();
@@ -205,6 +206,11 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     }
 
     public void testDelete() throws Exception {
+        // adding a bit of random overlapping dta to db...
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("AX");
+        context.commitChanges();
+
         CompoundPainting o1 = context.newObject(CompoundPainting.class);
         o1.setArtistName("A1");
         o1.setEstimatedPrice(new BigDecimal(1.0d));
@@ -220,7 +226,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
         Number artistCount = (Number) DataObjectUtils.objectForQuery(
                 context,
                 new EJBQLQuery("select count(a) from Artist a"));
-        assertEquals(0, artistCount.intValue());
+        assertEquals(1, artistCount.intValue());
         Number paintingCount = (Number) DataObjectUtils.objectForQuery(
                 context,
                 new EJBQLQuery("select count(a) from Painting a"));
