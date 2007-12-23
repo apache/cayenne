@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.Query;
 
 /**
  * A sync bucket that holds flattened queries.
@@ -38,22 +39,22 @@ import org.apache.cayenne.query.InsertBatchQuery;
 class DataDomainFlattenedBucket {
 
     final DataDomainFlushAction parent;
-    final Map flattenedInsertQueries;
-    final Map flattenedDeleteQueries;
+    final Map<DbEntity, InsertBatchQuery> flattenedInsertQueries;
+    final Map<DbEntity, DeleteBatchQuery> flattenedDeleteQueries;
 
     DataDomainFlattenedBucket(DataDomainFlushAction parent) {
         this.parent = parent;
-        this.flattenedInsertQueries = new HashMap();
-        this.flattenedDeleteQueries = new HashMap();
+        this.flattenedInsertQueries = new HashMap<DbEntity, InsertBatchQuery>();
+        this.flattenedDeleteQueries = new HashMap<DbEntity, DeleteBatchQuery>();
     }
 
     boolean isEmpty() {
         return flattenedInsertQueries.isEmpty() && flattenedDeleteQueries.isEmpty();
     }
 
-    void addFlattenedInsert(DbEntity flattenedEntity, FlattenedArcKey flattenedInsertInfo) {
+    void addFlattenedInsert(DbEntity flattenedEntity, FlattenedArcKey flattenedArcKey) {
 
-        InsertBatchQuery relationInsertQuery = (InsertBatchQuery) flattenedInsertQueries
+        InsertBatchQuery relationInsertQuery = flattenedInsertQueries
                 .get(flattenedEntity);
 
         if (relationInsertQuery == null) {
@@ -62,13 +63,13 @@ class DataDomainFlattenedBucket {
         }
 
         DataNode node = parent.getDomain().lookupDataNode(flattenedEntity.getDataMap());
-        Map flattenedSnapshot = flattenedInsertInfo.buildJoinSnapshotForInsert(node);
+        Map flattenedSnapshot = flattenedArcKey.buildJoinSnapshotForInsert(node);
         relationInsertQuery.add(flattenedSnapshot);
     }
 
     void addFlattenedDelete(DbEntity flattenedEntity, FlattenedArcKey flattenedDeleteInfo) {
 
-        DeleteBatchQuery relationDeleteQuery = (DeleteBatchQuery) flattenedDeleteQueries
+        DeleteBatchQuery relationDeleteQuery = flattenedDeleteQueries
                 .get(flattenedEntity);
         if (relationDeleteQuery == null) {
             boolean optimisticLocking = false;
@@ -87,13 +88,13 @@ class DataDomainFlattenedBucket {
         }
     }
 
-    void appendInserts(Collection queries) {
+    void appendInserts(Collection<Query> queries) {
         if (!flattenedInsertQueries.isEmpty()) {
             queries.addAll(flattenedInsertQueries.values());
         }
     }
 
-    void appendDeletes(Collection queries) {
+    void appendDeletes(Collection<Query> queries) {
         if (!flattenedDeleteQueries.isEmpty()) {
             queries.addAll(flattenedDeleteQueries.values());
         }

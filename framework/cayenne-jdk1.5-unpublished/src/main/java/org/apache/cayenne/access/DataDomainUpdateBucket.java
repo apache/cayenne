@@ -55,30 +55,31 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
         DataNodeSyncQualifierDescriptor qualifierBuilder = new DataNodeSyncQualifierDescriptor();
 
         for (DbEntity dbEntity : dbEntities) {
-            List objEntitiesForDbEntity = (List) descriptorsByDbEntity.get(dbEntity);
-            Map batches = new LinkedHashMap();
 
-            for (Iterator j = objEntitiesForDbEntity.iterator(); j.hasNext();) {
-                ClassDescriptor descriptor = (ClassDescriptor) j.next();
+            Collection<ClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
+            Map<Object, Query> batches = new LinkedHashMap<Object, Query>();
+
+            for (ClassDescriptor descriptor : descriptors) {
                 ObjEntity entity = descriptor.getEntity();
 
                 diffBuilder.reset(entity, dbEntity);
                 qualifierBuilder.reset(entity, dbEntity);
                 boolean isRootDbEntity = entity.getDbEntity() == dbEntity;
 
-                List objects = (List) objectsByDescriptor.get(descriptor);
-
-                for (Iterator k = objects.iterator(); k.hasNext();) {
-                    Persistent o = (Persistent) k.next();
+                Iterator<Persistent> objects = objectsByDescriptor
+                        .get(descriptor)
+                        .iterator();
+                while (objects.hasNext()) {
+                    Persistent o = objects.next();
                     ObjectDiff diff = parent.objectDiff(o.getObjectId());
 
-                    Map snapshot = diffBuilder.buildDBDiff(diff);
+                    Map<Object, Object> snapshot = diffBuilder.buildDBDiff(diff);
 
                     // check whether MODIFIED object has real db-level modifications
                     if (snapshot == null) {
 
                         if (isRootDbEntity) {
-                            k.remove();
+                            objects.remove();
                             o.setPersistenceState(PersistenceState.COMMITTED);
                         }
 
@@ -125,11 +126,12 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
 
                     // update replacement id with meaningful PK changes
                     if (isRootDbEntity) {
-                        Map replacementId = o.getObjectId().getReplacementIdMap();
+                        Map<String, Object> replacementId = o
+                                .getObjectId()
+                                .getReplacementIdMap();
 
-                        Iterator pkIt = dbEntity.getPrimaryKeys().iterator();
-                        while (pkIt.hasNext()) {
-                            String name = ((DbAttribute) pkIt.next()).getName();
+                        for (DbAttribute pk : dbEntity.getPrimaryKeys()) {
+                            String name = pk.getName();
                             if (snapshot.containsKey(name)
                                     && !replacementId.containsKey(name)) {
                                 replacementId.put(name, snapshot.get(name));

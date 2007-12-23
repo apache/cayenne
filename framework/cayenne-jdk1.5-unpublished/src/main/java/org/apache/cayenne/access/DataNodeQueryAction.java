@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -65,7 +66,7 @@ class DataNodeQueryAction implements OperationObserver {
         observer.nextCount(currentQuery, resultCount);
     }
 
-    public void nextDataRows(Query query, List dataRows) {
+    public void nextDataRows(Query query, List<DataRow> dataRows) {
         observer.nextDataRows(currentQuery, dataRows);
     }
 
