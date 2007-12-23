@@ -53,14 +53,14 @@ import org.apache.commons.collections.Factory;
  */
 abstract class DataDomainSyncBucket {
 
-    final Map<ClassDescriptor, Collection<Object>> objectsByDescriptor;
+    final Map<ClassDescriptor, List<Persistent>> objectsByDescriptor;
     final DataDomainFlushAction parent;
 
     List<DbEntity> dbEntities;
     Map<DbEntity, Collection<ClassDescriptor>> descriptorsByDbEntity;
 
     DataDomainSyncBucket(DataDomainFlushAction parent) {
-        this.objectsByDescriptor = new HashMap<ClassDescriptor, Collection<Object>>();
+        this.objectsByDescriptor = new HashMap<ClassDescriptor, List<Persistent>>();
         this.parent = parent;
     }
 
@@ -152,12 +152,12 @@ abstract class DataDomainSyncBucket {
         }
     }
 
-    void addDirtyObject(Object object, ClassDescriptor descriptor) {
+    void addDirtyObject(Persistent object, ClassDescriptor descriptor) {
 
-        Collection<Object> objects = objectsByDescriptor.get(descriptor);
+        List<Persistent> objects = objectsByDescriptor.get(descriptor);
         if (objects == null) {
 
-            objects = new ArrayList<Object>();
+            objects = new ArrayList<Persistent>();
             objectsByDescriptor.put(descriptor, objects);
         }
 

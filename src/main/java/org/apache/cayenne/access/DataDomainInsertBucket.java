@@ -36,6 +36,7 @@ import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -48,23 +49,21 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
         super(parent);
     }
 
-    void appendQueriesInternal(Collection queries) {
+    @Override
+    void appendQueriesInternal(Collection<Query> queries) {
 
         DataDomainDBDiffBuilder diffBuilder = new DataDomainDBDiffBuilder();
 
         EntitySorter sorter = parent.getDomain().getEntitySorter();
         sorter.sortDbEntities(dbEntities, false);
 
-        Iterator i = dbEntities.iterator();
-        while (i.hasNext()) {
-            DbEntity dbEntity = (DbEntity) i.next();
-            List objEntitiesForDbEntity = (List) descriptorsByDbEntity.get(dbEntity);
+        for (DbEntity dbEntity : dbEntities) {
+
+            Collection<ClassDescriptor> objEntitiesForDbEntity = descriptorsByDbEntity
+                    .get(dbEntity);
 
             InsertBatchQuery batch = new InsertBatchQuery(dbEntity, 27);
-
-            Iterator j = objEntitiesForDbEntity.iterator();
-            while (j.hasNext()) {
-                ClassDescriptor descriptor = (ClassDescriptor) j.next();
+            for (ClassDescriptor descriptor : objEntitiesForDbEntity) {
 
                 diffBuilder.reset(descriptor.getEntity(), dbEntity);
 
@@ -72,8 +71,8 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
 
                 // remove object set for dependent entity, so that it does not show up
                 // on post processing
-                List objects = (List) (isMasterDbEntity ? objectsByDescriptor
-                        .get(descriptor) : objectsByDescriptor.remove(descriptor));
+                List<Persistent> objects = isMasterDbEntity ? objectsByDescriptor
+                        .get(descriptor) : objectsByDescriptor.remove(descriptor);
 
                 if (objects.isEmpty()) {
                     continue;
@@ -86,11 +85,10 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                     sorter.sortObjectsForEntity(descriptor.getEntity(), objects, false);
                 }
 
-                for (Iterator k = objects.iterator(); k.hasNext();) {
-                    Persistent o = (Persistent) k.next();
+                for (Persistent o : objects) {
 
-                    Map snapshot = diffBuilder.buildDBDiff(parent.objectDiff(o
-                            .getObjectId()));
+                    Map<Object, Object> snapshot = diffBuilder.buildDBDiff(parent
+                            .objectDiff(o.getObjectId()));
 
                     batch.add(snapshot, o.getObjectId());
                 }
@@ -100,9 +98,11 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
         }
     }
 
-    void createPermIdsForObjEntity(ClassDescriptor descriptor, List dataObjects) {
+    void createPermIdsForObjEntity(
+            ClassDescriptor descriptor,
+            Collection<Persistent> objects) {
 
-        if (dataObjects.isEmpty()) {
+        if (objects.isEmpty()) {
             return;
         }
 
@@ -110,25 +110,21 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
         DbEntity dbEntity = objEntity.getDbEntity();
         DataNode node = parent.getDomain().lookupDataNode(dbEntity.getDataMap());
         boolean supportsGeneratedKeys = node.getAdapter().supportsGeneratedKeys();
-        
+
         PkGenerator pkGenerator = node.getAdapter().getPkGenerator();
 
-        Iterator i = dataObjects.iterator();
-        while (i.hasNext()) {
-
-            Persistent object = (Persistent) i.next();
+        for (Persistent object : objects) {
             ObjectId id = object.getObjectId();
             if (id == null || !id.isTemporary()) {
                 continue;
             }
 
             // modify replacement id directly...
-            Map idMap = id.getReplacementIdMap();
+            Map<String, Object> idMap = id.getReplacementIdMap();
 
             boolean autoPkDone = false;
-            Iterator it = dbEntity.getPrimaryKeys().iterator();
-            while (it.hasNext()) {
-                DbAttribute dbAttr = (DbAttribute) it.next();
+
+            for (DbAttribute dbAttr : dbEntity.getPrimaryKeys()) {
                 String dbAttrName = dbAttr.getName();
 
                 if (idMap.containsKey(dbAttrName)) {
@@ -136,7 +132,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                 }
 
                 // handle meaningful PK
-                ObjAttribute objAttr = (ObjAttribute) objEntity.getAttributeForDbAttribute(dbAttr);
+                ObjAttribute objAttr = objEntity.getAttributeForDbAttribute(dbAttr);
                 if (objAttr != null) {
 
                     Object value = descriptor
@@ -144,7 +140,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                             .readPropertyDirectly(object);
 
                     if (value != null) {
-                        Class javaClass = objAttr.getJavaClass();
+                        Class<?> javaClass = objAttr.getJavaClass();
                         if (javaClass.isPrimitive()
                                 && value instanceof Number
                                 && ((Number) value).intValue() == 0) {
@@ -158,7 +154,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                         }
                     }
                 }
-                
+
                 // skip db-generated
                 if (supportsGeneratedKeys && dbAttr.isGenerated()) {
                     continue;
@@ -168,7 +164,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                 if (isPropagated(dbAttr)) {
                     continue;
                 }
-                
+
                 // only a single key can be generated from DB... if this is done already
                 // in this loop, we must bail out.
                 if (autoPkDone) {
@@ -192,7 +188,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
 
     // TODO, andrus 4/12/2006 - move to DbAttribute in 2.0+
     boolean isPropagated(DbAttribute attribute) {
-        Iterator it = attribute.getEntity().getRelationships().iterator();
+        Iterator<?> it = attribute.getEntity().getRelationships().iterator();
         while (it.hasNext()) {
 
             DbRelationship dbRel = (DbRelationship) it.next();
@@ -200,9 +196,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                 continue;
             }
 
-            Iterator joins = dbRel.getJoins().iterator();
-            while (joins.hasNext()) {
-                DbJoin join = (DbJoin) joins.next();
+            for (DbJoin join : dbRel.getJoins()) {
                 if (attribute.getName().equals(join.getSourceName())) {
                     return true;
                 }
