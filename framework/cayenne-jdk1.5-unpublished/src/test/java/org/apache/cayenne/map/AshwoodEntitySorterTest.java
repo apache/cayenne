@@ -30,6 +30,7 @@ import org.apache.cayenne.unit.RelationshipCase;
  * @author Andrus Adamchik
  */
 public class AshwoodEntitySorterTest extends RelationshipCase {
+
     protected AshwoodEntitySorter sorter;
 
     protected void setUp() throws Exception {
@@ -42,11 +43,11 @@ public class AshwoodEntitySorterTest extends RelationshipCase {
     public void testSortObjectsForEntityReflexiveWithFaults() throws Exception {
         createTestData("testSortObjectsForEntityDeletedWithFaults");
 
-        ObjEntity entity =
-            getDomain().getEntityResolver().lookupObjEntity(ReflexiveAndToOne.class);
+        ObjEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+                ReflexiveAndToOne.class);
 
-        List objects =
-            createDataContext().performQuery(new SelectQuery(ReflexiveAndToOne.class));
+        List<?> objects = createDataContext().performQuery(
+                new SelectQuery(ReflexiveAndToOne.class));
         Collections.shuffle(objects);
         assertEquals(3, objects.size());
 
