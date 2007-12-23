@@ -26,7 +26,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * An ObjAttribute is a mapping descriptor of a Java class property.
@@ -176,54 +175,55 @@ public class ObjAttribute extends Attribute {
 
     /**
      * Set mapped DbAttribute.
+     * 
+     * @deprecated since 3.0 - this method only works for non-flattened attributes.
+     *             'setDbAttributePath' should be used instead.
      */
     public void setDbAttribute(DbAttribute dbAttribute) {
         if (dbAttribute == null) {
-            this.setDbAttributePath(null);
+            setDbAttributePath(null);
         }
         else {
-            this.setDbAttributePath(dbAttribute.getName());
+            setDbAttributePath(dbAttribute.getName());
         }
     }
 
     /**
-     * Returns the dbAttributeName.
-     * 
-     * @return String
+     * Returns the the name of the mapped DbAttribute. This value is the same as
+     * "dbAttributePath" for regular attributes mapped to columns. It is equql to the last
+     * path component for the flattened attributes.
      */
     public String getDbAttributeName() {
-        if (dbAttributePath == null)
+        if (dbAttributePath == null) {
             return null;
-        int lastPartStart = dbAttributePath.lastIndexOf('.');
-        String lastPart = StringUtils.substring(
-                dbAttributePath,
-                lastPartStart + 1,
-                dbAttributePath.length());
-        return lastPart;
+        }
+
+        int lastDot = dbAttributePath.lastIndexOf('.');
+        if (lastDot < 0) {
+            return dbAttributePath;
+        }
+
+        return dbAttributePath.substring(lastDot + 1);
     }
 
     /**
-     * Sets the dbAttributeName.
+     * Sets the name of the mapped DbAttribute.
      * 
-     * @param dbAttributeName The dbAttributeName to set
+     * @deprecated since 3.0 use {@link #setDbAttributePath(String)}.
      */
-    public void setDbAttributeName(String dbAttributeName) {
-        if (dbAttributePath == null || dbAttributeName == null) {
-            dbAttributePath = dbAttributeName;
-            return;
-        }
-        int lastPartStart = dbAttributePath.lastIndexOf('.');
-        String newPath = (lastPartStart > 0
-                ? StringUtils.chomp(dbAttributePath, ".")
-                : "");
-        newPath += (newPath.length() > 0 ? "." : "") + dbAttributeName;
-        this.dbAttributePath = newPath;
+    public void setDbAttributeName(String name) {
+        setDbAttributePath(name);
     }
 
     public void setDbAttributePath(String dbAttributePath) {
         this.dbAttributePath = dbAttributePath;
     }
 
+    /**
+     * Returns a dot-separated path that starts in the root DbEntity that maps to this
+     * attribute's ObjEntity and spans zero or more relationships, always ending in a
+     * DbAttribute name.
+     */
     public String getDbAttributePath() {
         return dbAttributePath;
     }
@@ -241,7 +241,7 @@ public class ObjAttribute extends Attribute {
     public ObjAttribute getClientAttribute() {
         ClientObjAttribute attribute = new ClientObjAttribute(getName());
         attribute.setType(getType());
-        
+
         DbAttribute dbAttribute = getDbAttribute();
         if (dbAttribute != null) {
             attribute.setMandatory(dbAttribute.isMandatory());

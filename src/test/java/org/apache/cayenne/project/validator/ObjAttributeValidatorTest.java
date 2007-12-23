@@ -41,7 +41,7 @@ public class ObjAttributeValidatorTest extends ValidatorTestBase {
             validator);
         assertValidator(ValidationInfo.VALID);
 
-        oa1.setDbAttribute(null);
+        oa1.setDbAttributePath(null);
         validator.reset();
         new ObjAttributeValidator().validateObject(
             new ProjectPath(new Object[] { project, d1, m1, oa1.getEntity(), oa1 }),

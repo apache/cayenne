@@ -121,7 +121,7 @@ public class EntityMergeSupport {
                 String type = TypesMapping.getJavaBySqlType(da.getType());
 
                 ObjAttribute oa = new ObjAttribute(attrName, type, entity);
-                oa.setDbAttribute(da);
+                oa.setDbAttributePath(da.getName());
                 entity.addAttribute(oa);
                 changed = true;
             }

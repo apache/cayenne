@@ -101,7 +101,7 @@ public abstract class ValidatorTestBase extends TestCase {
 
         ObjAttribute oa1 = new ObjAttribute(name, "java.lang.Integer", oe1);
         oe1.addAttribute(oa1);
-        oa1.setDbAttribute(a1);
+        oa1.setDbAttributePath(a1.getName());
 
         return oa1;
     }
