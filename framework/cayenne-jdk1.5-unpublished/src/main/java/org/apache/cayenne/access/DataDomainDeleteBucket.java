@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +32,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -45,37 +45,34 @@ class DataDomainDeleteBucket extends DataDomainSyncBucket {
         super(parent);
     }
 
+    @Override
     void postprocess() {
 
         if (!objectsByDescriptor.isEmpty()) {
 
             Collection<ObjectId> deletedIds = parent.getResultDeletedIds();
 
-            Iterator it = objectsByDescriptor.values().iterator();
-            while (it.hasNext()) {
-                Iterator objects = ((Collection) it.next()).iterator();
-                while (objects.hasNext()) {
-                    Persistent object = (Persistent) objects.next();
+            for (List<Persistent> objects : objectsByDescriptor.values()) {
+                for (Persistent object : objects) {
                     deletedIds.add(object.getObjectId());
                 }
             }
         }
     }
 
-    void appendQueriesInternal(Collection queries) {
+    @Override
+    void appendQueriesInternal(Collection<Query> queries) {
 
         DataNodeSyncQualifierDescriptor qualifierBuilder = new DataNodeSyncQualifierDescriptor();
 
         EntitySorter sorter = parent.getDomain().getEntitySorter();
         sorter.sortDbEntities(dbEntities, true);
 
-        for (Iterator i = dbEntities.iterator(); i.hasNext();) {
-            DbEntity dbEntity = (DbEntity) i.next();
-            List objEntitiesForDbEntity = (List) descriptorsByDbEntity.get(dbEntity);
-            Map batches = new LinkedHashMap();
+        for (DbEntity dbEntity : dbEntities) {
+            Collection<ClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
+            Map<Object, Query> batches = new LinkedHashMap<Object, Query>();
 
-            for (Iterator j = objEntitiesForDbEntity.iterator(); j.hasNext();) {
-                ClassDescriptor descriptor = (ClassDescriptor) j.next();
+            for (ClassDescriptor descriptor : descriptors) {
 
                 qualifierBuilder.reset(descriptor.getEntity(), dbEntity);
 
@@ -83,8 +80,7 @@ class DataDomainDeleteBucket extends DataDomainSyncBucket {
 
                 // remove object set for dependent entity, so that it does not show up
                 // on post processing
-                List objects = (List) objectsByDescriptor.get(descriptor);
-
+                List<Persistent> objects = objectsByDescriptor.get(descriptor);
                 if (objects.isEmpty()) {
                     continue;
                 }
@@ -95,26 +91,21 @@ class DataDomainDeleteBucket extends DataDomainSyncBucket {
                     sorter.sortObjectsForEntity(descriptor.getEntity(), objects, true);
                 }
 
-                for (Iterator k = objects.iterator(); k.hasNext();) {
-                    Persistent o = (Persistent) k.next();
+                for (Persistent o : objects) {
                     ObjectDiff diff = parent.objectDiff(o.getObjectId());
 
-                    Map qualifierSnapshot = qualifierBuilder
+                    Map<String, ?> qualifierSnapshot = qualifierBuilder
                             .createQualifierSnapshot(diff);
 
                     // organize batches by the nulls in qualifier
-                    Set nullQualifierNames = new HashSet();
-                    Iterator it = qualifierSnapshot.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry entry = (Map.Entry) it.next();
+                    Set<String> nullQualifierNames = new HashSet<String>();
+                    for (Map.Entry<String, ?> entry : qualifierSnapshot.entrySet()) {
                         if (entry.getValue() == null) {
                             nullQualifierNames.add(entry.getKey());
                         }
                     }
 
-                    List batchKey = Arrays.asList(new Object[] {
-                        nullQualifierNames
-                    });
+                    Object batchKey = Arrays.asList(nullQualifierNames);
 
                     DeleteBatchQuery batch = (DeleteBatchQuery) batches.get(batchKey);
                     if (batch == null) {
