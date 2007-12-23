@@ -37,6 +37,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -52,14 +53,14 @@ import org.apache.commons.collections.Factory;
  */
 abstract class DataDomainSyncBucket {
 
-    final Map objectsByDescriptor;
+    final Map<ClassDescriptor, Collection<Object>> objectsByDescriptor;
     final DataDomainFlushAction parent;
 
-    List dbEntities;
-    Map descriptorsByDbEntity;
+    List<DbEntity> dbEntities;
+    Map<DbEntity, Collection<ClassDescriptor>> descriptorsByDbEntity;
 
     DataDomainSyncBucket(DataDomainFlushAction parent) {
-        this.objectsByDescriptor = new HashMap();
+        this.objectsByDescriptor = new HashMap<ClassDescriptor, Collection<Object>>();
         this.parent = parent;
     }
 
@@ -67,12 +68,12 @@ abstract class DataDomainSyncBucket {
         return objectsByDescriptor.isEmpty();
     }
 
-    abstract void appendQueriesInternal(Collection queries);
+    abstract void appendQueriesInternal(Collection<Query> queries);
 
     /**
      * Appends all queries originated in the bucket to provided collection.
      */
-    void appendQueries(Collection queries) {
+    void appendQueries(Collection<Query> queries) {
 
         if (!objectsByDescriptor.isEmpty()) {
             groupObjEntitiesBySpannedDbEntities();
@@ -102,17 +103,17 @@ abstract class DataDomainSyncBucket {
 
     private void groupObjEntitiesBySpannedDbEntities() {
 
-        dbEntities = new ArrayList(objectsByDescriptor.size());
-        descriptorsByDbEntity = new HashMap(objectsByDescriptor.size() * 2);
+        dbEntities = new ArrayList<DbEntity>(objectsByDescriptor.size());
+        descriptorsByDbEntity = new HashMap<DbEntity, Collection<ClassDescriptor>>(
+                objectsByDescriptor.size() * 2);
 
-        Iterator i = objectsByDescriptor.keySet().iterator();
-        while (i.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor) i.next();
+        for (ClassDescriptor descriptor : objectsByDescriptor.keySet()) {
             DbEntity dbEntity = descriptor.getEntity().getDbEntity();
 
-            List objEntitiesForDbEntity = (List) descriptorsByDbEntity.get(dbEntity);
+            Collection<ClassDescriptor> objEntitiesForDbEntity = descriptorsByDbEntity
+                    .get(dbEntity);
             if (objEntitiesForDbEntity == null) {
-                objEntitiesForDbEntity = new ArrayList(1);
+                objEntitiesForDbEntity = new ArrayList<ClassDescriptor>(1);
                 dbEntities.add(dbEntity);
                 descriptorsByDbEntity.put(dbEntity, objEntitiesForDbEntity);
             }
@@ -123,7 +124,10 @@ abstract class DataDomainSyncBucket {
 
             // Note that this logic won't allow flattened attributes to span multiple
             // databases...
-            for (ObjAttribute objAttribute : descriptor.getEntity().getAttributeMap().values()) {
+            for (ObjAttribute objAttribute : descriptor
+                    .getEntity()
+                    .getAttributeMap()
+                    .values()) {
                 // TODO: andrus, 2/10/2007 - handle embedded
                 if (objAttribute instanceof EmbeddedAttribute) {
                     continue;
@@ -133,10 +137,10 @@ abstract class DataDomainSyncBucket {
                 }
 
                 dbEntity = (DbEntity) objAttribute.getDbAttribute().getEntity();
-                objEntitiesForDbEntity = (List) descriptorsByDbEntity.get(dbEntity);
+                objEntitiesForDbEntity = descriptorsByDbEntity.get(dbEntity);
 
                 if (objEntitiesForDbEntity == null) {
-                    objEntitiesForDbEntity = new ArrayList(1);
+                    objEntitiesForDbEntity = new ArrayList<ClassDescriptor>(1);
                     dbEntities.add(dbEntity);
                     descriptorsByDbEntity.put(dbEntity, objEntitiesForDbEntity);
                 }
@@ -150,10 +154,10 @@ abstract class DataDomainSyncBucket {
 
     void addDirtyObject(Object object, ClassDescriptor descriptor) {
 
-        Collection objects = (Collection) objectsByDescriptor.get(descriptor);
+        Collection<Object> objects = objectsByDescriptor.get(descriptor);
         if (objects == null) {
 
-            objects = new ArrayList();
+            objects = new ArrayList<Object>();
             objectsByDescriptor.put(descriptor, objects);
         }
 
@@ -240,7 +244,8 @@ abstract class DataDomainSyncBucket {
                         ToManyMapProperty reverseArc = (ToManyMapProperty) arc
                                 .getComplimentaryReverseArc();
 
-                        // must resolve faults... hopefully for to-one this will not cause extra fetches...
+                        // must resolve faults... hopefully for to-one this will not cause
+                        // extra fetches...
                         Object source = arc.readProperty(object);
                         if (source != null && !reverseArc.isFault(source)) {
                             remapTarget(reverseArc, source, object);

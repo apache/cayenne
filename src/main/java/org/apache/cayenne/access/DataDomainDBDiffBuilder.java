@@ -47,8 +47,8 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
     private DbEntity dbEntity;
 
     // diff snapshot expressed in terms of object properties.
-    private Map currentPropertyDiff;
-    private Map currentArcDiff;
+    private Map<Object, Object> currentPropertyDiff;
+    private Map<Object, Object> currentArcDiff;
     private Object currentId;
 
     /**
@@ -72,7 +72,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
     /**
      * Processes GraphDiffs of a single object, converting them to DB diff.
      */
-    Map buildDBDiff(GraphDiff singleObjectDiff) {
+    Map<Object, Object> buildDBDiff(GraphDiff singleObjectDiff) {
 
         reset();
         singleObjectDiff.apply(this);
@@ -81,7 +81,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
             return null;
         }
 
-        Map dbDiff = new HashMap();
+        Map<Object, Object> dbDiff = new HashMap<Object, Object>();
 
         appendSimpleProperties(dbDiff);
         appendForeignKeys(dbDiff);
@@ -90,12 +90,12 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         return dbDiff.isEmpty() ? null : dbDiff;
     }
 
-    private void appendSimpleProperties(Map dbDiff) {
+    private void appendSimpleProperties(Map<Object, Object> dbDiff) {
         // populate changed columns
         if (currentPropertyDiff != null) {
-            Iterator it = currentPropertyDiff.entrySet().iterator();
+            Iterator<?> it = currentPropertyDiff.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
+                Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) it.next();
                 ObjAttribute attribute = (ObjAttribute) objEntity.getAttribute(entry
                         .getKey()
                         .toString());
@@ -109,23 +109,19 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         }
     }
 
-    private void appendForeignKeys(Map dbDiff) {
+    private void appendForeignKeys(Map<Object, Object> dbDiff) {
         // populate changed FKs
         if (currentArcDiff != null) {
-            Iterator it = currentArcDiff.entrySet().iterator();
+            Iterator<?> it = currentArcDiff.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
+                Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) it.next();
                 ObjRelationship relation = (ObjRelationship) objEntity
                         .getRelationship(entry.getKey().toString());
 
-                DbRelationship dbRelation = relation
-                        .getDbRelationships()
-                        .get(0);
+                DbRelationship dbRelation = relation.getDbRelationships().get(0);
 
                 ObjectId targetId = (ObjectId) entry.getValue();
-                Iterator joins = dbRelation.getJoins().iterator();
-                while (joins.hasNext()) {
-                    DbJoin join = (DbJoin) joins.next();
+                for (DbJoin join : dbRelation.getJoins()) {
                     Object value = (targetId != null) ? new PropagatedValueFactory(
                             targetId,
                             join.getTargetName()) : null;
@@ -136,7 +132,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         }
     }
 
-    private void appendPrimaryKeys(Map dbDiff) {
+    private void appendPrimaryKeys(Map<Object, Object> dbDiff) {
 
         // populate changed PKs; note that we might end up overriding some values taken
         // from the object (e.g. zero PK's).
@@ -157,7 +153,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         // note - no checking for phantom mod... assuming there is no phantom diffs
 
         if (currentPropertyDiff == null) {
-            currentPropertyDiff = new HashMap();
+            currentPropertyDiff = new HashMap<Object, Object>();
         }
 
         currentPropertyDiff.put(property, newValue);
@@ -169,7 +165,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
                 .toString());
         if (!relationship.isSourceIndependentFromTargetChange()) {
             if (currentArcDiff == null) {
-                currentArcDiff = new HashMap();
+                currentArcDiff = new HashMap<Object, Object>();
             }
             currentArcDiff.put(arcId, targetNodeId);
         }
@@ -182,7 +178,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         if (!relationship.isSourceIndependentFromTargetChange()) {
 
             if (currentArcDiff == null) {
-                currentArcDiff = new HashMap();
+                currentArcDiff = new HashMap<Object, Object>();
                 currentArcDiff.put(arcId, null);
             }
             else {

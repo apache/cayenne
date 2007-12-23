@@ -37,6 +37,7 @@ import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -55,16 +56,16 @@ class DataDomainFlushAction {
     private Map changesByObjectId;
 
     private CompoundDiff resultDiff;
-    private Collection resultDeletedIds;
+    private Collection<ObjectId> resultDeletedIds;
     private Map resultModifiedSnapshots;
-    private Collection resultIndirectlyModifiedIds;
+    private Collection<ObjectId> resultIndirectlyModifiedIds;
 
     private DataDomainInsertBucket insertBucket;
     private DataDomainUpdateBucket updateBucket;
     private DataDomainDeleteBucket deleteBucket;
     private DataDomainFlattenedBucket flattenedBucket;
 
-    private List queries;
+    private List<Query> queries;
 
     DataDomainFlushAction(DataDomain domain) {
         this.domain = domain;
@@ -78,7 +79,7 @@ class DataDomainFlushAction {
         return context;
     }
 
-    Collection getResultDeletedIds() {
+    Collection<ObjectId> getResultDeletedIds() {
         return resultDeletedIds;
     }
 
@@ -86,7 +87,7 @@ class DataDomainFlushAction {
         return resultDiff;
     }
 
-    Collection getResultIndirectlyModifiedIds() {
+    Collection<ObjectId> getResultIndirectlyModifiedIds() {
         return resultIndirectlyModifiedIds;
     }
 
@@ -127,8 +128,8 @@ class DataDomainFlushAction {
         this.updateBucket = new DataDomainUpdateBucket(this);
         this.flattenedBucket = new DataDomainFlattenedBucket(this);
 
-        this.queries = new ArrayList();
-        this.resultIndirectlyModifiedIds = new HashSet();
+        this.queries = new ArrayList<Query>();
+        this.resultIndirectlyModifiedIds = new HashSet<ObjectId>();
 
         preprocess(context, changes);
 
@@ -137,7 +138,7 @@ class DataDomainFlushAction {
         }
 
         this.resultDiff = new CompoundDiff();
-        this.resultDeletedIds = new ArrayList();
+        this.resultDeletedIds = new ArrayList<ObjectId>();
         this.resultModifiedSnapshots = new HashMap();
 
         runQueries();

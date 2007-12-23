@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntitySorter;
@@ -48,7 +49,7 @@ class DataDomainDeleteBucket extends DataDomainSyncBucket {
 
         if (!objectsByDescriptor.isEmpty()) {
 
-            Collection deletedIds = parent.getResultDeletedIds();
+            Collection<ObjectId> deletedIds = parent.getResultDeletedIds();
 
             Iterator it = objectsByDescriptor.values().iterator();
             while (it.hasNext()) {
