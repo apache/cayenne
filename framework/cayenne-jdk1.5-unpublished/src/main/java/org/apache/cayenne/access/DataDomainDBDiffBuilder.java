@@ -27,7 +27,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataDomainSyncBucket.PropagatedValueFactory;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -100,11 +100,12 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
                         .getKey()
                         .toString());
 
-                // this takes care of the flattened attributes, as 'getDbAttributeName'
-                // returns the last path component...
-                Attribute dbAttribute = dbEntity.getAttribute(attribute
-                        .getDbAttributeName());
-                dbDiff.put(dbAttribute.getName(), entry.getValue());
+                // in case of a flattened attribute, ensure that it belongs to this
+                // bucket...
+                DbAttribute dbAttribute = attribute.getDbAttribute();
+                if (dbAttribute.getEntity() == dbEntity) {
+                    dbDiff.put(dbAttribute.getName(), entry.getValue());
+                }
             }
         }
     }
