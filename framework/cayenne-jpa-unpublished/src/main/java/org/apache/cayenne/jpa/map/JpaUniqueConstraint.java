@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import java.util.ArrayList;
@@ -25,7 +24,10 @@ import java.util.Collection;
 
 import javax.persistence.UniqueConstraint;
 
-public class JpaUniqueConstraint {
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
+public class JpaUniqueConstraint implements XMLSerializable {
 
     protected Collection<String> columnNames;
 
@@ -47,5 +49,8 @@ public class JpaUniqueConstraint {
             columnNames = new ArrayList<String>(2);
         }
         return columnNames;
+    }
+
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 }

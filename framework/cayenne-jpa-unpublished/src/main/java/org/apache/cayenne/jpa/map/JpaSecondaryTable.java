@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.jpa.map;
 
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import java.util.Collection;
 import javax.persistence.SecondaryTable;
 
 import org.apache.cayenne.util.TreeNodeChild;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class JpaSecondaryTable extends JpaTable {
 
@@ -60,5 +60,31 @@ public class JpaSecondaryTable extends JpaTable {
         }
 
         return primaryKeyJoinColumns;
+    }
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<secondary-table");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        if (catalog != null) {
+            encoder.print(" catalog=\"" + catalog + "\"");
+        }
+
+        if (schema != null) {
+            encoder.print(" schema=\"" + schema + "\"");
+        }
+        
+        encoder.println('>');
+        encoder.indent(1);
+
+        if (primaryKeyJoinColumns != null) {
+            encoder.print(primaryKeyJoinColumns);
+        }
+        
+        encoder.indent(-1);
+        encoder.println("</secondary-table>");
     }
 }

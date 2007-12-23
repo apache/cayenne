@@ -63,6 +63,28 @@ public class JpaTable implements XMLSerializable {
     }
     
     public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<table");
+        if (name != null) {
+            encoder.print(" name=\"" + name + "\"");
+        }
+
+        if (catalog != null) {
+            encoder.print(" catalog=\"" + catalog + "\"");
+        }
+
+        if (schema != null) {
+            encoder.print(" schema=\"" + schema + "\"");
+        }
+        
+        encoder.println('>');
+        encoder.indent(1);
+
+        if (uniqueConstraints != null) {
+            encoder.print(uniqueConstraints);
+        }
+        
+        encoder.indent(-1);
+        encoder.println("</table>");
     }
 
     public String getCatalog() {
