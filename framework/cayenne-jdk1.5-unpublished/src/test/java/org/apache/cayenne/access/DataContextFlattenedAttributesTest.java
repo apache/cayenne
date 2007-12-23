@@ -34,19 +34,19 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * @author Andrus Adamchik
  */
-public class DataContextCompoundOETest extends CayenneCase {
+public class DataContextFlattenedAttributesTest extends CayenneCase {
 
     final int artistCount = 4;
     final int galleryCount = 2;
     final int paintCount = 8;
 
-    protected DataContext ctxt;
+    protected DataContext context;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         deleteTestData();
-        ctxt = createDataContext();
+        context = createDataContext();
     }
 
     private void populateTables() throws Exception {
@@ -110,7 +110,7 @@ public class DataContextCompoundOETest extends CayenneCase {
     public void testSelectCompound1() throws Exception {
         populateTables();
         SelectQuery query = new SelectQuery(CompoundPainting.class);
-        List<?> objects = ctxt.performQuery(query);
+        List<?> objects = context.performQuery(query);
 
         assertNotNull(objects);
         assertEquals(3, objects.size());
@@ -145,7 +145,7 @@ public class DataContextCompoundOETest extends CayenneCase {
         populateTables();
         SelectQuery query = new SelectQuery(CompoundPainting.class, ExpressionFactory
                 .matchExp("artistName", "artist2"));
-        List<?> objects = ctxt.performQuery(query);
+        List<?> objects = context.performQuery(query);
 
         assertNotNull(objects);
         assertEquals(1, objects.size());
