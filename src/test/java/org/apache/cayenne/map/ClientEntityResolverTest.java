@@ -36,11 +36,13 @@ public class ClientEntityResolverTest extends TestCase {
 
         DataMap dataMap = new DataMap("test");
         dataMap.addObjEntity(entity);
-        Collection entities = Collections.singleton(dataMap);
-        EntityResolver resolver = new EntityResolver(entities);
+        Collection<DataMap> maps = Collections.singleton(dataMap);
+        EntityResolver resolver = new EntityResolver(maps);
 
         // 1. simple case
-        Object c1 = HessianUtil.cloneViaClientServerSerialization(resolver, new EntityResolver());
+        Object c1 = HessianUtil.cloneViaClientServerSerialization(
+                resolver,
+                new EntityResolver());
 
         assertNotNull(c1);
         assertTrue(c1 instanceof EntityResolver);
@@ -66,8 +68,8 @@ public class ClientEntityResolverTest extends TestCase {
         entity.setClassName("java.lang.String");
         DataMap dataMap = new DataMap("test");
         dataMap.addObjEntity(entity);
-        Collection entities = Collections.singleton(dataMap);
-        EntityResolver resolver = new EntityResolver(entities);
+        Collection<DataMap> maps = Collections.singleton(dataMap);
+        EntityResolver resolver = new EntityResolver(maps);
 
         assertSame(entity, resolver.getObjEntity(entity.getName()));
         assertNotNull(resolver.getObjEntity(entity.getName()));
@@ -93,8 +95,8 @@ public class ClientEntityResolverTest extends TestCase {
         DataMap dataMap = new DataMap("test");
         dataMap.addObjEntity(superEntity);
         dataMap.addObjEntity(subEntity);
-        Collection entities = Collections.singleton(dataMap);
-        new EntityResolver(entities);
+        Collection<DataMap> maps = Collections.singleton(dataMap);
+        new EntityResolver(maps);
 
         // after registration with resolver super entity should resolve just fine
         assertSame(superEntity, subEntity.getSuperEntity());

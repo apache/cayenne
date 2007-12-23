@@ -28,6 +28,7 @@ import junit.framework.TestCase;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.MockAbstractQuery;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.Util;
 
@@ -63,7 +64,7 @@ public class DataMapTest extends TestCase {
     }
 
     public void testInitWithProperties() {
-        Map properties = new HashMap();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(DataMap.CLIENT_SUPPORTED_PROPERTY, "true");
         properties.put(DataMap.DEFAULT_CLIENT_PACKAGE_PROPERTY, "aaaaa");
 
@@ -296,7 +297,7 @@ public class DataMapTest extends TestCase {
         AbstractQuery q = new MockAbstractQuery("a");
         DataMap map = new DataMap();
         map.addQuery(q);
-        Map queries = map.getQueryMap();
+        Map<String, Query> queries = map.getQueryMap();
         assertEquals(1, queries.size());
         assertSame(q, queries.get("a"));
     }
@@ -372,8 +373,8 @@ public class DataMapTest extends TestCase {
 
     protected void checkProcedures(DataMap map, String[] expectedNames) throws Exception {
         int len = expectedNames.length;
-        Map proceduresMap = map.getProcedureMap();
-        Collection proceduresCollection = map.getProcedures();
+        Map<String, Procedure> proceduresMap = map.getProcedureMap();
+        Collection<Procedure> proceduresCollection = map.getProcedures();
 
         assertNotNull(proceduresMap);
         assertEquals(len, proceduresMap.size());
