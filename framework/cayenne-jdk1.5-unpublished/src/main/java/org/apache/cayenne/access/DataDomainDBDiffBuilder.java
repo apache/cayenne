@@ -54,9 +54,9 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
     /**
      * Resets the builder to process a new combination of objEntity/dbEntity.
      */
-    void reset(ObjEntity objEntity, DbEntity dbEntity) {
-        this.objEntity = objEntity;
-        this.dbEntity = dbEntity;
+    void reset(DbEntityClassDescriptor descriptor) {
+        this.objEntity = descriptor.getEntity();
+        this.dbEntity = descriptor.getDbEntity();
     }
 
     /**

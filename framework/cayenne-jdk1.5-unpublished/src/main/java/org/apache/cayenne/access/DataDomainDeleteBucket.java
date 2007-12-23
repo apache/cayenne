@@ -33,7 +33,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 1.2
@@ -69,18 +68,19 @@ class DataDomainDeleteBucket extends DataDomainSyncBucket {
         sorter.sortDbEntities(dbEntities, true);
 
         for (DbEntity dbEntity : dbEntities) {
-            Collection<ClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
+            Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
+                    .get(dbEntity);
             Map<Object, Query> batches = new LinkedHashMap<Object, Query>();
 
-            for (ClassDescriptor descriptor : descriptors) {
+            for (DbEntityClassDescriptor descriptor : descriptors) {
 
-                qualifierBuilder.reset(descriptor.getEntity(), dbEntity);
+                qualifierBuilder.reset(descriptor);
 
-                boolean isRootDbEntity = (descriptor.getEntity().getDbEntity() == dbEntity);
+                boolean isRootDbEntity = descriptor.isMaster();
 
                 // remove object set for dependent entity, so that it does not show up
                 // on post processing
-                List<Persistent> objects = objectsByDescriptor.get(descriptor);
+                List<Persistent> objects = objectsByDescriptor.get(descriptor.getClassDescriptor());
                 if (objects.isEmpty()) {
                     continue;
                 }

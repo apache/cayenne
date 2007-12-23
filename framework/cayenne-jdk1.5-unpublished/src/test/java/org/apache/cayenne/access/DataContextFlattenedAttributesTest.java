@@ -27,7 +27,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.art.CompoundPainting;
+import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -176,7 +178,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
                     painting.getGalleryName());
         }
     }
-    
+
     public void testInsert() {
         CompoundPainting o1 = context.newObject(CompoundPainting.class);
         o1.setArtistName("A1");
@@ -186,5 +188,47 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
         o1.setTextReview("T1");
 
         context.commitChanges();
+
+        Number artistCount = (Number) DataObjectUtils.objectForQuery(
+                context,
+                new EJBQLQuery("select count(a) from Artist a"));
+        assertEquals(1, artistCount.intValue());
+        Number paintingCount = (Number) DataObjectUtils.objectForQuery(
+                context,
+                new EJBQLQuery("select count(a) from Painting a"));
+        assertEquals(1, paintingCount.intValue());
+
+        Number galleryCount = (Number) DataObjectUtils.objectForQuery(
+                context,
+                new EJBQLQuery("select count(a) from Gallery a"));
+        assertEquals(1, galleryCount.intValue());
+    }
+
+    public void testDelete() throws Exception {
+        CompoundPainting o1 = context.newObject(CompoundPainting.class);
+        o1.setArtistName("A1");
+        o1.setEstimatedPrice(new BigDecimal(1.0d));
+        o1.setGalleryName("G1");
+        o1.setPaintingTitle("P1");
+        o1.setTextReview("T1");
+
+        context.commitChanges();
+
+        context.deleteObject(o1);
+        context.commitChanges();
+
+        Number artistCount = (Number) DataObjectUtils.objectForQuery(
+                context,
+                new EJBQLQuery("select count(a) from Artist a"));
+        assertEquals(0, artistCount.intValue());
+        Number paintingCount = (Number) DataObjectUtils.objectForQuery(
+                context,
+                new EJBQLQuery("select count(a) from Painting a"));
+        assertEquals(0, paintingCount.intValue());
+
+        Number galleryCount = (Number) DataObjectUtils.objectForQuery(
+                context,
+                new EJBQLQuery("select count(a) from Gallery a"));
+        assertEquals(0, galleryCount.intValue());
     }
 }
