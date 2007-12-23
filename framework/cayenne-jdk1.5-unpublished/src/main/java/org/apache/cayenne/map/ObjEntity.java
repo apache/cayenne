@@ -764,7 +764,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
             ObjAttribute objAttr = (ObjAttribute) attribute;
             DbAttribute dbAttr = objAttr.getDbAttribute();
             if (null != dbAttr) {
-                objAttr.setDbAttribute(null);
+                objAttr.setDbAttributePath(null);
             }
         }
 

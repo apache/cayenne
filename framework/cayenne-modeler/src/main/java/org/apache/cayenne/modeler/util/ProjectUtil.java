@@ -256,7 +256,7 @@ public class ProjectUtil {
                 DbAttribute dbAtt = att.getDbAttribute();
                 if (dbAtt != null) {
                     if (dbEnt.getAttribute(dbAtt.getName()) != dbAtt) {
-                        att.setDbAttribute(null);
+                        att.setDbAttributePath(null);
                     }
                 }
             }
@@ -295,7 +295,7 @@ public class ProjectUtil {
             ObjAttribute objAttr = (ObjAttribute) it.next();
             DbAttribute dbAttr = objAttr.getDbAttribute();
             if (null != dbAttr) {
-                objAttr.setDbAttribute(null);
+                objAttr.setDbAttributePath(null);
             }
         }
 

@@ -186,7 +186,7 @@ public class MergerFactoryTest extends CayenneCase {
         ObjEntity objEntity = new ObjEntity("NewTable");
         objEntity.setDbEntity(dbEntity);
         ObjAttribute oatr1 = new ObjAttribute("name");
-        oatr1.setDbAttribute(column2);
+        oatr1.setDbAttributePath(column2.getName());
         oatr1.setType("java.lang.String");
         objEntity.addAttribute(oatr1);
         map.addObjEntity(objEntity);

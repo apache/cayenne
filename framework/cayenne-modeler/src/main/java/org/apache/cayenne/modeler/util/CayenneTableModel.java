@@ -102,7 +102,7 @@ public abstract class CayenneTableModel extends AbstractTableModel {
     /**
      * Returns Java class of the internal list elements.
      */
-    public abstract Class getElementsClass();
+    public abstract Class<?> getElementsClass();
 
     /**
      * Returns the key by which to order elements in the object list. Default value is

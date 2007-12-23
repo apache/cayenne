@@ -31,8 +31,19 @@ public class ObjAttributeTest extends TestCase {
         ObjAttribute attribute = new ObjAttribute("a1");
 
         DbAttribute dbAttr = new DbAttribute("tst_name", Types.INTEGER, null);
-        attribute.setDbAttribute(dbAttr);
+        attribute.setDbAttributePath(dbAttr.getName());
         assertEquals(dbAttr.getName(), attribute.getDbAttributeName());
+    }
+    
+    public void testDbAttributePath() {
+        ObjAttribute attribute = new ObjAttribute("a1");
+        attribute.setDbAttributePath("a");
+        assertEquals("a", attribute.getDbAttributePath());
+        assertEquals("a", attribute.getDbAttributeName());
+        
+        attribute.setDbAttributePath("a.b");
+        assertEquals("a.b", attribute.getDbAttributePath());
+        assertEquals("b", attribute.getDbAttributeName());
     }
 
     public void testType() {

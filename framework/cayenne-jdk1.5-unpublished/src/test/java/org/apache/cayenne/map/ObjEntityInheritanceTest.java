@@ -128,8 +128,8 @@ public class ObjEntityInheritanceTest extends BasicCase {
         entity1.setSuperEntityName("e2");
         entity2.setDbEntityName(dbEntity.getName());
 
-        attribute1.setDbAttribute(dbAttribute1);
-        attribute2.setDbAttribute(dbAttribute2);
+        attribute1.setDbAttributePath(dbAttribute1.getName());
+        attribute2.setDbAttributePath(dbAttribute2.getName());
 
         assertNull(entity2.getAttributeForDbAttribute(dbAttribute1));
         assertSame(attribute2, entity2.getAttributeForDbAttribute(dbAttribute2));

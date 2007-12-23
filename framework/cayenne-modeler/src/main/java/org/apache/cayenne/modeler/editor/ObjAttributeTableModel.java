@@ -35,15 +35,15 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.util.Util;
 
-/** 
- * Model for the Object Entity attributes and for Obj to 
- * DB Attribute Mapping tables. Allows adding/removing attributes,
- * modifying the types and the names.
+/**
+ * Model for the Object Entity attributes and for Obj to DB Attribute Mapping tables.
+ * Allows adding/removing attributes, modifying the types and the names.
  * 
- * @author Michael Misha Shengaout. 
+ * @author Michael Misha Shengaout.
  * @author Andrus Adamchik
  */
 public class ObjAttributeTableModel extends CayenneTableModel {
+
     // Columns
     static final int OBJ_ATTRIBUTE = 0;
     static final int OBJ_ATTRIBUTE_TYPE = 1;
@@ -51,15 +51,12 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     static final int DB_ATTRIBUTE_TYPE = 3;
     static final int LOCKING = 4;
 
-
     protected ObjEntity entity;
     protected DbEntity dbEntity;
 
-    public ObjAttributeTableModel(
-        ObjEntity entity,
-        ProjectController mediator,
-        Object eventSource) {
-        super(mediator, eventSource, new ArrayList(entity.getAttributes()));
+    public ObjAttributeTableModel(ObjEntity entity, ProjectController mediator,
+            Object eventSource) {
+        super(mediator, eventSource, new ArrayList<Attribute>(entity.getAttributes()));
         // take a copy
         this.entity = entity;
         this.dbEntity = entity.getDbEntity();
@@ -74,9 +71,9 @@ public class ObjAttributeTableModel extends CayenneTableModel {
 
     public Class getColumnClass(int col) {
         switch (col) {
-            case LOCKING :
+            case LOCKING:
                 return Boolean.class;
-            default :
+            default:
                 return String.class;
         }
     }
@@ -84,7 +81,8 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     /**
      * Returns ObjAttribute class.
      */
-    public Class getElementsClass() {
+    @Override
+    public Class<?> getElementsClass() {
         return ObjAttribute.class;
     }
 
@@ -94,11 +92,11 @@ public class ObjAttributeTableModel extends CayenneTableModel {
 
     public ObjAttribute getAttribute(int row) {
         return (row >= 0 && row < objectList.size())
-            ? (ObjAttribute) objectList.get(row)
-            : null;
+                ? (ObjAttribute) objectList.get(row)
+                : null;
     }
 
-    /** Refreshes DbEntity to current db entity within ObjEntity.*/
+    /** Refreshes DbEntity to current db entity within ObjEntity. */
     public void resetDbEntity() {
         if (dbEntity == entity.getDbEntity()) {
             return;
@@ -125,17 +123,17 @@ public class ObjAttributeTableModel extends CayenneTableModel {
 
     public String getColumnName(int column) {
         switch (column) {
-            case OBJ_ATTRIBUTE :
+            case OBJ_ATTRIBUTE:
                 return "ObjAttribute";
-            case OBJ_ATTRIBUTE_TYPE :
+            case OBJ_ATTRIBUTE_TYPE:
                 return "Java Type";
-            case DB_ATTRIBUTE :
+            case DB_ATTRIBUTE:
                 return "DbAttribute";
-            case DB_ATTRIBUTE_TYPE :
+            case DB_ATTRIBUTE_TYPE:
                 return "DB Type";
-            case LOCKING :
+            case LOCKING:
                 return "Used for Locking";
-            default :
+            default:
                 return "";
         }
     }
@@ -175,9 +173,9 @@ public class ObjAttributeTableModel extends CayenneTableModel {
 
         if (column == OBJ_ATTRIBUTE) {
             event.setOldName(attribute.getName());
-            ProjectUtil.setAttributeName(
-                attribute,
-                value != null ? value.toString().trim() : null);
+            ProjectUtil.setAttributeName(attribute, value != null ? value
+                    .toString()
+                    .trim() : null);
             fireTableCellUpdated(row, column);
         }
         else if (column == OBJ_ATTRIBUTE_TYPE) {
@@ -185,21 +183,22 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             fireTableCellUpdated(row, column);
         }
         else if (column == LOCKING) {
-            attribute.setUsedForLocking(
-                (value instanceof Boolean) && ((Boolean) value).booleanValue());
+            attribute.setUsedForLocking((value instanceof Boolean)
+                    && ((Boolean) value).booleanValue());
             fireTableCellUpdated(row, column);
         }
         else {
-            DbAttribute dbAttribute = attribute.getDbAttribute();
             if (column == DB_ATTRIBUTE) {
                 // If db attrib exist, associate it with obj attribute
                 if (value != null) {
-                    dbAttribute = (DbAttribute) dbEntity.getAttribute(value.toString());
-                    attribute.setDbAttribute(dbAttribute);
+                    DbAttribute dbAttribute = (DbAttribute) dbEntity.getAttribute(value
+                            .toString());
+                    String path = dbAttribute != null ? dbAttribute.getName() : null;
+                    attribute.setDbAttributePath(path);
                 }
                 // If name is erased, remove db attribute from obj attribute.
-                else if (dbAttribute != null) {
-                    attribute.setDbAttribute(null);
+                else if (attribute.getDbAttribute() != null) {
+                    attribute.setDbAttributePath(null);
                 }
             }
 
@@ -231,15 +230,15 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     }
 
     final class AttributeComparator implements Comparator {
+
         public int compare(Object o1, Object o2) {
             Attribute a1 = (Attribute) o1;
             Attribute a2 = (Attribute) o2;
 
             int delta = getWeight(a1) - getWeight(a2);
 
-            return (delta != 0)
-                ? delta
-                : Util.nullSafeCompare(true, a1.getName(), a2.getName());
+            return (delta != 0) ? delta : Util.nullSafeCompare(true, a1.getName(), a2
+                    .getName());
         }
 
         private int getWeight(Attribute a) {
