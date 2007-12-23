@@ -296,7 +296,7 @@
 	<obj-entity name="CompoundFkTestEntity" className="org.apache.art.CompoundFkTestEntity" dbEntityName="COMPOUND_FK_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="CompoundPainting" className="org.apache.art.CompoundPainting" readOnly="true" dbEntityName="PAINTING">
+	<obj-entity name="CompoundPainting" className="org.apache.art.CompoundPainting" dbEntityName="PAINTING">
 		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="toArtist.ARTIST_NAME"/>
 		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
 		<obj-attribute name="galleryName" type="java.lang.String" db-attribute-path="toGallery.GALLERY_NAME"/>
