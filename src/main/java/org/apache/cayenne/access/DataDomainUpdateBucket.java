@@ -36,7 +36,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.UpdateBatchQuery;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 1.2
@@ -56,18 +55,19 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
 
         for (DbEntity dbEntity : dbEntities) {
 
-            Collection<ClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
+            Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
+                    .get(dbEntity);
             Map<Object, Query> batches = new LinkedHashMap<Object, Query>();
 
-            for (ClassDescriptor descriptor : descriptors) {
+            for (DbEntityClassDescriptor descriptor : descriptors) {
                 ObjEntity entity = descriptor.getEntity();
 
-                diffBuilder.reset(entity, dbEntity);
-                qualifierBuilder.reset(entity, dbEntity);
+                diffBuilder.reset(descriptor);
+                qualifierBuilder.reset(descriptor);
                 boolean isRootDbEntity = entity.getDbEntity() == dbEntity;
 
                 Iterator<Persistent> objects = objectsByDescriptor
-                        .get(descriptor)
+                        .get(descriptor.getClassDescriptor())
                         .iterator();
                 while (objects.hasNext()) {
                     Persistent o = objects.next();

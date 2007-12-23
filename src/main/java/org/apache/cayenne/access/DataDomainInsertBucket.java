@@ -37,7 +37,6 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 1.2
@@ -59,20 +58,22 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
 
         for (DbEntity dbEntity : dbEntities) {
 
-            Collection<ClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
+            Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
+                    .get(dbEntity);
 
             InsertBatchQuery batch = new InsertBatchQuery(dbEntity, 27);
-            for (ClassDescriptor descriptor : descriptors) {
+            for (DbEntityClassDescriptor descriptor : descriptors) {
 
-                diffBuilder.reset(descriptor.getEntity(), dbEntity);
+                diffBuilder.reset(descriptor);
 
-                List<Persistent> objects = objectsByDescriptor.get(descriptor);
+                List<Persistent> objects = objectsByDescriptor.get(descriptor
+                        .getClassDescriptor());
                 if (objects.isEmpty()) {
                     continue;
                 }
 
                 checkReadOnly(descriptor.getEntity());
-                createPermIds(descriptor, dbEntity, objects);
+                createPermIds(descriptor, objects);
                 sorter.sortObjectsForEntity(descriptor.getEntity(), objects, false);
 
                 for (Persistent o : objects) {
@@ -87,16 +88,15 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
         }
     }
 
-    void createPermIds(
-            ClassDescriptor descriptor,
-            DbEntity entity,
-            Collection<Persistent> objects) {
+    void createPermIds(DbEntityClassDescriptor descriptor, Collection<Persistent> objects) {
 
         if (objects.isEmpty()) {
             return;
         }
 
         ObjEntity objEntity = descriptor.getEntity();
+        DbEntity entity = descriptor.getDbEntity();
+
         DataNode node = parent.getDomain().lookupDataNode(entity.getDataMap());
         boolean supportsGeneratedKeys = node.getAdapter().supportsGeneratedKeys();
 
@@ -124,9 +124,8 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                 ObjAttribute objAttr = objEntity.getAttributeForDbAttribute(dbAttr);
                 if (objAttr != null) {
 
-                    Object value = descriptor
-                            .getProperty(objAttr.getName())
-                            .readPropertyDirectly(object);
+                    Object value = descriptor.getClassDescriptor().getProperty(
+                            objAttr.getName()).readPropertyDirectly(object);
 
                     if (value != null) {
                         Class<?> javaClass = objAttr.getJavaClass();

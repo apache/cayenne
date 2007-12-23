@@ -34,7 +34,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.NodeIdChangeOperation;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
@@ -58,7 +57,7 @@ abstract class DataDomainSyncBucket {
     final DataDomainFlushAction parent;
 
     List<DbEntity> dbEntities;
-    Map<DbEntity, Collection<ClassDescriptor>> descriptorsByDbEntity;
+    Map<DbEntity, Collection<DbEntityClassDescriptor>> descriptorsByDbEntity;
 
     DataDomainSyncBucket(DataDomainFlushAction parent) {
         this.objectsByDescriptor = new HashMap<ClassDescriptor, List<Persistent>>();
@@ -105,49 +104,50 @@ abstract class DataDomainSyncBucket {
     private void groupObjEntitiesBySpannedDbEntities() {
 
         dbEntities = new ArrayList<DbEntity>(objectsByDescriptor.size());
-        descriptorsByDbEntity = new HashMap<DbEntity, Collection<ClassDescriptor>>(
+        descriptorsByDbEntity = new HashMap<DbEntity, Collection<DbEntityClassDescriptor>>(
                 objectsByDescriptor.size() * 2);
 
         for (ClassDescriptor descriptor : objectsByDescriptor.keySet()) {
-            DbEntity dbEntity = descriptor.getEntity().getDbEntity();
 
-            Collection<ClassDescriptor> objEntitiesForDbEntity = descriptorsByDbEntity
-                    .get(dbEntity);
-            if (objEntitiesForDbEntity == null) {
-                objEntitiesForDbEntity = new ArrayList<ClassDescriptor>(1);
-                dbEntities.add(dbEntity);
-                descriptorsByDbEntity.put(dbEntity, objEntitiesForDbEntity);
+            // root DbEntity
+            {
+                DbEntityClassDescriptor dbEntityDescriptor = new DbEntityClassDescriptor(
+                        descriptor);
+                DbEntity dbEntity = dbEntityDescriptor.getDbEntity();
+
+                Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
+                        .get(dbEntity);
+                if (descriptors == null) {
+                    descriptors = new ArrayList<DbEntityClassDescriptor>(1);
+                    dbEntities.add(dbEntity);
+                    descriptorsByDbEntity.put(dbEntity, descriptors);
+                }
+
+                descriptors.add(dbEntityDescriptor);
             }
 
-            if (!objEntitiesForDbEntity.contains(descriptor)) {
-                objEntitiesForDbEntity.add(descriptor);
-            }
+            // secondary DbEntities...
 
             // Note that this logic won't allow flattened attributes to span multiple
             // databases...
-            for (ObjAttribute objAttribute : descriptor
-                    .getEntity()
-                    .getAttributeMap()
-                    .values()) {
-                // TODO: andrus, 2/10/2007 - handle embedded
-                if (objAttribute instanceof EmbeddedAttribute) {
-                    continue;
-                }
-                if (!objAttribute.isCompound()) {
-                    continue;
-                }
+            for (ObjAttribute objAttribute : descriptor.getEntity().getAttributes()) {
 
-                dbEntity = (DbEntity) objAttribute.getDbAttribute().getEntity();
-                objEntitiesForDbEntity = descriptorsByDbEntity.get(dbEntity);
+                if (objAttribute.isFlattened()) {
+                    DbEntityClassDescriptor dbEntityDescriptor = new DbEntityClassDescriptor(
+                            descriptor,
+                            objAttribute);
 
-                if (objEntitiesForDbEntity == null) {
-                    objEntitiesForDbEntity = new ArrayList<ClassDescriptor>(1);
-                    dbEntities.add(dbEntity);
-                    descriptorsByDbEntity.put(dbEntity, objEntitiesForDbEntity);
-                }
+                    DbEntity dbEntity = dbEntityDescriptor.getDbEntity();
+                    Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
+                            .get(dbEntity);
 
-                if (!objEntitiesForDbEntity.contains(descriptor)) {
-                    objEntitiesForDbEntity.add(descriptor);
+                    if (descriptors == null) {
+                        descriptors = new ArrayList<DbEntityClassDescriptor>(1);
+                        dbEntities.add(dbEntity);
+                        descriptorsByDbEntity.put(dbEntity, descriptors);
+                    }
+
+                    descriptors.add(dbEntityDescriptor);
                 }
             }
         }

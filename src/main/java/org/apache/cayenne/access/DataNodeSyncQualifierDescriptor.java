@@ -24,10 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
@@ -71,14 +69,15 @@ class DataNodeSyncQualifierDescriptor {
         return map;
     }
 
-    void reset(ObjEntity entity, DbEntity dbEntity) {
+    void reset(DbEntityClassDescriptor descriptor) {
+
         attributes = new ArrayList<DbAttribute>(3);
         valueTransformers = new ArrayList<Transformer>(3);
-        usingOptimisticLocking = entity.getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
+        usingOptimisticLocking = descriptor.getEntity().getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
 
         // master PK columns
-        if (entity.getDbEntity() == dbEntity) {
-            for (final DbAttribute attribute : entity.getDbEntity().getPrimaryKeys()) {
+        if (descriptor.isMaster()) {
+            for (final DbAttribute attribute : descriptor.getDbEntity().getPrimaryKeys()) {
                 attributes.add(attribute);
                 valueTransformers.add(new Transformer() {
 
@@ -90,10 +89,9 @@ class DataNodeSyncQualifierDescriptor {
             }
         }
         else {
-            // detail table PK columns
-            DbRelationship masterDependentDbRel = findMasterToDependentDbRelationship(
-                    entity.getDbEntity(),
-                    dbEntity);
+
+            // TODO: andrus 12/23/2007 - only one step relationship is supported...
+            DbRelationship masterDependentDbRel = descriptor.getPathFromMaster().get(0);
 
             if (masterDependentDbRel != null) {
                 for (final DbJoin dbAttrPair : masterDependentDbRel.getJoins()) {
@@ -115,7 +113,7 @@ class DataNodeSyncQualifierDescriptor {
 
         if (usingOptimisticLocking) {
 
-            for (final ObjAttribute attribute : entity.getAttributes()) {
+            for (final ObjAttribute attribute : descriptor.getEntity().getAttributes()) {
 
                 if (attribute.isUsedForLocking()) {
                     // only care about first step in a flattened attribute
@@ -137,7 +135,9 @@ class DataNodeSyncQualifierDescriptor {
                 }
             }
 
-            for (final ObjRelationship relationship : entity.getRelationships()) {
+            for (final ObjRelationship relationship : descriptor
+                    .getEntity()
+                    .getRelationships()) {
 
                 if (relationship.isUsedForLocking()) {
                     // only care about the first DbRelationship
@@ -177,25 +177,5 @@ class DataNodeSyncQualifierDescriptor {
                 }
             }
         }
-    }
-
-    private DbRelationship findMasterToDependentDbRelationship(
-            DbEntity masterDbEntity,
-            DbEntity dependentDbEntity) {
-
-        for (DbRelationship relationship : masterDbEntity.getRelationships()) {
-            if (dependentDbEntity.equals(relationship.getTargetEntity())
-                    && relationship.isToDependentPK()) {
-
-                if (relationship.isToMany()) {
-                    throw new CayenneRuntimeException(
-                            "Only 'to one' master-detail relationships can be processed.");
-                }
-
-                return relationship;
-            }
-        }
-
-        return null;
     }
 }

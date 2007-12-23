@@ -236,7 +236,7 @@ public class ObjAttribute extends Attribute {
     }
 
     /**
-     * Returns whether this DbAttribute is "flattened", meaning that it points to a column
+     * Returns whether this attribute is "flattened", meaning that it points to a column
      * from an entity other than the DbEntity mapped to the parent ObjEntity.
      * 
      * @since 3.0
