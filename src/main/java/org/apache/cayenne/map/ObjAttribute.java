@@ -228,8 +228,21 @@ public class ObjAttribute extends Attribute {
         return dbAttributePath;
     }
 
+    /**
+     * @deprecated since 3.0 use 'isFlattened'.
+     */
     public boolean isCompound() {
-        return (dbAttributePath != null && dbAttributePath.indexOf('.') >= 0);
+        return isFlattened();
+    }
+
+    /**
+     * Returns whether this DbAttribute is "flattened", meaning that it points to a column
+     * from an entity other than the DbEntity mapped to the parent ObjEntity.
+     * 
+     * @since 3.0
+     */
+    public boolean isFlattened() {
+        return dbAttributePath != null && dbAttributePath.indexOf('.') >= 0;
     }
 
     /**
