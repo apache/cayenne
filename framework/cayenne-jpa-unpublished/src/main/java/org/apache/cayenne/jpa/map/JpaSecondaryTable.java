@@ -36,9 +36,17 @@ public class JpaSecondaryTable extends JpaTable {
     }
 
     public JpaSecondaryTable(SecondaryTable annotation) {
-        name = annotation.name();
-        catalog = annotation.catalog();
-        schema = annotation.schema();
+        if (!"".equals(annotation.name())) {
+            name = annotation.name();
+        }
+
+        if (!"".equals(annotation.catalog())) {
+            catalog = annotation.catalog();
+        }
+
+        if (!"".equals(annotation.schema())) {
+            schema = annotation.schema();
+        }
 
         getUniqueConstraints();
         for (int i = 0; i < annotation.uniqueConstraints().length; i++) {
