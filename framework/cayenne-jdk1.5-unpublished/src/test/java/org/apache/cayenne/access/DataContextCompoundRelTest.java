@@ -61,13 +61,13 @@ public class DataContextCompoundRelTest extends CayenneCase {
         ctxt = createDataContext();
 
         SelectQuery q = new SelectQuery(CompoundPkTestEntity.class);
-        List objs = ctxt.performQuery(q);
+        List<?> objs = ctxt.performQuery(q);
         assertEquals(1, objs.size());
 
         master = (CompoundPkTestEntity) objs.get(0);
         assertEquals("m1", master.getName());
 
-        List details = master.getCompoundFkArray();
+        List<?> details = master.getCompoundFkArray();
         assertEquals(1, details.size());
         detail = (CompoundFkTestEntity) details.get(0);
 
@@ -105,7 +105,7 @@ public class DataContextCompoundRelTest extends CayenneCase {
 
         Expression qual = ExpressionFactory.matchExp("toCompoundPk", master);
         SelectQuery q = new SelectQuery(CompoundFkTestEntity.class, qual);
-        List objs = ctxt.performQuery(q);
+        List<?> objs = ctxt.performQuery(q);
         assertEquals(1, objs.size());
 
         detail = (CompoundFkTestEntity) objs.get(0);
@@ -143,7 +143,7 @@ public class DataContextCompoundRelTest extends CayenneCase {
 
         Expression qual = ExpressionFactory.matchExp("compoundFkArray", detail1);
         SelectQuery q = new SelectQuery(CompoundPkTestEntity.class, qual);
-        List objs = ctxt.performQuery(q);
+        List<?> objs = ctxt.performQuery(q);
         assertEquals(1, objs.size());
 
         master = (CompoundPkTestEntity) objs.get(0);

@@ -98,11 +98,11 @@ public class DataContextEJBQLConditionsPeopleTest extends PeopleCase {
         ObjectContext context = createDataContext();
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<String> ids = new HashSet<String>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Manager m = (Manager) it.next();
             ids.add(m.getName());
@@ -120,11 +120,11 @@ public class DataContextEJBQLConditionsPeopleTest extends PeopleCase {
         ObjectContext context = createDataContext();
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<String> ids = new HashSet<String>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Manager m = (Manager) it.next();
             ids.add(m.getName());
@@ -143,7 +143,7 @@ public class DataContextEJBQLConditionsPeopleTest extends PeopleCase {
         ObjectContext context = createDataContext();
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(0, objects.size());
     }
 }

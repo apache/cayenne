@@ -60,7 +60,7 @@ public class DataContextDecoratedStackTest extends CayenneCase {
         query.setTemplate(
                 OpenBaseAdapter.class.getName(),
                 "select #result('COUNT(ARTIST_ID)' 'int' 'x') from ARTIST");
-        Map count = (Map) DataObjectUtils.objectForQuery(context, query);
+        Map<?, ?> count = (Map<?, ?>) DataObjectUtils.objectForQuery(context, query);
         assertNotNull(count);
         assertEquals(new Integer(1), count.get("x"));
     }

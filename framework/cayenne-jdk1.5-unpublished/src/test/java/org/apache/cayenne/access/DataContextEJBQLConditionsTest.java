@@ -42,11 +42,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE 'A%C'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = createDataContext().performQuery(query);
         assertEquals(1, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -61,11 +61,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle NOT LIKE 'A%C'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = createDataContext().performQuery(query);
         assertEquals(4, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -80,11 +80,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE '_DDDD'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = createDataContext().performQuery(query);
         assertEquals(3, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -101,11 +101,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE 'X_DDDD' ESCAPE 'X'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = createDataContext().performQuery(query);
         assertEquals(1, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -120,11 +120,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle IN ('A', 'B')";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = createDataContext().performQuery(query);
         assertEquals(2, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -140,11 +140,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle NOT IN ('A', 'B')";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = createDataContext().performQuery(query);
         assertEquals(1, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -161,11 +161,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = createDataContext().performQuery(query);
         assertEquals(2, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -181,11 +181,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray IS EMPTY";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = createDataContext().performQuery(query);
         assertEquals(1, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -200,11 +200,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray IS NOT EMPTY";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = createDataContext().performQuery(query);
         assertEquals(2, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -220,11 +220,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         String ejbql = "SELECT DISTINCT a FROM Artist a WHERE a.paintingArray IS NOT EMPTY";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = createDataContext().performQuery(query);
         assertEquals(2, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -246,11 +246,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
                 context,
                 Painting.class,
                 33010));
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -271,11 +271,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
                 context,
                 Painting.class,
                 33010));
-        List objects = context.performQuery(query);
+        List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
@@ -292,11 +292,11 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
                 + "WHERE p MEMBER OF a.paintingArray AND a.artistName = 'B'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List objects = createDataContext().performQuery(query);
+        List<?> objects = createDataContext().performQuery(query);
         assertEquals(2, objects.size());
 
-        Set ids = new HashSet();
-        Iterator it = objects.iterator();
+        Set<Object> ids = new HashSet<Object>();
+        Iterator<?> it = objects.iterator();
         while (it.hasNext()) {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
