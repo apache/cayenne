@@ -86,7 +86,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     }
 
     protected Map objectMap;
-    protected Map changes;
+    protected Map<Object, ObjectDiff> changes;
 
     // a sequential id used to tag GraphDiffs so that they can later be sorted in the
     // original creation order
@@ -128,7 +128,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     public ObjectStore(DataRowStore dataRowCache, Map objectMap) {
         setDataRowCache(dataRowCache);
         this.objectMap = objectMap != null ? objectMap : ObjectStore.createObjectMap();
-        this.changes = new HashMap();
+        this.changes = new HashMap<Object, ObjectDiff>();
     }
 
     /**
@@ -142,7 +142,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             diff.setDiffId(++currentDiffId);
         }
 
-        ObjectDiff objectDiff = (ObjectDiff) changes.get(nodeId);
+        ObjectDiff objectDiff = changes.get(nodeId);
 
         if (objectDiff == null) {
 
@@ -365,7 +365,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         // reset changes ... using new HashMap to allow event listeners to analyze the
         // original changes map after the rollback
-        this.changes = new HashMap();
+        this.changes = new HashMap<Object, ObjectDiff>();
     }
 
     /**
@@ -407,7 +407,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * 
      * @since 1.2
      */
-    Map getChangesByObjectId() {
+    Map<Object, ObjectDiff> getChangesByObjectId() {
         return changes;
     }
 
@@ -416,9 +416,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     void postprocessAfterPhantomCommit() {
 
-        Iterator it = changes.keySet().iterator();
-        while (it.hasNext()) {
-            ObjectId id = (ObjectId) it.next();
+        for (Object id : changes.keySet()) {
 
             Persistent object = (Persistent) objectMap.get(id);
 
@@ -490,7 +488,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         // create new instance of changes map so that event listeners who stored the
         // original diff don't get affected
-        this.changes = new HashMap();
+        this.changes = new HashMap<Object, ObjectDiff>();
     }
 
     /**
@@ -690,7 +688,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             object.setObjectId((ObjectId) newId);
             objectMap.put(newId, object);
 
-            Object change = changes.remove(nodeId);
+            ObjectDiff change = changes.remove(nodeId);
             if (change != null) {
                 changes.put(newId, change);
             }
@@ -750,7 +748,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                         nodeCreated(nodeId);
 
                         delegate.finishedProcessDelete(dataObject);
-                        }
+                    }
 
                     break;
             }
@@ -1098,7 +1096,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         public String getCacheKey() {
             return cacheKey;
         }
-        
+
         public SQLResultSetMapping getResultSetMapping() {
             return null;
         }

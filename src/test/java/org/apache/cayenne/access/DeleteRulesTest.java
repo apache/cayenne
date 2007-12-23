@@ -93,10 +93,8 @@ public class DeleteRulesTest extends RelationshipCase {
         int oldRule = changeDeleteRule(DeleteRule.NO_ACTION);
 
         try {
-            DeleteRuleFlatA a = context
-                    .newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = context
-                    .newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
 
             a.addToFlatB(b);
             context.commitChanges();
@@ -123,10 +121,8 @@ public class DeleteRulesTest extends RelationshipCase {
         ObjRelationship reverse = unsetReverse();
 
         try {
-            DeleteRuleFlatA a = context
-                    .newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = context
-                    .newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
 
             a.addToFlatB(b);
             context.commitChanges();
@@ -367,8 +363,7 @@ public class DeleteRulesTest extends RelationshipCase {
     }
 
     private void assertJoinNotDeleted(DeleteRuleFlatA a, DeleteRuleFlatB b) {
-        ObjectDiff changes = (ObjectDiff) context.getObjectStore().changes.get(a
-                .getObjectId());
+        ObjectDiff changes = context.getObjectStore().changes.get(a.getObjectId());
 
         if (changes != null) {
             Collection diffs = new ArrayList();

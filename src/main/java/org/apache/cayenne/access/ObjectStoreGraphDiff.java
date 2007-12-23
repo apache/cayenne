@@ -53,7 +53,7 @@ class ObjectStoreGraphDiff implements GraphDiff {
         preprocess(objectStore);
     }
 
-    Map getChangesByObjectId() {
+    Map<Object, ObjectDiff> getChangesByObjectId() {
         return objectStore.getChangesByObjectId();
     }
 
@@ -124,9 +124,8 @@ class ObjectStoreGraphDiff implements GraphDiff {
             return true;
         }
 
-        Iterator it = getChangesByObjectId().values().iterator();
-        while (it.hasNext()) {
-            if (!((ObjectDiff) it.next()).isNoop()) {
+        for (ObjectDiff diff : getChangesByObjectId().values()) {
+            if (!diff.isNoop()) {
                 return false;
             }
         }

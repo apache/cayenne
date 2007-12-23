@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.util.List;
@@ -60,7 +59,7 @@ public interface OperationObserver extends OperationHints {
     public void nextDataRows(Query q, ResultIterator it);
 
     /**
-     * Callback method invoked after each batch of generated values is read durring an
+     * Callback method invoked after each batch of generated values is read during an
      * update.
      * 
      * @since 1.2

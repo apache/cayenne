@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneException;
@@ -59,7 +58,7 @@ class DataDomainFlushObserver implements OperationObserver {
     public void nextGeneratedDataRows(Query query, ResultIterator keysIterator) {
 
         // read and close the iterator before doing anything else
-        List keys;
+        List<DataRow> keys;
         try {
             keys = keysIterator.dataRows(true);
         }
@@ -87,7 +86,7 @@ class DataDomainFlushObserver implements OperationObserver {
                     "One and only one PK row is expected, instead got " + keys.size());
         }
 
-        DataRow key = (DataRow) keys.get(0);
+        DataRow key = keys.get(0);
 
         // empty key?
         if (key.size() == 0) {
@@ -107,9 +106,7 @@ class DataDomainFlushObserver implements OperationObserver {
                             + key);
         }
 
-        Iterator it = batch.getDbEntity().getGeneratedAttributes().iterator();
-        while (it.hasNext()) {
-            DbAttribute attribute = (DbAttribute) it.next();
+        for (DbAttribute attribute : batch.getDbEntity().getGeneratedAttributes()) {
 
             // batch can have generated attributes that are not PKs, e.g. columns with
             // DB DEFAULT values. Ignore those.
@@ -130,7 +127,7 @@ class DataDomainFlushObserver implements OperationObserver {
     public void nextCount(Query query, int resultCount) {
     }
 
-    public void nextDataRows(Query query, List dataRows) {
+    public void nextDataRows(Query query, List<DataRow> dataRows) {
     }
 
     public void nextDataRows(Query q, ResultIterator it) {
