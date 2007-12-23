@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
@@ -254,8 +255,14 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     /**
      * Returns a Collection of relationships from this entity or inherited.
      */
+    @Override
     public Collection<DbRelationship> getRelationships() {
         return (Collection<DbRelationship>) super.getRelationships();
+    }
+
+    @Override
+    public SortedMap<String, DbRelationship> getRelationshipMap() {
+        return (SortedMap<String, DbRelationship>) super.getRelationshipMap();
     }
 
     public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp)
