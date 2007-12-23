@@ -40,7 +40,7 @@ $importUtils.addType(${attr.Type})##
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
 $importUtils.addType(${rel.TargetEntity.ClassName})##
-$importUtils.addType(${rel.CollectionType})##
+${importUtils.addType($rel.CollectionType)}##
 #end
 ${importUtils.generate()}
 
