@@ -206,7 +206,8 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
     }
 
     public void testDelete() throws Exception {
-        // adding a bit of random overlapping dta to db...
+        // throw in a bit of random overlapping data, to make sure FK/PK correspondence is
+        // not purely coincidental
         Artist a = context.newObject(Artist.class);
         a.setArtistName("AX");
         context.commitChanges();
@@ -236,5 +237,24 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
                 context,
                 new EJBQLQuery("select count(a) from Gallery a"));
         assertEquals(0, galleryCount.intValue());
+    }
+
+    public void testUpdate() {
+        CompoundPainting o1 = context.newObject(CompoundPainting.class);
+        o1.setArtistName("A1");
+        o1.setEstimatedPrice(new BigDecimal(1d));
+        o1.setGalleryName("G1");
+        o1.setPaintingTitle("P1");
+        o1.setTextReview("T1");
+
+        context.commitChanges();
+
+        o1.setArtistName("X1");
+        o1.setEstimatedPrice(new BigDecimal(2d));
+        o1.setGalleryName("X1");
+        o1.setPaintingTitle("X1");
+        o1.setTextReview("X1");
+
+        context.commitChanges();
     }
 }
