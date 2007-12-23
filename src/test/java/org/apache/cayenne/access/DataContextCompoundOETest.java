@@ -110,14 +110,14 @@ public class DataContextCompoundOETest extends CayenneCase {
     public void testSelectCompound1() throws Exception {
         populateTables();
         SelectQuery query = new SelectQuery(CompoundPainting.class);
-        List objects = ctxt.performQuery(query);
+        List<?> objects = ctxt.performQuery(query);
 
         assertNotNull(objects);
         assertEquals(3, objects.size());
         assertTrue("CompoundPainting expected, got " + objects.get(0).getClass(), objects
                 .get(0) instanceof CompoundPainting);
 
-        for (Iterator i = objects.iterator(); i.hasNext();) {
+        for (Iterator<?> i = objects.iterator(); i.hasNext();) {
             CompoundPainting painting = (CompoundPainting) i.next();
             Number id = (Number) painting
                     .getObjectId()
@@ -145,14 +145,14 @@ public class DataContextCompoundOETest extends CayenneCase {
         populateTables();
         SelectQuery query = new SelectQuery(CompoundPainting.class, ExpressionFactory
                 .matchExp("artistName", "artist2"));
-        List objects = ctxt.performQuery(query);
+        List<?> objects = ctxt.performQuery(query);
 
         assertNotNull(objects);
         assertEquals(1, objects.size());
         assertTrue("CompoundPainting expected, got " + objects.get(0).getClass(), objects
                 .get(0) instanceof CompoundPainting);
 
-        for (Iterator i = objects.iterator(); i.hasNext();) {
+        for (Iterator<?> i = objects.iterator(); i.hasNext();) {
             CompoundPainting painting = (CompoundPainting) i.next();
             Number id = (Number) painting
                     .getObjectId()

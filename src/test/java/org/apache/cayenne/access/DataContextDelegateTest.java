@@ -59,7 +59,7 @@ public class DataContextDelegateTest extends CayenneCase {
 
     public void testWillPerformGenericQuery() throws Exception {
 
-        final List queriesPerformed = new ArrayList(1);
+        final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             public Query willPerformGenericQuery(DataContext context, Query query) {
@@ -81,7 +81,7 @@ public class DataContextDelegateTest extends CayenneCase {
 
     public void testWillPerformGenericQueryBlocked() throws Exception {
 
-        final List queriesPerformed = new ArrayList(1);
+        final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             public Query willPerformGenericQuery(DataContext context, Query query) {
@@ -102,7 +102,7 @@ public class DataContextDelegateTest extends CayenneCase {
 
     public void testWillPerformQuery() throws Exception {
 
-        final List queriesPerformed = new ArrayList(1);
+        final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             public Query willPerformQuery(DataContext context, Query query) {
@@ -114,7 +114,7 @@ public class DataContextDelegateTest extends CayenneCase {
 
         // test that delegate is consulted before select
         SelectQuery query = new SelectQuery(Gallery.class);
-        List results = context.performQuery(query);
+        List<?> results = context.performQuery(query);
 
         assertTrue("Delegate is not notified of a query being run.", queriesPerformed
                 .contains(query));
@@ -124,7 +124,7 @@ public class DataContextDelegateTest extends CayenneCase {
 
     public void testWillPerformQueryBlocked() throws Exception {
 
-        final List queriesPerformed = new ArrayList(1);
+        final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             public Query willPerformQuery(DataContext context, Query query) {
@@ -135,7 +135,7 @@ public class DataContextDelegateTest extends CayenneCase {
 
         context.setDelegate(delegate);
         SelectQuery query = new SelectQuery(Gallery.class);
-        List results = context.performQuery(query);
+        List<?> results = context.performQuery(query);
 
         assertTrue("Delegate is not notified of a query being run.", queriesPerformed
                 .contains(query));

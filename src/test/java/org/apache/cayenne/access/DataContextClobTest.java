@@ -86,7 +86,7 @@ public class DataContextClobTest extends CayenneCase {
 
         // read the CLOB in the new context
         DataContext ctxt2 = createDataContext();
-        List objects2 = ctxt2.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects2 = ctxt2.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects2.size());
 
         ClobTestEntity clobObj2 = (ClobTestEntity) objects2.get(0);
@@ -99,7 +99,7 @@ public class DataContextClobTest extends CayenneCase {
 
         // read into yet another context and check for changes
         DataContext ctxt3 = createDataContext();
-        List objects3 = ctxt3.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects3 = ctxt3.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects3.size());
 
         ClobTestEntity clobObj3 = (ClobTestEntity) objects3.get(0);
@@ -126,7 +126,7 @@ public class DataContextClobTest extends CayenneCase {
 
         // read the CLOB in the new context
         DataContext ctxt2 = createDataContext();
-        List objects2 = ctxt2.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects2 = ctxt2.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects2.size());
 
         ClobTestEntity clobObj2 = (ClobTestEntity) objects2.get(0);
@@ -138,7 +138,7 @@ public class DataContextClobTest extends CayenneCase {
 
         // read into yet another context and check for changes
         DataContext ctxt3 = createDataContext();
-        List objects3 = ctxt3.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects3 = ctxt3.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects3.size());
 
         ClobTestEntity clobObj3 = (ClobTestEntity) objects3.get(0);

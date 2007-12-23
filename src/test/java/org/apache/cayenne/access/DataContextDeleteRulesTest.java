@@ -94,7 +94,7 @@ public class DataContextDeleteRulesTest extends CayenneCase {
                 Artist.class,
                 "SELECT * FROM ARTIST_GROUP");
         checkQuery.setFetchingDataRows(true);
-        List joins1 = context.performQuery(checkQuery);
+        List<?> joins1 = context.performQuery(checkQuery);
         assertEquals(1, joins1.size());
 
         context.deleteObject(anArtist);
@@ -103,7 +103,7 @@ public class DataContextDeleteRulesTest extends CayenneCase {
         assertFalse(anArtist.getGroupArray().contains(aGroup));
         context.commitChanges();
 
-        List joins2 = context.performQuery(checkQuery);
+        List<?> joins2 = context.performQuery(checkQuery);
         assertEquals(0, joins2.size());
     }
 
@@ -129,14 +129,14 @@ public class DataContextDeleteRulesTest extends CayenneCase {
                 Artist.class,
                 "SELECT * FROM ARTIST_GROUP");
         checkQuery.setFetchingDataRows(true);
-        List joins1 = context.performQuery(checkQuery);
+        List<?> joins1 = context.performQuery(checkQuery);
         assertEquals(1, joins1.size());
 
         context.deleteObject(aGroup);
         assertFalse(anArtist.getGroupArray().contains(aGroup));
         context.commitChanges();
 
-        List joins2 = context.performQuery(checkQuery);
+        List<?> joins2 = context.performQuery(checkQuery);
         assertEquals(0, joins2.size());
     }
 
