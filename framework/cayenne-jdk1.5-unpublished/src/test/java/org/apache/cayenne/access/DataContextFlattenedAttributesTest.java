@@ -184,7 +184,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
         o1.setGalleryName("G1");
         o1.setPaintingTitle("P1");
         o1.setTextReview("T1");
-        
+
         context.commitChanges();
     }
 }

@@ -59,34 +59,23 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
 
         for (DbEntity dbEntity : dbEntities) {
 
-            Collection<ClassDescriptor> objEntitiesForDbEntity = descriptorsByDbEntity
-                    .get(dbEntity);
+            Collection<ClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
 
             InsertBatchQuery batch = new InsertBatchQuery(dbEntity, 27);
-            for (ClassDescriptor descriptor : objEntitiesForDbEntity) {
+            for (ClassDescriptor descriptor : descriptors) {
 
                 diffBuilder.reset(descriptor.getEntity(), dbEntity);
 
-                boolean isMasterDbEntity = (descriptor.getEntity().getDbEntity() == dbEntity);
-
-                // remove object set for dependent entity, so that it does not show up
-                // on post processing
-                List<Persistent> objects = isMasterDbEntity ? objectsByDescriptor
-                        .get(descriptor) : objectsByDescriptor.remove(descriptor);
-
+                List<Persistent> objects = objectsByDescriptor.get(descriptor);
                 if (objects.isEmpty()) {
                     continue;
                 }
 
                 checkReadOnly(descriptor.getEntity());
-
-                if (isMasterDbEntity) {
-                    createPermIdsForObjEntity(descriptor, objects);
-                    sorter.sortObjectsForEntity(descriptor.getEntity(), objects, false);
-                }
+                createPermIds(descriptor, dbEntity, objects);
+                sorter.sortObjectsForEntity(descriptor.getEntity(), objects, false);
 
                 for (Persistent o : objects) {
-
                     Map<Object, Object> snapshot = diffBuilder.buildDBDiff(parent
                             .objectDiff(o.getObjectId()));
 
@@ -98,8 +87,9 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
         }
     }
 
-    void createPermIdsForObjEntity(
+    void createPermIds(
             ClassDescriptor descriptor,
+            DbEntity entity,
             Collection<Persistent> objects) {
 
         if (objects.isEmpty()) {
@@ -107,8 +97,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
         }
 
         ObjEntity objEntity = descriptor.getEntity();
-        DbEntity dbEntity = objEntity.getDbEntity();
-        DataNode node = parent.getDomain().lookupDataNode(dbEntity.getDataMap());
+        DataNode node = parent.getDomain().lookupDataNode(entity.getDataMap());
         boolean supportsGeneratedKeys = node.getAdapter().supportsGeneratedKeys();
 
         PkGenerator pkGenerator = node.getAdapter().getPkGenerator();
@@ -124,7 +113,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
 
             boolean autoPkDone = false;
 
-            for (DbAttribute dbAttr : dbEntity.getPrimaryKeys()) {
+            for (DbAttribute dbAttr : entity.getPrimaryKeys()) {
                 String dbAttrName = dbAttr.getName();
 
                 if (idMap.containsKey(dbAttrName)) {
@@ -174,7 +163,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
 
                 // finally, use database generation mechanism
                 try {
-                    Object pkValue = pkGenerator.generatePkForDbEntity(node, dbEntity);
+                    Object pkValue = pkGenerator.generatePkForDbEntity(node, entity);
                     idMap.put(dbAttrName, pkValue);
                     autoPkDone = true;
                 }

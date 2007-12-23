@@ -41,6 +41,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.commons.collections.Factory;
@@ -170,17 +171,14 @@ abstract class DataDomainSyncBucket {
 
             CompoundDiff result = parent.getResultDiff();
             Map modifiedSnapshots = parent.getResultModifiedSnapshots();
-            Collection deletedIds = parent.getResultDeletedIds();
+            Collection<ObjectId> deletedIds = parent.getResultDeletedIds();
 
-            Iterator it = objectsByDescriptor.entrySet().iterator();
-            while (it.hasNext()) {
+            for (Map.Entry<ClassDescriptor, List<Persistent>> entry : objectsByDescriptor
+                    .entrySet()) {
 
-                Map.Entry entry = (Map.Entry) it.next();
-                ClassDescriptor descriptor = (ClassDescriptor) entry.getKey();
+                ClassDescriptor descriptor = entry.getKey();
 
-                Iterator objects = ((Collection) entry.getValue()).iterator();
-                while (objects.hasNext()) {
-                    Persistent object = (Persistent) objects.next();
+                for (Persistent object : entry.getValue()) {
                     ObjectId id = object.getObjectId();
 
                     ObjectId finalId;
@@ -188,8 +186,8 @@ abstract class DataDomainSyncBucket {
                     // record id change and update attributes for generated ids
                     if (id.isReplacementIdAttached()) {
 
-                        Map replacement = id.getReplacementIdMap();
-                        Iterator idProperties = descriptor.getIdProperties();
+                        Map<String, Object> replacement = id.getReplacementIdMap();
+                        Iterator<Property> idProperties = descriptor.getIdProperties();
                         while (idProperties.hasNext()) {
                             AttributeProperty property = (AttributeProperty) idProperties
                                     .next();
@@ -222,7 +220,6 @@ abstract class DataDomainSyncBucket {
                     }
                     else {
                         finalId = id;
-
                     }
 
                     // do not take the snapshot until generated columns are processed (see
@@ -238,9 +235,10 @@ abstract class DataDomainSyncBucket {
                     modifiedSnapshots.put(finalId, dataRow);
 
                     // update Map reverse relationships
-                    Iterator mapArcProperties = descriptor.getMapArcProperties();
+                    Iterator<ArcProperty> mapArcProperties = descriptor
+                            .getMapArcProperties();
                     while (mapArcProperties.hasNext()) {
-                        ArcProperty arc = (ArcProperty) mapArcProperties.next();
+                        ArcProperty arc = mapArcProperties.next();
                         ToManyMapProperty reverseArc = (ToManyMapProperty) arc
                                 .getComplimentaryReverseArc();
 
@@ -261,7 +259,7 @@ abstract class DataDomainSyncBucket {
             Object source,
             Object target) throws PropertyException {
 
-        Map map = (Map) property.readProperty(source);
+        Map<Object, Object> map = (Map<Object, Object>) property.readProperty(source);
         Object newKey = property.getMapKey(target);
         Object currentValue = map.get(newKey);
 
@@ -275,9 +273,9 @@ abstract class DataDomainSyncBucket {
 
         // must do a slow map scan to ensure the object is not mapped under a different
         // key...
-        Iterator it = map.entrySet().iterator();
+        Iterator<?> it = map.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry e = (Map.Entry) it.next();
+            Map.Entry<Object, Object> e = (Map.Entry<Object, Object>) it.next();
             if (e.getValue() == target) {
                 it.remove();
                 break;
