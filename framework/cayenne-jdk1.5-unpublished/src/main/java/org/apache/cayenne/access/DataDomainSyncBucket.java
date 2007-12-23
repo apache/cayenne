@@ -170,7 +170,8 @@ abstract class DataDomainSyncBucket {
         if (!objectsByDescriptor.isEmpty()) {
 
             CompoundDiff result = parent.getResultDiff();
-            Map modifiedSnapshots = parent.getResultModifiedSnapshots();
+            Map<ObjectId, DataRow> modifiedSnapshots = parent
+                    .getResultModifiedSnapshots();
             Collection<ObjectId> deletedIds = parent.getResultDeletedIds();
 
             for (Map.Entry<ClassDescriptor, List<Persistent>> entry : objectsByDescriptor

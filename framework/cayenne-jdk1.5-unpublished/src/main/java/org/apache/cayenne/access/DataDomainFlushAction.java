@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -53,11 +54,11 @@ class DataDomainFlushAction {
 
     private final DataDomain domain;
     private DataContext context;
-    private Map changesByObjectId;
+    private Map<Object, ObjectDiff> changesByObjectId;
 
     private CompoundDiff resultDiff;
     private Collection<ObjectId> resultDeletedIds;
-    private Map resultModifiedSnapshots;
+    private Map<ObjectId, DataRow> resultModifiedSnapshots;
     private Collection<ObjectId> resultIndirectlyModifiedIds;
 
     private DataDomainInsertBucket insertBucket;
@@ -91,12 +92,12 @@ class DataDomainFlushAction {
         return resultIndirectlyModifiedIds;
     }
 
-    Map getResultModifiedSnapshots() {
+    Map<ObjectId, DataRow> getResultModifiedSnapshots() {
         return resultModifiedSnapshots;
     }
 
     ObjectDiff objectDiff(Object objectId) {
-        return (ObjectDiff) changesByObjectId.get(objectId);
+        return changesByObjectId.get(objectId);
     }
 
     void addFlattenedInsert(DbEntity flattenedEntity, FlattenedArcKey flattenedInsertInfo) {
@@ -139,7 +140,7 @@ class DataDomainFlushAction {
 
         this.resultDiff = new CompoundDiff();
         this.resultDeletedIds = new ArrayList<ObjectId>();
-        this.resultModifiedSnapshots = new HashMap();
+        this.resultModifiedSnapshots = new HashMap<ObjectId, DataRow>();
 
         runQueries();
 
@@ -157,7 +158,7 @@ class DataDomainFlushAction {
 
         ObjectStore objectStore = context.getObjectStore();
 
-        Iterator it = changesByObjectId.keySet().iterator();
+        Iterator<?> it = changesByObjectId.keySet().iterator();
         while (it.hasNext()) {
             ObjectId id = (ObjectId) it.next();
             Persistent object = (Persistent) objectStore.getNode(id);
