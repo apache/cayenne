@@ -36,10 +36,9 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-
 /**
- * Describes navigational association between two Java classes, represented as source and
- * target ObjEntity. Maps to a path of DbRelationships.
+ * Describes an association between two Java classes mapped as source and target
+ * ObjEntity. Maps to a path of DbRelationships.
  * 
  * @author Andrus Adamchik
  */
@@ -164,7 +163,7 @@ public class ObjRelationship extends Relationship implements EventListener {
      * null if no such relationship is found.
      */
     public ObjRelationship getReverseRelationship() {
-        
+
         // reverse the list
         List<DbRelationship> relationships = getDbRelationships();
         List<DbRelationship> reversed = new ArrayList<DbRelationship>(relationships
@@ -250,8 +249,7 @@ public class ObjRelationship extends Relationship implements EventListener {
         // on the flattened path
         int numDbRelationships = dbRelationships.size();
         if (numDbRelationships > 0) {
-            DbRelationship lastRel = dbRelationships
-                    .get(numDbRelationships - 1);
+            DbRelationship lastRel = dbRelationships.get(numDbRelationships - 1);
             if (!lastRel.getTargetEntityName().equals(dbRel.getSourceEntity().getName())) {
                 throw new CayenneRuntimeException("Error adding db relationship "
                         + dbRel
@@ -489,7 +487,8 @@ public class ObjRelationship extends Relationship implements EventListener {
         StringBuffer buffer = new StringBuffer();
 
         // iterate in reverse order
-        ListIterator<DbRelationship> it = relationships.listIterator(relationships.size());
+        ListIterator<DbRelationship> it = relationships
+                .listIterator(relationships.size());
         while (it.hasPrevious()) {
 
             DbRelationship relationship = it.previous();
@@ -540,7 +539,8 @@ public class ObjRelationship extends Relationship implements EventListener {
         StringBuffer validPath = new StringBuffer();
 
         try {
-            Iterator<CayenneMapEntry> it = entity.resolvePathComponents(new ASTDbPath(path));
+            Iterator<CayenneMapEntry> it = entity.resolvePathComponents(new ASTDbPath(
+                    path));
             while (it.hasNext()) {
                 DbRelationship relationship = (DbRelationship) it.next();
 
@@ -595,8 +595,8 @@ public class ObjRelationship extends Relationship implements EventListener {
 
                 try {
                     // add new relationships from path
-                    Iterator<CayenneMapEntry> it = entity.resolvePathComponents(new ASTDbPath(
-                            this.dbRelationshipPath));
+                    Iterator<CayenneMapEntry> it = entity
+                            .resolvePathComponents(new ASTDbPath(this.dbRelationshipPath));
 
                     while (it.hasNext()) {
                         DbRelationship relationship = (DbRelationship) it.next();
@@ -748,10 +748,9 @@ public class ObjRelationship extends Relationship implements EventListener {
     /**
      * Returns a property name of a target entity used to create a relationship map. Only
      * has effect if collectionType property is set to "java.util.Map".
-     *
-     * @return The attribute name used for the map key or <code>null</code> if the default (PK) is used
-     * as the map key.
-     *
+     * 
+     * @return The attribute name used for the map key or <code>null</code> if the
+     *         default (PK) is used as the map key.
      * @since 3.0
      */
     public String getMapKey() {
