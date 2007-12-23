@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
@@ -91,6 +92,12 @@ class DataNodeSyncQualifierDescriptor {
         else {
 
             // TODO: andrus 12/23/2007 - only one step relationship is supported...
+            if (descriptor.getPathFromMaster().size() != 1) {
+                throw new CayenneRuntimeException(
+                        "Only single step dependent relationships are currently supported. Actual path length: "
+                                + descriptor.getPathFromMaster().size());
+            }
+            
             DbRelationship masterDependentDbRel = descriptor.getPathFromMaster().get(0);
 
             if (masterDependentDbRel != null) {
