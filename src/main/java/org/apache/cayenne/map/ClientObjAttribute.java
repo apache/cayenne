@@ -25,26 +25,16 @@ package org.apache.cayenne.map;
  * @since 3.0
  * @author Tore Halset
  */
-public class ClientObjAttribute extends ObjAttribute {
-    
-    protected boolean mandatory;
-    protected int maxLength = -1;
+class ClientObjAttribute extends ObjAttribute {
 
+    boolean mandatory;
+    int maxLength = -1;
 
-    public ClientObjAttribute() {
-        super();
-    }
-
-    public ClientObjAttribute(String name, String type, ObjEntity entity) {
-        super(name, type, entity);
-    }
-
-    public ClientObjAttribute(String name) {
+    ClientObjAttribute(String name) {
         super(name);
     }
 
     /**
-     * 
      * @see DbAttribute#isMandatory()
      */
     public boolean isMandatory() {
@@ -54,9 +44,8 @@ public class ClientObjAttribute extends ObjAttribute {
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
     }
-    
+
     /**
-     * 
      * @see DbAttribute#getMaxLength()
      */
     public int getMaxLength() {
