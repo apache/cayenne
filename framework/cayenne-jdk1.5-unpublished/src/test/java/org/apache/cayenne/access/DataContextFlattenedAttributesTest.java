@@ -176,4 +176,15 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
                     painting.getGalleryName());
         }
     }
+    
+    public void testInsert() {
+        CompoundPainting o1 = context.newObject(CompoundPainting.class);
+        o1.setArtistName("A1");
+        o1.setEstimatedPrice(new BigDecimal(1.0d));
+        o1.setGalleryName("G1");
+        o1.setPaintingTitle("P1");
+        o1.setTextReview("T1");
+        
+        context.commitChanges();
+    }
 }

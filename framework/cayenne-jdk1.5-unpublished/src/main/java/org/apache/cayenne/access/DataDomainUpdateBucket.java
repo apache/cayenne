@@ -34,6 +34,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -47,13 +48,13 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
         super(parent);
     }
 
-    void appendQueriesInternal(Collection queries) {
+    @Override
+    void appendQueriesInternal(Collection<Query> queries) {
 
         DataDomainDBDiffBuilder diffBuilder = new DataDomainDBDiffBuilder();
         DataNodeSyncQualifierDescriptor qualifierBuilder = new DataNodeSyncQualifierDescriptor();
 
-        for (Iterator i = dbEntities.iterator(); i.hasNext();) {
-            DbEntity dbEntity = (DbEntity) i.next();
+        for (DbEntity dbEntity : dbEntities) {
             List objEntitiesForDbEntity = (List) descriptorsByDbEntity.get(dbEntity);
             Map batches = new LinkedHashMap();
 
