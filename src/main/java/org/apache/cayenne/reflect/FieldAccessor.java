@@ -93,7 +93,10 @@ public class FieldAccessor implements Accessor {
      * Finds a field for the property, ensuring that direct access via reflection is
      * possible.
      */
-    protected Field prepareField(Class<?> beanClass, String propertyName, Class<?> propertyType) {
+    protected Field prepareField(
+            Class<?> beanClass,
+            String propertyName,
+            Class<?> propertyType) {
         Field field;
 
         // locate field
@@ -121,11 +124,11 @@ public class FieldAccessor implements Accessor {
         if (propertyType != null) {
 
             // check that the field is of expected class...
-            if (!propertyType.isAssignableFrom(field.getType())) {
+            if (!field.getType().isAssignableFrom(propertyType)) {
 
                 // allow primitive to object conversions...
-                if (!PropertyUtils.normalizeType(propertyType).isAssignableFrom(
-                        PropertyUtils.normalizeType(field.getType()))) {
+                if (!PropertyUtils.normalizeType(field.getType()).isAssignableFrom(
+                        PropertyUtils.normalizeType(propertyType))) {
                     throw new CayenneRuntimeException("Expected property type '"
                             + propertyType.getName()
                             + "', got '"
