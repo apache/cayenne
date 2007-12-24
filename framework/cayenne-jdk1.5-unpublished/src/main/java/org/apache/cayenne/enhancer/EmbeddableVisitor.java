@@ -18,9 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.enhancer;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.cayenne.Persistent;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
 
 /**
  * Enhances classes passed through the visitor to add embeddable fields and methods needed
@@ -31,16 +35,56 @@ import org.objectweb.asm.ClassVisitor;
  */
 public class EmbeddableVisitor extends ClassAdapter {
 
+    private static String OWNER_FEILD = "owner";
+    private static String EMBEDDED_PROPERTY_FEILD = "embeddedProperty";
+
     protected EnhancementHelper helper;
+    protected Collection<String> reservedFieldNames;
+    protected boolean checkReserved;
 
     public EmbeddableVisitor(ClassVisitor visitor) {
         super(visitor);
         this.helper = new EnhancementHelper(this);
+        this.checkReserved = true;
+
+        this.reservedFieldNames = new ArrayList<String>(2);
+        reservedFieldNames.add(helper.getPropertyField(OWNER_FEILD));
+        reservedFieldNames.add(helper.getPropertyField(EMBEDDED_PROPERTY_FEILD));
+    }
+
+    /**
+     * Checks that no double enhancement happens.
+     */
+    @Override
+    public FieldVisitor visitField(
+            int access,
+            String name,
+            String desc,
+            String signature,
+            Object value) {
+
+        if (checkReserved && reservedFieldNames.contains(name)) {
+            throw new DoubleEnhanceException("Embeddable class already contains field "
+                    + name);
+        }
+
+        return super.visitField(access, name, desc, signature, value);
     }
 
     @Override
     public void visitEnd() {
-        helper.createField(Persistent.class, "owner");
-        helper.createField(String.class, "embeddedProperty");
+
+        // 'checkReserved' flipping makes the visitor thread-unsafe... pay attention if
+        // we are to ever reuse the visitor for multiple classes...
+
+        checkReserved = false;
+
+        try {
+            helper.createField(Persistent.class, OWNER_FEILD);
+            helper.createField(String.class, EMBEDDED_PROPERTY_FEILD);
+        }
+        finally {
+            checkReserved = true;
+        }
     }
 }
