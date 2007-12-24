@@ -34,6 +34,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.RefreshQuery;
 
 public class ResourceLocalEntityManager implements EntityManager, CayenneEntityManager {
 
@@ -231,8 +232,8 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      */
     public void refresh(Object entity) {
         checkClosed();
-        // TODO: Andrus, 2/10/2006 - implement
-        throw new UnsupportedOperationException("TODO");
+        Persistent p = (Persistent) entity;
+        context.performGenericQuery(new RefreshQuery(p));
     }
 
     /**
