@@ -253,17 +253,14 @@ public class AshwoodEntitySorter implements EntitySorter {
     protected void fillInMetadata(Table table, DbEntity entity) {
         // in this case quite a dummy
         short keySequence = 1;
-        Iterator i = entity.getRelationshipMap().values().iterator();
 
-        while (i.hasNext()) {
-            DbRelationship candidate = (DbRelationship) i.next();
+        for (DbRelationship candidate : entity.getRelationships()) {
             if ((!candidate.isToMany() && !candidate.isToDependentPK())
                     || candidate.isToMasterPK()) {
                 DbEntity target = (DbEntity) candidate.getTargetEntity();
                 boolean newReflexive = entity.equals(target);
-                Iterator j = candidate.getJoins().iterator();
-                while (j.hasNext()) {
-                    DbJoin join = (DbJoin) j.next();
+
+                for (DbJoin join : candidate.getJoins()) {
                     DbAttribute targetAttribute = join.getTarget();
                     if (targetAttribute.isPrimaryKey()) {
                         ForeignKey fk = new ForeignKey();
@@ -276,7 +273,8 @@ public class AshwoodEntitySorter implements EntitySorter {
                         table.addForeignKey(fk);
 
                         if (newReflexive) {
-                            List<DbRelationship> reflexiveRels = reflexiveDbEntities.get(entity);
+                            List<DbRelationship> reflexiveRels = reflexiveDbEntities
+                                    .get(entity);
                             if (reflexiveRels == null) {
                                 reflexiveRels = new ArrayList<DbRelationship>(1);
                                 reflexiveDbEntities.put(entity, reflexiveRels);
@@ -311,7 +309,7 @@ public class AshwoodEntitySorter implements EntitySorter {
                 true,
                 ObjectIdQuery.CACHE);
         QueryResponse response = context.getChannel().onQuery(null, query);
-        List result = response.firstList();
+        List<?> result = response.firstList();
         if (result == null || result.size() == 0) {
             return null;
         }
