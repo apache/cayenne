@@ -24,5 +24,6 @@
 		<class>org.apache.cayenne.jpa.itest.ch9.entity.IdEntity</class>
 		<class>org.apache.cayenne.jpa.itest.ch9.entity.IdColumnEntity</class>
 		<class>org.apache.cayenne.jpa.itest.ch9.entity.BasicEntity</class>
+		<class>org.apache.cayenne.jpa.itest.ch9.entity.SecondaryTableEntity</class>
 	</persistence-unit>
 </persistence>

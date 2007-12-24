@@ -46,8 +46,10 @@ import org.apache.cayenne.jpa.map.JpaManyToOne;
 import org.apache.cayenne.jpa.map.JpaMappedSuperclass;
 import org.apache.cayenne.jpa.map.JpaOneToMany;
 import org.apache.cayenne.jpa.map.JpaOneToOne;
+import org.apache.cayenne.jpa.map.JpaPrimaryKeyJoinColumn;
 import org.apache.cayenne.jpa.map.JpaPropertyDescriptor;
 import org.apache.cayenne.jpa.map.JpaRelationship;
+import org.apache.cayenne.jpa.map.JpaSecondaryTable;
 import org.apache.cayenne.jpa.map.JpaTable;
 import org.apache.cayenne.jpa.map.JpaVersion;
 import org.apache.cayenne.project.ProjectPath;
@@ -352,13 +354,50 @@ public class EntityMapDefaultsProcessor {
 
         EmbeddableVisitor() {
             BaseTreeVisitor attributeVisitor = new BaseTreeVisitor();
-            attributeVisitor.addChildVisitor(JpaBasic.class, new EmbeddableBasicVisitor());
+            attributeVisitor
+                    .addChildVisitor(JpaBasic.class, new EmbeddableBasicVisitor());
             addChildVisitor(JpaAttributes.class, attributeVisitor);
         }
     }
 
     final class EntityVisitor extends AbstractEntityVisitor {
 
+        @Override
+        public void onFinishNode(ProjectPath path) {
+
+            // now that attributes are parsed, we can fill in secondary table joins that
+            // may depend on previous entity id column processing.
+
+            JpaEntity entity = (JpaEntity) path.getObject();
+            for (JpaSecondaryTable table : entity.getSecondaryTables()) {
+
+                if (table.getPrimaryKeyJoinColumns().isEmpty()) {
+
+                    for (JpaId id : entity.getAttributes().getIds()) {
+                        JpaPrimaryKeyJoinColumn joinColumn = new JpaPrimaryKeyJoinColumn();
+                        joinColumn.setName(id.getColumn().getName());
+                        joinColumn.setReferencedColumnName(joinColumn.getName());
+                        table.getPrimaryKeyJoinColumns().add(joinColumn);
+                    }
+                }
+                else {
+                    for (JpaPrimaryKeyJoinColumn joinColumn : table
+                            .getPrimaryKeyJoinColumns()) {
+
+                        if (joinColumn.getReferencedColumnName() == null) {
+                            if (entity.getAttributes().getIds().size() == 1) {
+                                joinColumn.setReferencedColumnName(entity
+                                        .getAttributes()
+                                        .getIds()
+                                        .iterator()
+                                        .next()
+                                        .getName());
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     final class IdVisitor extends BaseTreeVisitor {

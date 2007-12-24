@@ -48,6 +48,7 @@ import org.apache.cayenne.jpa.map.JpaOneToMany;
 import org.apache.cayenne.jpa.map.JpaOneToOne;
 import org.apache.cayenne.jpa.map.JpaPersistenceUnitDefaults;
 import org.apache.cayenne.jpa.map.JpaPersistenceUnitMetadata;
+import org.apache.cayenne.jpa.map.JpaPrimaryKeyJoinColumn;
 import org.apache.cayenne.jpa.map.JpaQueryHint;
 import org.apache.cayenne.jpa.map.JpaRelationship;
 import org.apache.cayenne.jpa.map.JpaSecondaryTable;
@@ -714,6 +715,55 @@ public class DataMapConverter {
                         jpaEntity.getPreUpdate().getMethodName());
             }
         }
+
+        @Override
+        public void onFinishNode(ProjectPath path) {
+
+            JpaEntity entity = path.firstInstanceOf(JpaEntity.class);
+            ObjEntity cayenneEntity = targetPath.firstInstanceOf(ObjEntity.class);
+
+            for (JpaSecondaryTable secondaryTable : entity.getSecondaryTables()) {
+
+                // create a relationship between master DbEntity and a secondary
+                // DbEntity...
+                DbEntity cayennePrimaryTable = cayenneEntity.getDbEntity();
+                DbEntity cayenneSecondaryTable = cayennePrimaryTable
+                        .getDataMap()
+                        .getDbEntity(secondaryTable.getName());
+
+                JpaDbRelationship dbRelationship = new JpaDbRelationship(
+                        getSecondaryTableDbRelationshipName(secondaryTable.getName()));
+                dbRelationship.setTargetEntityName(secondaryTable.getName());
+                cayennePrimaryTable.addRelationship(dbRelationship);
+
+                for (JpaPrimaryKeyJoinColumn column : secondaryTable
+                        .getPrimaryKeyJoinColumns()) {
+                    DbAttribute pkAttribute = (DbAttribute) cayennePrimaryTable
+                            .getAttribute(column.getReferencedColumnName());
+                    if (pkAttribute == null) {
+                        recordConflict(path, "Invalid referenced column name: "
+                                + column.getReferencedColumnName());
+                        continue;
+                    }
+
+                    DbAttribute attribute = new DbAttribute(column.getName());
+                    attribute.setPrimaryKey(true);
+                    attribute.setMandatory(true);
+                    attribute.setAttributePrecision(pkAttribute.getAttributePrecision());
+                    attribute.setType(pkAttribute.getType());
+                    cayenneSecondaryTable.addAttribute(attribute);
+
+                    DbJoin join = new DbJoin(dbRelationship, column
+                            .getReferencedColumnName(), column.getName());
+                    dbRelationship.addJoin(join);
+                }
+
+                dbRelationship.setToDependentPK(true);
+                dbRelationship.setToMany(false);
+            }
+
+            super.onFinishNode(path);
+        }
     }
 
     class JpaManyToOneVisitor extends JpaRelationshipVisitor {
@@ -920,27 +970,20 @@ public class DataMapConverter {
             JpaSecondaryTable jpaTable = (JpaSecondaryTable) path.getObject();
             ObjEntity parentCayenneEntity = (ObjEntity) targetPath.getObject();
 
-            DbEntity cayenneEntity = parentCayenneEntity.getDataMap().getDbEntity(
+            DbEntity secondaryEntity = parentCayenneEntity.getDataMap().getDbEntity(
                     jpaTable.getName());
-            if (cayenneEntity == null) {
-                cayenneEntity = new DbEntity(jpaTable.getName());
-                cayenneEntity.setCatalog(jpaTable.getCatalog());
-                cayenneEntity.setSchema(jpaTable.getSchema());
+            if (secondaryEntity == null) {
+                secondaryEntity = new DbEntity(jpaTable.getName());
+                secondaryEntity.setCatalog(jpaTable.getCatalog());
+                secondaryEntity.setSchema(jpaTable.getSchema());
 
-                parentCayenneEntity.getDataMap().addDbEntity(cayenneEntity);
+                parentCayenneEntity.getDataMap().addDbEntity(secondaryEntity);
             }
 
-            // create a relationship between master DbEntity and a secondary DbEntity...
-            DbEntity masterEntity = parentCayenneEntity.getDbEntity();
+            // defer primary./secondary relationship creation till after parent entity's
+            // children are fully parsed...
 
-            JpaDbRelationship dbRelationship = new JpaDbRelationship(
-                    getSecondaryTableDbRelationshipName(cayenneEntity.getName()));
-            dbRelationship.setTargetEntityName(cayenneEntity.getName());
-            dbRelationship.setToMany(false);
-
-            masterEntity.addRelationship(dbRelationship);
-
-            return cayenneEntity;
+            return secondaryEntity;
         }
     }
 
