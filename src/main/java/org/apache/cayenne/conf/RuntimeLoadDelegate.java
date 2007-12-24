@@ -457,7 +457,8 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
 
         // load missing relationships and update configuration object
         for (DataDomain domain : getDomains().values()) {
-            domain.getEntityResolver().updateDefaults();
+            domain.getEntityResolver().applyDBLayerDefaults();
+            domain.getEntityResolver().applyObjectLayerDefaults();
             config.addDomain(domain);
         }
 
