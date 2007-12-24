@@ -109,7 +109,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * 
      * @since 3.0
      */
-    public void updateDefaults() {
+    public void applyDBLayerDefaults() {
 
         // connect DB layer
         for (DataMap map : getDataMaps()) {
@@ -137,6 +137,17 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 }
             }
         }
+
+    }
+
+    /**
+     * Updates missing mapping artifacts that can be guessed from other mapping
+     * information. This implementation creates missing reverse relationships, marking
+     * newly created relationships as "runtime".
+     * 
+     * @since 3.0
+     */
+    public void applyObjectLayerDefaults() {
 
         // connect object layer
         for (DataMap map : getDataMaps()) {

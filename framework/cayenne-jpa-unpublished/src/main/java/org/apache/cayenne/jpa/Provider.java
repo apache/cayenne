@@ -274,7 +274,10 @@ public class Provider implements PersistenceProvider {
             node.addDataMap(cayenneMap);
 
             domain.addNode(node);
-            domain.getEntityResolver().updateDefaults();
+
+            // note that for now we do not apply object layer defaults, as that would
+            // require extra enhancement for runtime relationships...
+            domain.getEntityResolver().applyDBLayerDefaults();
             domain.setUsingExternalTransactions(isJTA);
 
             if ("true".equalsIgnoreCase(unit.getProperties().getProperty(
