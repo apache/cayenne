@@ -34,6 +34,8 @@
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.IdClassEntity</class>
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.EmbeddedIdEntity</class>
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.EmbeddedEntity</class>
+		<class>org.apache.cayenne.jpa.itest.ch2.entity.SerializableEmbeddedEntity</class>
+		<class>org.apache.cayenne.jpa.itest.ch2.entity.PropertyEmbeddedEntity</class>
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.EmbeddedImpliedEntity</class>
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.PropertyDefaultsPrimitiveEntity</class>
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.PropertyDefaultsWrapperEntity</class>
@@ -45,5 +47,7 @@
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.BidiOneToManyOwner</class>
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.BidiOneToManyOwned</class>
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.Embeddable1</class>
+		<class>org.apache.cayenne.jpa.itest.ch2.entity.SerializableEmbeddable1</class>
+		<class>org.apache.cayenne.jpa.itest.ch2.entity.PropertyEmbeddable</class>
 	</persistence-unit>
 </persistence>

@@ -75,7 +75,8 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 for (ObjAttribute objAttribute : embedded.getAttributes()) {
                     createEmbeddedAttributeProperty(descriptor, embedded, objAttribute);
                 }
-            } else if (attribute instanceof ObjAttribute) {
+            }
+            else if (attribute instanceof ObjAttribute) {
                 createAttributeProperty(descriptor, (ObjAttribute) attribute);
             }
         }
@@ -151,14 +152,14 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
 
         String embeddableName = propertyPath.substring(lastDot + 1);
 
+        EmbeddableDescriptor embeddableDescriptor = createEmbeddableDescriptor(embeddedAttribute);
+
         Accessor embeddedAccessor = createAccessor(descriptor, embeddedAttribute
                 .getName(), embeddableClass);
         Accessor embeddedableAccessor = createEmbeddableAccessor(
-                embeddableClass,
+                embeddableDescriptor,
                 embeddableName,
                 attribute.getJavaClass());
-
-        EmbeddableDescriptor embeddableDescriptor = createEmbeddableDescriptor(embeddedAttribute);
 
         Accessor accessor = new EmbeddedFieldAccessor(
                 embeddableDescriptor,
@@ -235,12 +236,15 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
      * Creates an accessor for the property of the embeddable class.
      */
     protected Accessor createEmbeddableAccessor(
-            Class<?> embeddableClass,
+            EmbeddableDescriptor descriptor,
             String propertyName,
             Class<?> propertyType) {
-        return new FieldAccessor(embeddableClass, propertyName, propertyType);
+        return new FieldAccessor(descriptor.getObjectClass(), propertyName, propertyType);
     }
 
+    /**
+     * Creates a descriptor of the embedded property.
+     */
     protected EmbeddableDescriptor createEmbeddableDescriptor(
             EmbeddedAttribute embeddedAttribute) {
         // TODO: andrus, 11/19/2007 = avoid creation of descriptor for every property of
