@@ -103,6 +103,83 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
+     * Updates missing mapping artifacts that can be guessed from other mapping
+     * information. This implementation creates missing reverse relationships, marking
+     * newly created relationships as "runtime".
+     * 
+     * @since 3.0
+     */
+    public void updateDefaults() {
+
+        // connect DB layer
+        for (DataMap map : getDataMaps()) {
+
+            for (DbEntity entity : map.getDbEntities()) {
+
+                // iterate by copy to avoid concurrency modification errors on reflexive
+                // relationships
+                Object[] relationships = entity.getRelationships().toArray();
+                for (int i = 0; i < relationships.length; i++) {
+                    DbRelationship relationship = (DbRelationship) relationships[i];
+                    if (relationship.getReverseRelationship() == null) {
+                        DbRelationship reverse = relationship.createReverseRelationship();
+
+                        Entity targetEntity = reverse.getSourceEntity();
+                        reverse.setName(makeUniqueRelationshipName(targetEntity));
+                        reverse.setRuntime(true);
+                        targetEntity.addRelationship(reverse);
+
+                        logger.info("added runtime complimentary DbRelationship from "
+                                + targetEntity.getName()
+                                + " to "
+                                + reverse.getTargetEntityName());
+                    }
+                }
+            }
+        }
+
+        // connect object layer
+        for (DataMap map : getDataMaps()) {
+
+            for (ObjEntity entity : map.getObjEntities()) {
+
+                // iterate by copy to avoid concurrency modification errors on reflexive
+                // relationships
+                Object[] relationships = entity.getRelationships().toArray();
+                for (int i = 0; i < relationships.length; i++) {
+                    ObjRelationship relationship = (ObjRelationship) relationships[i];
+                    if (relationship.getReverseRelationship() == null) {
+                        ObjRelationship reverse = relationship
+                                .createReverseRelationship();
+
+                        Entity targetEntity = reverse.getSourceEntity();
+                        reverse.setName(makeUniqueRelationshipName(targetEntity));
+                        reverse.setRuntime(true);
+                        targetEntity.addRelationship(reverse);
+
+                        logger.info("added runtime complimentary ObjRelationship from "
+                                + targetEntity.getName()
+                                + " to "
+                                + reverse.getTargetEntityName());
+                    }
+                }
+            }
+        }
+    }
+
+    private String makeUniqueRelationshipName(Entity entity) {
+        for (int i = 0; i < 1000; i++) {
+            String name = "runtimeRelationship" + i;
+            if (entity.getRelationship(name) == null) {
+                return name;
+            }
+        }
+
+        throw new CayenneRuntimeException(
+                "Could not come up with a unique relationship name");
+    }
+
+    /**
      * Compiles internal callback registry.
      */
     synchronized void initCallbacks() {
@@ -273,7 +350,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
         return c;
     }
-    
+
     /**
      * @since 3.0
      */
@@ -447,8 +524,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
                 // build inheritance tree... include nodes that
                 // have no children to avoid unneeded cache rebuilding on lookup...
-                EntityInheritanceTree node = entityInheritanceCache
-                        .get(oe.getName());
+                EntityInheritanceTree node = entityInheritanceCache.get(oe.getName());
                 if (node == null) {
                     node = new EntityInheritanceTree(oe);
                     entityInheritanceCache.put(oe.getName(), node);
@@ -541,8 +617,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public EntityInheritanceTree lookupInheritanceTree(ObjEntity entity) {
 
-        EntityInheritanceTree tree = entityInheritanceCache
-                .get(entity.getName());
+        EntityInheritanceTree tree = entityInheritanceCache.get(entity.getName());
 
         if (tree == null) {
             // since we keep inheritance trees for all entities, null means

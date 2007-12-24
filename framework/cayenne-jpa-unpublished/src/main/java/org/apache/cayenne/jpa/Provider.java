@@ -274,6 +274,7 @@ public class Provider implements PersistenceProvider {
             node.addDataMap(cayenneMap);
 
             domain.addNode(node);
+            domain.getEntityResolver().updateDefaults();
             domain.setUsingExternalTransactions(isJTA);
 
             if ("true".equalsIgnoreCase(unit.getProperties().getProperty(
