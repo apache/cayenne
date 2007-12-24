@@ -142,14 +142,24 @@ public class DbRelationship extends Relationship {
      * @since 1.0.5
      */
     public DbRelationship createReverseRelationship() {
+        DbEntity targetEntity = (DbEntity) getTargetEntity();
+
         DbRelationship reverse = new DbRelationship();
-        reverse.setSourceEntity(getTargetEntity());
+        reverse.setSourceEntity(targetEntity);
         reverse.setTargetEntityName(getSourceEntity().getName());
 
-        // TODO: must set toDepPK correctly
-        // must set toMany correctly
+        // TODO: andrus 12/24/2007 - one more case to handle - set reverse toDepPK = true
+        // if this relationship toDepPK is false, but the entities are joined on a PK...
+        // on the other hand, these can still be two independent entities...
 
-        reverse.setToMany(!toMany);
+        if (isToDependentPK()
+                && !toMany
+                && joins.size() == targetEntity.getPrimaryKeys().size()) {
+            reverse.setToMany(false);
+        }
+        else {
+            reverse.setToMany(!toMany);
+        }
 
         for (DbJoin join : joins) {
             DbJoin reverseJoin = join.createReverseJoin();

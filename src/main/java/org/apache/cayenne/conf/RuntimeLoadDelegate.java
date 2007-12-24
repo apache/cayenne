@@ -25,19 +25,13 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.InputSource;
@@ -360,7 +354,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         if (adapterName != null) {
             try {
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                Class dbAdapterClass = Class.forName(adapterName, true, cl);
+                Class<?> dbAdapterClass = Class.forName(adapterName, true, cl);
                 node.setAdapter((DbAdapter) dbAdapterClass.newInstance());
                 return;
             }
@@ -463,7 +457,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
 
         // load missing relationships and update configuration object
         for (DataDomain domain : getDomains().values()) {
-            updateDefaults(domain);
+            domain.getEntityResolver().updateDefaults();
             config.addDomain(domain);
         }
 
@@ -474,86 +468,6 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
                 + " ms.");
     }
 
-    /**
-     * Updates missing mapping artefacts that can be guessed from other mapping
-     * information. This implementation creates missing reverse relationships, marking
-     * newly created relationships as "runtime".
-     * 
-     * @since 3.0
-     */
-    protected void updateDefaults(DataDomain domain) {
-
-        // connect DB layer
-        for (DataMap map : domain.getDataMaps()) {
-
-            for (DbEntity entity : map.getDbEntities()) {
-
-                // iterate by copy to avoid concurrency modification errors on reflexive
-                // relationships
-                Object[] relationships = entity.getRelationships().toArray();
-                for (int i = 0; i < relationships.length; i++) {
-                    DbRelationship relationship = (DbRelationship) relationships[i];
-                    if (relationship.getReverseRelationship() == null) {
-                        DbRelationship reverse = relationship.createReverseRelationship();
-
-                        Entity targetEntity = reverse.getSourceEntity();
-                        reverse.setName(makeUniqueRelationshipName(targetEntity));
-                        reverse.setRuntime(true);
-                        targetEntity.addRelationship(reverse);
-
-                        logger.info("added runtime complimentary DbRelationship from "
-                                + targetEntity.getName()
-                                + " to "
-                                + reverse.getTargetEntityName());
-                    }
-                }
-            }
-        }
-
-        // connect object layer
-        for (DataMap map : domain.getDataMaps()) {
-
-            for (ObjEntity entity : map.getObjEntities()) {
-
-                // iterate by copy to avoid concurrency modification errors on reflexive
-                // relationships
-                Object[] relationships = entity.getRelationships().toArray();
-                for (int i = 0; i < relationships.length; i++) {
-                    ObjRelationship relationship = (ObjRelationship) relationships[i];
-                    if (relationship.getReverseRelationship() == null) {
-                        ObjRelationship reverse = relationship
-                                .createReverseRelationship();
-
-                        Entity targetEntity = reverse.getSourceEntity();
-                        reverse.setName(makeUniqueRelationshipName(targetEntity));
-                        reverse.setRuntime(true);
-                        targetEntity.addRelationship(reverse);
-                        
-                        logger.info("added runtime complimentary ObjRelationship from "
-                                + targetEntity.getName()
-                                + " to "
-                                + reverse.getTargetEntityName());
-                    }
-                }
-            }
-        }
-    }
-
-    private String makeUniqueRelationshipName(Entity entity) {
-        for (int i = 0; i < 1000; i++) {
-            String name = "runtimeRelationship" + i;
-            if(entity.getRelationship(name) == null) {
-                return name;
-            }
-        }
-
-        throw new CayenneRuntimeException(
-                "Could not come up with a unique relationship name");
-    }
-
-    /**
-     * @see org.apache.cayenne.conf.ConfigLoaderDelegate#startedLoading()
-     */
     public void startedLoading() {
         startTime = System.currentTimeMillis();
         logger.info("started configuration loading.");
