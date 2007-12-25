@@ -23,7 +23,6 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
 import org.apache.cayenne.jpa.map.AccessType;
@@ -162,6 +161,46 @@ public class DataMapConverter {
         return visitor;
     }
 
+    private void createDbAttribute(
+            String tableName,
+            JpaColumn column,
+            JpaAttribute attribute) {
+
+        DbAttribute dbAttribute = new DbAttribute(column.getName());
+
+        if (attribute instanceof JpaBasic) {
+            JpaBasic basic = (JpaBasic) attribute;
+            dbAttribute.setType(basic.getDefaultJdbcType());
+        }
+        else if (attribute instanceof JpaVersion) {
+            JpaVersion version = (JpaVersion) attribute;
+            dbAttribute.setType(version.getDefaultJdbcType());
+        }
+
+        dbAttribute.setMandatory(!column.isNullable());
+        dbAttribute.setMaxLength(column.getLength());
+
+        // DbAttribute "no scale" means -1, not 0 like in JPA.
+        if (column.getScale() > 0) {
+            dbAttribute.setScale(column.getScale());
+        }
+
+        // DbAttribute "no precision" means -1, not 0 like in JPA.
+        if (column.getPrecision() > 0) {
+            dbAttribute.setAttributePrecision(column.getPrecision());
+        }
+
+        DbEntity entity = targetPath
+                .firstInstanceOf(DataMap.class)
+                .getDbEntity(tableName);
+
+        if (entity == null) {
+            throw new JpaProviderException("No DbEntity defined for table  " + tableName);
+        }
+
+        entity.addAttribute(dbAttribute);
+    }
+
     private String getSecondaryTableDbRelationshipName(String secondaryTableName) {
         return "$cay_secondary_" + secondaryTableName;
     }
@@ -267,20 +306,29 @@ public class DataMapConverter {
                         .getColumn()
                         .getName());
             }
+
             entity.addAttribute(embedded);
 
-            DbEntity dbEntity = entity.getDbEntity();
-            for (ObjAttribute attribute : embedded.getAttributes()) {
-                DbAttribute dbAttribute = new DbAttribute(attribute.getDbAttributeName());
-                dbAttribute.setType(TypesMapping.getSqlTypeByJava(attribute.getType()));
-                dbEntity.addAttribute(dbAttribute);
+            // for each embedded attribute, add all Embeddable attributes to DbEntity,
+            // honoring @Column settings
+            JpaEmbeddable jpaEmbeddable = path
+                    .firstInstanceOf(JpaEntityMap.class)
+                    .embeddableForClass(jpaEmbedded.getPropertyDescriptor().getType());
+
+            for (JpaBasic jpaBasic : jpaEmbeddable.getAttributes().getBasicAttributes()) {
+
+                JpaColumn column = jpaBasic.getColumn();
+                String tableName = column.getTable() != null ? column.getTable() : entity
+                        .getDbEntityName();
+
+                createDbAttribute(tableName, jpaBasic.getColumn(), jpaBasic);
             }
 
             return embedded;
         }
     }
 
-    class JpaEmbeddedBasicVisitor extends NestedVisitor {
+    class JpaEmbeddableBasicVisitor extends NestedVisitor {
 
         @Override
         Object createObject(ProjectPath path) {
@@ -443,52 +491,13 @@ public class DataMapConverter {
         public boolean onStartNode(ProjectPath path) {
             JpaColumn jpaColumn = (JpaColumn) path.getObject();
 
-            // skip embeddable columns - they are mapped per entity
-            if (path.firstInstanceOf(JpaEmbeddable.class) != null) {
-                return false;
-            }
-
-            JpaAttribute attribute = (JpaAttribute) path.getObjectParent();
-
-            DbAttribute dbAttribute = new DbAttribute(jpaColumn.getName());
-
-            if (attribute instanceof JpaBasic) {
-                JpaBasic basic = (JpaBasic) attribute;
-                dbAttribute.setType(basic.getDefaultJdbcType());
-            }
-            else if (attribute instanceof JpaVersion) {
-                JpaVersion version = (JpaVersion) attribute;
-                dbAttribute.setType(version.getDefaultJdbcType());
-            }
-
-            dbAttribute.setMandatory(!jpaColumn.isNullable());
-            dbAttribute.setMaxLength(jpaColumn.getLength());
-
-            // DbAttribute "no scale" means -1, not 0 like in JPA.
-            if (jpaColumn.getScale() > 0) {
-                dbAttribute.setScale(jpaColumn.getScale());
-            }
-
-            // DbAttribute "no precision" means -1, not 0 like in JPA.
-            if (jpaColumn.getPrecision() > 0) {
-                dbAttribute.setAttributePrecision(jpaColumn.getPrecision());
-            }
-
             if (jpaColumn.getTable() == null) {
                 throw new JpaProviderException("No default table defined for JpaColumn "
                         + jpaColumn.getName());
             }
 
-            DbEntity entity = targetPath.firstInstanceOf(DataMap.class).getDbEntity(
-                    jpaColumn.getTable());
-
-            if (entity == null) {
-                throw new JpaProviderException("No DbEntity defined for table  "
-                        + jpaColumn.getTable());
-            }
-
-            entity.addAttribute(dbAttribute);
-
+            JpaAttribute attribute = (JpaAttribute) path.getObjectParent();
+            createDbAttribute(jpaColumn.getTable(), jpaColumn, attribute);
             return false;
         }
     }
@@ -607,8 +616,7 @@ public class DataMapConverter {
 
             BaseTreeVisitor attributeVisitor = new BaseTreeVisitor();
 
-            JpaEmbeddedBasicVisitor basicVisitor = new JpaEmbeddedBasicVisitor();
-            basicVisitor.addChildVisitor(JpaColumn.class, new JpaColumnVisitor());
+            JpaEmbeddableBasicVisitor basicVisitor = new JpaEmbeddableBasicVisitor();
             attributeVisitor.addChildVisitor(JpaBasic.class, basicVisitor);
             addChildVisitor(JpaAttributes.class, attributeVisitor);
         }
