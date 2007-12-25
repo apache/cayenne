@@ -22,7 +22,6 @@ package org.apache.cayenne.unit;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -35,9 +34,10 @@ import org.apache.cayenne.map.Procedure;
  */
 public class MySQLStackAdapter extends AccessStackAdapter {
 
-    static final Collection NO_CONSTRAINTS_TABLES = Arrays.asList(new Object[] {
-            "REFLEXIVE_AND_TO_ONE", "ARTGROUP", "FK_OF_DIFFERENT_TYPE"
-    });
+    static final Collection<String> NO_CONSTRAINTS_TABLES = Arrays.asList(
+            "REFLEXIVE_AND_TO_ONE",
+            "ARTGROUP",
+            "FK_OF_DIFFERENT_TYPE");
 
     public MySQLStackAdapter(DbAdapter adapter) {
         super(adapter);
@@ -54,7 +54,7 @@ public class MySQLStackAdapter extends AccessStackAdapter {
     public boolean supportsStoredProcedures() {
         return true;
     }
-    
+
     public boolean supportsTrimChar() {
         return true;
     }
@@ -68,25 +68,28 @@ public class MySQLStackAdapter extends AccessStackAdapter {
         }
     }
 
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
-            throws Exception {
+    public void willDropTables(
+            Connection conn,
+            DataMap map,
+            Collection<String> tablesToDrop) throws Exception {
+
         // special DROP CONSTRAINT syntax for MySQL
 
-        Map constraintsMap = getConstraints(conn, map, tablesToDrop);
+        Map<String, Collection<String>> constraintsMap = getConstraints(
+                conn,
+                map,
+                tablesToDrop);
 
-        Iterator it = constraintsMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Map.Entry<String, Collection<String>> entry : constraintsMap.entrySet()) {
 
-            Collection constraints = (Collection) entry.getValue();
+            Collection<String> constraints = entry.getValue();
             if (constraints == null || constraints.isEmpty()) {
                 continue;
             }
 
             Object tableName = entry.getKey();
-            Iterator cit = constraints.iterator();
-            while (cit.hasNext()) {
-                Object constraint = cit.next();
+
+            for (String constraint : constraints) {
                 StringBuffer drop = new StringBuffer();
                 drop
                         .append("ALTER TABLE ")

@@ -31,7 +31,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -52,7 +51,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class AccessStackAdapter {
 
-    private static Log logObj = LogFactory.getLog(AccessStackAdapter.class);
+    private static Log logger = LogFactory.getLog(AccessStackAdapter.class);
 
     protected DbAdapter adapter;
 
@@ -74,29 +73,32 @@ public class AccessStackAdapter {
     /**
      * Drops all table constraints.
      */
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
-            throws Exception {
+    public void willDropTables(
+            Connection conn,
+            DataMap map,
+            Collection<String> tablesToDrop) throws Exception {
         dropConstraints(conn, map, tablesToDrop);
     }
 
-    protected void dropConstraints(Connection conn, DataMap map, Collection tablesToDrop)
-            throws Exception {
-        Map constraintsMap = getConstraints(conn, map, tablesToDrop);
+    protected void dropConstraints(
+            Connection conn,
+            DataMap map,
+            Collection<String> tablesToDrop) throws Exception {
+        Map<String, Collection<String>> constraintsMap = getConstraints(
+                conn,
+                map,
+                tablesToDrop);
 
-        Iterator it = constraintsMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Map.Entry<String, Collection<String>> entry : constraintsMap.entrySet()) {
 
-            Collection constraints = (Collection) entry.getValue();
+            Collection<String> constraints = entry.getValue();
             if (constraints == null || constraints.isEmpty()) {
                 continue;
             }
 
             Object tableName = entry.getKey();
-            Iterator cit = constraints.iterator();
-            while (cit.hasNext()) {
-                Object constraint = cit.next();
-                StringBuffer drop = new StringBuffer();
+            for (String constraint : constraints) {
+                StringBuilder drop = new StringBuilder();
                 drop
                         .append("ALTER TABLE ")
                         .append(tableName)
@@ -150,7 +152,7 @@ public class AccessStackAdapter {
     public boolean supportsEqualNullSyntax() {
         return true;
     }
-    
+
     public boolean supportsAllAnySome() {
         return true;
     }
@@ -184,11 +186,11 @@ public class AccessStackAdapter {
 
         return true;
     }
-    
+
     public boolean supportsFKConstraints() {
         return true;
     }
-    
+
     public boolean supportsColumnTypeReengineering() {
         return true;
     }
@@ -221,7 +223,7 @@ public class AccessStackAdapter {
     }
 
     protected void executeDDL(Connection con, String ddl) throws Exception {
-        logObj.info(ddl);
+        logger.info(ddl);
         Statement st = con.createStatement();
 
         try {
@@ -284,14 +286,16 @@ public class AccessStackAdapter {
      * Returns a map of database constraints with DbEntity names used as keys, and
      * Collections of constraint names as values.
      */
-    protected Map getConstraints(Connection conn, DataMap map, Collection includeTables)
-            throws SQLException {
-        Map constraintMap = new HashMap();
+    protected Map<String, Collection<String>> getConstraints(
+            Connection conn,
+            DataMap map,
+            Collection<String> includeTables) throws SQLException {
+
+        Map<String, Collection<String>> constraintMap = new HashMap<String, Collection<String>>();
 
         DatabaseMetaData metadata = conn.getMetaData();
-        Iterator it = includeTables.iterator();
-        while (it.hasNext()) {
-            String name = (String) it.next();
+
+        for (String name : includeTables) {
             DbEntity entity = map.getDbEntity(name);
             if (entity == null) {
                 continue;
@@ -306,10 +310,10 @@ public class AccessStackAdapter {
                     String fkTable = rs.getString("FKTABLE_NAME");
 
                     if (fk != null && fkTable != null) {
-                        Collection constraints = (Collection) constraintMap.get(fkTable);
+                        Collection<String> constraints = constraintMap.get(fkTable);
                         if (constraints == null) {
                             // use a set to avoid duplicate constraints
-                            constraints = new HashSet();
+                            constraints = new HashSet<String>();
                             constraintMap.put(fkTable, constraints);
                         }
 

@@ -520,12 +520,10 @@ public class DbGenerator {
             excludedEntities = Collections.emptyList();
         }
 
-        // remove derived db entities
         List<DbEntity> tables = new ArrayList<DbEntity>();
         List<DbEntity> tablesWithAutoPk = new ArrayList<DbEntity>();
-        Iterator<DbEntity> it = map.getDbEntities().iterator();
-        while (it.hasNext()) {
-            DbEntity nextEntity = it.next();
+
+        for (DbEntity nextEntity : map.getDbEntities()) {
 
             // do sanity checks...
 
@@ -581,9 +579,7 @@ public class DbGenerator {
                 // supposedly all source attributes of the relationship
                 // to master entity must be a part of primary key,
                 // so
-                Iterator<DbJoin> joins = nextRelationship.getJoins().iterator();
-                while (joins.hasNext()) {
-                    DbJoin join = joins.next();
+                for (DbJoin join : nextRelationship.getJoins()) {
                     pkAttributes.remove(join.getSource());
                 }
             }
