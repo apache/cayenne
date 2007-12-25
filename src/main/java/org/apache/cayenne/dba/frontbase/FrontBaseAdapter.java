@@ -20,6 +20,8 @@
 package org.apache.cayenne.dba.frontbase;
 
 import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -190,8 +192,11 @@ public class FrontBaseAdapter extends JdbcAdapter {
     /**
      * Adds the CASCADE option to the DROP TABLE clause.
      */
-    public String dropTable(DbEntity ent) {
-        return super.dropTable(ent) + " CASCADE";
+    @Override
+    public Collection<String> dropTableStatements(DbEntity table) {
+        return Collections.singleton("DROP TABLE "
+                + table.getFullyQualifiedName()
+                + " CASCADE");
     }
 
     protected PkGenerator createPkGenerator() {

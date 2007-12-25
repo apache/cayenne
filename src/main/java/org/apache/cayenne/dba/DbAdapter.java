@@ -52,17 +52,17 @@ public interface DbAdapter {
      * 
      * @since 1.0.4
      */
-    public String getBatchTerminator();
+    String getBatchTerminator();
 
     // TODO: deprecate and move into SQLAction implementation
-    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler);
+    QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler);
 
     /**
      * Returns an instance of SQLAction that should handle the query.
      * 
      * @since 1.2
      */
-    public SQLAction getAction(Query query, DataNode node);
+    SQLAction getAction(Query query, DataNode node);
 
     /**
      * Returns true if a target database supports FK constraints.
@@ -70,14 +70,14 @@ public interface DbAdapter {
      * @deprecated since 3.0 - almost all DB's support FK's now and also this flag is less
      *             relevant for Cayenne now.
      */
-    public boolean supportsFkConstraints();
+    boolean supportsFkConstraints();
 
     /**
      * Returns true if a target database supports UNIQUE constraints.
      * 
      * @since 1.1
      */
-    public boolean supportsUniqueConstraints();
+    boolean supportsUniqueConstraints();
 
     /**
      * Returns true if a target database supports key autogeneration. This feature also
@@ -85,57 +85,65 @@ public interface DbAdapter {
      * 
      * @since 1.2
      */
-    public boolean supportsGeneratedKeys();
+    boolean supportsGeneratedKeys();
 
     /**
      * Returns <code>true</code> if the target database supports batch updates.
      */
-    public boolean supportsBatchUpdates();
+    boolean supportsBatchUpdates();
 
     /**
      * Returns a SQL string that can be used to drop a database table corresponding to
-     * <code>ent</code> parameter.
+     * entity parameter.
+     * 
+     * @deprecated since 3.0 Cayenne supports 'dropTableStatements' to allow multiple
+     *             statements to be executed when dropping the table.
      */
-    public String dropTable(DbEntity entity);
+    String dropTable(DbEntity entity);
+
+    /**
+     * Returns a collection of SQL statements needed to drop a database table.
+     * 
+     * @since 3.0
+     */
+    Collection<String> dropTableStatements(DbEntity table);
 
     /**
      * Returns a SQL string that can be used to create database table corresponding to
      * <code>entity</code> parameter.
      */
-    public String createTable(DbEntity entity);
+    String createTable(DbEntity entity);
 
     /**
-     * Returns a DDL string to create a unique constraint over a set of columns, or null 
+     * Returns a DDL string to create a unique constraint over a set of columns, or null
      * if the unique constraints are not supported.
      * 
      * @since 1.1
      */
-    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns);
+    String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns);
 
     /**
      * Returns a SQL string that can be used to create a foreign key constraint for the
      * relationship, or null if foreign keys are not supported.
      */
-    public String createFkConstraint(DbRelationship rel);
+    String createFkConstraint(DbRelationship rel);
 
     /**
      * Returns an array of RDBMS types that can be used with JDBC <code>type</code>.
      * Valid JDBC types are defined in java.sql.Types.
      */
-    public String[] externalTypesForJdbcType(int type);
+    String[] externalTypesForJdbcType(int type);
 
     /**
      * Returns a map of ExtendedTypes that is used to translate values between Java and
      * JDBC layer.
-     * 
-     * @see org.apache.cayenne.access.types.ExtendedType
      */
-    public ExtendedTypeMap getExtendedTypes();
+    ExtendedTypeMap getExtendedTypes();
 
     /**
      * Returns primary key generator associated with this DbAdapter.
      */
-    public PkGenerator getPkGenerator();
+    PkGenerator getPkGenerator();
 
     /**
      * Creates and returns a DbAttribute based on supplied parameters (usually obtained
@@ -150,7 +158,7 @@ public interface DbAdapter {
      *            less than zero)
      * @param allowNulls database column nullable parameter
      */
-    public DbAttribute buildAttribute(
+    DbAttribute buildAttribute(
             String name,
             String typeName,
             int type,
@@ -161,7 +169,7 @@ public interface DbAdapter {
     /**
      * Binds an object value to PreparedStatement's numbered parameter.
      */
-    public void bindParameter(
+    void bindParameter(
             PreparedStatement statement,
             Object object,
             int pos,
@@ -172,13 +180,16 @@ public interface DbAdapter {
      * Returns the name of the table type (as returned by
      * <code>DatabaseMetaData.getTableTypes</code>) for a simple user table.
      */
-    public String tableTypeForTable();
+    String tableTypeForTable();
 
     /**
      * Returns the name of the table type (as returned by
      * <code>DatabaseMetaData.getTableTypes</code>) for a view table.
      */
-    public String tableTypeForView();
-    
-    public MergerFactory mergerFactory();
+    String tableTypeForView();
+
+    /**
+     * @since 3.0
+     */
+    MergerFactory mergerFactory();
 }

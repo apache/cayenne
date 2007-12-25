@@ -20,6 +20,8 @@
 package org.apache.cayenne.dba.postgres;
 
 import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -224,11 +226,12 @@ public class PostgresAdapter extends JdbcAdapter {
 
     /**
      * Adds the CASCADE option to the DROP TABLE clause.
-     * 
-     * @see JdbcAdapter#dropTable(DbEntity)
      */
-    public String dropTable(DbEntity ent) {
-        return super.dropTable(ent) + " CASCADE";
+    @Override
+    public Collection<String> dropTableStatements(DbEntity table) {
+        return Collections.singleton("DROP TABLE "
+                + table.getFullyQualifiedName()
+                + " CASCADE");
     }
 
     /**
@@ -244,7 +247,7 @@ public class PostgresAdapter extends JdbcAdapter {
     protected PkGenerator createPkGenerator() {
         return new PostgresPkGenerator();
     }
-    
+
     public MergerFactory mergerFactory() {
         return new PostgresMergerFactory();
     }

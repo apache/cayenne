@@ -66,7 +66,7 @@ public class DbGenerator {
     protected DataDomain domain;
 
     // stores generated SQL statements
-    protected Map<String, String> dropTables;
+    protected Map<String, Collection<String>> dropTables;
     protected Map<String, String> createTables;
     protected Map<String, List<String>> createConstraints;
     protected List<String> createPK;
@@ -149,7 +149,7 @@ public class DbGenerator {
      * this method.
      */
     protected void buildStatements() {
-        dropTables = new HashMap<String, String>();
+        dropTables = new HashMap<String, Collection<String>>();
         createTables = new HashMap<String, String>();
         createConstraints = new HashMap<String, List<String>>();
 
@@ -161,7 +161,7 @@ public class DbGenerator {
             String name = dbe.getName();
 
             // build "DROP TABLE"
-            dropTables.put(name, adapter.dropTable(dbe));
+            dropTables.put(name, adapter.dropTableStatements(dbe));
 
             // build "CREATE TABLE"
             createTables.put(name, adapter.createTable(dbe));
@@ -213,7 +213,7 @@ public class DbGenerator {
                     .listIterator(dbEntitiesInInsertOrder.size());
             while (it.hasPrevious()) {
                 DbEntity ent = it.previous();
-                list.add(dropTables.get(ent.getName()));
+                list.addAll(dropTables.get(ent.getName()));
             }
         }
 
@@ -283,7 +283,9 @@ public class DbGenerator {
                         .listIterator(dbEntitiesInInsertOrder.size());
                 while (it.hasPrevious()) {
                     DbEntity ent = it.previous();
-                    safeExecute(connection, dropTables.get(ent.getName()));
+                    for (String statement : dropTables.get(ent.getName())) {
+                        safeExecute(connection, statement);
+                    }
                 }
             }
 

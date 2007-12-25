@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
@@ -217,10 +218,19 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Returns a SQL string to drop a table corresponding to <code>ent</code> DbEntity.
+     * Returns a SQL string to drop a table corresponding to table DbEntity.
+     * 
+     * @deprecated since 3.0 in favor of "dropTableStatements"
      */
-    public String dropTable(DbEntity ent) {
-        return "DROP TABLE " + ent.getFullyQualifiedName();
+    public String dropTable(DbEntity table) {
+        return dropTableStatements(table).iterator().next();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public Collection<String> dropTableStatements(DbEntity table) {
+        return Collections.singleton("DROP TABLE " + table.getFullyQualifiedName());
     }
 
     /**
