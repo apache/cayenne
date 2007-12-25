@@ -85,6 +85,10 @@ public class MockDbAdapter implements DbAdapter {
         return null;
     }
 
+    public Collection<String> dropTableStatements(DbEntity table) {
+        return null;
+    }
+
     public String createTable(DbEntity ent) {
         return null;
     }

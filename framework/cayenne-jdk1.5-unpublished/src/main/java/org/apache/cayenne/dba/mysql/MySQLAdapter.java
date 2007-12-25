@@ -21,6 +21,8 @@ package org.apache.cayenne.dba.mysql;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -46,13 +48,12 @@ import org.apache.cayenne.query.SQLAction;
  * <p>
  * Foreign key constraints are supported by InnoDB engine and NOT supported by MyISAM
  * engine. This adapter by default assumes MyISAM, so
- * {@link org.apache.cayenne.dba.JdbcAdapter#supportsFkConstraints()} will return
- * false. Users can manually change this by calling
- * <em>setSupportsFkConstraints(true)</em> or better by using an
- * {@link org.apache.cayenne.dba.AutoAdapter}, i.e. not entering the adapter name at
- * all for the DataNode, letting Cayenne guess it in runtime. In the later case Cayenne
- * will check the <em>table_type</em> MySQL variable to detect whether InnoDB is the
- * default, and configure the adapter accordingly.
+ * {@link org.apache.cayenne.dba.JdbcAdapter#supportsFkConstraints()} will return false.
+ * Users can manually change this by calling <em>setSupportsFkConstraints(true)</em> or
+ * better by using an {@link org.apache.cayenne.dba.AutoAdapter}, i.e. not entering the
+ * adapter name at all for the DataNode, letting Cayenne guess it in runtime. In the later
+ * case Cayenne will check the <em>table_type</em> MySQL variable to detect whether
+ * InnoDB is the default, and configure the adapter accordingly.
  * <h3>Sample Connection Settings</h3>
  * <ul>
  * <li>Adapter name: org.apache.cayenne.dba.mysql.MySQLAdapter</li>
@@ -81,8 +82,24 @@ public class MySQLAdapter extends JdbcAdapter {
                 .getEntityResolver()));
     }
 
-    public String dropTable(DbEntity entity) {
-        return "DROP TABLE IF EXISTS " + entity.getFullyQualifiedName() + " CASCADE";
+    /**
+     * @deprecated since 3.0
+     */
+    @Override
+    public String dropTable(DbEntity table) {
+        return "DROP TABLE IF EXISTS " + table.getFullyQualifiedName() + " CASCADE";
+    }
+
+    /**
+     * @since 3.0
+     */
+    @Override
+    public Collection<String> dropTableStatements(DbEntity table) {
+        // note that CASCADE is a noop as of MySQL 5.0, so we have to use FK checks
+        // statement
+        return Arrays.asList("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS "
+                + table.getFullyQualifiedName()
+                + " CASCADE", "SET FOREIGN_KEY_CHECKS=1");
     }
 
     /**
@@ -171,7 +188,7 @@ public class MySQLAdapter extends JdbcAdapter {
     protected PkGenerator createPkGenerator() {
         return new MySQLPkGenerator();
     }
-    
+
     /**
      * @since 3.0
      */
@@ -225,7 +242,7 @@ public class MySQLAdapter extends JdbcAdapter {
         // Note that according to MySQL docs, FK indexes are created automatically when
         // constraint is defined, starting at MySQL 4.1.2
         if (supportsFkConstraints()) {
-            for (Relationship r :  entity.getRelationships()) {
+            for (Relationship r : entity.getRelationships()) {
                 DbRelationship relationship = (DbRelationship) r;
                 if (relationship.getJoins().size() > 0
                         && relationship.isToPK()
@@ -233,7 +250,9 @@ public class MySQLAdapter extends JdbcAdapter {
 
                     sqlBuffer.append(", KEY (");
 
-                    Iterator<DbAttribute> columns = relationship.getSourceAttributes().iterator();
+                    Iterator<DbAttribute> columns = relationship
+                            .getSourceAttributes()
+                            .iterator();
                     DbAttribute column = columns.next();
                     sqlBuffer.append(column.getName());
 

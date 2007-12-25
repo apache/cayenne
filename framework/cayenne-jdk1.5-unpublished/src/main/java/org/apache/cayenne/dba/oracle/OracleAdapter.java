@@ -23,6 +23,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -48,8 +50,8 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
- * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS </a>. Sample connection
- * settings to use with Oracle are shown below:
+ * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS </a>. Sample
+ * connection settings to use with Oracle are shown below:
  * 
  * <pre>
  *          test-oracle.cayenne.adapter = org.apache.cayenne.dba.oracle.OracleAdapter
@@ -171,7 +173,7 @@ public class OracleAdapter extends JdbcAdapter {
         // enable batch updates by default
         setSupportsBatchUpdates(true);
     }
-    
+
     /**
      * @since 3.0
      */
@@ -219,9 +221,14 @@ public class OracleAdapter extends JdbcAdapter {
     /**
      * Returns a query string to drop a table corresponding to <code>ent</code>
      * DbEntity. Changes superclass behavior to drop all related foreign key constraints.
+     * 
+     * @since 3.0
      */
-    public String dropTable(DbEntity ent) {
-        return "DROP TABLE " + ent.getFullyQualifiedName() + " CASCADE CONSTRAINTS";
+    @Override
+    public Collection<String> dropTableStatements(DbEntity table) {
+        return Collections.singleton("DROP TABLE "
+                + table.getFullyQualifiedName()
+                + " CASCADE CONSTRAINTS");
     }
 
     /**

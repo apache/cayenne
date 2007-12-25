@@ -22,7 +22,6 @@ package org.apache.cayenne.unit;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
@@ -72,33 +71,6 @@ public class MySQLStackAdapter extends AccessStackAdapter {
             Connection conn,
             DataMap map,
             Collection<String> tablesToDrop) throws Exception {
-
-        // special DROP CONSTRAINT syntax for MySQL
-
-        Map<String, Collection<String>> constraintsMap = getConstraints(
-                conn,
-                map,
-                tablesToDrop);
-
-        for (Map.Entry<String, Collection<String>> entry : constraintsMap.entrySet()) {
-
-            Collection<String> constraints = entry.getValue();
-            if (constraints == null || constraints.isEmpty()) {
-                continue;
-            }
-
-            Object tableName = entry.getKey();
-
-            for (String constraint : constraints) {
-                StringBuffer drop = new StringBuffer();
-                drop
-                        .append("ALTER TABLE ")
-                        .append(tableName)
-                        .append(" DROP FOREIGN KEY ")
-                        .append(constraint);
-                executeDDL(conn, drop.toString());
-            }
-        }
 
         Procedure proc = map.getProcedure("cayenne_tst_select_proc");
         if (proc != null && proc.getDataMap() == map) {

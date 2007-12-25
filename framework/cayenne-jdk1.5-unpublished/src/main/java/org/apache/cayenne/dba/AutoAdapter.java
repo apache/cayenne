@@ -155,7 +155,8 @@ public class AutoAdapter implements DbAdapter {
             }
         }
         catch (SQLException e) {
-            throw new CayenneRuntimeException("Error detecting database type: " + e.getLocalizedMessage(), e);
+            throw new CayenneRuntimeException("Error detecting database type: "
+                    + e.getLocalizedMessage(), e);
         }
 
         if (adapter == null) {
@@ -204,8 +205,15 @@ public class AutoAdapter implements DbAdapter {
         return getAdapter().supportsBatchUpdates();
     }
 
+    /**
+     * @deprecated since 3.0 as the deocarated method is deprecated.
+     */
     public String dropTable(DbEntity entity) {
         return getAdapter().dropTable(entity);
+    }
+
+    public Collection<String> dropTableStatements(DbEntity table) {
+        return getAdapter().dropTableStatements(table);
     }
 
     public String createTable(DbEntity entity) {

@@ -206,15 +206,16 @@ public abstract class AbstractAccessStack {
                     continue;
                 }
 
-                try {
-                    String dropSql = node.getAdapter().dropTable(ent);
-                    logObj.info(dropSql);
-                    stmt.execute(dropSql);
-                }
-                catch (SQLException sqe) {
-                    logObj.warn(
-                            "Can't drop table " + ent.getName() + ", ignoring...",
-                            sqe);
+                for (String dropSql : node.getAdapter().dropTableStatements(ent)) {
+                    try {
+                        logObj.info(dropSql);
+                        stmt.execute(dropSql);
+                    }
+                    catch (SQLException sqe) {
+                        logObj.warn(
+                                "Can't drop table " + ent.getName() + ", ignoring...",
+                                sqe);
+                    }
                 }
             }
 
