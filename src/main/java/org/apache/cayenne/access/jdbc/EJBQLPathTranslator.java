@@ -20,7 +20,6 @@ package org.apache.cayenne.access.jdbc;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -194,7 +193,8 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
     private void processLastPathComponent() {
 
-        ObjAttribute attribute = (ObjAttribute) currentEntity.getAttribute(lastPathComponent);
+        ObjAttribute attribute = (ObjAttribute) currentEntity
+                .getAttribute(lastPathComponent);
 
         if (attribute != null) {
             processTerminatingAttribute(attribute);
@@ -235,9 +235,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
             resolveJoin(false);
 
             // TODO: andrus, 6/21/2007 - flattened support
-            DbRelationship dbRelationship = relationship
-                    .getDbRelationships()
-                    .get(0);
+            DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
             DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
 
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
@@ -263,19 +261,17 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
             // match FK against the target object
 
             // TODO: andrus, 6/21/2007 - flattened support
-            DbRelationship dbRelationship = relationship
-                    .getDbRelationships()
-                    .get(0);
+            DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
             DbEntity table = (DbEntity) dbRelationship.getSourceEntity();
 
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
                     table.getFullyQualifiedName());
 
-            List joins = dbRelationship.getJoins();
+            List<DbJoin> joins = dbRelationship.getJoins();
 
             if (joins.size() == 1) {
-                DbJoin join = (DbJoin) joins.get(0);
+                DbJoin join = joins.get(0);
                 context.append(' ');
                 if (isUsingAliases()) {
                     context.append(alias).append('.');
@@ -283,11 +279,10 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 context.append(join.getSourceName());
             }
             else {
-                Map multiColumnMatch = new HashMap(joins.size() + 2);
+                Map<String, String> multiColumnMatch = new HashMap<String, String>(joins
+                        .size() + 2);
 
-                Iterator it = joins.iterator();
-                while (it.hasNext()) {
-                    DbJoin join = (DbJoin) it.next();
+                for (DbJoin join : joins) {
                     String column = isUsingAliases()
                             ? alias + "." + join.getSourceName()
                             : join.getSourceName();
