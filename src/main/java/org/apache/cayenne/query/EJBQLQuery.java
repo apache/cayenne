@@ -101,7 +101,7 @@ public class EJBQLQuery implements Query {
      * Returns unmodifiable map of combined named and positional parameters. Positional
      * parameter keys are Integers, while named parameter keys are strings.
      */
-    public Map<String, ?> getParameters() {
+    public Map<Object, Object> getParameters() {
         return parameters != null
                 ? Collections.unmodifiableMap(parameters)
                 : Collections.EMPTY_MAP;

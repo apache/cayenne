@@ -37,13 +37,13 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 public class EJBQLTranslationContext {
 
     private Map<String, String> tableAliases;
-    private Map boundParameters;
+    private Map<String, Object> boundParameters;
     private StringBuilder mainBuffer;
     private StringBuilder currentBuffer;
     private EJBQLCompiledExpression compiledExpression;
     private Map<String, Object> attributes;
     private Map<String, String> reusableJoins;
-    private Map parameters;
+    private Map<Object, Object> parameters;
     private Map<String, String> idAliases;
     private int columnAliasPosition;
     private EJBQLTranslatorFactory translatorFactory;
@@ -54,7 +54,7 @@ public class EJBQLTranslationContext {
     private boolean appendingResultColumns;
 
     public EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression,
-            Map parameters, EJBQLTranslatorFactory translatorFactory) {
+            Map<Object, Object> parameters, EJBQLTranslatorFactory translatorFactory) {
         this.compiledExpression = compiledExpression;
         this.mainBuffer = new StringBuilder();
         this.currentBuffer = mainBuffer;
@@ -128,8 +128,8 @@ public class EJBQLTranslationContext {
     }
 
     /**
-     * Inserts a marker in the SQL, mapped to a StringBuilder that can be later filled with
-     * content.
+     * Inserts a marker in the SQL, mapped to a StringBuilder that can be later filled
+     * with content.
      */
     void markCurrentPosition(String marker) {
         // ensure buffer is created for the marker
@@ -266,7 +266,7 @@ public class EJBQLTranslationContext {
      */
     String bindParameter(Object value, String prefix) {
         if (boundParameters == null) {
-            boundParameters = new HashMap();
+            boundParameters = new HashMap<String, Object>();
         }
 
         String var = prefix + boundParameters.size();
@@ -307,8 +307,8 @@ public class EJBQLTranslationContext {
      * such alias hasn't been used, it is created on the fly.
      */
     protected String getTableAlias(String idPath, String tableName) {
-        
-        if(!isUsingAliases()) {
+
+        if (!isUsingAliases()) {
             return tableName;
         }
 

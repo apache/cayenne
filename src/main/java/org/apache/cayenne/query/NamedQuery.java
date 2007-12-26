@@ -41,7 +41,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  */
 public class NamedQuery extends IndirectQuery {
 
-    protected Map<String, ?> parameters;
+    protected Map<String, Object> parameters;
 
     protected boolean forceNoCache;
 

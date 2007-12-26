@@ -34,7 +34,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         return translateSelect(ejbql, Collections.EMPTY_MAP);
     }
 
-    private SQLTemplate translateSelect(String ejbql, Map<?,?> parameters) {
+    private SQLTemplate translateSelect(String ejbql, Map<Object, Object> parameters) {
         EJBQLParser parser = EJBQLParserFactory.getParser();
         EJBQLCompiledExpression select = parser.compile(ejbql, getDomain()
                 .getEntityResolver());
