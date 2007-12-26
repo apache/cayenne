@@ -337,8 +337,9 @@ public class CayenneContext extends BaseContext {
     /**
      * Runs a query, returning result as list.
      */
-    public List<?> performQuery(Query query) {
-        List<?> result = onQuery(this, query).firstList();
+    @SuppressWarnings("unchecked")
+    public List performQuery(Query query) {
+        List result = onQuery(this, query).firstList();
         return result != null ? result : new ArrayList<Object>(1);
     }
 

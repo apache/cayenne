@@ -67,7 +67,8 @@ public abstract class BaseContext implements ObjectContext {
 
     public abstract QueryResponse performGenericQuery(Query query);
 
-    public abstract List<?> performQuery(Query query);
+    @SuppressWarnings("unchecked")
+    public abstract List performQuery(Query query);
 
     /**
      * @deprecated since 3.0 this method is replaced by

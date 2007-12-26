@@ -1298,13 +1298,14 @@ public class DataContext extends BaseContext implements DataChannel {
      * @return A list of DataObjects or a DataRows, depending on the value returned by
      *         {@link QueryMetadata#isFetchingDataRows()}.
      */
-    public List<?> performQuery(Query query) {
+    @SuppressWarnings("unchecked")
+    public List performQuery(Query query) {
         query = nonNullDelegate().willPerformQuery(this, query);
         if (query == null) {
             return new ArrayList<Object>(1);
         }
 
-        List<?> result = onQuery(this, query).firstList();
+        List result = onQuery(this, query).firstList();
         return result != null ? result : new ArrayList<Object>(1);
     }
 
