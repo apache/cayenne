@@ -115,9 +115,9 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         String targetAlias = appendTable(rhsId);
         context.append(" ON (");
 
-        Iterator it = incomingDB.getJoins().iterator();
+        Iterator<DbJoin> it = incomingDB.getJoins().iterator();
         if (it.hasNext()) {
-            DbJoin dbJoin = (DbJoin) it.next();
+            DbJoin dbJoin = it.next();
             context
                     .append(sourceAlias)
                     .append('.')
@@ -130,7 +130,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
         while (it.hasNext()) {
             context.append(", ");
-            DbJoin dbJoin = (DbJoin) it.next();
+            DbJoin dbJoin = it.next();
             context
                     .append(sourceAlias)
                     .append('.')
