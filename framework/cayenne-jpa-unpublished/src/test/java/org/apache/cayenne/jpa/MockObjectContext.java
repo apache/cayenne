@@ -78,7 +78,8 @@ public class MockObjectContext implements ObjectContext {
         return null;
     }
 
-    public List<?> performQuery(Query query) {
+    @SuppressWarnings("unchecked")
+    public List performQuery(Query query) {
         return null;
     }
 

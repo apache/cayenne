@@ -98,7 +98,8 @@ public interface QueryResponse {
      * null if the query has no lists. Note that this method resets current iterator to an
      * undefined state.
      */
-    List<?> firstList();
+    @SuppressWarnings("unchecked")
+    List firstList();
 
     /**
      * A utility method for quickly retrieving the first update count from the response.
