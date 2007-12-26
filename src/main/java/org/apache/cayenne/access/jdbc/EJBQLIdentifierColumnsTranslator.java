@@ -20,7 +20,6 @@ package org.apache.cayenne.access.jdbc;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -47,7 +46,7 @@ import org.apache.cayenne.reflect.ToOneProperty;
 class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
-    private Set columns;
+    private Set<String> columns;
 
     EJBQLIdentifierColumnsTranslator(EJBQLTranslationContext context) {
         this.context = context;
@@ -64,7 +63,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
             public boolean visitAttribute(AttributeProperty property) {
                 ObjAttribute oa = property.getAttribute();
-                Iterator dbPathIterator = oa.getDbPathIterator();
+                Iterator<?> dbPathIterator = oa.getDbPathIterator();
                 while (dbPathIterator.hasNext()) {
                     Object pathPart = dbPathIterator.next();
 
@@ -100,12 +99,8 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                 ObjRelationship rel = property.getRelationship();
                 DbRelationship dbRel = rel.getDbRelationships().get(0);
 
-                List joins = dbRel.getJoins();
-                int len = joins.size();
-                for (int i = 0; i < len; i++) {
-                    DbJoin join = (DbJoin) joins.get(i);
+                for (DbJoin join : dbRel.getJoins()) {
                     DbAttribute src = join.getSource();
-
                     appendColumn(idVar, src);
                 }
             }
@@ -118,9 +113,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
         // append id columns ... (some may have been appended already via relationships)
 
         DbEntity table = descriptor.getEntity().getDbEntity();
-        Iterator it = table.getPrimaryKeys().iterator();
-        while (it.hasNext()) {
-            DbAttribute pk = (DbAttribute) it.next();
+        for (DbAttribute pk : table.getPrimaryKeys()) {
             appendColumn(idVar, pk);
         }
 
@@ -136,7 +129,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
         String alias = context.getTableAlias(identifier, table.getFullyQualifiedName());
         String columnName = alias + "." + column.getName();
 
-        Set columns = getColumns();
+        Set<String> columns = getColumns();
 
         if (columns.add(columnName)) {
 
@@ -162,10 +155,10 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
         }
     }
 
-    private Set getColumns() {
+    private Set<String> getColumns() {
 
         if (columns == null) {
-            columns = new HashSet();
+            columns = new HashSet<String>();
         }
 
         return columns;
