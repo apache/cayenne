@@ -102,9 +102,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         }
 
         // TODO: andrus, 4/8/2007 - support for flattened relationships
-        DbRelationship incomingDB = joinRelationship
-                .getDbRelationships()
-                .get(0);
+        DbRelationship incomingDB = joinRelationship.getDbRelationships().get(0);
 
         String lhsId = join.getLeftHandSideId();
         String sourceAlias = context.getTableAlias(lhsId, incomingDB
