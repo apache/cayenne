@@ -52,7 +52,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     protected EJBQLTranslationContext context;
-    protected List multiColumnOperands;
+    protected List<EJBQLMultiColumnOperand> multiColumnOperands;
 
     public EJBQLConditionTranslator(EJBQLTranslationContext context) {
         this.context = context;
@@ -60,7 +60,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     protected void addMultiColumnOperand(EJBQLMultiColumnOperand operand) {
         if (multiColumnOperands == null) {
-            multiColumnOperands = new ArrayList(2);
+            multiColumnOperands = new ArrayList<EJBQLMultiColumnOperand>(2);
         }
 
         multiColumnOperands.add(operand);
@@ -167,13 +167,14 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         context.append(" WHERE");
 
         ObjRelationship relationship = context.getIncomingRelationship(id);
+
         // TODO: andrus, 8/11/2007 flattened?
         DbRelationship correlatedJoinRelationship = relationship
                 .getDbRelationships()
                 .get(0);
-        Iterator it = correlatedJoinRelationship.getJoins().iterator();
+        Iterator<DbJoin> it = correlatedJoinRelationship.getJoins().iterator();
         while (it.hasNext()) {
-            DbJoin join = (DbJoin) it.next();
+            DbJoin join = it.next();
             context.append(' ').append(subqueryRootAlias).append('.').append(
                     join.getTargetName()).append(" = ");
             context.append(correlatedTableAlias).append('.').append(join.getSourceName());
@@ -250,9 +251,8 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         DbRelationship correlatedJoinRelationship = relationship
                 .getDbRelationships()
                 .get(0);
-        Iterator it = correlatedJoinRelationship.getJoins().iterator();
-        while (it.hasNext()) {
-            DbJoin join = (DbJoin) it.next();
+
+        for (DbJoin join : correlatedJoinRelationship.getJoins()) {
             context.append(' ').append(subqueryRootAlias).append('.').append(
                     join.getTargetName()).append(" = ");
             context.append(correlatedTableAlias).append('.').append(join.getSourceName());
@@ -305,12 +305,10 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
                     context.trim(2);
 
-                    EJBQLMultiColumnOperand lhs = (EJBQLMultiColumnOperand) multiColumnOperands
-                            .get(0);
-                    EJBQLMultiColumnOperand rhs = (EJBQLMultiColumnOperand) multiColumnOperands
-                            .get(1);
+                    EJBQLMultiColumnOperand lhs = multiColumnOperands.get(0);
+                    EJBQLMultiColumnOperand rhs = multiColumnOperands.get(1);
 
-                    Iterator it = lhs.getKeys().iterator();
+                    Iterator<?> it = lhs.getKeys().iterator();
                     while (it.hasNext()) {
                         Object key = it.next();
 
@@ -361,12 +359,10 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
                     context.trim(3);
 
-                    EJBQLMultiColumnOperand lhs = (EJBQLMultiColumnOperand) multiColumnOperands
-                            .get(0);
-                    EJBQLMultiColumnOperand rhs = (EJBQLMultiColumnOperand) multiColumnOperands
-                            .get(1);
+                    EJBQLMultiColumnOperand lhs = multiColumnOperands.get(0);
+                    EJBQLMultiColumnOperand rhs = multiColumnOperands.get(1);
 
-                    Iterator it = lhs.getKeys().iterator();
+                    Iterator<?> it = lhs.getKeys().iterator();
                     while (it.hasNext()) {
                         Object key = it.next();
 
@@ -598,7 +594,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     private void processParameter(String boundName) {
         Object object = context.getBoundParameter(boundName);
 
-        Map map = null;
+        Map<?, ?> map = null;
         if (object instanceof Persistent) {
             map = ((Persistent) object).getObjectId().getIdSnapshot();
         }
@@ -606,7 +602,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             map = ((ObjectId) object).getIdSnapshot();
         }
         else if (object instanceof Map) {
-            map = (Map) object;
+            map = (Map<?, ?>) object;
         }
 
         if (map != null) {
