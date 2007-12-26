@@ -36,15 +36,15 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  */
 public class EJBQLTranslationContext {
 
-    private Map tableAliases;
+    private Map<String, String> tableAliases;
     private Map boundParameters;
     private StringBuilder mainBuffer;
     private StringBuilder currentBuffer;
     private EJBQLCompiledExpression compiledExpression;
-    private Map attributes;
-    private Map reusableJoins;
+    private Map<String, Object> attributes;
+    private Map<String, String> reusableJoins;
     private Map parameters;
-    private Map idAliases;
+    private Map<String, String> idAliases;
     private int columnAliasPosition;
     private EJBQLTranslatorFactory translatorFactory;
     private boolean usingAliases;
@@ -77,7 +77,7 @@ public class EJBQLTranslationContext {
             return id;
         }
 
-        String resolvedAlias = (String) idAliases.get(id);
+        String resolvedAlias = idAliases.get(id);
         if (resolvedAlias != null) {
             return resolvedAlias;
         }
@@ -107,7 +107,7 @@ public class EJBQLTranslationContext {
     String createIdAlias(String id) {
 
         if (idAliases == null) {
-            idAliases = new HashMap();
+            idAliases = new HashMap<String, String>();
         }
 
         for (int i = 0; i < 1000; i++) {
@@ -203,7 +203,7 @@ public class EJBQLTranslationContext {
      */
     void setAttribute(String var, Object value) {
         if (attributes == null) {
-            attributes = new HashMap();
+            attributes = new HashMap<String, Object>();
         }
 
         attributes.put(var, value);
@@ -287,12 +287,12 @@ public class EJBQLTranslationContext {
      */
     String registerReusableJoin(String sourceIdPath, String relationship, String targetId) {
         if (reusableJoins == null) {
-            reusableJoins = new HashMap();
+            reusableJoins = new HashMap<String, String>();
         }
 
         String key = sourceIdPath + ":" + relationship;
 
-        String oldId = (String) reusableJoins.put(key, targetId);
+        String oldId = reusableJoins.put(key, targetId);
         if (oldId != null) {
             // revert back to old id
             reusableJoins.put(key, oldId);
@@ -331,10 +331,10 @@ public class EJBQLTranslationContext {
         String alias;
 
         if (tableAliases != null) {
-            alias = (String) tableAliases.get(key);
+            alias = tableAliases.get(key);
         }
         else {
-            tableAliases = new HashMap();
+            tableAliases = new HashMap<String, String>();
             alias = null;
         }
 
@@ -357,7 +357,7 @@ public class EJBQLTranslationContext {
                     "No result set mapping exists for expression, can't map column aliases");
         }
 
-        return (String) resultSetMapping.getColumnResults().get(columnAliasPosition++);
+        return resultSetMapping.getColumnResults().get(columnAliasPosition++);
     }
 
     boolean isAppendingResultColumns() {
