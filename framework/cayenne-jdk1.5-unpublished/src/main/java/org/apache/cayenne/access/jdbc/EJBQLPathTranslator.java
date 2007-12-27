@@ -26,13 +26,6 @@ import java.util.Map;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
-import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
-import org.apache.cayenne.ejbql.parser.EJBQLIdentificationVariable;
-import org.apache.cayenne.ejbql.parser.EJBQLIdentifier;
-import org.apache.cayenne.ejbql.parser.EJBQLInnerJoin;
-import org.apache.cayenne.ejbql.parser.EJBQLJoin;
-import org.apache.cayenne.ejbql.parser.EJBQLOuterJoin;
-import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -58,7 +51,6 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     protected String idPath;
     protected String joinMarker;
     private String fullPath;
-    private EJBQLExpressionVisitor joinAppender;
     private boolean usingAliases;
 
     public EJBQLPathTranslator(EJBQLTranslationContext context) {
@@ -93,7 +85,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
         this.currentEntity = descriptor.getEntity();
         this.idPath = expression.getText();
-        this.joinMarker = EJBQLFromTranslator.makeJoinTailMarker(idPath);
+        this.joinMarker = EJBQLJoinAppender.makeJoinTailMarker(idPath);
         this.fullPath = idPath;
         return true;
     }
@@ -110,14 +102,6 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
-    private EJBQLExpressionVisitor getJoinAppender() {
-        if (joinAppender == null) {
-            joinAppender = context.getTranslatorFactory().getFromTranslator(context);
-        }
-
-        return joinAppender;
-    }
-
     private void resolveJoin(boolean inner) {
 
         String newPath = idPath + '.' + lastPathComponent;
@@ -131,36 +115,19 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                     .getDbEntityName());
         }
         else {
+
+            EJBQLJoinAppender joinAppender = context
+                    .getTranslatorFactory()
+                    .getJoinAppender(context);
+
             // register join
-            EJBQLIdentifier id = new EJBQLIdentifier(-1);
-            id.setText(idPath);
-
-            EJBQLIdentificationVariable idVar = new EJBQLIdentificationVariable(-1);
-            idVar.setText(lastPathComponent);
-
-            EJBQLPath path = new EJBQLPath(-1);
-            path.jjtAddChild(id, 0);
-            path.jjtAddChild(idVar, 1);
-
-            EJBQLIdentifier joinId = new EJBQLIdentifier(-1);
-            joinId.setText(fullPath);
-
-            context.switchToMarker(joinMarker, false);
-
             if (inner) {
-                EJBQLJoin join = new EJBQLInnerJoin(-1);
-                join.jjtAddChild(path, 0);
-                join.jjtAddChild(joinId, 1);
-                getJoinAppender().visitInnerJoin(join);
-
+                joinAppender.appendInnerJoin(joinMarker, idPath, fullPath);
                 this.lastAlias = context.getTableAlias(fullPath, currentEntity
                         .getDbEntityName());
             }
             else {
-                EJBQLJoin join = new EJBQLOuterJoin(-1);
-                join.jjtAddChild(path, 0);
-                join.jjtAddChild(joinId, 1);
-                getJoinAppender().visitOuterJoin(join);
+                joinAppender.appendOuterJoin(joinMarker, idPath, fullPath);
 
                 Relationship lastRelationship = currentEntity
                         .getRelationship(lastPathComponent);
@@ -170,10 +137,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                         .getDbEntityName());
             }
 
-            context.switchToMainBuffer();
-
             this.idPath = newPath;
-
         }
     }
 

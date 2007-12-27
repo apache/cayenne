@@ -179,6 +179,41 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
                     painting.getGalleryName());
         }
     }
+    
+    public void testSelectEJQBQL() throws Exception {
+//        populateTables();
+//        EJBQLQuery query = new EJBQLQuery("SELECT a FROM CompoundPainting a WHERE a.artistName = 'artist2'");
+//        List<?> objects = context.performQuery(query);
+//
+//        assertNotNull(objects);
+//        assertEquals(1, objects.size());
+//        assertTrue("CompoundPainting expected, got " + objects.get(0).getClass(), objects
+//                .get(0) instanceof CompoundPainting);
+//
+//        for (Iterator<?> i = objects.iterator(); i.hasNext();) {
+//            CompoundPainting painting = (CompoundPainting) i.next();
+//            Number id = (Number) painting
+//                    .getObjectId()
+//                    .getIdSnapshot()
+//                    .get("PAINTING_ID");
+//            assertEquals("CompoundPainting.getObjectId(): " + id, id.intValue(), 2);
+//            assertEquals("CompoundPainting.getPaintingTitle(): "
+//                    + painting.getPaintingTitle(), "painting" + id, painting
+//                    .getPaintingTitle());
+//            assertEquals(
+//                    "CompoundPainting.getTextReview(): " + painting.getTextReview(),
+//                    "painting review" + id,
+//                    painting.getTextReview());
+//            assertEquals(
+//                    "CompoundPainting.getArtistName(): " + painting.getArtistName(),
+//                    "artist2",
+//                    painting.getArtistName());
+//            assertEquals(
+//                    "CompoundPainting.getArtistName(): " + painting.getGalleryName(),
+//                    painting.getToGallery().getGalleryName(),
+//                    painting.getGalleryName());
+//        }
+    }
 
     public void testInsert() {
         CompoundPainting o1 = context.newObject(CompoundPainting.class);

@@ -28,6 +28,20 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  */
 public class JdbcEJBQLTranslatorFactory implements EJBQLTranslatorFactory {
 
+    protected static final String JOIN_APPENDER_KEY = "$JoinAppender";
+
+    public EJBQLJoinAppender getJoinAppender(EJBQLTranslationContext context) {
+        EJBQLJoinAppender appender = (EJBQLJoinAppender) context
+                .getAttribute(JOIN_APPENDER_KEY);
+
+        if (appender == null) {
+            appender = new EJBQLJoinAppender(context);
+            context.setAttribute(JOIN_APPENDER_KEY, appender);
+        }
+
+        return appender;
+    }
+
     public EJBQLExpressionVisitor getDeleteTranslator(EJBQLTranslationContext context) {
         context.setUsingAliases(false);
         return new EJBQLDeleteTranslator(context);

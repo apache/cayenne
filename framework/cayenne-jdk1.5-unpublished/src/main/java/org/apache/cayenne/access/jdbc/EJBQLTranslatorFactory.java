@@ -28,6 +28,8 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * @author Andrus Adamchik
  */
 public interface EJBQLTranslatorFactory {
+    
+    EJBQLJoinAppender getJoinAppender(EJBQLTranslationContext context);
 
     EJBQLExpressionVisitor getSelectTranslator(EJBQLTranslationContext context);
 
