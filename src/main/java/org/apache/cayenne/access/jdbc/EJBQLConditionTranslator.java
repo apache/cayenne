@@ -42,7 +42,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -166,11 +165,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         context.append(subqueryTableName).append(' ').append(subqueryRootAlias);
         context.append(" WHERE");
 
-        ObjRelationship relationship = context.getIncomingRelationship(id);
-
         // TODO: andrus, 8/11/2007 flattened?
-        DbRelationship correlatedJoinRelationship = relationship
-                .getDbRelationships()
+        DbRelationship correlatedJoinRelationship = context
+                .getIncomingRelationships(id)
                 .get(0);
         Iterator<DbJoin> it = correlatedJoinRelationship.getJoins().iterator();
         while (it.hasNext()) {
@@ -246,10 +243,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         context.append(subqueryTableName).append(' ').append(subqueryRootAlias);
         context.append(" WHERE");
 
-        ObjRelationship relationship = context.getIncomingRelationship(id);
         // TODO: andrus, 8/11/2007 flattened?
-        DbRelationship correlatedJoinRelationship = relationship
-                .getDbRelationships()
+        DbRelationship correlatedJoinRelationship = context
+                .getIncomingRelationships(id)
                 .get(0);
 
         for (DbJoin join : correlatedJoinRelationship.getJoins()) {

@@ -19,10 +19,12 @@
 package org.apache.cayenne.access.jdbc;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
@@ -96,8 +98,8 @@ public class EJBQLTranslationContext {
         return compiledExpression.getEntityDescriptor(resolveId(id));
     }
 
-    ObjRelationship getIncomingRelationship(String id) {
-        return compiledExpression.getIncomingRelationship(resolveId(id));
+    List<DbRelationship> getIncomingRelationships(String id) {
+        return compiledExpression.getIncomingRelationships(resolveId(id));
     }
 
     /**

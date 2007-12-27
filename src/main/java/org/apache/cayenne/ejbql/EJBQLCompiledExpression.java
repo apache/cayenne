@@ -18,7 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import org.apache.cayenne.map.ObjRelationship;
+import java.util.List;
+
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -47,10 +49,10 @@ public interface EJBQLCompiledExpression {
     ClassDescriptor getEntityDescriptor(String identifier);
 
     /**
-     * Returns a relationship that joins identifier with a parent entity. Returns null if
-     * the identifier corresponds to one of the query roots.
+     * Returns a collection of relationships that joins identifier with a parent entity.
+     * Returns null if the identifier corresponds to one of the query roots.
      */
-    ObjRelationship getIncomingRelationship(String identifier);
+    List<DbRelationship> getIncomingRelationships(String identifier);
 
     /**
      * Returns EJB QL source of the compiled expression if available.
