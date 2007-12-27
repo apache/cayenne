@@ -20,12 +20,12 @@ package org.apache.cayenne.access.jdbc;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -58,8 +58,7 @@ public class EJBQLJoinAppender {
             String sourceIdPath,
             String relationship,
             String targetId) {
-        
-        
+
         if (reusableJoins == null) {
             reusableJoins = new HashMap<String, String>();
         }
@@ -86,13 +85,13 @@ public class EJBQLJoinAppender {
 
     protected void appendJoin(String marker, String lhsId, String rhsId, String semantics) {
 
-        ObjRelationship joinRelationship = context.getIncomingRelationship(rhsId);
-        if (joinRelationship == null) {
+        List<DbRelationship> joinRelationships = context.getIncomingRelationships(rhsId);
+        if (joinRelationships.isEmpty()) {
             throw new EJBQLException("No join configured for id " + rhsId);
         }
 
         // TODO: andrus, 4/8/2007 - support for flattened relationships
-        DbRelationship incomingDB = joinRelationship.getDbRelationships().get(0);
+        DbRelationship incomingDB = joinRelationships.get(0);
 
         String sourceAlias = context.getTableAlias(lhsId, incomingDB
                 .getSourceEntity()

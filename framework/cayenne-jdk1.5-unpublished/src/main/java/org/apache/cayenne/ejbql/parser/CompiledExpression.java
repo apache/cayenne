@@ -18,10 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -36,8 +39,8 @@ class CompiledExpression implements EJBQLCompiledExpression {
 
     private String source;
     private String rootId;
-    private Map descriptorsById;
-    private Map incomingById;
+    private Map<String, ClassDescriptor> descriptorsById;
+    private Map<String, ObjRelationship> incomingById;
     private EJBQLExpression expression;
     private SQLResultSetMapping resultSetMapping;
 
@@ -46,10 +49,9 @@ class CompiledExpression implements EJBQLCompiledExpression {
             return null;
         }
 
-        return (ClassDescriptor) descriptorsById
-                .get(Compiler.normalizeIdPath(idVariable));
+        return descriptorsById.get(Compiler.normalizeIdPath(idVariable));
     }
-    
+
     public SQLResultSetMapping getResultSetMapping() {
         return resultSetMapping;
     }
@@ -58,8 +60,13 @@ class CompiledExpression implements EJBQLCompiledExpression {
         return rootId != null ? getEntityDescriptor(rootId) : null;
     }
 
-    public ObjRelationship getIncomingRelationship(String identifier) {
-        return (ObjRelationship) incomingById.get(identifier);
+    public List<DbRelationship> getIncomingRelationships(String identifier) {
+        ObjRelationship relationship = incomingById.get(identifier);
+        if (relationship == null) {
+            return Collections.emptyList();
+        }
+
+        return relationship.getDbRelationships();
     }
 
     public EJBQLExpression getExpression() {
@@ -74,11 +81,11 @@ class CompiledExpression implements EJBQLCompiledExpression {
         this.expression = expression;
     }
 
-    void setDescriptorsById(Map descriptorsById) {
+    void setDescriptorsById(Map<String, ClassDescriptor> descriptorsById) {
         this.descriptorsById = descriptorsById;
     }
 
-    void setIncomingById(Map incomingById) {
+    void setIncomingById(Map<String, ObjRelationship> incomingById) {
         this.incomingById = incomingById;
     }
 
@@ -89,7 +96,7 @@ class CompiledExpression implements EJBQLCompiledExpression {
     void setRootId(String rootId) {
         this.rootId = rootId;
     }
-    
+
     void setResultSetMapping(SQLResultSetMapping resultSetMapping) {
         this.resultSetMapping = resultSetMapping;
     }

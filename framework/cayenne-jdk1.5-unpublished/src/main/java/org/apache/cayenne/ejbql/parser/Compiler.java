@@ -21,7 +21,6 @@ package org.apache.cayenne.ejbql.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
@@ -50,9 +49,9 @@ class Compiler {
 
     private String rootId;
     private EntityResolver resolver;
-    private Map descriptorsById;
-    private Map incomingById;
-    private Collection paths;
+    private Map<String, ClassDescriptor> descriptorsById;
+    private Map<String, ObjRelationship> incomingById;
+    private Collection<EJBQLPath> paths;
     private EJBQLExpressionVisitor fromItemVisitor;
     private EJBQLExpressionVisitor joinVisitor;
     private EJBQLExpressionVisitor pathVisitor;
@@ -61,8 +60,8 @@ class Compiler {
 
     Compiler(EntityResolver resolver) {
         this.resolver = resolver;
-        this.descriptorsById = new HashMap();
-        this.incomingById = new HashMap();
+        this.descriptorsById = new HashMap<String, ClassDescriptor>();
+        this.incomingById = new HashMap<String, ObjRelationship>();
 
         this.rootDescriptorVisitor = new SelectExpressionVisitor();
         this.fromItemVisitor = new FromItemVisitor();
@@ -75,17 +74,15 @@ class Compiler {
 
         // postprocess paths, now that all id vars are resolved
         if (paths != null) {
-            Iterator it = paths.iterator();
-            while (it.hasNext()) {
-                EJBQLPath path = (EJBQLPath) it.next();
+            for (EJBQLPath path : paths) {
                 String id = normalizeIdPath(path.getId());
 
-                ClassDescriptor descriptor = (ClassDescriptor) descriptorsById.get(id);
+                ClassDescriptor descriptor = descriptorsById.get(id);
                 if (descriptor == null) {
                     throw new EJBQLException("Unmapped id variable: " + id);
                 }
 
-                StringBuffer buffer = new StringBuffer(id);
+                StringBuilder buffer = new StringBuilder(id);
 
                 for (int i = 1; i < path.getChildrenCount(); i++) {
 
@@ -118,9 +115,9 @@ class Compiler {
         return compiled;
     }
 
-    private void addPath(EJBQLExpression path) {
+    private void addPath(EJBQLPath path) {
         if (paths == null) {
-            paths = new ArrayList();
+            paths = new ArrayList<EJBQLPath>();
         }
 
         paths.add(path);
@@ -215,9 +212,7 @@ class Compiler {
                 // per JPA spec, 4.4.2, "Identification variables are case insensitive."
                 String id = normalizeIdPath(expression.getId());
 
-                ClassDescriptor old = (ClassDescriptor) descriptorsById.put(
-                        id,
-                        descriptor);
+                ClassDescriptor old = descriptorsById.put(id, descriptor);
                 if (old != null && old != descriptor) {
                     throw new EJBQLException(
                             "Duplicate identification variable definition: "
@@ -253,7 +248,7 @@ class Compiler {
         public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             if (finishedChildIndex + 1 < expression.getChildrenCount()) {
                 this.id = ((EJBQLPath) expression).getId();
-                this.descriptor = (ClassDescriptor) descriptorsById.get(id);
+                this.descriptor = descriptorsById.get(id);
 
                 if (descriptor == null) {
                     throw new EJBQLException("Unmapped id variable: " + id);
@@ -283,9 +278,7 @@ class Compiler {
                 String aliasId = expression.getText();
 
                 // map id variable to class descriptor
-                ClassDescriptor old = (ClassDescriptor) descriptorsById.put(
-                        aliasId,
-                        descriptor);
+                ClassDescriptor old = descriptorsById.put(aliasId, descriptor);
                 if (old != null && old != descriptor) {
                     throw new EJBQLException(
                             "Duplicate identification variable definition: "
@@ -308,7 +301,7 @@ class Compiler {
     class PathVisitor extends EJBQLBaseVisitor {
 
         public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
-            addPath(expression);
+            addPath((EJBQLPath) expression);
             return false;
         }
     }
@@ -326,7 +319,7 @@ class Compiler {
         }
 
         public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
-            addPath(expression);
+            addPath((EJBQLPath) expression);
             addResultSetColumn();
             return false;
         }
