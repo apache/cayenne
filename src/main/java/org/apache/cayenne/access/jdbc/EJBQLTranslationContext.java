@@ -42,7 +42,6 @@ public class EJBQLTranslationContext {
     private StringBuilder currentBuffer;
     private EJBQLCompiledExpression compiledExpression;
     private Map<String, Object> attributes;
-    private Map<String, String> reusableJoins;
     private Map<Object, Object> parameters;
     private Map<String, String> idAliases;
     private int columnAliasPosition;
@@ -276,30 +275,6 @@ public class EJBQLTranslationContext {
 
     Object getBoundParameter(String name) {
         return boundParameters != null ? boundParameters.get(name) : null;
-    }
-
-    /**
-     * Registers a "reusable" join, returning a preexisting ID if the join is already
-     * registered. Reusable joins are the implicit inner joins that are added as a result
-     * of processing of path expressions in SELECT or WHERE clauses. Note that if an
-     * implicit INNER join overlaps with an explicit INNER join, both joins are added to
-     * the query.
-     */
-    String registerReusableJoin(String sourceIdPath, String relationship, String targetId) {
-        if (reusableJoins == null) {
-            reusableJoins = new HashMap<String, String>();
-        }
-
-        String key = sourceIdPath + ":" + relationship;
-
-        String oldId = reusableJoins.put(key, targetId);
-        if (oldId != null) {
-            // revert back to old id
-            reusableJoins.put(key, oldId);
-            return oldId;
-        }
-
-        return null;
     }
 
     /**

@@ -52,6 +52,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
         this.context = context;
     }
 
+    @Override
     public boolean visitIdentifier(EJBQLExpression expression) {
 
         final String idVar = expression.getText();
@@ -64,6 +65,11 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
             public boolean visitAttribute(AttributeProperty property) {
                 ObjAttribute oa = property.getAttribute();
                 Iterator<?> dbPathIterator = oa.getDbPathIterator();
+
+                EJBQLJoinAppender joinAppender = null;
+                String marker = null;
+                String lhsId = idVar;
+
                 while (dbPathIterator.hasNext()) {
                     Object pathPart = dbPathIterator.next();
 
@@ -73,13 +79,22 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                     }
 
                     else if (pathPart instanceof DbRelationship) {
-                        // DbRelationship rel = (DbRelationship) pathPart;
-                        // dbRelationshipAdded(rel);
+
+                        if (marker == null) {
+                            marker = EJBQLJoinAppender.makeJoinTailMarker(idVar);
+                            joinAppender = context
+                                    .getTranslatorFactory()
+                                    .getJoinAppender(context);
+                        }
+
+                        DbRelationship dr = (DbRelationship) pathPart;
+
+                        String rhsId = lhsId + ".db:" + dr.getName();
+                        joinAppender.appendOuterJoin(marker, lhsId, rhsId);
+                        lhsId = rhsId;
                     }
                     else if (pathPart instanceof DbAttribute) {
-                        DbAttribute dbAttr = (DbAttribute) pathPart;
-
-                        appendColumn(idVar, dbAttr, oa.getType());
+                        appendColumn(idVar, (DbAttribute) pathPart, oa.getType());
                     }
                 }
                 return true;

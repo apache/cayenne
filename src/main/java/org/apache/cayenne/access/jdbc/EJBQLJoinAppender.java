@@ -18,7 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.DbJoin;
@@ -35,9 +37,43 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 public class EJBQLJoinAppender {
 
     protected EJBQLTranslationContext context;
+    private Map<String, String> reusableJoins;
+
+    static String makeJoinTailMarker(String id) {
+        return "FROM_TAIL" + id;
+    }
 
     public EJBQLJoinAppender(EJBQLTranslationContext context) {
         this.context = context;
+    }
+
+    /**
+     * Registers a "reusable" join, returning a preexisting ID if the join is already
+     * registered. Reusable joins are the implicit inner joins that are added as a result
+     * of processing of path expressions in SELECT or WHERE clauses. Note that if an
+     * implicit INNER join overlaps with an explicit INNER join, both joins are added to
+     * the query.
+     */
+    public String registerReusableJoin(
+            String sourceIdPath,
+            String relationship,
+            String targetId) {
+        
+        
+        if (reusableJoins == null) {
+            reusableJoins = new HashMap<String, String>();
+        }
+
+        String key = sourceIdPath + ":" + relationship;
+
+        String oldId = reusableJoins.put(key, targetId);
+        if (oldId != null) {
+            // revert back to old id
+            reusableJoins.put(key, oldId);
+            return oldId;
+        }
+
+        return null;
     }
 
     public void appendInnerJoin(String marker, String lhsId, String rhsId) {
@@ -127,7 +163,4 @@ public class EJBQLJoinAppender {
         }
     }
 
-    static String makeJoinTailMarker(String id) {
-        return "FROM_TAIL" + id;
-    }
 }
