@@ -103,9 +103,15 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     }
 
     private void resolveJoin(boolean inner) {
+        
+        EJBQLJoinAppender joinAppender = context.getTranslatorFactory().getJoinAppender(
+                context);
 
         String newPath = idPath + '.' + lastPathComponent;
-        String oldPath = context.registerReusableJoin(idPath, lastPathComponent, newPath);
+        String oldPath = joinAppender.registerReusableJoin(
+                idPath,
+                lastPathComponent,
+                newPath);
 
         this.fullPath = fullPath + '.' + lastPathComponent;
 
@@ -115,10 +121,6 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                     .getDbEntityName());
         }
         else {
-
-            EJBQLJoinAppender joinAppender = context
-                    .getTranslatorFactory()
-                    .getJoinAppender(context);
 
             // register join
             if (inner) {
