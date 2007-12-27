@@ -18,17 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
-import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 3.0
@@ -38,20 +31,18 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
     protected EJBQLTranslationContext context;
     private String lastId;
-
-    static String makeJoinTailMarker(String id) {
-        return "FROM_TAIL" + id;
-    }
+    private EJBQLJoinAppender joinAppender;
 
     public EJBQLFromTranslator(EJBQLTranslationContext context) {
         super(true);
         this.context = context;
+        this.joinAppender = context.getTranslatorFactory().getJoinAppender(context);
     }
 
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             if (lastId != null) {
-                context.markCurrentPosition(makeJoinTailMarker(lastId));
+                context.markCurrentPosition(EJBQLJoinAppender.makeJoinTailMarker(lastId));
             }
         }
 
@@ -64,11 +55,11 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 
         if (lastId != null) {
             context.append(',');
-            context.markCurrentPosition(makeJoinTailMarker(lastId));
+            context.markCurrentPosition(EJBQLJoinAppender.makeJoinTailMarker(lastId));
         }
 
         this.lastId = id;
-        appendTable(id);
+        joinAppender.appendTable(id);
         return false;
     }
 
@@ -78,7 +69,8 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitInnerJoin(EJBQLJoin join) {
-        appendJoin(join, "INNER JOIN");
+        joinAppender.appendInnerJoin(null, join.getLeftHandSideId(), join
+                .getRightHandSideId());
         return false;
     }
 
@@ -88,77 +80,8 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitOuterJoin(EJBQLJoin join) {
-        appendJoin(join, "LEFT OUTER JOIN");
+        joinAppender.appendOuterJoin(null, join.getLeftHandSideId(), join
+                .getRightHandSideId());
         return false;
-    }
-
-    private void appendJoin(EJBQLJoin join, String semantics) {
-
-        String rhsId = join.getRightHandSideId();
-
-        ObjRelationship joinRelationship = context.getIncomingRelationship(rhsId);
-        if (joinRelationship == null) {
-            throw new EJBQLException("No join configured for id " + rhsId);
-        }
-
-        // TODO: andrus, 4/8/2007 - support for flattened relationships
-        DbRelationship incomingDB = joinRelationship.getDbRelationships().get(0);
-
-        String lhsId = join.getLeftHandSideId();
-        String sourceAlias = context.getTableAlias(lhsId, incomingDB
-                .getSourceEntity()
-                .getName());
-
-        context.append(" ").append(semantics);
-        String targetAlias = appendTable(rhsId);
-        context.append(" ON (");
-
-        Iterator<DbJoin> it = incomingDB.getJoins().iterator();
-        if (it.hasNext()) {
-            DbJoin dbJoin = it.next();
-            context
-                    .append(sourceAlias)
-                    .append('.')
-                    .append(dbJoin.getSourceName())
-                    .append(" = ")
-                    .append(targetAlias)
-                    .append('.')
-                    .append(dbJoin.getTargetName());
-        }
-
-        while (it.hasNext()) {
-            context.append(", ");
-            DbJoin dbJoin = it.next();
-            context
-                    .append(sourceAlias)
-                    .append('.')
-                    .append(dbJoin.getSourceName())
-                    .append(" = ")
-                    .append(targetAlias)
-                    .append('.')
-                    .append(dbJoin.getTargetName());
-        }
-
-        context.append(")");
-    }
-
-    protected String appendTable(String id) {
-        ClassDescriptor descriptor = context.getEntityDescriptor(id);
-
-        String tableName = descriptor.getEntity().getDbEntity().getFullyQualifiedName();
-
-        if (context.isUsingAliases()) {
-            String alias = context.getTableAlias(id, tableName);
-
-            // not using "AS" to separate table name and alias name - OpenBase doesn't
-            // support
-            // "AS", and the rest of the databases do not care
-            context.append(' ').append(tableName).append(' ').append(alias);
-            return alias;
-        }
-        else {
-            context.append(' ').append(tableName);
-            return tableName;
-        }
     }
 }
