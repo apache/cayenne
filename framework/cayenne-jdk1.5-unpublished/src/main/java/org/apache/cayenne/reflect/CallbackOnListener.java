@@ -42,7 +42,7 @@ class CallbackOnListener extends AbstractCallback {
         this(listener, methodName, Object.class);
     }
 
-    CallbackOnListener(Object listener, String methodName, Class entityType)
+    CallbackOnListener(Object listener, String methodName, Class<?> entityType)
             throws IllegalArgumentException {
 
         if (listener == null) {
@@ -67,17 +67,17 @@ class CallbackOnListener extends AbstractCallback {
         }
     }
 
-    private Method findMethod(Class objectClass, String methodName, Class entityType)
+    private Method findMethod(Class<?> objectClass, String methodName, Class<?> entityType)
             throws IllegalArgumentException {
 
         Method[] methods = objectClass.getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
             if (methodName.equals(methods[i].getName())) {
 
-                // must be non-static, void, with a single arg assinable to entity type
+                // must be non-static, void, with a single arg assignable to entity type
                 // JPA spec also requires it to be non-final, but we don't care
                 int modifiers = methods[i].getModifiers();
-                Class[] parameters = methods[i].getParameterTypes();
+                Class<?>[] parameters = methods[i].getParameterTypes();
                 if (!Modifier.isStatic(modifiers)
                         && Void.TYPE.isAssignableFrom(methods[i].getReturnType())
                         && parameters.length == 1

@@ -36,14 +36,14 @@ class CallbackOnEntity extends AbstractCallback {
 
     private Method callbackMethod;
 
-    CallbackOnEntity(Class objectClass, String methodName)
+    CallbackOnEntity(Class<?> objectClass, String methodName)
             throws IllegalArgumentException {
         this.callbackMethod = findMethod(objectClass, methodName);
     }
 
     public void performCallback(Object entity) {
         try {
-            callbackMethod.invoke(entity, null);
+            callbackMethod.invoke(entity, (Object[]) null);
         }
         catch (Exception e) {
             throw new CayenneRuntimeException("Error invoking entity callback method "
@@ -51,7 +51,7 @@ class CallbackOnEntity extends AbstractCallback {
         }
     }
 
-    private Method findMethod(Class objectClass, String methodName)
+    private Method findMethod(Class<?> objectClass, String methodName)
             throws IllegalArgumentException {
         Method[] methods = objectClass.getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
