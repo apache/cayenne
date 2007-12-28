@@ -71,7 +71,7 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
 
         // Now do the rest of the normal handling (regardless of whether it was
         // flattened or not)
-        Collection collection = (Collection) readProperty(source);
+        Collection<Object> collection = (Collection<Object>) readProperty(source);
         collection.add(target);
 
         if (setReverse) {
@@ -87,7 +87,7 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
 
         // Now do the rest of the normal handling (regardless of whether it was
         // flattened or not)
-        Collection collection = (Collection) readProperty(source);
+        Collection<Object> collection = (Collection<Object>) readProperty(source);
         collection.remove(target);
 
         if (target != null && setReverse) {

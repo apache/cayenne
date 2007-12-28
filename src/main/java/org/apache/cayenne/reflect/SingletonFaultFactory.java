@@ -36,7 +36,7 @@ public class SingletonFaultFactory implements FaultFactory {
     protected Fault toOneFault = new ToOneFault();
     protected Fault listFault = new ToManyListFault();
     protected Fault setFault = new ToManySetFault();
-    protected Map mapFaults = new HashMap();
+    protected Map<Accessor, Fault> mapFaults = new HashMap<Accessor, Fault>();
 
     public Fault getCollectionFault() {
         return listFault;
@@ -48,7 +48,7 @@ public class SingletonFaultFactory implements FaultFactory {
     
     public Fault getMapFault(Accessor mapKeyAccessor) {
         synchronized (mapFaults) {
-            Fault fault = (Fault) mapFaults.get(mapKeyAccessor);
+            Fault fault = mapFaults.get(mapKeyAccessor);
 
             if (fault == null) {
                 fault = new ToManyMapFault(mapKeyAccessor);

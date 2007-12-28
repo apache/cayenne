@@ -24,8 +24,6 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.util.Util;
-
 /**
  * A factory of property type converters.
  * 
@@ -34,30 +32,30 @@ import org.apache.cayenne.util.Util;
  */
 class ConverterFactory {
 
-    private static final String FACTORY_CLASS_JDK15 = "org.apache.cayenne.reflect.ConverterFactory15";
+    static final ConverterFactory factory = new ConverterFactory();
 
-    static final ConverterFactory factory = createFactory();
-    static Map converters;
+    private Map<String, Converter> converters;
+    private EnumConverter enumConveter = new EnumConverter();
 
     static final Converter noopConverter = new Converter() {
 
-        Object convert(Object object, Class type) {
+        Object convert(Object object, Class<?> type) {
             return object;
         }
     };
 
-    static {
+    private ConverterFactory() {
 
         Converter stringConverter = new Converter() {
 
-            Object convert(Object object, Class type) {
+            Object convert(Object object, Class<?> type) {
                 return object != null ? object.toString() : null;
             }
         };
 
         Converter booleanConverter = new Converter() {
 
-            Object convert(Object object, Class type) {
+            Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Boolean.FALSE : null;
                 }
@@ -74,7 +72,7 @@ class ConverterFactory {
 
         Converter intConverter = new Converter() {
 
-            Object convert(Object object, Class type) {
+            Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Integer.valueOf(0) : null;
                 }
@@ -89,7 +87,7 @@ class ConverterFactory {
 
         Converter byteConverter = new Converter() {
 
-            Object convert(Object object, Class type) {
+            Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Byte.valueOf((byte) 0) : null;
                 }
@@ -104,7 +102,7 @@ class ConverterFactory {
 
         Converter shortConverter = new Converter() {
 
-            Object convert(Object object, Class type) {
+            Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Short.valueOf((short) 0) : null;
                 }
@@ -119,7 +117,7 @@ class ConverterFactory {
 
         Converter charConverter = new Converter() {
 
-            Object convert(Object object, Class type) {
+            Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Character.valueOf((char) 0) : null;
                 }
@@ -135,7 +133,7 @@ class ConverterFactory {
 
         Converter doubleConverter = new Converter() {
 
-            Object convert(Object object, Class type) {
+            Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? new Double(0.0d) : null;
                 }
@@ -150,7 +148,7 @@ class ConverterFactory {
 
         Converter floatConverter = new Converter() {
 
-            Object convert(Object object, Class type) {
+            Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? new Float(0.0f) : null;
                 }
@@ -165,7 +163,7 @@ class ConverterFactory {
 
         Converter bigDecimalConverter = new Converter() {
 
-            Object convert(Object object, Class type) {
+            Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return null;
                 }
@@ -180,7 +178,7 @@ class ConverterFactory {
 
         Converter bigIntegerConverter = new Converter() {
 
-            Object convert(Object object, Class type) {
+            Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return null;
                 }
@@ -195,7 +193,7 @@ class ConverterFactory {
 
         // TODO: byte[] converter...
 
-        converters = new HashMap();
+        converters = new HashMap<String, Converter>();
 
         converters.put(Boolean.class.getName(), booleanConverter);
         converters.put("boolean", booleanConverter);
@@ -224,26 +222,17 @@ class ConverterFactory {
         converters.put(String.class.getName(), stringConverter);
     }
 
-    static ConverterFactory createFactory() {
-        try {
-            // sniff JDK 1.5
-            Class.forName("java.lang.StringBuilder");
-
-            Class factoryClass = Util.getJavaClass(FACTORY_CLASS_JDK15);
-            return (ConverterFactory) factoryClass.newInstance();
-        }
-        catch (Throwable th) {
-            // .. jdk 1.4
-            return new ConverterFactory();
-        }
-    }
-
-    Converter getConverter(Class type) {
+    Converter getConverter(Class<?> type) {
         if (type == null) {
             throw new IllegalArgumentException("Null type");
         }
 
-        Converter c = (Converter) converters.get(type.getName());
+        // check for enum BEFORE super call, as it will return a noop converter
+        if (type.isEnum()) {
+            return enumConveter;
+        }
+
+        Converter c = converters.get(type.getName());
         return c != null ? c : noopConverter;
     }
 }

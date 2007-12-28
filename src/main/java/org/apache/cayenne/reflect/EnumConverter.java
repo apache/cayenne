@@ -26,6 +26,7 @@ package org.apache.cayenne.reflect;
 class EnumConverter extends Converter {
 
     @Override
+    @SuppressWarnings("unchecked")
     Object convert(Object object, Class type) {
 
         if (object == null) {
