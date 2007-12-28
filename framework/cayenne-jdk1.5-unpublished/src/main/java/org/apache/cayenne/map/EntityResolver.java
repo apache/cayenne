@@ -79,6 +79,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
     // callbacks are not serializable
     protected transient LifecycleCallbackRegistry callbackRegistry;
 
+    protected EntityListenerFactory entityListenerFactory;
+
     /**
      * Creates new EntityResolver.
      */
@@ -202,7 +204,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             for (DataMap map : maps) {
 
                 for (EntityListener listener : map.getDefaultEntityListeners()) {
-                    Object listenerInstance = createListener(listener);
+                    Object listenerInstance = createListener(listener, null);
 
                     CallbackDescriptor[] callbacks = listener
                             .getCallbackMap()
@@ -225,7 +227,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
                 // external listeners go first, entity's own callbacks go next
                 for (EntityListener listener : entity.getEntityListeners()) {
-                    Object listenerInstance = createListener(listener);
+                    Object listenerInstance = createListener(listener, entity);
 
                     CallbackDescriptor[] callbacks = listener
                             .getCallbackMap()
@@ -262,7 +264,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Creates a listener instance.
      */
-    private Object createListener(EntityListener listener) {
+    private Object createListener(EntityListener listener, ObjEntity entity) {
         Class<?> listenerClass;
 
         try {
@@ -271,6 +273,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
         catch (ClassNotFoundException e) {
             throw new CayenneRuntimeException("Invalid listener class: "
                     + listener.getClassName(), e);
+        }
+
+        if (entityListenerFactory != null) {
+            return entityListenerFactory.createListener(listenerClass, entity);
         }
 
         try {
@@ -842,5 +848,17 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
 
         return classDescriptorMap;
+    }
+
+    /**
+     * Sets an optional {@link EntityListenerFactory} that should be used to create entity
+     * listeners. Note that changing the factory does not affect already created
+     * listeners. So refresh the existing listners, call "setCallbackRegistry(null)" after
+     * setting the listener.
+     * 
+     * @since 3.0
+     */
+    public void setEntityListenerFactory(EntityListenerFactory entityListenerFactory) {
+        this.entityListenerFactory = entityListenerFactory;
     }
 }
