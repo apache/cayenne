@@ -195,7 +195,7 @@ public class ConfigSaver {
             if (encoder != null)
                 pw.print(attribute("password", encoder.encodePassword(
                         info.getPassword(),
-                        info.getPasswordEncoderSalt())));
+                        info.getPasswordEncoderKey())));
         }
         else if (info.getPasswordLocation().equals(
                 DataSourceInfo.PASSWORD_LOCATION_CLASSPATH)) {
@@ -209,7 +209,7 @@ public class ConfigSaver {
                         PrintStream out = new PrintStream(new FileOutputStream(
                                 passwordFile));
                         out.print(encoder.encodePassword(info.getPassword(), info
-                                .getPasswordEncoderSalt()));
+                                .getPasswordEncoderKey()));
                         out.close();
                     }
                     catch (FileNotFoundException exception) {
@@ -221,7 +221,7 @@ public class ConfigSaver {
         }
 
         pw.println(attribute("encoderClass", info.getPasswordEncoderClass())
-                + attribute("encoderSalt", info.getPasswordEncoderSalt())
+                + attribute("encoderKey", info.getPasswordEncoderKey())
                 + attribute("passwordLocation", info.getPasswordLocation())
                 + attribute("passwordSource", info.getPasswordSource())
                 + "/>");

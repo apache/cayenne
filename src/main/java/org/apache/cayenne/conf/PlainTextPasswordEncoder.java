@@ -34,7 +34,7 @@ public class PlainTextPasswordEncoder implements PasswordEncoding
   /* (non-Javadoc)
    * @see org.apache.cayenne.conf.PasswordEncoding#decodePassword(java.lang.String, java.lang.String)
    */
-  public String decodePassword(String encodedPassword, String salt)
+  public String decodePassword(String encodedPassword, String key)
   {
     return encodedPassword;
   }
@@ -42,7 +42,7 @@ public class PlainTextPasswordEncoder implements PasswordEncoding
   /* (non-Javadoc)
    * @see org.apache.cayenne.conf.PasswordEncoding#encodePassword(java.lang.String, java.lang.String)
    */
-  public String encodePassword(String normalPassword, String salt)
+  public String encodePassword(String normalPassword, String key)
   {
     return normalPassword;
   }

@@ -297,22 +297,22 @@ public class DriverDataSourceFactory implements DataSourceFactory {
             logger.info("loading user name and password.");
 
             String encoderClass = atts.getValue("encoderClass");
-            String encoderSalt = atts.getValue("encoderSalt");
+            String encoderKey = atts.getValue("encoderKey") == null ? atts.getValue("encoderSalt") : atts.getValue("encoderKey");
             String password = atts.getValue("password");
             String passwordLocation = atts.getValue("passwordLocation");
             String passwordSource = atts.getValue("passwordSource");
             String username = atts.getValue("userName");
 
             driverInfo.setPasswordEncoderClass(encoderClass);
-            driverInfo.setPasswordEncoderSalt(encoderSalt);
+            driverInfo.setPasswordEncoderKey(encoderKey);
             driverInfo.setPasswordLocation(passwordLocation);
             driverInfo.setPasswordSource(passwordSource);
             driverInfo.setUserName(username);
 
             // Replace {} in passwordSource with encoderSalt -- useful for EXECUTABLE &
             // URL options
-            if (encoderSalt != null) {
-                passwordSource = passwordSource.replaceAll("\\{\\}", encoderSalt);
+            if (encoderKey != null) {
+                passwordSource = passwordSource.replaceAll("\\{\\}", encoderKey);
             }
 
             PasswordEncoding passwordEncoder = driverInfo.getPasswordEncoder();
@@ -359,7 +359,7 @@ public class DriverDataSourceFactory implements DataSourceFactory {
             if (password != null && passwordEncoder != null)
                 driverInfo.setPassword(passwordEncoder.decodePassword(
                         password,
-                        encoderSalt));
+                        encoderKey));
         }
     }
 
