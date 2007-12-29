@@ -45,17 +45,19 @@ public interface PasswordEncoding
    * Decodes an encoded database password.
    * 
    * @param encodedPassword - The encoded password to be decoded
-   * @param salt - An optional data element which can be used to salt the algorithm.
+   * @param key - An optional data element which can be used to unlock the password.
+   *        Some encoders may require the key.
    * @return The decoded normal/plain plassword.
    */
-  public String decodePassword(String encodedPassword, String salt);
+  public String decodePassword(String encodedPassword, String key);
 
   /**
    * Encodes a normal/plain database password.
    * 
    * @param normalPassword - The normal/plain password to be encoded
-   * @param salt - An optional data element which can be used to salt the algorithm.
+   * @param key - An optional data element which can be used to lock the password.
+   *        Some encoders may require the key.
    * @return The encoded password.
    */
-  public String encodePassword(String normalPassword, String salt);
+  public String encodePassword(String normalPassword, String key);
 }

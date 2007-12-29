@@ -52,12 +52,12 @@ public class DataSourceInfo implements Cloneable, Serializable {
 
     // Extended parameters
     protected String passwordEncoderClass = PasswordEncoding.standardEncoders[0];
-    protected String passwordEncoderSalt = "";
+    protected String passwordEncoderKey = "";
+    protected String passwordLocation = PASSWORD_LOCATION_MODEL;
     protected String passwordSourceExecutable = "";
     protected String passwordSourceFilename = "";
     protected String passwordSourceModel = "Not Applicable";
     protected String passwordSourceUrl = "";
-    protected String passwordLocation = PASSWORD_LOCATION_MODEL;
 
     public boolean equals(Object obj) {
         if (obj == this)
@@ -87,7 +87,7 @@ public class DataSourceInfo implements Cloneable, Serializable {
             return false;
         if (!Util.nullSafeEquals(this.passwordEncoderClass, dsi.passwordEncoderClass))
             return false;
-        if (!Util.nullSafeEquals(this.passwordEncoderSalt, dsi.passwordEncoderSalt))
+        if (!Util.nullSafeEquals(this.passwordEncoderKey, dsi.passwordEncoderKey))
             return false;
         if (!Util.nullSafeEquals(this.passwordSourceFilename, dsi.passwordSourceFilename))
             return false;
@@ -130,7 +130,7 @@ public class DataSourceInfo implements Cloneable, Serializable {
 
         if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
             buf.append("\n   encoder class: ").append(passwordEncoderClass).append(
-                    "\n   encoder salt: ").append(passwordEncoderSalt);
+                    "\n   encoder key: ").append(passwordEncoderKey);
         }
 
         if (!PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
@@ -244,17 +244,17 @@ public class DataSourceInfo implements Cloneable, Serializable {
     }
 
     /**
-     * @return the passwordEncoderSalt
+     * @return the passwordEncoderKey
      */
-    public String getPasswordEncoderSalt() {
-        return passwordEncoderSalt;
+    public String getPasswordEncoderKey() {
+        return passwordEncoderKey;
     }
 
     /**
-     * @param passwordEncoderSalt the passwordEncoderSalt to set
+     * @param passwordEncoderKey the passwordEncoderKey to set
      */
-    public void setPasswordEncoderSalt(String passwordEncoderSalt) {
-        this.passwordEncoderSalt = passwordEncoderSalt;
+    public void setPasswordEncoderKey(String passwordEncoderKey) {
+        this.passwordEncoderKey = passwordEncoderKey;
     }
 
     /**

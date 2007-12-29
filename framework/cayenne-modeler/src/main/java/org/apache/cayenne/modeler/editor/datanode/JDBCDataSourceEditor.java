@@ -67,7 +67,7 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
         fieldAdapters[6] =
           builder.bindToComboSelection(view.getPasswordEncoder(), "node.dataSource.dataSourceInfo.passwordEncoderClass");
         fieldAdapters[7] =
-          builder.bindToTextField(view.getPasswordSalt(), "node.dataSource.dataSourceInfo.passwordEncoderSalt");
+          builder.bindToTextField(view.getPasswordKey(), "node.dataSource.dataSourceInfo.passwordEncoderKey");
         fieldAdapters[8] =
           builder.bindToComboSelection(view.getPasswordLocation(), "node.dataSource.dataSourceInfo.passwordLocation");
         fieldAdapters[9] =

@@ -53,7 +53,7 @@ public class JDBCDataSourceView extends JPanel {
     protected JPasswordField password;
     protected JComboBox      passwordEncoder;
     protected JComboBox      passwordLocation;
-    protected JTextField     passwordSalt;
+    protected JTextField     passwordKey;
     protected JTextField     passwordSource;
     protected JLabel         passwordSourceLabel;
     protected JTextField     minConnections;
@@ -71,7 +71,7 @@ public class JDBCDataSourceView extends JPanel {
             DataSourceInfo.PASSWORD_LOCATION_EXECUTABLE,
             DataSourceInfo.PASSWORD_LOCATION_URL };
 
-    private static final Map passwordSourceLabels = new TreeMap();
+    private static final Map<String, String> passwordSourceLabels = new TreeMap<String, String>();
 
     static
     {
@@ -108,7 +108,7 @@ public class JDBCDataSourceView extends JPanel {
         passwordEncoder  = new JComboBox();
         passwordLocation = new JComboBox();
         passwordSource   = new JTextField();
-        passwordSalt     = new JTextField();
+        passwordKey      = new JTextField();
         minConnections   = new JTextField(6);
         maxConnections   = new JTextField(6);
         syncWithLocal    = new JButton("Sync with Local");
@@ -158,10 +158,10 @@ public class JDBCDataSourceView extends JPanel {
         builder.addLabel("Password Encoder:", cc.xy(1, 11));
         builder.add(passwordEncoder, cc.xywh(3, 11, 5, 1));
 
-        builder.addLabel("Password Salt:", cc.xy(1, 13));
-        builder.add(passwordSalt, cc.xywh(3, 13, 5, 1));
+        builder.addLabel("Password Encoder Key:", cc.xy(1, 13));
+        builder.add(passwordKey, cc.xywh(3, 13, 5, 1));
 
-        builder.addLabel("Cayenne supplied encoders do not require salting", cc.xywh(3, 15, 5, 1));
+        builder.addLabel("Note: Cayenne supplied encoders do not use a key.", cc.xywh(3, 15, 5, 1));
 
         builder.addLabel("Password Location:", cc.xy(1, 17));
         builder.add(passwordLocation, cc.xywh(3, 17, 5, 1));
@@ -226,11 +226,11 @@ public class JDBCDataSourceView extends JPanel {
     }
 
     /**
-     * @return the passwordSalt
+     * @return the passwordKey
      */
-    public JTextField getPasswordSalt()
+    public JTextField getPasswordKey()
     {
-      return passwordSalt;
+      return passwordKey;
     }
 
     /**
