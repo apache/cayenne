@@ -310,7 +310,21 @@ public class DbMerger {
         }
 
         for (DbJoin j1 : j1s) {
+            boolean foundPair = false;
             for (DbJoin j2 : j2s) {
+                if ((j1.getSource() == null) || (j1.getSource().getEntity() == null)) {
+                    continue;
+                }
+                if ((j1.getTarget() == null) || (j1.getTarget().getEntity() == null)) {
+                    continue;
+                }
+                if ((j2.getSource() == null) || (j2.getSource().getEntity() == null)) {
+                    continue;
+                }
+                if ((j2.getTarget() == null) || (j2.getTarget().getEntity() == null)) {
+                    continue;
+                }
+
                 // check entity name
                 if (!j1.getSource().getEntity().getName().equalsIgnoreCase(
                         j2.getSource().getEntity().getName())) {
@@ -328,11 +342,16 @@ public class DbMerger {
                     continue;
                 }
 
-                return true;
+                foundPair = true;
+                break;
+            }
+
+            if (!foundPair) {
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
     private static final class LoaderDelegate implements DbLoaderDelegate {
