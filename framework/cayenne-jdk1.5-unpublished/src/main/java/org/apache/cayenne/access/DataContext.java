@@ -257,16 +257,11 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 3.0
      */
-    public QueryCache getQueryCache() {
-
+    public synchronized QueryCache getQueryCache() {
         if (queryCache == null) {
-            synchronized (this) {
-                if (queryCache == null) {
-                    queryCache = getParentDataDomain()
-                            .getQueryCacheFactory()
-                            .getQueryCache(Collections.EMPTY_MAP);
-                }
-            }
+            queryCache = getParentDataDomain()
+                    .getQueryCacheFactory()
+                    .getQueryCache(Collections.EMPTY_MAP);
         }
 
         return queryCache;
@@ -277,7 +272,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 3.0
      */
-    public void setQueryCache(QueryCache queryCache) {
+    public synchronized void setQueryCache(QueryCache queryCache) {
         this.queryCache = queryCache;
     }
 
