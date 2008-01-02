@@ -86,7 +86,9 @@ public class DataMapView extends JPanel {
 
     protected JLabel defaultClientPackageLabel;
     protected TextAdapter defaultClientPackage;
+    protected TextAdapter defaultClientSuperclass;
     protected JButton updateDefaultClientPackage;
+    protected JButton updateDefaultClientSuperclass;
 
     public DataMapView(ProjectController eventController) {
         this.eventController = eventController;
@@ -144,6 +146,14 @@ public class DataMapView extends JPanel {
             }
         };
 
+        updateDefaultClientSuperclass = new JButton("Update...");
+        defaultClientSuperclass = new TextAdapter(new JTextField()) {
+
+            protected void updateModel(String text) {
+                setDefaultClientSuperclass(text);
+            }
+        };
+
         // assemble
         FormLayout layout = new FormLayout(
                 "right:70dlu, 3dlu, fill:110dlu, 3dlu, fill:100",
@@ -174,6 +184,10 @@ public class DataMapView extends JPanel {
                 "Client Java Package:",
                 defaultClientPackage.getComponent(),
                 updateDefaultClientPackage);
+        builder.append(
+                "Custom Superclass:",
+                defaultClientSuperclass.getComponent(),
+                updateDefaultClientSuperclass);
 
         this.setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
@@ -217,6 +231,13 @@ public class DataMapView extends JPanel {
 
             public void actionPerformed(ActionEvent e) {
                 updateDefaultClientPackage();
+            }
+        });
+
+        updateDefaultClientSuperclass.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                updateDefaultClientSuperclass();
             }
         });
 
@@ -293,6 +314,7 @@ public class DataMapView extends JPanel {
         // client defaults
         clientSupport.setSelected(map.isClientSupported());
         defaultClientPackage.setText(map.getDefaultClientPackage());
+        defaultClientSuperclass.setText(map.getDefaultClientSuperclass());
         toggleClientProperties(map.isClientSupported());
     }
 
@@ -300,6 +322,9 @@ public class DataMapView extends JPanel {
         defaultClientPackage.getComponent().setEnabled(enabled);
         updateDefaultClientPackage.setEnabled(enabled);
         defaultClientPackageLabel.setEnabled(enabled);
+
+        defaultClientSuperclass.getComponent().setEnabled(enabled);
+        updateDefaultClientSuperclass.setEnabled(enabled);
     }
 
     void setDefaultLockType(int lockType) {
@@ -383,6 +408,26 @@ public class DataMapView extends JPanel {
         // newDefaultPackage,
         // DataMapDefaults.DEFAULT_SUPERCLASS_PACKAGE);
 
+        eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
+    }
+
+    void setDefaultClientSuperclass(String newSuperclass) {
+        DataMap dataMap = eventController.getCurrentDataMap();
+
+        if (dataMap == null) {
+            return;
+        }
+
+        if (newSuperclass != null && newSuperclass.trim().length() == 0) {
+            newSuperclass = null;
+        }
+
+        String oldSuperclass = dataMap.getDefaultClientSuperclass();
+        if (Util.nullSafeEquals(newSuperclass, oldSuperclass)) {
+            return;
+        }
+
+        dataMap.setDefaultClientSuperclass(newSuperclass);
         eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
     }
 
@@ -535,7 +580,7 @@ public class DataMapView extends JPanel {
         }
 
         if (dataMap.getObjEntities().size() > 0) {
-            new SuperclassUpdateController(eventController, dataMap).startup();
+            new SuperclassUpdateController(eventController, dataMap, false).startup();
         }
     }
 
@@ -560,6 +605,18 @@ public class DataMapView extends JPanel {
 
         if (dataMap.getObjEntities().size() > 0) {
             new PackageUpdateController(eventController, dataMap, true).startup();
+        }
+    }
+
+    void updateDefaultClientSuperclass() {
+        DataMap dataMap = eventController.getCurrentDataMap();
+
+        if (dataMap == null) {
+            return;
+        }
+
+        if (dataMap.getObjEntities().size() > 0) {
+            new SuperclassUpdateController(eventController, dataMap, true).startup();
         }
     }
 

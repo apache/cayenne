@@ -99,6 +99,17 @@ public class DataMapTest extends TestCase {
         assertNull(map.getDefaultClientPackage());
     }
 
+    public void testDefaultClientSuperclass() {
+        DataMap map = new DataMap();
+        String tstSuperclass = "tst_superclass";
+        assertNull(map.getDefaultClientSuperclass());
+        map.setDefaultClientSuperclass(tstSuperclass);
+        assertEquals(tstSuperclass, map.getDefaultClientSuperclass());
+
+        map.setDefaultClientSuperclass(null);
+        assertNull(map.getDefaultClientSuperclass());
+    }
+
     public void testDefaultPackage() {
         DataMap map = new DataMap();
         String tstPackage = "tst.pkg";

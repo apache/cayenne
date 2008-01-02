@@ -38,8 +38,11 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
     public static final String ALL_CONTROL = "cayenne.modeler.datamap.defaultprefs.superclass.radio";
     public static final String UNINIT_CONTROL = "cayenne.modeler.datamap.defaultprefs.superclassnull.radio";
 
-    public SuperclassUpdateController(ProjectController mediator, DataMap dataMap) {
+    protected boolean clientUpdate;
+
+    public SuperclassUpdateController(ProjectController mediator, DataMap dataMap, boolean clientUpdate) {
         super(mediator, dataMap);
+        this.clientUpdate = clientUpdate;
     }
 
     /**
@@ -63,14 +66,14 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
 
     protected void updateSuperclass() {
         boolean doAll = ((DefaultsPreferencesModel) getModel()).isAllEntities();
-        String defaultSuperclass = dataMap.getDefaultSuperclass();
+        String defaultSuperclass = getSuperclass();
 
         Iterator it = dataMap.getObjEntities().iterator();
         while (it.hasNext()) {
             ObjEntity entity = (ObjEntity) it.next();
-            if (doAll || Util.isEmptyString(entity.getSuperClassName())) {
-                if (!Util.nullSafeEquals(defaultSuperclass, entity.getSuperClassName())) {
-                    entity.setSuperClassName(defaultSuperclass);
+            if (doAll || Util.isEmptyString(getSuperClassName(entity))) {
+                if (!Util.nullSafeEquals(defaultSuperclass, getSuperClassName(entity))) {
+                    setSuperClassName(entity, defaultSuperclass);
 
                     // any way to batch events, a big change will flood the app with
                     // entity events..?
@@ -82,4 +85,20 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
         shutdown();
     }
 
+    protected String getSuperclass() {
+        return clientUpdate ? dataMap.getDefaultClientSuperclass() : dataMap.getDefaultSuperclass();
+    }
+
+    protected String getSuperClassName(ObjEntity entity) {
+        return clientUpdate ? entity.getClientSuperClassName() : entity.getSuperClassName();
+    }
+
+    protected void setSuperClassName(ObjEntity entity, String superClassName) {
+        if (clientUpdate) {
+            entity.setClientSuperClassName(superClassName);
+        }
+        else {
+            entity.setSuperClassName(superClassName);
+        }
+    }
 }

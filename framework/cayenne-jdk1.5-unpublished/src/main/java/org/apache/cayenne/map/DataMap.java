@@ -75,6 +75,13 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     public static final String DEFAULT_CLIENT_PACKAGE_PROPERTY = "defaultClientPackage";
 
     /**
+     * Defines the name of the property for default client Java superclass.
+     *
+     * @since 3.0
+     */
+    public static final String DEFAULT_CLIENT_SUPERCLASS_PROPERTY = "defaultClientSuperclass";
+
+    /**
      * Defines the name of the property for default DB schema.
      * 
      * @since 1.1
@@ -89,7 +96,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     public static final String DEFAULT_PACKAGE_PROPERTY = "defaultPackage";
 
     /**
-     * Defines the name of the property for default DB schema.
+     * Defines the name of the property for default Java superclass.
      * 
      * @since 1.1
      */
@@ -113,6 +120,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
 
     protected boolean clientSupported;
     protected String defaultClientPackage;
+    protected String defaultClientSuperclass;
 
     private SortedMap<String, Embeddable> embeddablesMap;
     private SortedMap<String, ObjEntity> objEntityMap;
@@ -166,6 +174,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         Object superclass = properties.get(DEFAULT_SUPERCLASS_PROPERTY);
         Object clientEntities = properties.get(CLIENT_SUPPORTED_PROPERTY);
         Object clientPackageName = properties.get(DEFAULT_CLIENT_PACKAGE_PROPERTY);
+        Object clientSuperclass = properties.get(DEFAULT_CLIENT_SUPERCLASS_PROPERTY);
 
         this.defaultLockType = "optimistic".equals(lockType)
                 ? ObjEntity.LOCK_TYPE_OPTIMISTIC
@@ -178,6 +187,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
                 .equalsIgnoreCase(clientEntities.toString()) : false;
         this.defaultClientPackage = (clientPackageName != null) ? clientPackageName
                 .toString() : null;
+        this.defaultClientSuperclass = (clientSuperclass != null) ? clientSuperclass.toString() : null;
     }
 
     /**
@@ -263,6 +273,10 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
 
         if (!Util.isEmptyString(defaultClientPackage)) {
             encoder.printProperty(DEFAULT_CLIENT_PACKAGE_PROPERTY, defaultClientPackage);
+        }
+
+        if (!Util.isEmptyString(defaultClientSuperclass)) {
+            encoder.printProperty(DEFAULT_CLIENT_SUPERCLASS_PROPERTY, defaultClientSuperclass);
         }
 
         // embeddables
@@ -954,6 +968,22 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      */
     public void setDefaultClientPackage(String defaultClientPackage) {
         this.defaultClientPackage = defaultClientPackage;
+    }
+
+    /**
+     * Returns default client superclass.
+     *
+     * @since 3.0
+     */
+    public String getDefaultClientSuperclass() {
+        return defaultClientSuperclass;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setDefaultClientSuperclass(String defaultClientSuperclass) {
+        this.defaultClientSuperclass = defaultClientSuperclass;
     }
 
     /**
