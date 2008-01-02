@@ -34,6 +34,7 @@ CAY-945 PropertyUtils support for "compiled" property access
 CAY-946 JPA: property-based access to persistent objects
 CAY-948 Implement flattened attributes in Cayenne
 CAY-949 Factory for lifecycle listeners
+CAY-950 Look up callback methods on listener superclasses
 
 Bug fixes since M2:
 

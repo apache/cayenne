@@ -92,10 +92,17 @@ class CallbackOnListener extends AbstractCallback {
             }
         }
 
-        throw new IllegalArgumentException("Class "
-                + objectClass.getName()
-                + " has no valid listener callback method '"
-                + methodName
-                + "'");
+        Class<?> superclass = objectClass.getSuperclass();
+        if (superclass == null || "java.lang.Object".equals(superclass.getName())) {
+
+            throw new IllegalArgumentException("Class "
+                    + objectClass.getName()
+                    + " has no valid listener callback method '"
+                    + methodName
+                    + "'");
+        }
+        else {
+            return findMethod(superclass, methodName, entityType);
+        }
     }
 }
