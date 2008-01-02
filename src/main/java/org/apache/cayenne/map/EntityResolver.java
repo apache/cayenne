@@ -235,7 +235,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
                     for (int i = 0; i < callbacks.length; i++) {
 
                         for (String method : callbacks[i].getCallbackMethods()) {
-                            // note that callbacks[i].getCallbackType() == i
                             callbackRegistry.addListener(
                                     callbacks[i].getCallbackType(),
                                     entityClass,
@@ -248,7 +247,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 CallbackDescriptor[] callbacks = entity.getCallbackMap().getCallbacks();
                 for (int i = 0; i < callbacks.length; i++) {
                     for (String method : callbacks[i].getCallbackMethods()) {
-                        // note that callbacks[i].getCallbackType() == i
                         callbackRegistry.addListener(
                                 callbacks[i].getCallbackType(),
                                 entityClass,
