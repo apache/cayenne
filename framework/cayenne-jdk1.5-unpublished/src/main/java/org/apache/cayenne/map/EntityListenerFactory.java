@@ -38,5 +38,5 @@ public interface EntityListenerFactory {
      * @return a listener of the given class. May return null to indicate that a
      *         configured listener should be suppressed.
      */
-    <T> T createListener(Class<T> listenerClass, ObjEntity entity);
+    Object createListener(EntityListener listenerMapping, ObjEntity entity);
 }
