@@ -205,6 +205,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
                 for (EntityListener listener : map.getDefaultEntityListeners()) {
                     Object listenerInstance = createListener(listener, null);
+                    if(listenerInstance == null) {
+                        continue;
+                    }
 
                     CallbackDescriptor[] callbacks = listener
                             .getCallbackMap()
@@ -228,6 +231,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 // external listeners go first, entity's own callbacks go next
                 for (EntityListener listener : entity.getEntityListeners()) {
                     Object listenerInstance = createListener(listener, entity);
+                    if(listenerInstance == null) {
+                        continue;
+                    }
 
                     CallbackDescriptor[] callbacks = listener
                             .getCallbackMap()
