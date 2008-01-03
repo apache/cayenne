@@ -34,6 +34,9 @@ public interface EntityListenerFactory {
      * Creates an instance of entity listener of a given class. "entity" parameter denotes
      * ObjEntity for which the listener is installed. It is null if this is a default
      * listener.
+     * 
+     * @return a listener of the given class. May return null to indicate that a
+     *         configured listener should be suppressed.
      */
     <T> T createListener(Class<T> listenerClass, ObjEntity entity);
 }
