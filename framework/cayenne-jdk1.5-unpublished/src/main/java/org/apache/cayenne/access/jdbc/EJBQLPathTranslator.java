@@ -20,6 +20,7 @@ package org.apache.cayenne.access.jdbc;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -184,8 +185,15 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     }
 
     protected void processTerminatingAttribute(ObjAttribute attribute) {
-
-        DbEntity table = currentEntity.getDbEntity();
+        
+        DbEntity table = null;
+        Iterator<?> it = attribute.getDbPathIterator();
+        while (it.hasNext()) {
+            Object pathComponent = it.next();
+            if (pathComponent instanceof DbAttribute) {
+                table = (DbEntity) ((DbAttribute) pathComponent).getEntity();
+            }
+        }
 
         if (isUsingAliases()) {
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(

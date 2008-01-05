@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.art.Artist;
 import org.apache.art.CompoundPainting;
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SelectQuery;
@@ -67,6 +68,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
             long dateBase = System.currentTimeMillis();
             for (int i = 1; i <= artistCount; i++) {
                 stmt.setInt(1, i + 1);
+                System.out.println("artist real id: " + (i + 1));
                 stmt.setString(2, "artist" + i);
                 stmt.setDate(3, new java.sql.Date(dateBase + 1000 * 60 * 60 * 24 * i));
                 stmt.executeUpdate();
@@ -85,6 +87,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
             for (int i = 1; i <= paintCount; i++) {
                 stmt.setInt(1, i);
                 stmt.setString(2, "painting" + i);
+                System.out.println("artist id: " + ((i - 1) % artistCount + 2));
                 stmt.setInt(3, (i - 1) % artistCount + 2);
                 stmt.setBigDecimal(4, new BigDecimal(1000d));
                 if (i == 3)
@@ -144,6 +147,8 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
         }
     }
 
+    // TODO: andrus 1/5/2007 -  CAY-952: SelectQuery uses INNER JOIN for flattened attributes, while
+    // EJBQLQuery does an OUTER JOIN... which seems like a better idea...
     public void testSelectCompound2() throws Exception {
         populateTables();
         SelectQuery query = new SelectQuery(CompoundPainting.class, ExpressionFactory
@@ -179,40 +184,22 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
                     painting.getGalleryName());
         }
     }
-    
+
     public void testSelectEJQBQL() throws Exception {
-//        populateTables();
-//        EJBQLQuery query = new EJBQLQuery("SELECT a FROM CompoundPainting a WHERE a.artistName = 'artist2'");
-//        List<?> objects = context.performQuery(query);
-//
-//        assertNotNull(objects);
-//        assertEquals(1, objects.size());
-//        assertTrue("CompoundPainting expected, got " + objects.get(0).getClass(), objects
-//                .get(0) instanceof CompoundPainting);
-//
-//        for (Iterator<?> i = objects.iterator(); i.hasNext();) {
-//            CompoundPainting painting = (CompoundPainting) i.next();
-//            Number id = (Number) painting
-//                    .getObjectId()
-//                    .getIdSnapshot()
-//                    .get("PAINTING_ID");
-//            assertEquals("CompoundPainting.getObjectId(): " + id, id.intValue(), 2);
-//            assertEquals("CompoundPainting.getPaintingTitle(): "
-//                    + painting.getPaintingTitle(), "painting" + id, painting
-//                    .getPaintingTitle());
-//            assertEquals(
-//                    "CompoundPainting.getTextReview(): " + painting.getTextReview(),
-//                    "painting review" + id,
-//                    painting.getTextReview());
-//            assertEquals(
-//                    "CompoundPainting.getArtistName(): " + painting.getArtistName(),
-//                    "artist2",
-//                    painting.getArtistName());
-//            assertEquals(
-//                    "CompoundPainting.getArtistName(): " + painting.getGalleryName(),
-//                    painting.getToGallery().getGalleryName(),
-//                    painting.getGalleryName());
-//        }
+        populateTables();
+        EJBQLQuery query = new EJBQLQuery(
+                "SELECT a FROM CompoundPainting a WHERE a.artistName = 'artist2'");
+        List<?> objects = context.performQuery(query);
+
+        assertNotNull(objects);
+        assertEquals(2, objects.size());
+        assertTrue("CompoundPainting expected, got " + objects.get(0).getClass(), objects
+                .get(0) instanceof CompoundPainting);
+        Iterator<?> i = objects.iterator();
+        while (i.hasNext()) {
+            CompoundPainting painting = (CompoundPainting) i.next();
+            // assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
+        }
     }
 
     public void testInsert() {
