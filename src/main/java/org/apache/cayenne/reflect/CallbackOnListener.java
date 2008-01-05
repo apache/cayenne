@@ -67,6 +67,14 @@ class CallbackOnListener extends AbstractCallback {
         }
     }
 
+    @Override
+    public String toString() {
+        return "callback-listener: "
+                + callbackMethod.getDeclaringClass().getName()
+                + "."
+                + callbackMethod.getName();
+    }
+
     private Method findMethod(Class<?> objectClass, String methodName, Class<?> entityType)
             throws IllegalArgumentException {
 
