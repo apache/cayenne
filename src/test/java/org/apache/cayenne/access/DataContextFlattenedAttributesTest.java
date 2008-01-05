@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.art.Artist;
 import org.apache.art.CompoundPainting;
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SelectQuery;
@@ -159,6 +160,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
 
         for (Iterator<?> i = objects.iterator(); i.hasNext();) {
             CompoundPainting painting = (CompoundPainting) i.next();
+            assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
             Number id = (Number) painting
                     .getObjectId()
                     .getIdSnapshot()
@@ -195,7 +197,7 @@ public class DataContextFlattenedAttributesTest extends CayenneCase {
         Iterator<?> i = objects.iterator();
         while (i.hasNext()) {
             CompoundPainting painting = (CompoundPainting) i.next();
-            // assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
         }
     }
 

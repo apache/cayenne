@@ -94,7 +94,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                         lhsId = rhsId;
                     }
                     else if (pathPart instanceof DbAttribute) {
-                        appendColumn(idVar, (DbAttribute) pathPart, oa.getType());
+                        appendColumn(idVar, oa, (DbAttribute) pathPart, oa.getType());
                     }
                 }
                 return true;
@@ -116,7 +116,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
                 for (DbJoin join : dbRel.getJoins()) {
                     DbAttribute src = join.getSource();
-                    appendColumn(idVar, src);
+                    appendColumn(idVar, null, src);
                 }
             }
         };
@@ -129,20 +129,30 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
         DbEntity table = descriptor.getEntity().getDbEntity();
         for (DbAttribute pk : table.getPrimaryKeys()) {
-            appendColumn(idVar, pk);
+            appendColumn(idVar, null, pk);
         }
 
         return false;
     }
 
-    private void appendColumn(String identifier, DbAttribute column) {
-        appendColumn(identifier, column, null);
+    private void appendColumn(
+            String identifier,
+            ObjAttribute objectAttribute,
+            DbAttribute column) {
+        appendColumn(identifier, objectAttribute, column, null);
     }
 
-    private void appendColumn(String identifier, DbAttribute column, String javaType) {
+    private void appendColumn(
+            String identifier,
+            ObjAttribute objectAttribute,
+            DbAttribute column,
+            String javaType) {
+
         DbEntity table = (DbEntity) column.getEntity();
         String alias = context.getTableAlias(identifier, table.getFullyQualifiedName());
         String columnName = alias + "." + column.getName();
+        String columnLabel = objectAttribute != null ? objectAttribute
+                .getDbAttributePath() : column.getName();
 
         Set<String> columns = getColumns();
 
@@ -164,7 +174,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                 // TODO: andrus 6/27/2007 - the last parameter is an unofficial "jdbcType"
                 // pending CAY-813 implementation, switch to #column directive
                 context.append("' '").append(javaType).append("' '").append(
-                        column.getName()).append("' '").append(column.getName()).append(
+                        column.getName()).append("' '").append(columnLabel).append(
                         "' " + column.getType()).append(")");
             }
         }
