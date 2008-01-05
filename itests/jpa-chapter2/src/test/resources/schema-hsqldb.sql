@@ -20,6 +20,7 @@ insert into AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('BidiOneToOneOwner', 1
 insert into AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('BidiOneToOneOwned', 1);
 insert into AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('BidiOneToManyOwner', 1);
 insert into AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('BidiOneToManyOwned', 1);
+insert into AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('ST_INHERITANCE', 1);
 
 create table FieldPersistenceEntity (id int not null, property1 VARCHAR(100), primary key(id));
 create table PropertyPersistenceEntity (id int not null, property1 VARCHAR(100), property2 BOOLEAN, primary key(id));
@@ -48,3 +49,4 @@ alter table BidiOneToOneOwner add constraint cu_owned_id UNIQUE (owned_id);
 create table BidiOneToManyOwned (id int not null, primary key(id));
 create table BidiOneToManyOwner (id int not null, owned_id int not null, primary key(id));
 alter table BidiOneToManyOwner add constraint cfk_owned_id1 FOREIGN KEY (owned_id) references BidiOneToManyOwned (id);
+create table ST_INHERITANCE (id int not null, propertyA VARCHAR(100), propertyB VARCHAR(100), propertyC VARCHAR(100), objectType VARCHAR(10), primary key(id));

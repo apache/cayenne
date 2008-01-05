@@ -49,5 +49,8 @@
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.Embeddable1</class>
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.SerializableEmbeddable1</class>
 		<class>org.apache.cayenne.jpa.itest.ch2.entity.PropertyEmbeddable</class>
+		<class>org.apache.cayenne.jpa.itest.ch2.entity.SingleTableInheritanceSuper1</class>
+		<class>org.apache.cayenne.jpa.itest.ch2.entity.SingleTableInheritanceSub1</class>
+		<class>org.apache.cayenne.jpa.itest.ch2.entity.SingleTableInheritanceSub2</class>
 	</persistence-unit>
 </persistence>
