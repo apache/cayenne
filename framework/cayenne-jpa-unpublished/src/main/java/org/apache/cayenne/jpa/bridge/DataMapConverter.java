@@ -195,12 +195,14 @@ public class DataMapConverter {
             dbAttribute.setAttributePrecision(column.getPrecision());
         }
 
-        DbEntity entity = targetPath
-                .firstInstanceOf(DataMap.class)
-                .getDbEntity(tableName);
+        DataMap dataMap = targetPath.firstInstanceOf(DataMap.class);
+        DbEntity entity = dataMap.getDbEntity(tableName);
 
         if (entity == null) {
-            throw new JpaProviderException("No DbEntity defined for table  " + tableName);
+            // table may be defined in a superclass that is not processed yet... so create
+            // a barebone version, with all remaining properties to be set later
+            entity = new DbEntity(tableName);
+            dataMap.addDbEntity(entity);
         }
 
         entity.addAttribute(dbAttribute);
@@ -739,17 +741,22 @@ public class DataMapConverter {
         public void onFinishNode(ProjectPath path) {
 
             JpaEntity entity = path.firstInstanceOf(JpaEntity.class);
+            DataMap dataMap = targetPath.firstInstanceOf(DataMap.class);
             ObjEntity cayenneEntity = targetPath.firstInstanceOf(ObjEntity.class);
-            DbEntity cayennePrimaryTable = cayenneEntity.getDbEntity();
+
+            // as superentity may not be loaded yet, must lookup DbEntity via JPA
+            // mapping...
+            DbEntity cayennePrimaryTable = dataMap.getDbEntity(entity
+                    .lookupTable()
+                    .getName());
 
             for (JpaSecondaryTable secondaryTable : entity.getSecondaryTables()) {
 
                 // create a relationship between master DbEntity and a secondary
                 // DbEntity...
 
-                DbEntity cayenneSecondaryTable = cayennePrimaryTable
-                        .getDataMap()
-                        .getDbEntity(secondaryTable.getName());
+                DbEntity cayenneSecondaryTable = dataMap.getDbEntity(secondaryTable
+                        .getName());
 
                 JpaDbRelationship dbRelationship = new JpaDbRelationship(
                         getSecondaryTableDbRelationshipName(secondaryTable.getName()));
@@ -1032,10 +1039,14 @@ public class DataMapConverter {
                     jpaTable.getName());
             if (cayenneEntity == null) {
                 cayenneEntity = new DbEntity(jpaTable.getName());
-                cayenneEntity.setCatalog(jpaTable.getCatalog());
-                cayenneEntity.setSchema(jpaTable.getSchema());
                 parentCayenneEntity.getDataMap().addDbEntity(cayenneEntity);
             }
+
+            // override catalog and schema even if this is an existing entity. See for
+            // instance JpaColumnVisitor for an example on how an entity without all
+            // properties is created early.
+            cayenneEntity.setCatalog(jpaTable.getCatalog());
+            cayenneEntity.setSchema(jpaTable.getSchema());
 
             parentCayenneEntity.setDbEntity(cayenneEntity);
             return cayenneEntity;
@@ -1054,11 +1065,11 @@ public class DataMapConverter {
                     jpaTable.getName());
             if (secondaryEntity == null) {
                 secondaryEntity = new DbEntity(jpaTable.getName());
-                secondaryEntity.setCatalog(jpaTable.getCatalog());
-                secondaryEntity.setSchema(jpaTable.getSchema());
-
                 parentCayenneEntity.getDataMap().addDbEntity(secondaryEntity);
             }
+
+            secondaryEntity.setCatalog(jpaTable.getCatalog());
+            secondaryEntity.setSchema(jpaTable.getSchema());
 
             // defer primary./secondary relationship creation till after parent entity's
             // children are fully parsed...

@@ -44,6 +44,7 @@ import org.apache.cayenne.jpa.map.JpaEntityMap;
 import org.apache.cayenne.jpa.map.JpaLifecycleCallback;
 import org.apache.cayenne.jpa.map.JpaPersistenceUnitDefaults;
 import org.apache.cayenne.jpa.map.JpaPersistenceUnitMetadata;
+import org.apache.cayenne.jpa.map.JpaTable;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -99,9 +100,13 @@ public class DataMapConverterTest extends TestCase {
                 new MockPersistenceUnitInfo());
         JpaEntityMap jpaMap = context.getEntityMap();
 
+        JpaTable table = new JpaTable();
+        table.setName("ET1");
+        
         JpaEntity jpaEntity = new JpaEntity();
         jpaEntity.setName("E1");
         jpaEntity.setClassName("abc.C2");
+        jpaEntity.setTable(table);
         jpaEntity.setPostLoad(new JpaLifecycleCallback("xpl2"));
         jpaEntity.setPreRemove(new JpaLifecycleCallback("xpr2"));
         jpaMap.getEntities().add(jpaEntity);
@@ -128,9 +133,13 @@ public class DataMapConverterTest extends TestCase {
                 new MockPersistenceUnitInfo());
         JpaEntityMap jpaMap = context.getEntityMap();
 
+        JpaTable table = new JpaTable();
+        table.setName("ET1");
+        
         JpaEntity jpaEntity = new JpaEntity();
         jpaEntity.setName("E1");
         jpaEntity.setClassName("abc.C2");
+        jpaEntity.setTable(table);
         jpaEntity.setPostLoad(new JpaLifecycleCallback("xpl2"));
         jpaEntity.setPreRemove(new JpaLifecycleCallback("xpr2"));
         jpaMap.getEntities().add(jpaEntity);
