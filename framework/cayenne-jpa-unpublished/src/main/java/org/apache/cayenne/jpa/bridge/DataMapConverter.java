@@ -759,6 +759,8 @@ public class DataMapConverter {
                     attribute.setMandatory(true);
                     attribute.setAttributePrecision(pkAttribute.getAttributePrecision());
                     attribute.setType(pkAttribute.getType());
+                    attribute.setMaxLength(pkAttribute.getMaxLength());
+                    attribute.setAttributePrecision(pkAttribute.getAttributePrecision());
                     cayenneSecondaryTable.addAttribute(attribute);
 
                     DbJoin join = new DbJoin(dbRelationship, column
