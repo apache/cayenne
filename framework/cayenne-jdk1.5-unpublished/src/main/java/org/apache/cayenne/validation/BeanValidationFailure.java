@@ -49,7 +49,7 @@ public class BeanValidationFailure extends SimpleValidationFailure {
     public static ValidationFailure validateNotEmpty(
             Object bean,
             String attribute,
-            Collection value) {
+            Collection<?> value) {
 
         if (value == null) {
             return new BeanValidationFailure(bean, attribute, validationMessage(
@@ -75,7 +75,7 @@ public class BeanValidationFailure extends SimpleValidationFailure {
             return validateNotEmpty(bean, attribute, (String) value);
         }
         if (value instanceof Collection) {
-            return validateNotEmpty(bean, attribute, (Collection) value);
+            return validateNotEmpty(bean, attribute, (Collection<?>) value);
         }
         return validateNotNull(bean, attribute, value);
     }

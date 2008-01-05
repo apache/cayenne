@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public interface PlistDataStructureFactory {
 
-    Map createMap(String keyPath);
+    Map<String, Object> createMap(String keyPath);
 
-    Collection createCollection(String keyPath);
+    Collection<Object> createCollection(String keyPath);
 }
