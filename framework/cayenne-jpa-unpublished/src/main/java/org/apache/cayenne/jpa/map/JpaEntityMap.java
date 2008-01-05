@@ -122,6 +122,22 @@ public class JpaEntityMap implements XMLSerializable {
         encoder.print("</entity-mappings>");
     }
 
+    public JpaEntity getEntity(String className) {
+        if (className == null) {
+            throw new IllegalArgumentException("Null class name");
+        }
+
+        if (entities != null) {
+            for (JpaEntity object : entities) {
+                if (className.equals(object.getClassName())) {
+                    return object;
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Returns an existing managed class, or null if no match is found.
      */

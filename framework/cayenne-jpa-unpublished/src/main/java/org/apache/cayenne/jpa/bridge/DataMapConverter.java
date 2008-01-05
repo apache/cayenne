@@ -23,6 +23,8 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 
+import javax.persistence.InheritanceType;
+
 import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
 import org.apache.cayenne.jpa.map.AccessType;
@@ -439,7 +441,7 @@ public class DataMapConverter {
             if (managedClass instanceof JpaEntity) {
                 JpaEntity entity = (JpaEntity) managedClass;
 
-                if (column.getTable().equals(entity.getTable().getName())) {
+                if (column.getTable().equals(entity.lookupTable().getName())) {
                     return column.getName();
                 }
 
@@ -679,6 +681,12 @@ public class DataMapConverter {
         Object createObject(ProjectPath path) {
             JpaEntity jpaEntity = (JpaEntity) path.getObject();
             ObjEntity cayenneEntity = new ObjEntity(jpaEntity.getName());
+
+            if (jpaEntity.getInheritance() == null
+                    && jpaEntity.lookupInheritanceStrategy() == InheritanceType.SINGLE_TABLE) {
+                cayenneEntity.setSuperEntityName(jpaEntity.getSuperEntity().getName());
+            }
+
             cayenneEntity.setClassName(jpaEntity.getClassName());
             initCallbacks(jpaEntity, cayenneEntity);
 

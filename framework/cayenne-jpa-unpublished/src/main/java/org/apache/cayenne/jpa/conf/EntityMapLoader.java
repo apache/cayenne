@@ -34,13 +34,14 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
+import org.apache.cayenne.jpa.map.JpaEntity;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
 
 /**
@@ -111,6 +112,7 @@ public class EntityMapLoader {
         try {
             loadFromAnnotations(persistenceUnit);
             updateFromXML(persistenceUnit);
+            updateInheritanceHierarchy();
             updateFromDefaults();
         }
         catch (JpaProviderException e) {
@@ -118,6 +120,30 @@ public class EntityMapLoader {
         }
         catch (Exception e) {
             throw new JpaProviderException("Error loading ORM descriptors", e);
+        }
+    }
+
+    protected void updateInheritanceHierarchy() {
+
+        JpaEntityMap map = getEntityMap();
+
+        for (JpaEntity entity : map.getEntities()) {
+
+            Class<?> superclass = entity
+                    .getClassDescriptor()
+                    .getManagedClass()
+                    .getSuperclass();
+
+            while (superclass != null && !superclass.getName().equals("java.lang.Object")) {
+
+                JpaEntity superEntity = map.getEntity(superclass.getName());
+                if (superEntity != null) {
+                    entity.setSuperEntity(superEntity);
+                    break;
+                }
+
+                superclass = superclass.getSuperclass();
+            }
         }
     }
 

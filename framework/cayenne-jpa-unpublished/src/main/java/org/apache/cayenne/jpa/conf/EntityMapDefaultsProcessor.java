@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.EnumType;
+import javax.persistence.InheritanceType;
 import javax.persistence.TemporalType;
 
 import org.apache.cayenne.jpa.JpaProviderException;
@@ -114,28 +115,6 @@ public class EntityMapDefaultsProcessor {
             // * entity name
             if (abstractEntity.getClassName() == null) {
                 return false;
-            }
-
-            if (abstractEntity instanceof JpaEntity) {
-                JpaEntity entity = (JpaEntity) abstractEntity;
-                if (entity.getName() == null) {
-                    // use unqualified class name
-                    String fqName = abstractEntity.getClassName();
-                    int split = fqName.lastIndexOf('.');
-                    entity.setName(split > 0 ? fqName.substring(split + 1) : fqName);
-                }
-
-                // * default table (see @Table annotation defaults, JPA spec 9.1.1)
-                if (entity.getTable() == null) {
-                    JpaTable table = new JpaTable(AnnotationPrototypes.getTable());
-
-                    // unclear whether we need to apply any other name transformations ...
-                    // or even if we need to uppercase the name. Per default examples
-                    // looks
-                    // like we need. table.setName(entity.getName().toUpperCase());
-                    table.setName(entity.getName());
-                    entity.setTable(table);
-                }
             }
 
             if (abstractEntity.getAttributes() == null) {
@@ -311,7 +290,7 @@ public class EntityMapDefaultsProcessor {
 
                 // parent can be a mapped superclass
                 if (entity != null) {
-                    column.setTable(entity.getTable().getName());
+                    column.setTable(entity.lookupTable().getName());
                 }
             }
 
@@ -361,6 +340,47 @@ public class EntityMapDefaultsProcessor {
     }
 
     final class EntityVisitor extends AbstractEntityVisitor {
+
+        @Override
+        public boolean onStartNode(ProjectPath path) {
+            if (super.onStartNode(path)) {
+
+                JpaEntity entity = (JpaEntity) path.getObject();
+
+                if (entity.getInheritance() != null
+                        && entity.getInheritance().getStrategy() == null) {
+                    entity.getInheritance().setStrategy(InheritanceType.SINGLE_TABLE);
+                }
+
+                if (entity.getName() == null) {
+                    // use unqualified class name
+                    String fqName = entity.getClassName();
+                    int split = fqName.lastIndexOf('.');
+                    entity.setName(split > 0 ? fqName.substring(split + 1) : fqName);
+                }
+
+                if (entity.getInheritance() == null
+                        && entity.lookupInheritanceStrategy() == InheritanceType.SINGLE_TABLE) {
+                    // no dedicated table for the single_table inheritance subclass
+                }
+                // default table (see @Table annotation defaults, JPA spec 9.1.1)
+                else if (entity.getTable() == null) {
+                    JpaTable table = new JpaTable(AnnotationPrototypes.getTable());
+
+                    // unclear whether we need to apply any other name transformations
+                    // ...
+                    // or even if we need to uppercase the name. Per default examples
+                    // looks
+                    // like we need. table.setName(entity.getName().toUpperCase());
+                    table.setName(entity.getName());
+                    entity.setTable(table);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
 
         @Override
         public void onFinishNode(ProjectPath path) {

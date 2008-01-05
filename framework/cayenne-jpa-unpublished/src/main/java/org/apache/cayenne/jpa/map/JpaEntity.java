@@ -22,6 +22,8 @@ package org.apache.cayenne.jpa.map;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.persistence.InheritanceType;
+
 import org.apache.cayenne.util.TreeNodeChild;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -43,6 +45,7 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
     protected JpaSqlResultSetMapping sqlResultSetMapping;
     protected Collection<JpaAttributeOverride> attributeOverrides;
     protected Collection<JpaAssociationOverride> associationOverrides;
+    protected JpaEntity superEntity;
 
     // TODO: andrus, 7/25/2006 - according to the notes in the JPA spec FR, these
     // annotations can be specified on a mapped superclass as well as entity. Check the
@@ -220,9 +223,45 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
         this.discriminatorValue = discriminatorValue;
     }
 
+    /**
+     * Returns a child JpaInheritance object that is only set on a root of inheritance
+     * hierarchy.
+     */
     @TreeNodeChild
     public JpaInheritance getInheritance() {
         return inheritance;
+    }
+
+    /**
+     * Returns inheritance type for this entity hierarchy. If the entity has no
+     * inheritance settings, returns null.
+     */
+    public InheritanceType lookupInheritanceStrategy() {
+
+        if (inheritance != null) {
+            return inheritance.getStrategy();
+        }
+
+        if (superEntity != null) {
+            return superEntity.lookupInheritanceStrategy();
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns a table for this entity hierarchy.
+     */
+    public JpaTable lookupTable() {
+        if (table != null) {
+            return table;
+        }
+        
+        if(superEntity != null) {
+            return superEntity.lookupTable();
+        }
+        
+        return null;
     }
 
     public void setInheritance(JpaInheritance inheritance) {
@@ -323,21 +362,29 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
         }
         return secondaryTables;
     }
-    
+
     public JpaSecondaryTable getSecondaryTable(String name) {
         if (secondaryTables != null) {
-            for(JpaSecondaryTable table : secondaryTables) {
-                if(name.equals(table.getName())) {
+            for (JpaSecondaryTable table : secondaryTables) {
+                if (name.equals(table.getName())) {
                     return table;
                 }
             }
         }
-        
+
         return null;
     }
 
     @Override
     public String toString() {
         return "JpaEntity:" + name;
+    }
+
+    public JpaEntity getSuperEntity() {
+        return superEntity;
+    }
+
+    public void setSuperEntity(JpaEntity superEntity) {
+        this.superEntity = superEntity;
     }
 }
