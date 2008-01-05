@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.reflect.ClassDescriptor;

@@ -74,8 +74,10 @@ class SQLTemplateProcessor {
         sharedRuntime.addProperty("userdirective", BindDirective.class.getName());
         sharedRuntime.addProperty("userdirective", BindEqualDirective.class.getName());
         sharedRuntime.addProperty("userdirective", BindNotEqualDirective.class.getName());
-        sharedRuntime.addProperty("userdirective", BindObjectEqualDirective.class.getName());
-        sharedRuntime.addProperty("userdirective", BindObjectNotEqualDirective.class.getName());
+        sharedRuntime.addProperty("userdirective", BindObjectEqualDirective.class
+                .getName());
+        sharedRuntime.addProperty("userdirective", BindObjectNotEqualDirective.class
+                .getName());
         sharedRuntime.addProperty("userdirective", ResultDirective.class.getName());
         sharedRuntime.addProperty("userdirective", ChainDirective.class.getName());
         sharedRuntime.addProperty("userdirective", ChunkDirective.class.getName());
@@ -112,8 +114,8 @@ class SQLTemplateProcessor {
                 ? new HashMap(parameters)
                 : new HashMap(3);
 
-        List bindings = new ArrayList();
-        List results = new ArrayList();
+        List<ParameterBinding> bindings = new ArrayList<ParameterBinding>();
+        List<ColumnDescriptor> results = new ArrayList<ColumnDescriptor>();
         internalParameters.put(BINDINGS_LIST_KEY, bindings);
         internalParameters.put(RESULT_COLUMNS_LIST_KEY, results);
         internalParameters.put(HELPER_KEY, renderingUtils);

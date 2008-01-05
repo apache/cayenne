@@ -74,9 +74,10 @@ public class ProcedureAction extends BaseSQLAction {
             // stored procedure may contain a mixture of update counts and result sets,
             // and out parameters. Read out parameters first, then
             // iterate until we exhaust all results
-            
+
             // TODO: andrus, 4/2/2007 - according to the docs we should store the boolean
-            // return value of this method and avoid calling 'getMoreResults' if it is true.
+            // return value of this method and avoid calling 'getMoreResults' if it is
+            // true.
             // some db's handle this well, some don't (MySQL).
             statement.execute();
 
@@ -148,7 +149,7 @@ public class ProcedureAction extends BaseSQLAction {
                     "Expected a non-negative result set index. Got: " + setIndex);
         }
 
-        List descriptors = query.getResultDescriptors();
+        List<ColumnDescriptor[]> descriptors = query.getResultDescriptors();
 
         if (descriptors.isEmpty()) {
             // failover to default JDBC result descriptor
@@ -162,7 +163,7 @@ public class ProcedureAction extends BaseSQLAction {
                     + "' configured.");
         }
 
-        ColumnDescriptor[] columns = (ColumnDescriptor[]) descriptors.get(setIndex);
+        ColumnDescriptor[] columns = descriptors.get(setIndex);
         return new RowDescriptor(columns, getAdapter().getExtendedTypes());
     }
 
@@ -184,9 +185,9 @@ public class ProcedureAction extends BaseSQLAction {
 
         // build result row...
         DataRow result = null;
-        List parameters = getProcedure().getCallParameters();
+        List<ProcedureParameter> parameters = getProcedure().getCallParameters();
         for (int i = 0; i < parameters.size(); i++) {
-            ProcedureParameter parameter = (ProcedureParameter) parameters.get(i);
+            ProcedureParameter parameter = parameters.get(i);
 
             if (!parameter.isOutParam()) {
                 continue;

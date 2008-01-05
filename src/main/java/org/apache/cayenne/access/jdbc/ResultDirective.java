@@ -66,10 +66,11 @@ import org.apache.cayenne.util.Util;
  */
 public class ResultDirective extends Directive {
 
-    private static final Map typesGuess = new HashMap();
+    private static final Map<String, String> typesGuess;
 
     static {
         // init default types
+        typesGuess = new HashMap<String, String>();
 
         // primitives
         typesGuess.put("long", Long.class.getName());
@@ -137,7 +138,7 @@ public class ResultDirective extends Directive {
         // TODO: andrus 6/27/2007 - this is an unofficial jdbcType parameter that is added
         // temporarily pending CAY-813 implementation for the sake of EJBQL query...
         Object jdbcType = getChild(context, node, 4);
-        if(jdbcType instanceof Number) {
+        if (jdbcType instanceof Number) {
             columnDescriptor.setJdbcType(((Number) jdbcType).intValue());
         }
 
@@ -180,7 +181,7 @@ public class ResultDirective extends Directive {
      * expected to be fully qualified, and are not converted.
      */
     protected String guessType(String type) {
-        String guessed = (String) typesGuess.get(type);
+        String guessed = typesGuess.get(type);
         return guessed != null ? guessed : type;
     }
 
@@ -191,8 +192,9 @@ public class ResultDirective extends Directive {
             InternalContextAdapter context,
             ColumnDescriptor columnDescriptor) {
 
-        Collection resultColumns = (Collection) context.getInternalUserContext().get(
-                SQLTemplateProcessor.RESULT_COLUMNS_LIST_KEY);
+        Collection<Object> resultColumns = (Collection<Object>) context
+                .getInternalUserContext()
+                .get(SQLTemplateProcessor.RESULT_COLUMNS_LIST_KEY);
 
         if (resultColumns != null) {
             resultColumns.add(columnDescriptor);
