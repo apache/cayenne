@@ -33,7 +33,6 @@ import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.RefreshQuery;
 
 public class ResourceLocalEntityManager implements EntityManager, CayenneEntityManager {
@@ -267,10 +266,7 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      */
     public Query createQuery(String ejbqlString) {
         checkClosed();
-
-        JpaQuery query = new JpaQuery(context);
-        query.setQuery(new EJBQLQuery(ejbqlString));
-        return query;
+        return new JpaEJBQLQuery(context, ejbqlString);
     }
 
     /**
@@ -283,7 +279,7 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      */
     public Query createNamedQuery(String name) {
         checkClosed();
-        return new JpaQuery(context, name);
+        return new JpaNamedQuery(context, name);
     }
 
     @SuppressWarnings("unchecked")

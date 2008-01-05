@@ -19,25 +19,37 @@
 
 package org.apache.cayenne.jpa;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.Query;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLTemplate;
 
+/**
+ * A JPA wrapper for Cayenne {@link SQLTemplate}.
+ * 
+ * @since 3.0
+ * @author Andrus Adamchik
+ */
 public class JpaNativeQuery extends JpaQuery {
 
     private static final String POSITIONAL_PARAM_PREFIX = "positional_";
 
+    protected SQLTemplate query;
+    protected Map<String, Object> parameters;
+
     public JpaNativeQuery(ObjectContext context, String sqlString, Class<?> resultClass) {
         super(context);
-        setQuery(new SQLTemplate(resultClass, processSQLString(sqlString)));
+        query = new SQLTemplate(resultClass, processSQLString(sqlString));
     }
 
     public JpaNativeQuery(ObjectContext context, String sqlString, String dataMapName) {
         super(context);
         DataMap map = context.getEntityResolver().getDataMap(dataMapName);
-        setQuery(new SQLTemplate(map, processSQLString(sqlString)));
+        query = new SQLTemplate(map, processSQLString(sqlString));
     }
 
     protected String processSQLString(String sqlString) {
@@ -58,6 +70,26 @@ public class JpaNativeQuery extends JpaQuery {
         }
 
         return sqlString;
+    }
+
+    @Override
+    protected org.apache.cayenne.query.Query getQuery() {
+        return query;
+    }
+
+    @Override
+    public Query setParameter(String name, Object value) {
+
+        if (parameters == null) {
+            parameters = new HashMap<String, Object>();
+        }
+
+        parameters.put(name, value);
+
+        // must call every time to re-init the query
+        query.setParameters(parameters);
+
+        return this;
     }
 
     /**
@@ -82,5 +114,4 @@ public class JpaNativeQuery extends JpaQuery {
                     + position, e);
         }
     }
-
 }

@@ -20,9 +20,7 @@ package org.apache.cayenne.jpa;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
@@ -34,7 +32,6 @@ import javax.persistence.TransactionRequiredException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.ParameterizedQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -42,49 +39,15 @@ import org.apache.cayenne.query.SelectQuery;
 /**
  * A JPA Query that wraps a Cayenne Query.
  */
-public class JpaQuery implements Query {
+public abstract class JpaQuery implements Query {
 
-    protected Map<String, Object> parameters = new HashMap<String, Object>();
-    protected org.apache.cayenne.query.Query cayenneQuery;
     protected ObjectContext context;
 
     public JpaQuery(ObjectContext ctxt) {
         this.context = ctxt;
     }
 
-    /**
-     * Construct a named query.
-     */
-    public JpaQuery(ObjectContext context, String name) {
-        this(context);
-
-        org.apache.cayenne.query.Query q = context.getEntityResolver().lookupQuery(name);
-
-        if (q == null) {
-            throw new IllegalArgumentException("Non-existing query: " + name);
-        }
-
-        setQuery(q);
-    }
-
-    protected void setQuery(org.apache.cayenne.query.Query q) {
-        this.cayenneQuery = q;
-    }
-
-    protected org.apache.cayenne.query.Query getQuery() {
-        return cayenneQuery;
-    }
-
-    /**
-     * Return the same query with parameters set.
-     */
-    private org.apache.cayenne.query.Query queryWithParameters() {
-        if (parameters.size() == 0) {
-            return cayenneQuery;
-        }
-
-        return ((ParameterizedQuery) cayenneQuery).createQuery(parameters);
-    }
+    protected abstract org.apache.cayenne.query.Query getQuery();
 
     /**
      * Execute a SELECT query and return the query results as a List.
@@ -94,7 +57,7 @@ public class JpaQuery implements Query {
      */
     @SuppressWarnings("unchecked")
     public List getResultList() {
-        return context.performQuery(queryWithParameters());
+        return context.performQuery(getQuery());
     }
 
     /**
@@ -107,7 +70,7 @@ public class JpaQuery implements Query {
     public int executeUpdate() {
         // TODO: check transaction
 
-        QueryResponse response = context.performGenericQuery(queryWithParameters());
+        QueryResponse response = context.performGenericQuery(getQuery());
         int[] res = response.firstUpdateCount();
 
         if (res == null) {
@@ -172,7 +135,7 @@ public class JpaQuery implements Query {
             throw new IllegalArgumentException("query does not support maxResult: "
                     + query);
         }
-        
+
         return this;
     }
 
@@ -220,17 +183,7 @@ public class JpaQuery implements Query {
      * @throws IllegalArgumentException if parameter name does not correspond to parameter
      *             in query string or argument is of incorrect type
      */
-    public Query setParameter(String name, Object value) {
-        if (!(cayenneQuery instanceof ParameterizedQuery)) {
-            throw new IllegalArgumentException("query does not accept parameters");
-        }
-
-        // TODO: check for valid parameter. should probably be built in to
-        // all ParameterizedQuerys
-
-        parameters.put(name, value);
-        return this;
-    }
+    public abstract Query setParameter(String name, Object value);
 
     /**
      * Bind an instance of java.util.Date to a named parameter.
@@ -271,10 +224,7 @@ public class JpaQuery implements Query {
      * @throws IllegalArgumentException if position does not correspond to positional
      *             parameter of query or argument is of incorrect type
      */
-    public Query setParameter(int position, Object value) {
-        // TODO: implement
-        throw new UnsupportedOperationException("TODO");
-    }
+    public abstract Query setParameter(int position, Object value);
 
     /**
      * Bind an instance of java.util.Date to a positional parameter.
@@ -305,5 +255,4 @@ public class JpaQuery implements Query {
         // handled by cayenne.
         return setParameter(position, value);
     }
-
 }
