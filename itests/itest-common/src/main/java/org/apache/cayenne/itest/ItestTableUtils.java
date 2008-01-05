@@ -48,7 +48,7 @@ public class ItestTableUtils {
 
     public ItestTableUtils insert(Object... values) throws SQLException {
         if (this.columns == null) {
-            throw new IllegalStateException("Call 'helper' to prepare insert");
+            throw new IllegalStateException("Call 'setColumns' to prepare insert");
         }
 
         if (this.columns.length != values.length) {
