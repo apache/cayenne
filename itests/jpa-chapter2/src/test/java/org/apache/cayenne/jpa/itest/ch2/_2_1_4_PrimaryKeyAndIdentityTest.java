@@ -33,7 +33,6 @@ public class _2_1_4_PrimaryKeyAndIdentityTest extends EntityManagerCase {
 
         try {
             getEntityManager().persist(o1);
-
         }
         catch (IllegalArgumentException e) {
             return;

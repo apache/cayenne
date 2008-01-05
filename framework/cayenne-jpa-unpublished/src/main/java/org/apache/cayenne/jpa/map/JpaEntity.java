@@ -256,11 +256,26 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
         if (table != null) {
             return table;
         }
-        
-        if(superEntity != null) {
+
+        if (superEntity != null) {
             return superEntity.lookupTable();
         }
-        
+
+        return null;
+    }
+
+    /**
+     * Returns a discriminator column for this entity hierarchy.
+     */
+    public JpaDiscriminatorColumn lookupDiscriminatorColumn() {
+        if (discriminatorColumn != null) {
+            return discriminatorColumn;
+        }
+
+        if (superEntity != null) {
+            return superEntity.lookupDiscriminatorColumn();
+        }
+
         return null;
     }
 

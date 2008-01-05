@@ -39,9 +39,15 @@ public class JpaDiscriminatorColumn implements XMLSerializable {
     }
 
     public JpaDiscriminatorColumn(DiscriminatorColumn annotation) {
-        name = annotation.name();
+        if (!"".equals(annotation.name())) {
+            name = annotation.name();
+        }
+
+        if (!"".equals(annotation.columnDefinition())) {
+            columnDefinition = annotation.columnDefinition();
+        }
+
         discriminatorType = annotation.discriminatorType();
-        columnDefinition = annotation.columnDefinition();
         length = annotation.length();
     }
 

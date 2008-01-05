@@ -21,10 +21,12 @@ package org.apache.cayenne.jpa.bridge;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.sql.Types;
 import java.util.Iterator;
 
 import javax.persistence.InheritanceType;
 
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.jpa.JpaProviderException;
 import org.apache.cayenne.jpa.conf.EntityMapLoaderContext;
 import org.apache.cayenne.jpa.map.AccessType;
@@ -33,6 +35,7 @@ import org.apache.cayenne.jpa.map.JpaAttributeOverride;
 import org.apache.cayenne.jpa.map.JpaAttributes;
 import org.apache.cayenne.jpa.map.JpaBasic;
 import org.apache.cayenne.jpa.map.JpaColumn;
+import org.apache.cayenne.jpa.map.JpaDiscriminatorColumn;
 import org.apache.cayenne.jpa.map.JpaEmbeddable;
 import org.apache.cayenne.jpa.map.JpaEmbedded;
 import org.apache.cayenne.jpa.map.JpaEntity;
@@ -737,12 +740,13 @@ public class DataMapConverter {
 
             JpaEntity entity = path.firstInstanceOf(JpaEntity.class);
             ObjEntity cayenneEntity = targetPath.firstInstanceOf(ObjEntity.class);
+            DbEntity cayennePrimaryTable = cayenneEntity.getDbEntity();
 
             for (JpaSecondaryTable secondaryTable : entity.getSecondaryTables()) {
 
                 // create a relationship between master DbEntity and a secondary
                 // DbEntity...
-                DbEntity cayennePrimaryTable = cayenneEntity.getDbEntity();
+
                 DbEntity cayenneSecondaryTable = cayennePrimaryTable
                         .getDataMap()
                         .getDbEntity(secondaryTable.getName());
@@ -778,6 +782,64 @@ public class DataMapConverter {
 
                 dbRelationship.setToDependentPK(true);
                 dbRelationship.setToMany(false);
+            }
+
+            // init discriminator column
+            JpaDiscriminatorColumn discriminator = entity.lookupDiscriminatorColumn();
+            if (discriminator != null) {
+
+                if (cayennePrimaryTable.getAttribute(discriminator.getName()) == null) {
+                    DbAttribute dbAttribute = new DbAttribute(discriminator.getName());
+
+                    switch (discriminator.getDiscriminatorType()) {
+                        case CHAR:
+                            dbAttribute.setType(Types.CHAR);
+                            dbAttribute.setMaxLength(1);
+                            break;
+                        case STRING:
+                            dbAttribute.setType(Types.VARCHAR);
+                            dbAttribute.setMaxLength(discriminator.getLength());
+                            break;
+                        case INTEGER:
+                            dbAttribute.setType(Types.INTEGER);
+                            break;
+                    }
+
+                    dbAttribute.setMandatory(false);
+                    cayennePrimaryTable.addAttribute(dbAttribute);
+                }
+
+                String valueString = entity.getDiscriminatorValue();
+                if (valueString != null && valueString.length() > 0) {
+
+                    Object value = null;
+                    switch (discriminator.getDiscriminatorType()) {
+                        case CHAR:
+                            value = valueString.charAt(0);
+                            break;
+                        case STRING:
+                            value = valueString;
+                            break;
+                        case INTEGER:
+                            try {
+                                value = Integer.valueOf(valueString);
+                            }
+                            catch (NumberFormatException e) {
+                                recordConflict(
+                                        path,
+                                        "Invalid integer discriminator value '"
+                                                + valueString);
+                            }
+                            break;
+                    }
+
+                    if (value != null) {
+                        cayenneEntity.setDeclaredQualifier(ExpressionFactory.matchDbExp(
+                                discriminator.getName(),
+                                value));
+                    }
+
+                }
             }
 
             super.onFinishNode(path);

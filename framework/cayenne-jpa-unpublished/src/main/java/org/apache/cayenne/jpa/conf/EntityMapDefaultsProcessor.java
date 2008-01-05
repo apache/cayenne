@@ -24,6 +24,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.persistence.DiscriminatorType;
 import javax.persistence.EnumType;
 import javax.persistence.InheritanceType;
 import javax.persistence.TemporalType;
@@ -36,6 +37,7 @@ import org.apache.cayenne.jpa.map.JpaAttributes;
 import org.apache.cayenne.jpa.map.JpaBasic;
 import org.apache.cayenne.jpa.map.JpaClassDescriptor;
 import org.apache.cayenne.jpa.map.JpaColumn;
+import org.apache.cayenne.jpa.map.JpaDiscriminatorColumn;
 import org.apache.cayenne.jpa.map.JpaEmbeddable;
 import org.apache.cayenne.jpa.map.JpaEntity;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
@@ -273,6 +275,29 @@ public class EntityMapDefaultsProcessor {
         }
     }
 
+    final class DiscriminatorColumnVisitor extends BaseTreeVisitor {
+
+        @Override
+        public boolean onStartNode(ProjectPath path) {
+
+            JpaDiscriminatorColumn column = (JpaDiscriminatorColumn) path.getObject();
+            if (column.getName() == null) {
+                column.setName("DTYPE");
+            }
+
+            if (column.getDiscriminatorType() == null) {
+                column.setDiscriminatorType(DiscriminatorType.STRING);
+            }
+
+            if (column.getLength() == 0
+                    && column.getDiscriminatorType() == DiscriminatorType.STRING) {
+                column.setLength(31);
+            }
+
+            return false;
+        }
+    }
+
     final class ColumnVisitor extends BaseTreeVisitor {
 
         @Override
@@ -340,6 +365,12 @@ public class EntityMapDefaultsProcessor {
     }
 
     final class EntityVisitor extends AbstractEntityVisitor {
+
+        EntityVisitor() {
+            addChildVisitor(
+                    JpaDiscriminatorColumn.class,
+                    new DiscriminatorColumnVisitor());
+        }
 
         @Override
         public boolean onStartNode(ProjectPath path) {
@@ -416,6 +447,24 @@ public class EntityMapDefaultsProcessor {
                                         .getName());
                             }
                         }
+                    }
+                }
+            }
+
+            JpaDiscriminatorColumn discriminator = entity.lookupDiscriminatorColumn();
+            if (discriminator != null) {
+
+                if (entity.getDiscriminatorValue() == null) {
+                    switch (discriminator.getDiscriminatorType()) {
+
+                        case STRING:
+                            entity.setDiscriminatorValue(entity.getName());
+                            break;
+                        default:
+                            context.recordConflict(new SimpleValidationFailure(
+                                    entity,
+                                    "Can't guess default discriminator value for non-String discriminator column: "
+                                            + discriminator.getName()));
                     }
                 }
             }
