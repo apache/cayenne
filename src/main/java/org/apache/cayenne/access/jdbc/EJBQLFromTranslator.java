@@ -59,7 +59,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         }
 
         this.lastId = id;
-        joinAppender.appendTable(id);
+        joinAppender.appendTable(new EJBQLTableId(id));
         return false;
     }
 
@@ -69,8 +69,10 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitInnerJoin(EJBQLJoin join) {
-        joinAppender.appendInnerJoin(null, join.getLeftHandSideId(), join
-                .getRightHandSideId());
+        joinAppender.appendInnerJoin(
+                null,
+                new EJBQLTableId(join.getLeftHandSideId()),
+                new EJBQLTableId(join.getRightHandSideId()));
         return false;
     }
 
@@ -80,8 +82,10 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitOuterJoin(EJBQLJoin join) {
-        joinAppender.appendOuterJoin(null, join.getLeftHandSideId(), join
-                .getRightHandSideId());
+        joinAppender.appendOuterJoin(
+                null,
+                new EJBQLTableId(join.getLeftHandSideId()),
+                new EJBQLTableId(join.getRightHandSideId()));
         return false;
     }
 }

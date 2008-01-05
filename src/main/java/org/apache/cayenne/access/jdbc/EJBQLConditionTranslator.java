@@ -166,9 +166,8 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         context.append(" WHERE");
 
         // TODO: andrus, 8/11/2007 flattened?
-        DbRelationship correlatedJoinRelationship = context
-                .getIncomingRelationships(id)
-                .get(0);
+        DbRelationship correlatedJoinRelationship = context.getIncomingRelationships(
+                new EJBQLTableId(id)).get(0);
         Iterator<DbJoin> it = correlatedJoinRelationship.getJoins().iterator();
         while (it.hasNext()) {
             DbJoin join = it.next();
@@ -244,9 +243,8 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         context.append(" WHERE");
 
         // TODO: andrus, 8/11/2007 flattened?
-        DbRelationship correlatedJoinRelationship = context
-                .getIncomingRelationships(id)
-                .get(0);
+        DbRelationship correlatedJoinRelationship = context.getIncomingRelationships(
+                new EJBQLTableId(id)).get(0);
 
         for (DbJoin join : correlatedJoinRelationship.getJoins()) {
             context.append(' ').append(subqueryRootAlias).append('.').append(

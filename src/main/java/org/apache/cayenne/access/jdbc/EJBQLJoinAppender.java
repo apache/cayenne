@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * Handles appending joins to the content buffer at a marked position.
@@ -75,15 +74,19 @@ public class EJBQLJoinAppender {
         return null;
     }
 
-    public void appendInnerJoin(String marker, String lhsId, String rhsId) {
+    public void appendInnerJoin(String marker, EJBQLTableId lhsId, EJBQLTableId rhsId) {
         appendJoin(marker, lhsId, rhsId, "INNER JOIN");
     }
 
-    public void appendOuterJoin(String marker, String lhsId, String rhsId) {
+    public void appendOuterJoin(String marker, EJBQLTableId lhsId, EJBQLTableId rhsId) {
         appendJoin(marker, lhsId, rhsId, "LEFT OUTER JOIN");
     }
 
-    protected void appendJoin(String marker, String lhsId, String rhsId, String semantics) {
+    protected void appendJoin(
+            String marker,
+            EJBQLTableId lhsId,
+            EJBQLTableId rhsId,
+            String semantics) {
 
         List<DbRelationship> joinRelationships = context.getIncomingRelationships(rhsId);
         if (joinRelationships.isEmpty()) {
@@ -93,7 +96,7 @@ public class EJBQLJoinAppender {
         // TODO: andrus, 4/8/2007 - support for flattened relationships
         DbRelationship incomingDB = joinRelationships.get(0);
 
-        String sourceAlias = context.getTableAlias(lhsId, incomingDB
+        String sourceAlias = context.getTableAlias(lhsId.getEntityId(), incomingDB
                 .getSourceEntity()
                 .getName());
 
@@ -142,13 +145,14 @@ public class EJBQLJoinAppender {
         }
     }
 
-    public String appendTable(String id) {
-        ClassDescriptor descriptor = context.getEntityDescriptor(id);
+    public String appendTable(EJBQLTableId id) {
 
-        String tableName = descriptor.getEntity().getDbEntity().getFullyQualifiedName();
+        String tableName = id.getDbEntity(context).getFullyQualifiedName();
 
         if (context.isUsingAliases()) {
-            String alias = context.getTableAlias(id, tableName);
+            // TODO: andrus 1/5/2007 - if the same table is joined more than once, this
+            // will create an incorrect alias.
+            String alias = context.getTableAlias(id.getEntityId(), tableName);
 
             // not using "AS" to separate table name and alias name - OpenBase doesn't
             // support

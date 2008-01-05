@@ -68,7 +68,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
                 EJBQLJoinAppender joinAppender = null;
                 String marker = null;
-                String lhsId = idVar;
+                EJBQLTableId lhsId = new EJBQLTableId(idVar);
 
                 while (dbPathIterator.hasNext()) {
                     Object pathPart = dbPathIterator.next();
@@ -89,7 +89,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
                         DbRelationship dr = (DbRelationship) pathPart;
 
-                        String rhsId = lhsId + ".db:" + dr.getName();
+                        EJBQLTableId rhsId = new EJBQLTableId(lhsId, dr.getName());
                         joinAppender.appendOuterJoin(marker, lhsId, rhsId);
                         lhsId = rhsId;
                     }
