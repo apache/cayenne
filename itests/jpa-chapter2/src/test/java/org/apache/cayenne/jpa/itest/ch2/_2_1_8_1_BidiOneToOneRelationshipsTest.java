@@ -32,20 +32,12 @@ public class _2_1_8_1_BidiOneToOneRelationshipsTest extends EntityManagerCase {
 
     // TODO: andrus 8/10/2006 - fails
     public void _testDefaults() throws Exception {
-        getDbHelper().deleteAll("BidiOneToOneOwned");
-        getDbHelper().deleteAll("BidiOneToOneOwner");
 
-        getDbHelper().insert("BidiOneToOneOwned", new String[] {
-            "id"
-        }, new Object[] {
-            5
-        });
-
-        getDbHelper().insert("BidiOneToOneOwner", new String[] {
-                "id", "owned_id"
-        }, new Object[] {
-                4, 5
-        });
+        getTableHelper("BidiOneToOneOwned").deleteAll().setColumns("id").insert(5);
+        getTableHelper("BidiOneToOneOwner")
+                .deleteAll()
+                .setColumns("id", "owned_id")
+                .insert(4, 5);
 
         BidiOneToOneOwner owner = getEntityManager().find(BidiOneToOneOwner.class, 4);
         assertNotNull(owner);
