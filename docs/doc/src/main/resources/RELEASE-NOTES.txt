@@ -35,6 +35,7 @@ CAY-946 JPA: property-based access to persistent objects
 CAY-948 Implement flattened attributes in Cayenne
 CAY-949 Factory for lifecycle listeners
 CAY-950 Look up callback methods on listener superclasses
+CAY-953 JPA: Single Table inheritance
 
 Bug fixes since M2:
 
