@@ -21,6 +21,7 @@ package org.apache.cayenne.itest.jpa;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.itest.ItestDBUtils;
+import org.apache.cayenne.itest.ItestTableUtils;
 
 /**
  * Abstract test case that bootstraps default JPA unit called "itest" and a schema script
@@ -32,5 +33,9 @@ public abstract class JpaTestCase extends TestCase {
 
     protected ItestDBUtils getDbHelper() {
         return ItestSetup.getInstance().getDbHelper();
+    }
+    
+    protected ItestTableUtils getTableHelper(String tableName) {
+        return new ItestTableUtils(getDbHelper(), tableName);
     }
 }
