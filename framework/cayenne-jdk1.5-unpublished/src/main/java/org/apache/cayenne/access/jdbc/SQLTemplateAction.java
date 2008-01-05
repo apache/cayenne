@@ -89,8 +89,8 @@ public class SQLTemplateAction implements SQLAction {
         // so fake a single entry batch...
         int batchSize = (size > 0) ? size : 1;
 
-        List counts = new ArrayList(batchSize);
-        Iterator it = (size > 0) ? query.parametersIterator() : IteratorUtils
+        List<Number> counts = new ArrayList<Number>(batchSize);
+        Iterator<?> it = (size > 0) ? query.parametersIterator() : IteratorUtils
                 .singletonIterator(Collections.EMPTY_MAP);
         for (int i = 0; i < batchSize; i++) {
             Map nextParameters = (Map) it.next();
@@ -107,11 +107,11 @@ public class SQLTemplateAction implements SQLAction {
             execute(connection, callback, compiled, counts);
         }
 
-        // notify of combined counts of all queries inside SQLTemplate multipled by the
+        // notify of combined counts of all queries inside SQLTemplate multiplied by the
         // number of parameter sets...
         int[] ints = new int[counts.size()];
         for (int i = 0; i < ints.length; i++) {
-            ints[i] = ((Integer) counts.get(i)).intValue();
+            ints[i] = counts.get(i).intValue();
         }
 
         callback.nextBatchCount(query, ints);
@@ -121,7 +121,7 @@ public class SQLTemplateAction implements SQLAction {
             Connection connection,
             OperationObserver callback,
             SQLStatement compiled,
-            Collection updateCounts) throws SQLException, Exception {
+            Collection<Number> updateCounts) throws SQLException, Exception {
 
         long t1 = System.currentTimeMillis();
         boolean iteratedResult = callback.isIteratedResult();
@@ -161,7 +161,7 @@ public class SQLTemplateAction implements SQLAction {
                                 resultSet.close();
                             }
                         }
-                        
+
                         // ignore possible following update counts and bail early on
                         // iterated results
                         if (iteratedResult) {
@@ -201,8 +201,8 @@ public class SQLTemplateAction implements SQLAction {
         RowDescriptor descriptor = (compiled.getResultColumns().length > 0)
                 ? new RowDescriptor(compiled.getResultColumns(), types)
                 : new RowDescriptor(resultSet, types);
-                
-           if (query.getColumnNamesCapitalization() != null) {
+
+        if (query.getColumnNamesCapitalization() != null) {
             if (SQLTemplate.LOWERCASE_COLUMN_NAMES.equals(query
                     .getColumnNamesCapitalization())) {
                 descriptor.forceLowerCaseColumnNames();
