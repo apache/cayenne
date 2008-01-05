@@ -386,11 +386,13 @@ public class EntityMapDefaultsProcessor {
 
                         if (joinColumn.getReferencedColumnName() == null) {
                             if (entity.getAttributes().getIds().size() == 1) {
-                                joinColumn.setReferencedColumnName(entity
+                                JpaId id = entity
                                         .getAttributes()
                                         .getIds()
                                         .iterator()
-                                        .next()
+                                        .next();
+                                joinColumn.setReferencedColumnName(id
+                                        .getColumn()
                                         .getName());
                             }
                         }

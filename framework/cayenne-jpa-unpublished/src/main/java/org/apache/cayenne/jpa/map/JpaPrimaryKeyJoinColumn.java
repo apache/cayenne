@@ -35,9 +35,18 @@ public class JpaPrimaryKeyJoinColumn implements XMLSerializable {
     }
 
     public JpaPrimaryKeyJoinColumn(PrimaryKeyJoinColumn annotation) {
-        name = annotation.name();
-        referencedColumnName = annotation.referencedColumnName();
-        columnDefinition = annotation.columnDefinition();
+
+        if (!"".equals(annotation.name())) {
+            name = annotation.name();
+        }
+
+        if (!"".equals(annotation.columnDefinition())) {
+            columnDefinition = annotation.columnDefinition();
+        }
+
+        if (!"".equals(annotation.referencedColumnName())) {
+            referencedColumnName = annotation.referencedColumnName();
+        }
     }
 
     public void encodeAsXML(XMLEncoder encoder) {
