@@ -18,12 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
@@ -97,8 +100,36 @@ public class EJBQLTranslationContext {
         return compiledExpression.getEntityDescriptor(resolveId(id));
     }
 
-    List<DbRelationship> getIncomingRelationships(String id) {
-        return compiledExpression.getIncomingRelationships(resolveId(id));
+    List<DbRelationship> getIncomingRelationships(EJBQLTableId id) {
+
+        List<DbRelationship> incoming = compiledExpression
+                .getIncomingRelationships(resolveId(id.getEntityId()));
+
+        // append tail of flattened relationships...
+        if (id.getDbPath() != null) {
+
+            DbEntity entity;
+
+            if (incoming == null || incoming.isEmpty()) {
+                entity = compiledExpression
+                        .getEntityDescriptor(id.getEntityId())
+                        .getEntity()
+                        .getDbEntity();
+            }
+            else {
+                DbRelationship last = incoming.get(incoming.size() - 1);
+                entity = (DbEntity) last.getTargetEntity();
+            }
+
+            incoming = new ArrayList<DbRelationship>(incoming);
+
+            Iterator<?> it = entity.resolvePathComponents(id.getDbPath());
+            while (it.hasNext()) {
+                incoming.add((DbRelationship) it.next());
+            }
+        }
+
+        return incoming;
     }
 
     /**

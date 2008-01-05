@@ -103,7 +103,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     }
 
     private void resolveJoin(boolean inner) {
-        
+
         EJBQLJoinAppender joinAppender = context.getTranslatorFactory().getJoinAppender(
                 context);
 
@@ -124,12 +124,18 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
             // register join
             if (inner) {
-                joinAppender.appendInnerJoin(joinMarker, idPath, fullPath);
+                joinAppender.appendInnerJoin(
+                        joinMarker,
+                        new EJBQLTableId(idPath),
+                        new EJBQLTableId(fullPath));
                 this.lastAlias = context.getTableAlias(fullPath, currentEntity
                         .getDbEntityName());
             }
             else {
-                joinAppender.appendOuterJoin(joinMarker, idPath, fullPath);
+                joinAppender.appendOuterJoin(
+                        joinMarker,
+                        new EJBQLTableId(idPath),
+                        new EJBQLTableId(fullPath));
 
                 Relationship lastRelationship = currentEntity
                         .getRelationship(lastPathComponent);
