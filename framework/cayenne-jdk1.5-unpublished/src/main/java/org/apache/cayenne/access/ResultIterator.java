@@ -23,64 +23,60 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.map.DbEntity;
 
 /**
- * Defines API of an iterator over the records returned as a result
- * of SelectQuery execution. Usually a ResultIterator is supported by
- * an open java.sql.ResultSet, therefore most of the methods would throw
- * checked exceptions. ResultIterators must be explicitly closed when the
- * user is done working with them.
- * 
- * <p><i>For more information see <a href="../../../../../../userguide/index.html"
- * target="_top">Cayenne User Guide.</a></i></p>
+ * Defines API of an iterator over the records returned as a result of SelectQuery
+ * execution. Usually a ResultIterator is supported by an open java.sql.ResultSet,
+ * therefore most of the methods would throw checked exceptions. ResultIterators must be
+ * explicitly closed when the user is done working with them.
  * 
  * @author Andrus Adamchik
  */
 public interface ResultIterator {
-    
+
     /**
-     * Returns all unread data rows from ResultSet and closes this iterator
-     * if asked to do so.
+     * Returns all unread data rows from ResultSet and closes this iterator if asked to do
+     * so.
      */
-    public List dataRows(boolean close) throws CayenneException;
-           
-	/** 
-	 * Returns true if there is at least one more record
-	 * that can be read from the iterator.
-	 */
-	public boolean hasNextRow() throws CayenneException;
-    
-    /** 
-	 * Returns the next result row as a Map.
-	 */
-    public Map nextDataRow() throws CayenneException;
-    
+    List<DataRow> dataRows(boolean close) throws CayenneException;
+
     /**
-     * Returns a map of ObjectId values from the next result row.
-     * Primary key columns are determined from the provided DbEntity.
+     * Returns true if there is at least one more record that can be read from the
+     * iterator.
+     */
+    boolean hasNextRow() throws CayenneException;
+
+    /**
+     * Returns the next result row as a Map.
+     */
+    Map<String, Object> nextDataRow() throws CayenneException;
+
+    /**
+     * Returns a map of ObjectId values from the next result row. Primary key columns are
+     * determined from the provided DbEntity.
      * 
      * @since 1.1
      */
-    public Map nextObjectId(DbEntity entity) throws CayenneException;
-    
+    Map<String, Object> nextObjectId(DbEntity entity) throws CayenneException;
+
     /**
      * Skips current data row instead of reading it.
      */
-    public void skipDataRow() throws CayenneException;
-    
-    /** 
-     * Closes ResultIterator and associated ResultSet. This method must be
-     * called explicitly when the user is finished processing the records.
-     * Otherwise unused database resources will not be released properly.
-     */  
-    public void close() throws CayenneException;
-    
+    void skipDataRow() throws CayenneException;
+
+    /**
+     * Closes ResultIterator and associated ResultSet. This method must be called
+     * explicitly when the user is finished processing the records. Otherwise unused
+     * database resources will not be released properly.
+     */
+    void close() throws CayenneException;
+
     /**
      * Returns the number of columns in the result row.
      * 
      * @since 1.0.6
      */
-    public int getDataRowWidth();
+    int getDataRowWidth();
 }
-

@@ -69,7 +69,7 @@ public class JDBCResultIterator implements ResultIterator {
     protected boolean nextRow;
     protected int fetchedSoFar;
     protected int fetchLimit;
-    
+
     private String[] labels;
     private int[] types;
 
@@ -89,15 +89,15 @@ public class JDBCResultIterator implements ResultIterator {
         this.mapCapacity = (int) Math.ceil((descriptor.getWidth()) / 0.75);
 
         checkNextRow();
-        
-        if(nextRow) {
+
+        if (nextRow) {
             // extract column parameters to speed up processing...
             ColumnDescriptor[] columns = descriptor.getColumns();
             int width = columns.length;
             labels = new String[width];
             types = new int[width];
-            
-            for(int i = 0; i < width; i++) {
+
+            for (int i = 0; i < width; i++) {
                 labels[i] = columns[i].getLabel();
                 types[i] = columns[i].getJdbcType();
             }
@@ -107,12 +107,12 @@ public class JDBCResultIterator implements ResultIterator {
     /**
      * Returns all unread data rows from ResultSet, closing this iterator if needed.
      */
-    public List dataRows(boolean close) throws CayenneException {
-        List list = new ArrayList();
+    public List<DataRow> dataRows(boolean close) throws CayenneException {
+        List<DataRow> list = new ArrayList<DataRow>();
 
         try {
-            while (this.hasNextRow()) {
-                list.add(this.nextDataRow());
+            while (hasNextRow()) {
+                list.add((DataRow) nextDataRow());
             }
         }
         finally {
@@ -135,14 +135,14 @@ public class JDBCResultIterator implements ResultIterator {
     /**
      * Returns the next result row as a Map.
      */
-    public Map nextDataRow() throws CayenneException {
+    public Map<String, Object> nextDataRow() throws CayenneException {
         if (!hasNextRow()) {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
         }
 
         // read
-        Map row = readDataRow();
+        Map<String, Object> row = readDataRow();
 
         // rewind
         checkNextRow();
@@ -154,7 +154,7 @@ public class JDBCResultIterator implements ResultIterator {
      * Returns a map of ObjectId values from the next result row. Primary key columns are
      * determined from the provided DbEntity.
      */
-    public Map nextObjectId(DbEntity entity) throws CayenneException {
+    public Map<String, Object> nextObjectId(DbEntity entity) throws CayenneException {
         if (!hasNextRow()) {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
@@ -169,7 +169,7 @@ public class JDBCResultIterator implements ResultIterator {
         // read ...
         // TODO: note a mismatch with 1.1 API - ID positions are preset and are
         // not affected by the entity specified (think of deprecating/replacing this)
-        Map row = readIdRow();
+        Map<String, Object> row = readIdRow();
 
         // rewind
         checkNextRow();
@@ -220,7 +220,7 @@ public class JDBCResultIterator implements ResultIterator {
             // TODO: andrus, 5/8/2006 - closing connection within JDBCResultIterator is
             // obsolete as this is bound to transaction closing in DataContext. Deprecate
             // this after 1.2
-            
+
             // close connection, if this object was explicitly configured to be
             // responsible for doing it
             if (connection != null && isClosingConnection()) {
@@ -278,7 +278,7 @@ public class JDBCResultIterator implements ResultIterator {
     /**
      * Reads a row from the internal ResultSet at the current cursor position.
      */
-    protected Map readDataRow() throws CayenneException {
+    protected Map<String, Object> readDataRow() throws CayenneException {
         try {
             DataRow dataRow = new DataRow(mapCapacity);
             ExtendedType[] converters = rowDescriptor.getConverters();
@@ -312,7 +312,7 @@ public class JDBCResultIterator implements ResultIterator {
      * Reads a row from the internal ResultSet at the current cursor position, processing
      * only columns that are part of the ObjectId of a target class.
      */
-    protected Map readIdRow() throws CayenneException {
+    protected Map<String, Object> readIdRow() throws CayenneException {
         try {
             DataRow idRow = new DataRow(2);
             ExtendedType[] converters = rowDescriptor.getConverters();

@@ -45,7 +45,7 @@ public class SQLTemplateResourceManager
     extends ResourceLoader
     implements ResourceManager {
 
-    protected Map templateCache;
+    protected Map<String, Template> templateCache;
 
     public void initialize(RuntimeServices rs) throws Exception {
         super.rsvc = rs;
@@ -63,7 +63,7 @@ public class SQLTemplateResourceManager
         throws ResourceNotFoundException, ParseErrorException, Exception {
 
         synchronized (templateCache) {
-            Template resource = (Template) templateCache.get(resourceName);
+            Template resource = templateCache.get(resourceName);
 
             if (resource == null) {
                 resource = new Template();
