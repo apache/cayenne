@@ -51,6 +51,14 @@ class CallbackOnEntity extends AbstractCallback {
         }
     }
 
+    @Override
+    public String toString() {
+        return "callback-entity: "
+                + callbackMethod.getDeclaringClass().getName()
+                + "."
+                + callbackMethod.getName();
+    }
+
     private Method findMethod(Class<?> objectClass, String methodName)
             throws IllegalArgumentException {
         Method[] methods = objectClass.getDeclaredMethods();
