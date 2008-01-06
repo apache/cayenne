@@ -38,7 +38,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     static String makeWhereMarker() {
         return "WHERE_MARKER";
     }
-    
+
     static String makeEntityQualifierMarker() {
         return "ENTITY_QUALIIER";
     }
@@ -112,6 +112,10 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         context.pushMarker(makeWhereMarker(), true);
         context.append(" WHERE");
         context.popMarker();
+
+        if (context.findOrCreateMarkedBuffer(makeEntityQualifierMarker()).length() > 0) {
+            context.append(" AND");
+        }
 
         expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
         return false;
