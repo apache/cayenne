@@ -101,7 +101,7 @@ public class ASTList extends SimpleNode {
                     ((Expression) values[i]).encodeAsString(pw);
                 }
                 else {
-                    encodeScalarAsString(pw, values[i]);
+                    encodeScalarAsString(pw, values[i], '\"');
                 }
             }
         }
