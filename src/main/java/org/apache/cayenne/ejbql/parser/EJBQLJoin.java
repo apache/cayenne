@@ -23,16 +23,6 @@ public class EJBQLJoin extends SimpleNode {
     public EJBQLJoin(int id) {
         super(id);
     }
-    
-    public String getRelationship() {
-        int len = getChildrenCount();
-        if (len < 1) {
-            return null;
-        }
-
-        EJBQLPath path = (EJBQLPath) getChild(0);
-        return path.getRelativePath();
-    }
 
     public String getLeftHandSideId() {
         int len = getChildrenCount();
