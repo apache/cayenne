@@ -481,6 +481,17 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    @Override
+    public boolean visitDbPath(EJBQLExpression expression, int finishedChildIndex) {
+        expression.visit(new EJBQLDbPathTranslator(context) {
+
+            protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
+                EJBQLConditionTranslator.this.addMultiColumnOperand(operand);
+            }
+        });
+        return false;
+    }
+
     public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
 
         expression.visit(new EJBQLPathTranslator(context) {

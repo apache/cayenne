@@ -26,7 +26,14 @@ public class EJBQLDbPath extends EJBQLPath {
         super(id);
     }
 
-    public void visit(EJBQLExpressionVisitor visitor) {
-        visitor.visitDbPath(this);
+    @Override
+    protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
+        return super.visitChild(visitor, childIndex)
+                && visitor.visitDbPath(this, childIndex);
+    }
+
+    @Override
+    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+        return visitor.visitDbPath(this, -1);
     }
 }
