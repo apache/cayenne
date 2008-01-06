@@ -18,8 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.TraversalHelper;
 import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
@@ -118,6 +125,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 .getResolver()
                 .lookupInheritanceTree(descriptor.getEntity());
         indexSubclassDescriptors(descriptor, inheritanceTree);
+        indexQualifiers(descriptor, inheritanceTree);
 
         return descriptor;
     }
@@ -204,6 +212,47 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
 
                 indexSubclassDescriptors(descriptor, child);
             }
+        }
+    }
+
+    protected void indexQualifiers(
+            PersistentDescriptor descriptor,
+            EntityInheritanceTree inheritanceTree) {
+
+        Expression qualifier;
+
+        if (inheritanceTree != null) {
+
+            qualifier = inheritanceTree.qualifierForEntityAndSubclasses();
+
+            for (EntityInheritanceTree child : inheritanceTree.getChildren()) {
+                indexQualifiers(descriptor, child);
+            }
+        }
+        else {
+            qualifier = descriptor.getEntity().getDeclaredQualifier();
+        }
+
+        if (qualifier != null) {
+
+            final Set<DbAttribute> attributes = new HashSet<DbAttribute>();
+            final DbEntity dbEntity = descriptor.getEntity().getDbEntity();
+
+            qualifier.traverse(new TraversalHelper() {
+
+                @Override
+                public void startNode(Expression node, Expression parentNode) {
+                    if (node.getType() == Expression.DB_PATH) {
+                        String path = node.getOperand(0).toString();
+                        DbAttribute attribute = (DbAttribute) dbEntity.getAttribute(path);
+                        if (attribute != null) {
+                            attributes.add(attribute);
+                        }
+                    }
+                }
+            });
+
+            descriptor.setDiscriminatorColumns(attributes);
         }
     }
 

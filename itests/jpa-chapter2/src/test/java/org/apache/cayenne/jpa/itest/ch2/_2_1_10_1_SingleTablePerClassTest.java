@@ -18,8 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.jpa.itest.ch2;
 
+import java.util.List;
+
+import javax.persistence.Query;
+
 import org.apache.cayenne.itest.ItestTableUtils;
 import org.apache.cayenne.itest.jpa.EntityManagerCase;
+import org.apache.cayenne.jpa.itest.ch2.entity.SingleTableInheritanceSub1;
+import org.apache.cayenne.jpa.itest.ch2.entity.SingleTableInheritanceSub2;
+import org.apache.cayenne.jpa.itest.ch2.entity.SingleTableInheritanceSuper1;
 
 public class _2_1_10_1_SingleTablePerClassTest extends EntityManagerCase {
 
@@ -32,27 +39,27 @@ public class _2_1_10_1_SingleTablePerClassTest extends EntityManagerCase {
         helper.insert(3, "B", "3", "BX", null);
         helper.insert(4, "C", "4", null, "CX");
 
-//        Query query = getEntityManager().createQuery(
-//                "select a FROM SingleTableInheritanceSuper1 a ORDER BY a.propertyA");
-//        List<?> results = query.getResultList();
-//        assertEquals(4, results.size());
-//
-//        assertEquals(SingleTableInheritanceSuper1.class.getName(), results
-//                .get(0)
-//                .getClass()
-//                .getName());
-//        assertEquals(SingleTableInheritanceSuper1.class.getName(), results
-//                .get(1)
-//                .getClass()
-//                .getName());
-//        assertEquals(SingleTableInheritanceSub1.class.getName(), results
-//                .get(2)
-//                .getClass()
-//                .getName());
-//        assertEquals(SingleTableInheritanceSub2.class.getName(), results
-//                .get(3)
-//                .getClass()
-//                .getName());
+        Query query = getEntityManager().createQuery(
+                "select a FROM SingleTableInheritanceSuper1 a ORDER BY a.propertyA");
+        List<?> results = query.getResultList();
+        assertEquals(4, results.size());
+
+        assertEquals(SingleTableInheritanceSuper1.class.getName(), results
+                .get(0)
+                .getClass()
+                .getName());
+        assertEquals(SingleTableInheritanceSuper1.class.getName(), results
+                .get(1)
+                .getClass()
+                .getName());
+        assertEquals(SingleTableInheritanceSub1.class.getName(), results
+                .get(2)
+                .getClass()
+                .getName());
+        assertEquals(SingleTableInheritanceSub2.class.getName(), results
+                .get(3)
+                .getClass()
+                .getName());
     }
 
     public void testSelectSub() throws Exception {
@@ -64,14 +71,14 @@ public class _2_1_10_1_SingleTablePerClassTest extends EntityManagerCase {
         helper.insert(3, "B", "3", "BX", null);
         helper.insert(4, "C", "4", null, "CX");
 
-//        Query query = getEntityManager().createQuery(
-//                "select a FROM SingleTableInheritanceSub1 a ORDER BY a.propertyA");
-//        List<?> results = query.getResultList();
-//        assertEquals(1, results.size());
-//
-//        assertEquals(SingleTableInheritanceSub1.class.getName(), results
-//                .get(0)
-//                .getClass()
-//                .getName());
+        Query query = getEntityManager().createQuery(
+                "select a FROM SingleTableInheritanceSub1 a ORDER BY a.propertyA");
+        List<?> results = query.getResultList();
+        assertEquals(1, results.size());
+
+        assertEquals(SingleTableInheritanceSub1.class.getName(), results
+                .get(0)
+                .getClass()
+                .getName());
     }
 }
