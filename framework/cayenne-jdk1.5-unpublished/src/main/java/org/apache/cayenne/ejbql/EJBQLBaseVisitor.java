@@ -134,7 +134,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
     
-    public boolean visitDbPath(EJBQLExpression expression) {
+    public boolean visitDbPath(EJBQLExpression expression, int finishedChildIndex) {
         return continueFlag;
     }
 
