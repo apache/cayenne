@@ -107,7 +107,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         context.pushMarker(makeWhereMarker(), true);
         context.append(" WHERE");
         context.popMarker();
-        
+
         expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
         return false;
     }

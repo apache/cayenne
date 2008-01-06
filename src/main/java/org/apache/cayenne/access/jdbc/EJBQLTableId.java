@@ -69,6 +69,10 @@ class EJBQLTableId {
         this.entityId = entityId;
         this.dbPath = dbPath;
     }
+    
+    boolean isPrimaryTable() {
+        return dbPath == null;
+    }
 
     /**
      * Returns a DbEntity corresponding to the ID, that could be a root entity for the id,

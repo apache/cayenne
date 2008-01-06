@@ -40,6 +40,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
                 .getEntityResolver());
 
         EJBQLTranslationContext tr = new EJBQLTranslationContext(
+                getDomain().getEntityResolver(),
                 select,
                 parameters,
                 new JdbcEJBQLTranslatorFactory());
@@ -118,8 +119,9 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String from = fromMarker.toString();
         assertEquals("", from);
 
-        assertTrue(sql, sql.endsWith(" FROM ARTIST t0${marker1}${marker2} t0.ARTIST_NAME ="
-                + " #bind('Dali' 'VARCHAR')"));
+        assertTrue(sql, sql
+                .endsWith(" FROM ARTIST t0${marker1}${marker2} t0.ARTIST_NAME ="
+                        + " #bind('Dali' 'VARCHAR')"));
     }
 
     public void testSelectFromWhereOrEqual() {
@@ -175,7 +177,8 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT"));
-        assertTrue(sql, sql.endsWith("${marker2} t0.ESTIMATED_PRICE > #bind($id3 'DECIMAL')"));
+        assertTrue(sql, sql
+                .endsWith("${marker2} t0.ESTIMATED_PRICE > #bind($id3 'DECIMAL')"));
     }
 
     public void testSelectFromWhereGreaterOrEqual() {
@@ -190,7 +193,8 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice < 1.0");
         String sql = query.getDefaultTemplate();
 
-        assertTrue(sql, sql.endsWith("${marker2} t0.ESTIMATED_PRICE < #bind($id3 'DECIMAL')"));
+        assertTrue(sql, sql
+                .endsWith("${marker2} t0.ESTIMATED_PRICE < #bind($id3 'DECIMAL')"));
     }
 
     public void testSelectFromWhereLessOrEqual() {
@@ -205,7 +209,8 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         SQLTemplate query = translateSelect("select a from Artist a where a.artistName <> 'Dali'");
         String sql = query.getDefaultTemplate();
 
-        assertTrue(sql, sql.endsWith("${marker2} t0.ARTIST_NAME <> #bind('Dali' 'VARCHAR')"));
+        assertTrue(sql, sql
+                .endsWith("${marker2} t0.ARTIST_NAME <> #bind('Dali' 'VARCHAR')"));
     }
 
     public void testSelectFromWhereBetween() {
@@ -241,7 +246,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
     }
 
     public void testSelectPositionalParameters() {
-        Map params = new HashMap();
+        Map<Object, Object> params = new HashMap<Object, Object>();
         params.put(new Integer(1), "X");
         params.put(new Integer(2), "Y");
         SQLTemplate query = translateSelect(

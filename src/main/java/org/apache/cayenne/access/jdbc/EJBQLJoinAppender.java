@@ -26,6 +26,8 @@ import java.util.Map;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
  * Handles appending joins to the content buffer at a marked position.
@@ -148,22 +150,39 @@ public class EJBQLJoinAppender {
     public String appendTable(EJBQLTableId id) {
 
         String tableName = id.getDbEntity(context).getFullyQualifiedName();
+        String alias;
 
         if (context.isUsingAliases()) {
             // TODO: andrus 1/5/2007 - if the same table is joined more than once, this
             // will create an incorrect alias.
-            String alias = context.getTableAlias(id.getEntityId(), tableName);
+            alias = context.getTableAlias(id.getEntityId(), tableName);
 
             // not using "AS" to separate table name and alias name - OpenBase doesn't
             // support
             // "AS", and the rest of the databases do not care
             context.append(' ').append(tableName).append(' ').append(alias);
-            return alias;
         }
         else {
             context.append(' ').append(tableName);
-            return tableName;
+            alias = tableName;
         }
+
+        // append inheritance qualifier...
+        if (id.isPrimaryTable()) {
+            ObjEntity entity = context.getEntityDescriptor(id.getEntityId()).getEntity();
+            EntityInheritanceTree inheritanceTree = context
+                    .getEntityResolver()
+                    .lookupInheritanceTree(entity);
+            if (inheritanceTree != null) {
+                // TODO: andrus, 1/6/2008 - access to entity qualifier is pending CAY-956
+                // implementation...
+                // context.pushMarker(EJBQLSelectTranslator.makeWhereMarker(), true);
+                // context.append(" WHERE");
+                // context.popMarker();
+            }
+        }
+
+        return alias;
     }
 
 }
