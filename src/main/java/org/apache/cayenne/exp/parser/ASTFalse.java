@@ -68,5 +68,12 @@ public class ASTFalse extends ConditionNode {
     public void encodeAsString(PrintWriter pw) {
         pw.print("false");
     }
-
+    
+    /**
+     * @since 3.0
+     */
+    @Override
+    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+        encodeAsString(pw);
+    }
 }

@@ -23,12 +23,10 @@ import java.io.PrintWriter;
 import org.apache.cayenne.exp.Expression;
 
 /**
- * Boolean true expression element
- * 
- * Notice that there is one ASTTrue and one ASTFalse instead of a ASTBoolean with a
- * Boolean value. The main reason for doing this is that a common ASTBoolean will have
- * operand count of 1 and that will default to a prepared statmenet like " where ? and
- * (...)", but we only need " where true and (...)".
+ * Boolean true expression element Notice that there is one ASTTrue and one ASTFalse
+ * instead of a ASTBoolean with a Boolean value. The main reason for doing this is that a
+ * common ASTBoolean will have operand count of 1 and that will default to a prepared
+ * statmenet like " where ? and (...)", but we only need " where true and (...)".
  * 
  * @see ASTFalse
  * @author halset
@@ -64,9 +62,16 @@ public class ASTTrue extends ConditionNode {
     public int getType() {
         return Expression.TRUE;
     }
-    
+
     public void encodeAsString(PrintWriter pw) {
         pw.print("true");
     }
 
+    /**
+     * @since 3.0
+     */
+    @Override
+    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+        pw.print("true");
+    }
 }

@@ -88,8 +88,20 @@ public class ASTDbPath extends ASTPath {
         return copy;
     }
 
+    @Override
     public void encodeAsString(PrintWriter pw) {
         pw.print("db:");
+        pw.print(path);
+    }
+    
+    /**
+     * @since 3.0
+     */
+    @Override
+    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+        // warning: non-standard EJBQL...
+        pw.print(rootId);
+        pw.print(".db:");
         pw.print(path);
     }
 

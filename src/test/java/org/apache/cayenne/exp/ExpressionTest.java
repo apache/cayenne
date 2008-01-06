@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 
 import junit.framework.TestCase;
@@ -38,5 +40,39 @@ public class ExpressionTest extends TestCase {
 
         e = e.expWithParameters(Collections.singletonMap("x", null));
         assertEquals("X = null", e.toString());
+    }
+
+    public void testToEJBQL1() {
+
+        Expression e = Expression.fromString("artistName = 'bla'");
+        assertEquals("x.artistName = \"bla\"", e.toEJBQL("x"));
+    }
+
+    public void testEncodeAsEJBQL1() {
+
+        Expression e = Expression.fromString("artistName = 'bla'");
+
+        StringWriter buffer = new StringWriter();
+        PrintWriter pw = new PrintWriter(buffer);
+        e.encodeAsEJBQL(pw, "x");
+        pw.close();
+        buffer.flush();
+        String ejbql = buffer.toString();
+
+        assertEquals("x.artistName = \"bla\"", ejbql);
+    }
+
+    public void testEncodeAsEJBQL2() {
+
+        Expression e = Expression.fromString("artistName.stuff = $name");
+
+        StringWriter buffer = new StringWriter();
+        PrintWriter pw = new PrintWriter(buffer);
+        e.encodeAsEJBQL(pw, "x");
+        pw.close();
+        buffer.flush();
+        String ejbql = buffer.toString();
+
+        assertEquals("x.artistName.stuff = :name", ejbql);
     }
 }

@@ -53,8 +53,8 @@ public class ASTNot extends AggregateConditionNode {
         }
 
         return ConversionUtil.toBoolean(evaluateChild(0, o))
-            ? Boolean.FALSE
-            : Boolean.TRUE;
+                ? Boolean.FALSE
+                : Boolean.TRUE;
     }
 
     /**
@@ -73,8 +73,17 @@ public class ASTNot extends AggregateConditionNode {
         super.encodeAsString(pw);
     }
 
+    /**
+     * @since 3.0
+     */
+    @Override
+    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+        encodeAsString(pw);
+    }
+
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException(
-            "No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");
+        throw new UnsupportedOperationException("No operator for '"
+                + ExpressionParserTreeConstants.jjtNodeName[id]
+                + "'");
     }
 }
