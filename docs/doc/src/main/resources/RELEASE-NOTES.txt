@@ -36,6 +36,8 @@ CAY-948 Implement flattened attributes in Cayenne
 CAY-949 Factory for lifecycle listeners
 CAY-950 Look up callback methods on listener superclasses
 CAY-953 JPA: Single Table inheritance
+CAY-954 EJBQL Query: Support for single table inheritance
+CAY-956 Converter between Expression and EJBQL Expression
 
 Bug fixes since M2:
 
