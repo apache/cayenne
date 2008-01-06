@@ -54,12 +54,10 @@ class EJBQLUpdateItemTranslator extends EJBQLConditionTranslator {
 
                 context.trim(2);
 
-                EJBQLMultiColumnOperand lhs = (EJBQLMultiColumnOperand) multiColumnOperands
-                        .get(0);
-                EJBQLMultiColumnOperand rhs = (EJBQLMultiColumnOperand) multiColumnOperands
-                        .get(1);
+                EJBQLMultiColumnOperand lhs = multiColumnOperands.get(0);
+                EJBQLMultiColumnOperand rhs = multiColumnOperands.get(1);
 
-                Iterator it = lhs.getKeys().iterator();
+                Iterator<?> it = lhs.getKeys().iterator();
                 while (it.hasNext()) {
                     Object key = it.next();
 
@@ -93,7 +91,6 @@ class EJBQLUpdateItemTranslator extends EJBQLConditionTranslator {
                 return visitPath(expression, finishedChildIndex);
             }
         };
-
 
         // some DB's do not support aliases in SET (Postgresql)
         pathTranslator.setUsingAliases(false);
