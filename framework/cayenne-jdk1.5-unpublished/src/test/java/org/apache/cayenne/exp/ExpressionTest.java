@@ -44,8 +44,10 @@ public class ExpressionTest extends TestCase {
 
     public void testToEJBQL1() {
 
-        Expression e = Expression.fromString("artistName = 'bla'");
-        assertEquals("x.artistName = \"bla\"", e.toEJBQL("x"));
+        Expression e = Expression.fromString("artistName = \"bla\"");
+
+        // note single quotes - EJBQL does not support doublequotes...
+        assertEquals("x.artistName = 'bla'", e.toEJBQL("x"));
     }
 
     public void testEncodeAsEJBQL1() {
@@ -59,7 +61,7 @@ public class ExpressionTest extends TestCase {
         buffer.flush();
         String ejbql = buffer.toString();
 
-        assertEquals("x.artistName = \"bla\"", ejbql);
+        assertEquals("x.artistName = 'bla'", ejbql);
     }
 
     public void testEncodeAsEJBQL2() {
