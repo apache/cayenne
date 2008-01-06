@@ -20,6 +20,7 @@ package org.apache.cayenne.reflect;
 
 import java.util.Iterator;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -102,6 +103,11 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
     public Iterator<Property> getIdProperties() {
         checkDescriptorInitialized();
         return descriptor.getIdProperties();
+    }
+    
+    public Iterator<DbAttribute> getDiscriminatorColumns() {
+        checkDescriptorInitialized();
+        return descriptor.getDiscriminatorColumns();
     }
 
     public Iterator<ArcProperty> getMapArcProperties() {

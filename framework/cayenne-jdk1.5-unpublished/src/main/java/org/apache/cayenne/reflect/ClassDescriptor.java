@@ -21,6 +21,7 @@ package org.apache.cayenne.reflect;
 
 import java.util.Iterator;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -106,6 +107,15 @@ public interface ClassDescriptor {
      * @since 3.0
      */
     Iterator<Property> getIdProperties();
+
+    /**
+     * Returns a collection of DbAttributes for the described class, its superclasses and
+     * subclasses, that participate in inheritance qualifier, but are not mapped as object
+     * properties.
+     * 
+     * @since 3.0
+     */
+    Iterator<DbAttribute> getDiscriminatorColumns();
 
     /**
      * Returns an iterator over the arc properties whose reverse arcs are to-many maps.

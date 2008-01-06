@@ -121,15 +121,20 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
             }
         };
 
-        // EJBQL queries are polimorphic by definition - there is no distinction between
+        // EJBQL queries are polymorphic by definition - there is no distinction between
         // inheritance/no-inheritance fetch
         descriptor.visitAllProperties(visitor);
 
         // append id columns ... (some may have been appended already via relationships)
-
         DbEntity table = descriptor.getEntity().getDbEntity();
         for (DbAttribute pk : table.getPrimaryKeys()) {
             appendColumn(idVar, null, pk);
+        }
+
+        // append inheritance discriminator columns...
+        Iterator<DbAttribute> discriminatorColumns = descriptor.getDiscriminatorColumns();
+        while (discriminatorColumns.hasNext()) {
+            appendColumn(idVar, null, discriminatorColumns.next());
         }
 
         return false;
