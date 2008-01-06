@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -46,22 +47,31 @@ public class PersistentDescriptor implements ClassDescriptor {
     protected ClassDescriptor superclassDescriptor;
 
     // compiled properties ...
-    protected Class objectClass;
-    protected Map declaredProperties;
-    protected Map subclassDescriptors;
+    protected Class<?> objectClass;
+    protected Map<String, Property> declaredProperties;
+    protected Map<String, ClassDescriptor> subclassDescriptors;
     protected Accessor persistenceStateAccessor;
 
     protected ObjEntity entity;
 
-    protected Collection declaredIdProperties;
-    protected Collection declaredMapArcProperties;
+    protected Collection<DbAttribute> declaredDiscriminatorColumns;
+    protected Collection<Property> declaredIdProperties;
+    protected Collection<ArcProperty> declaredMapArcProperties;
 
     /**
      * Creates a PersistentDescriptor.
      */
     public PersistentDescriptor() {
-        this.declaredProperties = new HashMap();
-        this.subclassDescriptors = new HashMap();
+        this.declaredProperties = new HashMap<String, Property>();
+        this.subclassDescriptors = new HashMap<String, ClassDescriptor>();
+    }
+
+    public void addDiscriminatorColumn(DbAttribute column) {
+        if (declaredDiscriminatorColumns == null) {
+            declaredDiscriminatorColumns = new ArrayList<DbAttribute>();
+        }
+
+        declaredDiscriminatorColumns.add(column);
     }
 
     /**
@@ -77,7 +87,7 @@ public class PersistentDescriptor implements ClassDescriptor {
                     && attribute.getDbAttribute().isPrimaryKey()) {
 
                 if (declaredIdProperties == null) {
-                    declaredIdProperties = new ArrayList(2);
+                    declaredIdProperties = new ArrayList<Property>(2);
                 }
 
                 declaredIdProperties.add(property);
@@ -90,10 +100,10 @@ public class PersistentDescriptor implements ClassDescriptor {
                     && "java.util.Map".equals(reverseRelationship.getCollectionType())) {
 
                 if (declaredMapArcProperties == null) {
-                    declaredMapArcProperties = new ArrayList(2);
+                    declaredMapArcProperties = new ArrayList<ArcProperty>(2);
                 }
 
-                declaredMapArcProperties.add(property);
+                declaredMapArcProperties.add((ArcProperty) property);
             }
         }
     }
@@ -138,15 +148,15 @@ public class PersistentDescriptor implements ClassDescriptor {
         return HOLLOW_STATE.equals(persistenceStateAccessor.getValue(object));
     }
 
-    public Class getObjectClass() {
+    public Class<?> getObjectClass() {
         return objectClass;
     }
 
-    void setObjectClass(Class objectClass) {
+    void setObjectClass(Class<?> objectClass) {
         this.objectClass = objectClass;
     }
 
-    public ClassDescriptor getSubclassDescriptor(Class objectClass) {
+    public ClassDescriptor getSubclassDescriptor(Class<?> objectClass) {
         if (objectClass == null) {
             throw new IllegalArgumentException("Null objectClass");
         }
@@ -155,16 +165,15 @@ public class PersistentDescriptor implements ClassDescriptor {
             return this;
         }
 
-        ClassDescriptor subclassDescriptor = (ClassDescriptor) subclassDescriptors
-                .get(objectClass.getName());
+        ClassDescriptor subclassDescriptor = subclassDescriptors.get(objectClass
+                .getName());
 
         // ascend via the class hierarchy (only doing it if there are multiple choices)
         if (subclassDescriptor == null) {
-            Class currentClass = objectClass;
+            Class<?> currentClass = objectClass;
             while (subclassDescriptor == null
                     && (currentClass = currentClass.getSuperclass()) != null) {
-                subclassDescriptor = (ClassDescriptor) subclassDescriptors
-                        .get(currentClass.getName());
+                subclassDescriptor = subclassDescriptors.get(currentClass.getName());
             }
         }
 
@@ -175,10 +184,9 @@ public class PersistentDescriptor implements ClassDescriptor {
      * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
      *             instead.
      */
-    public Iterator getProperties() {
-        Iterator declaredIt = IteratorUtils.unmodifiableIterator(declaredProperties
-                .values()
-                .iterator());
+    public Iterator<Property> getProperties() {
+        Iterator<Property> declaredIt = IteratorUtils
+                .unmodifiableIterator(declaredProperties.values().iterator());
 
         if (getSuperclassDescriptor() == null) {
             return declaredIt;
@@ -190,9 +198,26 @@ public class PersistentDescriptor implements ClassDescriptor {
         }
     }
 
-    public Iterator getIdProperties() {
+    public Iterator<DbAttribute> getDiscriminatorColumns() {
+        Iterator<DbAttribute> it = null;
 
-        Iterator it = null;
+        if (getSuperclassDescriptor() != null) {
+            it = getSuperclassDescriptor().getDiscriminatorColumns();
+        }
+
+        if (declaredDiscriminatorColumns != null) {
+            it = (it != null)
+                    ? IteratorUtils.chainedIterator(it, declaredDiscriminatorColumns
+                            .iterator())
+                    : declaredDiscriminatorColumns.iterator();
+        }
+
+        return it != null ? it : IteratorUtils.EMPTY_ITERATOR;
+    }
+
+    public Iterator<Property> getIdProperties() {
+
+        Iterator<Property> it = null;
 
         if (getSuperclassDescriptor() != null) {
             it = getSuperclassDescriptor().getIdProperties();
@@ -206,8 +231,8 @@ public class PersistentDescriptor implements ClassDescriptor {
         return it != null ? it : IteratorUtils.EMPTY_ITERATOR;
     }
 
-    public Iterator getMapArcProperties() {
-        Iterator it = null;
+    public Iterator<ArcProperty> getMapArcProperties() {
+        Iterator<ArcProperty> it = null;
 
         if (getSuperclassDescriptor() != null) {
             it = getSuperclassDescriptor().getMapArcProperties();
@@ -238,7 +263,7 @@ public class PersistentDescriptor implements ClassDescriptor {
     }
 
     public Property getDeclaredProperty(String propertyName) {
-        return (Property) declaredProperties.get(propertyName);
+        return declaredProperties.get(propertyName);
     }
 
     /**
@@ -279,9 +304,7 @@ public class PersistentDescriptor implements ClassDescriptor {
             getSuperclassDescriptor().injectValueHolders(object);
         }
 
-        Iterator it = declaredProperties.values().iterator();
-        while (it.hasNext()) {
-            Property property = (Property) it.next();
+        for (Property property : declaredProperties.values()) {
             property.injectValueHolder(object);
         }
     }
@@ -317,9 +340,8 @@ public class PersistentDescriptor implements ClassDescriptor {
      * @since 3.0
      */
     public boolean visitDeclaredProperties(PropertyVisitor visitor) {
-        Iterator it = declaredProperties.values().iterator();
-        while (it.hasNext()) {
-            Property next = (Property) it.next();
+
+        for (Property next : declaredProperties.values()) {
             if (!next.visit(visitor)) {
                 return false;
             }
@@ -337,9 +359,7 @@ public class PersistentDescriptor implements ClassDescriptor {
         }
 
         if (!subclassDescriptors.isEmpty()) {
-            Iterator it = subclassDescriptors.values().iterator();
-            while (it.hasNext()) {
-                ClassDescriptor next = (ClassDescriptor) it.next();
+            for (ClassDescriptor next : subclassDescriptors.values()) {
                 if (!next.visitDeclaredProperties(visitor)) {
                     return false;
                 }

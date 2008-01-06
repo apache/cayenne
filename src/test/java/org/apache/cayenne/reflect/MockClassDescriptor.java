@@ -21,6 +21,7 @@ package org.apache.cayenne.reflect;
 
 import java.util.Iterator;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -46,19 +47,23 @@ public class MockClassDescriptor implements ClassDescriptor {
      * @deprecated since 3.0. Use {@link #visitProperties(PropertyVisitor)} method
      *             instead.
      */
-    public Iterator getProperties() {
+    public Iterator<Property> getProperties() {
         return null;
     }
 
-    public Iterator getIdProperties() {
-        return null;
-    }
-
-    public Iterator getMapArcProperties() {
+    public Iterator<Property> getIdProperties() {
         return null;
     }
     
-    public ClassDescriptor getSubclassDescriptor(Class objectClass) {
+    public Iterator<DbAttribute> getDiscriminatorColumns() {
+        return null;
+    }
+
+    public Iterator<ArcProperty> getMapArcProperties() {
+        return null;
+    }
+    
+    public ClassDescriptor getSubclassDescriptor(Class<?> objectClass) {
         return this;
     }
 
@@ -84,7 +89,7 @@ public class MockClassDescriptor implements ClassDescriptor {
         return null;
     }
 
-    public Class getObjectClass() {
+    public Class<?> getObjectClass() {
         return null;
     }
 
