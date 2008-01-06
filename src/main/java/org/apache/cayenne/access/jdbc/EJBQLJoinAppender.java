@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ejbql.EJBQLException;
+import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityInheritanceTree;
@@ -176,11 +177,26 @@ public class EJBQLJoinAppender {
                     .getEntityResolver()
                     .lookupInheritanceTree(entity);
             if (inheritanceTree != null) {
-                // TODO: andrus, 1/6/2008 - access to entity qualifier is pending CAY-956
-                // implementation...
-                // context.pushMarker(EJBQLSelectTranslator.makeWhereMarker(), true);
-                // context.append(" WHERE");
-                // context.popMarker();
+
+                EJBQLExpression qualifier = inheritanceTree
+                        .ejbqlQualifierForEntityAndSubclass(id.getEntityId());
+
+                if (qualifier != null) {
+
+                    context.pushMarker(EJBQLSelectTranslator.makeWhereMarker(), true);
+                    context.append(" WHERE");
+                    context.popMarker();
+
+                    context.pushMarker(
+                            EJBQLSelectTranslator.makeEntityQualifierMarker(),
+                            false);
+
+                    qualifier.visit(context
+                            .getTranslatorFactory()
+                            .getConditionTranslator(context));
+
+                    context.popMarker();
+                }
             }
         }
 

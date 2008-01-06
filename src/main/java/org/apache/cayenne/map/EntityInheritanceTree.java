@@ -24,16 +24,20 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
+import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.exp.Expression;
 
 /**
- * A tree structure representing inheritance hierarchy 
- * of an ObjEntity and its subentities.
+ * A tree structure representing inheritance hierarchy of an ObjEntity and its
+ * subentities.
  * 
  * @since 1.1
  * @author Andrus Adamchik
  */
 public class EntityInheritanceTree {
+
     protected ObjEntity entity;
     protected Collection<EntityInheritanceTree> subentities;
     protected Expression normalizedQualifier;
@@ -43,8 +47,8 @@ public class EntityInheritanceTree {
     }
 
     /**
-     * Returns a qualifier Expression that matches root entity
-     * of this tree and all its subentities.
+     * Returns a qualifier Expression that matches root entity of this tree and all its
+     * subentities.
      */
     public Expression qualifierForEntityAndSubclasses() {
         Expression qualifier = entity.getDeclaredQualifier();
@@ -58,7 +62,8 @@ public class EntityInheritanceTree {
             for (EntityInheritanceTree child : subentities) {
                 Expression childQualifier = child.qualifierForEntityAndSubclasses();
 
-                // if any child qualifier is null, just return null, since no filtering is possible
+                // if any child qualifier is null, just return null, since no filtering is
+                // possible
                 if (childQualifier == null) {
                     return null;
                 }
@@ -71,8 +76,39 @@ public class EntityInheritanceTree {
     }
 
     /**
-     * Returns the deepest possible entity in the inheritance hierarchy 
-     * that can be used to create objects from a given DataRow.
+     * @since 3.0
+     */
+    public EJBQLExpression ejbqlQualifierForEntityAndSubclass(String entityId) {
+
+        Expression qualifier = qualifierForEntityAndSubclasses();
+        if (qualifier == null) {
+            return null;
+        }
+
+        // TODO: andrus 1/6/2008 - extremely inefficient, cache inheritance qualifier in
+        // the ClassDescriptor
+
+        // parser only works on full queries, so prepend a dummy query and then strip it
+        // out...
+        String ejbqlChunk = qualifier.toEJBQL(entityId);
+        EJBQLExpression expression = EJBQLParserFactory.getParser().parse(
+                "DELETE FROM DUMMY WHERE " + ejbqlChunk);
+
+        final EJBQLExpression[] result = new EJBQLExpression[1];
+        expression.visit(new EJBQLBaseVisitor() {
+            @Override
+            public boolean visitWhere(EJBQLExpression expression) {
+                result[0] = expression.getChild(0);
+                return false;
+            }
+        });
+        
+        return result[0];
+    }
+
+    /**
+     * Returns the deepest possible entity in the inheritance hierarchy that can be used
+     * to create objects from a given DataRow.
      */
     public ObjEntity entityMatchingRow(DataRow row) {
         // match depth first
