@@ -62,7 +62,7 @@ public class ASTScalar extends SimpleNode {
     }
 
     public void encodeAsString(PrintWriter pw) {
-        SimpleNode.encodeScalarAsString(pw, value);
+        SimpleNode.encodeScalarAsString(pw, value, '\"');
     }
     
     /**
@@ -70,7 +70,7 @@ public class ASTScalar extends SimpleNode {
      */
     @Override
     public void encodeAsEJBQL(PrintWriter pw, String rootId) {
-        SimpleNode.encodeScalarAsString(pw, value);
+        SimpleNode.encodeScalarAsString(pw, value, '\'');
     }
 
     public void setValue(Object value) {

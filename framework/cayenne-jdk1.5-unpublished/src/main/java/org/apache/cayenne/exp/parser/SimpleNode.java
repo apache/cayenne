@@ -48,11 +48,11 @@ public abstract class SimpleNode extends Expression implements Node {
     /**
      * Utility method that encodes an object that is not an expression Node to String.
      */
-    protected static void encodeScalarAsString(PrintWriter pw, Object scalar) {
+    protected static void encodeScalarAsString(PrintWriter pw, Object scalar, char quoteChar) {
         boolean quote = scalar instanceof String;
 
         if (quote) {
-            pw.print('\"');
+            pw.print(quoteChar);
         }
 
         // encode only ObjectId for Persistent, ensure that the order of keys is
@@ -66,7 +66,7 @@ public abstract class SimpleNode extends Expression implements Node {
 
         encodeAsEscapedString(pw, String.valueOf(scalar));
         if (quote) {
-            pw.print('\"');
+            pw.print(quoteChar);
         }
     }
 
