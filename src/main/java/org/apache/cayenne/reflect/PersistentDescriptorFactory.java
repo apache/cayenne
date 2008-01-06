@@ -216,18 +216,13 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     }
 
     protected void indexQualifiers(
-            PersistentDescriptor descriptor,
+            final PersistentDescriptor descriptor,
             EntityInheritanceTree inheritanceTree) {
 
         Expression qualifier;
 
         if (inheritanceTree != null) {
-
             qualifier = inheritanceTree.qualifierForEntityAndSubclasses();
-
-            for (EntityInheritanceTree child : inheritanceTree.getChildren()) {
-                indexQualifiers(descriptor, child);
-            }
         }
         else {
             qualifier = descriptor.getEntity().getDeclaredQualifier();
@@ -253,6 +248,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             });
 
             descriptor.setDiscriminatorColumns(attributes);
+            descriptor.setEntityQualifier(qualifier);
         }
     }
 

@@ -20,6 +20,7 @@ package org.apache.cayenne.reflect;
 
 import java.util.Iterator;
 
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjEntity;
 
@@ -76,7 +77,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
     }
 
     public Class<?> getObjectClass() {
-        
+
         // note that we can resolve Object class without triggering descriptor resolution.
         // This is very helpful when compiling POJO relationships
         if (descriptor == null) {
@@ -104,10 +105,15 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         checkDescriptorInitialized();
         return descriptor.getIdProperties();
     }
-    
+
     public Iterator<DbAttribute> getDiscriminatorColumns() {
         checkDescriptorInitialized();
         return descriptor.getDiscriminatorColumns();
+    }
+
+    public Expression getEntityQualifier() {
+        checkDescriptorInitialized();
+        return descriptor.getEntityQualifier();
     }
 
     public Iterator<ArcProperty> getMapArcProperties() {

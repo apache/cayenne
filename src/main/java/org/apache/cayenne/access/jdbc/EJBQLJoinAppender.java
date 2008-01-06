@@ -30,8 +30,6 @@ import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.map.ObjEntity;
 
 /**
  * Handles appending joins to the content buffer at a marked position.
@@ -176,17 +174,9 @@ public class EJBQLJoinAppender {
         // append inheritance qualifier...
         if (id.isPrimaryTable()) {
 
-            // TODO: andrus 1/6/2008 - this is *extremely* inefficient, especially
-            // 'ejbqlQualifierForEntityAndSubclasses'. Cache inheritance qualifier in
-            // the ClassDescriptor
-
-            ObjEntity entity = context.getEntityDescriptor(id.getEntityId()).getEntity();
-            EntityInheritanceTree inheritanceTree = context
-                    .getEntityResolver()
-                    .lookupInheritanceTree(entity);
-
-            Expression qualifier = inheritanceTree != null ? inheritanceTree
-                    .qualifierForEntityAndSubclasses() : entity.getDeclaredQualifier();
+            Expression qualifier = context
+                    .getEntityDescriptor(id.getEntityId())
+                    .getEntityQualifier();
 
             if (qualifier != null) {
 
@@ -235,5 +225,4 @@ public class EJBQLJoinAppender {
 
         return result[0];
     }
-
 }
