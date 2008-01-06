@@ -146,7 +146,7 @@ public class QualifierTranslator
             queryAssembler.dbRelationshipAdded(relationship);
         }
         
-        Iterator it = objectMatchTranslator.keys();
+        Iterator<String> it = objectMatchTranslator.keys();
         while (it.hasNext()) {
             if (first) {
                 first = false;
@@ -155,7 +155,7 @@ public class QualifierTranslator
                 qualBuf.append(" AND ");
             }
 
-            String key = (String) it.next();
+            String key = it.next();
             DbAttribute attr = objectMatchTranslator.getAttribute(key);
             Object val = objectMatchTranslator.getValue(key);
            
@@ -358,10 +358,10 @@ public class QualifierTranslator
     }
 
     private final void appendList(Expression listExpr, DbAttribute paramDesc) {
-        Iterator it = null;
+        Iterator<?> it = null;
         Object list = listExpr.getOperand(0);
         if (list instanceof List) {
-            it = ((List) list).iterator();
+            it = ((List<?>) list).iterator();
         }
         else if (list instanceof Object[]) {
             it = IteratorUtils.arrayIterator((Object[]) list);
