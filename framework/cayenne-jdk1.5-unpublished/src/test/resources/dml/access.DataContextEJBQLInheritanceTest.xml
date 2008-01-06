@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+
+	<bean id="E1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, null, null, 'a', 1, 'EE', 20000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="E2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, null, null, 'b', 2, 'EE', 25000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="M1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, null, null, 'c', 4, 'EM', 30000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="M2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, null, null, 'd', 5, 'EM', 40000)
+		</value></constructor-arg>
+	</bean>
+	<bean id="C1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.inherit.AbstractPerson</value></constructor-arg>
+		<constructor-arg><value>
+		insert into PERSON (CLIENT_COMPANY_ID, CLIENT_CONTACT_TYPE, DEPARTMENT_ID, NAME, PERSON_ID, PERSON_TYPE, SALARY) values (null, null, null, 'e', 6, 'C', null)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="testSelect" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="E1"/>
+				<ref bean="E2"/>
+				<ref bean="M1"/>
+				<ref bean="M2"/>
+				<ref bean="C1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

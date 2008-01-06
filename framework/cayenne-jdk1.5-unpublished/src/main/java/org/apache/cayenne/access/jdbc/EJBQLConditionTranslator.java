@@ -103,9 +103,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         // on the target entity)...
 
         if (expression.isNegated()) {
-            context.switchToMarker(EJBQLSelectTranslator.makeDistinctMarker(), true);
+            context.pushMarker(EJBQLSelectTranslator.makeDistinctMarker(), true);
             context.append(" DISTINCT");
-            context.switchToMainBuffer();
+            context.popMarker();
         }
 
         visitIsNull(expression, -1);

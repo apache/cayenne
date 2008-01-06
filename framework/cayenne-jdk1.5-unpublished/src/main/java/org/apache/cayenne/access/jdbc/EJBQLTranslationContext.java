@@ -21,6 +21,7 @@ package org.apache.cayenne.access.jdbc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +53,8 @@ public class EJBQLTranslationContext {
     private EJBQLTranslatorFactory translatorFactory;
     private boolean usingAliases;
 
+    protected LinkedList<StringBuilder> bufferStack;
+
     // a flag indicating whether column expressions should be treated as result columns or
     // not.
     private boolean appendingResultColumns;
@@ -64,6 +67,7 @@ public class EJBQLTranslationContext {
         this.parameters = parameters;
         this.translatorFactory = translatorFactory;
         this.usingAliases = true;
+        this.bufferStack = new LinkedList<StringBuilder>();
     }
 
     SQLTemplate getQuery() {
@@ -168,32 +172,30 @@ public class EJBQLTranslationContext {
 
         String internalMarker = (String) getAttribute(marker);
 
-        // make sure we mark the main buffer
-        StringBuilder current = this.currentBuffer;
-
-        try {
-            switchToMainBuffer();
-            append("${").append(internalMarker).append("}");
-        }
-        finally {
-            this.currentBuffer = current;
-        }
+        // append directly to the main buffer, bypassing the stack and the current buffer
+        this.mainBuffer.append("${").append(internalMarker).append("}");
     }
 
     /**
-     * Switches the current buffer to a marked buffer. Note that this can be done even
-     * before the marker is inserted in the main buffer. If "reset" is true, any previous
-     * contents of the marker are cleared.
+     * Switches the current buffer to a marked buffer, pushing the currently used buffer
+     * on the stack. Note that this can be done even before the marker is inserted in the
+     * main buffer. If "reset" is true, any previous contents of the marker are cleared.
      */
-    void switchToMarker(String marker, boolean reset) {
+    void pushMarker(String marker, boolean reset) {
+
+        bufferStack.add(currentBuffer);
+
         this.currentBuffer = findOrCreateMarkedBuffer(marker);
         if (reset) {
             this.currentBuffer.delete(0, this.currentBuffer.length());
         }
     }
 
-    void switchToMainBuffer() {
-        this.currentBuffer = this.mainBuffer;
+    /**
+     * Pops a marker stack, switching to the previously used marker.
+     */
+    void popMarker() {
+        this.currentBuffer = bufferStack.removeLast();
     }
 
     private StringBuilder findOrCreateMarkedBuffer(String marker) {

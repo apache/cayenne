@@ -35,6 +35,10 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         return "DISTINCT_MARKER";
     }
 
+    static String makeWhereMarker() {
+        return "WHERE_MARKER";
+    }
+
     EJBQLSelectTranslator(EJBQLTranslationContext context) {
         this.context = context;
     }
@@ -46,9 +50,9 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     public boolean visitDistinct(EJBQLExpression expression) {
         // "distinct" is appended via a marker as sometimes a later match on to-many would
         // require a DISTINCT insertion.
-        context.switchToMarker(makeDistinctMarker(), true);
+        context.pushMarker(makeDistinctMarker(), true);
         context.append(" DISTINCT");
-        context.switchToMainBuffer();
+        context.popMarker();
         return true;
     }
 
@@ -56,6 +60,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         context.append(" FROM");
         context.setAppendingResultColumns(false);
         expression.visit(context.getTranslatorFactory().getFromTranslator(context));
+        context.markCurrentPosition(makeWhereMarker());
         return false;
     }
 
@@ -97,7 +102,12 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     }
 
     public boolean visitWhere(EJBQLExpression expression) {
+        // "WHERE" is appended via a marker as it may have been already appended when an
+        // entity inheritance qualifier was applied.
+        context.pushMarker(makeWhereMarker(), true);
         context.append(" WHERE");
+        context.popMarker();
+        
         expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
         return false;
     }
