@@ -54,9 +54,11 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     protected ObjEntity entity;
 
-    protected Collection<DbAttribute> declaredDiscriminatorColumns;
     protected Collection<Property> declaredIdProperties;
     protected Collection<ArcProperty> declaredMapArcProperties;
+
+    // inheritance information
+    protected Collection<DbAttribute> allDiscriminatorColumns;
 
     /**
      * Creates a PersistentDescriptor.
@@ -66,12 +68,13 @@ public class PersistentDescriptor implements ClassDescriptor {
         this.subclassDescriptors = new HashMap<String, ClassDescriptor>();
     }
 
-    public void addDiscriminatorColumn(DbAttribute column) {
-        if (declaredDiscriminatorColumns == null) {
-            declaredDiscriminatorColumns = new ArrayList<DbAttribute>();
+    public void setDiscriminatorColumns(Collection<DbAttribute> columns) {
+        if (columns == null || columns.isEmpty()) {
+            allDiscriminatorColumns = null;
         }
-
-        declaredDiscriminatorColumns.add(column);
+        else {
+            allDiscriminatorColumns = new ArrayList<DbAttribute>(columns);
+        }
     }
 
     /**
@@ -199,20 +202,9 @@ public class PersistentDescriptor implements ClassDescriptor {
     }
 
     public Iterator<DbAttribute> getDiscriminatorColumns() {
-        Iterator<DbAttribute> it = null;
-
-        if (getSuperclassDescriptor() != null) {
-            it = getSuperclassDescriptor().getDiscriminatorColumns();
-        }
-
-        if (declaredDiscriminatorColumns != null) {
-            it = (it != null)
-                    ? IteratorUtils.chainedIterator(it, declaredDiscriminatorColumns
-                            .iterator())
-                    : declaredDiscriminatorColumns.iterator();
-        }
-
-        return it != null ? it : IteratorUtils.EMPTY_ITERATOR;
+        return allDiscriminatorColumns != null
+                ? allDiscriminatorColumns.iterator()
+                : IteratorUtils.EMPTY_ITERATOR;
     }
 
     public Iterator<Property> getIdProperties() {
