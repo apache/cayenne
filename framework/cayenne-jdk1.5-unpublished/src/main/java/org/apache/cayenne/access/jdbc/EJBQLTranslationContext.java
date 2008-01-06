@@ -228,7 +228,7 @@ public class EJBQLTranslationContext {
         stackTop = bufferStack.get(lastIndex - 1);
     }
 
-    private StringBuilder findOrCreateMarkedBuffer(String marker) {
+    StringBuilder findOrCreateMarkedBuffer(String marker) {
         StringBuilder buffer = (StringBuilder) getAttribute(marker);
         if (buffer == null) {
             buffer = new StringBuilder();
