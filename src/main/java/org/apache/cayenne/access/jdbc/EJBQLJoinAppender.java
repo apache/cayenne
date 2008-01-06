@@ -97,6 +97,8 @@ public class EJBQLJoinAppender {
 
         // TODO: andrus, 4/8/2007 - support for flattened relationships
         DbRelationship incomingDB = joinRelationships.get(0);
+        
+        // TODO: andrus, 1/6/2008 - move reusable join check here...
 
         String sourceAlias = context.getTableAlias(lhsId.getEntityId(), incomingDB
                 .getSourceEntity()

@@ -21,7 +21,6 @@ package org.apache.cayenne.access.jdbc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,13 +48,13 @@ public class EJBQLTranslationContext {
 
     private Map<String, String> tableAliases;
     private Map<String, Object> boundParameters;
-    private StringBuilder mainBuffer;
-    private StringBuilder currentBuffer;
     private Map<String, Object> attributes;
     private Map<String, String> idAliases;
     private int columnAliasPosition;
     private boolean usingAliases;
-    private LinkedList<StringBuilder> bufferStack;
+    private List<StringBuilder> bufferStack;
+    private List<StringBuilder> bufferChain;
+    private StringBuilder stackTop;
 
     // a flag indicating whether column expressions should be treated as result columns or
     // not.
@@ -67,16 +66,33 @@ public class EJBQLTranslationContext {
 
         this.entityResolver = entityResolver;
         this.compiledExpression = compiledExpression;
-        this.mainBuffer = new StringBuilder();
-        this.currentBuffer = mainBuffer;
+
         this.parameters = parameters;
         this.translatorFactory = translatorFactory;
         this.usingAliases = true;
-        this.bufferStack = new LinkedList<StringBuilder>();
+
+        // buffer stack will hold named buffers during translation in the order they were
+        // requested
+        this.bufferStack = new ArrayList<StringBuilder>();
+
+        // buffer chain will hold named and unnamed buffers in the order they should be
+        // concatenated
+        this.bufferChain = new ArrayList<StringBuilder>();
+
+        stackTop = new StringBuilder();
+        bufferChain.add(stackTop);
+        bufferStack.add(stackTop);
     }
 
     SQLTemplate getQuery() {
-        String sql = mainBuffer.length() > 0 ? mainBuffer.toString() : null;
+
+        // concatenate buffers...
+        StringBuilder main = bufferChain.get(0);
+        for (int i = 1; i < bufferChain.size(); i++) {
+            main.append(bufferChain.get(i));
+        }
+
+        String sql = main.length() > 0 ? main.toString() : null;
         SQLTemplate query = new SQLTemplate(compiledExpression
                 .getRootDescriptor()
                 .getObjectClass(), sql);
@@ -176,13 +192,16 @@ public class EJBQLTranslationContext {
      * with content.
      */
     void markCurrentPosition(String marker) {
-        // ensure buffer is created for the marker
-        findOrCreateMarkedBuffer(marker);
 
-        String internalMarker = (String) getAttribute(marker);
+        StringBuilder buffer = findOrCreateMarkedBuffer(marker);
+        bufferChain.add(buffer);
 
-        // append directly to the main buffer, bypassing the stack and the current buffer
-        this.mainBuffer.append("${").append(internalMarker).append("}");
+        // immediately create unmarked buffer after the marked one and replace the bottom
+        // of the stack with it
+        StringBuilder tailBuffer = new StringBuilder();
+        bufferChain.add(tailBuffer);
+        bufferStack.set(0, tailBuffer);
+        stackTop = bufferStack.get(bufferStack.size() - 1);
     }
 
     /**
@@ -192,40 +211,30 @@ public class EJBQLTranslationContext {
      */
     void pushMarker(String marker, boolean reset) {
 
-        bufferStack.add(currentBuffer);
-
-        this.currentBuffer = findOrCreateMarkedBuffer(marker);
+        stackTop = findOrCreateMarkedBuffer(marker);
         if (reset) {
-            this.currentBuffer.delete(0, this.currentBuffer.length());
+            stackTop.delete(0, stackTop.length());
         }
+
+        bufferStack.add(stackTop);
     }
 
     /**
      * Pops a marker stack, switching to the previously used marker.
      */
     void popMarker() {
-        this.currentBuffer = bufferStack.removeLast();
+        int lastIndex = bufferStack.size() - 1;
+        bufferStack.remove(lastIndex);
+        stackTop = bufferStack.get(lastIndex - 1);
     }
 
     private StringBuilder findOrCreateMarkedBuffer(String marker) {
-        StringBuilder buffer;
-
-        String internalMarker = (String) getAttribute(marker);
-        if (internalMarker == null) {
+        StringBuilder buffer = (StringBuilder) getAttribute(marker);
+        if (buffer == null) {
             buffer = new StringBuilder();
-            internalMarker = bindParameter(buffer, "marker");
 
             // register mapping of internal to external marker
-            setAttribute(marker, internalMarker);
-        }
-        else {
-            Object object = boundParameters.get(internalMarker);
-            if (!(object instanceof StringBuilder)) {
-                throw new IllegalArgumentException(
-                        "Invalid or missing buffer for marker: " + marker);
-            }
-
-            buffer = (StringBuilder) object;
+            setAttribute(marker, buffer);
         }
 
         return buffer;
@@ -255,7 +264,7 @@ public class EJBQLTranslationContext {
      * Appends a piece of SQL to the internal buffer.
      */
     public EJBQLTranslationContext append(String chunk) {
-        currentBuffer.append(chunk);
+        stackTop.append(chunk);
         return this;
     }
 
@@ -263,7 +272,7 @@ public class EJBQLTranslationContext {
      * Appends a piece of SQL to the internal buffer.
      */
     public EJBQLTranslationContext append(char chunk) {
-        currentBuffer.append(chunk);
+        stackTop.append(chunk);
         return this;
     }
 
@@ -271,10 +280,10 @@ public class EJBQLTranslationContext {
      * Deletes a specified number of characters from the end of the current buffer.
      */
     EJBQLTranslationContext trim(int n) {
-        int len = currentBuffer.length();
+        int len = stackTop.length();
 
         if (len >= n) {
-            currentBuffer.delete(len - n, len);
+            stackTop.delete(len - n, len);
         }
         return this;
     }
