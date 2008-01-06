@@ -21,6 +21,7 @@ package org.apache.cayenne.reflect;
 
 import java.util.Iterator;
 
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjEntity;
 
@@ -116,6 +117,14 @@ public interface ClassDescriptor {
      * @since 3.0
      */
     Iterator<DbAttribute> getDiscriminatorColumns();
+
+    /**
+     * Returns entity qualifier as a Cayenne expression that includes qualifiers for this
+     * entity and all subentities.
+     * 
+     * @since 3.0
+     */
+    Expression getEntityQualifier();
 
     /**
      * Returns an iterator over the arc properties whose reverse arcs are to-many maps.

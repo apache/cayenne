@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -59,6 +60,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     // inheritance information
     protected Collection<DbAttribute> allDiscriminatorColumns;
+    protected Expression entityQualifier;
 
     /**
      * Creates a PersistentDescriptor.
@@ -380,5 +382,13 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     public void setSuperclassDescriptor(ClassDescriptor superclassDescriptor) {
         this.superclassDescriptor = superclassDescriptor;
+    }
+
+    public Expression getEntityQualifier() {
+        return entityQualifier;
+    }
+
+    public void setEntityQualifier(Expression entityQualifier) {
+        this.entityQualifier = entityQualifier;
     }
 }

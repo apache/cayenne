@@ -21,6 +21,8 @@ package org.apache.cayenne.reflect;
 
 import java.util.Iterator;
 
+import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.Accessor;
@@ -51,10 +53,14 @@ public class MockClassDescriptor implements ClassDescriptor {
         return null;
     }
 
+    public Expression getEntityQualifier() {
+        return null;
+    }
+
     public Iterator<Property> getIdProperties() {
         return null;
     }
-    
+
     public Iterator<DbAttribute> getDiscriminatorColumns() {
         return null;
     }
@@ -62,7 +68,7 @@ public class MockClassDescriptor implements ClassDescriptor {
     public Iterator<ArcProperty> getMapArcProperties() {
         return null;
     }
-    
+
     public ClassDescriptor getSubclassDescriptor(Class<?> objectClass) {
         return this;
     }
