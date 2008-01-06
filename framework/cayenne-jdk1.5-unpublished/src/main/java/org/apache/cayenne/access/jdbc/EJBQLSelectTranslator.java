@@ -38,6 +38,10 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     static String makeWhereMarker() {
         return "WHERE_MARKER";
     }
+    
+    static String makeEntityQualifierMarker() {
+        return "ENTITY_QUALIIER";
+    }
 
     EJBQLSelectTranslator(EJBQLTranslationContext context) {
         this.context = context;
@@ -61,6 +65,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         context.setAppendingResultColumns(false);
         expression.visit(context.getTranslatorFactory().getFromTranslator(context));
         context.markCurrentPosition(makeWhereMarker());
+        context.markCurrentPosition(makeEntityQualifierMarker());
         return false;
     }
 

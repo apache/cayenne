@@ -70,15 +70,11 @@ public class DataContextEJBQLInheritanceTest extends PeopleCase {
         EJBQLQuery subclass = new EJBQLQuery("select e from Employee e ORDER BY e.name");
 
         List subclassResult = context.performQuery(subclass);
-        // assertEquals(4, subclassResult.size());
-        //
-        // assertEquals(Employee.class.getName(),
-        // subclassResult.get(0).getClass().getName());
-        // assertEquals(Employee.class.getName(),
-        // subclassResult.get(1).getClass().getName());
-        // assertEquals(Manager.class.getName(),
-        // subclassResult.get(2).getClass().getName());
-        // assertEquals(Manager.class.getName(),
-        // subclassResult.get(3).getClass().getName());
+         assertEquals(4, subclassResult.size());
+
+        assertEquals(Employee.class.getName(), subclassResult.get(0).getClass().getName());
+        assertEquals(Employee.class.getName(), subclassResult.get(1).getClass().getName());
+        assertEquals(Manager.class.getName(), subclassResult.get(2).getClass().getName());
+        assertEquals(Manager.class.getName(), subclassResult.get(3).getClass().getName());
     }
 }
