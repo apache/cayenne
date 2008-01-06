@@ -100,8 +100,9 @@ public class ASTDbPath extends ASTPath {
     @Override
     public void encodeAsEJBQL(PrintWriter pw, String rootId) {
         // warning: non-standard EJBQL...
+        pw.print("db:");
         pw.print(rootId);
-        pw.print(".db:");
+        pw.print('.');
         pw.print(path);
     }
 

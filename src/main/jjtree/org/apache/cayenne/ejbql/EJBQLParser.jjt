@@ -391,10 +391,23 @@ void inner_fetch_join() #InnerFetchJoin : { }
 }
 
 
-void path() #Path : { }
+void path() : { }
 {
 	// a path is any dot-separated path expression starting with a
 	// non-reserved word
+	
+	db_path() | object_path()
+}
+
+void db_path() #DbPath : { }
+{
+	// Cayenne extension: DBPath... there's no such thing in EJBQL 
+	
+	"db:" identification_variable() (<DOT> path_component())+
+}
+
+void object_path() #Path : { }
+{
 	identification_variable() (<DOT> path_component())+
 }
 
@@ -1060,7 +1073,7 @@ void tok() #Tok :
 
 void identification_variable() #Identifier :
 { Token t; }
-{
+{  
 	t = <IDENTIFIER> { jjtThis.setText (t.image); }
 }
 

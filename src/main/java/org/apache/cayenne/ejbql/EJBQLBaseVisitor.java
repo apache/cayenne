@@ -133,6 +133,10 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
     public boolean visitDescending(EJBQLExpression expression) {
         return continueFlag;
     }
+    
+    public boolean visitDbPath(EJBQLExpression expression) {
+        return continueFlag;
+    }
 
     public boolean visitDistinct(EJBQLExpression expression) {
         return continueFlag;
