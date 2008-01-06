@@ -23,8 +23,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.EJBQLParserFactory;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityInheritanceTree;
@@ -98,7 +101,7 @@ public class EJBQLJoinAppender {
 
         // TODO: andrus, 4/8/2007 - support for flattened relationships
         DbRelationship incomingDB = joinRelationships.get(0);
-        
+
         // TODO: andrus, 1/6/2008 - move reusable join check here...
 
         String sourceAlias = context.getTableAlias(lhsId.getEntityId(), incomingDB
@@ -172,35 +175,65 @@ public class EJBQLJoinAppender {
 
         // append inheritance qualifier...
         if (id.isPrimaryTable()) {
+
+            // TODO: andrus 1/6/2008 - this is *extremely* inefficient, especially
+            // 'ejbqlQualifierForEntityAndSubclasses'. Cache inheritance qualifier in
+            // the ClassDescriptor
+
             ObjEntity entity = context.getEntityDescriptor(id.getEntityId()).getEntity();
             EntityInheritanceTree inheritanceTree = context
                     .getEntityResolver()
                     .lookupInheritanceTree(entity);
-            if (inheritanceTree != null) {
 
-                EJBQLExpression qualifier = inheritanceTree
-                        .ejbqlQualifierForEntityAndSubclass(id.getEntityId());
+            Expression qualifier = inheritanceTree != null ? inheritanceTree
+                    .qualifierForEntityAndSubclasses() : entity.getDeclaredQualifier();
 
-                if (qualifier != null) {
+            if (qualifier != null) {
 
-                    context.pushMarker(EJBQLSelectTranslator.makeWhereMarker(), true);
-                    context.append(" WHERE");
-                    context.popMarker();
+                EJBQLExpression ejbqlQualifier = ejbqlQualifierForEntityAndSubclasses(
+                        qualifier,
+                        id.getEntityId());
 
-                    context.pushMarker(
-                            EJBQLSelectTranslator.makeEntityQualifierMarker(),
-                            false);
+                context.pushMarker(EJBQLSelectTranslator.makeWhereMarker(), true);
+                context.append(" WHERE");
+                context.popMarker();
 
-                    qualifier.visit(context
-                            .getTranslatorFactory()
-                            .getConditionTranslator(context));
+                context.pushMarker(
+                        EJBQLSelectTranslator.makeEntityQualifierMarker(),
+                        false);
 
-                    context.popMarker();
-                }
+                ejbqlQualifier.visit(context
+                        .getTranslatorFactory()
+                        .getConditionTranslator(context));
+
+                context.popMarker();
             }
         }
 
         return alias;
+    }
+
+    private EJBQLExpression ejbqlQualifierForEntityAndSubclasses(
+            Expression qualifier,
+            String entityId) {
+
+        // parser only works on full queries, so prepend a dummy query and then strip it
+        // out...
+        String ejbqlChunk = qualifier.toEJBQL(entityId);
+        EJBQLExpression expression = EJBQLParserFactory.getParser().parse(
+                "DELETE FROM DUMMY WHERE " + ejbqlChunk);
+
+        final EJBQLExpression[] result = new EJBQLExpression[1];
+        expression.visit(new EJBQLBaseVisitor() {
+
+            @Override
+            public boolean visitWhere(EJBQLExpression expression) {
+                result[0] = expression.getChild(0);
+                return false;
+            }
+        });
+
+        return result[0];
     }
 
 }

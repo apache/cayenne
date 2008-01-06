@@ -24,9 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
-import org.apache.cayenne.ejbql.EJBQLExpression;
-import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -73,37 +70,6 @@ public class EntityInheritanceTree {
         }
 
         return qualifier;
-    }
-
-    /**
-     * @since 3.0
-     */
-    public EJBQLExpression ejbqlQualifierForEntityAndSubclass(String entityId) {
-
-        Expression qualifier = qualifierForEntityAndSubclasses();
-        if (qualifier == null) {
-            return null;
-        }
-
-        // TODO: andrus 1/6/2008 - extremely inefficient, cache inheritance qualifier in
-        // the ClassDescriptor
-
-        // parser only works on full queries, so prepend a dummy query and then strip it
-        // out...
-        String ejbqlChunk = qualifier.toEJBQL(entityId);
-        EJBQLExpression expression = EJBQLParserFactory.getParser().parse(
-                "DELETE FROM DUMMY WHERE " + ejbqlChunk);
-
-        final EJBQLExpression[] result = new EJBQLExpression[1];
-        expression.visit(new EJBQLBaseVisitor() {
-            @Override
-            public boolean visitWhere(EJBQLExpression expression) {
-                result[0] = expression.getChild(0);
-                return false;
-            }
-        });
-        
-        return result[0];
     }
 
     /**
