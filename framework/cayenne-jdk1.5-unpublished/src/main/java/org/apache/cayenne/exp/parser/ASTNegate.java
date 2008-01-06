@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.exp.parser;
 
 import java.io.PrintWriter;
@@ -33,6 +32,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * @author Andrus Adamchik
  */
 public class ASTNegate extends SimpleNode {
+
     ASTNegate(int id) {
         super(id);
     }
@@ -70,9 +70,8 @@ public class ASTNegate extends SimpleNode {
 
             SimpleNode child = (SimpleNode) children[0];
 
-            // don't call super - we have our own parenthesis policy 
-            boolean useParen =
-                parent != null
+            // don't call super - we have our own parenthesis policy
+            boolean useParen = parent != null
                     && !((child instanceof ASTScalar) || (child instanceof ASTPath));
             if (useParen) {
                 pw.print("(");
@@ -86,9 +85,35 @@ public class ASTNegate extends SimpleNode {
         }
     }
 
+    /**
+     * @since 3.0
+     */
+    @Override
+    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+        if ((children != null) && (children.length > 0)) {
+            pw.print("-");
+
+            SimpleNode child = (SimpleNode) children[0];
+
+            // don't call super - we have our own parenthesis policy
+            boolean useParen = parent != null
+                    && !((child instanceof ASTScalar) || (child instanceof ASTPath));
+            if (useParen) {
+                pw.print("(");
+            }
+
+            child.encodeAsEJBQL(pw, rootId);
+
+            if (useParen) {
+                pw.print(')');
+            }
+        }
+    }
+
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException(
-            "No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");
+        throw new UnsupportedOperationException("No operator for '"
+                + ExpressionParserTreeConstants.jjtNodeName[id]
+                + "'");
     }
 
     public int getType() {

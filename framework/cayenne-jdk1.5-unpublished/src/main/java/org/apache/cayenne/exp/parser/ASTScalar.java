@@ -64,6 +64,14 @@ public class ASTScalar extends SimpleNode {
     public void encodeAsString(PrintWriter pw) {
         SimpleNode.encodeScalarAsString(pw, value);
     }
+    
+    /**
+     * @since 3.0
+     */
+    @Override
+    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+        SimpleNode.encodeScalarAsString(pw, value);
+    }
 
     public void setValue(Object value) {
         this.value = value;

@@ -545,10 +545,27 @@ public abstract class Expression implements Serializable, XMLSerializable {
      */
     public abstract void encodeAsString(PrintWriter pw);
 
+    /**
+     * Stores a String representation of Expression as EJBQL using a provided PrintWriter.
+     * DB path expressions produce non-standard EJBQL path expressions.
+     * 
+     * @since 3.0
+     */
+    public abstract void encodeAsEJBQL(PrintWriter pw, String rootId);
+
     public String toString() {
         StringWriter buffer = new StringWriter();
         PrintWriter pw = new PrintWriter(buffer);
         encodeAsString(pw);
+        pw.close();
+        buffer.flush();
+        return buffer.toString();
+    }
+    
+    public String toEJBQL(String rootId) {
+        StringWriter buffer = new StringWriter();
+        PrintWriter pw = new PrintWriter(buffer);
+        encodeAsEJBQL(pw, rootId);
         pw.close();
         buffer.flush();
         return buffer.toString();

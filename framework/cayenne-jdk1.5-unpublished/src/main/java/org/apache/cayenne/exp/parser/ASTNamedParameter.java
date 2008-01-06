@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.io.PrintWriter;
+
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionParameter;
@@ -68,5 +70,22 @@ public class ASTNamedParameter extends ASTScalar {
         }
 
         super.setValue(new ExpressionParameter(name));
+    }
+    
+    /**
+     * @since 3.0
+     */
+    @Override
+    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+        if(value != null) {
+            String valueString = value.toString();
+            if(valueString.length() > 1 && valueString.charAt(0) == '$') {
+                pw.print(':');
+                pw.print(valueString.substring(1));
+                return;
+            }
+        }
+        
+        super.encodeAsEJBQL(pw, rootId);
     }
 }

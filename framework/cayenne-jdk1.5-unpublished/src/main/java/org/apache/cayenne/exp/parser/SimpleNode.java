@@ -59,7 +59,7 @@ public abstract class SimpleNode extends Expression implements Node {
         // predictable....
         if (scalar instanceof Persistent) {
             ObjectId id = ((Persistent) scalar).getObjectId();
-            if(id != null) {
+            if (id != null) {
                 scalar = id;
             }
         }
@@ -168,6 +168,7 @@ public abstract class SimpleNode extends Expression implements Node {
         }
     }
 
+    @Override
     public void encodeAsString(PrintWriter pw) {
         if (parent != null) {
             pw.print("(");
@@ -271,11 +272,11 @@ public abstract class SimpleNode extends Expression implements Node {
      * Evaluates itself with object, pushing result on the stack.
      */
     protected abstract Object evaluateNode(Object o) throws Exception;
-    
-    /** 
+
+    /**
      * Sets the parent to this for all children.
      * 
-     * @since 3.0 
+     * @since 3.0
      */
     protected void connectChildren() {
         if (children != null) {
@@ -308,6 +309,37 @@ public abstract class SimpleNode extends Expression implements Node {
                     "Error evaluating expression '" + string + "'",
                     string,
                     Util.unwindException(th));
+        }
+    }
+
+    /**
+     * @since 3.0
+     */
+    @Override
+    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+        if (parent != null) {
+            pw.print("(");
+        }
+
+        if ((children != null) && (children.length > 0)) {
+            for (int i = 0; i < children.length; ++i) {
+                if (i > 0) {
+                    pw.print(' ');
+                    pw.print(getExpressionOperator(i));
+                    pw.print(' ');
+                }
+
+                if (children[i] == null) {
+                    pw.print("null");
+                }
+                else {
+                    ((SimpleNode) children[i]).encodeAsEJBQL(pw, rootId);
+                }
+            }
+        }
+
+        if (parent != null) {
+            pw.print(')');
         }
     }
 }

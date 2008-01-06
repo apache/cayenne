@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.exp.parser;
 
 import java.io.PrintWriter;
@@ -47,10 +46,9 @@ public class ASTObjPath extends ASTPath {
 
     protected Object evaluateNode(Object o) throws Exception {
         return (o instanceof DataObject)
-            ? ((DataObject) o).readNestedProperty(path)
-            : (o instanceof Entity)
-            ? evaluateEntityNode((Entity) o)
-            : PropertyUtils.getProperty(o, path);
+                ? ((DataObject) o).readNestedProperty(path)
+                : (o instanceof Entity) ? evaluateEntityNode((Entity) o) : PropertyUtils
+                        .getProperty(o, path);
     }
 
     /**
@@ -63,6 +61,16 @@ public class ASTObjPath extends ASTPath {
     }
 
     public void encodeAsString(PrintWriter pw) {
+        pw.print(path);
+    }
+
+    /**
+     * @since 3.0
+     */
+    @Override
+    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+        pw.print(rootId);
+        pw.print('.');
         pw.print(path);
     }
 
