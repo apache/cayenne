@@ -56,7 +56,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         assertTrue(sql, sql.indexOf("t0.ARTIST_ID") > 0);
         assertTrue(sql, sql.indexOf("t0.ARTIST_NAME") > 0);
         assertTrue(sql, sql.indexOf("t0.DATE_OF_BIRTH") > 0);
-        assertTrue(sql, sql.endsWith(" FROM ARTIST t0${marker1}"));
+        assertTrue(sql, sql.endsWith(" FROM ARTIST t0${marker1}${marker2}"));
 
         StringBuilder fromMarker = (StringBuilder) query.getParameters().get("marker1");
         assertNotNull(fromMarker);
@@ -118,7 +118,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String from = fromMarker.toString();
         assertEquals("", from);
 
-        assertTrue(sql, sql.endsWith(" FROM ARTIST t0${marker1} WHERE t0.ARTIST_NAME ="
+        assertTrue(sql, sql.endsWith(" FROM ARTIST t0${marker1}${marker2} t0.ARTIST_NAME ="
                 + " #bind('Dali' 'VARCHAR')"));
     }
 
@@ -133,12 +133,12 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql1 = query1.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT"));
-        assertTrue(sql, sql.indexOf(" FROM ARTIST t0${marker1} WHERE ") > 0);
-        assertEquals(1, countDelimiters(sql, " OR ", sql.indexOf("WHERE ")));
+        assertTrue(sql, sql.indexOf(" FROM ARTIST t0${marker1}${marker2} ") > 0);
+        assertEquals(1, countDelimiters(sql, " OR ", sql.indexOf("${marker2}")));
 
         assertTrue(sql1, sql1.startsWith("SELECT"));
-        assertTrue(sql1, sql.indexOf(" FROM ARTIST t0${marker1} WHERE ") > 0);
-        assertEquals(2, countDelimiters(sql1, " OR ", sql.indexOf("WHERE ")));
+        assertTrue(sql1, sql.indexOf(" FROM ARTIST t0${marker1}${marker2} ") > 0);
+        assertEquals(2, countDelimiters(sql1, " OR ", sql.indexOf("${marker2}")));
     }
 
     public void testSelectFromWhereAndEqual() {
@@ -153,12 +153,12 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql1 = query1.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT"));
-        assertTrue(sql, sql.indexOf(" WHERE ") > 0);
-        assertEquals(1, countDelimiters(sql, " AND ", sql.indexOf("WHERE ")));
+        assertTrue(sql, sql.indexOf("${marker2} ") > 0);
+        assertEquals(1, countDelimiters(sql, " AND ", sql.indexOf("${marker2}")));
 
         assertTrue(sql1, sql1.startsWith("SELECT"));
-        assertTrue(sql1, sql1.indexOf(" WHERE ") > 0);
-        assertEquals(2, countDelimiters(sql1, " AND ", sql1.indexOf("WHERE ")));
+        assertTrue(sql1, sql1.indexOf("${marker2} ") > 0);
+        assertEquals(2, countDelimiters(sql1, " AND ", sql1.indexOf("${marker2}")));
     }
 
     public void testSelectFromWhereNot() {
@@ -166,7 +166,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT"));
-        assertTrue(sql, sql.endsWith(" WHERE NOT "
+        assertTrue(sql, sql.endsWith("${marker2} NOT "
                 + "t0.ARTIST_NAME = #bind('Dali' 'VARCHAR')"));
     }
 
@@ -175,7 +175,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql.startsWith("SELECT"));
-        assertTrue(sql, sql.endsWith(" WHERE t0.ESTIMATED_PRICE > #bind($id2 'DECIMAL')"));
+        assertTrue(sql, sql.endsWith("${marker2} t0.ESTIMATED_PRICE > #bind($id3 'DECIMAL')"));
     }
 
     public void testSelectFromWhereGreaterOrEqual() {
@@ -183,14 +183,14 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql
-                .endsWith(" WHERE t0.ESTIMATED_PRICE >= #bind($id2 'INTEGER')"));
+                .endsWith("${marker2} t0.ESTIMATED_PRICE >= #bind($id3 'INTEGER')"));
     }
 
     public void testSelectFromWhereLess() {
         SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice < 1.0");
         String sql = query.getDefaultTemplate();
 
-        assertTrue(sql, sql.endsWith(" WHERE t0.ESTIMATED_PRICE < #bind($id2 'DECIMAL')"));
+        assertTrue(sql, sql.endsWith("${marker2} t0.ESTIMATED_PRICE < #bind($id3 'DECIMAL')"));
     }
 
     public void testSelectFromWhereLessOrEqual() {
@@ -198,37 +198,37 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         String sql = query.getDefaultTemplate();
 
         assertTrue(sql, sql
-                .endsWith(" WHERE t0.ESTIMATED_PRICE <= #bind($id2 'DECIMAL')"));
+                .endsWith("${marker2} t0.ESTIMATED_PRICE <= #bind($id3 'DECIMAL')"));
     }
 
     public void testSelectFromWhereNotEqual() {
         SQLTemplate query = translateSelect("select a from Artist a where a.artistName <> 'Dali'");
         String sql = query.getDefaultTemplate();
 
-        assertTrue(sql, sql.endsWith(" WHERE t0.ARTIST_NAME <> #bind('Dali' 'VARCHAR')"));
+        assertTrue(sql, sql.endsWith("${marker2} t0.ARTIST_NAME <> #bind('Dali' 'VARCHAR')"));
     }
 
     public void testSelectFromWhereBetween() {
         SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice between 3 and 5");
         String sql = query.getDefaultTemplate();
 
-        assertTrue(sql, sql.endsWith(" WHERE t0.ESTIMATED_PRICE "
-                + "BETWEEN #bind($id2 'INTEGER') AND #bind($id3 'INTEGER')"));
+        assertTrue(sql, sql.endsWith("${marker2} t0.ESTIMATED_PRICE "
+                + "BETWEEN #bind($id3 'INTEGER') AND #bind($id4 'INTEGER')"));
     }
 
     public void testSelectFromWhereNotBetween() {
         SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice not between 3 and 5");
         String sql = query.getDefaultTemplate();
 
-        assertTrue(sql, sql.endsWith(" WHERE t0.ESTIMATED_PRICE "
-                + "NOT BETWEEN #bind($id2 'INTEGER') AND #bind($id3 'INTEGER')"));
+        assertTrue(sql, sql.endsWith("${marker2} t0.ESTIMATED_PRICE "
+                + "NOT BETWEEN #bind($id3 'INTEGER') AND #bind($id4 'INTEGER')"));
     }
 
     public void testSelectFromWhereLike() {
         SQLTemplate query = translateSelect("select p from Painting p where p.paintingTitle like 'Stuff'");
         String sql = query.getDefaultTemplate();
 
-        assertTrue(sql, sql.endsWith(" WHERE t0.PAINTING_TITLE "
+        assertTrue(sql, sql.endsWith("${marker2} t0.PAINTING_TITLE "
                 + "LIKE #bind('Stuff' 'VARCHAR')"));
     }
 
@@ -236,7 +236,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         SQLTemplate query = translateSelect("select p from Painting p where p.paintingTitle NOT like 'Stuff'");
         String sql = query.getDefaultTemplate();
 
-        assertTrue(sql, sql.endsWith(" WHERE t0.PAINTING_TITLE "
+        assertTrue(sql, sql.endsWith("${marker2} t0.PAINTING_TITLE "
                 + "NOT LIKE #bind('Stuff' 'VARCHAR')"));
     }
 
@@ -249,7 +249,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
                 params);
         String sql = query.getDefaultTemplate();
         assertTrue(sql, sql
-                .endsWith("t0.ARTIST_NAME = #bind($id2) OR t0.ARTIST_NAME = #bind($id3)"));
+                .endsWith("t0.ARTIST_NAME = #bind($id3) OR t0.ARTIST_NAME = #bind($id4)"));
     }
 
     public void testMax() {

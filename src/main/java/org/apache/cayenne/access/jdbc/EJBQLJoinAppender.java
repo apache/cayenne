@@ -101,7 +101,7 @@ public class EJBQLJoinAppender {
                 .getName());
 
         if (marker != null) {
-            context.switchToMarker(marker, false);
+            context.pushMarker(marker, false);
         }
 
         try {
@@ -140,7 +140,7 @@ public class EJBQLJoinAppender {
         }
         finally {
             if (marker != null) {
-                context.switchToMainBuffer();
+                context.popMarker();
             }
         }
     }
