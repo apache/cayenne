@@ -29,6 +29,7 @@ import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -41,26 +42,30 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  */
 public class EJBQLTranslationContext {
 
+    private EJBQLCompiledExpression compiledExpression;
+    private Map<Object, Object> parameters;
+    private EJBQLTranslatorFactory translatorFactory;
+    private EntityResolver entityResolver;
+
     private Map<String, String> tableAliases;
     private Map<String, Object> boundParameters;
     private StringBuilder mainBuffer;
     private StringBuilder currentBuffer;
-    private EJBQLCompiledExpression compiledExpression;
     private Map<String, Object> attributes;
-    private Map<Object, Object> parameters;
     private Map<String, String> idAliases;
     private int columnAliasPosition;
-    private EJBQLTranslatorFactory translatorFactory;
     private boolean usingAliases;
-
-    protected LinkedList<StringBuilder> bufferStack;
+    private LinkedList<StringBuilder> bufferStack;
 
     // a flag indicating whether column expressions should be treated as result columns or
     // not.
     private boolean appendingResultColumns;
 
-    public EJBQLTranslationContext(EJBQLCompiledExpression compiledExpression,
-            Map<Object, Object> parameters, EJBQLTranslatorFactory translatorFactory) {
+    public EJBQLTranslationContext(EntityResolver entityResolver,
+            EJBQLCompiledExpression compiledExpression, Map<Object, Object> parameters,
+            EJBQLTranslatorFactory translatorFactory) {
+
+        this.entityResolver = entityResolver;
         this.compiledExpression = compiledExpression;
         this.mainBuffer = new StringBuilder();
         this.currentBuffer = mainBuffer;
@@ -94,6 +99,10 @@ public class EJBQLTranslationContext {
 
     EJBQLTranslatorFactory getTranslatorFactory() {
         return translatorFactory;
+    }
+
+    EntityResolver getEntityResolver() {
+        return entityResolver;
     }
 
     /**
