@@ -40,7 +40,7 @@ public class EJBQLPath extends SimpleNode {
             return null;
         }
 
-        StringBuffer buffer = new StringBuffer(jjtGetChild(1).getText());
+        StringBuilder buffer = new StringBuilder(jjtGetChild(1).getText());
         for (int i = 2; i < len; i++) {
             buffer.append('.').append(jjtGetChild(i).getText());
         }
@@ -54,7 +54,7 @@ public class EJBQLPath extends SimpleNode {
             return null;
         }
 
-        StringBuffer buffer = new StringBuffer(jjtGetChild(0).getText());
+        StringBuilder buffer = new StringBuilder(jjtGetChild(0).getText());
         for (int i = 1; i < len; i++) {
             buffer.append('.').append(jjtGetChild(i).getText());
         }
