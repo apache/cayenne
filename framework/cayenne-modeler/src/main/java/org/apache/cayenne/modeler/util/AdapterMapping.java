@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.util;
 
 import java.util.HashMap;
@@ -26,6 +25,7 @@ import java.util.Map;
 import org.apache.cayenne.dba.db2.DB2Adapter;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
+import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
@@ -43,16 +43,16 @@ import org.apache.cayenne.dba.sybase.SybaseAdapter;
  */
 public class AdapterMapping {
 
-    protected Map adapterToJDBCDriverMap;
-    protected Map adapterToJDBCURLMap;
-    protected Map jdbcDriverToAdapterMap;
-    protected Map eofPluginToAdapterMap;
+    protected Map<String, String> adapterToJDBCDriverMap;
+    protected Map<String, String> adapterToJDBCURLMap;
+    protected Map<String, String> jdbcDriverToAdapterMap;
+    protected Map<String, String> eofPluginToAdapterMap;
 
     public AdapterMapping() {
-        this.adapterToJDBCDriverMap = new HashMap();
-        this.adapterToJDBCURLMap = new HashMap();
-        this.jdbcDriverToAdapterMap = new HashMap();
-        this.eofPluginToAdapterMap = new HashMap();
+        this.adapterToJDBCDriverMap = new HashMap<String, String>();
+        this.adapterToJDBCURLMap = new HashMap<String, String>();
+        this.jdbcDriverToAdapterMap = new HashMap<String, String>();
+        this.eofPluginToAdapterMap = new HashMap<String, String>();
 
         initDefaults();
     }
@@ -70,6 +70,7 @@ public class AdapterMapping {
                 .getName());
         jdbcDriverToAdapterMap
                 .put("org.hsqldb.jdbcDriver", HSQLDBAdapter.class.getName());
+        jdbcDriverToAdapterMap.put("org.h2.Driver", H2Adapter.class.getName());
         jdbcDriverToAdapterMap.put("org.postgresql.Driver", PostgresAdapter.class
                 .getName());
         jdbcDriverToAdapterMap.put("com.openbase.jdbc.ObDriver", OpenBaseAdapter.class
@@ -102,6 +103,9 @@ public class AdapterMapping {
         adapterToJDBCURLMap.put(
                 HSQLDBAdapter.class.getName(),
                 "jdbc:hsqldb:hsql://localhost/database");
+        adapterToJDBCURLMap.put(
+                H2Adapter.class.getName(),
+                "jdbc:h2:mem:database;MVCC=TRUE");
         adapterToJDBCURLMap.put(
                 PostgresAdapter.class.getName(),
                 "jdbc:postgresql://localhost:5432/database");
@@ -139,6 +143,7 @@ public class AdapterMapping {
                 "com.ibm.db2.jcc.DB2Driver");
         adapterToJDBCDriverMap
                 .put(HSQLDBAdapter.class.getName(), "org.hsqldb.jdbcDriver");
+        adapterToJDBCDriverMap.put(H2Adapter.class.getName(), "org.h2.Driver");
         adapterToJDBCDriverMap.put(
                 PostgresAdapter.class.getName(),
                 "org.postgresql.Driver");
@@ -184,19 +189,19 @@ public class AdapterMapping {
     }
 
     public String jdbcURLForAdapter(String adapterClass) {
-        return (String) adapterToJDBCURLMap.get(adapterClass);
+        return adapterToJDBCURLMap.get(adapterClass);
     }
 
     public String jdbcDriverForAdapter(String adapterClass) {
-        return (String) adapterToJDBCDriverMap.get(adapterClass);
+        return adapterToJDBCDriverMap.get(adapterClass);
     }
 
     public String adapterForJDBCDriver(String driverClass) {
-        return (String) jdbcDriverToAdapterMap.get(driverClass);
+        return jdbcDriverToAdapterMap.get(driverClass);
     }
 
     public String adapterForEOFPlugin(String eofPlugin) {
-        return (String) eofPluginToAdapterMap.get(eofPlugin);
+        return eofPluginToAdapterMap.get(eofPlugin);
     }
 
     public String adapterForEOFPluginOrDriver(String eofPlugin, String jdbcDriver) {
