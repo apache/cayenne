@@ -326,13 +326,6 @@
 			</dependency>
 			
 			<dependency>
-    			<groupId>com.h2database</groupId>
-    			<artifactId>h2</artifactId>
-    			<version>1.0.63</version>
-    			<scope>test</scope>
-			</dependency>
-
-			<dependency>
 				<groupId>org.apache.derby</groupId>
 				<artifactId>derby</artifactId>
 				<version>10.2.2.0</version>
@@ -689,6 +682,23 @@
                                 </dependency>
                         </dependencies>
                 </profile>
+		<profile>
+			<id>h2</id>
+			<activation>
+				<property>
+					<name>cayenne.test.connection</name>
+					<value>h2</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<version>1.0.64</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 		<profile>
 			<id>mysql</id>
 			<activation>
