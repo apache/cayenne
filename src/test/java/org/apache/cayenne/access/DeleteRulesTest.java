@@ -339,7 +339,7 @@ public class DeleteRulesTest extends RelationshipCase {
 
     private void assertJoinDeleted(DeleteRuleFlatA a, DeleteRuleFlatB b) {
 
-        ObjectDiff changes = (ObjectDiff) context.getObjectStore().changes.get(a
+        ObjectDiff changes = context.getObjectStore().changes.get(a
                 .getObjectId());
 
         assertNotNull(changes);

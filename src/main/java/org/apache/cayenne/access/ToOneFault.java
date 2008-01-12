@@ -50,7 +50,7 @@ public class ToOneFault extends Fault {
         if ((state == PersistenceState.MODIFIED || state == PersistenceState.DELETED)
                 && context instanceof DataContext) {
 
-            ObjectDiff diff = (ObjectDiff) ((DataContext) context)
+            ObjectDiff diff = ((DataContext) context)
                     .getObjectStore()
                     .getChangesByObjectId()
                     .get(sourceObject.getObjectId());

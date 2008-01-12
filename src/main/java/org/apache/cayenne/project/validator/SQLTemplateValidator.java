@@ -64,7 +64,7 @@ public class SQLTemplateValidator extends TreeNodeValidator {
     }
 
     protected void validateRoot(SQLTemplate query, ProjectPath path, Validator validator) {
-        DataMap map = (DataMap) path.firstInstanceOf(DataMap.class);
+        DataMap map = path.firstInstanceOf(DataMap.class);
         if (query.getRoot() == null && map != null) {
             validator.registerWarning("Query has no root", path);
         }

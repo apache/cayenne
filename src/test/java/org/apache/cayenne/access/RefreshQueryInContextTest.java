@@ -361,8 +361,8 @@ public class RefreshQueryInContextTest extends CayenneCase {
 
         Artist a1 = (Artist) artists.get(0);
         Artist a2 = (Artist) artists.get(1);
-        Painting p1 = (Painting) a1.getPaintingArray().get(0);
-        Painting p2 = (Painting) a1.getPaintingArray().get(0);
+        Painting p1 = a1.getPaintingArray().get(0);
+        Painting p2 = a1.getPaintingArray().get(0);
 
         assertNotNull(context
                 .getParentDataDomain()
