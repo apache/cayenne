@@ -943,7 +943,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
-    public void deleteObjects(Collection<Persistent> objects) {
+    public void deleteObjects(Collection objects) {
         if (objects.isEmpty()) {
             return;
         }
