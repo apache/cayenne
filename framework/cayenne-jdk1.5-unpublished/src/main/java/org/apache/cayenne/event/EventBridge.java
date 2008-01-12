@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import org.apache.cayenne.util.Util;
 
@@ -63,14 +62,14 @@ public abstract class EventBridge implements EventListener {
     public static final int RECEIVE_LOCAL_EXTERNAL = 3;
 
     protected String externalSubject;
-    protected Collection localSubjects;
+    protected Collection<EventSubject> localSubjects;
     protected EventManager eventManager;
     protected int mode;
 
     protected Object externalEventSource;
 
     // keeps all listeners so that they are not deallocated
-    Collection listeners;
+    Collection<SubjectListener> listeners;
 
     /**
      * A utility method that performs consistent translation from an EventSubject to a
@@ -101,8 +100,8 @@ public abstract class EventBridge implements EventListener {
      * 
      * @since 1.2
      */
-    public EventBridge(Collection localSubjects, String externalSubject) {
-        this.localSubjects = new HashSet(localSubjects);
+    public EventBridge(Collection<EventSubject> localSubjects, String externalSubject) {
+        this.localSubjects = new HashSet<EventSubject>(localSubjects);
         this.externalSubject = externalSubject;
     }
 
@@ -127,7 +126,7 @@ public abstract class EventBridge implements EventListener {
      * 
      * @since 1.2
      */
-    public Collection getLocalSubjects() {
+    public Collection<EventSubject> getLocalSubjects() {
         return localSubjects;
     }
 
@@ -229,12 +228,9 @@ public abstract class EventBridge implements EventListener {
 
         if (receivesLocalEvents() && !localSubjects.isEmpty()) {
 
-            listeners = new ArrayList(localSubjects.size());
+            listeners = new ArrayList<SubjectListener>(localSubjects.size());
 
-            Iterator it = localSubjects.iterator();
-            while (it.hasNext()) {
-
-                EventSubject subject = (EventSubject) it.next();
+            for (EventSubject subject : localSubjects) {
                 SubjectListener listener = new SubjectListener(subject);
 
                 listeners.add(listener);
@@ -264,9 +260,7 @@ public abstract class EventBridge implements EventListener {
 
         if (listeners != null && eventManager != null) {
 
-            Iterator it = listeners.iterator();
-            while (it.hasNext()) {
-                SubjectListener listener = (SubjectListener) it.next();
+            for (SubjectListener listener : listeners) {
                 eventManager.removeListener(listener, listener.subject);
             }
 

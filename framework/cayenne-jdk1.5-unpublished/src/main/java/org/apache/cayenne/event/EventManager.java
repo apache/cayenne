@@ -22,7 +22,6 @@ package org.apache.cayenne.event;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventObject;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +46,8 @@ public class EventManager {
     public static final int DEFAULT_DISPATCH_THREAD_COUNT = 5;
 
     // keeps weak references to subjects
-    protected Map subjects;
-    protected List eventQueue;
+    protected Map<EventSubject, DispatchQueue> subjects;
+    protected List<Dispatch> eventQueue;
     protected boolean singleThread;
     protected boolean stopped;
 
@@ -83,8 +82,8 @@ public class EventManager {
      * less.
      */
     public EventManager(int dispatchThreadCount) {
-        this.subjects = Collections.synchronizedMap(new WeakHashMap());
-        this.eventQueue = Collections.synchronizedList(new LinkedList());
+        this.subjects = Collections.synchronizedMap(new WeakHashMap<EventSubject, DispatchQueue>());
+        this.eventQueue = Collections.synchronizedList(new LinkedList<Dispatch>());
         this.singleThread = dispatchThreadCount <= 0;
 
         // start dispatch threads
@@ -111,15 +110,15 @@ public class EventManager {
      * 
      * @since 1.1
      */
-    public List getEventQueue() {
+    public List<Dispatch> getEventQueue() {
         synchronized (eventQueue) {
-            return new ArrayList(eventQueue);
+            return new ArrayList<Dispatch>(eventQueue);
         }
     }
 
     /**
      * Stops event threads. After the EventManager is stopped, it can not be restarted and
-     * should be discarded. Note that dispath threads may still run for a few more minutes
+     * should be discarded. Note that dispatch threads may still run for a few more minutes
      * after this method call until they time out.
      * 
      * @since 3.0
@@ -138,7 +137,7 @@ public class EventManager {
     public void addListener(
             Object listener,
             String methodName,
-            Class eventParameterClass,
+            Class<?> eventParameterClass,
             EventSubject subject) {
         this.addListener(listener, methodName, eventParameterClass, subject, null, true);
     }
@@ -146,7 +145,7 @@ public class EventManager {
     public void addNonBlockingListener(
             Object listener,
             String methodName,
-            Class eventParameterClass,
+            Class<?> eventParameterClass,
             EventSubject subject) {
 
         if (singleThread) {
@@ -172,7 +171,7 @@ public class EventManager {
     public void addListener(
             Object listener,
             String methodName,
-            Class eventParameterClass,
+            Class<?> eventParameterClass,
             EventSubject subject,
             Object sender) {
         addListener(listener, methodName, eventParameterClass, subject, sender, true);
@@ -181,7 +180,7 @@ public class EventManager {
     public void addNonBlockingListener(
             Object listener,
             String methodName,
-            Class eventParameterClass,
+            Class<?> eventParameterClass,
             EventSubject subject,
             Object sender) {
 
@@ -196,7 +195,7 @@ public class EventManager {
     protected void addListener(
             Object listener,
             String methodName,
-            Class eventParameterClass,
+            Class<?> eventParameterClass,
             EventSubject subject,
             Object sender,
             boolean blocking) {
@@ -246,10 +245,8 @@ public class EventManager {
 
         synchronized (subjects) {
             if (!subjects.isEmpty()) {
-                Iterator subjectIter = subjects.keySet().iterator();
-                while (subjectIter.hasNext()) {
-                    didRemove |= this.removeListener(listener, (EventSubject) subjectIter
-                            .next());
+                for (EventSubject subject : subjects.keySet()) {
+                    didRemove |= this.removeListener(listener, subject);
                 }
             }
         }
@@ -352,7 +349,7 @@ public class EventManager {
     // returns a subject's mapping from senders to registered listener invocations
     private DispatchQueue dispatchQueueForSubject(EventSubject subject, boolean create) {
         synchronized (subjects) {
-            DispatchQueue listenersStore = (DispatchQueue) subjects.get(subject);
+            DispatchQueue listenersStore = subjects.get(subject);
             if (create && listenersStore == null) {
                 listenersStore = new DispatchQueue();
                 subjects.put(subject, listenersStore);
@@ -433,7 +430,7 @@ public class EventManager {
     // dispatched in a separate thread
     final class NonBlockingInvocation extends Invocation {
 
-        public NonBlockingInvocation(Object target, String methodName, Class parameterType)
+        public NonBlockingInvocation(Object target, String methodName, Class<?> parameterType)
                 throws NoSuchMethodException {
             super(target, methodName, parameterType);
         }
@@ -455,7 +452,7 @@ public class EventManager {
 
                 synchronized (EventManager.this.eventQueue) {
                     if (EventManager.this.eventQueue.size() > 0) {
-                        dispatch = (Dispatch) EventManager.this.eventQueue.remove(0);
+                        dispatch = EventManager.this.eventQueue.remove(0);
                     }
                     else {
                         try {

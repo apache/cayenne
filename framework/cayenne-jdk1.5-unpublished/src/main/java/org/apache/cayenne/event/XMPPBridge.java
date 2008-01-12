@@ -79,7 +79,7 @@ public class XMPPBridge extends EventBridge {
     /**
      * Creates an XMPPBridge. External subject will be used as the chat group name.
      */
-    public XMPPBridge(Collection localSubjects, String externalSubject) {
+    public XMPPBridge(Collection<EventSubject> localSubjects, String externalSubject) {
         super(localSubjects, externalSubject);
 
         // generate a unique session handle... users can override it to use a specific

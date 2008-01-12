@@ -42,8 +42,8 @@ import org.apache.cayenne.util.Invocation;
  */
 class DispatchQueue {
 
-    private Set subjectInvocations = new HashSet();
-    private Map invocationsBySender = new WeakHashMap();
+    private Set<Invocation> subjectInvocations = new HashSet<Invocation>();
+    private Map<Object, Collection<Invocation>> invocationsBySender = new WeakHashMap<Object, Collection<Invocation>>();
 
     /**
      * Dispatches event to all listeners in the queue that are registered for this event
@@ -59,7 +59,7 @@ class DispatchQueue {
     }
 
     synchronized void addInvocation(Invocation invocation, Object sender) {
-        Collection invocations;
+        Collection<Invocation> invocations;
 
         if (sender == null) {
             invocations = subjectInvocations;
@@ -71,10 +71,10 @@ class DispatchQueue {
         // perform maintenance of the given invocations set, as failure to do that can
         // result in a memory leak per CAY-770. This seemed to happen when lots of
         // invocations got registered, but no events were dispatched (hence the stale
-        // inocation removal during dispatch did not happen)
-        Iterator it = invocations.iterator();
+        // invocation removal during dispatch did not happen)
+        Iterator<Invocation> it = invocations.iterator();
         while (it.hasNext()) {
-            Invocation i = (Invocation) it.next();
+            Invocation i = it.next();
             if (i.getTarget() == null) {
                 it.remove();
             }
@@ -95,16 +95,14 @@ class DispatchQueue {
         // remove listener from all collections
         didRemove = removeInvocations(subjectInvocations, listener);
 
-        Iterator sets = invocationsBySender.values().iterator();
-        while (sets.hasNext()) {
-            Collection senderInvocations = (Collection) sets.next();
+        for (Collection<Invocation> senderInvocations : invocationsBySender.values()) {
             if (senderInvocations == null) {
                 continue;
             }
 
-            Iterator it = senderInvocations.iterator();
+            Iterator<Invocation> it = senderInvocations.iterator();
             while (it.hasNext()) {
-                Invocation invocation = (Invocation) it.next();
+                Invocation invocation = it.next();
                 if (invocation.getTarget() == listener) {
                     it.remove();
                     didRemove = true;
@@ -115,10 +113,10 @@ class DispatchQueue {
         return didRemove;
     }
 
-    private Collection invocationsForSender(Object sender, boolean create) {
-        Collection senderInvocations = (Collection) invocationsBySender.get(sender);
+    private Collection<Invocation> invocationsForSender(Object sender, boolean create) {
+        Collection<Invocation> senderInvocations = invocationsBySender.get(sender);
         if (create && senderInvocations == null) {
-            senderInvocations = new HashSet();
+            senderInvocations = new HashSet<Invocation>();
             invocationsBySender.put(sender, senderInvocations);
         }
 
@@ -126,16 +124,16 @@ class DispatchQueue {
     }
 
     // removes all invocations for a given listener
-    private boolean removeInvocations(Collection invocations, Object listener) {
+    private boolean removeInvocations(Collection<Invocation> invocations, Object listener) {
         if (invocations == null || invocations.isEmpty()) {
             return false;
         }
 
         boolean didRemove = false;
 
-        Iterator invocationsIt = invocations.iterator();
+        Iterator<Invocation> invocationsIt = invocations.iterator();
         while (invocationsIt.hasNext()) {
-            Invocation invocation = (Invocation) invocationsIt.next();
+            Invocation invocation = invocationsIt.next();
             if (invocation.getTarget() == listener) {
                 invocationsIt.remove();
                 didRemove = true;
@@ -146,17 +144,14 @@ class DispatchQueue {
     }
 
     // dispatches event to a list of listeners
-    private void dispatchEvent(Collection invocations, Dispatch dispatch) {
+    private void dispatchEvent(Collection<Invocation> invocations, Dispatch dispatch) {
         if (invocations == null || invocations.isEmpty()) {
             return;
         }
 
         // iterate over copy of the collection as there is a chance a caller would want to
         // (un)register another listener during event processing
-        Iterator it = new ArrayList(invocations).iterator();
-        while (it.hasNext()) {
-            Invocation invocation = (Invocation) it.next();
-
+        for (Invocation invocation : new ArrayList<Invocation>(invocations)) {
             // fire invocation, detect if anything went wrong (e.g. GC'ed invocation
             // targets)
             if (!dispatch.fire(invocation)) {

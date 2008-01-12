@@ -57,9 +57,9 @@ public class JavaGroupsBridgeFactory implements EventBridgeFactory {
      * remote notifications.
      */
     public EventBridge createEventBridge(
-            Collection localSubjects,
+            Collection<EventSubject> localSubjects,
             String externalSubject,
-            Map properties) {
+            Map<String, Object> properties) {
 
         try {
             // sniff JavaGroups presence
@@ -77,15 +77,15 @@ public class JavaGroupsBridgeFactory implements EventBridgeFactory {
     }
 
     private EventBridge createJavaGroupsBridge(
-            Collection localSubjects,
+            Collection<EventSubject> localSubjects,
             String externalSubject,
-            Map properties) {
+            Map<String, Object> properties) {
 
         // create JavaGroupsBridge using reflection to avoid triggering
         // ClassNotFound exceptions due to JavaGroups absence.
 
         try {
-            Constructor c = Class
+            Constructor<?> c = Class
                     .forName("org.apache.cayenne.event.JavaGroupsBridge")
                     .getConstructor(new Class[] {
                             Collection.class, String.class

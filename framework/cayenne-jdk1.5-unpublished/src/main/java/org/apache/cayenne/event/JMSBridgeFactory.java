@@ -39,7 +39,7 @@ public class JMSBridgeFactory implements EventBridgeFactory {
     /**
      * @since 1.2
      */
-    public EventBridge createEventBridge(Collection localSubjects, String externalSubject, Map properties) {
+    public EventBridge createEventBridge(Collection<EventSubject> localSubjects, String externalSubject, Map<String, Object> properties) {
         JMSBridge bridge = new JMSBridge(localSubjects, externalSubject);
 
         // configure properties

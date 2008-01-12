@@ -50,9 +50,9 @@ public class XMPPBridgeFactory implements EventBridgeFactory {
     public static final String XMPP_PASSWORD_PROPERTY = "cayenne.XMPPBridge.xmppPassword";
 
     public EventBridge createEventBridge(
-            Collection localSubjects,
+            Collection<EventSubject> localSubjects,
             String externalSubject,
-            Map properties) {
+            Map<String, Object> properties) {
 
         String chatService = (String) properties.get(XMPP_CHAT_SERVICE_PROPERTY);
         String host = (String) properties.get(XMPP_HOST_PROPERTY);

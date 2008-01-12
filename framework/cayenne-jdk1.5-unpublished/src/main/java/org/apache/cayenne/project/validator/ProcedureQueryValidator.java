@@ -47,7 +47,7 @@ public class ProcedureQueryValidator extends TreeNodeValidator {
             ProcedureQuery query,
             ProjectPath path,
             Validator validator) {
-        DataMap map = (DataMap) path.firstInstanceOf(DataMap.class);
+        DataMap map = path.firstInstanceOf(DataMap.class);
         Object root = query.getRoot();
 
         if (root == null && map != null) {

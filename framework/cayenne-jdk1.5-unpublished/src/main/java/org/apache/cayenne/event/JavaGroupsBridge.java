@@ -56,7 +56,7 @@ public class JavaGroupsBridge extends EventBridge implements MessageListener {
     /**
      * @since 1.2
      */
-    public JavaGroupsBridge(Collection localSubjects, String externalSubject) {
+    public JavaGroupsBridge(Collection<EventSubject> localSubjects, String externalSubject) {
         super(localSubjects, externalSubject);
     }
 
