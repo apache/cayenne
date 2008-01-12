@@ -68,7 +68,7 @@ public class JMSBridge extends EventBridge implements MessageListener {
     /**
      * @since 1.2
      */
-    public JMSBridge(Collection localSubjects, String externalSubject) {
+    public JMSBridge(Collection<EventSubject> localSubjects, String externalSubject) {
         super(localSubjects, externalSubject);
     }
 

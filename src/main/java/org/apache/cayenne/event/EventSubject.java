@@ -43,7 +43,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class EventSubject implements Serializable {
 
     // a Map that will allow the values to be GC'ed
-    private static Map _registeredSubjects = new ReferenceMap(
+    private static Map<String, EventSubject> _registeredSubjects = new ReferenceMap(
             ReferenceMap.HARD,
             ReferenceMap.WEAK);
 
@@ -58,7 +58,7 @@ public class EventSubject implements Serializable {
      * @throws IllegalArgumentException if subjectOwner/subjectName are <code>null</code>
      *             or subjectName is empty.
      */
-    public static EventSubject getSubject(Class subjectOwner, String subjectName) {
+    public static EventSubject getSubject(Class<?> subjectOwner, String subjectName) {
         if (subjectOwner == null) {
             throw new IllegalArgumentException("Owner class must not be null.");
         }
@@ -68,7 +68,7 @@ public class EventSubject implements Serializable {
         }
 
         String fullSubjectName = subjectOwner.getName() + "/" + subjectName;
-        EventSubject newSubject = (EventSubject) _registeredSubjects.get(fullSubjectName);
+        EventSubject newSubject = _registeredSubjects.get(fullSubjectName);
         if (newSubject == null) {
             newSubject = new EventSubject(fullSubjectName);
             _registeredSubjects.put(newSubject.getSubjectName(), newSubject);
@@ -80,6 +80,7 @@ public class EventSubject implements Serializable {
     /**
      * Private constructor to force use of #getSubject(Class, String)
      */
+    @SuppressWarnings("unused")
     private EventSubject() {
     }
 

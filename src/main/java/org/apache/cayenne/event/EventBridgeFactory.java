@@ -36,7 +36,7 @@ public interface EventBridgeFactory {
      * @since 1.2
      */
     EventBridge createEventBridge(
-            Collection localSubjects,
+            Collection<EventSubject> localSubjects,
             String externalSubject,
-            Map properties);
+            Map<String, Object> properties);
 }

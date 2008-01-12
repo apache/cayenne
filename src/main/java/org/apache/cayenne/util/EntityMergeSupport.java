@@ -55,13 +55,14 @@ public class EntityMergeSupport {
      * Updates each one of the collection of ObjEntities, adding attributes and
      * relationships based on the current state of its DbEntity.
      * 
+     * @return true if any ObjEntity has changed as a result of synchronization.
+     * 
      * @since 1.2 changed signature to use Collection instead of List.
      */
-    public boolean synchronizeWithDbEntities(Collection objEntities) {
+    public boolean synchronizeWithDbEntities(Collection<ObjEntity> objEntities) {
         boolean changed = false;
-        Iterator it = objEntities.iterator();
-        while (it.hasNext()) {
-            if (synchronizeWithDbEntity((ObjEntity) it.next())) {
+        for (ObjEntity nextEntity : objEntities) {
+            if (synchronizeWithDbEntity(nextEntity)) {
                 changed = true;
             }
         }
@@ -84,32 +85,26 @@ public class EntityMergeSupport {
         boolean changed = false;
 
         // synchronization on DataMap is some (weak) protection
-        // against simulteneous modification of the map (like double-clicking on sync
+        // against simultaneous modification of the map (like double-clicking on sync
         // button)
         synchronized (map) {
 
             if (removeMeaningfulFKs) {
 
                 // get rid of attributes that are now src attributes for relationships
-                Iterator rait = getMeaningfulFKs(entity).iterator();
-                while (rait.hasNext()) {
-                    DbAttribute da = (DbAttribute) rait.next();
-                    ObjAttribute oa = (ObjAttribute) entity.getAttributeForDbAttribute(da);
+                for (DbAttribute da : getMeaningfulFKs(entity)) {
+                    ObjAttribute oa = entity.getAttributeForDbAttribute(da);
                     while (oa != null) {
                         String attrName = oa.getName();
                         entity.removeAttribute(attrName);
                         changed = true;
-                        oa = (ObjAttribute) entity.getAttributeForDbAttribute(da);
+                        oa = entity.getAttributeForDbAttribute(da);
                     }
                 }
             }
 
-            List addAttributes = getAttributesToAdd(entity);
-
             // add missing attributes
-            Iterator ait = addAttributes.iterator();
-            while (ait.hasNext()) {
-                DbAttribute da = (DbAttribute) ait.next();
+            for (DbAttribute da : getAttributesToAdd(entity)) {
                 String attrName = NameConverter.underscoredToJava(da.getName(), false);
 
                 // avoid duplicate names
@@ -126,18 +121,11 @@ public class EntityMergeSupport {
                 changed = true;
             }
 
-            List addRelationships = getRelationshipsToAdd(entity);
-
             // add missing relationships
-            Iterator rit = addRelationships.iterator();
-            while (rit.hasNext()) {
-                DbRelationship dr = (DbRelationship) rit.next();
+            for (DbRelationship dr : getRelationshipsToAdd(entity)) {
                 DbEntity dbEntity = (DbEntity) dr.getTargetEntity();
 
-                Iterator targets = map.getMappedEntities(dbEntity).iterator();
-                if (targets.hasNext()) {
-
-                    Entity mappedTarget = (Entity) targets.next();
+                for (Entity mappedTarget : map.getMappedEntities(dbEntity)) {
 
                     // avoid duplicate names
                     String relationshipName = NameConverter.underscoredToJava(dr
@@ -161,15 +149,14 @@ public class EntityMergeSupport {
     }
 
     /**
-     * Returns a list of ObjAttributes that are mapped to foreign keys.
+     * Returns a list of DbAttributes that are mapped to foreign keys.
      * 
      * @since 1.2
      */
-    public Collection getMeaningfulFKs(ObjEntity objEntity) {
-        List fks = new ArrayList(2);
-        Iterator it = objEntity.getAttributes().iterator();
-        while (it.hasNext()) {
-            ObjAttribute property = (ObjAttribute) it.next();
+    public Collection<DbAttribute> getMeaningfulFKs(ObjEntity objEntity) {
+        List<DbAttribute> fks = new ArrayList<DbAttribute>(2);
+
+        for (ObjAttribute property : objEntity.getAttributes()) {
             DbAttribute column = property.getDbAttribute();
 
             // check if adding it makes sense at all
@@ -185,14 +172,12 @@ public class EntityMergeSupport {
      * Returns a list of attributes that exist in the DbEntity, but are missing from the
      * ObjEntity.
      */
-    protected List getAttributesToAdd(ObjEntity objEntity) {
-        List missing = new ArrayList();
-        Iterator it = objEntity.getDbEntity().getAttributes().iterator();
-        Collection rels = objEntity.getDbEntity().getRelationships();
-        Collection incomingRels = getIncomingRelationships(objEntity.getDbEntity());
+    protected List<DbAttribute> getAttributesToAdd(ObjEntity objEntity) {
+        List<DbAttribute> missing = new ArrayList<DbAttribute>();
+        Collection<DbRelationship> rels = objEntity.getDbEntity().getRelationships();
+        Collection<DbRelationship> incomingRels = getIncomingRelationships(objEntity.getDbEntity());
 
-        while (it.hasNext()) {
-            DbAttribute dba = (DbAttribute) it.next();
+        for (DbAttribute dba : objEntity.getDbEntity().getAttributes()) {
             // already there
             if (objEntity.getAttributeForDbAttribute(dba) != null) {
                 continue;
@@ -205,12 +190,10 @@ public class EntityMergeSupport {
 
             // check FK's
             boolean isFK = false;
-            Iterator rit = rels.iterator();
+            Iterator<DbRelationship> rit = rels.iterator();
             while (!isFK && rit.hasNext()) {
-                DbRelationship rel = (DbRelationship) rit.next();
-                Iterator jit = rel.getJoins().iterator();
-                while (jit.hasNext()) {
-                    DbJoin join = (DbJoin) jit.next();
+                DbRelationship rel = rit.next();
+                for (DbJoin join : rel.getJoins()) {
                     if (join.getSource() == dba) {
                         isFK = true;
                         break;
@@ -225,10 +208,8 @@ public class EntityMergeSupport {
             // check incoming relationships
             rit = incomingRels.iterator();
             while (!isFK && rit.hasNext()) {
-                DbRelationship rel = (DbRelationship) rit.next();
-                Iterator jit = rel.getJoins().iterator();
-                while (jit.hasNext()) {
-                    DbJoin join = (DbJoin) jit.next();
+                DbRelationship rel = rit.next();
+                for (DbJoin join : rel.getJoins()) {
                     if (join.getTarget() == dba) {
                         isFK = true;
                         break;
@@ -246,17 +227,12 @@ public class EntityMergeSupport {
         return missing;
     }
     
-    private Collection getIncomingRelationships(DbEntity entity) {
+    private Collection<DbRelationship> getIncomingRelationships(DbEntity entity) {
+        Collection<DbRelationship> incoming = new ArrayList<DbRelationship>();
         
-        Collection incoming = new ArrayList();
-        Iterator entities = entity.getDataMap().getDbEntities().iterator();
-        while(entities.hasNext()) {
-            DbEntity nextEntity = (DbEntity) entities.next();
-            
-            Iterator relationships = nextEntity.getRelationships().iterator();
-            while(relationships.hasNext()) {
-                DbRelationship relationship = (DbRelationship) relationships.next();
-                if(entity == relationship.getTargetEntity()) {
+        for (DbEntity nextEntity : entity.getDataMap().getDbEntities()) {
+            for (DbRelationship relationship : nextEntity.getRelationships()) {
+                if (entity == relationship.getTargetEntity()) {
                     incoming.add(relationship);
                 }
             }
@@ -265,11 +241,9 @@ public class EntityMergeSupport {
         return incoming;
     }
 
-    protected List getRelationshipsToAdd(ObjEntity objEntity) {
-        List missing = new ArrayList();
-        Iterator it = objEntity.getDbEntity().getRelationships().iterator();
-        while (it.hasNext()) {
-            DbRelationship dbrel = (DbRelationship) it.next();
+    protected List<DbRelationship> getRelationshipsToAdd(ObjEntity objEntity) {
+        List<DbRelationship> missing = new ArrayList<DbRelationship>();
+        for (DbRelationship dbrel : objEntity.getDbEntity().getRelationships()) {
             // check if adding it makes sense at all
             if (dbrel.getName() == null) {
                 continue;

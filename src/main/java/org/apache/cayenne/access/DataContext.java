@@ -943,16 +943,14 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
-    public void deleteObjects(Collection objects) {
+    public void deleteObjects(Collection<Persistent> objects) {
         if (objects.isEmpty()) {
             return;
         }
 
         // clone object list... this maybe a relationship collection with nullify delete
         // rule, so modifying
-        Iterator it = new ArrayList(objects).iterator();
-        while (it.hasNext()) {
-            Persistent object = (Persistent) it.next();
+        for (Persistent object : new ArrayList<Persistent>(objects)) {
             deleteObject(object);
         }
     }
