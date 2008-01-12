@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.project.validator;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
@@ -124,9 +122,7 @@ public class ObjEntityValidator extends TreeNodeValidator {
         }
 
         // check for duplicate names in the parent context
-        Iterator it = map.getObjEntities().iterator();
-        while (it.hasNext()) {
-            ObjEntity otherEnt = (ObjEntity) it.next();
+        for (ObjEntity otherEnt : map.getObjEntities()) {
             if (otherEnt == entity) {
                 continue;
             }
@@ -138,11 +134,9 @@ public class ObjEntityValidator extends TreeNodeValidator {
         }
 
         // check for dupliucates in other DataMaps
-        DataDomain domain = (DataDomain) path.firstInstanceOf(DataDomain.class);
+        DataDomain domain = path.firstInstanceOf(DataDomain.class);
         if (domain != null) {
-            Iterator maps = domain.getDataMaps().iterator();
-            while (maps.hasNext()) {
-                DataMap nextMap = (DataMap) maps.next();
+            for (DataMap nextMap : domain.getDataMaps()) {
                 if (nextMap == map) {
                     continue;
                 }

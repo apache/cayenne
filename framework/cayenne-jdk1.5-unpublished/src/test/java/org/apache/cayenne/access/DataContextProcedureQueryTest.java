@@ -92,7 +92,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertEquals(1, artists.size());
 
         Artist a = (Artist) artists.get(0);
-        Painting p = (Painting) a.getPaintingArray().get(0);
+        Painting p = a.getPaintingArray().get(0);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -128,7 +128,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertEquals(1, artists.size());
 
         Artist a = (Artist) artists.get(0);
-        Painting p = (Painting) a.getPaintingArray().get(0);
+        Painting p = a.getPaintingArray().get(0);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -153,7 +153,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
                 Artist.class,
                 uppercaseConverter(artistRow),
                 false);
-        Painting p = (Painting) a.getPaintingArray().get(0);
+        Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
         ctxt.invalidateObjects(Collections.singletonList(p));
@@ -182,7 +182,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
                 Artist.class,
                 uppercaseConverter(artistRow),
                 false);
-        Painting p = (Painting) a.getPaintingArray().get(0);
+        Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
         ctxt.invalidateObjects(Collections.singletonList(p));
@@ -213,7 +213,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
                 Artist.class,
                 uppercaseConverter(artistRow),
                 false);
-        Painting p = (Painting) a.getPaintingArray().get(0);
+        Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
         ctxt.invalidateObjects(Collections.singletonList(p));
@@ -263,7 +263,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertNotNull("Null result from StoredProcedure.", artists);
         assertEquals(1, artists.size());
         Artist a = (Artist) artists.get(0);
-        Painting p = (Painting) a.getPaintingArray().get(0);
+        Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
         ctxt.invalidateObjects(Collections.singletonList(p));

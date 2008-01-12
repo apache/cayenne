@@ -96,7 +96,7 @@ public class CDOOne2ManyTest extends CayenneDOTestBase {
         // test database data
         Artist a2 = fetchArtist();
         assertEquals(1, a2.getPaintingArray().size());
-        assertEquals(paintingName, ((Painting) a2.getPaintingArray().get(0))
+        assertEquals(paintingName, (a2.getPaintingArray().get(0))
                 .getPaintingTitle());
     }
 

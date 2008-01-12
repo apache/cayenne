@@ -146,7 +146,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
 
         Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 33001);
 
-        ArtGroup group = (ArtGroup) a1.getGroupArray().get(0);
+        ArtGroup group = a1.getGroupArray().get(0);
         a1.removeFromGroupArray(group);
 
         List groupList = a1.getGroupArray();
@@ -168,7 +168,7 @@ public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
         createTestData("testRemoveFlattenedRelationshipAndRootRecord");
         Artist a1 = DataObjectUtils.objectForPK(context, Artist.class, 33001);
 
-        ArtGroup group = (ArtGroup) a1.getGroupArray().get(0);
+        ArtGroup group = a1.getGroupArray().get(0);
         a1.removeFromGroupArray(group); // Cause the delete of the link record
 
         context.deleteObject(a1); // Cause the deletion of the artist

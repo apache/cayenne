@@ -131,7 +131,7 @@ class DataRowUtils {
             final Persistent object,
             final DataRow snapshot) {
 
-        final ObjectDiff diff = (ObjectDiff) context
+        final ObjectDiff diff = context
                 .getObjectStore()
                 .getChangesByObjectId()
                 .get(object.getObjectId());
