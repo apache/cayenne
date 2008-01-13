@@ -57,6 +57,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
     private static final String _SEQUENCE_PREFIX = "pk_";
 
+    @Override
     public void createAutoPk(DataNode node, List dbEntities) throws Exception {
         List sequences = getExistingSequences(node);
 
@@ -70,6 +71,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
         }
     }
 
+    @Override
     public List createAutoPkStatements(List dbEntities) {
         List list = new ArrayList();
         Iterator it = dbEntities.iterator();
@@ -81,6 +83,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
         return list;
     }
 
+    @Override
     public void dropAutoPk(DataNode node, List dbEntities) throws Exception {
         List sequences = getExistingSequences(node);
 
@@ -94,6 +97,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
         }
     }
 
+    @Override
     public List dropAutoPkStatements(List dbEntities) {
         List list = new ArrayList();
         Iterator it = dbEntities.iterator();
@@ -134,6 +138,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      *   SELECT pk_table_name.nextval FROM DUAL
      * </pre>
      */
+    @Override
     protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
 
         DbKeyGenerator pkGenerator = ent.getPrimaryKeyGenerator();

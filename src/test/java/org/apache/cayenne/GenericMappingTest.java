@@ -32,10 +32,12 @@ import org.apache.cayenne.unit.CayenneResources;
 
 public class GenericMappingTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack("GenericStack");
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();

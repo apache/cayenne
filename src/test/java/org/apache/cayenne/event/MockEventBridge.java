@@ -38,12 +38,15 @@ public class MockEventBridge extends EventBridge {
         this.properties = properties;
     }
 
+    @Override
     protected void startupExternal() throws Exception {
     }
 
+    @Override
     protected void shutdownExternal() throws Exception {
     }
 
+    @Override
     protected void sendExternalEvent(CayenneEvent localEvent) throws Exception {
     }
 }

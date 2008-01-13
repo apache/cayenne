@@ -59,6 +59,7 @@ public abstract class EJBQLMultiColumnOperand {
             this.map = pathMap;
         }
 
+        @Override
         void appendValue(Object key) {
 
             Object column = map.get(key);
@@ -78,6 +79,7 @@ public abstract class EJBQLMultiColumnOperand {
             this.map = pathMap;
         }
 
+        @Override
         void appendValue(Object key) {
             Object value = map.get(key);
             if (value == null) {

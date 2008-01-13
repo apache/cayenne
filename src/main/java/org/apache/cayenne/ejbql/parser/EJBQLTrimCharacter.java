@@ -30,6 +30,7 @@ public class EJBQLTrimCharacter extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitTrimCharacter(this);
     }

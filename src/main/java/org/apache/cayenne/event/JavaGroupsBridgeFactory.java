@@ -123,27 +123,34 @@ public class JavaGroupsBridgeFactory implements EventBridgeFactory {
             super(Collections.EMPTY_SET, null);
         }
 
+        @Override
         public boolean receivesExternalEvents() {
             return false;
         }
 
+        @Override
         public boolean receivesLocalEvents() {
             return false;
         }
 
+        @Override
         protected void startupExternal() {
         }
 
+        @Override
         protected void shutdownExternal() {
         }
 
+        @Override
         protected void sendExternalEvent(CayenneEvent localEvent) {
         }
 
+        @Override
         public void startup(EventManager eventManager, int mode, Object eventsSource) {
             this.eventManager = eventManager;
         }
 
+        @Override
         public void shutdown() {
         }
     }

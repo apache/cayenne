@@ -187,6 +187,7 @@ public class DataContextExtrasTest extends CayenneCase {
         // to emulate an exception
         PkGenerator newGenerator = new JdbcPkGenerator() {
 
+            @Override
             public Object generatePkForDbEntity(DataNode node, DbEntity ent)
                     throws Exception {
                 throw new CayenneRuntimeException("Synthetic error....");

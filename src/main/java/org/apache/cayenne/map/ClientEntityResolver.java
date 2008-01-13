@@ -32,6 +32,7 @@ class ClientEntityResolver extends EntityResolver {
     ClientEntityResolver() {
     }
 
+    @Override
     public EntityResolver getClientEntityResolver() {
         return this;
     }

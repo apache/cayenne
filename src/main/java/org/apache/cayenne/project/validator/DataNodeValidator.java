@@ -39,6 +39,7 @@ public class DataNodeValidator extends TreeNodeValidator {
         super();
     }
 
+    @Override
     public void validateObject(ProjectPath path, Validator validator) {
         DataNode node = (DataNode) path.getObject();
         validateName(node, path, validator);

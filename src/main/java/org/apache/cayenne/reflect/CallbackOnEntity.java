@@ -41,6 +41,7 @@ class CallbackOnEntity extends AbstractCallback {
         this.callbackMethod = findMethod(objectClass, methodName);
     }
 
+    @Override
     public void performCallback(Object entity) {
         try {
             callbackMethod.invoke(entity, (Object[]) null);

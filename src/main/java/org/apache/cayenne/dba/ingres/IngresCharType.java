@@ -34,6 +34,7 @@ class IngresCharType extends CharType {
         super(true, false);
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,

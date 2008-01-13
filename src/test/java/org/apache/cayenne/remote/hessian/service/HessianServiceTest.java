@@ -42,10 +42,12 @@ public class HessianServiceTest extends TestCase {
 
         HessianService handler = new HessianService() {
 
+            @Override
             protected void initCayenneStack(Map properties) {
                 this.domain = new DataDomain("test");
             }
             
+            @Override
             protected HttpSession getSession(boolean create) {
                 return new MockHttpSession();
             }

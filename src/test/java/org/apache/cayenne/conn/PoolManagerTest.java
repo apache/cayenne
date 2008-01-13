@@ -30,6 +30,7 @@ public class PoolManagerTest extends CayenneCase {
         String url = getConnectionInfo().getDataSourceUrl();
 
         PoolManager pm = new PoolManager(driverName, url, 0, 3, "", "") {
+            @Override
             protected void startMaintenanceThread() {
             }
         };
@@ -39,6 +40,7 @@ public class PoolManagerTest extends CayenneCase {
 
     public void testPassword() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "", "b") {
+            @Override
             protected void startMaintenanceThread() {
             }
         };
@@ -47,6 +49,7 @@ public class PoolManagerTest extends CayenneCase {
 
     public void testUserName() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "a", "") {
+            @Override
             protected void startMaintenanceThread() {
             }
         };
@@ -55,6 +58,7 @@ public class PoolManagerTest extends CayenneCase {
 
     public void testMinConnections() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "", "") {
+            @Override
             protected void startMaintenanceThread() {
             }
         };
@@ -63,6 +67,7 @@ public class PoolManagerTest extends CayenneCase {
 
     public void testMaxConnections() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "", "") {
+            @Override
             protected void startMaintenanceThread() {
             }
         };

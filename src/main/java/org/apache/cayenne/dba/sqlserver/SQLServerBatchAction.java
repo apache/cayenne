@@ -45,6 +45,7 @@ public class SQLServerBatchAction extends BatchAction {
         super(batchQuery, adapter, entityResolver);
     }
 
+    @Override
     public void performAction(Connection connection, OperationObserver observer)
             throws SQLException, Exception {
 

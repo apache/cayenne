@@ -28,6 +28,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  */
 class MySQLEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
 
+    @Override
     public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
         return new MySQLEJBQLConditionTranslator(context);
     }

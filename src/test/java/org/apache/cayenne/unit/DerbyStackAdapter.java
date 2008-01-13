@@ -36,14 +36,17 @@ public class DerbyStackAdapter extends AccessStackAdapter {
         super(adapter);
     }
 
+    @Override
     public boolean supportsBinaryPK() {
         return false;
     }
 
+    @Override
     public boolean supportsCaseInsensitiveOrder() {
         return false;
     }
     
+    @Override
     public boolean supportsLobs() {
         return true;
     }

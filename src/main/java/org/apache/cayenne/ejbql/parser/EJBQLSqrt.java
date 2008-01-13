@@ -30,10 +30,12 @@ public class EJBQLSqrt extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitSqrt(this, -1);
     }
 
+    @Override
     protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
         return super.visitChild(visitor, childIndex)
                 && visitor.visitSqrt(this, childIndex);

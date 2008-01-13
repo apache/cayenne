@@ -129,6 +129,7 @@ public class OptimisticLockException extends CayenneRuntimeException {
     /**
      * Returns descriptive message for this exception.
      */
+    @Override
     public String getMessage() {
         StringBuffer buffer = new StringBuffer(super.getMessage());
 

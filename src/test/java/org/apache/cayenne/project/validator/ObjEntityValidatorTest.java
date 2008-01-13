@@ -34,6 +34,7 @@ public class ObjEntityValidatorTest extends ValidatorTestBase {
     protected DataDomain domain;
     protected DataMap map;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         domain = new DataDomain("d1");

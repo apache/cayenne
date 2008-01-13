@@ -45,6 +45,7 @@ public class DataContextCommitTest extends CayenneCase {
 
         MockGraphChangeHandler diffChecker = new MockGraphChangeHandler() {
 
+            @Override
             public void nodeIdChanged(Object nodeId, Object newId) {
                 super.nodeIdChanged(nodeId, newId);
 
@@ -70,6 +71,7 @@ public class DataContextCommitTest extends CayenneCase {
 
         MockGraphChangeHandler diffChecker2 = new MockGraphChangeHandler() {
 
+            @Override
             public void nodeIdChanged(Object nodeId, Object newId) {
                 super.nodeIdChanged(nodeId, newId);
 

@@ -154,6 +154,7 @@ public class PersistentObjectSet extends RelationshipFault implements Set, Value
         return resolvedObjectSet().containsAll(c);
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) {
             return false;
@@ -166,6 +167,7 @@ public class PersistentObjectSet extends RelationshipFault implements Set, Value
         return resolvedObjectSet().equals(((PersistentObjectSet) o).resolvedObjectSet());
     }
 
+    @Override
     public int hashCode() {
         return 53 + resolvedObjectSet().hashCode();
     }
@@ -355,6 +357,7 @@ public class PersistentObjectSet extends RelationshipFault implements Set, Value
         }
     }
 
+    @Override
     public String toString() {
         return (objectSet != null) ? objectSet.toString() : "[<unresolved>]";
     }

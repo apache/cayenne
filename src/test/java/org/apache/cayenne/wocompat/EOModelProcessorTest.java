@@ -37,6 +37,7 @@ public class EOModelProcessorTest extends BasicCase {
 
     protected EOModelProcessor processor;
 
+    @Override
     public void setUp() throws Exception {
         processor = new EOModelProcessor();
     }
@@ -174,24 +175,31 @@ public class EOModelProcessorTest extends BasicCase {
             super(System.out);
         }
 
+        @Override
         public void close() {
         }
 
+        @Override
         public void flush() {
         }
 
+        @Override
         public void write(char[] arg0, int arg1, int arg2) {
         }
 
+        @Override
         public void write(char[] arg0) {
         }
 
+        @Override
         public void write(int arg0) {
         }
 
+        @Override
         public void write(String arg0, int arg1, int arg2) {
         }
 
+        @Override
         public void write(String arg0) {
         }
     }

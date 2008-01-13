@@ -42,6 +42,7 @@ import org.apache.cayenne.util.Util;
  */
 public class SelectQueryValidator extends TreeNodeValidator {
 
+    @Override
     public void validateObject(ProjectPath treeNodePath, Validator validator) {
         SelectQuery query = (SelectQuery) treeNodePath.getObject();
 
@@ -225,6 +226,7 @@ public class SelectQueryValidator extends TreeNodeValidator {
             this.rootEntity = rootEntity;
         }
 
+        @Override
         public void startNode(Expression node, Expression parentNode) {
             // check if path nodes are compatibe with root entity
             if (node.getType() == Expression.OBJ_PATH

@@ -34,27 +34,33 @@ public class FrontBaseStackAdapter extends AccessStackAdapter {
         super(adapter);
     }
 
+    @Override
     public boolean supportsLobs() {
         return true;
     }
 
+    @Override
     public boolean supportsLobInsertsAsStrings() {
         return false;
     }
     
+    @Override
     public boolean supportsEqualNullSyntax() {
         return false;
     }
 
+    @Override
     public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
             throws Exception {
         // avoid dropping constraints...
     }
 
+    @Override
     public boolean supportsBatchPK() {
         return false;
     }
 
+    @Override
     public boolean supportsHaving() {
         // FrontBase DOES support HAVING, however it doesn't support aggegate expressions
         // in HAVING, and requires using column aliases instead. As HAVING is used for old
@@ -63,6 +69,7 @@ public class FrontBaseStackAdapter extends AccessStackAdapter {
         return false;
     }
 
+    @Override
     public boolean supportsCaseInsensitiveOrder() {
         // TODO, Andrus 11/8/2005: FrontBase does support UPPER() in ordering clause,
         // however it does not

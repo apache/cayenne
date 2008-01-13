@@ -30,14 +30,17 @@ public class EJBQLMin extends EJBQLAggregateColumn {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitMin(this);
     }
     
+    @Override
     public String getFunction() {
         return "MIN";
     }
 
+    @Override
     public String getJavaType(String pathType) {
         return pathType;
     }

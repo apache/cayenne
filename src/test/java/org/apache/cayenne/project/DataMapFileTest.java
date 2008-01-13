@@ -35,6 +35,7 @@ public class DataMapFileTest extends CayenneCase {
     /**
      * @see junit.framework.TestCase#setUp()
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         pr = new TstProject(new File("xyz"));

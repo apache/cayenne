@@ -38,6 +38,7 @@ class OracleSelectAction extends SelectAction {
         super(query, adapter, entityResolver);
     }
 
+    @Override
     protected SelectTranslator createTranslator(Connection connection) {
         SelectTranslator translator = new OracleSelectTranslator();
         translator.setQuery(query);

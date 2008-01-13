@@ -30,6 +30,7 @@ public class EJBQLIntegerLiteral extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitIntegerLiteral(this);
     }

@@ -34,6 +34,7 @@ public class HSQLDBNoSchemaAdapter extends HSQLDBAdapter {
      * 
      * @since 1.2
      */
+    @Override
     protected String getTableName(DbEntity entity)
     {
         return  entity.getName();
@@ -44,6 +45,7 @@ public class HSQLDBNoSchemaAdapter extends HSQLDBAdapter {
      * 
      * @since 1.2
      */
+    @Override
     protected String getSchemaName(DbEntity entity) {
         return "";
     }
@@ -53,6 +55,7 @@ public class HSQLDBNoSchemaAdapter extends HSQLDBAdapter {
      * 
      * @since 1.2
      */
+    @Override
     public String dropTable(DbEntity ent) {
         // hsqldb doesn't support schema namespaces, so remove if found
         return "DROP TABLE " + getTableName(ent);
@@ -63,6 +66,7 @@ public class HSQLDBNoSchemaAdapter extends HSQLDBAdapter {
      * 
      * @since 1.2
      */
+    @Override
     public String createTable(DbEntity ent) {
         String sql = super.createTable(ent);
 

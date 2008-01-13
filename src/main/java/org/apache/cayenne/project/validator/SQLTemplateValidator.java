@@ -35,6 +35,7 @@ import org.apache.cayenne.util.Util;
  */
 public class SQLTemplateValidator extends TreeNodeValidator {
 
+    @Override
     public void validateObject(ProjectPath treeNodePath, Validator validator) {
         SQLTemplate query = (SQLTemplate) treeNodePath.getObject();
 

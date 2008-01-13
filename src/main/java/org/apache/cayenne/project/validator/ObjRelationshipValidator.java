@@ -43,6 +43,7 @@ public class ObjRelationshipValidator extends TreeNodeValidator {
         super();
     }
 
+    @Override
     public void validateObject(ProjectPath path, Validator validator) {
         ObjRelationship rel = (ObjRelationship) path.getObject();
 

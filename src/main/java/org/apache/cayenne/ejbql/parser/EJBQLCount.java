@@ -30,14 +30,17 @@ public class EJBQLCount extends EJBQLAggregateColumn {
         super(id);
     }
 
+    @Override
     public String getFunction() {
         return "COUNT";
     }
 
+    @Override
     public String getJavaType(String pathType) {
         return "java.lang.Long";
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitCount(this);
     }

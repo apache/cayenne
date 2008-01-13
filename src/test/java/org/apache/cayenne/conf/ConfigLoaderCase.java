@@ -82,6 +82,7 @@ public class ConfigLoaderCase {
         this.failedMapRefs = failedMapRefs;
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append("\n===== DomainHelperCase ====\n").append(configInfo);

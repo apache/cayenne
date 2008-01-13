@@ -53,6 +53,7 @@ public class ProcedureEvent extends MapEvent {
         this.procedure = procedure;
     }
 
+    @Override
     public String getNewName() {
         return (procedure != null) ? procedure.getName() : null;
     }

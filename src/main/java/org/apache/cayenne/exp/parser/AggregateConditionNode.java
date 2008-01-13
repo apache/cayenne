@@ -35,10 +35,12 @@ public abstract class AggregateConditionNode extends SimpleNode {
         super(i);
     }
 
+    @Override
     protected boolean pruneNodeForPrunedChild(Object prunedChild) {
         return false;
     }
 
+    @Override
     protected Object transformExpression(Transformer transformer) {
         Object transformed = super.transformExpression(transformer);
 
@@ -60,6 +62,7 @@ public abstract class AggregateConditionNode extends SimpleNode {
         }
     }
 
+    @Override
     public void jjtSetParent(Node n) {
         // this is a check that we can't handle properly
         // in the grammar... do it here...
@@ -76,6 +79,7 @@ public abstract class AggregateConditionNode extends SimpleNode {
         super.jjtSetParent(n);
     }
 
+    @Override
     public void jjtAddChild(Node n, int i) {
         // this is a check that we can't handle properly
         // in the grammar... do it here...

@@ -36,6 +36,7 @@ public class EntityResolverClassDescriptorTest extends CayenneCase {
     /**
      * Configures multi-tier stack as we want to access descriptors in different tiers...
      */
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()

@@ -30,6 +30,7 @@ public class EJBQLSubselect extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitSubselect(this);
     }

@@ -34,15 +34,18 @@ import org.apache.cayenne.access.types.DefaultType;
  */
 class SQLiteObjectType extends AbstractType {
 
+    @Override
     public String getClassName() {
         return Object.class.getName();
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return rs.getObject(index);
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getObject(index);
     }

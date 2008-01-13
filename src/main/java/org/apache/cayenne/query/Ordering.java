@@ -283,6 +283,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
         encoder.println("</ordering>");
     }
 
+    @Override
     public String toString() {
         StringWriter buffer = new StringWriter();
         PrintWriter pw = new PrintWriter(buffer);

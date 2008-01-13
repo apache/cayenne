@@ -62,6 +62,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
     protected abstract void appendMultiColumnPath(EJBQLMultiColumnOperand operand);
 
+    @Override
     public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
 
         if (finishedChildIndex > 0) {
@@ -77,6 +78,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitIdentifier(EJBQLExpression expression) {
         ClassDescriptor descriptor = context.getEntityDescriptor(expression.getText());
         if (descriptor == null) {
@@ -91,6 +93,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitIdentificationVariable(EJBQLExpression expression) {
 
         // TODO: andrus 6/11/2007 - if the path ends with relationship, the last join will

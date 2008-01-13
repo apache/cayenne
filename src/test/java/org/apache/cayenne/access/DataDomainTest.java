@@ -314,6 +314,7 @@ public class DataDomainTest extends CayenneCase {
 
         DataNode n1 = new DataNode("N1") {
 
+            @Override
             public synchronized void shutdown() {
                 nodeShutdown[0] = true;
             }
@@ -321,6 +322,7 @@ public class DataDomainTest extends CayenneCase {
 
         DataNode n2 = new DataNode("N2") {
 
+            @Override
             public synchronized void shutdown() {
                 nodeShutdown[1] = true;
             }
@@ -345,6 +347,7 @@ public class DataDomainTest extends CayenneCase {
                 Collections.EMPTY_MAP,
                 new EventManager()) {
 
+            @Override
             public void shutdown() {
                 cacheShutdown[0] = true;
             }

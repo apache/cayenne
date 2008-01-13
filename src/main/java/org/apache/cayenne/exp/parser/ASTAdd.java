@@ -61,6 +61,7 @@ public class ASTAdd extends SimpleNode {
         connectChildren();
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
         if (len == 0) {
@@ -84,18 +85,22 @@ public class ASTAdd extends SimpleNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTAdd(id);
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         return "+";
     }
 
+    @Override
     public int getType() {
         return Expression.ADD;
     }
 
+    @Override
     public void jjtClose() {
         super.jjtClose();
         flattenTree();

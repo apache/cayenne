@@ -35,6 +35,7 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class MySQLPkGenerator extends JdbcPkGenerator {
 
+    @Override
     protected String dropAutoPkString() {
         return "DROP TABLE IF EXISTS AUTO_PK_SUPPORT";
     }
@@ -43,6 +44,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
      * Overrides superclass's implementation to perform locking of the primary key lookup
      * table.
      */
+    @Override
     protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
 
         // must work directly with JDBC connection, since we
@@ -133,6 +135,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
         return parent;
     }
 
+    @Override
     protected String pkTableCreateString() {
         StringBuffer buf = new StringBuffer();
         buf.append("CREATE TABLE AUTO_PK_SUPPORT (").append(

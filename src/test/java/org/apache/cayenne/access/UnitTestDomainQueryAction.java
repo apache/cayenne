@@ -44,10 +44,12 @@ public class UnitTestDomainQueryAction extends DataDomainQueryAction {
     /**
      * Exposing super as a public method.
      */
+    @Override
     public QueryResponse execute() {
         return super.execute();
     }
 
+    @Override
     void runQueryInTransaction() {
         checkQueryAllowed(Collections.singleton(query));
         super.runQueryInTransaction();

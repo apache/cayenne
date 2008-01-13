@@ -27,6 +27,7 @@ public class QueryAssemblerTest extends CayenneCase {
 
     protected TstQueryAssembler qa;
 
+    @Override
     protected void setUp() throws Exception {
         qa = new TstQueryAssembler(getNode(), new SelectQuery());
     }

@@ -29,6 +29,7 @@ public class BasePropertyTest extends TestCase {
                 new MockClassDescriptor(),
                 new MockAccessor() {
 
+                    @Override
                     public String getName() {
                         return "xyz";
                     }

@@ -176,6 +176,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return resolvedObjectList().containsAll(c);
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) {
             return false;
@@ -189,6 +190,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
                 ((PersistentObjectList) o).resolvedObjectList());
     }
 
+    @Override
     public int hashCode() {
         return 37 + resolvedObjectList().hashCode();
     }
@@ -419,6 +421,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         }
     }
 
+    @Override
     public String toString() {
         return (objectList != null) ? objectList.toString() : "[<unresolved>]";
     }

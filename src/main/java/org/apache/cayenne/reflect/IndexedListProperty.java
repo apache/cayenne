@@ -45,6 +45,7 @@ public class IndexedListProperty extends ListProperty {
     /**
      * Creates a List indexed on a specified property.
      */
+    @Override
     protected ValueHolder createCollectionValueHolder(Object object)
             throws PropertyException {
         List<?> unordered = (List<?>) super.createCollectionValueHolder(object);

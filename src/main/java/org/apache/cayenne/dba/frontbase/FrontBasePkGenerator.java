@@ -45,10 +45,12 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
     /**
      * Retruns zero as PK caching is not supported by FrontBaseAdapter.
      */
+    @Override
     public int getPkCacheSize() {
         return 0;
     }
 
+    @Override
     public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
         // For each entity (re)set the unique counter
         for (DbEntity entity : dbEntities) {
@@ -56,6 +58,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
         }
     }
 
+    @Override
     public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
         List<String> list = new ArrayList<String>();
         for (DbEntity entity : dbEntities) {
@@ -64,37 +67,45 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
         return list;
     }
 
+    @Override
     public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
     }
 
+    @Override
     protected String pkTableCreateString() {
         return "";
     }
 
+    @Override
     protected String pkDeleteString(List<DbEntity> dbEntities) {
         return "-- The 'Drop Primary Key Support' option is unavailable";
     }
 
+    @Override
     protected String pkCreateString(String entName) {
         StringBuffer buf = new StringBuffer();
         buf.append("SET UNIQUE = 1000000 FOR \"").append(entName).append("\"");
         return buf.toString();
     }
 
+    @Override
     protected String pkSelectString(String entName) {
         StringBuffer buf = new StringBuffer();
         buf.append("SELECT UNIQUE FROM \"").append(entName).append("\"");
         return buf.toString();
     }
 
+    @Override
     protected String pkUpdateString(String entName) {
         return "";
     }
 
+    @Override
     protected String dropAutoPkString() {
         return "";
     }
 
+    @Override
     protected int pkFromDatabase(DataNode node, DbEntity entity) throws Exception {
         String template = "SELECT #result('UNIQUE' 'int') FROM " + entity.getName();
 

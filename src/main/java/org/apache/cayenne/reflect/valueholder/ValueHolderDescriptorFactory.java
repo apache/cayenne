@@ -44,6 +44,7 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
         super(descriptorMap);
     }
 
+    @Override
     protected void createToManyCollectionProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -59,6 +60,7 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
                 reverseName));
     }
 
+    @Override
     protected void createToManyListProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -74,6 +76,7 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
                 reverseName));
     }
 
+    @Override
     protected void createToManyMapProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -93,6 +96,7 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
         descriptor.addDeclaredProperty(property);
     }
 
+    @Override
     protected void createToManySetProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -108,6 +112,7 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
                 reverseName));
     }
 
+    @Override
     protected void createToOneProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {

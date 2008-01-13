@@ -74,6 +74,7 @@ public class HessianService extends HttpRemoteService implements Service {
                 .getEntityResolver());
     }
 
+    @Override
     protected HttpSession getSession(boolean create) {
         HttpServletRequest request = (HttpServletRequest) ServiceContext
                 .getContextRequest();

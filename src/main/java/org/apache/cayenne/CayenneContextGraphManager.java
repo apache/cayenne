@@ -100,6 +100,7 @@ final class CayenneContextGraphManager extends GraphMap {
         return stateLog.dirtyNodes(state);
     }
 
+    @Override
     public synchronized Object unregisterNode(Object nodeId) {
         Object node = super.unregisterNode(nodeId);
 
@@ -245,21 +246,25 @@ final class CayenneContextGraphManager extends GraphMap {
     // ****** GraphChangeHandler API ******
     // =====================================================
 
+    @Override
     public synchronized void nodeIdChanged(Object nodeId, Object newId) {
         stateLog.nodeIdChanged(nodeId, newId);
         processChange(new NodeIdChangeOperation(nodeId, newId));
     }
 
+    @Override
     public synchronized void nodeCreated(Object nodeId) {
         stateLog.nodeCreated(nodeId);
         processChange(new NodeCreateOperation(nodeId));
     }
 
+    @Override
     public synchronized void nodeRemoved(Object nodeId) {
         stateLog.nodeRemoved(nodeId);
         processChange(new NodeDeleteOperation(nodeId));
     }
 
+    @Override
     public synchronized void nodePropertyChanged(
             Object nodeId,
             String property,
@@ -274,11 +279,13 @@ final class CayenneContextGraphManager extends GraphMap {
                 newValue));
     }
 
+    @Override
     public synchronized void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
         stateLog.arcCreated(nodeId, targetNodeId, arcId);
         processChange(new ArcCreateOperation(nodeId, targetNodeId, arcId));
     }
 
+    @Override
     public synchronized void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
         stateLog.arcDeleted(nodeId, targetNodeId, arcId);
         processChange(new ArcDeleteOperation(nodeId, targetNodeId, arcId));

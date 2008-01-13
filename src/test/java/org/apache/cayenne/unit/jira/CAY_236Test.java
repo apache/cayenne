@@ -100,30 +100,37 @@ public class CAY_236Test extends BasicCase {
             this.file = file;
         }
 
+        @Override
         public String getLocationSuffix() {
             return DataMapFile.LOCATION_SUFFIX;
         }
 
+        @Override
         public boolean canHandle(Object obj) {
             return false;
         }
 
+        @Override
         public Object getObject() {
             return map;
         }
 
+        @Override
         public String getObjectName() {
             return location;
         }
 
+        @Override
         public void save(PrintWriter out) throws Exception {
             map.encodeAsXML(out);
         }
 
+        @Override
         protected File tempFileForFile(File f) throws IOException {
             return file;
         }
 
+        @Override
         public File resolveFile() {
             return file;
         }

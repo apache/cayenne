@@ -38,6 +38,7 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
         super(adapter);
     }
 
+    @Override
     public List getValuesForLOBUpdateParameters(BatchQuery query) {
         int len = query.getDbAttributes().size();
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
@@ -63,6 +64,7 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
         return values;
     }
 
+    @Override
     public String createSqlString(BatchQuery batch) {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) batch;
         String table = batch.getDbEntity().getFullyQualifiedName();

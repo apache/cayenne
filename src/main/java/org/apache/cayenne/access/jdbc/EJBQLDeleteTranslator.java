@@ -35,17 +35,20 @@ public class EJBQLDeleteTranslator extends EJBQLBaseVisitor {
         this.context = context;
     }
 
+    @Override
     public boolean visitDelete(EJBQLExpression expression) {
         context.append("DELETE");
         return true;
     }
 
+    @Override
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
         context.append(" FROM");
         expression.visit(context.getTranslatorFactory().getFromTranslator(context));
         return false;
     }
 
+    @Override
     public boolean visitWhere(EJBQLExpression expression) {
         context.append(" WHERE");
         expression.visit(context.getTranslatorFactory().getConditionTranslator(context));

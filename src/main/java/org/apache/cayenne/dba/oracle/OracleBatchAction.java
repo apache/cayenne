@@ -36,6 +36,7 @@ class OracleBatchAction extends BatchAction {
         super(batchQuery, adapter, entityResolver);
     }
 
+    @Override
     protected BatchQueryBuilder createBuilder() throws CayenneException {
         // intercept super call to configure the builder...
         BatchQueryBuilder builder = super.createBuilder();

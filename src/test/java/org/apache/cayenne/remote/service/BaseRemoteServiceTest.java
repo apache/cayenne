@@ -32,14 +32,17 @@ public class BaseRemoteServiceTest extends TestCase {
 
         BaseRemoteService handler = new BaseRemoteService() {
 
+            @Override
             protected ServerSession createServerSession() {
                 return new ServerSession(new RemoteSession("a"), null);
             }
 
+            @Override
             protected ServerSession createServerSession(String name) {
                 return createServerSession();
             }
 
+            @Override
             protected ServerSession getServerSession() {
                 return createServerSession();
             }
@@ -48,6 +51,7 @@ public class BaseRemoteServiceTest extends TestCase {
         try {
             handler.processMessage(new QueryMessage(null) {
 
+                @Override
                 public Query getQuery() {
                     // serializable exception thrown
                     throw new CayenneRuntimeException();
@@ -63,6 +67,7 @@ public class BaseRemoteServiceTest extends TestCase {
         try {
             handler.processMessage(new QueryMessage(null) {
 
+                @Override
                 public Query getQuery() {
                     // non-serializable exception thrown
                     throw new MockUnserializableException();

@@ -38,6 +38,7 @@ public class DbRelationshipValidator extends TreeNodeValidator {
         super();
     }
 
+    @Override
     public void validateObject(ProjectPath path, Validator validator) {
         DbRelationship rel = (DbRelationship) path.getObject();
         if (rel.getTargetEntity() == null) {

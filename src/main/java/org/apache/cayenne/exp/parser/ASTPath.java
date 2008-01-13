@@ -37,10 +37,12 @@ public abstract class ASTPath extends SimpleNode {
         super(i);
     }
 
+    @Override
     public int getOperandCount() {
         return 1;
     }
 
+    @Override
     public Object getOperand(int index) {
         if (index == 0) {
             return path;
@@ -49,6 +51,7 @@ public abstract class ASTPath extends SimpleNode {
         throw new ArrayIndexOutOfBoundsException(index);
     }
 
+    @Override
     public void setOperand(int index, Object value) {
         if (index != 0) {
             throw new ArrayIndexOutOfBoundsException(index);
@@ -79,6 +82,7 @@ public abstract class ASTPath extends SimpleNode {
         return next;
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         throw new UnsupportedOperationException(
             "No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");

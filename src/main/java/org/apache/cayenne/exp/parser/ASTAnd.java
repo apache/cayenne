@@ -64,6 +64,7 @@ public class ASTAnd extends AggregateConditionNode {
         connectChildren();
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
         if (len == 0) {
@@ -82,19 +83,23 @@ public class ASTAnd extends AggregateConditionNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTAnd(id);
     }
 
+    @Override
     public int getType() {
         return Expression.AND;
     }
 
+    @Override
     public void jjtClose() {
         super.jjtClose();
         flattenTree();
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         return "and";
     }

@@ -67,6 +67,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitIdentifier(EJBQLExpression expression) {
 
         // expression id is always rooted in an ObjEntity, even for DbPath...
@@ -83,6 +84,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitIdentificationVariable(EJBQLExpression expression) {
 
         // TODO: andrus 6/11/2007 - if the path ends with relationship, the last join will

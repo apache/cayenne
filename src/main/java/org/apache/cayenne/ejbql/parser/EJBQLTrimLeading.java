@@ -30,6 +30,7 @@ public class EJBQLTrimLeading extends EJBQLTrimSpecification {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitTrimLeading(this);
     }

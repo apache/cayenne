@@ -86,6 +86,7 @@ public class MockDataNode extends DataNode {
         results.put(query, result);
     }
 
+    @Override
     public void performQueries(Collection queries, OperationObserver resultConsumer) {
         runCount += queries.size();
 
@@ -109,86 +110,107 @@ public class MockDataNode extends DataNode {
         }
     }
 
+    @Override
     public void addDataMap(DataMap map) {
         node.addDataMap(map);
     }
 
+    @Override
     public boolean equals(Object obj) {
         return node.equals(obj);
     }
 
+    @Override
     public DbAdapter getAdapter() {
         return node.getAdapter();
     }
 
+    @Override
     public Collection getDataMaps() {
         return node.getDataMaps();
     }
 
+    @Override
     public DataSource getDataSource() {
         return node.getDataSource();
     }
 
+    @Override
     public String getDataSourceFactory() {
         return node.getDataSourceFactory();
     }
 
+    @Override
     public String getDataSourceLocation() {
         return node.getDataSourceLocation();
     }
 
+    @Override
     public EntityResolver getEntityResolver() {
         return node.getEntityResolver();
     }
 
+    @Override
     public EntitySorter getEntitySorter() {
         return node.getEntitySorter();
     }
 
+    @Override
     public String getName() {
         return node.getName();
     }
 
+    @Override
     public void removeDataMap(String mapName) {
         node.removeDataMap(mapName);
     }
 
+    @Override
     public void setAdapter(DbAdapter adapter) {
         node.setAdapter(adapter);
     }
 
+    @Override
     public void setDataMaps(Collection dataMaps) {
         node.setDataMaps(dataMaps);
     }
 
+    @Override
     public void setDataSource(DataSource dataSource) {
         node.setDataSource(dataSource);
     }
 
+    @Override
     public void setDataSourceFactory(String dataSourceFactory) {
         node.setDataSourceFactory(dataSourceFactory);
     }
 
+    @Override
     public void setDataSourceLocation(String dataSourceLocation) {
         node.setDataSourceLocation(dataSourceLocation);
     }
 
+    @Override
     public void setEntityResolver(EntityResolver entityResolver) {
         node.setEntityResolver(entityResolver);
     }
 
+    @Override
     public void setEntitySorter(EntitySorter entitySorter) {
         node.setEntitySorter(entitySorter);
     }
 
+    @Override
     public void setName(String name) {
         node.setName(name);
     }
 
+    @Override
     public void shutdown() {
         node.shutdown();
     }
 
+    @Override
     public String toString() {
         return node.toString();
     }

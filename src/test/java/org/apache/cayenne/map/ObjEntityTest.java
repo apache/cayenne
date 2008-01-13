@@ -91,6 +91,7 @@ public class ObjEntityTest extends CayenneCase {
 
         ObjRelationship r1 = new ObjRelationship("r1") {
 
+            @Override
             public Entity getTargetEntity() {
                 return target;
             }

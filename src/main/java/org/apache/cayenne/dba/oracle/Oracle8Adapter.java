@@ -36,11 +36,13 @@ public class Oracle8Adapter extends OracleAdapter {
     /**
      * Uses OracleActionBuilder to create the right action.
      */
+    @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new Oracle8ActionBuilder(this, node
                 .getEntityResolver()));
     }
    
+    @Override
     public URL findAdapterResource(String name) {
         
         if("/types.xml".equals(name)) {

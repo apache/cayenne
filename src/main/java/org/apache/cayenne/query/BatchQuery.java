@@ -72,6 +72,7 @@ public abstract class BatchQuery implements Query {
     public QueryMetadata getMetaData(EntityResolver resolver) {
         return new DefaultQueryMetadata() {
 
+            @Override
             public DbEntity getDbEntity() {
                 return dbEntity;
             }

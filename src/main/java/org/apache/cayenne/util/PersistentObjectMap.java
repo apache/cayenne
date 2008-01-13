@@ -177,6 +177,7 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
         return map;
     }
 
+    @Override
     public String toString() {
         return (objectMap != null) ? objectMap.toString() : "{<unresolved>}";
     }

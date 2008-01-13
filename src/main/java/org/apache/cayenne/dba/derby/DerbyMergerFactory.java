@@ -34,6 +34,7 @@ public class DerbyMergerFactory extends MergerFactory {
 
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
+            @Override
             protected void appendPrefix(StringBuffer sqlBuffer) {
                 // http://db.apache.org/derby/manuals/reference/sqlj26.html
                 sqlBuffer.append("ALTER TABLE ");

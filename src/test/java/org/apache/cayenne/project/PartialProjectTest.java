@@ -34,6 +34,7 @@ public class PartialProjectTest extends CayenneCase {
     protected File testProjectFile;
     protected PartialProject project;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

@@ -81,6 +81,7 @@ public abstract class PatternMatchNode extends ConditionNode {
         return pattern;
     }
 
+    @Override
     public void jjtAddChild(Node n, int i) {
         // reset pattern if the node is modified
         if (i == 1) {

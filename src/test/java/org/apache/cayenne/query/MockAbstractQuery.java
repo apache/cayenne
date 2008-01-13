@@ -33,6 +33,7 @@ public class MockAbstractQuery extends AbstractQuery {
         setName(name);
     }
 
+    @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return null;
     }

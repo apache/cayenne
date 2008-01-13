@@ -57,6 +57,7 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
         return targetDescriptor;
     }
 
+    @Override
     public String getName() {
         return relationship.getName();
     }
@@ -93,6 +94,7 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
         }
     }
 
+    @Override
     public void injectValueHolder(Object object) throws PropertyException {
         if (readPropertyDirectly(object) == null) {
             writePropertyDirectly(object, null, fault.resolveFault(
@@ -105,6 +107,7 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
         return readPropertyDirectly(source) instanceof Fault;
     }
 
+    @Override
     public boolean visit(PropertyVisitor visitor) {
         return visitor.visitToMany(this);
     }

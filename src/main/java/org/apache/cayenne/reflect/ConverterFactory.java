@@ -39,6 +39,7 @@ class ConverterFactory {
 
     static final Converter noopConverter = new Converter() {
 
+        @Override
         Object convert(Object object, Class<?> type) {
             return object;
         }
@@ -48,6 +49,7 @@ class ConverterFactory {
 
         Converter stringConverter = new Converter() {
 
+            @Override
             Object convert(Object object, Class<?> type) {
                 return object != null ? object.toString() : null;
             }
@@ -55,6 +57,7 @@ class ConverterFactory {
 
         Converter booleanConverter = new Converter() {
 
+            @Override
             Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Boolean.FALSE : null;
@@ -72,6 +75,7 @@ class ConverterFactory {
 
         Converter intConverter = new Converter() {
 
+            @Override
             Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Integer.valueOf(0) : null;
@@ -87,6 +91,7 @@ class ConverterFactory {
 
         Converter byteConverter = new Converter() {
 
+            @Override
             Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Byte.valueOf((byte) 0) : null;
@@ -102,6 +107,7 @@ class ConverterFactory {
 
         Converter shortConverter = new Converter() {
 
+            @Override
             Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Short.valueOf((short) 0) : null;
@@ -117,6 +123,7 @@ class ConverterFactory {
 
         Converter charConverter = new Converter() {
 
+            @Override
             Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Character.valueOf((char) 0) : null;
@@ -133,6 +140,7 @@ class ConverterFactory {
 
         Converter doubleConverter = new Converter() {
 
+            @Override
             Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? new Double(0.0d) : null;
@@ -148,6 +156,7 @@ class ConverterFactory {
 
         Converter floatConverter = new Converter() {
 
+            @Override
             Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return type.isPrimitive() ? new Float(0.0f) : null;
@@ -163,6 +172,7 @@ class ConverterFactory {
 
         Converter bigDecimalConverter = new Converter() {
 
+            @Override
             Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return null;
@@ -178,6 +188,7 @@ class ConverterFactory {
 
         Converter bigIntegerConverter = new Converter() {
 
+            @Override
             Object convert(Object object, Class<?> type) {
                 if (object == null) {
                     return null;

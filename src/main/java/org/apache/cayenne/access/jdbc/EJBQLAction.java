@@ -66,6 +66,7 @@ public class EJBQLAction extends BaseSQLAction {
 
         compiledExpression.getExpression().visit(new EJBQLBaseVisitor(false) {
 
+            @Override
             public boolean visitSelect(EJBQLExpression expression) {
                 EJBQLExpressionVisitor visitor = translatorFactory
                         .getSelectTranslator(context);
@@ -73,6 +74,7 @@ public class EJBQLAction extends BaseSQLAction {
                 return false;
             }
 
+            @Override
             public boolean visitDelete(EJBQLExpression expression) {
                 EJBQLExpressionVisitor visitor = translatorFactory
                         .getDeleteTranslator(context);
@@ -80,6 +82,7 @@ public class EJBQLAction extends BaseSQLAction {
                 return false;
             }
 
+            @Override
             public boolean visitUpdate(EJBQLExpression expression) {
                 EJBQLExpressionVisitor visitor = translatorFactory
                         .getUpdateTranslator(context);

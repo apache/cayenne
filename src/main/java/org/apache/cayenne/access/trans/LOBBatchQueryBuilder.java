@@ -119,6 +119,7 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
     /**
      * Binds BatchQuery parameters to the PreparedStatement.
      */
+    @Override
     public void bindParameters(PreparedStatement statement, BatchQuery query)
             throws SQLException, Exception {
 

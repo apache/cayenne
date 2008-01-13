@@ -33,6 +33,7 @@ public class MockEntityResolver extends EntityResolver {
         this.mockObjEntity = mockObjEntity;
     }
 
+    @Override
     public synchronized ObjEntity lookupObjEntity(Class aClass) {
         return mockObjEntity;
     }
@@ -45,6 +46,7 @@ public class MockEntityResolver extends EntityResolver {
         return mockObjEntity;
     }
 
+    @Override
     public synchronized ObjEntity lookupObjEntity(String entityName) {
         return mockObjEntity;
     }

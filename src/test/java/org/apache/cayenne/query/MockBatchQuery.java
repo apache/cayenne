@@ -37,21 +37,26 @@ public class MockBatchQuery extends BatchQuery {
         super(dbEntity);
     }
 
+    @Override
     public List<DbAttribute> getDbAttributes() {
         return null;
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     public boolean next() {
         return false;
     }
 
+    @Override
     public Object getValue(int valueIndex) {
         return null;
     }
 
+    @Override
     public int size() {
         return 0;
     }

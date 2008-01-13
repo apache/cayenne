@@ -577,6 +577,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * Returns a named attribute that either belongs to this ObjEntity or is inherited.
      * Returns null if no matching attribute is found.
      */
+    @Override
     public Attribute getAttribute(String name) {
         Attribute attribute = super.getAttribute(name);
         if (attribute != null) {
@@ -605,6 +606,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * Returns a SortedMap of all attributes that either belong to this ObjEntity or
      * inherited.
      */
+    @Override
     public SortedMap<String, ObjAttribute> getAttributeMap() {
         if (superEntityName == null) {
             return (SortedMap<String, ObjAttribute>) super.getAttributeMap();
@@ -631,6 +633,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * Returns a Collection of all attributes that either belong to this ObjEntity or
      * inherited.
      */
+    @Override
     public Collection<ObjAttribute> getAttributes() {
         if (superEntityName == null) {
             return (Collection<ObjAttribute>) super.getAttributes();
@@ -653,6 +656,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * Returns a named Relationship that either belongs to this ObjEntity or is inherited.
      * Returns null if no matching attribute is found.
      */
+    @Override
     public Relationship getRelationship(String name) {
         ObjRelationship relationship = (ObjRelationship) super.getRelationship(name);
         if (relationship != null) {
@@ -667,6 +671,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         return (superEntity != null) ? superEntity.getRelationship(name) : null;
     }
 
+    @Override
     public SortedMap<String, ObjRelationship> getRelationshipMap() {
         if (superEntityName == null) {
             return (SortedMap<String, ObjRelationship>) super.getRelationshipMap();
@@ -689,6 +694,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         }
     }
 
+    @Override
     public Collection<ObjRelationship> getRelationships() {
         if (superEntityName == null) {
             return (Collection<ObjRelationship>) super.getRelationships();
@@ -812,6 +818,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         return (superEntity != null) ? superEntity.isSubentityOf(entity) : false;
     }
 
+    @Override
     public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp) throws ExpressionException {
 
         // resolve DB_PATH if we can
@@ -864,6 +871,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * 
      * @since 1.1
      */
+    @Override
     public Expression translateToRelatedEntity(
             Expression expression,
             String relationshipPath) {

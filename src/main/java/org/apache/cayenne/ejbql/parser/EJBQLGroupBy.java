@@ -30,6 +30,7 @@ public class EJBQLGroupBy extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitGroupBy(this);
     }

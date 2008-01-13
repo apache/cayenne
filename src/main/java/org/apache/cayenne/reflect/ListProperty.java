@@ -41,6 +41,7 @@ public class ListProperty extends BaseToManyProperty {
     /**
      * Creates a List for an object. Expects an object to be an instance of Persistent.
      */
+    @Override
     protected ValueHolder createCollectionValueHolder(Object object)
             throws PropertyException {
         if (!(object instanceof Persistent)) {
@@ -54,6 +55,7 @@ public class ListProperty extends BaseToManyProperty {
         return new PersistentObjectList((Persistent) object, getName());
     }
 
+    @Override
     public boolean isFault(Object object) {
         Object target = accessor.getValue(object);
         return target == null

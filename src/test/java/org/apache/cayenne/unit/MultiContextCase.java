@@ -32,6 +32,7 @@ import org.apache.cayenne.util.Util;
  */
 public abstract class MultiContextCase extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();

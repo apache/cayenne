@@ -30,6 +30,7 @@ public class EJBQLAscending extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitAscending(this);
     }

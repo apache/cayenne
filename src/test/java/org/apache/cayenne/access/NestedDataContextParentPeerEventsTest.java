@@ -45,6 +45,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
 
         new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals("Y", a2.getArtistName());
 
@@ -84,6 +85,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
 
         new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertSame(altA2, p2.getToArtist());
                 assertFalse("Peer data context became dirty on event processing", peer2
@@ -123,6 +125,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
 
         new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(2, a2.getPaintingArray().size());
                 assertTrue(a2.getPaintingArray().contains(py2));

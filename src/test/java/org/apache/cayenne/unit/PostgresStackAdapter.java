@@ -38,24 +38,29 @@ public class PostgresStackAdapter extends AccessStackAdapter {
         super(adapter);
     }
 
+    @Override
     public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
             throws Exception {
         // avoid dropping constraints...
     }
 
+    @Override
     public boolean supportsLobs() {
         return true;
     }
 
+    @Override
     public boolean supportsStoredProcedures() {
         return true;
     }
 
+    @Override
     public boolean canMakeObjectsOutOfProcedures() {
         // we are a victim of CAY-148 - column capitalization...
         return false;
     }
 
+    @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
         if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
             executeDDL(con, "postgresql", "create-select-sp.sql");
@@ -65,6 +70,7 @@ public class PostgresStackAdapter extends AccessStackAdapter {
         }
     }
 
+    @Override
     public void tweakProcedure(Procedure proc) {
         if (DataContextProcedureQueryTest.OUT_STORED_PROCEDURE.equals(proc.getName())
                 && proc.getCallParameters().size() == 2) {

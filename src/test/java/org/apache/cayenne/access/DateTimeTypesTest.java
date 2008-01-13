@@ -36,6 +36,7 @@ public class DateTimeTypesTest extends CayenneCase {
 
     protected DataContext context;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

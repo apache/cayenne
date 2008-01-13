@@ -182,6 +182,7 @@ public class ObjectId implements Serializable {
                 : Collections.EMPTY_MAP;
     }
 
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -255,6 +256,7 @@ public class ObjectId implements Serializable {
         return Util.nullSafeEquals(o1, o2);
     }
 
+    @Override
     public int hashCode() {
 
         if (this.hashCode == 0) {
@@ -352,6 +354,7 @@ public class ObjectId implements Serializable {
      * A standard toString method used for debugging. It is guaranteed to produce the same
      * string if two ObjectIds are equal.
      */
+    @Override
     public String toString() {
 
         StringBuilder buffer = new StringBuilder();

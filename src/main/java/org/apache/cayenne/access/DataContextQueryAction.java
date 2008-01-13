@@ -50,6 +50,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
         super(actingContext, targetContext, query);
     }
 
+    @Override
     public QueryResponse execute() {
         if (interceptPaginatedQuery() != DONE) {
             if (interceptOIDQuery() != DONE) {
@@ -70,6 +71,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
     /**
      * Overrides super implementation to property handle data row fetches.
      */
+    @Override
     protected boolean interceptOIDQuery() {
         if (query instanceof ObjectIdQuery) {
             ObjectIdQuery oidQuery = (ObjectIdQuery) query;
@@ -113,6 +115,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
         return !DONE;
     }
 
+    @Override
     protected QueryCache getQueryCache() {
         return ((DataContext) actingContext).getQueryCache();
     }

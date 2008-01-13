@@ -46,14 +46,17 @@ import org.apache.velocity.runtime.parser.node.Node;
  */
 public class ChunkDirective extends Directive {
 
+    @Override
     public String getName() {
         return "chunk";
     }
 
+    @Override
     public int getType() {
         return BLOCK;
     }
 
+    @Override
     public boolean render(InternalContextAdapter context, Writer writer, Node node)
         throws
             IOException,

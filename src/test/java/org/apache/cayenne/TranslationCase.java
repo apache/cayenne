@@ -45,6 +45,7 @@ public class TranslationCase {
         return (matcher.find()) ? matcher.replaceFirst(subst) : str;
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append(this.getClass().getName()).append(tstObject);

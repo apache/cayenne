@@ -45,6 +45,7 @@ class ValueHolderProperty extends BaseToOneProperty {
     /**
      * Returns true if a property ValueHolder is not initialized or is itself a fault.
      */
+    @Override
     public boolean isFault(Object object) {
         ValueHolder holder = (ValueHolder) accessor.getValue(object);
         return holder == null || holder.isFault();
@@ -57,6 +58,7 @@ class ValueHolderProperty extends BaseToOneProperty {
         }
     }
 
+    @Override
     public Object readPropertyDirectly(Object object) throws PropertyException {
         ValueHolder holder = (ValueHolder) accessor.getValue(object);
 
@@ -65,10 +67,12 @@ class ValueHolderProperty extends BaseToOneProperty {
         return (holder != null) ? holder.getValueDirectly() : null;
     }
 
+    @Override
     public Object readProperty(Object object) throws PropertyException {
         return ensureValueHolderSet(object).getValue();
     }
 
+    @Override
     public void writePropertyDirectly(Object object, Object oldValue, Object newValue)
             throws PropertyException {
 
@@ -81,6 +85,7 @@ class ValueHolderProperty extends BaseToOneProperty {
         holder.setValueDirectly(newValue);
     }
 
+    @Override
     public void writeProperty(Object object, Object oldValue, Object newValue)
             throws PropertyException {
         ensureValueHolderSet(object).setValueDirectly(newValue);
@@ -89,6 +94,7 @@ class ValueHolderProperty extends BaseToOneProperty {
     /**
      * Injects a ValueHolder in the object if it hasn't been done yet.
      */
+    @Override
     public void injectValueHolder(Object object) throws PropertyException {
         ensureValueHolderSet(object);
     }

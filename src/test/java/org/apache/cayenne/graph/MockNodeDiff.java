@@ -29,9 +29,11 @@ public class MockNodeDiff extends NodeDiff {
         super(nodeId, diffId);
     }
 
+    @Override
     public void apply(GraphChangeHandler tracker) {
     }
 
+    @Override
     public void undo(GraphChangeHandler tracker) {
     }
 }

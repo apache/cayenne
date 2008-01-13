@@ -28,10 +28,12 @@ public class H2StackAdapter extends AccessStackAdapter {
         super(adapter);
     }
 
+    @Override
     public boolean supportsLobs() {
         return true;
     }
     
+    @Override
     public boolean supportsStoredProcedures() {
         return false;
     }

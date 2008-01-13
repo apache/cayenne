@@ -43,6 +43,7 @@ public class ASTLike extends PatternMatchNode {
         connectChildren();
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
         if (len != 2) {
@@ -60,14 +61,17 @@ public class ASTLike extends PatternMatchNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTLike(id);
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         return "like";
     }
 
+    @Override
     public int getType() {
         return Expression.LIKE;
     }

@@ -145,6 +145,7 @@ public class ColumnDescriptor implements Serializable {
      * 
      * @since 1.2
      */
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof ColumnDescriptor)) {
             return false;
@@ -161,6 +162,7 @@ public class ColumnDescriptor implements Serializable {
     /**
      * @since 1.2
      */
+    @Override
     public int hashCode() {
         return new HashCodeBuilder(23, 43)
                 .append(name)
@@ -174,6 +176,7 @@ public class ColumnDescriptor implements Serializable {
     /**
      * @since 1.2
      */
+    @Override
     public String toString() {
         ToStringBuilder builder = new ToStringBuilder(this);
         builder.append("namePrefix", getQualifiedColumnName());

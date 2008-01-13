@@ -254,6 +254,7 @@ public abstract class ProjectFile {
         }
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append("ProjectFile [").append(getClass().getName()).append("]: name = ");

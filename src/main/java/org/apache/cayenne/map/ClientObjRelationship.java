@@ -44,18 +44,22 @@ class ClientObjRelationship extends ObjRelationship {
         this.reverseRelationshipName = reverseRelationshipName;
     }
 
+    @Override
     public boolean isToMany() {
         return clientToMany;
     }
 
+    @Override
     public boolean isReadOnly() {
         return clientReadOnly;
     }
 
+    @Override
     public String getReverseRelationshipName() {
         return reverseRelationshipName;
     }
 
+    @Override
     public ObjRelationship getReverseRelationship() {
         if (reverseRelationshipName == null) {
             return null;

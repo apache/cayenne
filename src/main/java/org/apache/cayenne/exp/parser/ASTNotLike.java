@@ -45,6 +45,7 @@ public class ASTNotLike extends PatternMatchNode {
         connectChildren();
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
         if (len != 2) {
@@ -62,14 +63,17 @@ public class ASTNotLike extends PatternMatchNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTNotLike(id);
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         return "not like";
     }
 
+    @Override
     public int getType() {
         return Expression.NOT_LIKE;
     }

@@ -39,12 +39,14 @@ public class MockEntity extends Entity {
         super(name);
     }
 
+    @Override
     public Expression translateToRelatedEntity(
             Expression expression,
             String relationshipPath) {
         return null;
     }
 
+    @Override
     public Iterator resolvePathComponents(Expression pathExp) throws ExpressionException {
         return null;
     }

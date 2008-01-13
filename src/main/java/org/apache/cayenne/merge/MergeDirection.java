@@ -46,14 +46,17 @@ public class MergeDirection {
         return name;
     }
 
+    @Override
     public boolean equals(Object obj) {
         return (obj == this);
     }
 
+    @Override
     public int hashCode() {
         return id * 17;
     }
 
+    @Override
     public String toString() {
         return getName();
     }

@@ -34,6 +34,7 @@ public class DataContextBlobTest extends CayenneCase {
 
     protected DataContext ctxt;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

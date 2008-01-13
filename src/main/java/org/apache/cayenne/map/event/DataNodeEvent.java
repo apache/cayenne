@@ -60,7 +60,8 @@ public class DataNodeEvent extends MapEvent {
 		this.dataNode = dataNode;
 	}
 	
-	public String getNewName() {
+	@Override
+    public String getNewName() {
 		return (dataNode != null) ? dataNode.getName() : null;
 	}
 }

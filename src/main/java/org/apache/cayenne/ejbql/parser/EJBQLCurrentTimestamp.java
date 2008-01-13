@@ -30,6 +30,7 @@ public class EJBQLCurrentTimestamp extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitCurrentTimestamp(this);
     }

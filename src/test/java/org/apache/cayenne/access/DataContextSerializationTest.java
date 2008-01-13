@@ -33,6 +33,7 @@ import org.apache.cayenne.util.Util;
  */
 public class DataContextSerializationTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         fixSharedConfiguration();
         deleteTestData();

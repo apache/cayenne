@@ -35,6 +35,7 @@ class SQLTemplateBuilder extends QueryLoader {
     /**
      * Builds a SQLTemplate query.
      */
+    @Override
     public Query getQuery() {
 
         SQLTemplate template = new SQLTemplate();

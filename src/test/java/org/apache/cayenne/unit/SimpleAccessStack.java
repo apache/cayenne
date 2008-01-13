@@ -52,6 +52,7 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
         }
     }
 
+    @Override
     protected DataDomain getDomain() {
         return domain;
     }

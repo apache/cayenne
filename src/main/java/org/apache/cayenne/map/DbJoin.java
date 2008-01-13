@@ -145,6 +145,7 @@ public class DbJoin implements XMLSerializable {
         return relationship;
     }
 
+    @Override
     public String toString() {
         ToStringBuilder builder = new ToStringBuilder(this);
         builder.append("source", getSourceName());

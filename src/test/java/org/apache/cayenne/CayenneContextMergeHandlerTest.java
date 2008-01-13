@@ -27,6 +27,7 @@ import org.apache.cayenne.unit.CayenneResources;
 
 public class CayenneContextMergeHandlerTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()

@@ -36,6 +36,7 @@ import org.apache.cayenne.util.ObjectContextGraphAction;
 class CayenneContextGraphAction extends ObjectContextGraphAction {
 
     static final ThreadLocal<Boolean> arcChangeInProcess = new ThreadLocal<Boolean>() {
+        @Override
         protected synchronized Boolean initialValue() {
             return Boolean.FALSE;
         }
@@ -45,6 +46,7 @@ class CayenneContextGraphAction extends ObjectContextGraphAction {
         super(context);
     }
 
+    @Override
     protected void handleArcPropertyChange(
             Persistent object,
             ArcProperty property,
@@ -84,6 +86,7 @@ class CayenneContextGraphAction extends ObjectContextGraphAction {
         }
     }
 
+    @Override
     protected void handleSimplePropertyChange(
             Persistent object,
             String propertyName,

@@ -31,6 +31,7 @@ public class ValidationResultTest extends TestCase {
     private Object obj1;
     private Object obj2;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         obj1 = new Object();

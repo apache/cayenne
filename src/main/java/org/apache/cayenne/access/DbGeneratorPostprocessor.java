@@ -65,6 +65,7 @@ class DbGeneratorPostprocessor {
 
     static class HSQLDBPostprocessor extends Postprocessor {
 
+        @Override
         void execute(Connection c) throws SQLException {
             PreparedStatement st = c.prepareStatement("CHECKPOINT");
             try {

@@ -43,6 +43,7 @@ public class MockMessage implements ClientMessage {
     /**
      * Returns a description of the type of message. In this case always "Mock message".
      */
+    @Override
     public String toString() {
         return "Mock message";
     }

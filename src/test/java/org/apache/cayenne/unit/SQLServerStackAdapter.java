@@ -35,10 +35,12 @@ public class SQLServerStackAdapter extends SybaseStackAdapter {
         super(adapter);
     }
 
+    @Override
     public boolean handlesNullVsEmptyLOBs() {
         return true;
     }
 
+    @Override
     public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
             throws Exception {
         dropConstraints(conn, map, tablesToDrop);

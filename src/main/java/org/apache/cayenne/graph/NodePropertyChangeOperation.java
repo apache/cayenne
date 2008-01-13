@@ -52,14 +52,17 @@ public class NodePropertyChangeOperation extends NodeDiff {
     /**
      * Returns true if both old and new value are equal.
      */
+    @Override
     public boolean isNoop() {
         return Util.nullSafeEquals(oldValue, newValue);
     }
 
+    @Override
     public void apply(GraphChangeHandler tracker) {
         tracker.nodePropertyChanged(nodeId, property, oldValue, newValue);
     }
 
+    @Override
     public void undo(GraphChangeHandler tracker) {
         tracker.nodePropertyChanged(nodeId, property, newValue, oldValue);
     }

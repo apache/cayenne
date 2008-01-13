@@ -63,7 +63,8 @@ public class DomainEvent extends MapEvent {
 		this.domain = domain;
 	}
 	
-	public String getNewName() {
+	@Override
+    public String getNewName() {
 		return (domain != null) ? domain.getName() : null;
 	}
 }

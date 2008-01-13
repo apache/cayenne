@@ -44,10 +44,12 @@ import org.apache.velocity.runtime.parser.node.Node;
  */
 public class BindObjectEqualDirective extends BindDirective {
 
+    @Override
     public String getName() {
         return "bindObjectEqual";
     }
 
+    @Override
     public boolean render(InternalContextAdapter context, Writer writer, Node node)
             throws IOException, ResourceNotFoundException, ParseErrorException,
             MethodInvocationException {
@@ -145,6 +147,7 @@ public class BindObjectEqualDirective extends BindDirective {
         writer.write(columnName.toString());
     }
 
+    @Override
     protected void render(
             InternalContextAdapter context,
             Writer writer,

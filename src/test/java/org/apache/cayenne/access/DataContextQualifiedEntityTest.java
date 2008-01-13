@@ -34,6 +34,7 @@ import org.apache.cayenne.unit.PeopleCase;
 public class DataContextQualifiedEntityTest extends PeopleCase {
     protected DataContext context;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

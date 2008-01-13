@@ -31,10 +31,12 @@ import org.apache.cayenne.query.DeleteQuery;
  */
 public class DeleteTranslator extends QueryAssembler {
 
+    @Override
     public String aliasForTable(DbEntity dbEnt) {
         throw new RuntimeException("aliases not supported");
     }
 
+    @Override
     public void dbRelationshipAdded(DbRelationship dbRel) {
         throw new RuntimeException("db relationships not supported");
     }
@@ -42,6 +44,7 @@ public class DeleteTranslator extends QueryAssembler {
     /** Main method of DeleteTranslator class. Translates DeleteQuery
      *  into a JDBC PreparedStatement
      */
+    @Override
     public String createSqlString() throws Exception {
         StringBuffer queryBuf = new StringBuffer("DELETE FROM ");
 

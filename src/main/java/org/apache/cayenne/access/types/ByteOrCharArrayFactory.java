@@ -76,16 +76,19 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             super(stringType);
         }
 
+        @Override
         public String getClassName() {
             return "java.lang.Character";
         }
 
+        @Override
         Object fromJavaObject(Object object) {
             return object != null
                     ? String.valueOf(((Character) object).charValue())
                     : null;
         }
 
+        @Override
         Object toJavaObject(Object object) {
             if (object == null) {
                 return null;
@@ -102,14 +105,17 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             super(stringType);
         }
 
+        @Override
         public String getClassName() {
             return "char[]";
         }
 
+        @Override
         Object fromJavaObject(Object object) {
             return object != null ? new String((char[]) object) : null;
         }
 
+        @Override
         Object toJavaObject(Object object) {
             return object != null ? ((String) object).toCharArray() : null;
         }
@@ -121,10 +127,12 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             super(stringType);
         }
 
+        @Override
         public String getClassName() {
             return "java.lang.Character[]";
         }
 
+        @Override
         Object fromJavaObject(Object object) {
             if (object == null) {
                 return null;
@@ -139,6 +147,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             return buffer.toString();
         }
 
+        @Override
         Object toJavaObject(Object object) {
             if (object == null) {
                 return null;
@@ -160,10 +169,12 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             super(byteArrayType);
         }
 
+        @Override
         public String getClassName() {
             return "java.lang.Byte[]";
         }
 
+        @Override
         Object fromJavaObject(Object object) {
             if (object == null) {
                 return null;
@@ -178,6 +189,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             return buffer;
         }
 
+        @Override
         Object toJavaObject(Object object) {
             if (object == null) {
                 return null;

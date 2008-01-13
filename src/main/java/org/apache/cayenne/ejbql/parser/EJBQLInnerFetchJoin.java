@@ -30,6 +30,7 @@ public class EJBQLInnerFetchJoin extends EJBQLJoin {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitInnerFetchJoin(this);
     }

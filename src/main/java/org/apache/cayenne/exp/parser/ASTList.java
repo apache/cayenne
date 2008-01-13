@@ -71,22 +71,27 @@ public class ASTList extends SimpleNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTList(id);
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         return values;
     }
 
+    @Override
     public int getType() {
         return Expression.LIST;
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         return ",";
     }
 
+    @Override
     public void encodeAsString(PrintWriter pw) {
         pw.print('(');
 
@@ -109,10 +114,12 @@ public class ASTList extends SimpleNode {
         pw.print(')');
     }
 
+    @Override
     public int getOperandCount() {
         return 1;
     }
 
+    @Override
     public Object getOperand(int index) {
         if (index == 0) {
             return values;
@@ -121,6 +128,7 @@ public class ASTList extends SimpleNode {
         throw new ArrayIndexOutOfBoundsException(index);
     }
 
+    @Override
     public void setOperand(int index, Object value) {
         if (index != 0) {
             throw new ArrayIndexOutOfBoundsException(index);
@@ -160,6 +168,7 @@ public class ASTList extends SimpleNode {
         }
     }
 
+    @Override
     public void jjtClose() {
         super.jjtClose();
 

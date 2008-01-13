@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 public class MockSerializable implements Serializable {
 
+    @Override
     public boolean equals(Object obj) {
         if (obj == null)
             return false;

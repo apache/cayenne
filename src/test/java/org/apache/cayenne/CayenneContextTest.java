@@ -48,6 +48,7 @@ import org.apache.cayenne.util.GenericResponse;
  */
 public class CayenneContextTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
     }
@@ -166,6 +167,7 @@ public class CayenneContextTest extends CayenneCase {
 
         MockDataChannel channel = new MockDataChannel() {
 
+            @Override
             public GraphDiff onSync(
                     ObjectContext originatingContext,
                     GraphDiff changes,
@@ -175,6 +177,7 @@ public class CayenneContextTest extends CayenneCase {
             }
 
             // must provide a channel with working event manager
+            @Override
             public EventManager getEventManager() {
                 return eventManager;
             }
@@ -301,6 +304,7 @@ public class CayenneContextTest extends CayenneCase {
         final boolean[] selectExecuted = new boolean[1];
         CayenneContext context = new CayenneContext(channel) {
 
+            @Override
             public List performQuery(Query query) {
                 selectExecuted[0] = true;
                 return super.performQuery(query);

@@ -78,6 +78,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
      *
      *  @param node node that provides access to a DataSource.
      */
+    @Override
     public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
     	super.createAutoPk(node, dbEntities);
     	super.runUpdate(node, safePkProcDrop());
@@ -85,6 +86,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
     }
     
     
+    @Override
     public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
 		List<String> list = super.createAutoPkStatements(dbEntities);
 		
@@ -118,11 +120,13 @@ public class SybasePkGenerator extends JdbcPkGenerator {
      *
      *  @param node node that provides access to a DataSource.
      */
+    @Override
     public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
         super.runUpdate(node, safePkProcDrop());
         super.runUpdate(node, safePkTableDrop());
     }
     
+    @Override
     public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
 		List<String> list = new ArrayList<String>();
 		list.add(safePkProcDrop());
@@ -130,6 +134,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 		return list;
 	}
 
+    @Override
     protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
         // handle CAY-588 - get connection that is separate from the connection in the
         // current transaction. 

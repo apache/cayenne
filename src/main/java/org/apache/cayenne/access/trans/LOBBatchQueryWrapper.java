@@ -123,6 +123,7 @@ public class LOBBatchQueryWrapper {
         else if (value instanceof Serializable) {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
 
+                @Override
                 public synchronized byte[] toByteArray() {
                     return buf;
                 }

@@ -27,6 +27,7 @@ import org.apache.cayenne.unit.PeopleCase;
 public class EntityResolverInheritanceTest extends PeopleCase {
     protected EntityResolver resolver;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

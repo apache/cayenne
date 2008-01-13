@@ -33,6 +33,7 @@ public class CAY_743Test extends TestCase {
 
         DefaultConfiguration config = new DefaultConfiguration() {
 
+            @Override
             protected InputStream getDomainConfiguration() {
                 return Thread
                         .currentThread()
@@ -40,6 +41,7 @@ public class CAY_743Test extends TestCase {
                         .getResourceAsStream("cay743/cayenne.xml");
             }
 
+            @Override
             protected InputStream getMapConfiguration(String location) {
                 return Thread
                         .currentThread()

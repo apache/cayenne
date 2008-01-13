@@ -43,6 +43,7 @@ public abstract class ValidatorTestBase extends TestCase {
     protected Validator validator;
     protected ApplicationProject project;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         project = new ApplicationProject(new File(System.getProperty("user.dir")));

@@ -36,6 +36,7 @@ public class OptimisticLockingTest extends LockingCase {
 
     protected DataContext context;
 
+    @Override
     protected void setUp() throws Exception {
         context = createDataContext();
     }

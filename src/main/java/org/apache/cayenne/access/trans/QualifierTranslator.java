@@ -59,6 +59,7 @@ public class QualifierTranslator
     /** Translates query qualifier to SQL WHERE clause. 
      *  Qualifier is obtained from <code>queryAssembler</code> object. 
      */
+    @Override
     public String doTranslation() {
         qualBuf.setLength(0);
 
@@ -385,6 +386,7 @@ public class QualifierTranslator
         }
     }
 
+    @Override
     protected void appendLiteral(
         StringBuffer buf,
         Object val,
@@ -405,6 +407,7 @@ public class QualifierTranslator
         }
     }
 
+    @Override
     protected void processRelTermination(StringBuffer buf, DbRelationship rel) {
 
         if (!matchingObject) {

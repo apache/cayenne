@@ -34,6 +34,7 @@ import org.apache.cayenne.util.Util;
  */
 public class ProcedureValidator extends TreeNodeValidator {
 
+    @Override
     public void validateObject(ProjectPath treeNodePath, Validator validator) {
         Procedure procedure = (Procedure) treeNodePath.getObject();
         validateName(procedure, treeNodePath, validator);

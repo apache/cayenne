@@ -59,6 +59,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         super(parent, segmentPath);
     }
 
+    @Override
     void afterInit() {
         super.afterInit();
 

@@ -34,6 +34,7 @@ import org.apache.cayenne.reflect.PropertyException;
 // for other object types.
 class DataObjectDescriptor extends PersistentDescriptor {
 
+    @Override
     public void shallowMerge(Object from, Object to) throws PropertyException {
         super.shallowMerge(from, to);
 

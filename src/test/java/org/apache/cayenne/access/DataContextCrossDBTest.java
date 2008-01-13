@@ -26,6 +26,7 @@ import org.apache.cayenne.unit.MultiNodeCase;
 
 public class DataContextCrossDBTest extends MultiNodeCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();

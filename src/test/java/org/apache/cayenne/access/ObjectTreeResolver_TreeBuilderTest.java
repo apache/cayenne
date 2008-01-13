@@ -51,26 +51,32 @@ public class ObjectTreeResolver_TreeBuilderTest extends CayenneCase {
 
         QueryMetadata metadata = new MockQueryMetadata() {
 
+            @Override
             public ClassDescriptor getClassDescriptor() {
                 return descriptor;
             }
 
+            @Override
             public ObjEntity getObjEntity() {
                 return descriptor.getEntity();
             }
 
+            @Override
             public DbEntity getDbEntity() {
                 return getObjEntity().getDbEntity();
             }
 
+            @Override
             public DataMap getDataMap() {
                 return getObjEntity().getDataMap();
             }
 
+            @Override
             public boolean isRefreshingObjects() {
                 return true;
             }
 
+            @Override
             public boolean isResolvingInherited() {
                 return true;
             }
@@ -118,26 +124,32 @@ public class ObjectTreeResolver_TreeBuilderTest extends CayenneCase {
 
         QueryMetadata metadata = new MockQueryMetadata() {
 
+            @Override
             public ClassDescriptor getClassDescriptor() {
                 return descriptor;
             }
 
+            @Override
             public ObjEntity getObjEntity() {
                 return descriptor.getEntity();
             }
 
+            @Override
             public DbEntity getDbEntity() {
                 return getObjEntity().getDbEntity();
             }
 
+            @Override
             public DataMap getDataMap() {
                 return getObjEntity().getDataMap();
             }
 
+            @Override
             public boolean isRefreshingObjects() {
                 return true;
             }
 
+            @Override
             public boolean isResolvingInherited() {
                 return true;
             }

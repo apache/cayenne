@@ -47,6 +47,7 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
      * 
      * @since 1.2
      */
+    @Override
     public void bindParameters(PreparedStatement statement, BatchQuery query)
             throws SQLException, Exception {
 
@@ -71,6 +72,7 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
      * 
      * @since 1.2
      */
+    @Override
     public List<Object> getParameterValues(BatchQuery query) {
         List<DbAttribute> attributes = query.getDbAttributes();
         int len = attributes.size();
@@ -84,6 +86,7 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
         return values;
     }
 
+    @Override
     public String createSqlString(BatchQuery batch) {
         String table = batch.getDbEntity().getFullyQualifiedName();
         List<DbAttribute> dbAttributes = batch.getDbAttributes();

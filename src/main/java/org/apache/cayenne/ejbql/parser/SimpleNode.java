@@ -138,6 +138,7 @@ public abstract class SimpleNode implements Node, Serializable, EJBQLExpression 
         this.text = text;
     }
 
+    @Override
     public String toString() {
         StringWriter buffer = new StringWriter();
         PrintWriter pw = new PrintWriter(buffer);

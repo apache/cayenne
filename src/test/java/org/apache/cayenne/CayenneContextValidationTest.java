@@ -31,6 +31,7 @@ import org.apache.cayenne.validation.ValidationException;
 
 public class CayenneContextValidationTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()

@@ -47,6 +47,7 @@ public class ASTBetween extends ConditionNode {
         connectChildren();
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
         if (len != 3) {
@@ -76,14 +77,17 @@ public class ASTBetween extends ConditionNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTBetween(id);
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         return (index == 2) ? "and" : "between";
     }
 
+    @Override
     public int getType() {
         return Expression.BETWEEN;
     }

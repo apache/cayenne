@@ -44,6 +44,7 @@ public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
         super(queryAssembler, trimFunction);
     }
 
+    @Override
     protected void appendLiteralDirect(
         StringBuffer buf,
         Object val,

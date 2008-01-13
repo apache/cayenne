@@ -34,6 +34,7 @@ public abstract class ConditionNode extends SimpleNode {
         super(i);
     }
 
+    @Override
     public void jjtSetParent(Node n) {
         // this is a check that we can't handle properly
         // in the grammar... do it here...

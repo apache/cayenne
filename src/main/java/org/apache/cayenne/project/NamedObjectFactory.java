@@ -190,14 +190,17 @@ public abstract class NamedObjectFactory {
 
     // concrete factories
     static class DataDomainFactory extends NamedObjectFactory {
+        @Override
         protected String nameBase() {
             return "UntitledDomain";
         }
 
+        @Override
         protected Object create(String name, Object namingContext) {
             return new DataDomain(name);
         }
 
+        @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             Configuration config = (Configuration) namingContext;
             return config.getDomain(name) != null;
@@ -205,14 +208,17 @@ public abstract class NamedObjectFactory {
     }
 
     static class DataMapFactory extends NamedObjectFactory {
+        @Override
         protected String nameBase() {
             return "UntitledMap";
         }
 
+        @Override
         protected Object create(String name, Object namingContext) {
             return new DataMap(name);
         }
 
+        @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             // null context is a situation when DataMap is a
             // top level object of the project
@@ -226,14 +232,17 @@ public abstract class NamedObjectFactory {
     }
 
     static class ObjEntityFactory extends NamedObjectFactory {
+        @Override
         protected String nameBase() {
             return "UntitledObjEntity";
         }
 
+        @Override
         protected Object create(String name, Object namingContext) {
             return new ObjEntity(name);
         }
 
+        @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             DataMap map = (DataMap) namingContext;
             return map.getObjEntity(name) != null;
@@ -241,14 +250,17 @@ public abstract class NamedObjectFactory {
     }
 
     static class DbEntityFactory extends NamedObjectFactory {
+        @Override
         protected String nameBase() {
             return "UntitledDbEntity";
         }
 
+        @Override
         protected Object create(String name, Object namingContext) {
             return new DbEntity(name);
         }
 
+        @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             DataMap map = (DataMap) namingContext;
             return map.getDbEntity(name) != null;
@@ -256,14 +268,17 @@ public abstract class NamedObjectFactory {
     }
 
     static class ProcedureParameterFactory extends NamedObjectFactory {
+        @Override
         protected String nameBase() {
             return "UntitledProcedureParameter";
         }
 
+        @Override
         protected Object create(String name, Object namingContext) {
             return new ProcedureParameter(name);
         }
 
+        @Override
         protected boolean isNameInUse(String name, Object namingContext) {
         	
             // it doesn't matter if we create a parameter with 
@@ -283,14 +298,17 @@ public abstract class NamedObjectFactory {
     }
 
     static class ProcedureFactory extends NamedObjectFactory {
+        @Override
         protected String nameBase() {
             return "UntitledProcedure";
         }
 
+        @Override
         protected Object create(String name, Object namingContext) {
             return new Procedure(name);
         }
 
+        @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             DataMap map = (DataMap) namingContext;
             return map.getProcedure(name) != null;
@@ -298,16 +316,19 @@ public abstract class NamedObjectFactory {
     }
     
     static class SelectQueryFactory extends NamedObjectFactory {
+        @Override
         protected String nameBase() {
             return "UntitledQuery";
         }
 
+        @Override
         protected Object create(String name, Object namingContext) {
             SelectQuery query = new SelectQuery();
             query.setName(name);
             return query;
         }
 
+        @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             DataMap map = (DataMap) namingContext;
             return map.getQuery(name) != null;
@@ -315,14 +336,17 @@ public abstract class NamedObjectFactory {
     }
 
     static class ObjAttributeFactory extends NamedObjectFactory {
+        @Override
         protected String nameBase() {
             return "untitledAttr";
         }
 
+        @Override
         protected Object create(String name, Object namingContext) {
             return new ObjAttribute(name, null, (ObjEntity) namingContext);
         }
 
+        @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             Entity ent = (Entity) namingContext;
             return ent.getAttribute(name) != null;
@@ -330,6 +354,7 @@ public abstract class NamedObjectFactory {
     }
 
     static class DbAttributeFactory extends ObjAttributeFactory {
+        @Override
         protected Object create(String name, Object namingContext) {
             return new DbAttribute(
                 name,
@@ -339,14 +364,17 @@ public abstract class NamedObjectFactory {
     }
 
     static class DataNodeFactory extends NamedObjectFactory {
+        @Override
         protected String nameBase() {
             return "UntitledDataNode";
         }
 
+        @Override
         protected Object create(String name, Object namingContext) {
             return new DataNode(name);
         }
 
+        @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             DataDomain domain = (DataDomain) namingContext;
             return domain.getNode(name) != null;
@@ -362,10 +390,12 @@ public abstract class NamedObjectFactory {
             this.toMany = toMany;
         }
 
+        @Override
         protected Object create(String name, Object namingContext) {
             return new ObjRelationship(name);
         }
 
+        @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             Entity ent = (Entity) namingContext;
             return ent.getRelationship(name) != null;
@@ -376,6 +406,7 @@ public abstract class NamedObjectFactory {
          * For to-one case and entity name "xxxx" it generates name "toXxxx".
          * For to-many case and entity name "Xxxx" it generates name "xxxxArray".
          */
+        @Override
         protected String nameBase() {
             if (target == null) {
                 return "untitledRel";
@@ -393,6 +424,7 @@ public abstract class NamedObjectFactory {
             super(target, toMany);
         }
 
+        @Override
         protected Object create(String name, Object namingContext) {
             return new DbRelationship(name);
         }
@@ -402,6 +434,7 @@ public abstract class NamedObjectFactory {
          * For to-one case it generates name "TO_XXXX".
          * For to-many case it generates name "XXXX_ARRAY". 
          */
+        @Override
         protected String nameBase() {
             if (target == null) {
                 return "untitledRel";

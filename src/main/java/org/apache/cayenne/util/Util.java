@@ -305,6 +305,7 @@ public class Util {
     public static Object cloneViaSerialization(Serializable obj) throws Exception {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
 
+            @Override
             public synchronized byte[] toByteArray() {
                 return buf;
             }

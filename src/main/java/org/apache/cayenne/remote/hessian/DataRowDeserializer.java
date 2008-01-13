@@ -51,10 +51,12 @@ class DataRowDeserializer extends AbstractMapDeserializer {
         versionField.setAccessible(true);
     }
 
+    @Override
     public Class<?> getType() {
         return DataRow.class;
     }
 
+    @Override
     public Object readMap(AbstractHessianInput in) throws IOException {
 
         int size = in.readInt();

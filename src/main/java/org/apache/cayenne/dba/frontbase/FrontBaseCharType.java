@@ -40,6 +40,7 @@ class FrontBaseCharType extends CharType {
         super(false, true);
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,

@@ -30,6 +30,7 @@ import org.apache.cayenne.unit.RelationshipCase;
 
 public class CDOMapRelationshipTest extends RelationshipCase {
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
     }

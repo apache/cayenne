@@ -31,6 +31,7 @@ import org.apache.cayenne.unit.CayenneResources;
 
 public class ObjectDetachOperationTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()

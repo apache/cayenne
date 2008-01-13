@@ -68,6 +68,7 @@ public class PostgresAdapter extends JdbcAdapter {
      * 
      * @since 1.2
      */
+    @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new PostgresActionBuilder(this, node
                 .getEntityResolver()));
@@ -77,6 +78,7 @@ public class PostgresAdapter extends JdbcAdapter {
      * Installs appropriate ExtendedTypes as converters for passing values between JDBC
      * and Java layers.
      */
+    @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
 
         super.configureExtendedTypes(map);
@@ -85,6 +87,7 @@ public class PostgresAdapter extends JdbcAdapter {
         map.registerType(new PostgresByteArrayType(true, true));
     }
 
+    @Override
     public DbAttribute buildAttribute(
             String name,
             String typeName,
@@ -118,6 +121,7 @@ public class PostgresAdapter extends JdbcAdapter {
      * 
      * @since 1.0.2
      */
+    @Override
     public String createTable(DbEntity ent) {
 
         StringBuffer buf = new StringBuffer();
@@ -237,6 +241,7 @@ public class PostgresAdapter extends JdbcAdapter {
     /**
      * Returns a trimming translator.
      */
+    @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         return new PostgresQualifierTranslator(queryAssembler);
     }
@@ -244,10 +249,12 @@ public class PostgresAdapter extends JdbcAdapter {
     /**
      * @see JdbcAdapter#createPkGenerator()
      */
+    @Override
     protected PkGenerator createPkGenerator() {
         return new PostgresPkGenerator();
     }
 
+    @Override
     public MergerFactory mergerFactory() {
         return new PostgresMergerFactory();
     }

@@ -43,6 +43,7 @@ public class ClassGeneratorResourceLoader extends FileResourceLoader {
      * Returns resource as InputStream. First calls super implementation. If resource
      * wasn't found, it attempts to load it from current directory or as an absolute path.
      */
+    @Override
     public synchronized InputStream getResourceStream(String name)
             throws ResourceNotFoundException {
 

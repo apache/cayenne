@@ -45,6 +45,7 @@ class DataContextFaults extends Fault {
         }
     }
 
+    @Override
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
         throw new UnsupportedOperationException();
     }

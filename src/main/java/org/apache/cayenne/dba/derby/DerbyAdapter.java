@@ -67,6 +67,7 @@ public class DerbyAdapter extends JdbcAdapter {
         setSupportsBatchUpdates(true);
     }
 
+    @Override
     protected PkGenerator createPkGenerator() {
         return new DerbyPkGenerator();
     }
@@ -75,6 +76,7 @@ public class DerbyAdapter extends JdbcAdapter {
      * Installs appropriate ExtendedTypes as converters for passing values between JDBC
      * and Java layers.
      */
+    @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
 
@@ -92,6 +94,7 @@ public class DerbyAdapter extends JdbcAdapter {
      * 
      * @since 1.2
      */
+    @Override
     protected void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
 
         String[] types = externalTypesForJdbcType(column.getType());
@@ -169,10 +172,12 @@ public class DerbyAdapter extends JdbcAdapter {
     /**
      * Returns a trimming translator.
      */
+    @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         return new TrimmingQualifierTranslator(queryAssembler, "RTRIM");
     }
     
+    @Override
     public MergerFactory mergerFactory() {
         return new DerbyMergerFactory();
     }

@@ -84,19 +84,23 @@ public class ObjectIdQuery extends IndirectQuery {
      */
     // return metadata without creating replacement, as it is not always possible to
     // create replacement (e.g. temp ObjectId).
+    @Override
     public QueryMetadata getMetaData(final EntityResolver resolver) {
         // caching metadata as it may be accessed multiple times (at a DC and DD level)
         if (metadata == null || metadataResolver != resolver) {
             this.metadata = new DefaultQueryMetadata() {
 
+                @Override
                 public ClassDescriptor getClassDescriptor() {
                     return resolver.getClassDescriptor(objectId.getEntityName());
                 }
                 
+                @Override
                 public ObjEntity getObjEntity() {
                     return getClassDescriptor().getEntity();
                 }
 
+                @Override
                 public boolean isFetchingDataRows() {
                     return fetchingDataRows;
                 }
@@ -112,6 +116,7 @@ public class ObjectIdQuery extends IndirectQuery {
         return objectId;
     }
 
+    @Override
     protected Query createReplacementQuery(EntityResolver resolver) {
         if (objectId == null) {
             throw new CayenneRuntimeException("Can't resolve query - objectId is null.");
@@ -150,6 +155,7 @@ public class ObjectIdQuery extends IndirectQuery {
     /**
      * Overrides toString() outputting a short string with query class and ObjectId.
      */
+    @Override
     public String toString() {
         return StringUtils.substringAfterLast(getClass().getName(), ".") + ":" + objectId;
     }
@@ -158,6 +164,7 @@ public class ObjectIdQuery extends IndirectQuery {
      * An object is considered equal to this query if it is also a SingleObjectQuery with
      * an equal ObjectId.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -175,6 +182,7 @@ public class ObjectIdQuery extends IndirectQuery {
     /**
      * Implements a standard hashCode contract considering custom 'equals' implementation.
      */
+    @Override
     public int hashCode() {
         return (objectId != null) ? objectId.hashCode() : 11;
     }

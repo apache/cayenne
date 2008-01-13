@@ -52,6 +52,7 @@ public class ObjEntityInheritanceTest extends BasicCase {
     protected ObjRelationship relationship2;
     protected ObjRelationship relationship3;
 
+    @Override
     public void setUp() throws Exception {
         map = new DataMap();
 

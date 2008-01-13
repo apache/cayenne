@@ -52,6 +52,7 @@ class OracleProcedureAction extends ProcedureAction {
     /**
      * Helper method that reads OUT parameters of a CallableStatement.
      */
+    @Override
     protected void readProcedureOutParameters(
             CallableStatement statement,
             OperationObserver delegate) throws SQLException, Exception {

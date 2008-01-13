@@ -46,6 +46,7 @@ public abstract class CayenneDOTestBase extends CayenneCase {
 
     protected DataContext ctxt;
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
         ctxt = createDataContext();

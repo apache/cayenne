@@ -76,6 +76,7 @@ abstract class ApplicationUpgradeHandler {
 
     static class UpgradeHandler_3_0 extends UpgradeHandler_2_0 {
 
+        @Override
         String supportedVersion() {
             return "3.0";
         }
@@ -83,6 +84,7 @@ abstract class ApplicationUpgradeHandler {
 
     static class UpgradeHandler_2_0 extends UpgradeHandler_1_1 {
 
+        @Override
         String supportedVersion() {
             return "2.0";
         }
@@ -90,16 +92,19 @@ abstract class ApplicationUpgradeHandler {
 
     static class UpgradeHandler_1_1 extends ApplicationUpgradeHandler {
 
+        @Override
         String supportedVersion() {
             return "1.1";
         }
 
+        @Override
         void performUpgrade(ApplicationProject project) throws ProjectException {
             project.setModified(true);
             project.getConfiguration().setProjectVersion(supportedVersion());
             project.save();
         }
 
+        @Override
         int checkForUpgrades(Configuration project, Collection appendMessages) {
             String loadedVersion = project.getProjectVersion();
             int versionState = compareVersion(loadedVersion);

@@ -57,6 +57,7 @@ public class CharType extends AbstractType {
     /**
      * Returns "java.lang.String".
      */
+    @Override
     public String getClassName() {
         return String.class.getName();
     }
@@ -67,6 +68,7 @@ public class CharType extends AbstractType {
      * @since 1.1
      * @deprecated since 3.0 as validation should not be done at the DataNode level.
      */
+    @Override
     public boolean validateProperty(
             Object source,
             String property,
@@ -102,6 +104,7 @@ public class CharType extends AbstractType {
     }
 
     /** Return trimmed string. */
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
         String val = null;
@@ -126,6 +129,7 @@ public class CharType extends AbstractType {
     }
 
     /** Return trimmed string. */
+    @Override
     public Object materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
 
@@ -153,6 +157,7 @@ public class CharType extends AbstractType {
         return val;
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,

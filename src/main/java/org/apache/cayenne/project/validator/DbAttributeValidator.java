@@ -36,6 +36,7 @@ public class DbAttributeValidator extends TreeNodeValidator {
         super();
     }
 
+    @Override
     public void validateObject(ProjectPath path, Validator validator) {
         DbAttribute attribute = (DbAttribute) path.getObject();
         // Must have name

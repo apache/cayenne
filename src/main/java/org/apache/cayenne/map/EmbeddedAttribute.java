@@ -56,6 +56,7 @@ public class EmbeddedAttribute extends ObjAttribute {
         setEntity(entity);
     }
 
+    @Override
     public void encodeAsXML(XMLEncoder encoder) {
         encoder.print("<embedded-attribute name=\"" + getName() + '\"');
         if (getType() != null) {
@@ -200,6 +201,7 @@ public class EmbeddedAttribute extends ObjAttribute {
     /**
      * Returns a type of this attribute that must be an {@link Embeddable} object.
      */
+    @Override
     public String getType() {
         return type;
     }
@@ -208,6 +210,7 @@ public class EmbeddedAttribute extends ObjAttribute {
      * Returns Java class of an object property described by this attribute. Wraps any
      * thrown exceptions into CayenneRuntimeException.
      */
+    @Override
     public Class<?> getJavaClass() {
         if (this.getType() == null) {
             return null;
@@ -227,6 +230,7 @@ public class EmbeddedAttribute extends ObjAttribute {
     /**
      * Sets a type of this attribute that must be an {@link Embeddable} object.
      */
+    @Override
     public void setType(String type) {
         this.type = type;
     }

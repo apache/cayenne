@@ -33,11 +33,13 @@ class EJBQLUpdateItemTranslator extends EJBQLConditionTranslator {
         super(context);
     }
 
+    @Override
     public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
         // unexpected, but make sure super is not called....
         return false;
     }
 
+    @Override
     public boolean visitUpdateItem(EJBQLExpression expression, int finishedChildIndex) {
 
         if (finishedChildIndex == expression.getChildrenCount() - 1) {
@@ -77,14 +79,17 @@ class EJBQLUpdateItemTranslator extends EJBQLConditionTranslator {
         return true;
     }
 
+    @Override
     public boolean visitUpdateField(EJBQLExpression expression, int finishedChildIndex) {
 
         EJBQLPathTranslator pathTranslator = new EJBQLPathTranslator(context) {
 
+            @Override
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
                 EJBQLUpdateItemTranslator.this.addMultiColumnOperand(operand);
             }
 
+            @Override
             public boolean visitUpdateField(
                     EJBQLExpression expression,
                     int finishedChildIndex) {
@@ -99,12 +104,14 @@ class EJBQLUpdateItemTranslator extends EJBQLConditionTranslator {
         return false;
     }
 
+    @Override
     public boolean visitEquals(EJBQLExpression expression, int finishedChildIndex) {
         // unlike super, Equals here has no children and is itself a child of UpdateItem
         context.append(" =");
         return false;
     }
 
+    @Override
     public boolean visitUpdateValue(EJBQLExpression expression) {
 
         // a criteria for NULL is UpdateValue with no children

@@ -36,9 +36,11 @@ abstract class ValueHolderToManyProperty extends BaseToManyProperty {
         super(owner, targetDescriptor, accessor, reverseName);
     }
 
+    @Override
     protected abstract ValueHolder createCollectionValueHolder(Object object)
             throws PropertyException;
 
+    @Override
     public boolean isFault(Object source) {
         Object target = accessor.getValue(source);
         return target == null

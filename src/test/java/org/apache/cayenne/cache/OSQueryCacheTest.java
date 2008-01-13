@@ -110,6 +110,7 @@ public class OSQueryCacheTest extends TestCase {
         List r1 = new ArrayList();
         QueryMetadata m1 = new MockQueryMetadata() {
 
+            @Override
             public String getCacheKey() {
                 return "a";
             }
@@ -120,6 +121,7 @@ public class OSQueryCacheTest extends TestCase {
         List r2 = new ArrayList();
         QueryMetadata m2 = new MockQueryMetadata() {
 
+            @Override
             public String getCacheKey() {
                 return "b";
             }

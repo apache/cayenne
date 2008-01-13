@@ -29,6 +29,7 @@ public abstract class SelectQueryBase extends CayenneCase {
     protected SelectQuery query;
     protected MockOperationObserver opObserver;
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
         populateTables();

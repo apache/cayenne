@@ -30,10 +30,12 @@ public class EJBQLLength extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitLength(this, -1);
     }
 
+    @Override
     protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
         return super.visitChild(visitor, childIndex)
                 && visitor.visitLength(this, childIndex);

@@ -41,6 +41,7 @@ class ValueHolderMapProperty extends ValueHolderToManyProperty implements
         this.mapKeyAccessor = mapKeyAccessor;
     }
 
+    @Override
     protected ValueHolder createCollectionValueHolder(Object object)
             throws PropertyException {
         if (!(object instanceof Persistent)) {

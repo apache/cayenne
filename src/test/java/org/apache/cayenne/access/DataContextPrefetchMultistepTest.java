@@ -43,6 +43,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class DataContextPrefetchMultistepTest extends DataContextCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

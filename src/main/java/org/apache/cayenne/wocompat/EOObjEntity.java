@@ -116,6 +116,7 @@ public class EOObjEntity extends ObjEntity {
      * 
      * @since 1.2
      */
+    @Override
     public Expression translateToDbPath(Expression expression) {
 
         if (expression == null) {

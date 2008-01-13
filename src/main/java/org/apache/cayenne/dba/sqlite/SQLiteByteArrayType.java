@@ -30,10 +30,12 @@ import org.apache.cayenne.access.types.AbstractType;
  */
 class SQLiteByteArrayType extends AbstractType {
 
+    @Override
     public String getClassName() {
         return "byte[]";
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,
@@ -49,10 +51,12 @@ class SQLiteByteArrayType extends AbstractType {
         }
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getBytes(index);
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return rs.getBytes(index);

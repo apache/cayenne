@@ -38,7 +38,8 @@ public class BatchQueryBuilderTest extends TestCase {
 		DbAdapter adapter = new JdbcAdapter();
 		BatchQueryBuilder builder =
 			new BatchQueryBuilder(adapter) {
-			public String createSqlString(BatchQuery batch) {
+			@Override
+            public String createSqlString(BatchQuery batch) {
 				return null;
 			}
 		};
@@ -52,7 +53,8 @@ public class BatchQueryBuilderTest extends TestCase {
 
 		BatchQueryBuilder builder =
 			new BatchQueryBuilder(adapter) {
-			public String createSqlString(BatchQuery batch) {
+			@Override
+            public String createSqlString(BatchQuery batch) {
 				return null;
 			}
 		};
@@ -74,7 +76,8 @@ public class BatchQueryBuilderTest extends TestCase {
 		DbAdapter adapter = new JdbcAdapter();
 
 		BatchQueryBuilder builder = new BatchQueryBuilder(adapter) {
-			public String createSqlString(BatchQuery batch) {
+			@Override
+            public String createSqlString(BatchQuery batch) {
 				return null;
 			}
 		};

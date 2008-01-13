@@ -33,6 +33,7 @@ import org.apache.cayenne.unit.PeopleCase;
 
 public class DataContextEJBQLConditionsPeopleTest extends PeopleCase {
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
 
@@ -82,6 +83,7 @@ public class DataContextEJBQLConditionsPeopleTest extends PeopleCase {
         context.commitChanges();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         // help in cleaning up relationship cycles...
         ObjectContext context = createDataContext();

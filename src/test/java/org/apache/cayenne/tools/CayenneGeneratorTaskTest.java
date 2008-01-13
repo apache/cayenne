@@ -65,6 +65,7 @@ public class CayenneGeneratorTaskTest extends BasicCase {
         Util.copy(url3, mapEmbeddables);
     }
 
+    @Override
     public void setUp() {
         task = new CayenneGeneratorTask();
         task.setProject(project);

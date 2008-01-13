@@ -71,6 +71,7 @@ public class PrefetchSelectQuery extends SelectQuery {
      * 
      * @since 1.2
      */
+    @Override
     void routePrefetches(QueryRouter router, EntityResolver resolver) {
         // noop - intentional.
     }

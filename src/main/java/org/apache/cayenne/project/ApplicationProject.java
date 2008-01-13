@@ -90,6 +90,7 @@ public class ApplicationProject extends Project {
     /**
      * @since 1.1
      */
+    @Override
     public void upgrade() throws ProjectException {
         ApplicationUpgradeHandler.sharedHandler().performUpgrade(this);
     }
@@ -97,6 +98,7 @@ public class ApplicationProject extends Project {
     /**
      * Initializes internal <code>Configuration</code> object and then calls super.
      */
+    @Override
     protected void postInitialize(File projectFile) {
         loadProject();
         super.postInitialize(projectFile);
@@ -143,6 +145,7 @@ public class ApplicationProject extends Project {
         this.configuration = config;
     }
 
+    @Override
     public void checkForUpgrades() {
         this.upgradeStatus = ApplicationUpgradeHandler.sharedHandler().checkForUpgrades(
                 configuration,
@@ -152,6 +155,7 @@ public class ApplicationProject extends Project {
     /**
      * @see org.apache.cayenne.project.Project#getChildren()
      */
+    @Override
     public List getChildren() {
         return new ArrayList(this.getConfiguration().getDomains());
     }
@@ -161,6 +165,7 @@ public class ApplicationProject extends Project {
      * own. In case of ApplicationProject, the nodes that require separate filed are: the
      * project itself, each DataMap, each driver DataNode.
      */
+    @Override
     public ProjectFile projectFileForObject(Object obj) {
         if (requiresProjectFile(obj)) {
             String domainFileName = this.getConfiguration().getDomainConfigurationName();
@@ -202,6 +207,7 @@ public class ApplicationProject extends Project {
         return false;
     }
 
+    @Override
     public ConfigStatus getLoadStatus() {
         return (configuration != null)
                 ? configuration.getLoadStatus()
@@ -218,6 +224,7 @@ public class ApplicationProject extends Project {
             // do nothing...
         }
 
+        @Override
         public void shouldLoadDataDomain(String domainName) {
             super.shouldLoadDataDomain(domainName);
 
@@ -230,6 +237,7 @@ public class ApplicationProject extends Project {
             }
         }
 
+        @Override
         public void shouldLoadDataDomainProperties(String domainName, Map properties) {
 
             // remove factory property to avoid instatiation attempts for unknown/invalid

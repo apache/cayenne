@@ -168,6 +168,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(DB_ENTITY_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartDbEntity(attributes);
             }
@@ -175,6 +176,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(DB_ATTRIBUTE_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartDbAttribute(attributes);
             }
@@ -182,6 +184,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(OBJ_ENTITY_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartObjEntity(attributes);
             }
@@ -189,6 +192,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(OBJ_ATTRIBUTE_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartObjAttribute(attributes);
             }
@@ -196,6 +200,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(EMBEDDABLE_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartEmbeddable(attributes);
             }
@@ -203,6 +208,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(EMBEDDABLE_ATTRIBUTE_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartEmbeddableAttribute(attributes);
             }
@@ -210,6 +216,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(EMBEDDABLE_ATTRIBUTE_OVERRIDE_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartEmbeddableAttributeOverride(attributes);
             }
@@ -217,6 +224,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(EMBEDDED_ATTRIBUTE_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartEmbeddedAttribute(attributes);
             }
@@ -224,6 +232,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(DB_RELATIONSHIP_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartDbRelationship(attributes);
             }
@@ -231,6 +240,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(DB_ATTRIBUTE_PAIR_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartDbAttributePair(attributes);
             }
@@ -238,6 +248,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(OBJ_RELATIONSHIP_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartObjRelationship(attributes);
             }
@@ -245,6 +256,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(DB_RELATIONSHIP_REF_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartDbRelationshipRef(attributes);
             }
@@ -252,6 +264,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(PROCEDURE_PARAMETER_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartProcedureParameter(attributes);
             }
@@ -259,6 +272,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(PROCEDURE_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartProcedure(attributes);
             }
@@ -266,6 +280,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(QUERY_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartQuery(attributes);
             }
@@ -273,6 +288,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(QUERY_SQL_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 charactersBuffer = new StringBuilder();
                 processStartQuerySQL(attributes);
@@ -281,6 +297,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(QUERY_ORDERING_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 charactersBuffer = new StringBuilder();
                 processStartQueryOrdering(attributes);
@@ -289,6 +306,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(DB_KEY_GENERATOR_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartDbKeyGenerator(attributes);
             }
@@ -296,6 +314,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(PROPERTY_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 // properties can belong to query or DataMap
                 if (queryBuilder != null) {
@@ -308,18 +327,21 @@ public class MapLoader extends DefaultHandler {
         });
 
         startTagOpMap.put(ENTITY_LISTENER_TAG, new StartClosure() {
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartEntitylistener(attributes);
             }
         });
 
         startTagOpMap.put(PRE_PERSIST_TAG, new StartClosure() {
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartPrePersist(attributes);
             }
         });
 
         startTagOpMap.put(POST_PERSIST_TAG, new StartClosure() {
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartPostPersist(attributes);
             }
@@ -327,6 +349,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(PRE_UPDATE_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartPreUpdate(attributes);
             }
@@ -334,6 +357,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(POST_UPDATE_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartPostUpdate(attributes);
             }
@@ -341,6 +365,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(PRE_REMOVE_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartPreRemove(attributes);
             }
@@ -348,6 +373,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(POST_REMOVE_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartPostRemove(attributes);
             }
@@ -355,6 +381,7 @@ public class MapLoader extends DefaultHandler {
 
         startTagOpMap.put(POST_LOAD_TAG, new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartPostLoad(attributes);
             }
@@ -362,6 +389,7 @@ public class MapLoader extends DefaultHandler {
 
         StartClosure resetBuffer = new StartClosure() {
 
+            @Override
             void execute(Attributes attributes) throws SAXException {
                 charactersBuffer = new StringBuilder();
             }
@@ -375,30 +403,35 @@ public class MapLoader extends DefaultHandler {
 
         endTagOpMap.put(DATA_MAP_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndDataMap();
             }
         });
         endTagOpMap.put(DB_ENTITY_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndDbEntity();
             }
         });
         endTagOpMap.put(OBJ_ENTITY_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndObjEntity();
             }
         });
         endTagOpMap.put(EMBEDDABLE_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndEmbeddable();
             }
         });
         endTagOpMap.put(EMBEDDABLE_ATTRIBUTE_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndEmbeddedAttribute();
             }
@@ -406,6 +439,7 @@ public class MapLoader extends DefaultHandler {
 
         endTagOpMap.put(DB_ATTRIBUTE_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndDbAttribute();
             }
@@ -413,78 +447,91 @@ public class MapLoader extends DefaultHandler {
         
         endTagOpMap.put(DB_RELATIONSHIP_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndDbRelationship();
             }
         });
         endTagOpMap.put(OBJ_RELATIONSHIP_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndObjRelationship();
             }
         });
         endTagOpMap.put(DB_GENERATOR_TYPE_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndDbGeneratorType();
             }
         });
         endTagOpMap.put(DB_GENERATOR_NAME_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndDbGeneratorName();
             }
         });
         endTagOpMap.put(DB_KEY_CACHE_SIZE_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndDbKeyCacheSize();
             }
         });
         endTagOpMap.put(PROCEDURE_PARAMETER_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndProcedureParameter();
             }
         });
         endTagOpMap.put(PROCEDURE_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndProcedure();
             }
         });
         endTagOpMap.put(QUERY_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndQuery();
             }
         });
         endTagOpMap.put(QUERY_SQL_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndQuerySQL();
             }
         });
         endTagOpMap.put(QUERY_QUALIFIER_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndQualifier();
             }
         });
         endTagOpMap.put(QUERY_ORDERING_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndQueryOrdering();
             }
         });
         endTagOpMap.put(QUERY_PREFETCH_TAG, new EndClosure() {
 
+            @Override
             void execute() throws SAXException {
                 processEndQueryPrefetch();
             }
         });
 
         endTagOpMap.put(ENTITY_LISTENER_TAG, new EndClosure() {
+            @Override
             void execute() throws SAXException {
                 processEndEntitylistener();
             }
@@ -678,6 +725,7 @@ public class MapLoader extends DefaultHandler {
         return locator;
     }
 
+    @Override
     public void startElement(
             String namespaceUri,
             String localName,
@@ -692,6 +740,7 @@ public class MapLoader extends DefaultHandler {
         }
     }
 
+    @Override
     public void endElement(String namespaceURI, String localName, String qName)
             throws SAXException {
 
@@ -1211,6 +1260,7 @@ public class MapLoader extends DefaultHandler {
         return sb;
     }
 
+    @Override
     public void characters(char[] text, int start, int length)
             throws org.xml.sax.SAXException {
         if (charactersBuffer != null) {

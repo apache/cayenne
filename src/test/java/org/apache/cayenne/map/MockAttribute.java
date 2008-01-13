@@ -35,6 +35,7 @@ public class MockAttribute extends Attribute {
         super(name);
     }
 
+    @Override
     public void encodeAsXML(XMLEncoder encoder) {
     }
 

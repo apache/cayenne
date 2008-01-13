@@ -46,6 +46,7 @@ public class ASTNot extends AggregateConditionNode {
         connectChildren();
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
         if (len == 0) {
@@ -60,14 +61,17 @@ public class ASTNot extends AggregateConditionNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTNot(id);
     }
 
+    @Override
     public int getType() {
         return Expression.NOT;
     }
 
+    @Override
     public void encodeAsString(PrintWriter pw) {
         pw.print("not ");
         super.encodeAsString(pw);
@@ -81,6 +85,7 @@ public class ASTNot extends AggregateConditionNode {
         encodeAsString(pw);
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         throw new UnsupportedOperationException("No operator for '"
                 + ExpressionParserTreeConstants.jjtNodeName[id]

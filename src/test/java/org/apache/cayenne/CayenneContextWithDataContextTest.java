@@ -44,6 +44,7 @@ import org.apache.cayenne.unit.UnitLocalConnection;
 
 public class CayenneContextWithDataContextTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
     }

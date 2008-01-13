@@ -77,6 +77,7 @@ public class WebApplicationResourceLocator extends ResourceLocator {
      * Looks for resources relative to /WEB-INF/ directory or any extra context paths
      * configured. Internal ServletContext is used to find resources.
      */
+    @Override
     public URL findResource(String location) {
         if (!additionalContextPaths.isEmpty() && getServletContext() != null) {
 
@@ -115,6 +116,7 @@ public class WebApplicationResourceLocator extends ResourceLocator {
      * Override ResourceLocator.addFilesystemPath(String) to intercept context paths
      * starting with "/WEB-INF/" to place in additionalContextPaths.
      */
+    @Override
     public void addFilesystemPath(String path) {
         if (path != null) {
             if (path.startsWith("/WEB-INF/")) {

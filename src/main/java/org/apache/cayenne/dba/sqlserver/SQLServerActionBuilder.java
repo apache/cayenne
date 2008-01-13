@@ -37,6 +37,7 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
         super(adapter, resolver);
     }
 
+    @Override
     public SQLAction batchAction(BatchQuery query) {
         // check run strategy...
 
@@ -49,6 +50,7 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
         return action;
     }
 
+    @Override
     public SQLAction procedureAction(ProcedureQuery query) {
         return new SQLServerProcedureAction(query, getAdapter(), getEntityResolver());
     }

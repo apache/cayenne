@@ -35,6 +35,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class IncrementalFaultListPrefetchTest extends DataContextCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         createTestData("testPaintings");

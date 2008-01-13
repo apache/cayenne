@@ -36,6 +36,7 @@ public class MockObjRelationship extends ObjRelationship {
         super(name);
     }
 
+    @Override
     public ObjRelationship getReverseRelationship() {
         return reverseRelationship;
     }

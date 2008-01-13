@@ -83,6 +83,7 @@ public class CayenneException extends Exception {
         return super.getMessage();
     }
 
+    @Override
     public String getMessage() {
         String message = super.getMessage();
         return (message != null) ? getExceptionLabel() + message : getExceptionLabel()

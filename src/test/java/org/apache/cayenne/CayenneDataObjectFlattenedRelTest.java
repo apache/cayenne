@@ -39,6 +39,7 @@ import org.apache.cayenne.unit.CayenneCase;
 // from RelationshipTestCase.
 public class CayenneDataObjectFlattenedRelTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();

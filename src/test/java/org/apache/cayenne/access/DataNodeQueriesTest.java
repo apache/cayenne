@@ -42,6 +42,7 @@ import org.apache.cayenne.unit.CayenneCase;
  */
 public class DataNodeQueriesTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();

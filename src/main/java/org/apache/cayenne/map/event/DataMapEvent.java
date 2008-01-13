@@ -61,6 +61,7 @@ public class DataMapEvent extends MapEvent {
 		this.dataMap = dataMap;
 	}
 
+    @Override
     public String getNewName() {
         return (dataMap != null) ? dataMap.getName() : null;
     }

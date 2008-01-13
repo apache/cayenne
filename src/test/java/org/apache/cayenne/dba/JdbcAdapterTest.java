@@ -27,6 +27,7 @@ public class JdbcAdapterTest extends CayenneCase {
 
     protected JdbcAdapter adapter;
 
+    @Override
     protected void setUp() throws java.lang.Exception {
         adapter = new JdbcAdapter();
     }

@@ -42,6 +42,7 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
         super(queryAssembler);
     }
 
+    @Override
     public void startNode(Expression node, Expression parentNode) {
 
         if (node.getOperandCount() == 2) {
@@ -62,6 +63,7 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
         }
     }
 
+    @Override
     public void endNode(Expression node, Expression parentNode) {
         if (node.getOperandCount() == 2) {
             // check if we need to use objectMatchTranslator to finish building the expression
@@ -82,6 +84,7 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
         }
     }
 
+    @Override
     protected void appendLiteralDirect(
         StringBuffer buf,
         Object val,
@@ -117,6 +120,7 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
         return buffer.toString();
     }
 
+    @Override
     public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
         if (!hasMoreChildren) {
             return;

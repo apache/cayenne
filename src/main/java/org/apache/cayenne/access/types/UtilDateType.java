@@ -41,6 +41,7 @@ public class UtilDateType extends AbstractType {
     /**
      * Returns "java.util.Date".
      */
+    @Override
     public String getClassName() {
         return Date.class.getName();
     }
@@ -52,6 +53,7 @@ public class UtilDateType extends AbstractType {
      * @since 1.1
      * @deprecated since 3.0 as validation should not be done at the DataNode level.
      */
+    @Override
     public boolean validateProperty(
             Object source,
             String property,
@@ -76,6 +78,7 @@ public class UtilDateType extends AbstractType {
                             + TypesMapping.getSqlNameByType(type));
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         Date val = null;
 
@@ -109,6 +112,7 @@ public class UtilDateType extends AbstractType {
         return (rs.wasNull()) ? null : new Date(val.getTime());
     }
 
+    @Override
     public Object materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
         Object val = null;
@@ -145,6 +149,7 @@ public class UtilDateType extends AbstractType {
                 .getTime());
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,

@@ -27,6 +27,7 @@ import org.apache.cayenne.access.trans.SelectTranslator;
  */
 class PostgresSelectTranslator extends SelectTranslator {
 
+    @Override
     public String createSqlString() throws Exception {
         String sql = super.createSqlString();
 

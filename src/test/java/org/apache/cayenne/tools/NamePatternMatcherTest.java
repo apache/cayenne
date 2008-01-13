@@ -63,6 +63,7 @@ public class NamePatternMatcherTest extends TestCase {
     public void testTokenizer() {
         Task parentTask = new Task() {
 
+            @Override
             public void log(String msg, int msgLevel) {
                 System.out.println(String.valueOf(msgLevel) + ": " + msg);
             }
@@ -90,6 +91,7 @@ public class NamePatternMatcherTest extends TestCase {
     public void testTokenizerEntities() {
         Task parentTask = new Task() {
 
+            @Override
             public void log(String msg, int msgLevel) {
                 System.out.println(String.valueOf(msgLevel) + ": " + msg);
             }

@@ -48,6 +48,7 @@ public abstract class BaseToOneProperty extends BaseArcProperty implements ToOne
         writeProperty(source, oldTarget, target);
     }
 
+    @Override
     public boolean visit(PropertyVisitor visitor) {
         return visitor.visitToOne(this);
     }

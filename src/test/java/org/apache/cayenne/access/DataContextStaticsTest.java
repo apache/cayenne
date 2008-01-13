@@ -69,28 +69,35 @@ public class DataContextStaticsTest extends CayenneCase {
             Configuration.sharedConfiguration = savedConfig;
         }
 
-		public boolean canInitialize() {
+		@Override
+        public boolean canInitialize() {
 			return true;
 		}
 
-		public void initialize() throws Exception {
+		@Override
+        public void initialize() throws Exception {
 		}
 
-		public void didInitialize() {
+		@Override
+        public void didInitialize() {
 		}
 
-		public ResourceLocator getResourceLocator() {
+		@Override
+        public ResourceLocator getResourceLocator() {
 			return null;
 		}
 
+        @Override
         protected InputStream getDomainConfiguration() {
             return null;
         }
 
+        @Override
         protected InputStream getMapConfiguration(String location) {
             return null;
         }
         
+        @Override
         protected InputStream getViewConfiguration(String location) {
             return null;
         }

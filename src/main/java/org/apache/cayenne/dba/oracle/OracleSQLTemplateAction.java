@@ -55,6 +55,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         super(query, adapter);
     }
 
+    @Override
     protected void processSelectResult(
             SQLStatement compiled,
             Connection connection,

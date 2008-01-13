@@ -69,11 +69,13 @@ public class UtilExtTest extends TestCase {
 		// need a special subclass of Object to make "clone" method public
 		class CloneableObject implements Cloneable {
 
-			public Object clone() throws CloneNotSupportedException {
+			@Override
+            public Object clone() throws CloneNotSupportedException {
 				return super.clone();
 			}
 
-			public boolean equals(Object obj) {
+			@Override
+            public boolean equals(Object obj) {
 				if (obj == null)
 					return false;
 

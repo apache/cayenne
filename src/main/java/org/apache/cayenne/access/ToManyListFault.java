@@ -30,6 +30,7 @@ public class ToManyListFault extends Fault {
     /**
      * Resolves this fault to a List of objects.
      */
+    @Override
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
         return new ToManyList(sourceObject, relationshipName);
     }

@@ -104,6 +104,7 @@ public class EventBridgeTest extends TestCase {
         // we must wait till notification is received
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertTrue(bridge.lastLocalEvent instanceof SnapshotEvent);
                 assertEquals(local, bridge.lastLocalEvent.getSubject());
@@ -128,6 +129,7 @@ public class EventBridgeTest extends TestCase {
         // we must wait till notification is received
         ThreadedTestHelper helper1 = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertTrue(bridge.lastLocalEvent instanceof SnapshotEvent);
                 assertEquals(local, bridge.lastLocalEvent.getSubject());
@@ -147,14 +149,17 @@ public class EventBridgeTest extends TestCase {
             super(localSubject, externalSubject);
         }
 
+        @Override
         public void sendExternalEvent(CayenneEvent event) {
             lastLocalEvent = event;
         }
 
+        @Override
         protected void shutdownExternal() throws Exception {
             shutdownCalls++;
         }
 
+        @Override
         protected void startupExternal() throws Exception {
             startupCalls++;
         }

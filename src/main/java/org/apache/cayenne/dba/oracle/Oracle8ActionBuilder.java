@@ -36,6 +36,7 @@ class Oracle8ActionBuilder extends OracleActionBuilder {
         super(adapter, resolver);
     }
 
+    @Override
     public SQLAction sqlAction(SQLTemplate query) {
         return new Oracle8SQLTemplateAction(query, adapter);
     }

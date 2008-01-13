@@ -175,6 +175,7 @@ final class FlattenedArcKey {
 
         node.performQueries(Collections.singleton((Query) query), new DefaultOperationObserver() {
 
+            @Override
             public void nextDataRows(Query query, List dataRows) {
                 result[0] = dataRows;
             }
@@ -187,6 +188,7 @@ final class FlattenedArcKey {
         return reverseRelationship != null;
     }
 
+    @Override
     public int hashCode() {
         // TODO: use hashcode builder to make a better hashcode.
         return sourceId.hashCode() + destinationId.hashCode() + compareToken.hashCode();
@@ -195,6 +197,7 @@ final class FlattenedArcKey {
     /**
      * Defines equal based on whether the relationship is bidirectional.
      */
+    @Override
     public boolean equals(Object object) {
 
         if (this == object) {

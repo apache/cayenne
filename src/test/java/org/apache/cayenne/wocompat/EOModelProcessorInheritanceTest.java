@@ -30,6 +30,7 @@ import org.apache.cayenne.unit.BasicCase;
 public class EOModelProcessorInheritanceTest extends BasicCase {
     protected EOModelProcessor processor;
 
+    @Override
     public void setUp() throws Exception {
         processor = new EOModelProcessor();
     }

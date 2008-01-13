@@ -146,6 +146,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     /**
      * @since 1.2
      */
+    @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
 
         metaData.resolve(root, resultClass != null
@@ -200,6 +201,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.2
      */
+    @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return visitor.procedureAction(this);
     }

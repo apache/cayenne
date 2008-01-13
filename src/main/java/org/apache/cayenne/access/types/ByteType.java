@@ -40,21 +40,25 @@ public class ByteType extends AbstractType {
         this.widenBytes = widenBytes;
     }
 
+    @Override
     public String getClassName() {
         return Byte.class.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         byte b = rs.getByte(index);
         return (rs.wasNull()) ? null : new Byte(b);
     }
 
+    @Override
     public Object materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         byte b = st.getByte(index);
         return (st.wasNull()) ? null : Byte.valueOf(b);
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,

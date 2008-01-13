@@ -45,6 +45,7 @@ public class ASTNamedParameter extends ASTScalar {
         setValue(value);
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         throw new ExpressionException(
             "Uninitialized parameter: " + value + ", call 'expWithParameters' first.");
@@ -53,12 +54,14 @@ public class ASTNamedParameter extends ASTScalar {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         ASTNamedParameter copy = new ASTNamedParameter(id);
         copy.value = value;
         return copy;
     }
 
+    @Override
     public void setValue(Object value) {
         if (value == null) {
             throw new ExpressionException("Null Parameter value");

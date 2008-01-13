@@ -48,6 +48,7 @@ public class ProcedureParameterEvent extends MapEvent {
         setId(type);
     }
 
+    @Override
     public String getNewName() {
         return (parameter != null) ? parameter.getName() : null;
     }

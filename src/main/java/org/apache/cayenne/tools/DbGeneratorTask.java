@@ -58,6 +58,7 @@ public class DbGeneratorTask extends CayenneTask {
     protected boolean createPK = true;
     protected boolean createFK = true;
 
+    @Override
     public void execute() {
 
         // prepare defaults

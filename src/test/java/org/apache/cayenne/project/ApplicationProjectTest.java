@@ -37,6 +37,7 @@ public class ApplicationProjectTest extends CayenneCase {
     protected ApplicationProject p;
     protected File f;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         f = new File(Configuration.DEFAULT_DOMAIN_FILE);

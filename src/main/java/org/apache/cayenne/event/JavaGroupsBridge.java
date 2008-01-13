@@ -110,6 +110,7 @@ public class JavaGroupsBridge extends EventBridge implements MessageListener {
         }
     }
 
+    @Override
     protected void startupExternal() throws Exception {
         // TODO: need to do more research to figure out the best default transport
         // settings
@@ -162,6 +163,7 @@ public class JavaGroupsBridge extends EventBridge implements MessageListener {
                 + "shun=true;print_local_addr=false)";
     }
 
+    @Override
     protected void shutdownExternal() throws Exception {
         try {
             if (adapter != null) {
@@ -176,6 +178,7 @@ public class JavaGroupsBridge extends EventBridge implements MessageListener {
         }
     }
 
+    @Override
     protected void sendExternalEvent(CayenneEvent localEvent) throws Exception {
         Message message = new Message(null, null, eventToMessageObject(localEvent));
         channel.send(message);

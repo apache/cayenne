@@ -65,6 +65,7 @@ public class AttributeEvent extends EntityEvent {
         this.attribute = attribute;
     }
 
+    @Override
     public String getNewName() {
         return (attribute != null) ? attribute.getName() : null;
     }

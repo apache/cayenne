@@ -175,6 +175,7 @@ public class ProjectPath {
         return (path.length > 1) ? path[path.length - 2] : null;
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append("[ProjectPath: ");
@@ -190,6 +191,7 @@ public class ProjectPath {
         return buf.toString();
     }
 
+    @Override
     public boolean equals(Object object) {
         if (object == this) {
             return true;

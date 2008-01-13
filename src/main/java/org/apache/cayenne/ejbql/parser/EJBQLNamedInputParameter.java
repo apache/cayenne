@@ -30,6 +30,7 @@ public class EJBQLNamedInputParameter extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitNamedInputParameter(this);
     }

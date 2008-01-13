@@ -51,6 +51,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         return context;
     }
 
+    @Override
     public boolean visitDistinct(EJBQLExpression expression) {
         // "distinct" is appended via a marker as sometimes a later match on to-many would
         // require a DISTINCT insertion.
@@ -60,6 +61,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
         context.append(" FROM");
         context.setAppendingResultColumns(false);
@@ -69,24 +71,28 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    @Override
     public boolean visitGroupBy(EJBQLExpression expression) {
         context.append(" GROUP BY");
         expression.visit(context.getTranslatorFactory().getGroupByTranslator(context));
         return false;
     }
 
+    @Override
     public boolean visitHaving(EJBQLExpression expression) {
         context.append(" HAVING");
         expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
         return false;
     }
 
+    @Override
     public boolean visitOrderBy(EJBQLExpression expression) {
         context.append(" ORDER BY");
         expression.visit(context.getTranslatorFactory().getOrderByTranslator(context));
         return false;
     }
 
+    @Override
     public boolean visitSelect(EJBQLExpression expression) {
         // this ensures that result columns are appeneded only in top-level select, but
         // not subselect (as 'visitSelect' is not called on subselect)
@@ -94,18 +100,21 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitSelectClause(EJBQLExpression expression) {
         context.append("SELECT");
         context.markCurrentPosition(makeDistinctMarker());
         return true;
     }
 
+    @Override
     public boolean visitSelectExpressions(EJBQLExpression expression) {
         expression.visit(context.getTranslatorFactory().getSelectColumnsTranslator(
                 context));
         return false;
     }
 
+    @Override
     public boolean visitWhere(EJBQLExpression expression) {
         // "WHERE" is appended via a marker as it may have been already appended when an
         // entity inheritance qualifier was applied.

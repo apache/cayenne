@@ -30,6 +30,7 @@ public class ResourceLocatorTest extends TestCase {
     private File fTmpFileInCurrentDir;
     private String fTmpFileName;
 
+    @Override
     protected void setUp() throws java.lang.Exception {
         fTmpFileName = System.currentTimeMillis() + ".tmp";
         fTmpFileInCurrentDir = new File("." + File.separator + fTmpFileName);
@@ -40,6 +41,7 @@ public class ResourceLocatorTest extends TestCase {
         fout.close();
     }
 
+    @Override
     protected void tearDown() throws java.lang.Exception {
         if (!fTmpFileInCurrentDir.delete())
             throw new Exception("Error deleting temporary file: " + fTmpFileInCurrentDir);

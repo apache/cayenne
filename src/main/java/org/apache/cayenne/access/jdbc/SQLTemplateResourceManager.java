@@ -84,19 +84,23 @@ public class SQLTemplateResourceManager
         return getClass().getName();
     }
 
+    @Override
     public long getLastModified(Resource resource) {
         return -1;
     }
 
+    @Override
     public InputStream getResourceStream(String source)
         throws ResourceNotFoundException {
         return new ByteArrayInputStream(source.getBytes());
     }
 
+    @Override
     public void init(ExtendedProperties configuration) {
 
     }
 
+    @Override
     public boolean isSourceModified(Resource resource) {
         return false;
     }

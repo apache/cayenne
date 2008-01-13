@@ -180,11 +180,13 @@ class ObjectContextChangeLog {
             size = toIndex - fromIndex;
         }
 
+        @Override
         public GraphDiff get(int index) {
             rangeCheck(index);
             return list.get(index + offset);
         }
 
+        @Override
         public int size() {
             return size;
         }

@@ -44,6 +44,7 @@ public abstract class BaseArcProperty extends BaseProperty implements ArcPropert
                 .getRelationship(getName());
     }
 
+    @Override
     public abstract boolean visit(PropertyVisitor visitor);
 
     public abstract boolean isFault(Object source);

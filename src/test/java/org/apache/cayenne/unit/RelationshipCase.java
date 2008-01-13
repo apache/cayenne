@@ -27,6 +27,7 @@ public abstract class RelationshipCase extends CayenneCase {
 
     public static final String RELATIONSHIP_ACCESS_STACK = "RelationshipStack";
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(
             RELATIONSHIP_ACCESS_STACK);

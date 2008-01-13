@@ -88,6 +88,7 @@ public class LocalConnection extends BaseConnection {
     /**
      * Does nothing.
      */
+    @Override
     protected void beforeSendMessage(ClientMessage message) {
         // noop
     }
@@ -95,6 +96,7 @@ public class LocalConnection extends BaseConnection {
     /**
      * Dispatches a message to an internal handler.
      */
+    @Override
     protected Object doSendMessage(ClientMessage message) throws CayenneRuntimeException {
 
         ClientMessage processedMessage;

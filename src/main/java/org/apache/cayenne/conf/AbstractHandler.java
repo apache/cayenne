@@ -73,6 +73,7 @@ class AbstractHandler extends DefaultHandler {
      * @exception SAXException if this method is not overridden, or in case of error in an
      *                overridden version
      */
+    @Override
     public void startElement(
             String namespaceURI,
             String localName,
@@ -94,6 +95,7 @@ class AbstractHandler extends DefaultHandler {
      * @exception SAXException if this method is not overridden, or in case of error in an
      *                overridden version
      */
+    @Override
     public void characters(char[] buf, int start, int count) throws SAXException {
         String s = new String(buf, start, count).trim();
 
@@ -117,6 +119,7 @@ class AbstractHandler extends DefaultHandler {
      * 
      * @see #finished()
      */
+    @Override
     public void endElement(String namespaceURI, String localName, String qName)
             throws SAXException {
         finished();

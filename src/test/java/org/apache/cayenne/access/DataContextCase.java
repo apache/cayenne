@@ -42,6 +42,7 @@ public abstract class DataContextCase extends CayenneCase {
 
     protected DataContext context;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

@@ -30,10 +30,12 @@ public class EJBQLIsNull extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitIsNull(this, -1);
     }
 
+    @Override
     protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
         return super.visitChild(visitor, childIndex)
                 && visitor.visitIsNull(this, childIndex);

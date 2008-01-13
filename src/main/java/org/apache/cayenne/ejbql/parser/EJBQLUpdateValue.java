@@ -30,6 +30,7 @@ public class EJBQLUpdateValue extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitUpdateValue(this);
     }

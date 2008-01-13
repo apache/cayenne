@@ -30,6 +30,7 @@ public class OrderingTranslatorTest extends CayenneCase {
     protected TstQueryAssembler qa;
     protected SelectQuery q;
 
+    @Override
     protected void setUp() throws Exception {
         qa = new TstQueryAssembler(getNode(), new SelectQuery());
         q = (SelectQuery) qa.getQuery();

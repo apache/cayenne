@@ -39,9 +39,11 @@ class OpenBaseActionBuilder extends JdbcActionBuilder {
         super(adapter, resolver);
     }
 
+    @Override
     public SQLAction objectSelectAction(SelectQuery query) {
         return new SelectAction(query, adapter, entityResolver) {
 
+            @Override
             protected SelectTranslator createTranslator(Connection connection) {
                 SelectTranslator translator = new OpenBaseSelectTranslator();
                 translator.setQuery(query);

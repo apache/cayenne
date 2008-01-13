@@ -27,10 +27,12 @@ import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextCallbacksTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         EntityResolver resolver = getDomain().getEntityResolver();
         resolver.getCallbackRegistry().clear();

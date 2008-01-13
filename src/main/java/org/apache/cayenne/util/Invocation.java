@@ -227,6 +227,7 @@ public class Invocation extends Object {
     /**
      * @see Object#equals(java.lang.Object)
      */
+    @Override
     public boolean equals(Object obj) {
         if ((obj != null) && (obj.getClass().equals(this.getClass()))) {
             Invocation otherInvocation = (Invocation) obj;
@@ -257,6 +258,7 @@ public class Invocation extends Object {
     /**
      * @see Object#hashCode()
      */
+    @Override
     public int hashCode() {
         // IMPORTANT: DO NOT include Invocation target into whatever
         // algorithm is used to compute hashCode, since it is using a

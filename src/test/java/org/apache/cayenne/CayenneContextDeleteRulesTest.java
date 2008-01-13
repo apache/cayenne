@@ -32,6 +32,7 @@ import org.apache.cayenne.unit.CayenneResources;
 
 public class CayenneContextDeleteRulesTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()

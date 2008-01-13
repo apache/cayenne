@@ -42,22 +42,27 @@ public class MySQLStackAdapter extends AccessStackAdapter {
         super(adapter);
     }
 
+    @Override
     public boolean supportsLobs() {
         return true;
     }
 
+    @Override
     public boolean supportsCaseSensitiveLike() {
         return false;
     }
 
+    @Override
     public boolean supportsStoredProcedures() {
         return true;
     }
 
+    @Override
     public boolean supportsTrimChar() {
         return true;
     }
 
+    @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
         if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
             executeDDL(con, "mysql", "create-select-sp.sql");
@@ -67,6 +72,7 @@ public class MySQLStackAdapter extends AccessStackAdapter {
         }
     }
 
+    @Override
     public void willDropTables(
             Connection conn,
             DataMap map,
@@ -81,6 +87,7 @@ public class MySQLStackAdapter extends AccessStackAdapter {
         }
     }
 
+    @Override
     public boolean supportsFKConstraints(DbEntity entity) {
         // MySQL supports that, but there are problems deleting objects from such
         // tables...

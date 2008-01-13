@@ -100,6 +100,7 @@ public class DbRelationship extends Relationship {
      * Returns a target of this relationship. If relationship is not attached to a
      * DbEntity, and DbEntity doesn't have a namespace, and exception is thrown.
      */
+    @Override
     public Entity getTargetEntity() {
         String targetName = getTargetEntityName();
         if (targetName == null) {
@@ -484,6 +485,7 @@ public class DbRelationship extends Relationship {
             super(relationship);
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o == null) {
                 return false;

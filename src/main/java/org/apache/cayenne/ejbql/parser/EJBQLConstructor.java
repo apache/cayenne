@@ -30,6 +30,7 @@ public class EJBQLConstructor extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitConstructor(this);
     }

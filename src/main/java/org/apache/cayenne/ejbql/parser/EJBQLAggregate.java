@@ -30,6 +30,7 @@ public class EJBQLAggregate extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitAggregate(this);
     }

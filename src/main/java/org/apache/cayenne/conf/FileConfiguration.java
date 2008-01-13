@@ -146,7 +146,8 @@ public class FileConfiguration extends DefaultConfiguration {
 	 * Only returns <code>true</code> when {@link #getProjectFile} does not
 	 * return <code>null</code>.
 	 */
-	public boolean canInitialize() {
+	@Override
+    public boolean canInitialize() {
 		// I can only initialize myself when I have a valid file
 		return (this.getProjectFile() != null);
 	}

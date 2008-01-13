@@ -38,7 +38,8 @@ public class DbEntityValidator extends TreeNodeValidator {
 		super();
 	}
 
-	public void validateObject(ProjectPath path, Validator validator) {
+	@Override
+    public void validateObject(ProjectPath path, Validator validator) {
 		DbEntity ent = (DbEntity) path.getObject();
 		validateName(ent, path, validator);
 		validateAttributes(ent, path, validator);

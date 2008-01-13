@@ -53,6 +53,7 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class HSQLDBAdapter extends JdbcAdapter {
 
+    @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
         map.registerType(new ShortType());
@@ -86,6 +87,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * 
      * @since 1.2
      */
+    @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query
                 .createSQLAction(new HSQLActionBuilder(this, node.getEntityResolver()));
@@ -96,6 +98,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * 
      * @since 1.1
      */
+    @Override
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException(
@@ -136,6 +139,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * 
      * @see JdbcAdapter#createFkConstraint(DbRelationship)
      */
+    @Override
     public String createFkConstraint(DbRelationship rel) {
         StringBuffer buf = new StringBuffer();
         StringBuffer refBuf = new StringBuffer();
@@ -186,6 +190,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * 
      * @since 1.2
      */
+    @Override
     public String createTable(DbEntity ent) {
         // SET SCHEMA <schemaname>
 
@@ -198,6 +203,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
         return sql;
     }
     
+    @Override
     public MergerFactory mergerFactory() {
         return new HSQLMergerFactory();
     }
@@ -208,6 +214,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
             super(Short.class.getName());
         }
 
+        @Override
         public void setJdbcObject(
                 PreparedStatement st,
                 Object val,
@@ -232,6 +239,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
             super(Byte.class.getName());
         }
 
+        @Override
         public void setJdbcObject(
                 PreparedStatement st,
                 Object val,

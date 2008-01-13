@@ -29,6 +29,7 @@ import org.apache.cayenne.unit.CayenneCase;
 public class OraclePkGeneratorTest extends CayenneCase {
     protected OraclePkGenerator pkGenerator;
 
+    @Override
     protected void setUp() throws Exception {
         pkGenerator = new OraclePkGenerator();
     }

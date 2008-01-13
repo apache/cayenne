@@ -50,6 +50,7 @@ public abstract class CayenneCase extends BasicCase {
         // create dummy shared config
         Configuration config = new DefaultConfiguration() {
 
+            @Override
             public void initialize() {
             }
         };

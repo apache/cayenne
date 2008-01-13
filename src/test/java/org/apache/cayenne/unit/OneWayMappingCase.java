@@ -28,6 +28,7 @@ package org.apache.cayenne.unit;
 public abstract class OneWayMappingCase extends CayenneCase {
     public static final String ONEWAY_ACCESS_STACK = "OneWayStack";
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(ONEWAY_ACCESS_STACK);
     }

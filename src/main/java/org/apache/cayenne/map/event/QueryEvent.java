@@ -46,6 +46,7 @@ public class QueryEvent extends MapEvent {
         setId(type);
     }
 
+    @Override
     public String getNewName() {
         return (query != null) ? query.getName() : null;
     }

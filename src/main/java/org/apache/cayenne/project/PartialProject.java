@@ -60,6 +60,7 @@ public class PartialProject extends Project {
     /**
      * @since 1.1
      */
+    @Override
     public void upgrade() throws ProjectException {
         // upgrades not supported in this type of project
         throw new ProjectException("'PartialProject' does not support upgrades.");
@@ -103,11 +104,13 @@ public class PartialProject extends Project {
         }
     }
 
+    @Override
     protected void prepareSave(List filesToSave, List wrappedObjects)
         throws ProjectException {
         filesToSave.addAll(files);
     }
 
+    @Override
     protected void postInitialize(File projectFile) {
         loadDelegate = new LoadDelegate();
         domains = new HashMap();
@@ -131,10 +134,12 @@ public class PartialProject extends Project {
         super.postInitialize(projectFile);
     }
 
+    @Override
     public List getChildren() {
         return new ArrayList(domains.values());
     }
 
+    @Override
     public void checkForUpgrades() {
         // do nothing...
     }
@@ -142,6 +147,7 @@ public class PartialProject extends Project {
     /**
      * @see org.apache.cayenne.project.Project#buildFileList()
      */
+    @Override
     public List buildFileList() {
         List list = new ArrayList();
         list.add(projectFileForObject(this));
@@ -151,10 +157,12 @@ public class PartialProject extends Project {
     /**
      * @see org.apache.cayenne.project.Project#getLoadStatus()
      */
+    @Override
     public ConfigStatus getLoadStatus() {
         return loadDelegate.getStatus();
     }
 
+    @Override
     public ProjectFile projectFileForObject(Object obj) {
         if (obj != this) {
             return null;

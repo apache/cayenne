@@ -53,6 +53,7 @@ public class ValidationInfo {
         return path.getObjectParent();
     }
 
+    @Override
     public String toString() {
         return getMessage();
     }

@@ -56,6 +56,7 @@ public abstract class HttpRemoteService extends BaseRemoteService {
      * with the current session. If ServerSession hasn't been previously saved, returns
      * null.
      */
+    @Override
     protected ServerSession getServerSession() {
         HttpSession httpSession = getSession(true);
         return (ServerSession) httpSession.getAttribute(SESSION_ATTRIBUTE);
@@ -65,6 +66,7 @@ public abstract class HttpRemoteService extends BaseRemoteService {
      * Creates a new ServerSession with a dedicated DataChannel. Returned ServerSession is
      * stored in HttpSession for future reuse.
      */
+    @Override
     protected ServerSession createServerSession() {
 
         HttpSession httpSession = getSession(true);
@@ -86,6 +88,7 @@ public abstract class HttpRemoteService extends BaseRemoteService {
      * 
      * @param name shared session name used to lookup a shared DataChannel.
      */
+    @Override
     protected ServerSession createServerSession(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Name is null for shared session.");

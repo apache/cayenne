@@ -47,6 +47,7 @@ public class DataMapFile extends ProjectFile {
     /**
      * Returns DataMap associated with this project.
      */
+    @Override
     public Object getObject() {
         return map;
     }
@@ -54,10 +55,12 @@ public class DataMapFile extends ProjectFile {
     /**
      * @see org.apache.cayenne.project.ProjectFile#getObjectName()
      */
+    @Override
     public String getObjectName() {
         return map.getName();
     }
 
+    @Override
     public void save(PrintWriter out) throws Exception {
         map.encodeAsXML(out);
     }
@@ -65,6 +68,7 @@ public class DataMapFile extends ProjectFile {
     /**
      * @see org.apache.cayenne.project.ProjectFile#canHandle(Object)
      */
+    @Override
     public boolean canHandle(Object obj) {
         return obj instanceof DataMap;
     }
@@ -72,6 +76,7 @@ public class DataMapFile extends ProjectFile {
     /**
      * Updates map location to match the name before save.
      */
+    @Override
     public void willSave() {
         super.willSave();
 
@@ -83,6 +88,7 @@ public class DataMapFile extends ProjectFile {
     /**
      * Returns ".map.xml" that should be used as a file suffix for DataMaps.
      */
+    @Override
     public String getLocationSuffix() {
         return LOCATION_SUFFIX;
     }

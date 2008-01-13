@@ -30,6 +30,7 @@ public class EJBQLIdentifier extends SimpleNode {
         super(id);
     }
 
+    @Override
     public void visit(EJBQLExpressionVisitor visitor) {
         visitor.visitIdentifier(this);
     }

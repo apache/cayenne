@@ -143,6 +143,7 @@ public class XMPPBridge extends EventBridge {
         this.sessionHandle = sessionHandle;
     }
 
+    @Override
     protected void startupExternal() throws Exception {
 
         // validate settings
@@ -203,6 +204,7 @@ public class XMPPBridge extends EventBridge {
         this.connected = true;
     }
 
+    @Override
     protected void shutdownExternal() throws Exception {
         if (groupChat != null) {
             groupChat.leave();
@@ -217,6 +219,7 @@ public class XMPPBridge extends EventBridge {
         connected = false;
     }
 
+    @Override
     protected void sendExternalEvent(CayenneEvent localEvent) throws Exception {
 
         Message message = groupChat.createMessage();

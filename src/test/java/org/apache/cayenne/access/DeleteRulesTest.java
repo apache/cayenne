@@ -40,6 +40,7 @@ public class DeleteRulesTest extends RelationshipCase {
 
     private DataContext context;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

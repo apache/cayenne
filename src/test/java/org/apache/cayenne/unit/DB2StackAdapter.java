@@ -35,18 +35,22 @@ public class DB2StackAdapter extends AccessStackAdapter {
         super(adapter);
     }
     
+    @Override
     public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop) throws Exception {
         // avoid dropping constraints...  
     }
 
+    @Override
     public boolean supportsBinaryPK() {
         return false;
     }
 
+    @Override
     public boolean supportsLobs() {
         return true;
     }
 
+    @Override
     public boolean supportsStoredProcedures() {
         return false;
     }

@@ -40,6 +40,7 @@ import org.apache.cayenne.util.PersistentObjectList;
 
 public class ClientServerChannelQueryTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()

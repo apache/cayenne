@@ -152,6 +152,7 @@ public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable, Seriali
         return generatorName;
     }
 
+    @Override
     public String toString() {
         return "{Type="
                 + generatorType

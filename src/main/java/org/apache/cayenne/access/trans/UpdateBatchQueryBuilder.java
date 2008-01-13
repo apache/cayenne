@@ -42,6 +42,7 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
         super(adapter);
     }
 
+    @Override
     public String createSqlString(BatchQuery batch) {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) batch;
         String table = batch.getDbEntity().getFullyQualifiedName();
@@ -80,6 +81,7 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
     /**
      * Binds BatchQuery parameters to the PreparedStatement.
      */
+    @Override
     public void bindParameters(PreparedStatement statement, BatchQuery query)
             throws SQLException, Exception {
 

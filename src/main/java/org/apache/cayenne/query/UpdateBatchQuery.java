@@ -96,6 +96,7 @@ public class UpdateBatchQuery extends BatchQuery {
      * 
      * @since 1.1
      */
+    @Override
     public boolean isUsingOptimisticLocking() {
         return usingOptimisticLocking;
     }
@@ -107,6 +108,7 @@ public class UpdateBatchQuery extends BatchQuery {
         this.usingOptimisticLocking = usingOptimisticLocking;
     }
 
+    @Override
     public Object getValue(int dbAttributeIndex) {
         DbAttribute attribute = dbAttributes.get(dbAttributeIndex);
 
@@ -135,10 +137,12 @@ public class UpdateBatchQuery extends BatchQuery {
         objectIds.add(id);
     }
 
+    @Override
     public int size() {
         return qualifierSnapshots.size();
     }
 
+    @Override
     public List<DbAttribute> getDbAttributes() {
         return dbAttributes;
     }
@@ -173,6 +177,7 @@ public class UpdateBatchQuery extends BatchQuery {
      * 
      * @since 1.2
      */
+    @Override
     public ObjectId getObjectId() {
         return objectIds.get(batchIndex);
     }

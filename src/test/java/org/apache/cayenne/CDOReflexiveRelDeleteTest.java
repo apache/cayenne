@@ -28,6 +28,7 @@ public class CDOReflexiveRelDeleteTest extends CayenneDOTestBase {
     private ArtGroup childGroup2;
     private ArtGroup childGroup3;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         ctxt = createDataContext();

@@ -50,6 +50,7 @@ class SQLiteDateType extends UtilDateType {
         timeFormat = new SimpleDateFormat("kk:mm:ss");
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
         String string = rs.getString(index);
@@ -75,6 +76,7 @@ class SQLiteDateType extends UtilDateType {
         }
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
 

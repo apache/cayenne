@@ -29,10 +29,12 @@ import org.apache.cayenne.access.types.AbstractType;
  */
 class SQLiteFloatType extends AbstractType {
 
+    @Override
     public String getClassName() {
         return Float.class.getName();
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         // the driver throws an NPE on 'getFloat' if the value is null, so must read it as
@@ -41,6 +43,7 @@ class SQLiteFloatType extends AbstractType {
         return (n == null) ? null : new Float(n.floatValue());
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         // the driver throws an NPE on 'getFloat' if the value is null, so must read it as
         // an object.

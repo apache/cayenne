@@ -61,7 +61,8 @@ public class EntityEvent extends MapEvent {
 		this.entity = entity;
 	}
 	
-	public String getNewName() {
+	@Override
+    public String getNewName() {
 		return (entity != null) ? entity.getName() : null;
 	}
 }

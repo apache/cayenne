@@ -44,6 +44,7 @@ public class ASTNotIn extends ConditionNode {
         connectChildren();
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
         if (len != 2) {
@@ -73,18 +74,22 @@ public class ASTNotIn extends ConditionNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTNotIn(id);
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         return "not in";
     }
 
+    @Override
     public int getType() {
         return Expression.NOT_IN;
     }
     
+    @Override
     protected Object transformExpression(Transformer transformer) {
         Object transformed = super.transformExpression(transformer);
         

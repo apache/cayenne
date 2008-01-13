@@ -38,6 +38,7 @@ public class ParsedExpQualifierCompatTest extends CayenneCase {
 
     protected DataContext context;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         deleteTestData();

@@ -74,6 +74,7 @@ public class SnapshotEvent extends CayenneEvent {
                 : Collections.EMPTY_LIST;
     }
 
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("[SnapshotEvent] source: ").append(getSource());

@@ -29,6 +29,7 @@ public class DefaultOperationObserverTest extends CayenneCase {
 
     protected DefaultOperationObserver observer;
 
+    @Override
     public void setUp() throws Exception {
         observer = new DefaultOperationObserver();
     }

@@ -33,6 +33,7 @@ public class AntClassGenerator extends DefaultClassGenerator {
 
     protected Task parentTask;
 
+    @Override
     protected File fileForSuperclass(String pkgName, String className) throws Exception {
 
         File outFile = super.fileForSuperclass(pkgName, className);
@@ -43,6 +44,7 @@ public class AntClassGenerator extends DefaultClassGenerator {
         return outFile;
     }
 
+    @Override
     protected File fileForClass(String pkgName, String className) throws Exception {
 
         File outFile = super.fileForClass(pkgName, className);

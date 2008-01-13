@@ -175,6 +175,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
      * Returns a Collection of all attributes that either belong to this DbEntity or
      * inherited.
      */
+    @Override
     public Collection<DbAttribute> getAttributes() {
         return (Collection<DbAttribute>) super.getAttributes();
     }
@@ -209,6 +210,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
      * @deprecated in favour of {@link #addAttribute(DbAttribute attr)}. Scheduled for
      *             removal in Cayenne 4.
      */
+    @Override
     @Deprecated
     public void addAttribute(Attribute attr) {
         super.addAttribute(attr);
@@ -221,6 +223,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
      * 
      * @see org.apache.cayenne.map.Entity#removeAttribute(String)
      */
+    @Override
     public void removeAttribute(String attrName) {
         Attribute attr = getAttribute(attrName);
         if (attr == null) {
@@ -246,6 +249,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         this.dbAttributeRemoved(new AttributeEvent(this, attr, this, MapEvent.REMOVE));
     }
 
+    @Override
     public void clearAttributes() {
         super.clearAttributes();
         // post dummy event for no specific attribute
@@ -265,6 +269,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         return (SortedMap<String, DbRelationship>) super.getRelationshipMap();
     }
 
+    @Override
     public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp)
             throws ExpressionException {
         if (pathExp.getType() != Expression.DB_PATH) {
@@ -551,6 +556,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
      * 
      * @since 1.1
      */
+    @Override
     public Expression translateToRelatedEntity(
             Expression expression,
             String relationshipPath) {

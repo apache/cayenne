@@ -33,6 +33,7 @@ import org.apache.cayenne.query.Query;
 public class DataMapNamespaceTest extends TestCase {
     protected DataMap map;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         map = new DataMap();

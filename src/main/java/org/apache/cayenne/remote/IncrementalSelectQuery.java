@@ -60,6 +60,7 @@ class IncrementalSelectQuery extends SelectQuery {
         this.cacheKey = cacheKey;
     }
 
+    @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
         final QueryMetadata metadata = query.getMetaData(resolver);
 
@@ -136,202 +137,252 @@ class IncrementalSelectQuery extends SelectQuery {
         };
     }
 
+    @Override
     public void addCustomDbAttribute(String attributePath) {
         query.addCustomDbAttribute(attributePath);
     }
 
+    @Override
     public void addCustomDbAttributes(List attrPaths) {
         query.addCustomDbAttributes(attrPaths);
     }
 
+    @Override
     public void addOrdering(Ordering ordering) {
         query.addOrdering(ordering);
     }
 
+    @Override
     public void addOrdering(String sortPathSpec, boolean isAscending, boolean ignoreCase) {
         query.addOrdering(sortPathSpec, isAscending, ignoreCase);
     }
 
+    @Override
     public void addOrdering(String sortPathSpec, boolean isAscending) {
         query.addOrdering(sortPathSpec, isAscending);
     }
 
+    @Override
     public void addOrderings(List orderings) {
         query.addOrderings(orderings);
     }
 
+    @Override
     public PrefetchTreeNode addPrefetch(String prefetchPath) {
         return query.addPrefetch(prefetchPath);
     }
 
+    @Override
     public void andQualifier(Expression e) {
         query.andQualifier(e);
     }
 
+    @Override
     public void clearOrderings() {
         query.clearOrderings();
     }
 
+    @Override
     public void clearPrefetches() {
         query.clearPrefetches();
     }
 
+    @Override
     public Query createQuery(Map parameters) {
         return query.createQuery(parameters);
     }
 
+    @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return query.createSQLAction(visitor);
     }
 
+    @Override
     public void encodeAsXML(XMLEncoder encoder) {
         query.encodeAsXML(encoder);
     }
 
+    @Override
     public boolean equals(Object obj) {
         return query.equals(obj);
     }
 
+    @Override
     public String[] getCacheGroups() {
         return query.getCacheGroups();
     }
 
+    @Override
     public String getCachePolicy() {
         return query.getCachePolicy();
     }
 
+    @Override
     public List<String> getCustomDbAttributes() {
         return query.getCustomDbAttributes();
     }
 
+    @Override
     public int getFetchLimit() {
         return query.getFetchLimit();
     }
 
+    @Override
     public String getName() {
         return query.getName();
     }
 
+    @Override
     public List<Ordering> getOrderings() {
         return query.getOrderings();
     }
 
+    @Override
     public int getPageSize() {
         return query.getPageSize();
     }
 
+    @Override
     public PrefetchTreeNode getPrefetchTree() {
         return query.getPrefetchTree();
     }
 
+    @Override
     public Expression getQualifier() {
         return query.getQualifier();
     }
 
+    @Override
     public Object getRoot() {
         return query.getRoot();
     }
 
+    @Override
     public int hashCode() {
         return query.hashCode();
     }
 
+    @Override
     public void initWithProperties(Map properties) {
         query.initWithProperties(properties);
     }
 
+    @Override
     public boolean isDistinct() {
         return query.isDistinct();
     }
 
+    @Override
     public boolean isFetchingCustomAttributes() {
         return query.isFetchingCustomAttributes();
     }
 
+    @Override
     public boolean isFetchingDataRows() {
         return query.isFetchingDataRows();
     }
 
+    @Override
     public boolean isRefreshingObjects() {
         return query.isRefreshingObjects();
     }
 
+    @Override
     public boolean isResolvingInherited() {
         return query.isResolvingInherited();
     }
 
+    @Override
     public void orQualifier(Expression e) {
         query.orQualifier(e);
     }
 
+    @Override
     public SelectQuery queryWithParameters(Map parameters, boolean pruneMissing) {
         return query.queryWithParameters(parameters, pruneMissing);
     }
 
+    @Override
     public SelectQuery queryWithParameters(Map parameters) {
         return query.queryWithParameters(parameters);
     }
 
+    @Override
     public void removeOrdering(Ordering ordering) {
         query.removeOrdering(ordering);
     }
 
+    @Override
     public void removePrefetch(String prefetchPath) {
         query.removePrefetch(prefetchPath);
     }
 
+    @Override
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         query.route(router, resolver, substitutedQuery);
     }
 
+    @Override
     public void setCacheGroups(String[] cachGroups) {
         query.setCacheGroups(cachGroups);
     }
 
+    @Override
     public void setCachePolicy(String policy) {
         query.setCachePolicy(policy);
     }
 
+    @Override
     public void setDistinct(boolean distinct) {
         query.setDistinct(distinct);
     }
 
+    @Override
     public void setFetchingDataRows(boolean flag) {
         query.setFetchingDataRows(flag);
     }
 
+    @Override
     public void setFetchLimit(int fetchLimit) {
         query.setFetchLimit(fetchLimit);
     }
 
+    @Override
     public void setName(String name) {
         query.setName(name);
     }
 
+    @Override
     public void setPageSize(int pageSize) {
         query.setPageSize(pageSize);
     }
 
+    @Override
     public void setPrefetchTree(PrefetchTreeNode prefetchTree) {
         query.setPrefetchTree(prefetchTree);
     }
 
+    @Override
     public void setQualifier(Expression qualifier) {
         query.setQualifier(qualifier);
     }
 
+    @Override
     public void setRefreshingObjects(boolean flag) {
         query.setRefreshingObjects(flag);
     }
 
+    @Override
     public void setResolvingInherited(boolean b) {
         query.setResolvingInherited(b);
     }
 
+    @Override
     public void setRoot(Object value) {
         query.setRoot(value);
     }
 
+    @Override
     public String toString() {
         return query.toString();
     }

@@ -51,6 +51,7 @@ public class DataMapProject extends Project {
     /**
      * @since 1.1
      */
+    @Override
     public void upgrade() throws ProjectException {
         // upgrades not supported in this type of project
         throw new ProjectException("'DataMapProject' does not support upgrades.");
@@ -59,6 +60,7 @@ public class DataMapProject extends Project {
     /**
      * Does nothing.
      */
+    @Override
     public void checkForUpgrades() {
         // do nothing
     }
@@ -66,6 +68,7 @@ public class DataMapProject extends Project {
     /**
      * Initializes internal <code>map</code> object and then calls super.
      */
+    @Override
     protected void postInitialize(File projectFile) {
         if (projectFile != null) {
             try {
@@ -97,6 +100,7 @@ public class DataMapProject extends Project {
     /**
      * Returns a list that contains project DataMap as a single object.
      */
+    @Override
     public List getChildren() {
         List entities = new ArrayList();
         entities.add(map);
@@ -108,6 +112,7 @@ public class DataMapProject extends Project {
      * own. In case of DataMapProject, the only object that requires a file is the project
      * itself.
      */
+    @Override
     public ProjectFile projectFileForObject(Object obj) {
         if (obj == this) {
             return new DataMapFile(this, map);
@@ -119,6 +124,7 @@ public class DataMapProject extends Project {
     /**
      * Always returns empty status. Map projects do not support status tracking yet.
      */
+    @Override
     public ConfigStatus getLoadStatus() {
         return new ConfigStatus();
     }

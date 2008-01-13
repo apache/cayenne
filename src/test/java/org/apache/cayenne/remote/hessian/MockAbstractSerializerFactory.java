@@ -30,10 +30,12 @@ public class MockAbstractSerializerFactory extends AbstractSerializerFactory {
 
     protected EntityResolver entityResolver;
 
+    @Override
     public Serializer getSerializer(Class cl) throws HessianProtocolException {
         return null;
     }
 
+    @Override
     public Deserializer getDeserializer(Class cl) throws HessianProtocolException {
         return null;
     }

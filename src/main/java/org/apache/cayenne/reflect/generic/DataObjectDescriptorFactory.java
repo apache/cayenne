@@ -48,6 +48,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
         this.faultFactory = faultFactory;
     }
 
+    @Override
     protected ClassDescriptor getDescriptor(ObjEntity entity, Class entityClass) {
         if (!DataObject.class.isAssignableFrom(entityClass)) {
             return null;
@@ -56,16 +57,19 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
         return super.getDescriptor(entity, entityClass);
     }
 
+    @Override
     protected PersistentDescriptor createDescriptor() {
         return new DataObjectDescriptor();
     }
 
+    @Override
     protected void createAttributeProperty(
             PersistentDescriptor descriptor,
             ObjAttribute attribute) {
         descriptor.addDeclaredProperty(new DataObjectAttributeProperty(attribute));
     }
 
+    @Override
     protected void createToManyListProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -78,6 +82,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
                 faultFactory.getListFault()));
     }
 
+    @Override
     protected void createToManyMapProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -92,6 +97,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
                 mapKeyAccessor));
     }
 
+    @Override
     protected void createToManySetProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -103,6 +109,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
                 faultFactory.getSetFault()));
     }
 
+    @Override
     protected void createToManyCollectionProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -114,6 +121,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
                 faultFactory.getCollectionFault()));
     }
 
+    @Override
     protected void createToOneProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -126,6 +134,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
                 faultFactory.getToOneFault()));
     }
 
+    @Override
     protected Accessor createAccessor(
             PersistentDescriptor descriptor,
             String propertyName,

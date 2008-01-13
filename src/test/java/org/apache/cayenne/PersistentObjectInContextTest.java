@@ -38,6 +38,7 @@ import org.apache.cayenne.util.PersistentObjectHolder;
 
 public class PersistentObjectInContextTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()

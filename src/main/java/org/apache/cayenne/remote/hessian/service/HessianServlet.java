@@ -57,6 +57,7 @@ public class HessianServlet extends com.caucho.hessian.server.HessianServlet {
     /**
      * Installs {@link HessianService} to respond to {@link RemoteService} requests.
      */
+    @Override
     public void init(ServletConfig config) throws ServletException {
 
         Class apiClass = createAPIClass(config);

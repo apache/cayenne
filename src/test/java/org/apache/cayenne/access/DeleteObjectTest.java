@@ -40,6 +40,7 @@ public class DeleteObjectTest extends CayenneCase {
 
     private DataContext context;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

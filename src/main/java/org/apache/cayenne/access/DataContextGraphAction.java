@@ -37,6 +37,7 @@ class DataContextGraphAction extends ObjectContextGraphAction {
         super(context);
     }
 
+    @Override
     protected void handleSimplePropertyChange(
             Persistent object,
             String propertyName,
@@ -54,6 +55,7 @@ class DataContextGraphAction extends ObjectContextGraphAction {
         }
     }
 
+    @Override
     protected void handleArcPropertyChange(
             Persistent object,
             ArcProperty property,

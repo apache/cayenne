@@ -66,6 +66,7 @@ public class Painting extends org.apache.art.auto._Painting {
         validateForSaveCalled = false;
     }
 
+    @Override
     public void validateForSave(ValidationResult validationResult) {
         validateForSaveCalled = true;
         super.validateForSave(validationResult);

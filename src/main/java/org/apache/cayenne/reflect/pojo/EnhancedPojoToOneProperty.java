@@ -47,6 +47,7 @@ class EnhancedPojoToOneProperty extends BaseToOneProperty {
         this.fault = fault;
     }
 
+    @Override
     public boolean isFault(Object source) {
         return faultHandler.isFaultProperty(source);
     }
@@ -63,6 +64,7 @@ class EnhancedPojoToOneProperty extends BaseToOneProperty {
         }
     }
 
+    @Override
     public Object readProperty(Object object) throws PropertyException {
         resolveFault(object);
         return super.readProperty(object);

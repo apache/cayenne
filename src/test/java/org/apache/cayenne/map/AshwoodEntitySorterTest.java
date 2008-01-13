@@ -33,6 +33,7 @@ public class AshwoodEntitySorterTest extends RelationshipCase {
 
     protected AshwoodEntitySorter sorter;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

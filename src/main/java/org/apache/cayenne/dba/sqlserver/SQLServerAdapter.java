@@ -92,6 +92,7 @@ public class SQLServerAdapter extends SybaseAdapter {
      * 
      * @since 1.2
      */
+    @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new SQLServerActionBuilder(this, node.getEntityResolver()));
     }
@@ -100,6 +101,7 @@ public class SQLServerAdapter extends SybaseAdapter {
     /**
      * Returns a trimming translator.
      */
+    @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         return new TrimmingQualifierTranslator(
                 queryAssembler,
@@ -112,6 +114,7 @@ public class SQLServerAdapter extends SybaseAdapter {
      * 
      * @since 1.2
      */
+    @Override
     protected void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         super.createTableAppendColumn(sqlBuffer, column);
         
@@ -121,6 +124,7 @@ public class SQLServerAdapter extends SybaseAdapter {
         }
     }
     
+    @Override
     public MergerFactory mergerFactory() {
         return new SQLServerMergerFactory();
     }

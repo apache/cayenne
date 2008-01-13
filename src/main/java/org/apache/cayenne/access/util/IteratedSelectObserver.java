@@ -39,15 +39,18 @@ import org.apache.cayenne.query.Query;
 public class IteratedSelectObserver extends DefaultOperationObserver {
 	protected ResultIterator resultIterator;
 
-	public boolean isIteratedResult() {
+	@Override
+    public boolean isIteratedResult() {
 		return true;
 	}
 
-	public void nextDataRows(Query query, List dataRows) {
+	@Override
+    public void nextDataRows(Query query, List dataRows) {
 		throw new CayenneRuntimeException("Results unexpectedly returned as list.");
 	}
 
-	public void nextDataRows(Query q, ResultIterator it) {
+	@Override
+    public void nextDataRows(Query q, ResultIterator it) {
 	    // don't call super - it closes the iterator
 		resultIterator = it;
 	}

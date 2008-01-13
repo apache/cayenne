@@ -30,10 +30,12 @@ public class MockNoRoutingQuery extends AbstractQuery {
 
     protected boolean routed;
 
+    @Override
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         this.routed = true;
     }
 
+    @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         throw new UnsupportedOperationException();
     }

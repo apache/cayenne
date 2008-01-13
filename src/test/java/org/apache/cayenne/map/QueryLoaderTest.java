@@ -29,9 +29,11 @@ public class QueryLoaderTest extends BasicCase {
 
     protected QueryLoader builder;
 
+    @Override
     protected void setUp() throws Exception {
         builder = new QueryLoader() {
 
+            @Override
             public Query getQuery() {
                 return null;
             }

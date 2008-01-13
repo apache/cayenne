@@ -52,10 +52,12 @@ public class EnumSerializerProxy extends AbstractSerializerFactory {
         }
     }
 
+    @Override
     public Serializer getSerializer(Class cl) throws HessianProtocolException {
         return enumSerializer != null ? enumSerializer.getSerializer(cl) : null;
     }
 
+    @Override
     public Deserializer getDeserializer(Class cl) throws HessianProtocolException {
         return enumSerializer != null ? enumSerializer.getDeserializer(cl) : null;
     }

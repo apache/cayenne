@@ -82,6 +82,7 @@ public class RemoteSession implements Serializable {
         this.eventBridgeParameters = eventBridgeParameters;
     }
 
+    @Override
     public int hashCode() {
         return new HashCodeBuilder(71, 5).append(sessionId).toHashCode();
     }
@@ -136,6 +137,7 @@ public class RemoteSession implements Serializable {
         }
     }
 
+    @Override
     public String toString() {
         ToStringBuilder builder = new ToStringBuilder(this)
                 .append("sessionId", sessionId);

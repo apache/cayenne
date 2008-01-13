@@ -26,6 +26,7 @@ import org.apache.cayenne.util.Util;
 public class DataSourceInfoTest extends CayenneCase {
     private DataSourceInfo dsi;
 
+    @Override
     public void setUp() throws java.lang.Exception {
         dsi = new DataSourceInfo();
         dsi.setUserName("a");

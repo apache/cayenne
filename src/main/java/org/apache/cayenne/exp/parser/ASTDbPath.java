@@ -48,6 +48,7 @@ public class ASTDbPath extends ASTPath {
         setPath(value);
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         // TODO: implement resolving DB_PATH for DataObjects
 
@@ -82,6 +83,7 @@ public class ASTDbPath extends ASTPath {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         ASTDbPath copy = new ASTDbPath(id);
         copy.path = path;
@@ -106,6 +108,7 @@ public class ASTDbPath extends ASTPath {
         pw.print(path);
     }
 
+    @Override
     public int getType() {
         return Expression.DB_PATH;
     }

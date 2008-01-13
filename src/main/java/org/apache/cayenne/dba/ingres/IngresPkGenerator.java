@@ -49,6 +49,7 @@ public class IngresPkGenerator extends OraclePkGenerator {
      *     SELECT nextval(pk_table_name)
      * </pre>
      */
+    @Override
     protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
 
         DbKeyGenerator pkGenerator = ent.getPrimaryKeyGenerator();
@@ -88,6 +89,7 @@ public class IngresPkGenerator extends OraclePkGenerator {
         }
     }
 
+    @Override
     protected List<String> getExistingSequences(DataNode node) throws SQLException {
 
         // check existing sequences
