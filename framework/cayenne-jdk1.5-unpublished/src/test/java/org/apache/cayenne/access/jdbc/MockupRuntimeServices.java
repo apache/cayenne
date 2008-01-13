@@ -30,11 +30,13 @@ import org.apache.velocity.runtime.parser.node.SimpleNode;
  */
 class MockupRuntimeServices extends RuntimeInstance {
 
+    @Override
     public SimpleNode parse(Reader reader, String templateName, boolean dumpNamespace)
         throws ParseException {
         return new SimpleNode(1);
     }
 
+    @Override
     public SimpleNode parse(Reader reader, String templateName) throws ParseException {
         return new SimpleNode(1);
     }

@@ -39,6 +39,7 @@ public class BooleanTypeTest extends TestCase {
     public void testMaterializeObjectFromResultSet() throws Exception {
         MockResultSet rs = new MockResultSet("") {
 
+            @Override
             public boolean getBoolean(int i) throws SQLException {
                 return (i + 2) % 2 == 0;
             }

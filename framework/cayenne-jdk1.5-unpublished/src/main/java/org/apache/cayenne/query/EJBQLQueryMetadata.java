@@ -36,6 +36,7 @@ class EJBQLQueryMetadata extends BaseQueryMetadata {
         this.resultSetMapping = resultSetMapping;
     }
 
+    @Override
     public SQLResultSetMapping getResultSetMapping() {
         return resultSetMapping;
     }

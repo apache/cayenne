@@ -66,6 +66,7 @@ public class TestBean {
         this.integer = new Integer(intValue);
     }
 
+    @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }

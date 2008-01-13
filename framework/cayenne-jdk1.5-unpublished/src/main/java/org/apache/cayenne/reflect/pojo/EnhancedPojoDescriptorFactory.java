@@ -58,6 +58,7 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
         this.fieldNameMapper = new EnhancementHelper(null);
     }
 
+    @Override
     protected ClassDescriptor getDescriptor(ObjEntity entity, Class<?> entityClass) {
         // check whether we are dealing with enhanced pojo
         try {
@@ -72,6 +73,7 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
         return super.getDescriptor(entity, entityClass);
     }
 
+    @Override
     protected void createToManyListProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -89,6 +91,7 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
         descriptor.addDeclaredProperty(property);
     }
 
+    @Override
     protected void createToManyMapProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -107,6 +110,7 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
         descriptor.addDeclaredProperty(property);
     }
 
+    @Override
     protected void createToManySetProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -123,6 +127,7 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
         descriptor.addDeclaredProperty(property);
     }
 
+    @Override
     protected void createToManyCollectionProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {
@@ -142,6 +147,7 @@ public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
         descriptor.addDeclaredProperty(property);
     }
 
+    @Override
     protected void createToOneProperty(
             PersistentDescriptor descriptor,
             ObjRelationship relationship) {

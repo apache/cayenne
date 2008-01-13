@@ -77,6 +77,7 @@ public class SelectQueryBuilderTest extends TestCase {
 
     class MockupRootQueryBuilder extends SelectQueryBuilder {
 
+        @Override
         public Object getRoot() {
             return "FakeRoot";
         }

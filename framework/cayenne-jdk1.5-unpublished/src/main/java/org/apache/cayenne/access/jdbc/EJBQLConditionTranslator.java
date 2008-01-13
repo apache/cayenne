@@ -65,17 +65,20 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         multiColumnOperands.add(operand);
     }
 
+    @Override
     public boolean visitAggregate(EJBQLExpression expression) {
         expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(
                 context));
         return false;
     }
 
+    @Override
     public boolean visitAnd(EJBQLExpression expression, int finishedChildIndex) {
         afterChild(expression, " AND", finishedChildIndex);
         return true;
     }
 
+    @Override
     public boolean visitBetween(EJBQLExpression expression, int finishedChildIndex) {
         switch (finishedChildIndex) {
             case 0:
@@ -92,11 +95,13 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitExists(EJBQLExpression expression) {
         context.append(" EXISTS");
         return true;
     }
 
+    @Override
     public boolean visitIsEmpty(EJBQLExpression expression) {
 
         // handle as "path is [not] null" (an alt. way would've been a correlated subquery
@@ -117,6 +122,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    @Override
     public boolean visitSize(EJBQLExpression expression) {
 
         // run as a correlated subquery.
@@ -185,6 +191,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    @Override
     public boolean visitMemberOf(EJBQLExpression expression) {
 
         // create a correlated subquery, using the following transformation:
@@ -266,21 +273,25 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    @Override
     public boolean visitAll(EJBQLExpression expression) {
         context.append(" ALL");
         return true;
     }
 
+    @Override
     public boolean visitAny(EJBQLExpression expression) {
         context.append(" ANY");
         return true;
     }
 
+    @Override
     public boolean visitOr(EJBQLExpression expression, int finishedChildIndex) {
         afterChild(expression, " OR", finishedChildIndex);
         return true;
     }
 
+    @Override
     public boolean visitEquals(EJBQLExpression expression, int finishedChildIndex) {
         switch (finishedChildIndex) {
             case 0:
@@ -324,17 +335,20 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitNamedInputParameter(EJBQLExpression expression) {
         String parameter = context.bindNamedParameter(expression.getText());
         processParameter(parameter);
         return true;
     }
 
+    @Override
     public boolean visitNot(EJBQLExpression expression) {
         context.append(" NOT");
         return true;
     }
 
+    @Override
     public boolean visitNotEquals(EJBQLExpression expression, int finishedChildIndex) {
         switch (finishedChildIndex) {
             case 0:
@@ -377,6 +391,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitGreaterThan(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex == 0) {
             context.append(" >");
@@ -385,6 +400,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitGreaterOrEqual(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex == 0) {
             context.append(" >=");
@@ -393,6 +409,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitLessOrEqual(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex == 0) {
             context.append(" <=");
@@ -401,6 +418,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitLessThan(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex == 0) {
             context.append(" <");
@@ -409,6 +427,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitLike(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex == 0) {
             if (expression.isNegated()) {
@@ -420,6 +439,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitIn(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex == 0) {
             if (expression.isNegated()) {
@@ -455,6 +475,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         }
     }
 
+    @Override
     public boolean visitIdentificationVariable(EJBQLExpression expression) {
         // this is a match on a variable, like "x = :x"
 
@@ -485,6 +506,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitDbPath(EJBQLExpression expression, int finishedChildIndex) {
         expression.visit(new EJBQLDbPathTranslator(context) {
 
+            @Override
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
                 EJBQLConditionTranslator.this.addMultiColumnOperand(operand);
             }
@@ -492,10 +514,12 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    @Override
     public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
 
         expression.visit(new EJBQLPathTranslator(context) {
 
+            @Override
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
                 EJBQLConditionTranslator.this.addMultiColumnOperand(operand);
             }
@@ -503,6 +527,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    @Override
     public boolean visitIntegerLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
             context.append("null");
@@ -523,6 +548,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitDecimalLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
             context.append("null");
@@ -543,12 +569,14 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitEscapeCharacter(EJBQLExpression expression) {
         // note that EscapeChar text is already wrapped in single quotes
         context.append(" ESCAPE ").append(expression.getText());
         return false;
     }
 
+    @Override
     public boolean visitIsNull(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex == 0) {
             context.append(expression.isNegated() ? " IS NOT NULL" : " IS NULL");
@@ -557,6 +585,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitPositionalInputParameter(EJBQLPositionalInputParameter expression) {
 
         String parameter = context.bindPositionalParameter(expression.getPosition());
@@ -564,6 +593,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitBooleanLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
             context.append("null");
@@ -577,6 +607,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitStringLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
             context.append("null");
@@ -589,6 +620,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitSubselect(EJBQLExpression expression) {
         context.append(" (");
         expression.visit(new EJBQLSelectTranslator(context));
@@ -637,21 +669,25 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         }
     }
 
+    @Override
     public boolean visitCurrentDate(EJBQLExpression expression) {
         context.append(" {fn CURDATE()}");
         return false;
     }
 
+    @Override
     public boolean visitCurrentTime(EJBQLExpression expression) {
         context.append(" {fn CURTIME()}");
         return false;
     }
 
+    @Override
     public boolean visitCurrentTimestamp(EJBQLExpression expression) {
         context.append(" {fn NOW()}");
         return false;
     }
 
+    @Override
     public boolean visitAbs(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn ABS(");
@@ -663,6 +699,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitSqrt(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn SQRT(");
@@ -674,6 +711,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitMod(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn MOD(");
@@ -688,6 +726,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitConcat(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn CONCAT(");
@@ -702,6 +741,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitSubstring(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn SUBSTRING(");
@@ -716,6 +756,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitLower(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn LCASE(");
@@ -727,6 +768,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitUpper(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn UCASE(");
@@ -738,6 +780,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitLength(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn LENGTH(");
@@ -749,6 +792,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitLocate(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn LOCATE(");
@@ -763,6 +807,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitTrim(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
 
@@ -783,6 +828,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitTrimCharacter(EJBQLExpression expression) {
         // this is expected to be overwritten in adapter-specific translators
         if (!"' '".equals(expression.getText())) {
@@ -794,16 +840,19 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    @Override
     public boolean visitTrimLeading(EJBQLExpression expression) {
         context.append(" {fn LTRIM(");
         return false;
     }
 
+    @Override
     public boolean visitTrimTrailing(EJBQLExpression expression) {
         context.append(" {fn RTRIM(");
         return false;
     }
 
+    @Override
     public boolean visitTrimBoth(EJBQLExpression expression) {
         context.append(" {fn LTRIM({fn RTRIM(");
         return false;

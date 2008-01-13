@@ -167,10 +167,12 @@ class ObjectDiff extends NodeDiff {
 
         collection.add(new NodeDiff(nodeId, diffId) {
 
+            @Override
             public void apply(GraphChangeHandler tracker) {
                 applySimplePropertyChanges(tracker);
             }
 
+            @Override
             public void undo(GraphChangeHandler tracker) {
                 throw new UnsupportedOperationException();
             }
@@ -250,6 +252,7 @@ class ObjectDiff extends NodeDiff {
     /**
      * Checks whether at least a single property is modified.
      */
+    @Override
     public boolean isNoop() {
 
         // if we have no baseline to compare with, assume that there are changes
@@ -313,10 +316,12 @@ class ObjectDiff extends NodeDiff {
         return !modFound[0];
     }
 
+    @Override
     public void undo(GraphChangeHandler handler) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void apply(final GraphChangeHandler handler) {
 
         if (otherDiffs != null) {
@@ -404,11 +409,13 @@ class ObjectDiff extends NodeDiff {
             return delete;
         }
 
+        @Override
         public int hashCode() {
             // assuming String and ObjectId provide a good hashCode
             return arcId.hashCode() + targetNodeId.hashCode() + 5;
         }
 
+        @Override
         public boolean equals(Object object) {
             // compare ignoring op type...
             if (object == this) {
@@ -428,6 +435,7 @@ class ObjectDiff extends NodeDiff {
                     && Util.nullSafeEquals(targetNodeId, other.targetNodeId);
         }
 
+        @Override
         public void apply(GraphChangeHandler tracker) {
 
             if (delete) {
@@ -438,6 +446,7 @@ class ObjectDiff extends NodeDiff {
             }
         }
 
+        @Override
         public void undo(GraphChangeHandler tracker) {
             throw new UnsupportedOperationException();
         }

@@ -48,6 +48,7 @@ public class ValidationException extends CayenneRuntimeException {
         return result;
     }
 
+    @Override
     public String toString() {
         return super.toString() + System.getProperty("line.separator") + this.result;
     }

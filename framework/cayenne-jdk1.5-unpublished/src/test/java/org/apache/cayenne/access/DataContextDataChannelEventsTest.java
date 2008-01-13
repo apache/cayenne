@@ -108,6 +108,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
 
         new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertFalse(listener.graphCommitted);
                 assertTrue(listener.graphChanged);
@@ -136,6 +137,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
 
         new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertFalse(listener.graphCommitted);
                 assertTrue(listener.graphChanged);

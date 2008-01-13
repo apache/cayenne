@@ -27,6 +27,7 @@ import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 public class ObjectStoreGCTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();
@@ -45,6 +46,7 @@ public class ObjectStoreGCTest extends CayenneCase {
         // allow for slow GC
         new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 System.gc();
                 assertEquals(0, context.getObjectStore().registeredObjectsCount());
@@ -64,6 +66,7 @@ public class ObjectStoreGCTest extends CayenneCase {
         // allow for slow GC
         new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 System.gc();
                 assertEquals(1, context.getObjectStore().registeredObjectsCount());
@@ -74,6 +77,7 @@ public class ObjectStoreGCTest extends CayenneCase {
         context.commitChanges();
         new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 System.gc();
                 assertEquals(0, context.getObjectStore().registeredObjectsCount());
@@ -96,6 +100,7 @@ public class ObjectStoreGCTest extends CayenneCase {
 
         new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 System.gc();
                 assertEquals(1, context.getObjectStore().registeredObjectsCount());
@@ -105,6 +110,7 @@ public class ObjectStoreGCTest extends CayenneCase {
         context.commitChanges();
         new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 System.gc();
                 assertEquals(0, context.getObjectStore().registeredObjectsCount());

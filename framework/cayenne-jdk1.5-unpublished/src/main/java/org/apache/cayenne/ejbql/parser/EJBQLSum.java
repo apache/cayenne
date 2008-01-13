@@ -45,14 +45,17 @@ public class EJBQLSum extends EJBQLAggregateColumn {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitSum(this);
     }
 
+    @Override
     public String getFunction() {
         return "SUM";
     }
 
+    @Override
     public String getJavaType(String pathType) {
 
         if (pathType == null) {

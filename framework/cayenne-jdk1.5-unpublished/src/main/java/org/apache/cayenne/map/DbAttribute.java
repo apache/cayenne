@@ -89,6 +89,7 @@ public class DbAttribute extends Attribute {
      * 
      * @since 1.1
      */
+    @Override
     public void encodeAsXML(XMLEncoder encoder) {
 
         encoder.print("<db-attribute name=\"");

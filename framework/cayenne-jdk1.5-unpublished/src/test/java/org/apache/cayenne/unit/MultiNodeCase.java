@@ -35,16 +35,19 @@ public abstract class MultiNodeCase extends CayenneCase {
 
     public static final String MULTINODE_ACCESS_STACK = "MultiNodeStack";
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(MULTINODE_ACCESS_STACK);
     }
 
+    @Override
     public DataNode getNode() {
         throw new RuntimeException(
                 "'getNode() makes no sense in multinode environment.. "
                         + "use getNode1() or getNode2()");
     }
 
+    @Override
     public Connection getConnection() {
         throw new RuntimeException(
                 "'getConnection() makes no sense in multinode environment.. "

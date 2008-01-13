@@ -55,6 +55,7 @@ public class InsertBatchQuery extends BatchQuery {
         this.dbAttributes = new ArrayList(getDbEntity().getAttributes());
     }
 
+    @Override
     public Object getValue(int dbAttributeIndex) {
         DbAttribute attribute = dbAttributes.get(dbAttributeIndex);
         Map currentSnapshot = objectSnapshots.get(batchIndex);
@@ -81,10 +82,12 @@ public class InsertBatchQuery extends BatchQuery {
         objectIds.add(id);
     }
 
+    @Override
     public int size() {
         return objectSnapshots.size();
     }
 
+    @Override
     public List<DbAttribute> getDbAttributes() {
         return dbAttributes;
     }
@@ -96,6 +99,7 @@ public class InsertBatchQuery extends BatchQuery {
      * 
      * @since 1.2
      */
+    @Override
     public ObjectId getObjectId() {
         return objectIds.get(batchIndex);
     }

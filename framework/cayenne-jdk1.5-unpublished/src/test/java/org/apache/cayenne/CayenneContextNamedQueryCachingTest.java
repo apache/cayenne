@@ -36,12 +36,14 @@ public class CayenneContextNamedQueryCachingTest extends CayenneCase {
     protected UnitLocalConnection connection;
     protected CayenneContext context;
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()
                 .getAccessStack(MULTI_TIER_ACCESS_STACK);
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

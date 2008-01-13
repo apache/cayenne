@@ -36,6 +36,7 @@ public class CAY_207String2 {
         this.string = string;
     }
 
+    @Override
     public String toString() {
         return getClass().getName() + ": " + string;
     }

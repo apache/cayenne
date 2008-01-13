@@ -34,6 +34,7 @@ public class EmptyConfiguration extends DefaultConfiguration {
         this.setLoaderDelegate(new RuntimeLoadDelegate(this, this.getLoadStatus()));
     }
 
+    @Override
     public void addDomain(DataDomain domain) {
         // noop
     }

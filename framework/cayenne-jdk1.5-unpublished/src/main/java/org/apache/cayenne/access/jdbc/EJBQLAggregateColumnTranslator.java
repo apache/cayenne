@@ -39,26 +39,31 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
         this.context = context;
     }
 
+    @Override
     public boolean visitCount(EJBQLAggregateColumn expression) {
         visitAggregateColumn(expression, new CountColumnVisitor());
         return false;
     }
 
+    @Override
     public boolean visitAverage(EJBQLAggregateColumn expression) {
         visitAggregateColumn(expression, new FieldPathTranslator());
         return false;
     }
 
+    @Override
     public boolean visitMax(EJBQLAggregateColumn expression) {
         visitAggregateColumn(expression, new FieldPathTranslator());
         return false;
     }
 
+    @Override
     public boolean visitMin(EJBQLAggregateColumn expression) {
         visitAggregateColumn(expression, new FieldPathTranslator());
         return false;
     }
 
+    @Override
     public boolean visitSum(EJBQLAggregateColumn expression) {
         visitAggregateColumn(expression, new FieldPathTranslator());
         return false;
@@ -97,15 +102,18 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
             super(EJBQLAggregateColumnTranslator.this.context);
         }
 
+        @Override
         public boolean visitDistinct(EJBQLExpression expression) {
             context.append("DISTINCT ");
             return true;
         }
 
+        @Override
         protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
             throw new EJBQLException("Can't use multi-column paths in column clause");
         }
 
+        @Override
         protected void processTerminatingAttribute(ObjAttribute attribute) {
 
             EJBQLAggregateColumnTranslator.this.attributeType = attribute.getType();
@@ -120,16 +128,19 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
 
     class CountColumnVisitor extends EJBQLBaseVisitor {
 
+        @Override
         public boolean visitDistinct(EJBQLExpression expression) {
             context.append("DISTINCT ");
             return true;
         }
 
+        @Override
         public boolean visitIdentifier(EJBQLExpression expression) {
             context.append('*');
             return false;
         }
 
+        @Override
         public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             expression.visit(new FieldPathTranslator());
             return false;

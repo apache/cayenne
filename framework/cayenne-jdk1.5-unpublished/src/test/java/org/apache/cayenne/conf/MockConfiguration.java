@@ -34,30 +34,37 @@ public class MockConfiguration extends Configuration {
         super();
     }
 
+    @Override
     public boolean canInitialize() {
         return true;
     }
 
+    @Override
     public void didInitialize() {
     }
 
+    @Override
     protected InputStream getDomainConfiguration() {
         throw new NotImplementedException(
                 "this is an in-memory mockup...'getDomainConfiguration' is not implemented.");
     }
 
+    @Override
     protected InputStream getMapConfiguration(String name) {
         return null;
     }
 
+    @Override
     protected ResourceLocator getResourceLocator() {
         return null;
     }
 
+    @Override
     protected InputStream getViewConfiguration(String location) {
         return null;
     }
 
+    @Override
     public void initialize() throws Exception {
     }
 }

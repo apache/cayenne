@@ -36,6 +36,7 @@ class EJBQLOrderByTranslator extends EJBQLBaseVisitor {
         this.context = context;
     }
 
+    @Override
     public boolean visitOrderByItem(EJBQLExpression expression) {
         if (itemCount++ > 0) {
             context.append(',');
@@ -44,15 +45,18 @@ class EJBQLOrderByTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitDescending(EJBQLExpression expression) {
         context.append(" DESC");
         return true;
     }
 
+    @Override
     public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
 
         EJBQLExpressionVisitor childVisitor = new EJBQLPathTranslator(context) {
 
+            @Override
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
                 throw new EJBQLException("Can't order on multi-column paths or objects");
             }

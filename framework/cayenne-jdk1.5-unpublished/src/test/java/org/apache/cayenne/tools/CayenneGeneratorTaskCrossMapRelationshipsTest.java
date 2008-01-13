@@ -40,6 +40,7 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
 
     protected CayenneGeneratorTask task;
 
+    @Override
     public void setUp() {
         task = new CayenneGeneratorTask();
         task.setProject(project);

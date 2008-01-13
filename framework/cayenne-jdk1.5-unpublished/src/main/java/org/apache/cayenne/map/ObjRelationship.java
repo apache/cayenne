@@ -138,6 +138,7 @@ public class ObjRelationship extends Relationship implements EventListener {
      * Returns a target ObjEntity of this relationship. Entity is looked up in the parent
      * DataMap using "targetEntityName".
      */
+    @Override
     public Entity getTargetEntity() {
         String targetName = getTargetEntityName();
         if (targetName == null) {
@@ -381,6 +382,7 @@ public class ObjRelationship extends Relationship implements EventListener {
         return readOnly;
     }
 
+    @Override
     public boolean isToMany() {
         refreshFromPath(true);
         return super.isToMany();
@@ -692,6 +694,7 @@ public class ObjRelationship extends Relationship implements EventListener {
         this.readOnly = false;
     }
 
+    @Override
     public String toString() {
         return new ToStringBuilder(this).append("name", getName()).append(
                 "dbRelationshipPath",

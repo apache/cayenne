@@ -119,6 +119,7 @@ public class JMSBridge extends EventBridge implements MessageListener {
     /**
      * Starts up JMS machinery for "publish/subscribe" model.
      */
+    @Override
     protected void startupExternal() throws Exception {
         Context jndiContext = new InitialContext();
         TopicConnectionFactory connectionFactory = (TopicConnectionFactory) jndiContext
@@ -171,6 +172,7 @@ public class JMSBridge extends EventBridge implements MessageListener {
     /**
      * Closes all resources used to communicate via JMS.
      */
+    @Override
     protected void shutdownExternal() throws Exception {
         Exception lastException = null;
 
@@ -230,6 +232,7 @@ public class JMSBridge extends EventBridge implements MessageListener {
         }
     }
 
+    @Override
     protected void sendExternalEvent(CayenneEvent localEvent) throws Exception {
         ObjectMessage message = sendSession
                 .createObjectMessage(eventToMessageObject(localEvent));

@@ -30,6 +30,7 @@ public class EJBQLTrimBoth extends EJBQLTrimSpecification {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitTrimBoth(this);
     }

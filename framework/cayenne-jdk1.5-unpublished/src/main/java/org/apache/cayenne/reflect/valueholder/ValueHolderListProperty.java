@@ -36,6 +36,7 @@ class ValueHolderListProperty extends ValueHolderToManyProperty {
         super(owner, targetDescriptor, accessor, reverseName);
     }
 
+    @Override
     protected ValueHolder createCollectionValueHolder(Object object)
             throws PropertyException {
         

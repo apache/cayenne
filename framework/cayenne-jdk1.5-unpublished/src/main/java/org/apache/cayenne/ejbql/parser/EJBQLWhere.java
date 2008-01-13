@@ -30,6 +30,7 @@ public class EJBQLWhere extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitWhere(this);
     }

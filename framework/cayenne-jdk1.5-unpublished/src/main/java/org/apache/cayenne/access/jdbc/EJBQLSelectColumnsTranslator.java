@@ -40,6 +40,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
         this.context = context;
     }
 
+    @Override
     public boolean visitSelectExpression(EJBQLExpression expression) {
         if (expressionsCount++ > 0) {
             context.append(",");
@@ -48,20 +49,24 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitAggregate(EJBQLExpression expression) {
         expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(
                 context));
         return false;
     }
 
+    @Override
     public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
 
         EJBQLPathTranslator pathTranslator = new EJBQLPathTranslator(context) {
 
+            @Override
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
                 throw new EJBQLException("Can't use multi-column paths in column clause");
             }
 
+            @Override
             protected void processTerminatingAttribute(ObjAttribute attribute) {
                 DbEntity table = currentEntity.getDbEntity();
                 String alias = this.lastAlias != null ? lastAlias : context
@@ -101,6 +106,7 @@ class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    @Override
     public boolean visitIdentifier(EJBQLExpression expression) {
         expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(
                 context));

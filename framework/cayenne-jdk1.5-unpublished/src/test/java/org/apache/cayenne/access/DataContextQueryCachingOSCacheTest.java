@@ -22,6 +22,7 @@ import org.apache.cayenne.cache.OSQueryCacheFactory;
 
 public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingTest {
 
+    @Override
     public void testLocalCacheDataObjectsNoRefresh() throws Exception {
         runTest(new TestRun() {
 
@@ -32,6 +33,7 @@ public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingT
         });
     }
 
+    @Override
     public void testLocalCacheDataObjectsRefresh() throws Exception {
         runTest(new TestRun() {
 
@@ -42,6 +44,7 @@ public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingT
         });
     }
 
+    @Override
     public void testLocalCacheDataRowsNoRefresh() throws Exception {
         runTest(new TestRun() {
 
@@ -52,6 +55,7 @@ public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingT
         });
     }
 
+    @Override
     public void testLocalCacheDataRowsRefresh() throws Exception {
         runTest(new TestRun() {
 
@@ -62,6 +66,7 @@ public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingT
         });
     }
 
+    @Override
     public void testLocalCacheRefreshObjectsRefresh() throws Exception {
         runTest(new TestRun() {
 
@@ -72,6 +77,7 @@ public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingT
         });
     }
 
+    @Override
     public void testSharedCacheDataObjectsNoRefresh() throws Exception {
         runTest(new TestRun() {
 
@@ -82,6 +88,7 @@ public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingT
         });
     }
 
+    @Override
     public void testSharedCacheDataRowsNoRefresh() throws Exception {
         runTest(new TestRun() {
 
@@ -92,6 +99,7 @@ public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingT
         });
     }
 
+    @Override
     public void testSharedCacheDataRowsRefresh() throws Exception {
         runTest(new TestRun() {
 

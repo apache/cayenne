@@ -38,6 +38,7 @@ public class SimpleAttributeProperty extends BaseProperty implements AttributePr
         this.attribute = attribute;
     }
 
+    @Override
     public boolean visit(PropertyVisitor visitor) {
         return visitor.visitAttribute(this);
     }
@@ -46,11 +47,13 @@ public class SimpleAttributeProperty extends BaseProperty implements AttributePr
         return attribute;
     }
 
+    @Override
     public Object readProperty(Object object) throws PropertyException {
         resolveFault(object);
         return super.readProperty(object);
     }
 
+    @Override
     public void writeProperty(Object object, Object oldValue, Object newValue)
             throws PropertyException {
         resolveFault(object);

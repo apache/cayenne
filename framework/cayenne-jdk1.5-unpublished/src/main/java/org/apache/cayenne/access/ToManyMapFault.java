@@ -35,6 +35,7 @@ public class ToManyMapFault extends Fault {
         this.mapKeyAccessor = mapKeyAccessor;
     }
 
+    @Override
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
         return new PersistentObjectMap(sourceObject, relationshipName, mapKeyAccessor);
     }

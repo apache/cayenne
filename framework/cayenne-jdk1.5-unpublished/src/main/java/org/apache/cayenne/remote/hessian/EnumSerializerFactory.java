@@ -40,10 +40,12 @@ class EnumSerializerFactory extends AbstractSerializerFactory {
     private final EnumSerializer enumSerializer = new EnumSerializer();
     private HashMap<Class, Deserializer> cachedDeserializerMap;
 
+    @Override
     public Serializer getSerializer(Class cl) throws HessianProtocolException {
         return (cl.isEnum()) ? enumSerializer : null;
     }
 
+    @Override
     public Deserializer getDeserializer(Class cl) throws HessianProtocolException {
         if (cl.isEnum()) {
             Deserializer deserializer = null;

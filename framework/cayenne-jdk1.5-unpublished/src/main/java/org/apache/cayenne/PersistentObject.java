@@ -104,6 +104,7 @@ public abstract class PersistentObject implements Persistent {
                 + "' is not a to-many Map");
     }
 
+    @Override
     public String toString() {
         String state = PersistenceState.persistenceStateName(getPersistenceState());
 

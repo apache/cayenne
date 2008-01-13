@@ -47,10 +47,12 @@ public class SybaseStackAdapter extends AccessStackAdapter {
         super(adapter);
     }
 
+    @Override
     public boolean supportsStoredProcedures() {
         return true;
     }
 
+    @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
         Procedure proc = map.getProcedure("cayenne_tst_select_proc");
         if (proc != null && proc.getDataMap() == map) {
@@ -61,6 +63,7 @@ public class SybaseStackAdapter extends AccessStackAdapter {
         }
     }
 
+    @Override
     public void willCreateTables(Connection con, DataMap map) throws Exception {
 
         // Sybase does not support NULLable BIT columns...
@@ -70,6 +73,7 @@ public class SybaseStackAdapter extends AccessStackAdapter {
         }
     }
 
+    @Override
     public void willDropTables(Connection con, DataMap map, Collection tablesToDrop)
             throws Exception {
 
@@ -123,10 +127,12 @@ public class SybaseStackAdapter extends AccessStackAdapter {
         }
     }
 
+    @Override
     public boolean supportsLobs() {
         return true;
     }
 
+    @Override
     public boolean handlesNullVsEmptyLOBs() {
         // TODO Sybase handling of this must be fixed
         return false;

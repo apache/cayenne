@@ -42,6 +42,7 @@ public class CAY_207Test extends PeopleCase {
 
     protected DataMap testMap;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();

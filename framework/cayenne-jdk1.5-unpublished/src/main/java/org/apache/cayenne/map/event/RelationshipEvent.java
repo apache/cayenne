@@ -76,7 +76,8 @@ public class RelationshipEvent extends EntityEvent {
 		this.relationship = relationship;
 	}
 	
-	public String getNewName() {
+	@Override
+    public String getNewName() {
 		return (relationship != null) ? relationship.getName() : null;
 	}
 }

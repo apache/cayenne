@@ -52,18 +52,22 @@ public class TstQueryAssembler extends QueryAssembler {
         super.getConnection().close();
     }
 
+    @Override
     public void dbRelationshipAdded(DbRelationship dbRel) {
         dbRels.add(dbRel);
     }
 
+    @Override
     public String aliasForTable(DbEntity dbEnt) {
         return "ta";
     }
 
+    @Override
     public boolean supportsTableAliases() {
         return true;
     }
 
+    @Override
     public String createSqlString() {
         return "SELECT * FROM ARTIST";
     }

@@ -41,6 +41,7 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
     protected DataContext c1;
     protected DataContext c2;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -207,6 +208,7 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(
                         "Snapshot change is not propagated: " + freshSnapshot,

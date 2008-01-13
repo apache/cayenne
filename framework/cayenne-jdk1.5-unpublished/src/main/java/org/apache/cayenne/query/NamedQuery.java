@@ -72,6 +72,7 @@ public class NamedQuery extends IndirectQuery {
         this.parameters = Util.toMap(keys, values);
     }
 
+    @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
 
         QueryMetadata base = overrideMetadata != null ? overrideMetadata : super
@@ -116,6 +117,7 @@ public class NamedQuery extends IndirectQuery {
         return wrapper;
     }
 
+    @Override
     protected Query createReplacementQuery(EntityResolver resolver) {
         Query query = resolveQuery(resolver);
 
@@ -176,6 +178,7 @@ public class NamedQuery extends IndirectQuery {
     /**
      * Overrides toString() outputting a short string with query class and name.
      */
+    @Override
     public String toString() {
         return StringUtils.substringAfterLast(getClass().getName(), ".")
                 + ":"
@@ -200,6 +203,7 @@ public class NamedQuery extends IndirectQuery {
      * An object is considered equal to this NamedQuery if it is a NamedQuery with the
      * same queryName and same parameters.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -254,6 +258,7 @@ public class NamedQuery extends IndirectQuery {
     /**
      * Implements a standard hashCode contract considering custom 'equals' implementation.
      */
+    @Override
     public int hashCode() {
 
         if (this.hashCode == 0) {

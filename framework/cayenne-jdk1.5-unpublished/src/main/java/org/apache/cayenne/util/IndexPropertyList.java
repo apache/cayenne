@@ -133,6 +133,7 @@ public class IndexPropertyList extends AbstractList implements ValueHolder {
         this.dirty = true;
     }
 
+    @Override
     public Object get(int index) {
         if (dirty) {
             sort();
@@ -141,6 +142,7 @@ public class IndexPropertyList extends AbstractList implements ValueHolder {
         return list.get(index);
     }
 
+    @Override
     public int size() {
         if (dirty) {
             sort();
@@ -149,6 +151,7 @@ public class IndexPropertyList extends AbstractList implements ValueHolder {
         return list.size();
     }
 
+    @Override
     public Object set(int index, Object element) {
         if (dirty) {
             sort();
@@ -172,6 +175,7 @@ public class IndexPropertyList extends AbstractList implements ValueHolder {
         return removed;
     }
 
+    @Override
     public void add(int index, Object element) {
         if (dirty) {
             sort();
@@ -187,6 +191,7 @@ public class IndexPropertyList extends AbstractList implements ValueHolder {
         }
     }
 
+    @Override
     public Object remove(int index) {
         if (dirty) {
             sort();

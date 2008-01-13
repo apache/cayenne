@@ -26,18 +26,22 @@ public class SQLiteStackAdapter extends AccessStackAdapter {
         super(adapter);
     }
     
+    @Override
     public boolean supportsFKConstraints() {
         return false;
     }
     
+    @Override
     public boolean supportsColumnTypeReengineering() {
         return false;
     }
     
+    @Override
     public boolean supportsCaseSensitiveLike() {
         return false;
     }
     
+    @Override
     public boolean supportsAllAnySome() {
         return false;
     }

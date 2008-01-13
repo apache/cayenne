@@ -60,6 +60,7 @@ public class MapEventTest extends TestCase {
             this.newName = newName;
         }
 
+        @Override
         public String getNewName() {
             return newName;
         }

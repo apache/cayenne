@@ -47,6 +47,7 @@ public class ASTIn extends ConditionNode {
         connectChildren();
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
         if (len != 2) {
@@ -76,18 +77,22 @@ public class ASTIn extends ConditionNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTIn(id);
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         return "in";
     }
 
+    @Override
     public int getType() {
         return Expression.IN;
     }
 
+    @Override
     protected Object transformExpression(Transformer transformer) {
         Object transformed = super.transformExpression(transformer);
         

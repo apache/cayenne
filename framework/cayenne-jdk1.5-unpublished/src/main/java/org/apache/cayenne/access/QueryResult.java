@@ -202,6 +202,7 @@ public class QueryResult extends DefaultOperationObserver {
     /**
      * Overrides superclass implementation to rethrow an exception immediately.
      */
+    @Override
     public void nextQueryException(Query query, Exception ex) {
         super.nextQueryException(query, ex);
         throw new CayenneRuntimeException("Query exception.", Util.unwindException(ex));
@@ -210,6 +211,7 @@ public class QueryResult extends DefaultOperationObserver {
     /**
      * Overrides superclass implementation to rethrow an exception immediately.
      */
+    @Override
     public void nextGlobalException(Exception ex) {
         super.nextGlobalException(ex);
         throw new CayenneRuntimeException("Global exception.", Util.unwindException(ex));
@@ -218,10 +220,12 @@ public class QueryResult extends DefaultOperationObserver {
     /**
      * Always returns <code>false</code>, iterated results are not supported.
      */
+    @Override
     public boolean isIteratedResult() {
         return false;
     }
 
+    @Override
     public void nextBatchCount(Query query, int[] resultCount) {
         List list = (List) queries.get(query);
         if (list == null) {
@@ -232,6 +236,7 @@ public class QueryResult extends DefaultOperationObserver {
         list.add(resultCount);
     }
 
+    @Override
     public void nextCount(Query query, int resultCount) {
         super.nextCount(query, resultCount);
 
@@ -244,6 +249,7 @@ public class QueryResult extends DefaultOperationObserver {
         list.add(Integer.valueOf(resultCount));
     }
 
+    @Override
     public void nextDataRows(Query query, List dataRows) {
         super.nextDataRows(query, dataRows);
 
@@ -256,6 +262,7 @@ public class QueryResult extends DefaultOperationObserver {
         list.add(dataRows);
     }
 
+    @Override
     public void nextDataRows(Query q, ResultIterator it) {
         throw new CayenneRuntimeException("Iterated results are not supported by "
                 + this.getClass().getName());

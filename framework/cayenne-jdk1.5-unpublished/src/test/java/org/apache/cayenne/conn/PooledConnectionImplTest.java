@@ -28,6 +28,7 @@ public class PooledConnectionImplTest extends TestCase {
         // that has been removed from the pool, but when pool is still a 
         // listener for its events.
         PoolManager pm = new PoolManager(null, 0, 3, "", "") {
+            @Override
             protected void startMaintenanceThread() {}
         };
         PooledConnectionImpl con = new PooledConnectionImpl();
@@ -40,6 +41,7 @@ public class PooledConnectionImplTest extends TestCase {
         // that has been removed from the pool, but when pool is still a 
         // listener for its events.
         PoolManager pm = new PoolManager(null, 0, 3, "", "") {
+            @Override
             protected void startMaintenanceThread() {}
         };
         PooledConnectionImpl con = new PooledConnectionImpl();

@@ -34,6 +34,7 @@ public class UtilTest extends TestCase {
     private String fTmpFileName;
     private File fTmpFileCopy;
 
+    @Override
     protected void setUp() throws Exception {
         fTmpFileName = "." + File.separator + System.currentTimeMillis() + ".tmp";
 
@@ -47,6 +48,7 @@ public class UtilTest extends TestCase {
         fTmpFileCopy = new File(fTmpFileName + ".copy");
     }
 
+    @Override
     protected void tearDown() throws java.lang.Exception {
         if (!fTmpFileInCurrentDir.delete())
             throw new Exception("Error deleting temporary file: " + fTmpFileInCurrentDir);

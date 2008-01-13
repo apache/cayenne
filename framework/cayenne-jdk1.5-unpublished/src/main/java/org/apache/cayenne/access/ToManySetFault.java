@@ -28,6 +28,7 @@ import org.apache.cayenne.util.PersistentObjectSet;
  */
 public class ToManySetFault extends Fault {
 
+    @Override
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
         return new PersistentObjectSet(sourceObject, relationshipName);
     }

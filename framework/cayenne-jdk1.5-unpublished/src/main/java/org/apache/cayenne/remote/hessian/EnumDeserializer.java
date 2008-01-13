@@ -36,6 +36,7 @@ class EnumDeserializer extends AbstractDeserializer {
         this.enumClass = enumClass;
     }
 
+    @Override
     public Object readMap(AbstractHessianInput in) throws IOException {
         String name = in.readString();
         in.readMapEnd();

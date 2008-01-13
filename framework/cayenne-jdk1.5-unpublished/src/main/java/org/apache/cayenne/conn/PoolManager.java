@@ -505,6 +505,7 @@ public class PoolManager implements DataSource, ConnectionEventListener {
             this.pool = pool;
         }
 
+        @Override
         public void run() {
             // periodically wakes up to check if the pool should grow or shrink 
             while (true) {

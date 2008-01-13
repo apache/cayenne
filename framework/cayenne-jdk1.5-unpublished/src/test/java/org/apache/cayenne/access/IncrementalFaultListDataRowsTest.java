@@ -40,6 +40,7 @@ public class IncrementalFaultListDataRowsTest extends CayenneCase {
     protected IncrementalFaultList list;
     protected Query query;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

@@ -53,6 +53,7 @@ class CallbackOnListener extends AbstractCallback {
         this.listener = listener;
     }
 
+    @Override
     public void performCallback(Object entity) {
         try {
             callbackMethod.invoke(listener, new Object[] {

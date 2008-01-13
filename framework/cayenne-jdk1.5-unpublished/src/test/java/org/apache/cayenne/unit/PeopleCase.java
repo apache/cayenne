@@ -28,6 +28,7 @@ package org.apache.cayenne.unit;
 public abstract class PeopleCase extends CayenneCase {
     public static final String PEOPLE_ACCESS_STACK = "PeopleStack";
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(PEOPLE_ACCESS_STACK);
     }

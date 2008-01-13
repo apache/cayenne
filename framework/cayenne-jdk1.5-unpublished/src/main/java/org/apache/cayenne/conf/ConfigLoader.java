@@ -102,6 +102,7 @@ public class ConfigLoader {
          * 
          * @exception SAXException if the tag given is not <code>"domains"</code>
          */
+        @Override
         public void startElement(
                 String namespaceURI,
                 String localName,
@@ -138,6 +139,7 @@ public class ConfigLoader {
          * Handles the start of a top-level element within the project. An appropriate
          * handler is created and initialised with the details of the element.
          */
+        @Override
         public void startElement(
                 String namespaceURI,
                 String localName,
@@ -191,6 +193,7 @@ public class ConfigLoader {
             delegate.shouldLoadDataDomain(domainName);
         }
 
+        @Override
         public void startElement(
                 String namespaceURI,
                 String localName,
@@ -226,6 +229,7 @@ public class ConfigLoader {
             }
         }
 
+        @Override
         protected void finished() {
             loadProperties();
             loadMaps();
@@ -285,6 +289,7 @@ public class ConfigLoader {
             location = attrs.getValue("", "location");
         }
 
+        @Override
         public void startElement(
                 String namespaceURI,
                 String localName,
@@ -305,6 +310,7 @@ public class ConfigLoader {
             }
         }
 
+        @Override
         protected void finished() {
             mapLocations.put(mapName, location);
         }
@@ -335,6 +341,7 @@ public class ConfigLoader {
                     factoryName);
         }
 
+        @Override
         public void startElement(
                 String namespaceURI,
                 String localName,

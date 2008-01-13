@@ -29,6 +29,7 @@ import org.apache.cayenne.unit.CayenneCase;
  */
 public class ObjectStoreDiffRetainingTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();

@@ -41,6 +41,7 @@ class HessianProxyFactory extends com.caucho.hessian.client.HessianProxyFactory 
         this.clientConnection = clientConnection;
     }
 
+    @Override
     protected URLConnection openConnection(URL url) throws IOException {
         URLConnection connection = super.openConnection(url);
 

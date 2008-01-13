@@ -38,6 +38,7 @@ public class DbLoaderTest extends CayenneCase {
 
     protected DbLoader loader;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

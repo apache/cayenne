@@ -38,6 +38,7 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
         super(owner, targetDescriptor, accessor, reverseName);
     }
 
+    @Override
     public Object readProperty(Object object) throws PropertyException {
         return ensureCollectionValueHolderSet(object);
     }
@@ -45,6 +46,7 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
     /**
      * Wraps list in a value holder that performs lazy faulting.
      */
+    @Override
     public void writePropertyDirectly(Object object, Object oldValue, Object newValue)
             throws PropertyException {
 
@@ -95,6 +97,7 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
         }
     }
 
+    @Override
     public boolean visit(PropertyVisitor visitor) {
         return visitor.visitToMany(this);
     }
@@ -102,6 +105,7 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
     /**
      * Injects a List in the object if it hasn't been done yet.
      */
+    @Override
     public void injectValueHolder(Object object) throws PropertyException {
         ensureCollectionValueHolderSet(object);
     }

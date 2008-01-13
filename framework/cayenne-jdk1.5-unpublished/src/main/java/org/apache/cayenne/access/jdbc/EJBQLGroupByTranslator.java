@@ -36,11 +36,13 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
         this.context = context;
     }
 
+    @Override
     public boolean visitIdentifier(EJBQLExpression expression) {
         expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(context));
         return false;
     }
 
+    @Override
     public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
 
         if (itemCount++ > 0) {
@@ -49,6 +51,7 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
 
         EJBQLExpressionVisitor childVisitor = new EJBQLPathTranslator(context) {
 
+            @Override
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
                 throw new EJBQLException(
                         "Can't GROUP BY on multi-column paths or objects");

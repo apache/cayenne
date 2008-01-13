@@ -50,10 +50,12 @@ public class OracleStackAdapter extends AccessStackAdapter {
         super(adapter);
     }
 
+    @Override
     public boolean supportsStoredProcedures() {
         return true;
     }
 
+    @Override
     public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
             throws Exception {
         // avoid dropping constraints...
@@ -63,6 +65,7 @@ public class OracleStackAdapter extends AccessStackAdapter {
      * Oracle 8i does not support more then 1 "LONG xx" column per table PAINTING_INFO
      * need to be fixed.
      */
+    @Override
     public void willCreateTables(Connection con, DataMap map) {
         DbEntity paintingInfo = map.getDbEntity("PAINTING_INFO");
 
@@ -74,6 +77,7 @@ public class OracleStackAdapter extends AccessStackAdapter {
         }
     }
 
+    @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
         if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
             executeDDL(con, "oracle", "create-types-pkg.sql");
@@ -84,10 +88,12 @@ public class OracleStackAdapter extends AccessStackAdapter {
         }
     }
 
+    @Override
     public boolean supportsLobs() {
         return true;
     }
 
+    @Override
     public void tweakProcedure(Procedure proc) {
         if (DataContextProcedureQueryTest.SELECT_STORED_PROCEDURE.equals(proc.getName())
                 && proc.getCallParameters().size() == 2) {

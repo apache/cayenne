@@ -30,6 +30,7 @@ import org.apache.cayenne.unit.CayenneCase;
 public class ProjectConfigInfoTest extends CayenneCase {
     protected ProjectConfigInfo config;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         config = new ProjectConfigInfo();

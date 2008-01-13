@@ -136,46 +136,55 @@ class Compiler {
 
     class CompilationVisitor extends EJBQLBaseVisitor {
 
+        @Override
         public boolean visitSelect(EJBQLExpression expression) {
             appendingResultColumns = true;
             return true;
         }
 
+        @Override
         public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
             appendingResultColumns = false;
             return true;
         }
 
+        @Override
         public boolean visitSelectExpression(EJBQLExpression expression) {
             expression.visit(rootDescriptorVisitor);
             return false;
         }
 
+        @Override
         public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
             expression.visit(fromItemVisitor);
             return false;
         }
 
+        @Override
         public boolean visitInnerFetchJoin(EJBQLJoin join) {
             join.visit(joinVisitor);
             return false;
         }
 
+        @Override
         public boolean visitInnerJoin(EJBQLJoin join) {
             join.visit(joinVisitor);
             return false;
         }
 
+        @Override
         public boolean visitOuterFetchJoin(EJBQLJoin join) {
             join.visit(joinVisitor);
             return false;
         }
 
+        @Override
         public boolean visitOuterJoin(EJBQLJoin join) {
             join.visit(joinVisitor);
             return false;
         }
 
+        @Override
         public boolean visitWhere(EJBQLExpression expression) {
             expression.visit(pathVisitor);
 
@@ -184,11 +193,13 @@ class Compiler {
             return true;
         }
 
+        @Override
         public boolean visitOrderBy(EJBQLExpression expression) {
             expression.visit(pathVisitor);
             return false;
         }
 
+        @Override
         public boolean visitSubselect(EJBQLExpression expression) {
             return super.visitSubselect(expression);
         }
@@ -198,6 +209,7 @@ class Compiler {
 
         private String entityName;
 
+        @Override
         public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
 
             if (finishedChildIndex + 1 == expression.getChildrenCount()) {
@@ -233,6 +245,7 @@ class Compiler {
             return true;
         }
 
+        @Override
         public boolean visitIdentificationVariable(EJBQLExpression expression) {
             entityName = expression.getText();
             return true;
@@ -245,6 +258,7 @@ class Compiler {
         private ObjRelationship incoming;
         private ClassDescriptor descriptor;
 
+        @Override
         public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             if (finishedChildIndex + 1 < expression.getChildrenCount()) {
                 this.id = ((EJBQLPath) expression).getId();
@@ -258,6 +272,7 @@ class Compiler {
             return true;
         }
 
+        @Override
         public boolean visitIdentificationVariable(EJBQLExpression expression) {
             Property property = descriptor.getProperty(expression.getText());
             if (property instanceof ArcProperty) {
@@ -272,6 +287,7 @@ class Compiler {
             return true;
         }
 
+        @Override
         public boolean visitIdentifier(EJBQLExpression expression) {
             if (incoming != null) {
 
@@ -300,6 +316,7 @@ class Compiler {
 
     class PathVisitor extends EJBQLBaseVisitor {
 
+        @Override
         public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             addPath((EJBQLPath) expression);
             return false;
@@ -308,16 +325,19 @@ class Compiler {
 
     class SelectExpressionVisitor extends EJBQLBaseVisitor {
 
+        @Override
         public boolean visitIdentifier(EJBQLExpression expression) {
             rootId = normalizeIdPath(expression.getText());
             return false;
         }
 
+        @Override
         public boolean visitAggregate(EJBQLExpression expression) {
             addResultSetColumn();
             return false;
         }
 
+        @Override
         public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             addPath((EJBQLPath) expression);
             addResultSetColumn();

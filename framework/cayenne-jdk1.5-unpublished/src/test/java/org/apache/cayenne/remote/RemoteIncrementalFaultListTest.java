@@ -44,6 +44,7 @@ public class RemoteIncrementalFaultListTest extends CayenneCase {
     protected RemoteIncrementalFaultList list;
     protected SelectQuery query;
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()

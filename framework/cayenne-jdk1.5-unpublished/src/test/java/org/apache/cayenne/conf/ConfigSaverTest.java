@@ -109,6 +109,7 @@ public class ConfigSaverTest extends CayenneCase {
     /**
      * @see junit.framework.TestCase#setUp()
      */
+    @Override
     protected void setUp() throws Exception {
         saver = new ConfigSaver();
     }

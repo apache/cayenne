@@ -47,6 +47,7 @@ import org.apache.cayenne.map.DbEntity;
 public class IngresAdapter extends JdbcAdapter {
     public static final String TRIM_FUNCTION = "TRIM";
     
+    @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         return new TrimmingQualifierTranslator(
                 queryAssembler,
@@ -56,6 +57,7 @@ public class IngresAdapter extends JdbcAdapter {
      * Returns a SQL string that can be used to create database table corresponding to
      * <code>ent</code> parameter.
      */
+    @Override
     public String createTable(DbEntity ent) {
         StringBuffer buf = new StringBuffer();
         buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");
@@ -145,6 +147,7 @@ public class IngresAdapter extends JdbcAdapter {
         return buf.toString();
     }
 
+    @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
         map.registerType(new IngresCharType());
@@ -153,6 +156,7 @@ public class IngresAdapter extends JdbcAdapter {
     /**
      * @see JdbcAdapter#createPkGenerator()
      */
+    @Override
     protected PkGenerator createPkGenerator() {
         return new IngresPkGenerator();
     }

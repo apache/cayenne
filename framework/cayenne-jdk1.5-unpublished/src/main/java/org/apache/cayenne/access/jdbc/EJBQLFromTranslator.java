@@ -39,6 +39,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         this.joinAppender = context.getTranslatorFactory().getJoinAppender(context);
     }
 
+    @Override
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             if (lastId != null) {
@@ -49,6 +50,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         return true;
     }
 
+    @Override
     public boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex) {
 
         String id = expression.getId();
@@ -63,11 +65,13 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    @Override
     public boolean visitInnerFetchJoin(EJBQLJoin join) {
         // TODO: andrus, 4/9/2007 - support for prefetching
         return visitInnerJoin(join);
     }
 
+    @Override
     public boolean visitInnerJoin(EJBQLJoin join) {
         joinAppender.appendInnerJoin(
                 null,
@@ -76,11 +80,13 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
+    @Override
     public boolean visitOuterFetchJoin(EJBQLJoin join) {
         // TODO: andrus, 4/9/2007 - support for prefetching
         return visitOuterJoin(join);
     }
 
+    @Override
     public boolean visitOuterJoin(EJBQLJoin join) {
         joinAppender.appendOuterJoin(
                 null,

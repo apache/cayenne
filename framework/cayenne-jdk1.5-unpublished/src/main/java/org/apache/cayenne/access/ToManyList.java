@@ -158,6 +158,7 @@ public class ToManyList implements List, Serializable, ValueHolder {
         return resolvedObjectList().containsAll(c);
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) {
             return false;
@@ -170,6 +171,7 @@ public class ToManyList implements List, Serializable, ValueHolder {
         return resolvedObjectList().equals(((ToManyList) o).resolvedObjectList());
     }
 
+    @Override
     public int hashCode() {
         return 15 + resolvedObjectList().hashCode();
     }
@@ -373,6 +375,7 @@ public class ToManyList implements List, Serializable, ValueHolder {
         return true;
     }
 
+    @Override
     public String toString() {
         return getClass().getName() + "@" + System.identityHashCode(this);
     }

@@ -43,6 +43,7 @@ import org.apache.cayenne.unit.CayenneCase;
  */
 public class DataObjectUtilsTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();

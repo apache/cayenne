@@ -31,10 +31,12 @@ class ProcedureQueryMetadata extends BaseQueryMetadata {
 
     transient Procedure procedure;
 
+    @Override
     public Procedure getProcedure() {
         return procedure;
     }
 
+    @Override
     void copyFromInfo(QueryMetadata info) {
         procedure = null;
         super.copyFromInfo(info);

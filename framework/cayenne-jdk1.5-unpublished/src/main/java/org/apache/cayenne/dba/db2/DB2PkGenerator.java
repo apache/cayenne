@@ -47,6 +47,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
      */
     public static final String SEQUENCE_PREFIX = "S_";
 
+    @Override
     protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
 
         String pkGeneratingSequenceName = sequenceName(ent);
@@ -81,6 +82,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
         }
     }
 
+    @Override
     public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
         Collection<String> sequences = getExistingSequences(node);
        for (DbEntity entity : dbEntities) {
@@ -93,6 +95,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
     /**
      * Creates a list of CREATE SEQUENCE statements for the list of DbEntities.
      */
+    @Override
     public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
         List<String> list = new ArrayList<String>(dbEntities.size());
         for (DbEntity entity : dbEntities) {
@@ -104,6 +107,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
     /**
      * Drops PK sequences for all specified DbEntities.
      */
+    @Override
     public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
         Collection<String> sequences = getExistingSequences(node);
 
@@ -117,6 +121,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
     /**
      * Creates a list of DROP SEQUENCE statements for the list of DbEntities.
      */
+    @Override
     public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
         List<String> list = new ArrayList<String>(dbEntities.size());
         for (DbEntity entity : dbEntities) {

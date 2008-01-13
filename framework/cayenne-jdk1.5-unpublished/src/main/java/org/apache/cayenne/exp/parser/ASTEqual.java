@@ -51,6 +51,7 @@ public class ASTEqual extends ConditionNode {
         connectChildren();
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
         if (len != 2) {
@@ -90,14 +91,17 @@ public class ASTEqual extends ConditionNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTEqual(id);
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         return "=";
     }
 
+    @Override
     public int getType() {
         return Expression.EQUAL_TO;
     }

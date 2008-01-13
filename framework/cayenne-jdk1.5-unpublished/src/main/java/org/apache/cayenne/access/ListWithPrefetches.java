@@ -85,6 +85,7 @@ class ListWithPrefetches implements List {
         return list.containsAll(c);
     }
 
+    @Override
     public boolean equals(Object o) {
         return list.equals(o);
     }
@@ -93,6 +94,7 @@ class ListWithPrefetches implements List {
         return list.get(index);
     }
 
+    @Override
     public int hashCode() {
         return list.hashCode();
     }

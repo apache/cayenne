@@ -50,6 +50,7 @@ class Oracle8SQLTemplateAction extends SQLTemplateAction {
      * common for selecting and updating statements that does not work in Oracle 8.*
      * drivers.
      */
+    @Override
     protected void execute(
             Connection connection,
             OperationObserver callback,

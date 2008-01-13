@@ -57,6 +57,7 @@ public class SimpleValidationFailure implements ValidationFailure {
     /**
      * Returns a String representation of the failure.
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
 

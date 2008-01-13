@@ -43,14 +43,17 @@ public abstract class Transaction {
 
     private static final Transaction NO_TRANSACTION = new Transaction() {
 
+        @Override
         public void begin() {
 
         }
 
+        @Override
         public void commit() {
 
         }
 
+        @Override
         public void rollback() {
 
         }

@@ -33,6 +33,7 @@ class SelectQueryBuilder extends QueryLoader {
     /**
      * Creates a SelectQuery.
      */
+    @Override
     public Query getQuery() {
         SelectQuery query = new SelectQuery();
         query.setRoot(getRoot());

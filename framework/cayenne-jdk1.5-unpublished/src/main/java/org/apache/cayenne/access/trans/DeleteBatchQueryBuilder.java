@@ -40,6 +40,7 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
         super(adapter);
     }
 
+    @Override
     public String createSqlString(BatchQuery batch) {
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) batch;
         String table = batch.getDbEntity().getFullyQualifiedName();
@@ -64,6 +65,7 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
     /**
      * Binds BatchQuery parameters to the PreparedStatement.
      */
+    @Override
     public void bindParameters(PreparedStatement statement, BatchQuery query)
             throws SQLException, Exception {
 

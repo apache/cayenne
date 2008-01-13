@@ -38,6 +38,7 @@ public class UserTransactionTest extends CayenneCase {
 
         TransactionDelegate delegate = new MockTransactionDelegate() {
 
+            @Override
             public boolean willAddConnection(
                     Transaction transaction,
                     Connection connection) {
@@ -45,11 +46,13 @@ public class UserTransactionTest extends CayenneCase {
                 return true;
             }
 
+            @Override
             public boolean willCommit(Transaction transaction) {
                 willCommitCalled[0] = true;
                 return true;
             }
 
+            @Override
             public void didCommit(Transaction transaction) {
                 didCommitCalled[0] = true;
             }

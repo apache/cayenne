@@ -37,6 +37,7 @@ class PostgresByteArrayType extends ByteArrayType {
         super(trimmingBytes, usingBlobs);
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,

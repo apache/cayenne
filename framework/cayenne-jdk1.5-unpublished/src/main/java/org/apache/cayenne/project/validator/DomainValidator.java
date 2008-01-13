@@ -37,6 +37,7 @@ public class DomainValidator extends TreeNodeValidator {
         super();
     }
 
+    @Override
     public void validateObject(ProjectPath path, Validator validator) {
 
         // check for empty name

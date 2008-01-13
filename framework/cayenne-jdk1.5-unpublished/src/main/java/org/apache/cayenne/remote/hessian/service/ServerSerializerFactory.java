@@ -56,6 +56,7 @@ class ServerSerializerFactory extends AbstractSerializerFactory {
         this.serverResolver = resolver;
     }
 
+    @Override
     public Serializer getSerializer(Class cl) throws HessianProtocolException {
 
         if (PersistentObjectList.class.isAssignableFrom(cl)) {
@@ -68,6 +69,7 @@ class ServerSerializerFactory extends AbstractSerializerFactory {
         return null;
     }
 
+    @Override
     public Deserializer getDeserializer(Class cl) throws HessianProtocolException {
         Deserializer deserializer = null;
 

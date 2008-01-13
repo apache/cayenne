@@ -76,6 +76,7 @@ public abstract class BaseProperty implements Property {
         accessor.setValue(object, newValue);
     }
 
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append(getClass().getName()).append('@').append(

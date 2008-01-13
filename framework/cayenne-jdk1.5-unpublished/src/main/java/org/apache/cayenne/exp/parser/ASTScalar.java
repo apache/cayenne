@@ -48,6 +48,7 @@ public class ASTScalar extends SimpleNode {
         setValue(value);
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         return value;
     }
@@ -55,12 +56,14 @@ public class ASTScalar extends SimpleNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         ASTScalar copy = new ASTScalar(id);
         copy.value = value;
         return copy;
     }
 
+    @Override
     public void encodeAsString(PrintWriter pw) {
         SimpleNode.encodeScalarAsString(pw, value, '\"');
     }
@@ -81,6 +84,7 @@ public class ASTScalar extends SimpleNode {
         return value;
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         throw new UnsupportedOperationException(
             "No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");

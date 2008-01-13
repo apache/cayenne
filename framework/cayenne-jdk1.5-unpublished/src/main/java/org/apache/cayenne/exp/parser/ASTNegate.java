@@ -50,10 +50,12 @@ public class ASTNegate extends SimpleNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTNegate(id);
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
         if (len == 0) {
@@ -64,6 +66,7 @@ public class ASTNegate extends SimpleNode {
         return result != null ? result.negate() : null;
     }
 
+    @Override
     public void encodeAsString(PrintWriter pw) {
         if ((children != null) && (children.length > 0)) {
             pw.print("-");
@@ -110,16 +113,19 @@ public class ASTNegate extends SimpleNode {
         }
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         throw new UnsupportedOperationException("No operator for '"
                 + ExpressionParserTreeConstants.jjtNodeName[id]
                 + "'");
     }
 
+    @Override
     public int getType() {
         return Expression.NEGATIVE;
     }
 
+    @Override
     public int getOperandCount() {
         return 1;
     }

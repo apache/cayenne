@@ -27,6 +27,7 @@ package org.apache.cayenne.unit;
 public abstract class LockingCase extends CayenneCase {
     public static final String LOCKING_ACCESS_STACK = "LockingStack";
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(LOCKING_ACCESS_STACK);
     }

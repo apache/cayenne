@@ -38,6 +38,7 @@ public class ProjectTest extends CayenneCase {
     /**
       * @see junit.framework.TestCase#setUp()
       */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         f = new File("xyz");
@@ -103,6 +104,7 @@ public class ProjectTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#canHandle(Object)
          */
+        @Override
         public boolean canHandle(Object obj) {
             return false;
         }
@@ -117,6 +119,7 @@ public class ProjectTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#getObject()
          */
+        @Override
         public Object getObject() {
             return null;
         }
@@ -124,6 +127,7 @@ public class ProjectTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#getObjectName()
          */
+        @Override
         public String getObjectName() {
             return null;
         }
@@ -131,12 +135,14 @@ public class ProjectTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#saveToFile(File)
          */
+        @Override
         public void save(PrintWriter out) throws Exception {
         }
 
         /**
          * @see org.apache.cayenne.project.ProjectFile#saveCommit()
          */
+        @Override
         public File saveCommit() {
             commitCount++;
             return new File("abc");
@@ -153,6 +159,7 @@ public class ProjectTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#saveTemp()
          */
+        @Override
         public void saveTemp() throws Exception {
             saveTempCount++;
             
@@ -164,6 +171,7 @@ public class ProjectTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#saveUndo()
          */
+        @Override
         public void saveUndo() {
             undoCount++;
         }
@@ -171,6 +179,7 @@ public class ProjectTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#getFileName()
          */
+        @Override
         public String getLocation() {
             return null;
         }
@@ -179,6 +188,7 @@ public class ProjectTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#getOldFileName()
          */
+        @Override
         public String getOldLocation() {
             return null;
         }
@@ -187,6 +197,7 @@ public class ProjectTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#resolveFile()
          */
+        @Override
         public File resolveFile() {
             return new File("abc");
         }
@@ -195,6 +206,7 @@ public class ProjectTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#resolveOldFile()
          */
+        @Override
         public File resolveOldFile() {
             return new File("xyz");
         }

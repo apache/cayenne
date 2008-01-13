@@ -33,6 +33,7 @@ import org.apache.cayenne.unit.CaseDataFactory;
 
 public class CayenneDataObjectInCtxtTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();

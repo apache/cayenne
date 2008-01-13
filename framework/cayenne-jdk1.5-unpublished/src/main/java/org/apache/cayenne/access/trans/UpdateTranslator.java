@@ -36,15 +36,18 @@ import org.apache.cayenne.query.UpdateQuery;
   */
 public class UpdateTranslator extends QueryAssembler {
 
+    @Override
     public String aliasForTable(DbEntity dbEnt) {
         throw new RuntimeException("aliases not supported");
     }
 
+    @Override
     public void dbRelationshipAdded(DbRelationship dbRel) {
         throw new RuntimeException("db relationships not supported");
     }
 
     /** Method that converts an update query into SQL string */
+    @Override
     public String createSqlString() throws Exception {
         StringBuffer queryBuf = new StringBuffer();
         queryBuf.append("UPDATE ");

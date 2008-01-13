@@ -50,6 +50,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
     protected Artist artist;
     protected DataContext context;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -105,6 +106,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
 
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(
                         "Peer object state wasn't refreshed on fetch",
@@ -154,6 +156,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(newName, altArtist.getArtistName());
             }
@@ -204,6 +207,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(newAltName, altArtist.getArtistName());
                 assertEquals(newDate, altArtist.getDateOfBirth());
@@ -245,6 +249,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(PersistenceState.TRANSIENT, altArtist.getPersistenceState());
                 assertNull(altArtist.getObjectContext());
@@ -283,6 +288,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(PersistenceState.TRANSIENT, altArtist.getPersistenceState());
                 assertNull(altArtist.getObjectContext());
@@ -322,6 +328,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(PersistenceState.NEW, altArtist.getPersistenceState());
             }
@@ -379,6 +386,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(PersistenceState.TRANSIENT, altArtist.getPersistenceState());
                 assertNull(altArtist.getObjectContext());
@@ -447,6 +455,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         // check peer artist
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(PersistenceState.TRANSIENT, altPainting1
                         .getPersistenceState());
@@ -504,6 +513,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         // needed
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 Object value = altArtist.readPropertyDirectly("paintingArray"); 
                 assertTrue("Unexpected: " + value, value instanceof ToManyList);

@@ -40,10 +40,12 @@ public class ArcCreateOperation extends NodeDiff {
         this.arcId = arcId;
     }
 
+    @Override
     public void apply(GraphChangeHandler tracker) {
         tracker.arcCreated(nodeId, targetNodeId, arcId);
     }
 
+    @Override
     public void undo(GraphChangeHandler tracker) {
         tracker.arcDeleted(nodeId, targetNodeId, arcId);
     }

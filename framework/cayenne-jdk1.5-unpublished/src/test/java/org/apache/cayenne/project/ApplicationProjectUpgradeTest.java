@@ -142,9 +142,11 @@ public class ApplicationProjectUpgradeTest extends CayenneCase {
                 // do nothing...
             }
 
+            @Override
             protected DataNode createDataNode(String nodeName) {
                 return new DataNode(nodeName) {
 
+                    @Override
                     public DataSource getDataSource() {
                         return dataSource;
                     }

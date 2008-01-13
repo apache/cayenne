@@ -40,9 +40,11 @@ class MySQLActionBuilder extends JdbcActionBuilder {
         super(adapter, resolver);
     }
 
+    @Override
     public SQLAction objectSelectAction(SelectQuery query) {
         return new SelectAction(query, adapter, entityResolver) {
 
+            @Override
             protected SelectTranslator createTranslator(Connection connection) {
                 SelectTranslator translator = new MySQLSelectTranslator();
                 translator.setQuery(query);
@@ -54,6 +56,7 @@ class MySQLActionBuilder extends JdbcActionBuilder {
         };
     }
 
+    @Override
     public SQLAction procedureAction(ProcedureQuery query) {
         return new MySQLProcedureAction(query, getAdapter(), getEntityResolver());
     }

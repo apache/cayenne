@@ -108,6 +108,7 @@ public abstract class AbstractQuery implements Query {
         this.root = value;
     }
 
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("root", root)

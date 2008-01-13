@@ -36,6 +36,7 @@ import org.apache.cayenne.unit.CayenneCase;
 // question to see if a PK is numeric and not propagated.
 public class PregeneratedPKTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();

@@ -48,6 +48,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
 
     protected DataContext ctxt;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

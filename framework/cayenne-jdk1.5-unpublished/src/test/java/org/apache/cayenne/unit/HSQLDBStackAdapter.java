@@ -33,6 +33,7 @@ public class HSQLDBStackAdapter extends AccessStackAdapter {
         super(adapter);
     }
 
+    @Override
     public boolean supportsLobs() {
         return true;
     }
@@ -42,14 +43,17 @@ public class HSQLDBStackAdapter extends AccessStackAdapter {
      * not return a ResultSet (see HSQL CallableStatement JavaDocs). Once HSQL implements
      * the rest of callable statement we can enable our unit test.
      */
+    @Override
     public boolean supportsStoredProcedures() {
         return false;
     }
 
+    @Override
     public boolean supportsHaving() {
         return false;
     }
 
+    @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
         if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
             executeDDL(con, "hsqldb", "create-sp-aliases.sql");

@@ -30,6 +30,7 @@ public class DbRelationshipTest extends CayenneCase {
     protected DbEntity paintingEnt;
     protected DbEntity galleryEnt;
 
+    @Override
     public void setUp() throws Exception {
         artistEnt = getDbEntity("ARTIST");
         paintingEnt = getDbEntity("PAINTING");

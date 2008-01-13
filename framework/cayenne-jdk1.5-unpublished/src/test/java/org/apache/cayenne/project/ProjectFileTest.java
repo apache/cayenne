@@ -32,6 +32,7 @@ public class ProjectFileTest extends CayenneCase {
     /**
     * @see junit.framework.TestCase#setUp()
     */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         pf = new TestProjectFile("name.ext");
@@ -73,6 +74,7 @@ public class ProjectFileTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#getObject()
          */
+        @Override
         public Object getObject() {
             return null;
         }
@@ -80,6 +82,7 @@ public class ProjectFileTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#getObjectName()
          */
+        @Override
         public String getObjectName() {
             return OBJ_NAME;
         }
@@ -87,6 +90,7 @@ public class ProjectFileTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#saveToFile(File)
          */
+        @Override
         public void save(PrintWriter out) throws Exception {}
 
         /**
@@ -99,6 +103,7 @@ public class ProjectFileTest extends CayenneCase {
         /**
          * @see org.apache.cayenne.project.ProjectFile#isObjectSupported(Object)
          */
+        @Override
         public boolean canHandle(Object obj) {
             return false;
         }

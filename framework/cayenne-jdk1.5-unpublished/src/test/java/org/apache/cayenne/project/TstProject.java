@@ -45,11 +45,13 @@ public class TstProject extends Project {
     /**
      * @see org.apache.cayenne.project.Project#checkForUpgrades()
      */
+    @Override
     public void checkForUpgrades() {}
 
     /**
      * @see org.apache.cayenne.project.Project#treeNodes()
      */
+    @Override
     public Iterator treeNodes() {
         return new ArrayList().iterator();
     }
@@ -57,6 +59,7 @@ public class TstProject extends Project {
     /**
      * @see org.apache.cayenne.project.Project#getChildren()
      */
+    @Override
     public List getChildren() {
         return new ArrayList();
     }
@@ -64,6 +67,7 @@ public class TstProject extends Project {
     /**
      * @see org.apache.cayenne.project.Project#projectFileForObject(Object)
      */
+    @Override
     public ProjectFile projectFileForObject(Object obj) {
         return null;
     }
@@ -71,10 +75,12 @@ public class TstProject extends Project {
     /**
      * @see org.apache.cayenne.project.Project#projectLoadStatus()
      */
+    @Override
     public ConfigStatus getLoadStatus() {
         return null;
     }
     
+    @Override
     public void upgrade() throws ProjectException {
 
     }

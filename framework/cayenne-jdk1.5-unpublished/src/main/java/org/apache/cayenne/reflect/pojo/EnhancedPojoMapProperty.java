@@ -41,6 +41,7 @@ class EnhancedPojoMapProperty extends EnhancedPojoToManyProperty implements
         this.mapKeyAccessor = mapKeyAccessor;
     }
 
+    @Override
     protected ValueHolder createValueHolder(Persistent relationshipOwner) {
         return new PersistentObjectMap(relationshipOwner, getName(), mapKeyAccessor);
     }

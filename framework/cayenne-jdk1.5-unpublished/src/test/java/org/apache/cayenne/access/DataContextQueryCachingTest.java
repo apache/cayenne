@@ -37,6 +37,7 @@ public class DataContextQueryCachingTest extends CayenneCase {
 
     protected DataContext context;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -68,6 +69,7 @@ public class DataContextQueryCachingTest extends CayenneCase {
 
             QueryMetadata cacheKey = new MockQueryMetadata() {
 
+                @Override
                 public String getCacheKey() {
                     return "c";
                 }
@@ -108,6 +110,7 @@ public class DataContextQueryCachingTest extends CayenneCase {
 
             QueryMetadata cacheKey = new MockQueryMetadata() {
 
+                @Override
                 public String getCacheKey() {
                     return "c";
                 }
@@ -152,6 +155,7 @@ public class DataContextQueryCachingTest extends CayenneCase {
             assertEquals(rows, resultRows);
             QueryMetadata cacheKey = new MockQueryMetadata() {
 
+                @Override
                 public String getCacheKey() {
                     return "c";
                 }
@@ -201,6 +205,7 @@ public class DataContextQueryCachingTest extends CayenneCase {
 
             QueryMetadata cacheKey = new MockQueryMetadata() {
 
+                @Override
                 public String getCacheKey() {
                     return "c";
                 }
@@ -248,6 +253,7 @@ public class DataContextQueryCachingTest extends CayenneCase {
             assertTrue(resultRows.get(0) instanceof DataObject);
             QueryMetadata cacheKey = new MockQueryMetadata() {
 
+                @Override
                 public String getCacheKey() {
                     return "c";
                 }
@@ -296,6 +302,7 @@ public class DataContextQueryCachingTest extends CayenneCase {
 
             QueryMetadata cacheKey = new MockQueryMetadata() {
 
+                @Override
                 public String getCacheKey() {
                     return "c";
                 }
@@ -336,6 +343,7 @@ public class DataContextQueryCachingTest extends CayenneCase {
             assertTrue(resultRows.get(0) instanceof DataObject);
             QueryMetadata cacheKey = new MockQueryMetadata() {
 
+                @Override
                 public String getCacheKey() {
                     return "c";
                 }

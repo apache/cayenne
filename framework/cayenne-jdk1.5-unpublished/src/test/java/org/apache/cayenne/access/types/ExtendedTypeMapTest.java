@@ -109,6 +109,7 @@ public class ExtendedTypeMapTest extends TestCase {
 
     class TstTypeMap extends ExtendedTypeMap {
 
+        @Override
         protected void initDefaultTypes() {
             // noop to avoid any default types
         }

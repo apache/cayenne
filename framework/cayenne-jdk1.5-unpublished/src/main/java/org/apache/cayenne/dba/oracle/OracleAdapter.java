@@ -177,6 +177,7 @@ public class OracleAdapter extends JdbcAdapter {
     /**
      * @since 3.0
      */
+    @Override
     protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
         return new OracleEJBQLTranslatorFactory();
     }
@@ -185,6 +186,7 @@ public class OracleAdapter extends JdbcAdapter {
      * Installs appropriate ExtendedTypes as converters for passing values between JDBC
      * and Java layers.
      */
+    @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
 
@@ -214,6 +216,7 @@ public class OracleAdapter extends JdbcAdapter {
      * Creates and returns a primary key generator. Overrides superclass implementation to
      * return an instance of OraclePkGenerator.
      */
+    @Override
     protected PkGenerator createPkGenerator() {
         return new OraclePkGenerator();
     }
@@ -235,6 +238,7 @@ public class OracleAdapter extends JdbcAdapter {
      * Fixes some reverse engineering problems. Namely if a columns is created as DECIMAL
      * and has non-positive precision it is converted to INTEGER.
      */
+    @Override
     public DbAttribute buildAttribute(
             String name,
             String typeName,
@@ -281,6 +285,7 @@ public class OracleAdapter extends JdbcAdapter {
     /**
      * Returns a trimming translator.
      */
+    @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         return new TrimmingQualifierTranslator(
                 queryAssembler,
@@ -292,6 +297,7 @@ public class OracleAdapter extends JdbcAdapter {
      * 
      * @since 1.2
      */
+    @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new OracleActionBuilder(this, node
                 .getEntityResolver()));
@@ -306,6 +312,7 @@ public class OracleAdapter extends JdbcAdapter {
             super(Integer.class.getName());
         }
 
+        @Override
         public void setJdbcObject(
                 PreparedStatement st,
                 Object val,
@@ -331,6 +338,7 @@ public class OracleAdapter extends JdbcAdapter {
             super(Double.class.getName());
         }
 
+        @Override
         public void setJdbcObject(
                 PreparedStatement st,
                 Object val,

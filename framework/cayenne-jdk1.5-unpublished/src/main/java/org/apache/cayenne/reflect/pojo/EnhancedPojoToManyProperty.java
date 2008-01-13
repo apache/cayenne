@@ -41,6 +41,7 @@ abstract class EnhancedPojoToManyProperty extends BaseToManyProperty {
                 getName());
     }
 
+    @Override
     protected ValueHolder createCollectionValueHolder(Object object)
             throws PropertyException {
 
@@ -63,6 +64,7 @@ abstract class EnhancedPojoToManyProperty extends BaseToManyProperty {
         faultHandler.setFaultProperty(object, true);
     }
 
+    @Override
     public boolean isFault(Object object) {
         return faultHandler.isFaultProperty(object);
     }

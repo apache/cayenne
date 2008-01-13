@@ -30,10 +30,12 @@ import org.apache.cayenne.unit.CayenneCase;
 
 public class DataDomainCallbacksTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         EntityResolver resolver = getDomain().getEntityResolver();
         resolver.getCallbackRegistry().clear();
@@ -236,6 +238,7 @@ public class DataDomainCallbacksTest extends CayenneCase {
                 "postPersistCallback");
         MockCallingBackListener listener2 = new MockCallingBackListener() {
 
+            @Override
             public void publicCallback(Object entity) {
                 super.publicCallback(entity);
                 assertFalse(((Persistent) entity).getObjectId().isTemporary());

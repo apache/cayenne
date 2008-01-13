@@ -39,6 +39,7 @@ public class DataContextNamedQueryCachingTest extends CayenneCase {
 
         QueryMetadata cacheKey = new MockQueryMetadata() {
 
+            @Override
             public String getCacheKey() {
                 return "ParameterizedQueryWithSharedCache";
             }
@@ -86,6 +87,7 @@ public class DataContextNamedQueryCachingTest extends CayenneCase {
 
         QueryMetadata cacheKey = new MockQueryMetadata() {
 
+            @Override
             public String getCacheKey() {
                 return "ParameterizedQueryWithLocalCache";
             }

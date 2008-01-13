@@ -77,6 +77,7 @@ public class ObjAttribute extends Attribute {
      * 
      * @since 1.1
      */
+    @Override
     public void encodeAsXML(XMLEncoder encoder) {
         encoder.print("<obj-attribute name=\"" + getName() + '\"');
 

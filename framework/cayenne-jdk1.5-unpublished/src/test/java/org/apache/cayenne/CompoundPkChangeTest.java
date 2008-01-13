@@ -31,6 +31,7 @@ public class CompoundPkChangeTest extends CayenneCase {
     private static final String key1v3 = "-key1-v3-";
     private static final String key2v3 = "-key2-v3-";
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();

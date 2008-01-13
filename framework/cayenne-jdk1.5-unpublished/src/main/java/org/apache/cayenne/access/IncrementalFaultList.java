@@ -769,6 +769,7 @@ public class IncrementalFaultList<E> implements List<E> {
 
     class PersistentListHelper extends IncrementalListHelper {
 
+        @Override
         boolean incorrectObjectType(Object object) {
             if (!(object instanceof Persistent)) {
                 return true;
@@ -786,6 +787,7 @@ public class IncrementalFaultList<E> implements List<E> {
             return false;
         }
 
+        @Override
         boolean objectsAreEqual(Object object, Object objectInTheList) {
 
             if (objectInTheList instanceof Persistent) {
@@ -798,6 +800,7 @@ public class IncrementalFaultList<E> implements List<E> {
             }
         }
 
+        @Override
         boolean replacesObject(Object object, Object objectInTheList) {
             if (objectInTheList instanceof Persistent) {
                 return false;
@@ -810,6 +813,7 @@ public class IncrementalFaultList<E> implements List<E> {
 
     class DataRowListHelper extends IncrementalListHelper {
 
+        @Override
         boolean incorrectObjectType(Object object) {
             if (!(object instanceof Map)) {
                 return true;
@@ -819,6 +823,7 @@ public class IncrementalFaultList<E> implements List<E> {
             return map.size() != rowWidth;
         }
 
+        @Override
         boolean objectsAreEqual(Object object, Object objectInTheList) {
             if (object == null && objectInTheList == null) {
                 return true;
@@ -847,6 +852,7 @@ public class IncrementalFaultList<E> implements List<E> {
             return false;
         }
 
+        @Override
         boolean replacesObject(Object object, Object objectInTheList) {
 
             Map id = (Map) objectInTheList;

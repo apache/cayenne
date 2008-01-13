@@ -433,6 +433,7 @@ public class SelectQueryTest extends SelectQueryBase {
         assertEquals(2, router.getQueryCount());
     }
 
+    @Override
     protected void populateTables() throws java.lang.Exception {
         String insertArtist = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) VALUES (?,?,?)";
         Connection conn = getConnection();

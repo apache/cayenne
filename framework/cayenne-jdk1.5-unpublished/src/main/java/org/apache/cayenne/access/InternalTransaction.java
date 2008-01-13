@@ -37,11 +37,13 @@ class InternalTransaction extends ExternalTransaction {
         super(delegate);
     }
 
+    @Override
     public void begin() {
         super.begin();
         QueryLogger.logBeginTransaction("transaction started.");
     }
 
+    @Override
     void fixConnectionState(Connection connection) throws SQLException {
         if (connection.getAutoCommit()) {
             // some DBs are very particular about that, (e.g. Informix SE 7.0 per
@@ -57,6 +59,7 @@ class InternalTransaction extends ExternalTransaction {
         }
     }
 
+    @Override
     void processCommit() throws SQLException, CayenneException {
         status = Transaction.STATUS_COMMITTING;
 
@@ -105,6 +108,7 @@ class InternalTransaction extends ExternalTransaction {
         }
     }
 
+    @Override
     void processRollback() throws SQLException, CayenneException {
         status = Transaction.STATUS_ROLLING_BACK;
 

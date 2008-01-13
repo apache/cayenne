@@ -44,6 +44,7 @@ public class ASTObjPath extends ASTPath {
         setPath(value);
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         return (o instanceof DataObject)
                 ? ((DataObject) o).readNestedProperty(path)
@@ -54,12 +55,14 @@ public class ASTObjPath extends ASTPath {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         ASTObjPath copy = new ASTObjPath(id);
         copy.path = path;
         return copy;
     }
 
+    @Override
     public void encodeAsString(PrintWriter pw) {
         pw.print(path);
     }
@@ -74,6 +77,7 @@ public class ASTObjPath extends ASTPath {
         pw.print(path);
     }
 
+    @Override
     public int getType() {
         return Expression.OBJ_PATH;
     }

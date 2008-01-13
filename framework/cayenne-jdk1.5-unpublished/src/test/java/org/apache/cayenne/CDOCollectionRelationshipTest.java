@@ -29,6 +29,7 @@ import org.apache.cayenne.unit.RelationshipCase;
 
 public class CDOCollectionRelationshipTest extends RelationshipCase {
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
     }

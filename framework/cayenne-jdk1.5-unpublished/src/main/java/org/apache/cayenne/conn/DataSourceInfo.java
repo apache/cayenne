@@ -59,6 +59,7 @@ public class DataSourceInfo implements Cloneable, Serializable {
     protected String passwordSourceModel = "Not Applicable";
     protected String passwordSourceUrl = "";
 
+    @Override
     public boolean equals(Object obj) {
         if (obj == this)
             return true;
@@ -110,6 +111,7 @@ public class DataSourceInfo implements Cloneable, Serializable {
         }
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append("[").append(this.getClass().getName()).append(":").append(

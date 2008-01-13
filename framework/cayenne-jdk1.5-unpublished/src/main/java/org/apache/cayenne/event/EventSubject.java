@@ -93,6 +93,7 @@ public class EventSubject implements Serializable {
         _fullyQualifiedSubjectName = fullSubjectName;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof EventSubject) {
             return _fullyQualifiedSubjectName.equals(((EventSubject) obj)
@@ -102,6 +103,7 @@ public class EventSubject implements Serializable {
         return false;
     }
 
+    @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 3).append(_fullyQualifiedSubjectName).toHashCode();
     }
@@ -114,6 +116,7 @@ public class EventSubject implements Serializable {
      * @return a String in the form <code>&lt;ClassName 0x123456&gt; SomeName</code>
      * @see Object#toString()
      */
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer(64);
 

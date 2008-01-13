@@ -30,14 +30,17 @@ public class EJBQLMax extends EJBQLAggregateColumn {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitMax(this);
     }
     
+    @Override
     public String getFunction() {
         return "MAX";
     }
 
+    @Override
     public String getJavaType(String pathType) {
         return pathType;
     }

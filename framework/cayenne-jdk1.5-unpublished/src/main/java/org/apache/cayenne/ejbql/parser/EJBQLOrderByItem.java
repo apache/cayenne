@@ -30,6 +30,7 @@ public class EJBQLOrderByItem extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitOrderByItem(this);
     }

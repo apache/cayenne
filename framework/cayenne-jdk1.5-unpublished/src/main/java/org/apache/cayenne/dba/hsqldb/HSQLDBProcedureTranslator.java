@@ -33,6 +33,7 @@ public class HSQLDBProcedureTranslator extends ProcedureTranslator {
     /**
      * Creates HSQLDB-compliant SQL to execute a stored procedure.
      */
+    @Override
     protected String createSqlString() {
         Procedure procedure = getProcedure();
 

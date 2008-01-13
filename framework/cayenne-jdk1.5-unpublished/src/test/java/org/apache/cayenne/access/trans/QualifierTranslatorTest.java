@@ -39,6 +39,7 @@ public class QualifierTranslatorTest extends CayenneCase {
 
     protected TstQueryAssembler qa;
 
+    @Override
     protected void setUp() throws java.lang.Exception {
         qa = new TstQueryAssembler(getNode(), new SelectQuery());
     }

@@ -94,6 +94,7 @@ public class DeleteBatchQuery extends BatchQuery {
      * 
      * @since 1.2
      */
+    @Override
     public boolean isUsingOptimisticLocking() {
         return usingOptimisticLocking;
     }
@@ -112,6 +113,7 @@ public class DeleteBatchQuery extends BatchQuery {
         return qualifierAttributes;
     }
 
+    @Override
     public Object getValue(int dbAttributeIndex) {
         DbAttribute attribute = dbAttributes.get(dbAttributeIndex);
         return getCurrentQualifier().get(attribute.getName());
@@ -121,10 +123,12 @@ public class DeleteBatchQuery extends BatchQuery {
         qualifierSnapshots.add(dataObjectId);
     }
 
+    @Override
     public int size() {
         return qualifierSnapshots.size();
     }
 
+    @Override
     public List<DbAttribute> getDbAttributes() {
         return dbAttributes;
     }

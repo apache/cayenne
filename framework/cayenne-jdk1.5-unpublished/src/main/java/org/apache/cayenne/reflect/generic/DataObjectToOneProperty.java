@@ -57,6 +57,7 @@ class DataObjectToOneProperty extends DataObjectBaseProperty implements ToOnePro
         return targetDescriptor;
     }
 
+    @Override
     public String getName() {
         return relationship.getName();
     }
@@ -65,6 +66,7 @@ class DataObjectToOneProperty extends DataObjectBaseProperty implements ToOnePro
         return relationship;
     }
 
+    @Override
     public void injectValueHolder(Object object) throws PropertyException {
     }
 
@@ -81,6 +83,7 @@ class DataObjectToOneProperty extends DataObjectBaseProperty implements ToOnePro
         }
     }
 
+    @Override
     public boolean visit(PropertyVisitor visitor) {
         return visitor.visitToOne(this);
     }

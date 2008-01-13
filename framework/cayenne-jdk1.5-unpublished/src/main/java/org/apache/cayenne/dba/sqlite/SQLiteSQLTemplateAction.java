@@ -46,6 +46,7 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
      * execute it appropriately. Super implementation relied on generic JDBC mechanism,
      * common for selecting and updating statements that does not work in SQLite drivers.
      */
+    @Override
     protected void execute(
             Connection connection,
             OperationObserver callback,

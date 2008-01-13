@@ -43,6 +43,7 @@ public class OracleSelectTranslator extends SelectTranslator {
         Integer.valueOf(100)
     };
 
+    @Override
     public String createSqlString() throws Exception {
 
         String sqlString = super.createSqlString();
@@ -94,6 +95,7 @@ public class OracleSelectTranslator extends SelectTranslator {
      * Translates internal query into PreparedStatement, applying Oracle optimizations if
      * possible.
      */
+    @Override
     public PreparedStatement createStatement() throws Exception {
         String sqlStr = createSqlString();
         QueryLogger.logQuery(sqlStr, values);

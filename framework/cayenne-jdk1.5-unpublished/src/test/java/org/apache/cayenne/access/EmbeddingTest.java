@@ -35,6 +35,7 @@ public class EmbeddingTest extends CayenneCase {
 
     public static final String EMBEDDING_ACCESS_STACK = "EmbeddingStack";
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(EMBEDDING_ACCESS_STACK);
     }

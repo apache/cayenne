@@ -375,6 +375,7 @@ public class DataContext extends BaseContext implements DataChannel {
         }
     }
 
+    @Override
     public DataChannel getChannel() {
         awakeFromDeserialization();
         return super.getChannel();
@@ -459,6 +460,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Returns a list of objects that are registered with this DataContext and have a
      * state PersistenceState.NEW
      */
+    @Override
     public Collection<?> newObjects() {
         return getObjectStore().objectsInState(PersistenceState.NEW);
     }
@@ -467,6 +469,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Returns a list of objects that are registered with this DataContext and have a
      * state PersistenceState.DELETED
      */
+    @Override
     public Collection<?> deletedObjects() {
         return getObjectStore().objectsInState(PersistenceState.DELETED);
     }
@@ -475,6 +478,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Returns a list of objects that are registered with this DataContext and have a
      * state PersistenceState.MODIFIED
      */
+    @Override
     public Collection<?> modifiedObjects() {
         return getObjectStore().objectsInState(PersistenceState.MODIFIED);
     }
@@ -484,6 +488,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
+    @Override
     public Collection<?> uncommittedObjects() {
 
         int len = getObjectStore().registeredObjectsCount();
@@ -716,6 +721,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
+    @Override
     public <T> T newObject(Class<T> persistentClass) {
         if (persistentClass == null) {
             throw new NullPointerException("Null 'persistentClass'");
@@ -802,6 +808,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @param object new object that needs to be made persistent.
      */
+    @Override
     public void registerNewObject(Object object) {
         if (object == null) {
             throw new NullPointerException("Can't register null object.");
@@ -966,6 +973,7 @@ public class DataContext extends BaseContext implements DataChannel {
      *             deletion.
      * @throws NullPointerException if object is null.
      */
+    @Override
     public void deleteObject(Object object) throws DeleteDenyException {
         new DataContextDeleteAction(this).performDelete((Persistent) object);
     }
@@ -1018,6 +1026,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
+    @Override
     public void rollbackChangesLocally() {
         if (objectStore.hasChanges()) {
             GraphDiff diff = getObjectStore().getChanges();
@@ -1031,6 +1040,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Reverts any changes that have occurred to objects registered with DataContext; also
      * performs cascading rollback of all parent DataContexts.
      */
+    @Override
     public void rollbackChanges() {
 
         if (objectStore.hasChanges()) {
@@ -1064,6 +1074,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * @since 1.2
      * @see #commitChanges()
      */
+    @Override
     public void commitChangesToParent() {
         flushToParent(false);
     }
@@ -1072,6 +1083,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Synchronizes object graph with the database. Executes needed insert, update and
      * delete queries (generated internally).
      */
+    @Override
     public void commitChanges() throws CayenneRuntimeException {
         flushToParent(true);
     }
@@ -1262,6 +1274,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
+    @Override
     public QueryResponse performGenericQuery(Query query) {
 
         query = nonNullDelegate().willPerformGenericQuery(this, query);
@@ -1296,6 +1309,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * @return A list of DataObjects or a DataRows, depending on the value returned by
      *         {@link QueryMetadata#isFetchingDataRows()}.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List performQuery(Query query) {
         query = nonNullDelegate().willPerformQuery(this, query);
@@ -1390,6 +1404,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Returns EntityResolver. EntityResolver can be null if DataContext has not been
      * attached to an DataChannel.
      */
+    @Override
     public EntityResolver getEntityResolver() {
         awakeFromDeserialization();
         return entityResolver;
@@ -1555,6 +1570,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * @since 1.2
      */
+    @Override
     public void propertyChanged(
             Persistent object,
             String property,
@@ -1568,6 +1584,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
+    @Override
     public GraphManager getGraphManager() {
         return objectStore;
     }
@@ -1583,6 +1600,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
+    @Override
     public Persistent localObject(ObjectId id, Object prototype) {
 
         // ****** Warning: when changing the code below, don't forget to change

@@ -30,6 +30,7 @@ public class EJBQLOuterFetchJoin extends EJBQLJoin {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitOuterFetchJoin(this);
     }

@@ -34,6 +34,7 @@ public class DataNodeFileTest extends TestCase {
     protected DataNode node;
     protected Project pr;
 
+    @Override
     protected void setUp() throws Exception {
         pr = new TstProject(new File("xyz"));
         node = new DataNode("n1");

@@ -157,6 +157,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
             super(callbackRegistry, graphManager, changes);
         }
 
+        @Override
         protected boolean hasListeners() {
             return !(callbackRegistry.isEmpty(LifecycleEvent.PRE_UPDATE)
                     && callbackRegistry.isEmpty(LifecycleEvent.POST_UPDATE)
@@ -164,10 +165,12 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
                     .isEmpty(LifecycleEvent.POST_PERSIST));
         }
 
+        @Override
         void applyPreCommit() {
             apply(LifecycleEvent.PRE_UPDATE, updated);
         }
 
+        @Override
         void applyPostCommit() {
             apply(LifecycleEvent.POST_UPDATE, updated);
             apply(LifecycleEvent.POST_REMOVE, removed);
@@ -182,14 +185,17 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
             super(callbackRegistry, graphManager, changes);
         }
 
+        @Override
         protected boolean hasListeners() {
             return !callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD);
         }
 
+        @Override
         void applyPreCommit() {
             // noop
         }
 
+        @Override
         void applyPostCommit() {
             apply(LifecycleEvent.POST_LOAD, updated);
             apply(LifecycleEvent.POST_LOAD, removed);

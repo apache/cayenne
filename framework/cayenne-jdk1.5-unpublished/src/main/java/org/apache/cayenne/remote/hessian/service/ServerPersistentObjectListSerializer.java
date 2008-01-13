@@ -38,6 +38,7 @@ class ServerPersistentObjectListSerializer extends JavaSerializer {
         super(PersistentObjectList.class);
     }
 
+    @Override
     public void writeObject(Object object, AbstractHessianOutput out) throws IOException {
         PersistentObjectList list = (PersistentObjectList) object;
         if (list.isFault()) {

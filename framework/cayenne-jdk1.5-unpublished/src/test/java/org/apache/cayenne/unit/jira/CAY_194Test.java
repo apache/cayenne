@@ -37,6 +37,7 @@ import org.apache.cayenne.unit.RelationshipCase;
 // find an approprtaite place in unit tests..
 public class CAY_194Test extends RelationshipCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

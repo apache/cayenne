@@ -38,6 +38,7 @@ import org.apache.cayenne.unit.CayenneCase;
  */
 public class FlattenedPrefetchTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

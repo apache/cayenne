@@ -170,6 +170,7 @@ public class CayenneContext extends BaseContext {
      * CayenneContext operation. If EntityResolver is not set, this method would obtain
      * and cache one from the underlying DataChannel.
      */
+    @Override
     public EntityResolver getEntityResolver() {
         // load entity resolver on demand
         if (entityResolver == null) {
@@ -187,6 +188,7 @@ public class CayenneContext extends BaseContext {
         this.entityResolver = entityResolver;
     }
 
+    @Override
     public GraphManager getGraphManager() {
         return graphManager;
     }
@@ -204,6 +206,7 @@ public class CayenneContext extends BaseContext {
      * context and if any changes are detected, sends a commit message to remote Cayenne
      * service via an internal instance of CayenneConnector.
      */
+    @Override
     public void commitChanges() {
         doCommitChanges(true);
     }
@@ -267,10 +270,12 @@ public class CayenneContext extends BaseContext {
         return commitDiff;
     }
 
+    @Override
     public void commitChangesToParent() {
         doCommitChanges(false);
     }
 
+    @Override
     public void rollbackChanges() {
         synchronized (graphManager) {
             if (graphManager.hasChanges()) {
@@ -283,6 +288,7 @@ public class CayenneContext extends BaseContext {
         }
     }
 
+    @Override
     public void rollbackChangesLocally() {
         synchronized (graphManager) {
             if (graphManager.hasChanges()) {
@@ -295,6 +301,7 @@ public class CayenneContext extends BaseContext {
      * Deletes an object locally, scheduling it for future deletion from the external data
      * store.
      */
+    @Override
     public void deleteObject(Object object) {
         new ObjectContextDeleteAction(this).performDelete((Persistent) object);
     }
@@ -302,6 +309,7 @@ public class CayenneContext extends BaseContext {
     /**
      * Creates and registers a new Persistent object instance.
      */
+    @Override
     public <T> T newObject(Class<T> persistentClass) {
         if (persistentClass == null) {
             throw new NullPointerException("Persistent class can't be null.");
@@ -323,6 +331,7 @@ public class CayenneContext extends BaseContext {
     /**
      * @since 3.0
      */
+    @Override
     public void registerNewObject(Object object) {
         if (object == null) {
             throw new NullPointerException("An attempt to register null object.");
@@ -337,12 +346,14 @@ public class CayenneContext extends BaseContext {
     /**
      * Runs a query, returning result as list.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List performQuery(Query query) {
         List result = onQuery(this, query).firstList();
         return result != null ? result : new ArrayList<Object>(1);
     }
 
+    @Override
     public QueryResponse performGenericQuery(Query query) {
         return onQuery(this, query);
     }
@@ -361,6 +372,7 @@ public class CayenneContext extends BaseContext {
      * or in HOLLOW state.</i>
      * </p>
      */
+    @Override
     public Persistent localObject(ObjectId id, Object prototype) {
 
         // TODO: Andrus, 1/26/2006 - this implementation is copied verbatim from
@@ -438,6 +450,7 @@ public class CayenneContext extends BaseContext {
         // ****** Copied from DataContext - end *******
     }
 
+    @Override
     public void propertyChanged(
             Persistent object,
             String property,
@@ -449,24 +462,28 @@ public class CayenneContext extends BaseContext {
         }
     }
 
+    @Override
     public Collection<?> uncommittedObjects() {
         synchronized (graphManager) {
             return graphManager.dirtyNodes();
         }
     }
 
+    @Override
     public Collection<?> deletedObjects() {
         synchronized (graphManager) {
             return graphManager.dirtyNodes(PersistenceState.DELETED);
         }
     }
 
+    @Override
     public Collection<?> modifiedObjects() {
         synchronized (graphManager) {
             return graphManager.dirtyNodes(PersistenceState.MODIFIED);
         }
     }
 
+    @Override
     public Collection<?> newObjects() {
         synchronized (graphManager) {
             return graphManager.dirtyNodes(PersistenceState.NEW);

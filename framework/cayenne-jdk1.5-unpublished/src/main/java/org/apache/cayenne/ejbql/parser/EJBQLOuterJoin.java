@@ -30,6 +30,7 @@ public class EJBQLOuterJoin extends EJBQLJoin {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitOuterJoin(this);
     }

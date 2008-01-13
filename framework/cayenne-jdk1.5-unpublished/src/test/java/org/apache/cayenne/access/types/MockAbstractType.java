@@ -35,15 +35,18 @@ public class MockAbstractType extends AbstractType {
         this.className = className;
     }
 
+    @Override
     public String getClassName() {
         return className;
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return null;
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return null;
     }

@@ -46,6 +46,7 @@ public class OrderingTranslator extends QueryAssemblerHelper {
      *  Ordering list is obtained from <code>queryAssembler</code>'s query object. 
      *  In a process of building of ORDER BY clause, <code>queryAssembler</code> 
      *  is notified when a join needs to be added. */
+    @Override
     public String doTranslation() {
         Query q = queryAssembler.getQuery();
 

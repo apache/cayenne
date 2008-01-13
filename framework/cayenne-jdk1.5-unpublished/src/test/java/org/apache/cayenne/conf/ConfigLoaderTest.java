@@ -164,6 +164,7 @@ public class ConfigLoaderTest extends TestCase {
 
         MockConfigLoaderDelegate delegate = new MockConfigLoaderDelegate() {
 
+            @Override
             public void shouldLoadDataNode(
                     String domainName,
                     String nodeName,

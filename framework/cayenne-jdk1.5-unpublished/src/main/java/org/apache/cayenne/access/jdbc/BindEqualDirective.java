@@ -34,10 +34,12 @@ import org.apache.velocity.context.InternalContextAdapter;
  */
 public class BindEqualDirective extends BindDirective {
 
+    @Override
     public String getName() {
         return "bindEqual";
     }
 
+    @Override
     protected void render(
         InternalContextAdapter context,
         Writer writer,

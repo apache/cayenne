@@ -38,6 +38,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
      * Overrides super implementation to ensure that created DataContext's ObjectStore
      * retains unreferenced registered objects.
      */
+    @Override
     protected DataContext createDataContext() {
         DataContext context = super.createDataContext();
         context.getObjectStore().objectMap = new HashMap();

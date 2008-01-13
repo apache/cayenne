@@ -30,6 +30,7 @@ public class ExpressionFactoryExtrasTest extends CayenneCase {
 
     protected TstTraversalHandler handler;
 
+    @Override
     protected void setUp() throws java.lang.Exception {
         handler = new TstTraversalHandler();
     }

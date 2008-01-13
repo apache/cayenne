@@ -39,6 +39,7 @@ import org.apache.cayenne.map.DbKeyGenerator;
  */
 public class PostgresPkGenerator extends OraclePkGenerator {
 
+    @Override
     protected String createSequenceString(DbEntity ent) {
         // note that PostgreSQL 7.4 and newer supports INCREMENT BY and START WITH
         // however 7.3 doesn't like BY and WITH, so using older more neutral syntax
@@ -61,6 +62,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
      *     SELECT nextval(pk_table_name)
      * </pre>
      */
+    @Override
     protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
 
         DbKeyGenerator pkGenerator = ent.getPrimaryKeyGenerator();
@@ -103,6 +105,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
     /**
      * Fetches a list of existing sequences that might match Cayenne generated ones.
      */
+    @Override
     protected List<String> getExistingSequences(DataNode node) throws SQLException {
 
         // check existing sequences

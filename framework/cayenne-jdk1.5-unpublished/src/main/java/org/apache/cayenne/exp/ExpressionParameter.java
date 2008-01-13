@@ -44,10 +44,12 @@ public class ExpressionParameter {
         return name;
     }
     
+    @Override
     public String toString() {
     	return '$' + name;
     }
     
+    @Override
     public boolean equals(Object o) {
         if(!(o instanceof ExpressionParameter)) {
             return false;

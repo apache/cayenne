@@ -194,6 +194,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
         }
     }
 
+    @Override
     public boolean equals(Object object) {
         if (!(object instanceof Expression)) {
             return false;
@@ -553,6 +554,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
      */
     public abstract void encodeAsEJBQL(PrintWriter pw, String rootId);
 
+    @Override
     public String toString() {
         StringWriter buffer = new StringWriter();
         PrintWriter pw = new PrintWriter(buffer);

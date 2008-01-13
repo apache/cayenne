@@ -38,10 +38,12 @@ class OracleActionBuilder extends JdbcActionBuilder {
         super(adapter, resolver);
     }
     
+    @Override
     public SQLAction sqlAction(SQLTemplate query) {
         return new OracleSQLTemplateAction(query, adapter);
     }
 
+    @Override
     public SQLAction batchAction(BatchQuery query) {
 
         // special handling for LOB updates
@@ -65,10 +67,12 @@ class OracleActionBuilder extends JdbcActionBuilder {
 
     }
 
+    @Override
     public SQLAction procedureAction(ProcedureQuery query) {
         return new OracleProcedureAction(query, getAdapter(), getEntityResolver());
     }
 
+    @Override
     public SQLAction objectSelectAction(SelectQuery query) {
         return new OracleSelectAction(query, getAdapter(), getEntityResolver());
     }

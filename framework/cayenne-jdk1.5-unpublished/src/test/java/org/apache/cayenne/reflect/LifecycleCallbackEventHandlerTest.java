@@ -137,6 +137,7 @@ public class LifecycleCallbackEventHandlerTest extends TestCase {
 
     static class C4 extends C1 {
 
+        @Override
         void c1Callback() {
             callbacks.add("c4Callback");
         }

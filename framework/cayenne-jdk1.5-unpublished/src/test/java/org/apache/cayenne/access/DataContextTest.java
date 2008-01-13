@@ -48,6 +48,7 @@ public class DataContextTest extends DataContextCase {
 
     protected MockOperationObserver opObserver;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

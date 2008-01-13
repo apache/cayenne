@@ -33,6 +33,7 @@ class ProcedureQueryBuilder extends QueryLoader {
     /**
      * Returns a ProcedureQuery.
      */
+    @Override
     public Query getQuery() {
         ProcedureQuery query = new ProcedureQuery();
         Object root = getRoot();

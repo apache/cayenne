@@ -461,6 +461,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
         buffer.append("]");
     }
 
+    @Override
     public String toString() {
         return toStringBuffer(new StringBuffer(), true).toString();
     }

@@ -95,6 +95,7 @@ public class TestObject extends CayenneDataObject {
         return children;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (null == o || !(o instanceof TestObject)) {
             return false;
@@ -113,6 +114,7 @@ public class TestObject extends CayenneDataObject {
         return ((test.getAge() == age) && (test.isOpen() == open));
     }
 
+    @Override
     public void encodeAsXML(XMLEncoder encoder) {
         encoder.setRoot("Test", this.getClass().getName());
         
@@ -124,6 +126,7 @@ public class TestObject extends CayenneDataObject {
         encoder.encodeProperty("children", children);
     }
 
+    @Override
     public void decodeFromXML(XMLDecoder decoder) {
         
         if (null != decoder.decodeObject("parent")) {
@@ -142,6 +145,7 @@ public class TestObject extends CayenneDataObject {
         children = (List) decoder.decodeObject("children");
     }
 
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("parent", parent)

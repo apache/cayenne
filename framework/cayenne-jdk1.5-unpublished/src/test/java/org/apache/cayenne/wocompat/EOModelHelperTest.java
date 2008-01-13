@@ -35,6 +35,7 @@ public class EOModelHelperTest extends BasicCase {
 
     protected EOModelHelper helper;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

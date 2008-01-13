@@ -60,6 +60,7 @@ public class TransactionThreadTest extends CayenneCase {
 
         Delegate delegate = new Delegate() {
 
+            @Override
             public boolean willCommit(Transaction transaction) {
 
                 // insert another artist directly

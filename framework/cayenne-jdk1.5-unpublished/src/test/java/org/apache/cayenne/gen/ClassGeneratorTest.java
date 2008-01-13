@@ -32,6 +32,7 @@ public class ClassGeneratorTest extends BasicCase {
 
     protected ClassGenerationInfo cgen;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         cgen = new ClassGenerationInfo();
@@ -87,6 +88,7 @@ public class ClassGeneratorTest extends BasicCase {
 
         ObjRelationship toMany = new ObjRelationship("tomany") {
 
+            @Override
             public boolean isToMany() {
                 return true;
             }

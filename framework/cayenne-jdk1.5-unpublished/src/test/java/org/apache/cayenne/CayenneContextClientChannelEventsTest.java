@@ -38,6 +38,7 @@ import org.apache.cayenne.unit.CayenneResources;
  */
 public class CayenneContextClientChannelEventsTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()

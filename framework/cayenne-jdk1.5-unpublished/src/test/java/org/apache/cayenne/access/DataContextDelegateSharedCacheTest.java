@@ -36,6 +36,7 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
     protected Artist artist;
     protected DataContext context;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -61,6 +62,7 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
         final boolean[] methodInvoked = new boolean[1];
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
+            @Override
             public boolean shouldMergeChanges(DataObject object, DataRow snapshotInStore) {
                 methodInvoked[0] = true;
                 return true;
@@ -85,6 +87,7 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
         // was refreshed
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertTrue("Delegate was not consulted", methodInvoked[0]);
             }
@@ -104,6 +107,7 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
 
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
+            @Override
             public boolean shouldMergeChanges(DataObject object, DataRow snapshotInStore) {
                 return false;
             }
@@ -140,6 +144,7 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
         final boolean[] methodInvoked = new boolean[1];
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
+            @Override
             public boolean shouldProcessDelete(DataObject object) {
                 methodInvoked[0] = true;
                 return true;
@@ -164,6 +169,7 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
         // was refreshed
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertTrue("Delegate was not consulted", methodInvoked[0]);
             }
@@ -184,6 +190,7 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
         final boolean[] methodInvoked = new boolean[1];
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
+            @Override
             public boolean shouldProcessDelete(DataObject object) {
                 methodInvoked[0] = true;
                 return false;
@@ -208,6 +215,7 @@ public class DataContextDelegateSharedCacheTest extends MultiContextCase {
         // was refreshed, and actually blocked object expulsion
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertTrue("Delegate was not consulted", methodInvoked[0]);
             }

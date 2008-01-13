@@ -40,21 +40,25 @@ public class ShortType extends AbstractType {
         this.widenShorts = widenShorts;
     }
 
+    @Override
     public String getClassName() {
         return Short.class.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         short s = rs.getShort(index);
         return (rs.wasNull()) ? null : Short.valueOf(s);
     }
 
+    @Override
     public Object materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         short s = st.getShort(index);
         return (st.wasNull()) ? null : Short.valueOf(s);
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,

@@ -65,15 +65,18 @@ public class FrontBaseAdapter extends JdbcAdapter {
     /**
      * Uses special action builder to create the right action.
      */
+    @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new FrontBaseActionBuilder(this, node
                 .getEntityResolver()));
     }
 
+    @Override
     public String tableTypeForTable() {
         return "BASE TABLE";
     }
 
+    @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
 
@@ -85,6 +88,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
     /**
      * Customizes table creating procedure for FrontBase.
      */
+    @Override
     public String createTable(DbEntity ent) {
 
         StringBuffer buf = new StringBuffer();
@@ -199,6 +203,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
                 + " CASCADE");
     }
 
+    @Override
     protected PkGenerator createPkGenerator() {
         return new FrontBasePkGenerator();
     }

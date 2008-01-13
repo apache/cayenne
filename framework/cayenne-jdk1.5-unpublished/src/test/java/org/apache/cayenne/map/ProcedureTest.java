@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 public class ProcedureTest extends TestCase {
     protected Procedure procedure;
 
+    @Override
     public void setUp() throws Exception {
         procedure = new Procedure();
     }

@@ -44,6 +44,7 @@ public class UnitLocalConnection extends LocalConnection {
         super(handler, serializationPolicy);
     }
 
+    @Override
     public Object sendMessage(ClientMessage message) throws CayenneRuntimeException {
         checkMessageAllowed();
         return super.sendMessage(message);

@@ -25,6 +25,7 @@ public class MtTable3 extends _MtTable3 {
 
     protected ObjEntity entity;
 
+    @Override
     public ObjEntity getObjEntity() {
         return (entity != null) ? entity : super.getObjEntity();
     }

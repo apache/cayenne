@@ -76,6 +76,7 @@ public class SyncMessage implements ClientMessage {
      * Returns a description of the type of message.
      * Possibilities are "flush-sync", "flush-cascade-sync", "rollback-cascade-sync" or "unknown-sync".
      */
+    @Override
     public String toString() {
         switch (type) {
             case DataChannel.FLUSH_NOCASCADE_SYNC:

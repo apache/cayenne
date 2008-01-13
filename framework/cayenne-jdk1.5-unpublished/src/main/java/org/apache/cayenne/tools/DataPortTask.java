@@ -56,6 +56,7 @@ public class DataPortTask extends CayenneTask {
         this.cleanDest = true;
     }
 
+    @Override
     public void execute() throws BuildException {
         validateParameters();
 

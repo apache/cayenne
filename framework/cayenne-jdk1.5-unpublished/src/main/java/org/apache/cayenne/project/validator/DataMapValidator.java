@@ -41,6 +41,7 @@ public class DataMapValidator extends TreeNodeValidator {
         super();
     }
 
+    @Override
     public void validateObject(ProjectPath path, Validator validator) {
         DataMap map = (DataMap) path.getObject();
         validateName(map, path, validator);

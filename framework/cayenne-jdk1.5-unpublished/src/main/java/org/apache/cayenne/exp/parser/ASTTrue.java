@@ -45,24 +45,29 @@ public class ASTTrue extends ConditionNode {
         super(ExpressionParserTreeConstants.JJTTRUE);
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         return Boolean.TRUE;
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         throw new UnsupportedOperationException("No operator for '"
                 + ExpressionParserTreeConstants.jjtNodeName[id]
                 + "'");
     }
 
+    @Override
     public Expression shallowCopy() {
         return new ASTTrue(id);
     }
 
+    @Override
     public int getType() {
         return Expression.TRUE;
     }
 
+    @Override
     public void encodeAsString(PrintWriter pw) {
         pw.print("true");
     }

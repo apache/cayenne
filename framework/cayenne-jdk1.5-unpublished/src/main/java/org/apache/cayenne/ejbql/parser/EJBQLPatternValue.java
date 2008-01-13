@@ -30,6 +30,7 @@ public class EJBQLPatternValue extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitPatternValue(this);
     }

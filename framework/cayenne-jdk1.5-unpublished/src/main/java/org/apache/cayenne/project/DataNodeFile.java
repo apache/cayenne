@@ -49,6 +49,7 @@ public class DataNodeFile extends ProjectFile {
     /**
      * @see ProjectFile#getObject()
      */
+    @Override
     public Object getObject() {
         return nodeObj;
     }
@@ -56,10 +57,12 @@ public class DataNodeFile extends ProjectFile {
     /**
      * @see ProjectFile#getObjectName()
      */
+    @Override
     public String getObjectName() {
         return nodeObj.getName();
     }
 
+    @Override
     public void save(PrintWriter out) throws Exception {
         ProjectDataSource src = (ProjectDataSource) nodeObj.getDataSource();
         new ConfigSaver().storeDataNode(out, getProject(), src.getDataSourceInfo());
@@ -68,6 +71,7 @@ public class DataNodeFile extends ProjectFile {
     /**
      * @see org.apache.cayenne.project.ProjectFile#canHandle(Object)
      */
+    @Override
     public boolean canHandle(Object obj) {
         if (obj instanceof DataNode) {
             DataNode node = (DataNode) obj;
@@ -87,6 +91,7 @@ public class DataNodeFile extends ProjectFile {
     /**
      * Updates node location to match the name before save.
      */
+    @Override
     public void willSave() {
         super.willSave();
 
@@ -99,6 +104,7 @@ public class DataNodeFile extends ProjectFile {
      * Returns ".driver.xml" that should be used as a file suffix 
      * for DataNode driver files.
      */
+    @Override
     public String getLocationSuffix() {
         return LOCATION_SUFFIX;
     }

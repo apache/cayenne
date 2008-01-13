@@ -32,6 +32,7 @@ class DataObjectAttributeProperty extends DataObjectBaseProperty implements
         this.attribute = attribute;
     }
 
+    @Override
     public String getName() {
         return attribute.getName();
     }
@@ -40,9 +41,11 @@ class DataObjectAttributeProperty extends DataObjectBaseProperty implements
         return attribute;
     }
 
+    @Override
     public void injectValueHolder(Object object) throws PropertyException {
     }
 
+    @Override
     public boolean visit(PropertyVisitor visitor) {
         return visitor.visitAttribute(this);
     }

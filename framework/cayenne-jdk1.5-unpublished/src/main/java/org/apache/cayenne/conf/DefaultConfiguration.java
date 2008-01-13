@@ -128,6 +128,7 @@ public class DefaultConfiguration extends Configuration {
      * ResourceLocator suitable for loading from the CLASSPATH, unless it has already been
      * set in a subclass. Always returns <code>true</code>.
      */
+    @Override
     public boolean canInitialize() {
         logger.debug("canInitialize started.");
         // allow to proceed
@@ -138,6 +139,7 @@ public class DefaultConfiguration extends Configuration {
      * Initializes all Cayenne resources. Loads all configured domains and their data
      * maps, initializes all domain Nodes and their DataSources.
      */
+    @Override
     public void initialize() throws Exception {
         logger.debug("initialize starting.");
 
@@ -174,6 +176,7 @@ public class DefaultConfiguration extends Configuration {
      * Default implementation of {@link Configuration#didInitialize}. Currently does
      * nothing except logging.
      */
+    @Override
     public void didInitialize() {
         // empty default implementation
         logger.debug("didInitialize finished.");
@@ -182,6 +185,7 @@ public class DefaultConfiguration extends Configuration {
     /**
      * Returns the default ResourceLocator configured for CLASSPATH lookups.
      */
+    @Override
     protected ResourceLocator getResourceLocator() {
         return this.locator;
     }
@@ -198,6 +202,7 @@ public class DefaultConfiguration extends Configuration {
      * Returns the domain configuration as a stream or <code>null</code> if it cannot be
      * found. Uses the configured {@link ResourceLocator} to find the file.
      */
+    @Override
     protected InputStream getDomainConfiguration() {
         return locator.findResourceStream(this.getDomainConfigurationName());
     }
@@ -207,10 +212,12 @@ public class DefaultConfiguration extends Configuration {
      * specified location or <code>null</code> if it cannot be found. Uses the
      * configured {@link ResourceLocator} to find the file.
      */
+    @Override
     protected InputStream getMapConfiguration(String location) {
         return locator.findResourceStream(location);
     }
 
+    @Override
     protected InputStream getViewConfiguration(String location) {
         return locator.findResourceStream(location);
     }
@@ -218,6 +225,7 @@ public class DefaultConfiguration extends Configuration {
     /**
      * @see Object#toString()
      */
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf

@@ -154,6 +154,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     /**
      * @since 1.2
      */
+    @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
         selectInfo.resolve(root, resolver, this);
         return selectInfo;
@@ -164,6 +165,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 1.2
      */
+    @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return visitor.sqlAction(this);
     }

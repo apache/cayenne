@@ -56,6 +56,7 @@ public class TrimmingQualifierTranslator extends QualifierTranslator {
     /**
      * Adds special handling of CHAR columns.
      */
+    @Override
     protected void processColumn(StringBuffer buf, DbAttribute dbAttr) {
         if (dbAttr.getType() == Types.CHAR) {
             buf.append(trimFunction).append("(");
@@ -69,6 +70,7 @@ public class TrimmingQualifierTranslator extends QualifierTranslator {
     /**
      * Adds special handling of CHAR columns.
      */
+    @Override
     protected void processColumn(
         StringBuffer buf,
         DbAttribute dbAttr,

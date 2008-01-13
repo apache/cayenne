@@ -157,6 +157,7 @@ public abstract class Relationship implements CayenneMapEntry, XMLSerializable,
     /**
      * Overrides Object.toString() to return informative description.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this).append("name", getName()).append(
                 "toMany",

@@ -34,10 +34,12 @@ import org.apache.velocity.context.InternalContextAdapter;
  */
 public class BindObjectNotEqualDirective extends BindObjectEqualDirective {
 
+    @Override
     public String getName() {
         return "bindObjectNotEqual";
     }
 
+    @Override
     protected void renderColumn(
             InternalContextAdapter context,
             Writer writer,
@@ -51,6 +53,7 @@ public class BindObjectNotEqualDirective extends BindObjectEqualDirective {
         writer.write(columnName.toString());
     }
 
+    @Override
     protected void render(
             InternalContextAdapter context,
             Writer writer,

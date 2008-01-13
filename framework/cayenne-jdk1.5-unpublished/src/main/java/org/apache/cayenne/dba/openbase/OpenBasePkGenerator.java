@@ -47,6 +47,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * mechanism is used, key caching is disabled. Instead a database operation is
      * performed on every call.
      */
+    @Override
     public Object generatePkForDbEntity(DataNode node, DbEntity entity) throws Exception {
         // check for binary pk
         Object binPK = binaryPK(entity);
@@ -66,6 +67,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * 
      * COLUMN must be marked as UNIQUE in order for this to work properly.
      */
+    @Override
     protected int pkFromDatabase(DataNode node, DbEntity entity) throws Exception {
         String sql = newIDString(entity);
         QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
@@ -116,6 +118,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
         return buf.toString();
     }
 
+    @Override
     public void createAutoPk(DataNode node, List dbEntities) throws Exception {
         // looks like generating a PK on top of an existing one does not
         // result in errors...
@@ -139,6 +142,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     /**
      * 
      */
+    @Override
     public List createAutoPkStatements(List dbEntities) {
         List list = new ArrayList(2 * dbEntities.size());
         Iterator it = dbEntities.iterator();
@@ -165,6 +169,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     /**
      * 
      */
+    @Override
     public void dropAutoPk(DataNode node, List dbEntities) throws Exception {
         // there is no simple way to do that... probably requires
         // editing metadata tables...
@@ -176,6 +181,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     /**
      * Returns an empty list, since OpenBase doesn't support this operation.
      */
+    @Override
     public List dropAutoPkStatements(List dbEntities) {
         return Collections.EMPTY_LIST;
     }
@@ -244,6 +250,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
         return buffer.toString();
     }
 
+    @Override
     public void reset() {
         // noop
     }
@@ -252,10 +259,12 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * Returns zero, since PK caching is not feasible with OpenBase PK generation
      * mechanism.
      */
+    @Override
     public int getPkCacheSize() {
         return 0;
     }
 
+    @Override
     public void setPkCacheSize(int pkCacheSize) {
         // noop, no PK caching
     }

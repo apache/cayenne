@@ -35,9 +35,11 @@ class FrontBaseActionBuilder extends JdbcActionBuilder {
         super(adapter, resolver);
     }
 
+    @Override
     public SQLAction objectSelectAction(SelectQuery query) {
         return new SelectAction(query, adapter, entityResolver) {
 
+            @Override
             protected SelectTranslator createTranslator(Connection connection) {
                 SelectTranslator translator = new FrontBaseSelectTranslator();
                 translator.setQuery(query);

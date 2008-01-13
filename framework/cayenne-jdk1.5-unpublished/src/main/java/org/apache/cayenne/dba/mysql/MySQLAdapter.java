@@ -77,6 +77,7 @@ public class MySQLAdapter extends JdbcAdapter {
      * 
      * @since 1.2
      */
+    @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new MySQLActionBuilder(this, node
                 .getEntityResolver()));
@@ -106,6 +107,7 @@ public class MySQLAdapter extends JdbcAdapter {
      * Installs appropriate ExtendedTypes used as converters for passing values between
      * JDBC and Java layers.
      */
+    @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
 
@@ -117,6 +119,7 @@ public class MySQLAdapter extends JdbcAdapter {
         map.registerType(new ByteArrayType(false, false));
     }
 
+    @Override
     public DbAttribute buildAttribute(
             String name,
             String typeName,
@@ -177,6 +180,7 @@ public class MySQLAdapter extends JdbcAdapter {
      * Returns null, since views are not yet supported in MySQL. Views are available on
      * newer versions of MySQL.
      */
+    @Override
     public String tableTypeForView() {
         return null;
     }
@@ -185,6 +189,7 @@ public class MySQLAdapter extends JdbcAdapter {
      * Creates and returns a primary key generator. Overrides superclass implementation to
      * return an instance of MySQLPkGenerator that does the correct table locking.
      */
+    @Override
     protected PkGenerator createPkGenerator() {
         return new MySQLPkGenerator();
     }
@@ -192,6 +197,7 @@ public class MySQLAdapter extends JdbcAdapter {
     /**
      * @since 3.0
      */
+    @Override
     protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
         return new MySQLEJBQLTranslatorFactory();
     }
@@ -200,6 +206,7 @@ public class MySQLAdapter extends JdbcAdapter {
      * Overrides super implementation to explicitly set table engine to InnoDB if FK
      * constraints are supported by this adapter.
      */
+    @Override
     public String createTable(DbEntity entity) {
         String ddlSQL = super.createTable(entity);
         // force InnoDB tables - by default constraints are enabled
@@ -215,6 +222,7 @@ public class MySQLAdapter extends JdbcAdapter {
      * @since 1.2
      */
     // See CAY-358 for details of the InnoDB problem
+    @Override
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
 
         // must move generated to the front...
@@ -270,6 +278,7 @@ public class MySQLAdapter extends JdbcAdapter {
     /**
      * Appends AUTO_INCREMENT clause to the column definition for generated columns.
      */
+    @Override
     protected void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         super.createTableAppendColumn(sqlBuffer, column);
 

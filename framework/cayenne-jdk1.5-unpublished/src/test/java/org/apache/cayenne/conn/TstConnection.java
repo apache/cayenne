@@ -27,6 +27,7 @@ public class TstConnection extends ConnectionWrapper {
         super(null, null);
     }
     
+    @Override
     public void close() {
         // do nothing...   
     }

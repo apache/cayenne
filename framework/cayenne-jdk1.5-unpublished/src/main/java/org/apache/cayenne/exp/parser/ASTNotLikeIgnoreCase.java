@@ -44,6 +44,7 @@ public class ASTNotLikeIgnoreCase extends PatternMatchNode {
         connectChildren();
     }
 
+    @Override
     protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
         if (len != 2) {
@@ -61,14 +62,17 @@ public class ASTNotLikeIgnoreCase extends PatternMatchNode {
     /**
      * Creates a copy of this expression node, without copying children.
      */
+    @Override
     public Expression shallowCopy() {
         return new ASTNotLikeIgnoreCase(id);
     }
 
+    @Override
     protected String getExpressionOperator(int index) {
         return "not likeIgnoreCase";
     }
 
+    @Override
     public int getType() {
         return Expression.NOT_LIKE_IGNORE_CASE;
     }

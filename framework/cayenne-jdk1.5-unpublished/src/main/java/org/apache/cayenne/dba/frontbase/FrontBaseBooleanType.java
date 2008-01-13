@@ -33,6 +33,7 @@ import org.apache.cayenne.access.types.BooleanType;
  */
 class FrontBaseBooleanType extends BooleanType {
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,

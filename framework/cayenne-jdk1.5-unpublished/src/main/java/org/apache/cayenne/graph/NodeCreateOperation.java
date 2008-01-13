@@ -33,10 +33,12 @@ public class NodeCreateOperation extends NodeDiff {
         super(nodeId, diffId);
     }
 
+    @Override
     public void apply(GraphChangeHandler tracker) {
         tracker.nodeCreated(nodeId);
     }
 
+    @Override
     public void undo(GraphChangeHandler tracker) {
         tracker.nodeRemoved(nodeId);
     }

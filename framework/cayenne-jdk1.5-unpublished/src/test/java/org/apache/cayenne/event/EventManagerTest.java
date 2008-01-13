@@ -38,6 +38,7 @@ public class EventManagerTest extends TestCase implements EventListener {
     // the event manager used for testing
     private EventManager _eventManager;
 
+    @Override
     public void setUp() {
         _eventManager = new EventManager();
         _numberOfReceivedEvents = 0;
@@ -398,6 +399,7 @@ public class EventManagerTest extends TestCase implements EventListener {
 
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(expected, listener._numberOfReceivedEvents);
             }
@@ -409,6 +411,7 @@ public class EventManagerTest extends TestCase implements EventListener {
     private static void assertReceivedEventsForClass(final int expected) throws Exception {
         ThreadedTestHelper helper = new ThreadedTestHelper() {
 
+            @Override
             protected void assertResult() throws Exception {
                 assertEquals(expected, _numberOfReceivedEventsForClass);
             }

@@ -32,7 +32,8 @@ import org.apache.cayenne.access.types.UtilDateType;
  */
 public class OracleUtilDateType extends UtilDateType {
 
-	public Object materializeObject(CallableStatement cs, int index, int type)
+	@Override
+    public Object materializeObject(CallableStatement cs, int index, int type)
 		throws Exception {
 			
 		Object date = super.materializeObject(cs, index, type);
@@ -43,7 +44,8 @@ public class OracleUtilDateType extends UtilDateType {
 		}
 	}
 
-	public Object materializeObject(ResultSet rs, int index, int type)
+	@Override
+    public Object materializeObject(ResultSet rs, int index, int type)
 		throws Exception {
 
 		Object date = super.materializeObject(rs, index, type);

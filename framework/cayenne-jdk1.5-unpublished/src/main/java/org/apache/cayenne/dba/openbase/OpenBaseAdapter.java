@@ -70,11 +70,13 @@ public class OpenBaseAdapter extends JdbcAdapter {
      * 
      * @since 1.2
      */
+    @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new OpenBaseActionBuilder(this, node
                 .getEntityResolver()));
     }
 
+    @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
 
@@ -85,6 +87,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
         map.registerType(new OpenBaseCharType());
     }
 
+    @Override
     public DbAttribute buildAttribute(
         String name,
         String typeName,
@@ -105,6 +108,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
     /**
      * Returns word "go".
      */
+    @Override
     public String getBatchTerminator() {
         return "go";
     }
@@ -112,6 +116,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
     /** 
      * Returns null, since views are not yet supported in openbase.
      */
+    @Override
     public String tableTypeForView() {
         // TODO: according to OpenBase docs views *ARE* supported.
         return null;
@@ -120,6 +125,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
     /** 
      * Returns OpenBase-specific translator for queries.
      */
+    @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         return new OpenBaseQualifierTranslator(queryAssembler);
     }
@@ -129,6 +135,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
       * implementation to return an
       * instance of OpenBasePkGenerator that uses built-in multi-server primary key generation.
       */
+    @Override
     protected PkGenerator createPkGenerator() {
         return new OpenBasePkGenerator();
     }
@@ -137,6 +144,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
       * Returns a SQL string that can be used to create database table
       * corresponding to <code>ent</code> parameter.
       */
+    @Override
     public String createTable(DbEntity ent) {
 
         StringBuffer buf = new StringBuffer();
@@ -216,6 +224,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
      * Returns a SQL string that can be used to create
      * a foreign key constraint for the relationship.
      */
+    @Override
     public String createFkConstraint(DbRelationship rel) {
         StringBuffer buf = new StringBuffer();
 
@@ -268,6 +277,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
             super(Byte.class.getName());
         }
 
+        @Override
         public Object materializeObject(ResultSet rs, int index, int type)
             throws Exception {
 
@@ -282,6 +292,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
             super(false, true);
         }
 
+        @Override
         public void setJdbcObject(
             PreparedStatement st,
             Object val,

@@ -43,6 +43,7 @@ class MySQLProcedureAction extends ProcedureAction {
         super(query, adapter, entityResolver);
     }
 
+    @Override
     public void performAction(Connection connection, OperationObserver observer)
             throws SQLException, Exception {
 
@@ -122,6 +123,7 @@ class MySQLProcedureAction extends ProcedureAction {
      * Creates a translator that adds parenthesis to no-param queries.
      */
     // see CAY-750 for the problem description
+    @Override
     protected ProcedureTranslator createTranslator(Connection connection) {
         ProcedureTranslator translator = new MySQLProcedureTranslator();
         translator.setAdapter(getAdapter());
@@ -134,6 +136,7 @@ class MySQLProcedureAction extends ProcedureAction {
     // same as postgres translator - should we make this the default?
     static class MySQLProcedureTranslator extends ProcedureTranslator {
 
+        @Override
         protected String createSqlString() {
 
             String sql = super.createSqlString();

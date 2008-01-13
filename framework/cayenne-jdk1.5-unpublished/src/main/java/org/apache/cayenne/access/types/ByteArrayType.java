@@ -76,6 +76,7 @@ public class ByteArrayType extends AbstractType {
         this.trimmingBytes = trimmingBytes;
     }
 
+    @Override
     public String getClassName() {
         return "byte[]";
     }
@@ -86,6 +87,7 @@ public class ByteArrayType extends AbstractType {
      * @since 1.1
      * @deprecated since 3.0 as validation should not be done at the DataNode level.
      */
+    @Override
     public boolean validateProperty(
             Object source,
             String property,
@@ -119,6 +121,7 @@ public class ByteArrayType extends AbstractType {
         return true;
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
         byte[] bytes = null;
@@ -140,6 +143,7 @@ public class ByteArrayType extends AbstractType {
         return bytes;
     }
 
+    @Override
     public Object materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
 
@@ -165,6 +169,7 @@ public class ByteArrayType extends AbstractType {
         return bytes;
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,

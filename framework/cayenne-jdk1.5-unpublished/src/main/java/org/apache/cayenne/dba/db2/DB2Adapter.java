@@ -56,10 +56,12 @@ public class DB2Adapter extends JdbcAdapter {
     /**
      * Creates a DB2 specific PK Generator.
      */
+    @Override
     protected PkGenerator createPkGenerator() {
         return new DB2PkGenerator();
     }
 
+    @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
 
@@ -76,6 +78,7 @@ public class DB2Adapter extends JdbcAdapter {
      * Returns a SQL string that can be used to create database table corresponding to
      * <code>ent</code> parameter.
      */
+    @Override
     public String createTable(DbEntity ent) {
 
         StringBuffer buf = new StringBuffer();
@@ -168,12 +171,14 @@ public class DB2Adapter extends JdbcAdapter {
     /**
      * Returns a trimming translator.
      */
+    @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         return new DB2QualifierTranslator(queryAssembler, "RTRIM");
     }
 
     final class DB2BooleanType extends BooleanType {
 
+        @Override
         public void setJdbcObject(
                 PreparedStatement st,
                 Object val,

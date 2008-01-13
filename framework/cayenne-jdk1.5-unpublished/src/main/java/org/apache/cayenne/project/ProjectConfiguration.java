@@ -58,6 +58,7 @@ public class ProjectConfiguration extends FileConfiguration {
      * 
      * @see FileConfiguration#canInitialize()
      */
+    @Override
     public boolean canInitialize() {
         return (super.canInitialize() && this.getProjectFile().isFile());
     }
@@ -67,6 +68,7 @@ public class ProjectConfiguration extends FileConfiguration {
      * 
      * @see FileConfiguration#setProjectFile(File)
      */
+    @Override
     protected void setProjectFile(File projectFile) {
         if ((projectFile != null) && (projectFile.exists())) {
             super.setProjectFile(projectFile);
@@ -82,6 +84,7 @@ public class ProjectConfiguration extends FileConfiguration {
      * 
      * @see org.apache.cayenne.project.ProjectDataSourceFactory
      */
+    @Override
     public DataSourceFactory getDataSourceFactory() {
         try {
             return new ProjectDataSourceFactory(this.getProjectDirectory());

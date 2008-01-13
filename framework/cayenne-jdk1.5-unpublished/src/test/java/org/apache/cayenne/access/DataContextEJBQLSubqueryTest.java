@@ -30,6 +30,7 @@ import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLSubqueryTest extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
     }

@@ -32,6 +32,7 @@ public abstract class ClassGeneratorTestBase extends BasicCase {
 
     protected ClassGenerator cgen;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         cgen = createGenerator();

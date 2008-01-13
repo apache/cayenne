@@ -51,6 +51,7 @@ public abstract class Attribute implements CayenneMapEntry, XMLSerializable, Ser
         this.name = name;
     }
     
+    @Override
     public String toString() {
         return new ToStringBuilder(this).append("name", getName()).toString();
     }

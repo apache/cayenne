@@ -63,6 +63,7 @@ public class ApplicationProjectFile extends ProjectFile {
      * Returns suffix to append to object name when creating a file name. Default
      * implementation returns empty string.
      */
+    @Override
     public String getLocationSuffix() {
         return ".xml";
     }
@@ -70,6 +71,7 @@ public class ApplicationProjectFile extends ProjectFile {
     /**
      * Returns a project.
      */
+    @Override
     public Object getObject() {
         return getProject();
     }
@@ -77,10 +79,12 @@ public class ApplicationProjectFile extends ProjectFile {
     /**
      * @see org.apache.cayenne.project.ProjectFile#getObjectName()
      */
+    @Override
     public String getObjectName() {
         return this.objectName;
     }
 
+    @Override
     public void save(PrintWriter out) throws Exception {
         ConfigSaverDelegate localDelegate = (saveDelegate != null)
                 ? saveDelegate
@@ -89,6 +93,7 @@ public class ApplicationProjectFile extends ProjectFile {
         new ConfigSaver(localDelegate).storeDomains(out);
     }
 
+    @Override
     public boolean canHandle(Object obj) {
         return obj instanceof ApplicationProject;
     }

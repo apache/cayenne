@@ -85,6 +85,7 @@ public class SQLTemplateBuilderTest extends TestCase {
 
     class MockupRootQueryBuilder extends SQLTemplateBuilder {
 
+        @Override
         public Object getRoot() {
             return "FakeRoot";
         }

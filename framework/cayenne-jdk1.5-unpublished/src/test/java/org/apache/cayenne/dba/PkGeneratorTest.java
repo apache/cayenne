@@ -32,6 +32,7 @@ public class PkGeneratorTest extends CayenneCase {
     protected DataNode node;
     protected DbEntity paintEnt;
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
         node = getDomain().getDataNodes().iterator().next();

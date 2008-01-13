@@ -40,6 +40,7 @@ class ExternalTransaction extends Transaction {
         setDelegate(delegate);
     }
 
+    @Override
     public synchronized void begin() {
         if (status != Transaction.STATUS_NO_TRANSACTION) {
             throw new IllegalStateException(
@@ -51,6 +52,7 @@ class ExternalTransaction extends Transaction {
         status = Transaction.STATUS_ACTIVE;
     }
 
+    @Override
     public boolean addConnection(String name, Connection connection) throws SQLException {
         if (super.addConnection(name, connection)) {
 
@@ -75,6 +77,7 @@ class ExternalTransaction extends Transaction {
 
     }
 
+    @Override
     public void commit() throws IllegalStateException, SQLException, CayenneException {
         try {
             if (status == Transaction.STATUS_NO_TRANSACTION) {
@@ -104,6 +107,7 @@ class ExternalTransaction extends Transaction {
         }
     }
 
+    @Override
     public void rollback() throws IllegalStateException, SQLException, CayenneException {
 
         try {

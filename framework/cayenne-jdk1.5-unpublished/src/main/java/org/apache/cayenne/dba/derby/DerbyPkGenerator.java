@@ -42,6 +42,7 @@ public class DerbyPkGenerator extends JdbcPkGenerator {
     static final String SELECT_QUERY = "SELECT NEXT_ID FROM AUTO_PK_SUPPORT"
             + " WHERE TABLE_NAME = ? FOR UPDATE";
 
+    @Override
     protected int pkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
         if (QueryLogger.isLoggable()) {

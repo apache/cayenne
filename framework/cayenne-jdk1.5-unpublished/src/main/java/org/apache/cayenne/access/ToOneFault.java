@@ -36,6 +36,7 @@ public class ToOneFault extends Fault {
     /**
      * Resolves this fault to a DataObject.
      */
+    @Override
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
         int state = sourceObject.getPersistenceState();
         if (state == PersistenceState.NEW) {

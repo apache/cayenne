@@ -28,6 +28,7 @@ import org.apache.cayenne.map.ObjRelationship;
  */
 public class ClassGeneratorSuperTemplateTest extends ClassGeneratorTestBase {
 
+    @Override
     protected ClassGenerator createGenerator() throws Exception {
         return new ClassGenerator(MapClassGenerator.SUPERCLASS_TEMPLATE, ClassGenerator.VERSION_1_1);
     }
@@ -51,6 +52,7 @@ public class ClassGeneratorSuperTemplateTest extends ClassGeneratorTestBase {
         ObjEntity testEntity = new ObjEntity("Test");
         ObjRelationship toMany = new ObjRelationship("tomany") {
 
+            @Override
             public boolean isToMany() {
                 return true;
             }

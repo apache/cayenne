@@ -36,6 +36,7 @@ public class XMLDecoderTest extends TestCase {
     static final String XML_DATA_DIR = "xmlcoding/";
     protected XMLDecoder decoder;
 
+    @Override
     public void setUp() {
         decoder = new XMLDecoder();
     }

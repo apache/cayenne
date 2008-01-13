@@ -99,14 +99,17 @@ public class ResultDirective extends Directive {
         typesGuess.put("BigInteger", BigInteger.class.getName());
     }
 
+    @Override
     public String getName() {
         return "result";
     }
 
+    @Override
     public int getType() {
         return LINE;
     }
 
+    @Override
     public boolean render(InternalContextAdapter context, Writer writer, Node node)
             throws IOException, ResourceNotFoundException, ParseErrorException,
             MethodInvocationException {

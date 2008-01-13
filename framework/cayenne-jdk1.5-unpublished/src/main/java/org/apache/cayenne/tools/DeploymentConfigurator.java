@@ -53,6 +53,7 @@ public class DeploymentConfigurator extends CayenneTask {
     /**
      * Executes the task. It will be called by ant framework.
      */
+    @Override
     public void execute() throws BuildException {
         
         validateAttributes();

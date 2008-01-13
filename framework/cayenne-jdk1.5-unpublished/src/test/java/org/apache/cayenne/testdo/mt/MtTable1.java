@@ -26,6 +26,7 @@ public class MtTable1 extends _MtTable1 {
     protected ObjEntity entity;
     protected transient boolean prePersisted;
 
+    @Override
     public ObjEntity getObjEntity() {
         return (entity != null) ? entity : super.getObjEntity();
     }

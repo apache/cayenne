@@ -28,6 +28,7 @@ import org.apache.cayenne.query.SQLActionVisitor;
  */
 public class MockQualifiedQuery extends QualifiedQuery {
 
+    @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return null;
     }

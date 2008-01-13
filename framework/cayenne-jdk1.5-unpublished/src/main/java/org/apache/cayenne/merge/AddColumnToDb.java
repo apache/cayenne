@@ -48,6 +48,7 @@ public class AddColumnToDb extends AbstractToDbToken {
         sqlBuffer.append(" ");
     }
 
+    @Override
     public List<String> createSql(DbAdapter adapter) {
         StringBuffer sqlBuffer = new StringBuffer();
 

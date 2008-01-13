@@ -41,6 +41,7 @@ public class DataContextDelegateTest extends CayenneCase {
     protected Gallery gallery;
     protected Artist artist;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -62,6 +63,7 @@ public class DataContextDelegateTest extends CayenneCase {
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
+            @Override
             public Query willPerformGenericQuery(DataContext context, Query query) {
                 queriesPerformed.add(query);
                 return query;
@@ -84,6 +86,7 @@ public class DataContextDelegateTest extends CayenneCase {
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
+            @Override
             public Query willPerformGenericQuery(DataContext context, Query query) {
                 queriesPerformed.add(query);
                 return null;
@@ -105,6 +108,7 @@ public class DataContextDelegateTest extends CayenneCase {
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
+            @Override
             public Query willPerformQuery(DataContext context, Query query) {
                 queriesPerformed.add(query);
                 return query;
@@ -127,6 +131,7 @@ public class DataContextDelegateTest extends CayenneCase {
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
+            @Override
             public Query willPerformQuery(DataContext context, Query query) {
                 queriesPerformed.add(query);
                 return null;

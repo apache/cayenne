@@ -58,10 +58,12 @@ public class UnitTestDomain extends DataDomain {
         this.blockingQueries = blockingQueries;
     }
 
+    @Override
     public QueryResponse onQuery(ObjectContext context, Query query) {
         return new UnitTestDomainQueryAction(context, this, query).execute();
     }
 
+    @Override
     public void performQueries(Collection queries, OperationObserver callback) {
         checkQueryAllowed(queries);
         super.performQueries(queries, callback);

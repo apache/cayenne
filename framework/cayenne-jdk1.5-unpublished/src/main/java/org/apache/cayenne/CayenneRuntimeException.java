@@ -68,6 +68,7 @@ public class CayenneRuntimeException extends RuntimeException {
      * Returns message that includes Cayenne version label and the actual exception
      * message.
      */
+    @Override
     public String getMessage() {
         String message = super.getMessage();
         return (message != null)

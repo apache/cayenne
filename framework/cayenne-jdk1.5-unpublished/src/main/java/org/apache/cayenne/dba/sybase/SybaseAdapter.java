@@ -43,6 +43,7 @@ public class SybaseAdapter extends JdbcAdapter {
      * 
      * @since 1.0.4
      */
+    @Override
     public String getBatchTerminator() {
         return "go";
     }
@@ -51,6 +52,7 @@ public class SybaseAdapter extends JdbcAdapter {
      * Installs appropriate ExtendedTypes as converters for passing values
      * between JDBC and Java layers.
      */
+    @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
 
@@ -70,10 +72,12 @@ public class SybaseAdapter extends JdbcAdapter {
      * Overrides superclass implementation to return an
      * instance of SybasePkGenerator.
      */
+    @Override
     protected PkGenerator createPkGenerator() {
         return new SybasePkGenerator();
     }
 
+    @Override
     public void bindParameter(
         PreparedStatement statement,
         Object object,

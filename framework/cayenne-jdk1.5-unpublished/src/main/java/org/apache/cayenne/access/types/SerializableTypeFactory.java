@@ -78,14 +78,17 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
             this.javaClass = javaClass;
         }
 
+        @Override
         public String getClassName() {
             return javaClass.getName();
         }
 
+        @Override
         Object fromJavaObject(Object object) {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
 
                 // avoid unneeded array copy...
+                @Override
                 public synchronized byte[] toByteArray() {
                     return buf;
                 }
@@ -103,6 +106,7 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
             return bytes.toByteArray();
         }
 
+        @Override
         Object toJavaObject(Object object) {
             byte[] bytes = (byte[]) object;
             try {

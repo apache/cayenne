@@ -582,6 +582,7 @@ public class RemoteIncrementalFaultList implements List {
 
     class PersistentListHelper extends ListHelper {
 
+        @Override
         boolean incorrectObjectType(Object object) {
             if (!(object instanceof Persistent)) {
                 return true;
@@ -599,6 +600,7 @@ public class RemoteIncrementalFaultList implements List {
 
     class DataRowListHelper extends ListHelper {
 
+        @Override
         boolean incorrectObjectType(Object object) {
             if (!(object instanceof Map)) {
                 return true;

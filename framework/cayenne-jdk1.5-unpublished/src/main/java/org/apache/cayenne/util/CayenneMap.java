@@ -91,6 +91,7 @@ public class CayenneMap extends FastTreeMap {
      * 
      * @see java.util.Map#put(Object, Object)
      */
+    @Override
     public Object put(Object key, Object value) {
 
         if (containsKey(key) && get(key) != value) {
@@ -129,6 +130,7 @@ public class CayenneMap extends FastTreeMap {
     /**
      * @see java.util.Map#putAll(Map)
      */
+    @Override
     public void putAll(Map t) {
         Iterator it = t.entrySet().iterator();
         while (it.hasNext()) {

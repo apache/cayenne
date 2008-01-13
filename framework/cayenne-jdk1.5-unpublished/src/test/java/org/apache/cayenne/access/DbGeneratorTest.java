@@ -32,6 +32,7 @@ public class DbGeneratorTest extends CayenneCase {
 
     protected DbGenerator gen;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
 

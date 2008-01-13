@@ -875,6 +875,7 @@ public class DataDomain implements QueryEngine, DataChannel {
         }
     }
 
+    @Override
     public String toString() {
         return new ToStringBuilder(this).append("name", name).toString();
     }

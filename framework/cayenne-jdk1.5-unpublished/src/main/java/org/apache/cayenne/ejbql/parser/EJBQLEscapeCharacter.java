@@ -30,6 +30,7 @@ public class EJBQLEscapeCharacter extends SimpleNode {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitEscapeCharacter(this);
     }

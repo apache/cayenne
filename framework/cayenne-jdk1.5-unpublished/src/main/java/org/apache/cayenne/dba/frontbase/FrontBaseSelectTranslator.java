@@ -29,6 +29,7 @@ class FrontBaseSelectTranslator extends SelectTranslator {
 
     static final String SELECT_PREFIX = "SELECT";
 
+    @Override
     public String createSqlString() throws Exception {
         String sql = super.createSqlString();
 

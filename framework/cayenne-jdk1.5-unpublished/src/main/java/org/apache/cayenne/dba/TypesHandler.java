@@ -123,6 +123,7 @@ public class TypesHandler {
             return types;
         }
 
+        @Override
         public void startElement(
             String namespaceURI,
             String localName,
@@ -146,6 +147,7 @@ public class TypesHandler {
             }
         }
 
+        @Override
         public void endElement(String namespaceURI, String localName, String qName)
             throws SAXException {
             if (JDBC_TYPE_TAG.equals(localName)

@@ -30,6 +30,7 @@ import org.apache.cayenne.unit.CayenneResources;
 
 public class GeneratedMethodsInClientObjectContextTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()

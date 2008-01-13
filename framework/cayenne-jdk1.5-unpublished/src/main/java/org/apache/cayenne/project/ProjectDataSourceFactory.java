@@ -42,6 +42,7 @@ public class ProjectDataSourceFactory extends DriverDataSourceFactory {
         this.projectDir = projectDir;
     }
 
+    @Override
     public DataSource getDataSource(String location) throws Exception {
         try {
             this.load(location);
@@ -53,6 +54,7 @@ public class ProjectDataSourceFactory extends DriverDataSourceFactory {
         return new ProjectDataSource(this.getDriverInfo());
     }
 
+    @Override
     protected DataSourceInfo getDriverInfo() {
         DataSourceInfo temp = super.getDriverInfo();
         if (null == temp) {

@@ -31,6 +31,7 @@ public class MockRelationship extends Relationship {
         super(name);
     }
 
+    @Override
     public Entity getTargetEntity() {
         return null;
     }

@@ -49,6 +49,7 @@ public class QueryMessage implements ClientMessage {
     /**
      * Returns a description of the type of message. In this case always "Query".
      */
+    @Override
     public String toString() {
         return "Query";
     }

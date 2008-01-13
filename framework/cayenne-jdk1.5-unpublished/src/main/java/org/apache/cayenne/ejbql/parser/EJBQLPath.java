@@ -62,10 +62,12 @@ public class EJBQLPath extends SimpleNode {
         return buffer.toString();
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitPath(this, -1);
     }
 
+    @Override
     protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
         return super.visitChild(visitor, childIndex)
                 && visitor.visitPath(this, childIndex);

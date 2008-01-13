@@ -45,6 +45,7 @@ public class EJBQLFromItem extends SimpleNode {
         final String[] entityNames = new String[1];
         getChild(0).visit(new EJBQLBaseVisitor() {
 
+            @Override
             public boolean visitIdentificationVariable(EJBQLExpression expression) {
                 entityNames[0] = expression.getText();
                 return false;
@@ -83,10 +84,12 @@ public class EJBQLFromItem extends SimpleNode {
         return jjtGetChild(len - 1).getText();
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitFromItem(this, -1);
     }
 
+    @Override
     protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
         return super.visitChild(visitor, childIndex)
                 && visitor.visitFromItem(this, childIndex);

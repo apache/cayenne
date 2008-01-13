@@ -124,6 +124,7 @@ public class HessianConnection extends BaseConnection {
     /**
      * Establishes server session if needed.
      */
+    @Override
     protected void beforeSendMessage(ClientMessage message)
             throws CayenneRuntimeException {
         // for now only support session-based communications...
@@ -135,6 +136,7 @@ public class HessianConnection extends BaseConnection {
     /**
      * Sends a message to remote Cayenne Hessian service.
      */
+    @Override
     protected Object doSendMessage(ClientMessage message) throws CayenneRuntimeException {
         try {
             return service.processMessage(message);

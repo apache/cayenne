@@ -88,6 +88,7 @@ public class RelationshipQuery extends IndirectQuery {
      */
     // return metadata without creating replacement, as this is not always possible to
     // create replacement (one-way relationships, etc.)
+    @Override
     public QueryMetadata getMetaData(final EntityResolver resolver) {
         updateMetadata(resolver);
         return metadata;
@@ -105,6 +106,7 @@ public class RelationshipQuery extends IndirectQuery {
         return relationshipName;
     }
 
+    @Override
     protected Query createReplacementQuery(EntityResolver resolver) {
 
         if (objectId.isTemporary() && !objectId.isReplacementIdAttached()) {
@@ -159,14 +161,17 @@ public class RelationshipQuery extends IndirectQuery {
 
             this.metadata = new DefaultQueryMetadata() {
 
+                @Override
                 public boolean isRefreshingObjects() {
                     return refreshing;
                 }
 
+                @Override
                 public ObjEntity getObjEntity() {
                     return arc.getTargetDescriptor().getEntity();
                 }
 
+                @Override
                 public ClassDescriptor getClassDescriptor() {
                     return arc.getTargetDescriptor();
                 }
@@ -180,6 +185,7 @@ public class RelationshipQuery extends IndirectQuery {
      * Overrides toString() outputting a short string with query class and relationship
      * name.
      */
+    @Override
     public String toString() {
         return StringUtils.substringAfterLast(getClass().getName(), ".")
                 + ":"

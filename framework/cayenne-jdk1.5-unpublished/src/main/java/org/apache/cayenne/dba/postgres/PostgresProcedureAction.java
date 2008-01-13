@@ -47,6 +47,7 @@ class PostgresProcedureAction extends SQLServerProcedureAction {
      * Creates a translator that adds parenthesis to no-param queries.
      */
     // see CAY-750 for the problem description
+    @Override
     protected ProcedureTranslator createTranslator(Connection connection) {
         ProcedureTranslator translator = new PostgresProcedureTranslator();
         translator.setAdapter(getAdapter());
@@ -58,6 +59,7 @@ class PostgresProcedureAction extends SQLServerProcedureAction {
 
     static class PostgresProcedureTranslator extends ProcedureTranslator {
 
+        @Override
         protected String createSqlString() {
 
             String sql = super.createSqlString();

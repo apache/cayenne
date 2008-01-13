@@ -30,14 +30,17 @@ public class EJBQLAverage extends EJBQLAggregateColumn {
         super(id);
     }
 
+    @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitAverage(this);
     }
     
+    @Override
     public String getFunction() {
         return "AVG";
     }
 
+    @Override
     public String getJavaType(String pathType) {
         return "java.lang.Double";
     }

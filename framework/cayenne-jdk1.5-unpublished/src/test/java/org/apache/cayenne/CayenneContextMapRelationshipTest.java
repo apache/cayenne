@@ -34,6 +34,7 @@ import org.apache.cayenne.unit.CayenneResources;
 
 public class CayenneContextMapRelationshipTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
     }
@@ -45,6 +46,7 @@ public class CayenneContextMapRelationshipTest extends CayenneCase {
         return new CayenneContext(clientChannel);
     }
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
     }

@@ -36,6 +36,7 @@ public class CDOOneToOneFKTest extends RelationshipCase {
 
     protected DataContext context;
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
         context = createDataContext();

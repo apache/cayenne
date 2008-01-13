@@ -308,11 +308,13 @@ public class MemoryClob implements Clob {
             }
         }
 
+        @Override
         public int read() throws IOException {
             doRead();
             return doRead();
         }
 
+        @Override
         public int available() throws IOException {
             return available / 2;
         }

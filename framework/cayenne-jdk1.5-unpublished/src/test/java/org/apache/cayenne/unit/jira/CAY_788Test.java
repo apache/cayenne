@@ -46,6 +46,7 @@ public class CAY_788Test extends SelectQueryBase {
         }
     }
 
+    @Override
     protected void populateTables() throws Exception {
         DataContext ctxt = createDataContext();
         for (int i = 0; i < 10; i++) {

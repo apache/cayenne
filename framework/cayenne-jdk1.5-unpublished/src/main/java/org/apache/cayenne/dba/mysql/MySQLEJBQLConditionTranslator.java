@@ -34,6 +34,7 @@ class MySQLEJBQLConditionTranslator extends EJBQLConditionTranslator {
         super(context);
     }
 
+    @Override
     public boolean visitTrim(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" TRIM(");
@@ -48,21 +49,25 @@ class MySQLEJBQLConditionTranslator extends EJBQLConditionTranslator {
         return true;
     }
 
+    @Override
     public boolean visitTrimCharacter(EJBQLExpression expression) {
         context.append(' ').append(expression.getText());
         return false;
     }
 
+    @Override
     public boolean visitTrimLeading(EJBQLExpression expression) {
         context.append("LEADING");
         return false;
     }
 
+    @Override
     public boolean visitTrimTrailing(EJBQLExpression expression) {
         context.append("TRAILING");
         return false;
     }
 
+    @Override
     public boolean visitTrimBoth(EJBQLExpression expression) {
         context.append("BOTH");
         return false;

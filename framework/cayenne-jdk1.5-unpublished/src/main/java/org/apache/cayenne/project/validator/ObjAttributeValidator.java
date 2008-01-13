@@ -35,6 +35,7 @@ public class ObjAttributeValidator extends TreeNodeValidator {
         super();
     }
 
+    @Override
     public void validateObject(ProjectPath path, Validator validator) {
         ObjAttribute attribute = (ObjAttribute) path.getObject();
 

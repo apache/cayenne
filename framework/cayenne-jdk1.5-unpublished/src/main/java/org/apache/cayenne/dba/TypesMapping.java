@@ -528,6 +528,7 @@ public class TypesMapping {
         int jdbcType;
         long precision;
 
+        @Override
         public String toString() {
             StringBuffer buf = new StringBuffer();
             buf.append("[   TypeInfo: ").append(name);

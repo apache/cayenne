@@ -116,6 +116,7 @@ public abstract class SimpleNode extends Expression implements Node {
 
     protected abstract String getExpressionOperator(int index);
 
+    @Override
     protected boolean pruneNodeForPrunedChild(Object prunedChild) {
         return true;
     }
@@ -123,6 +124,7 @@ public abstract class SimpleNode extends Expression implements Node {
     /**
      * Implemented for backwards compatibility with exp package.
      */
+    @Override
     public String expName() {
         return ExpressionParserTreeConstants.jjtNodeName[id];
     }
@@ -131,6 +133,7 @@ public abstract class SimpleNode extends Expression implements Node {
      * Flattens the tree under this node by eliminating any children that are of the same
      * class as this node and copying their children to this node.
      */
+    @Override
     protected void flattenTree() {
         boolean shouldFlatten = false;
         int newSize = 0;
@@ -196,6 +199,7 @@ public abstract class SimpleNode extends Expression implements Node {
         }
     }
 
+    @Override
     public Object getOperand(int index) {
         Node child = jjtGetChild(index);
 
@@ -216,10 +220,12 @@ public abstract class SimpleNode extends Expression implements Node {
         return (child instanceof ASTScalar) ? ((ASTScalar) child).getValue() : child;
     }
 
+    @Override
     public int getOperandCount() {
         return jjtGetNumChildren();
     }
 
+    @Override
     public void setOperand(int index, Object value) {
         Node node = (value == null || value instanceof Node)
                 ? (Node) value
@@ -294,10 +300,12 @@ public abstract class SimpleNode extends Expression implements Node {
         return ((SimpleNode) jjtGetChild(index)).evaluate(o);
     }
 
+    @Override
     public Expression notExp() {
         return new ASTNot(this);
     }
 
+    @Override
     public Object evaluate(Object o) {
         // wrap in try/catch to provide unified exception processing
         try {

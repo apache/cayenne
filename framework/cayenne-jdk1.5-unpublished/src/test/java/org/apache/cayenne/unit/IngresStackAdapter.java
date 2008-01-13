@@ -33,6 +33,7 @@ public class IngresStackAdapter extends AccessStackAdapter {
         super(adapter);
     }
 
+    @Override
     public boolean supportsBinaryPK() {
         return false;
     }
@@ -40,6 +41,7 @@ public class IngresStackAdapter extends AccessStackAdapter {
     /**
      * Ingres doesn't support LONGVARCHAR comparisions ('like', '=', etc.)
      */
+    @Override
     public void willCreateTables(Connection con, DataMap map) {
         DbEntity paintingInfo = map.getDbEntity("PAINTING_INFO");
 

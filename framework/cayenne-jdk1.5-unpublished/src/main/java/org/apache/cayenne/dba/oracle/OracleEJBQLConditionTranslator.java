@@ -37,14 +37,17 @@ class OracleEJBQLConditionTranslator extends EJBQLConditionTranslator {
         super(context);
     }
 
+    @Override
     public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
 
         expression.visit(new EJBQLPathTranslator(context) {
 
+            @Override
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
                 OracleEJBQLConditionTranslator.this.addMultiColumnOperand(operand);
             }
 
+            @Override
             protected void processTerminatingAttribute(ObjAttribute attribute) {
                 if (attribute.getDbAttribute().getType() == Types.CHAR) {
                     context.append(' ').append(OracleAdapter.TRIM_FUNCTION).append("(");

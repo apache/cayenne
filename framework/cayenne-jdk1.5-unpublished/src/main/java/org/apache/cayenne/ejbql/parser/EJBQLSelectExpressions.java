@@ -30,6 +30,7 @@ public class EJBQLSelectExpressions extends SimpleNode {
         super(id);
     }
 
+    @Override
     public boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitSelectExpressions(this);
     }

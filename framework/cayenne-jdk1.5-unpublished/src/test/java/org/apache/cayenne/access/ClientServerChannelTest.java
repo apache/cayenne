@@ -53,6 +53,7 @@ import org.apache.cayenne.unit.CayenneResources;
  */
 public class ClientServerChannelTest extends CayenneCase {
 
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources
                 .getResources()
@@ -199,6 +200,7 @@ public class ClientServerChannelTest extends CayenneCase {
         final boolean[] genericDone = new boolean[1];
         MockDataChannel parent = new MockDataChannel(new EntityResolver()) {
 
+            @Override
             public QueryResponse onQuery(ObjectContext context, Query query) {
                 genericDone[0] = true;
                 return super.onQuery(context, query);

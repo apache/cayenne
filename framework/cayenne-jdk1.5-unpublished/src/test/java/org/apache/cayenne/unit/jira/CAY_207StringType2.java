@@ -32,19 +32,23 @@ import org.apache.cayenne.validation.ValidationResult;
  */
 public class CAY_207StringType2 extends AbstractType {
 
+    @Override
     public String getClassName() {
         return CAY_207String2.class.getName();
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return new CAY_207String2(rs.getString(index));
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return new CAY_207String2(rs.getString(index));
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,
@@ -59,6 +63,7 @@ public class CAY_207StringType2 extends AbstractType {
         super.setJdbcObject(statement, value, pos, type, precision);
     }
 
+    @Override
     public boolean validateProperty(
             Object source,
             String property,

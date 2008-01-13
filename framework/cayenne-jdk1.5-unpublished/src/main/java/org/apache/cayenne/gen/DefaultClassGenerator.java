@@ -170,6 +170,7 @@ public class DefaultClassGenerator extends MapClassGenerator {
         this.outputPattern = outputPattern;
     }
 
+    @Override
     public void closeWriter(Writer out) throws Exception {
         out.close();
     }
@@ -178,6 +179,7 @@ public class DefaultClassGenerator extends MapClassGenerator {
      * Opens a Writer to write generated output. Writer encoding is determined from the
      * value of the "encoding" property.
      */
+    @Override
     public Writer openWriter(ObjEntity entity, String pkgName, String className)
             throws Exception {
         File outFile = (className.startsWith(SUPERCLASS_PREFIX)) ? fileForSuperclass(

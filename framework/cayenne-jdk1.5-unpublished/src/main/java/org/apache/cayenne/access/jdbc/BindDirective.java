@@ -62,10 +62,12 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class BindDirective extends Directive {
 
+    @Override
     public String getName() {
         return "bind";
     }
 
+    @Override
     public int getType() {
         return LINE;
     }
@@ -75,6 +77,7 @@ public class BindDirective extends Directive {
      * control to {@link #render(InternalContextAdapter, Writer, ParameterBinding)} 
      * to do the actual rendering.
      */
+    @Override
     public boolean render(InternalContextAdapter context, Writer writer, Node node)
         throws
             IOException,

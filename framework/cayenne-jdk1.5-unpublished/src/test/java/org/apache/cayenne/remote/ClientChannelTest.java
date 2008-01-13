@@ -160,16 +160,20 @@ public class ClientChannelTest extends CayenneCase {
     public void testEventBridgeFailure() throws Exception {
         MockClientConnection connection = new MockClientConnection() {
 
+            @Override
             public EventBridge getServerEventBridge() throws CayenneRuntimeException {
                 return new EventBridge(Collections.EMPTY_LIST, "ext") {
 
+                    @Override
                     protected void sendExternalEvent(CayenneEvent localEvent)
                             throws Exception {
                     }
 
+                    @Override
                     protected void shutdownExternal() throws Exception {
                     }
 
+                    @Override
                     protected void startupExternal() throws Exception {
                         // intentionally throw an exception
                         throw new CayenneRuntimeException("Test failure");

@@ -99,6 +99,7 @@ public class SelectTranslator extends QueryAssembler {
      * Returns query translated to SQL. This is a main work method of the
      * SelectTranslator.
      */
+    @Override
     public String createSqlString() throws Exception {
         forcingDistinct = false;
 
@@ -636,6 +637,7 @@ public class SelectTranslator extends QueryAssembler {
      * Stores a new relationship in an internal list. Later it will be used to create
      * joins to relationship destination table.
      */
+    @Override
     public void dbRelationshipAdded(DbRelationship rel) {
         if (rel.isToMany()) {
             forcingDistinct = true;
@@ -662,6 +664,7 @@ public class SelectTranslator extends QueryAssembler {
         return newAlias;
     }
 
+    @Override
     public String aliasForTable(DbEntity ent, DbRelationship rel) {
         return (String) aliasLookup.get(rel);
     }
@@ -671,6 +674,7 @@ public class SelectTranslator extends QueryAssembler {
      * specified DbEntity in the query (or null if this DbEntity is not included in the
      * FROM clause).
      */
+    @Override
     public String aliasForTable(DbEntity ent) {
 
         int entIndex = tableList.indexOf(ent);
@@ -698,6 +702,7 @@ public class SelectTranslator extends QueryAssembler {
     /**
      * Always returns true.
      */
+    @Override
     public boolean supportsTableAliases() {
         return true;
     }

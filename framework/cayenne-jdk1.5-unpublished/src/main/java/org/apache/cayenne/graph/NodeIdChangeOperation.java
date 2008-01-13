@@ -40,10 +40,12 @@ public class NodeIdChangeOperation extends NodeDiff {
         this.newNodeId = newNodeId;
     }
 
+    @Override
     public void apply(GraphChangeHandler tracker) {
         tracker.nodeIdChanged(nodeId, newNodeId);
     }
 
+    @Override
     public void undo(GraphChangeHandler tracker) {
         tracker.nodeIdChanged(newNodeId, nodeId);
     }

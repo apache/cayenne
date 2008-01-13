@@ -40,13 +40,16 @@ class PostgresActionBuilder extends JdbcActionBuilder {
         super(adapter, resolver);
     }
 
+    @Override
     public SQLAction procedureAction(ProcedureQuery query) {
         return new PostgresProcedureAction(query, getAdapter(), getEntityResolver());
     }
 
+    @Override
     public SQLAction objectSelectAction(SelectQuery query) {
         return new SelectAction(query, adapter, entityResolver) {
 
+            @Override
             protected SelectTranslator createTranslator(Connection connection) {
                 SelectTranslator translator = new PostgresSelectTranslator();
                 translator.setQuery(query);

@@ -34,6 +34,7 @@ public class DataMapProjectTest extends CayenneCase {
     protected DataMapProject p;
     protected File f;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

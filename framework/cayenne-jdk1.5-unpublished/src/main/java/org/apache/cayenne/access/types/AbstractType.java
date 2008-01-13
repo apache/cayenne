@@ -103,6 +103,7 @@ public abstract class AbstractType implements ExtendedType {
         return true;
     }
 
+    @Override
     public String toString() {
         return new ToStringBuilder(this).append("className", getClassName()).toString();
     }

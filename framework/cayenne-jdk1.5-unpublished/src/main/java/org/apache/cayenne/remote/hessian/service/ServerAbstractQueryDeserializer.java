@@ -45,6 +45,7 @@ class ServerAbstractQueryDeserializer extends JavaDeserializer {
         this.clientResolver = clientResolver;
     }
 
+    @Override
     public Object readMap(AbstractHessianInput in) throws IOException {
         Object object = super.readMap(in);
 

@@ -35,6 +35,7 @@ class EnhancedPojoListProperty extends EnhancedPojoToManyProperty {
         super(owner, targetDescriptor, accessor, reverseName);
     }
 
+    @Override
     protected ValueHolder createValueHolder(Persistent relationshipOwner) {
         return new PersistentObjectList(relationshipOwner, getName());
     }

@@ -59,6 +59,7 @@ public class Artist extends _Artist {
         postLoaded = false;
     }
 
+    @Override
     public void validateForSave(ValidationResult validationResult) {
         validateForSaveCalled = true;
         if (validationDelegate != null) {

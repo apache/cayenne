@@ -29,6 +29,7 @@ public class MockBaseProperty extends BaseProperty {
         super(owner, accessor);
     }
 
+    @Override
     public boolean visit(PropertyVisitor visitor) {
         return true;
     }

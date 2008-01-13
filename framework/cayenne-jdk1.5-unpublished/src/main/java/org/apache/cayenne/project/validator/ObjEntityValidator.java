@@ -37,6 +37,7 @@ public class ObjEntityValidator extends TreeNodeValidator {
         super();
     }
 
+    @Override
     public void validateObject(ProjectPath path, Validator validator) {
         ObjEntity ent = (ObjEntity) path.getObject();
         validateName(ent, path, validator);

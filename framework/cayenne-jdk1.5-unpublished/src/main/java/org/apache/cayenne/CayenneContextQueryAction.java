@@ -41,6 +41,7 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
         super(actingContext, targetContext, query);
     }
 
+    @Override
     public QueryResponse execute() {
 
         if (interceptOIDQuery() != DONE) {
@@ -70,10 +71,12 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
         return !DONE;
     }
 
+    @Override
     protected QueryCache getQueryCache() {
         return ((CayenneContext) actingContext).getQueryCache();
     }
 
+    @Override
     protected QueryCacheEntryFactory getCacheObjectFactory() {
         return new QueryCacheEntryFactory() {
 

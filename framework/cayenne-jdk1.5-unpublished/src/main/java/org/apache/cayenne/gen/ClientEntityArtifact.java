@@ -33,11 +33,13 @@ public class ClientEntityArtifact extends EntityArtifact {
         super(entity);
     }
 
+    @Override
     public String getQualifiedBaseClassName() {
         return (entity.getClientSuperClassName() != null) ? entity
                 .getClientSuperClassName() : PersistentObject.class.getName();
     }
 
+    @Override
     public String getQualifiedClassName() {
         return entity.getClientClassName();
     }

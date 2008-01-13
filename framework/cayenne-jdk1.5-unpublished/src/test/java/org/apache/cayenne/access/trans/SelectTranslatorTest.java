@@ -55,6 +55,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         Template test = new Template() {
 
+            @Override
             void test(SelectTranslator transl) throws Exception {
                 String generatedSql = transl.createSqlString();
 
@@ -82,6 +83,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         Template test = new Template() {
 
+            @Override
             void test(SelectTranslator transl) throws Exception {
                 String generatedSql = transl.createSqlString();
 
@@ -109,6 +111,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         Template test = new Template() {
 
+            @Override
             void test(SelectTranslator transl) throws Exception {
                 String generatedSql = transl.createSqlString();
                 // logObj.warn("Query: " + generatedSql);
@@ -152,6 +155,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         Template test = new Template() {
 
+            @Override
             void test(SelectTranslator transl) throws Exception {
                 String generatedSql = transl.createSqlString();
 
@@ -186,6 +190,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         Template test = new Template() {
 
+            @Override
             void test(SelectTranslator transl) throws Exception {
                 String generatedSql = transl.createSqlString();
                 // logObj.warn("Query: " + generatedSql);
@@ -224,6 +229,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         Template test = new Template() {
 
+            @Override
             void test(SelectTranslator transl) throws Exception {
                 String generatedSql = transl.createSqlString();
 
@@ -255,6 +261,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         Template test = new Template() {
 
+            @Override
             void test(SelectTranslator transl) throws Exception {
 
                 String sql = transl.createSqlString();
@@ -315,6 +322,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         Template test = new Template() {
 
+            @Override
             void test(SelectTranslator transl) throws Exception {
 
                 String sql = transl.createSqlString();
@@ -350,6 +358,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         Template test = new Template() {
 
+            @Override
             void test(SelectTranslator transl) throws Exception {
 
                 transl.createSqlString();
@@ -370,6 +379,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         Template test = new Template() {
 
+            @Override
             void test(SelectTranslator transl) throws Exception {
 
                 String sql = transl.createSqlString();
@@ -404,6 +414,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         Template test = new Template() {
 
+            @Override
             void test(SelectTranslator transl) throws Exception {
 
                 try {

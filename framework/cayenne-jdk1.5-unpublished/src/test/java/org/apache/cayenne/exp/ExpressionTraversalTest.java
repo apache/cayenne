@@ -25,6 +25,7 @@ import org.apache.cayenne.unit.CayenneCase;
 public class ExpressionTraversalTest extends CayenneCase {
     protected TstTraversalHandler handler;
  
+    @Override
     protected void setUp() throws Exception {                
         handler = new TstTraversalHandler();
     }

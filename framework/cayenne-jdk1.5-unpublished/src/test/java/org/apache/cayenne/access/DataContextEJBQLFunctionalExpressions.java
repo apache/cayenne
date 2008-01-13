@@ -37,6 +37,7 @@ import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLFunctionalExpressions extends CayenneCase {
 
+    @Override
     protected void setUp() throws Exception {
         deleteTestData();
     }

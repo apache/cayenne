@@ -71,6 +71,7 @@ public class DeploymentConfiguratorTest extends CayenneCase {
         Util.copy(url3, altNodeFile);
     }
 
+    @Override
     public void setUp() throws Exception {
         // create test dir
         File testDir = null;

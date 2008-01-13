@@ -46,6 +46,7 @@ public class SQLiteAdapter extends JdbcAdapter {
         this.setSupportsGeneratedKeys(false);
     }
 
+    @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
         map.registerType(new SQLiteDateType());
@@ -57,10 +58,12 @@ public class SQLiteAdapter extends JdbcAdapter {
         map.registerType(new SQLiteCalendarType(Calendar.class));
     }
 
+    @Override
     public String createFkConstraint(DbRelationship rel) {
         return null;
     }
 
+    @Override
     public String createUniqueConstraint(DbEntity source, Collection columns) {
         // TODO: andrus 10/9/2007 - only ALTER TABLE ADD CONSTRAINT is not supported,
         // presumably there's some other syntax (a part of CREATE TABLE?) that would
@@ -68,6 +71,7 @@ public class SQLiteAdapter extends JdbcAdapter {
         return null;
     }
 
+    @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new SQLiteActionBuilder(this, node
                 .getEntityResolver()));

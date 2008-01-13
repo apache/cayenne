@@ -56,6 +56,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
         super(query, adapter, entityResolver);
     }
 
+    @Override
     public void performAction(Connection connection, OperationObserver observer)
             throws SQLException, Exception {
 

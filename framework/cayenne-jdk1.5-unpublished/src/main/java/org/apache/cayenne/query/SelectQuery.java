@@ -142,6 +142,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * @since 1.2
      */
+    @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
         selectInfo.resolve(root, resolver, this);
 
@@ -162,6 +163,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @since 1.2
      */
+    @Override
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         super.route(router, resolver, substitutedQuery);
         routePrefetches(router, resolver);
@@ -181,6 +183,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @since 1.2
      */
+    @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return visitor.objectSelectAction(this);
     }

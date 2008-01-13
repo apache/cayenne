@@ -50,6 +50,7 @@ public class ProcedureTranslator extends QueryTranslator {
             this.type = type;
         }
 
+        @Override
         public String toString() {
             return type;
         }
@@ -96,6 +97,7 @@ public class ProcedureTranslator extends QueryTranslator {
         return buf.toString();
     }
 
+    @Override
     public PreparedStatement createStatement() throws Exception {
         long t1 = System.currentTimeMillis();
 

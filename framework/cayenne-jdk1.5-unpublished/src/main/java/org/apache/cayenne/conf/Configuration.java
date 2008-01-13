@@ -452,6 +452,7 @@ public abstract class Configuration {
     }
 
     private class ConfigurationShutdownHook extends Thread {
+        @Override
         public void run() {
             shutdown();
         }
