@@ -1018,7 +1018,6 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
-    // TODO: Andrus, 1/19/2006: implement for nested DataContexts
     public void rollbackChangesLocally() {
         if (objectStore.hasChanges()) {
             GraphDiff diff = getObjectStore().getChanges();
