@@ -15,6 +15,7 @@ Date:
 Changes/New Features Since M2:
 
 CAY-263 cdbgen (DbGeneratorTask) must support classpath and classpathref
+CAY-716 DataContext.rollbackChangesLocally() is not implemented for nested DataContexts
 CAY-735 Embeddable class support in the org.apache.cayenne.map package
 CAY-736 Embeddable class support by Cayenne runtime
 CAY-879 Storing lifecycle listeners and callbacks in the *.map.xml and loading them back

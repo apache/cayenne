@@ -1020,11 +1020,11 @@ public class DataContext extends BaseContext implements DataChannel {
      */
     // TODO: Andrus, 1/19/2006: implement for nested DataContexts
     public void rollbackChangesLocally() {
-        if (getChannel() instanceof DataDomain) {
-            rollbackChanges();
-        }
-        else {
-            throw new CayenneRuntimeException("Implementation pending.");
+        if (objectStore.hasChanges()) {
+            GraphDiff diff = getObjectStore().getChanges();
+
+            getObjectStore().objectsRolledBack();
+            fireDataChannelRolledback(this, diff);
         }
     }
 
@@ -1047,6 +1047,12 @@ public class DataContext extends BaseContext implements DataChannel {
             getObjectStore().objectsRolledBack();
             fireDataChannelRolledback(this, diff);
         }
+        else {
+            if (channel != null) {
+                channel.onSync(this, new CompoundDiff(), DataChannel.ROLLBACK_CASCADE_SYNC);
+            }
+        }
+
     }
 
     /**
