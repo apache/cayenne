@@ -26,8 +26,8 @@ package org.apache.cayenne.merge;
  */
 public class MergeDirection {
 
-    public static final int TO_DB_ID = 1;
-    public static final int TO_MODEL_ID = 2;
+    private static final int TO_DB_ID = 1;
+    private static final int TO_MODEL_ID = 2;
 
     public static final MergeDirection TO_DB = new MergeDirection(TO_DB_ID, "To DB");
     public static final MergeDirection TO_MODEL = new MergeDirection(
