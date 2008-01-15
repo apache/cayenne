@@ -65,7 +65,7 @@ public class SQLTemplateActionTest extends CayenneCase {
         getSQLTemplateBuilder().updateSQLTemplate(template);
 
         Map bindings = new HashMap();
-        bindings.put("id", new Integer(33005));
+        bindings.put("id", new Long(33005l));
         template.setParameters(bindings);
 
         // must ensure the right SQLTemplateAction is created
@@ -208,7 +208,7 @@ public class SQLTemplateActionTest extends CayenneCase {
         SQLTemplate template = new SQLTemplate(Object.class, templateString);
 
         Map bindings = new HashMap();
-        bindings.put("id", new Integer(1));
+        bindings.put("id", new Long(1));
         bindings.put("name", "a1");
         bindings.put("dob", new Date(System.currentTimeMillis()));
         template.setParameters(bindings);
@@ -272,12 +272,12 @@ public class SQLTemplateActionTest extends CayenneCase {
         SQLTemplate template = new SQLTemplate(Object.class, templateString);
 
         Map bindings1 = new HashMap();
-        bindings1.put("id", new Integer(1));
+        bindings1.put("id", new Long(1));
         bindings1.put("name", "a1");
         bindings1.put("dob", new Date(System.currentTimeMillis()));
 
         Map bindings2 = new HashMap();
-        bindings2.put("id", new Integer(33));
+        bindings2.put("id", new Long(33));
         bindings2.put("name", "a$$$$$");
         bindings2.put("dob", new Date(System.currentTimeMillis()));
         template.setParameters(new Map[] {

@@ -27,7 +27,7 @@
 		<db-attribute name="PARENT_GROUP_ID" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="ARTIST">
-		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
 		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
 	</db-entity>
@@ -37,11 +37,11 @@
 		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
 	</db-entity>
 	<db-entity name="ARTIST_EXHIBIT">
-		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="ARTIST_GROUP">
-		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="BIGDECIMAL_ENTITY">
@@ -182,7 +182,7 @@
 		<db-attribute name="ATTRIBUTE1" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="PAINTING">
-		<db-attribute name="ARTIST_ID" type="INTEGER"/>
+		<db-attribute name="ARTIST_ID" type="BIGINT"/>
 		<db-attribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2"/>
 		<db-attribute name="GALLERY_ID" type="INTEGER"/>
 		<db-attribute name="PAINTING_DESCRIPTION" type="VARCHAR" length="255"/>
@@ -190,7 +190,7 @@
 		<db-attribute name="PAINTING_TITLE" type="VARCHAR" isMandatory="true" length="255"/>
 	</db-entity>
 	<db-entity name="PAINTING1">
-		<db-attribute name="ARTIST_ID" type="INTEGER"/>
+		<db-attribute name="ARTIST_ID" type="BIGINT"/>
 		<db-attribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2"/>
 		<db-attribute name="GALLERY_ID" type="INTEGER"/>
 		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>

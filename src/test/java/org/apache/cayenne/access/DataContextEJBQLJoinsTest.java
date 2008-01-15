@@ -85,8 +85,8 @@ public class DataContextEJBQLJoinsTest extends CayenneCase {
             ids.add(DataObjectUtils.pkForObject(a));
         }
 
-        assertTrue(ids.contains(new Integer(33001)));
-        assertTrue(ids.contains(new Integer(33005)));
+        assertTrue(ids.contains(33001l));
+        assertTrue(ids.contains(33005l));
     }
 
     public void testChainedJoins() throws Exception {

@@ -17,12 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.dba;
 
 import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
 /**
@@ -68,8 +68,16 @@ public interface PkGenerator {
      * Generates new (unique and non-repeating) primary key for specified DbEntity.
      * 
      * @param ent DbEntity for which automatic PK is generated.
+     * @deprecated since 3.0 use {@link #generatePkForDbEntity(DataNode, DbAttribute)}.
      */
     Object generatePkForDbEntity(DataNode dataNode, DbEntity ent) throws Exception;
+
+    /**
+     * Generates a unique and non-repeating primary key for specified DbEntity.
+     * 
+     * @since 3.0
+     */
+    Object generatePkForDbEntity(DataNode dataNode, DbAttribute pk) throws Exception;
 
     /**
      * Resets any cached primary keys forcing generator to go to the database next time id

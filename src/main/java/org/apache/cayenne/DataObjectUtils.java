@@ -45,6 +45,24 @@ import org.apache.cayenne.query.Query;
  * @author Andrus Adamchik
  */
 public final class DataObjectUtils {
+    
+    /**
+     * Returns an int primary key value for a persistent object. Only works for single
+     * column numeric primary keys. If an object is transient or has an ObjectId that can
+     * not be converted to an int PK, an exception is thrown.
+     * 
+     * @since 3.0
+     */
+    public static long longPKForObject(Persistent dataObject) {
+        Object value = pkForObject(dataObject);
+
+        if (!(value instanceof Number)) {
+            throw new CayenneRuntimeException("PK is not a number: "
+                    + dataObject.getObjectId());
+        }
+
+        return ((Number) value).longValue();
+    }
 
     /**
      * Returns an int primary key value for a persistent object. Only works for single

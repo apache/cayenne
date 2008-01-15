@@ -162,7 +162,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
 
                 // finally, use database generation mechanism
                 try {
-                    Object pkValue = pkGenerator.generatePkForDbEntity(node, entity);
+                    Object pkValue = pkGenerator.generatePkForDbEntity(node, dbAttr);
                     idMap.put(dbAttrName, pkValue);
                     autoPkDone = true;
                 }

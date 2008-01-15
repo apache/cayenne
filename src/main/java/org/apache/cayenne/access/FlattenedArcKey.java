@@ -122,7 +122,7 @@ final class FlattenedArcKey {
             // finally, use database generation mechanism
             try {
                 PkGenerator pkGenerator = node.getAdapter().getPkGenerator();
-                Object pkValue = pkGenerator.generatePkForDbEntity(node, joinEntity);
+                Object pkValue = pkGenerator.generatePkForDbEntity(node, dbAttr);
                 snapshot.put(dbAttrName, pkValue);
                 autoPkDone = true;
             }

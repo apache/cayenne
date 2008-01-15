@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.dba.oracle;
 
 import java.sql.Connection;
@@ -137,6 +136,59 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      * <pre>
      *   SELECT pk_table_name.nextval FROM DUAL
      * </pre>
+     * 
+     * @since 3.0
+     */
+    @Override
+    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+
+        DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
+        String pkGeneratingSequenceName;
+        if (pkGenerator != null
+                && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
+                && pkGenerator.getGeneratorName() != null)
+            pkGeneratingSequenceName = pkGenerator.getGeneratorName();
+        else
+            pkGeneratingSequenceName = sequenceName(entity);
+
+        Connection con = node.getDataSource().getConnection();
+        try {
+            Statement st = con.createStatement();
+            try {
+                String sql = "SELECT " + pkGeneratingSequenceName + ".nextval FROM DUAL";
+                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
+                ResultSet rs = st.executeQuery(sql);
+                try {
+                    // Object pk = null;
+                    if (!rs.next()) {
+                        throw new CayenneRuntimeException(
+                                "Error generating pk for DbEntity " + entity.getName());
+                    }
+                    return rs.getLong(1);
+                }
+                finally {
+                    rs.close();
+                }
+            }
+            finally {
+                st.close();
+            }
+        }
+        finally {
+            con.close();
+        }
+
+    }
+
+    /**
+     * Generates primary key by calling Oracle sequence corresponding to the
+     * <code>dbEntity</code>. Executed SQL looks like this:
+     * 
+     * <pre>
+     *   SELECT pk_table_name.nextval FROM DUAL
+     * </pre>
+     * 
+     * @deprecated since 3.0
      */
     @Override
     protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
