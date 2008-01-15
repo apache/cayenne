@@ -55,7 +55,7 @@ public class JdbcPkGenerator implements PkGenerator {
 
     public static final int DEFAULT_PK_CACHE_SIZE = 20;
 
-    protected Map<String, PkRange> pkCache = new HashMap<String, PkRange>();
+    protected Map<String, LongPkRange> pkCache = new HashMap<String, LongPkRange>();
     protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
 
     public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
@@ -208,16 +208,69 @@ public class JdbcPkGenerator implements PkGenerator {
     }
 
     /**
-     * <p>
-     * Generates new (unique and non-repeating) primary key for specified dbEntity.
-     * </p>
+     * Generates a unique and non-repeating primary key for specified dbEntity.
      * <p>
      * This implementation is naive since it does not lock the database rows when
      * executing select and subsequent update. Adapter-specific implementations are more
      * robust.
      * </p>
+     * 
+     * @since 3.0
      */
+    public Object generatePkForDbEntity(DataNode node, DbAttribute pk) throws Exception {
 
+        DbEntity entity = (DbEntity) pk.getEntity();
+
+        switch (pk.getType()) {
+            case Types.BINARY:
+            case Types.VARBINARY:
+                return IDUtil.pseudoUniqueSecureByteSequence(pk.getMaxLength());
+        }
+
+        DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
+        long cacheSize;
+        if (pkGenerator != null && pkGenerator.getKeyCacheSize() != null)
+            cacheSize = pkGenerator.getKeyCacheSize().intValue();
+        else
+            cacheSize = pkCacheSize;
+
+        long value;
+
+        // if no caching, always generate fresh
+        if (cacheSize <= 1) {
+            value = longPkFromDatabase(node, entity);
+        }
+        else {
+            synchronized (pkCache) {
+                LongPkRange r = pkCache.get(entity.getName());
+
+                if (r == null) {
+                    // created exhausted LongPkRange
+                    r = new LongPkRange(1l, 0l);
+                    pkCache.put(entity.getName(), r);
+                }
+
+                if (r.isExhausted()) {
+                    long val = longPkFromDatabase(node, entity);
+                    r.reset(val, val + cacheSize - 1);
+                }
+
+                value = r.getNextPrimaryKey();
+            }
+        }
+
+        if (pk.getType() == Types.BIGINT) {
+            return Long.valueOf(value);
+        }
+        else {
+            // leaving it up to the user to ensure that PK does not exceed max int...
+            return Integer.valueOf((int) value);
+        }
+    }
+
+    /**
+     * @deprecated since 3.0
+     */
     public Object generatePkForDbEntity(DataNode node, DbEntity ent) throws Exception {
 
         // check for binary pk
@@ -239,11 +292,11 @@ public class JdbcPkGenerator implements PkGenerator {
         }
 
         synchronized (pkCache) {
-            PkRange r = pkCache.get(ent.getName());
+            LongPkRange r = pkCache.get(ent.getName());
 
             if (r == null) {
                 // created exhausted PkRange
-                r = new PkRange(1, 0);
+                r = new LongPkRange(1, 0);
                 pkCache.put(ent.getName(), r);
             }
 
@@ -284,6 +337,8 @@ public class JdbcPkGenerator implements PkGenerator {
      * different primary key generation solutions should override this method, not
      * "generatePkForDbEntity".
      * </p>
+     * 
+     * @deprecated since 3.0 {@link #longPkFromDatabase(DataNode, DbEntity)} is used.
      */
     protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
         String select = "SELECT #result('NEXT_ID' 'int' 'NEXT_ID') "
@@ -298,6 +353,35 @@ public class JdbcPkGenerator implements PkGenerator {
         queries.add(new SQLTemplate(ent, pkUpdateString(ent.getName())));
 
         PkRetrieveProcessor observer = new PkRetrieveProcessor(ent.getName());
+        node.performQueries(queries, observer);
+        return observer.getId();
+    }
+
+    /**
+     * Performs primary key generation ignoring cache. Generates a range of primary keys
+     * as specified by "pkCacheSize" bean property.
+     * <p>
+     * This method is called internally from "generatePkForDbEntity" and then generated
+     * range of key values is saved in cache for performance. Subclasses that implement
+     * different primary key generation solutions should override this method, not
+     * "generatePkForDbEntity".
+     * </p>
+     * 
+     * @since 3.0
+     */
+    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+        String select = "SELECT #result('NEXT_ID' 'long' 'NEXT_ID') "
+                + "FROM AUTO_PK_SUPPORT "
+                + "WHERE TABLE_NAME = '"
+                + entity.getName()
+                + '\'';
+
+        // run queries via DataNode to utilize its transactional behavior
+        List<Query> queries = new ArrayList<Query>(2);
+        queries.add(new SQLTemplate(entity, select));
+        queries.add(new SQLTemplate(entity, pkUpdateString(entity.getName())));
+
+        PkRetrieveProcessor observer = new PkRetrieveProcessor(entity.getName());
         node.performQueries(queries, observer);
         return observer.getId();
     }

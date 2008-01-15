@@ -292,7 +292,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         assertEquals(1, objects.size());
         DataObject object = (DataObject) objects.get(0);
 
-        assertEquals(new Integer(33001), DataObjectUtils.pkForObject(object));
+        assertEquals(new Long(33001), DataObjectUtils.pkForObject(object));
     }
 
     public void testIntPKForObjectNonNumeric() throws Exception {

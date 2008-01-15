@@ -200,7 +200,7 @@ public class PreferenceDetail extends CayenneDataObject {
             try {
                 Object pk = node.getAdapter().getPkGenerator().generatePkForDbEntity(
                         node,
-                        entity);
+                        entity.getPrimaryKeys().iterator().next());
                 otherId.getReplacementIdMap().put(DomainPreference.ID_PK_COLUMN, pk);
             }
             catch (Throwable th) {

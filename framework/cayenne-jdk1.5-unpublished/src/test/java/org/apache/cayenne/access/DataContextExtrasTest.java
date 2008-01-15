@@ -36,6 +36,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -189,6 +190,12 @@ public class DataContextExtrasTest extends CayenneCase {
 
             @Override
             public Object generatePkForDbEntity(DataNode node, DbEntity ent)
+                    throws Exception {
+                throw new CayenneRuntimeException("Synthetic error....");
+            }
+            
+            @Override
+            public Object generatePkForDbEntity(DataNode node, DbAttribute pk)
                     throws Exception {
                 throw new CayenneRuntimeException("Synthetic error....");
             }

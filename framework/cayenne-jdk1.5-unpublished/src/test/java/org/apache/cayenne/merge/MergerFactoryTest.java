@@ -229,7 +229,7 @@ public class MergerFactoryTest extends CayenneCase {
         column2.setMandatory(false);
         dbEntity.addAttribute(column2);
 
-        DbAttribute column3 = new DbAttribute("ARTIST_ID", Types.INTEGER, dbEntity);
+        DbAttribute column3 = new DbAttribute("ARTIST_ID", Types.BIGINT, dbEntity);
         column3.setMandatory(false);
         dbEntity.addAttribute(column3);
 
@@ -295,7 +295,7 @@ public class MergerFactoryTest extends CayenneCase {
         column2.setMandatory(false);
         dbEntity.addAttribute(column2);
 
-        DbAttribute column3 = new DbAttribute("ARTIST_ID", Types.INTEGER, dbEntity);
+        DbAttribute column3 = new DbAttribute("ARTIST_ID", Types.BIGINT, dbEntity);
         column3.setMandatory(false);
         dbEntity.addAttribute(column3);
 

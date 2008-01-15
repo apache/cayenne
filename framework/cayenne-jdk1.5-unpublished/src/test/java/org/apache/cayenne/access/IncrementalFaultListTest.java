@@ -94,6 +94,26 @@ public class IncrementalFaultListTest extends CayenneCase {
         }
     }
 
+    public void testNewObject() throws Exception {
+
+        deleteTestData();
+        createTestData("testArtists");
+
+        DataContext context = createDataContext();
+
+        Artist newArtist = context.newObject(Artist.class);
+        newArtist.setArtistName("X");
+        context.commitChanges();
+
+        SelectQuery q = new SelectQuery(Artist.class);
+        q.setPageSize(6);
+        q.addOrdering("db:ARTIST_ID", Ordering.DESC);
+
+        IncrementalFaultList list = new IncrementalFaultList(context, q);
+
+        assertSame(newArtist, list.get(DataContextTest.artistCount));
+    }
+
     public void testListIterator() throws Exception {
         prepareList(6);
         ListIterator it = list.listIterator();

@@ -43,6 +43,93 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
     /**
      * Overrides superclass's implementation to perform locking of the primary key lookup
      * table.
+     * 
+     * @since 3.0
+     */
+    @Override
+    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+
+        // must work directly with JDBC connection, since we
+        // must unlock the AUTO_PK_SUPPORT table in case of
+        // failures.... ah..JDBC is fun...
+
+        // chained SQL exception
+        SQLException exception = null;
+        long pk = -1l;
+
+        Connection con = node.getDataSource().getConnection();
+        try {
+
+            if (con.getAutoCommit()) {
+                con.setAutoCommit(false);
+            }
+
+            Statement st = con.createStatement();
+
+            try {
+                pk = getLongPrimaryKey(st, entity.getName());
+                con.commit();
+            }
+            catch (SQLException pkEx) {
+
+                try {
+                    con.rollback();
+                }
+                catch (SQLException e) {
+
+                }
+
+                exception = processSQLException(pkEx, exception);
+            }
+            finally {
+                // UNLOCK!
+                // THIS MUST BE EXECUTED NO MATTER WHAT, OR WE WILL LOCK THE PRIMARY KEY
+                // TABLE!!
+                try {
+                    String unlockString = "UNLOCK TABLES";
+                    QueryLogger.logQuery(unlockString, Collections.EMPTY_LIST);
+                    st.execute(unlockString);
+                }
+                catch (SQLException unlockEx) {
+                    exception = processSQLException(unlockEx, exception);
+                }
+                finally {
+                    // close statement
+                    try {
+                        st.close();
+                    }
+                    catch (SQLException stClosingEx) {
+                        // ignoring...
+                    }
+                }
+            }
+        }
+        catch (SQLException otherEx) {
+            exception = processSQLException(otherEx, exception);
+        }
+        finally {
+            try {
+                con.close();
+            }
+            catch (SQLException closingEx) {
+                // ignoring
+            }
+        }
+
+        // check errors
+        if (exception != null) {
+            throw exception;
+        }
+
+        return pk;
+
+    }
+
+    /**
+     * Overrides superclass's implementation to perform locking of the primary key lookup
+     * table.
+     * 
+     * @deprecated since 3.0
      */
     @Override
     protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
@@ -57,11 +144,11 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
         Connection con = node.getDataSource().getConnection();
         try {
-            
-            if(con.getAutoCommit()) {
+
+            if (con.getAutoCommit()) {
                 con.setAutoCommit(false);
             }
-            
+
             Statement st = con.createStatement();
 
             try {
@@ -69,14 +156,14 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
                 con.commit();
             }
             catch (SQLException pkEx) {
-                
+
                 try {
                     con.rollback();
                 }
                 catch (SQLException e) {
 
                 }
-                
+
                 exception = processSQLException(pkEx, exception);
             }
             finally {
@@ -145,6 +232,9 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
         return buf.toString();
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     protected int getPrimaryKey(Statement statement, String entityName)
             throws SQLException {
         // lock
@@ -164,6 +254,57 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
             }
 
             pk = rs.getInt(1);
+
+            if (rs.next()) {
+                throw new SQLException("More than one row for '" + entityName + "'");
+            }
+        }
+        finally {
+            try {
+                rs.close();
+            }
+            catch (Exception ex) {
+                // ignoring...
+            }
+        }
+
+        // update
+        String updateString = super.pkUpdateString(entityName) + " AND NEXT_ID = " + pk;
+        QueryLogger.logQuery(updateString, Collections.EMPTY_LIST);
+        int updated = statement.executeUpdate(updateString);
+        // optimistic lock failure...
+        if (updated != 1) {
+            throw new SQLException("Error updating PK count '"
+                    + entityName
+                    + "': "
+                    + updated);
+        }
+
+        return pk;
+    }
+
+    /**
+     * @since 3.0
+     */
+    protected long getLongPrimaryKey(Statement statement, String entityName)
+            throws SQLException {
+        // lock
+        String lockString = "LOCK TABLES AUTO_PK_SUPPORT WRITE";
+        QueryLogger.logQuery(lockString, Collections.EMPTY_LIST);
+        statement.execute(lockString);
+
+        // select
+        long pk = -1;
+
+        String selectString = super.pkSelectString(entityName);
+        QueryLogger.logQuery(selectString, Collections.EMPTY_LIST);
+        ResultSet rs = statement.executeQuery(selectString);
+        try {
+            if (!rs.next()) {
+                throw new SQLException("No rows for '" + entityName + "'");
+            }
+
+            pk = rs.getLong(1);
 
             if (rs.next()) {
                 throw new SQLException("More than one row for '" + entityName + "'");

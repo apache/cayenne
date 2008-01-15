@@ -161,7 +161,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         DataRow row2 = (DataRow) rows.get(1);
         assertEquals(3, row2.size());
-        assertEquals(new Integer(33002), row2.get("ARTIST_ID"));
+        assertEquals(33002l, row2.get("ARTIST_ID"));
     }
 
     public void testFetchObjects() throws Exception {
@@ -444,14 +444,14 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         ResultIterator it = context.performIteratedQuery(query);
 
         try {
-            int i = 0;
+            long i = 0;
 
             while (it.hasNextRow()) {
                 i++;
 
                 Map row = it.nextDataRow();
                 assertEquals(3, row.size());
-                assertEquals(new Integer(33000 + i), row.get("ARTIST_ID"));
+                assertEquals(33000l + i, row.get("ARTIST_ID"));
             }
 
             assertEquals(DataContextCase.artistCount, i);

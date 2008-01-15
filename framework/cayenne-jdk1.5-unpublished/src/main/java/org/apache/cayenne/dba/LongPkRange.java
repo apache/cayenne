@@ -16,40 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.dba;
 
 /**
- * Represents data structure to maintain a range of cached primary keys.
- * 
+ * @since 3.0
  * @author Andrus Adamchik
- * @deprecated since 3.0 repalced with a non-public LongPkRange.
  */
-public final class PkRange {
+class LongPkRange {
 
-    private int curValue;
-    private int maxValue;
+    private long curValue;
+    private long maxValue;
 
-    public PkRange(int curValue, int maxValue) {
+    LongPkRange(long curValue, long maxValue) {
         reset(curValue, maxValue);
     }
 
-    public void reset(int curValue, int maxValue) {
+    void reset(long curValue, long maxValue) {
         this.curValue = curValue;
         this.maxValue = maxValue;
     }
 
-    public boolean isExhausted() {
+    boolean isExhausted() {
         return curValue > maxValue;
     }
 
-    public Integer getNextPrimaryKey() {
+    long getNextPrimaryKey() {
         // do bound checking
         if (isExhausted()) {
             throw new RuntimeException(
                     "PkRange is exhausted and can not be used anymore.");
         }
 
-        return Integer.valueOf(curValue++);
+        return curValue++;
     }
 }

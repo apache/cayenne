@@ -22,6 +22,7 @@ package org.apache.cayenne.dba.openbase;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +35,7 @@ import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.util.IDUtil;
 
 /**
  * @author <a href="mailto:mkienenb@alaska.net">Mike Kienenberger</a>
@@ -58,6 +60,35 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     }
 
     /**
+     * Returns a non-repeating primary key for a given PK attribute. Since
+     * OpenBase-specific mechanism is used, key caching is disabled. Instead a database
+     * operation is performed on every call.
+     * 
+     * @since 3.0
+     */
+    @Override
+    public Object generatePkForDbEntity(DataNode node, DbAttribute pk) throws Exception {
+
+        DbEntity entity = (DbEntity) pk.getEntity();
+
+        switch (pk.getType()) {
+            case Types.BINARY:
+            case Types.VARBINARY:
+                return IDUtil.pseudoUniqueSecureByteSequence(pk.getMaxLength());
+        }
+
+        long value = longPkFromDatabase(node, entity);
+
+        if (pk.getType() == Types.BIGINT) {
+            return Long.valueOf(value);
+        }
+        else {
+            // leaving it up to the user to ensure that PK does not exceed max int...
+            return Integer.valueOf((int) value);
+        }
+    }
+
+    /**
      * Generates new (unique and non-repeating) primary key for specified DbEntity.
      * Executed SQL looks like this:
      * 
@@ -66,6 +97,54 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * </pre>
      * 
      * COLUMN must be marked as UNIQUE in order for this to work properly.
+     * 
+     * @since 3.0
+     */
+    @Override
+    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+
+        String sql = newIDString(entity);
+        QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
+
+        Connection con = node.getDataSource().getConnection();
+        try {
+            Statement st = con.createStatement();
+            try {
+
+                ResultSet rs = st.executeQuery(sql);
+                try {
+                    // Object pk = null;
+                    if (!rs.next()) {
+                        throw new CayenneRuntimeException(
+                                "Error generating pk for DbEntity " + entity.getName());
+                    }
+                    return rs.getLong(1);
+                }
+                finally {
+                    rs.close();
+                }
+            }
+            finally {
+                st.close();
+            }
+        }
+        finally {
+            con.close();
+        }
+
+    }
+
+    /**
+     * Generates new (unique and non-repeating) primary key for specified DbEntity.
+     * Executed SQL looks like this:
+     * 
+     * <pre>
+     *  NEWID FOR Table Column
+     * </pre>
+     * 
+     * COLUMN must be marked as UNIQUE in order for this to work properly.
+     * 
+     * @deprecated since 3.0
      */
     @Override
     protected int pkFromDatabase(DataNode node, DbEntity entity) throws Exception {

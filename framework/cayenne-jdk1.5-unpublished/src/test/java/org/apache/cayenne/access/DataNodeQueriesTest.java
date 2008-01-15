@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.sql.Connection;
@@ -56,12 +55,12 @@ public class DataNodeQueriesTest extends CayenneCase {
         DbEntity artistEnt = node.getEntityResolver().getDbEntity("ARTIST");
         assertNotNull(node.getAdapter().getPkGenerator().generatePkForDbEntity(
                 node,
-                artistEnt));
+                artistEnt.getPrimaryKeys().iterator().next()));
 
         DbEntity exhibitEnt = node.getEntityResolver().getDbEntity("EXHIBIT");
         assertNotNull(node.getAdapter().getPkGenerator().generatePkForDbEntity(
                 node,
-                exhibitEnt));
+                exhibitEnt.getPrimaryKeys().iterator().next()));
     }
 
     public void testPerfomQueriesSQLTemplate() throws Exception {
@@ -70,7 +69,7 @@ public class DataNodeQueriesTest extends CayenneCase {
         SQLTemplate query = new SQLTemplate(Object.class, template);
 
         Map bindings = new HashMap();
-        bindings.put("id", new Integer(1));
+        bindings.put("id", 1l);
         bindings.put("name", "a1");
         bindings.put("dob", new Date(System.currentTimeMillis()));
         query.setParameters(bindings);

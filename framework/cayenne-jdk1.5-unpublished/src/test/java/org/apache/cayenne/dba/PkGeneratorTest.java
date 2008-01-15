@@ -47,16 +47,17 @@ public class PkGeneratorTest extends CayenneCase {
     public void testGeneratePkForDbEntity() throws Exception {
         List pkList = new ArrayList();
 
-        int testSize =
-            (pkGen instanceof JdbcPkGenerator)
-                ? ((JdbcPkGenerator) pkGen).getPkCacheSize() * 2
-                : 25;
+        int testSize = (pkGen instanceof JdbcPkGenerator) ? ((JdbcPkGenerator) pkGen)
+                .getPkCacheSize() * 2 : 25;
         if (testSize < 25) {
             testSize = 25;
         }
 
         for (int i = 0; i < testSize; i++) {
-            Object pk = pkGen.generatePkForDbEntity(node, paintEnt);
+            Object pk = pkGen.generatePkForDbEntity(node, paintEnt
+                    .getPrimaryKeys()
+                    .iterator()
+                    .next());
             assertNotNull(pk);
             assertTrue(pk instanceof Number);
 

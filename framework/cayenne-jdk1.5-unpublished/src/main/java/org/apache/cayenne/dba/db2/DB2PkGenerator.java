@@ -47,6 +47,47 @@ public class DB2PkGenerator extends JdbcPkGenerator {
      */
     public static final String SEQUENCE_PREFIX = "S_";
 
+    /**
+     * @since 3.0
+     */
+    @Override
+    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+
+        String pkGeneratingSequenceName = sequenceName(entity);
+
+        Connection con = node.getDataSource().getConnection();
+        try {
+            Statement st = con.createStatement();
+            try {
+                String sql = "SELECT NEXTVAL FOR "
+                        + pkGeneratingSequenceName
+                        + " FROM SYSIBM.SYSDUMMY1";
+                QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
+                ResultSet rs = st.executeQuery(sql);
+                try {
+                    // Object pk = null;
+                    if (!rs.next()) {
+                        throw new CayenneRuntimeException(
+                                "Error generating pk for DbEntity " + entity.getName());
+                    }
+                    return rs.getLong(1);
+                }
+                finally {
+                    rs.close();
+                }
+            }
+            finally {
+                st.close();
+            }
+        }
+        finally {
+            con.close();
+        }
+    }
+
+    /**
+     * @deprecated since 3.0
+     */
     @Override
     protected int pkFromDatabase(DataNode node, DbEntity ent) throws Exception {
 
@@ -85,7 +126,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
     @Override
     public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
         Collection<String> sequences = getExistingSequences(node);
-       for (DbEntity entity : dbEntities) {
+        for (DbEntity entity : dbEntities) {
             if (!sequences.contains(sequenceName(entity))) {
                 this.runUpdate(node, createSequenceString(entity));
             }

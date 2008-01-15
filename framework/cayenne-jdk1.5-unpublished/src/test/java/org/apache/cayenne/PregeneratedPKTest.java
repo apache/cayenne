@@ -42,7 +42,7 @@ public class PregeneratedPKTest extends CayenneCase {
         deleteTestData();
     }
 
-    public void testIntPk() throws Exception {
+    public void testLongPk() throws Exception {
 
         DataContext context = createDataContext();
         Artist a = context.newObject(Artist.class);
@@ -53,7 +53,7 @@ public class PregeneratedPKTest extends CayenneCase {
         Object pk = a.getObjectId().getReplacementIdMap().get(Artist.ARTIST_ID_PK_COLUMN);
         assertNotNull(pk);
 
-        assertEquals(pk, new Integer(DataObjectUtils.intPKForObject(a)));
+        assertEquals(pk, DataObjectUtils.longPKForObject(a));
 
         context.commitChanges();
 
@@ -66,10 +66,9 @@ public class PregeneratedPKTest extends CayenneCase {
         DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
         DataNode node = context.getParentDataDomain().lookupDataNode(entity.getDataMap());
 
-        Object pk = node
-                .getAdapter()
-                .getPkGenerator()
-                .generatePkForDbEntity(node, entity); // throws Exception!!
+        Object pk = node.getAdapter().getPkGenerator().generatePkForDbEntity(
+                node,
+                entity.getPrimaryKeys().iterator().next());
         id.getReplacementIdMap().put(Artist.ARTIST_ID_PK_COLUMN, pk);
     }
 }

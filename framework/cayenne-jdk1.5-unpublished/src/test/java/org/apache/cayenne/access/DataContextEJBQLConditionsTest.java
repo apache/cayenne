@@ -192,7 +192,7 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
             ids.add(id);
         }
 
-        assertTrue(ids.contains(new Integer(33003)));
+        assertTrue(ids.contains(new Long(33003)));
     }
 
     public void testCollectionNotEmpty() throws Exception {
@@ -211,8 +211,8 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
             ids.add(id);
         }
 
-        assertTrue(ids.contains(new Integer(33001)));
-        assertTrue(ids.contains(new Integer(33002)));
+        assertTrue(ids.contains(33001l));
+        assertTrue(ids.contains(33002l));
     }
 
     public void testCollectionNotEmptyExplicitDistinct() throws Exception {
@@ -231,8 +231,8 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
             ids.add(id);
         }
 
-        assertTrue(ids.contains(new Integer(33001)));
-        assertTrue(ids.contains(new Integer(33002)));
+        assertTrue(ids.contains(33001l));
+        assertTrue(ids.contains(33002l));
     }
 
     public void testCollectionMemberOfParameter() throws Exception {
@@ -257,7 +257,7 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
             ids.add(id);
         }
 
-        assertTrue(ids.contains(new Integer(33001)));
+        assertTrue(ids.contains(33001l));
     }
     
     public void testCollectionNotMemberOfParameter() throws Exception {
@@ -282,8 +282,8 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
             ids.add(id);
         }
         
-        assertTrue(ids.contains(new Integer(33002)));
-        assertTrue(ids.contains(new Integer(33003)));
+        assertTrue(ids.contains(33002l));
+        assertTrue(ids.contains(33003l));
     }
 
     public void testCollectionMemberOfThetaJoin() throws Exception {
