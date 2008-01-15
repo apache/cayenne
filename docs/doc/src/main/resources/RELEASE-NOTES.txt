@@ -40,6 +40,7 @@ CAY-950 Look up callback methods on listener superclasses
 CAY-953 JPA: Single Table inheritance
 CAY-954 EJBQL Query: Support for single table inheritance
 CAY-956 Converter between Expression and EJBQL Expression
+CAY-961 Change PK generator API to take PK DbAttribute parameter; generate pk based on DbAttribute type (partial Long PK implementation)
 
 Bug fixes since M2:
 
