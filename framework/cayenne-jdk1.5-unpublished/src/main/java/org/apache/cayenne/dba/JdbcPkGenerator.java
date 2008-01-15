@@ -314,6 +314,7 @@ public class JdbcPkGenerator implements PkGenerator {
      *         method will likely be deprecated in 1.1 in favor of a more generic
      *         solution.
      * @since 1.0.2
+     * @deprecated since 3.0
      */
     protected byte[] binaryPK(DbEntity entity) {
         Collection<DbAttribute> pkColumns = entity.getPrimaryKeys();
