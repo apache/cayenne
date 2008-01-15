@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import java.lang.reflect.Array;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.access.jdbc.ParameterBinding;
@@ -51,6 +52,7 @@ public class QueryLogger {
     /**
      * @since 1.2
      */
+    @SuppressWarnings("unchecked")
     static ThreadLocal logLevel = new ThreadLocal();
 
     /**
@@ -242,43 +244,70 @@ public class QueryLogger {
                                  String            prefix,
                                  String            postfix,
                                  List<DbAttribute> attributes,
-                                 List<Object>      parameters)
+                                 List<?>           parameters,
+                                 boolean           isInserting)
     {
         if (parameters != null && parameters.size() > 0)
         {
-            DbAttribute attribute = null;
-            int         size      = parameters.size();
+            DbAttribute           attribute         = null;
+            Iterator<DbAttribute> attributeIterator = null;
+            int                   position          = 0;
 
-            for (int i = 0; i < size; i++)
+            if (attributes != null)
+                attributeIterator = attributes.iterator();
+
+            for (Object parameter : parameters)
             {
-                if (i == 0)
+                // If at the beginning, output the prefix, otherwise a separator.
+                if (position++ == 0)
                     buffer.append(prefix);
                 else
                     buffer.append(", ");
 
-                if (attributes != null && i < attributes.size())
-                    attribute = attributes.get(i);
-
-                buffer.append(i + 1);
-
-                if (attribute != null)
+                // Find the next attribute and SKIP generated attributes.  Only
+                // skip when logging inserts, though.  Should show previously
+                // generated keys on DELETE, UPDATE, or SELECT.
+                while (attributeIterator != null && attributeIterator.hasNext())
                 {
-                    buffer.append("->");
-                    buffer.append(attribute.getName());
+                    attribute = attributeIterator.next();
+
+                    if (isInserting == false || attribute.isGenerated() == false)
+                        break;
                 }
 
-                buffer.append(":");
-                sqlLiteralForObject(buffer, parameters.get(i));
+                buffer.append(position);
+
+              if (attribute != null)
+              {
+                  buffer.append("->");
+                  buffer.append(attribute.getName());
+              }
+
+              buffer.append(":");
+              sqlLiteralForObject(buffer, parameter);
             }
 
             buffer.append(postfix);
         }
     }
 
+    private static boolean isInserting(String query)
+    {
+        if (query == null || query.length() == 0)
+            return false;
+
+        char firstCharacter = query.charAt(0);
+        
+        if (firstCharacter == 'I' || firstCharacter == 'i')
+            return true;
+        else
+            return false;
+    }
+
     /**
      * @since 1.2
      */
-    public static void logQuery(String queryStr, List params) {
+    public static void logQuery(String queryStr, List<?> params) {
         logQuery(queryStr, null, params, -1);
     }
 
@@ -291,10 +320,10 @@ public class QueryLogger {
      *            in prepared statement.
      * @since 1.2
      */
-    public static void logQuery(String queryStr, List<DbAttribute> attrs, List params, long time) {
+    public static void logQuery(String queryStr, List<DbAttribute> attrs, List<?> params, long time) {
         if (isLoggable()) {
             StringBuffer buf = new StringBuffer(queryStr);
-            buildLog(buf, " [bind: ", "]", attrs, params);
+            buildLog(buf, " [bind: ", "]", attrs, params, isInserting(queryStr));
 
             // log preparation time only if it is something significant
             if (time > 5) {
@@ -308,11 +337,14 @@ public class QueryLogger {
     /**
      * @since 1.2
      */
-    public static void logQueryParameters(String label, List<DbAttribute> attrs, List parameters) {
+    public static void logQueryParameters(String           label,
+                                         List<DbAttribute> attrs,
+                                         List<Object>      parameters,
+                                         boolean           isInserting) {
         String prefix = "[" + label + ": ";
         if (isLoggable() && parameters.size() > 0) {
             StringBuffer buf = new StringBuffer();
-            buildLog(buf, prefix, "]", attrs, parameters);
+            buildLog(buf, prefix, "]", attrs, parameters, isInserting);
             logObj.info(buf.toString());
         }
     }
