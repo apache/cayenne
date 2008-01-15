@@ -108,7 +108,7 @@ class OracleLOBBatchAction implements SQLAction {
 
                 if (isLoggable) {
                     List bindings = queryBuilder.getValuesForLOBUpdateParameters(query);
-                    QueryLogger.logQueryParameters("bind", null, bindings);
+                    QueryLogger.logQueryParameters("bind", null, bindings, query instanceof InsertBatchQuery);
                 }
 
                 queryBuilder.bindParameters(statement, query);
@@ -156,7 +156,7 @@ class OracleLOBBatchAction implements SQLAction {
 
         if (isLoggable) {
             QueryLogger.logQuery(selectStr, qualifierValues);
-            QueryLogger.logQueryParameters("write LOB", null, lobValues);
+            QueryLogger.logQueryParameters("write LOB", null, lobValues, false);
         }
 
         PreparedStatement selectStatement = con.prepareStatement(selectStr);

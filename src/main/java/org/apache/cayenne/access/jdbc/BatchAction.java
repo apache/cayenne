@@ -122,7 +122,8 @@ public class BatchAction extends BaseSQLAction {
                     QueryLogger.logQueryParameters
                         ("batch bind",
                          query.getDbAttributes(), 
-                         queryBuilder.getParameterValues(query));
+                         queryBuilder.getParameterValues(query),
+                         query instanceof InsertBatchQuery);
                 }
 
                 queryBuilder.bindParameters(statement, query);
@@ -185,7 +186,7 @@ public class BatchAction extends BaseSQLAction {
             while (query.next()) {
                 if (isLoggable) {
                     QueryLogger.logQueryParameters
-                        ("bind", query.getDbAttributes(), queryBuilder.getParameterValues(query));
+                        ("bind", query.getDbAttributes(), queryBuilder.getParameterValues(query), query instanceof InsertBatchQuery);
                 }
 
                 queryBuilder.bindParameters(statement, query);
