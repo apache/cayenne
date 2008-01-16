@@ -39,6 +39,19 @@ import org.apache.cayenne.map.DbEntity;
  * @author Andrus Adamchik
  */
 public class SybasePkGenerator extends JdbcPkGenerator {
+    
+    @Override
+    protected String pkTableCreateString() {
+        StringBuffer buf = new StringBuffer();
+        buf
+                .append("CREATE TABLE AUTO_PK_SUPPORT (")
+                .append("  TABLE_NAME CHAR(100) NOT NULL,")
+                .append("  NEXT_ID DECIMAL(19,0) NOT NULL,")
+                .append("  PRIMARY KEY(TABLE_NAME)")
+                .append(")");
+
+        return buf.toString();
+    }
 
     /**
      * Generates database objects to provide automatic primary key support. Method will
@@ -50,7 +63,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
      * <pre>
      *    CREATE TABLE AUTO_PK_SUPPORT (
      *       TABLE_NAME VARCHAR(32) NOT NULL,
-     *       NEXT_ID INTEGER NOT NULL
+     *       NEXT_ID DECIMAL(19,0) NOT NULL
      *    )
      * </pre>
      * 

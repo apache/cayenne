@@ -198,7 +198,7 @@ public class PreferenceDetail extends CayenneDataObject {
                     .lookupDataNode(entity.getDataMap());
 
             try {
-                Object pk = node.getAdapter().getPkGenerator().generatePkForDbEntity(
+                Object pk = node.getAdapter().getPkGenerator().generatePk(
                         node,
                         entity.getPrimaryKeys().iterator().next());
                 otherId.getReplacementIdMap().put(DomainPreference.ID_PK_COLUMN, pk);

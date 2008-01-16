@@ -73,7 +73,7 @@ public interface PkGenerator {
     Object generatePkForDbEntity(DataNode dataNode, DbEntity ent) throws Exception;
 
     /**
-     * Generates a unique and non-repeating primary key for specified DbEntity.
+     * Generates a unique and non-repeating primary key for specified PK attribute.
      * 
      * @since 3.0
      */
