@@ -51,7 +51,7 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
             Connection connection,
             OperationObserver callback,
             SQLStatement compiled,
-            Collection updateCounts) throws SQLException, Exception {
+            Collection<Number> updateCounts) throws SQLException, Exception {
 
         String sql = compiled.getSql().trim();
         boolean select = sql.length() > "SELECT".length()
