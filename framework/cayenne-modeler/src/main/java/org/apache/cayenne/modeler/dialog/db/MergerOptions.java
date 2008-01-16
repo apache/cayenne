@@ -38,6 +38,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.merge.DbMerger;
 import org.apache.cayenne.merge.ExecutingMergerContext;
+import org.apache.cayenne.merge.MergeDirection;
 import org.apache.cayenne.merge.MergerContext;
 import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.modeler.Application;
@@ -45,6 +46,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ValidationResultBrowser;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
@@ -148,7 +150,7 @@ public class MergerOptions extends CayenneController {
                     .getClassLoadingService());
             tokens.setMergerFactory(adapter.mergerFactory());
             merger = new DbMerger();
-            List mergerTokens = merger.createMergeTokens(adapter, connectionInfo
+            List<MergerToken> mergerTokens = merger.createMergeTokens(adapter, connectionInfo
                     .makeDataSource(getApplication().getClassLoadingService()), dataMap);
             tokens.setTokens(mergerTokens);
         }
@@ -164,7 +166,7 @@ public class MergerOptions extends CayenneController {
         // convert them to string representation for display
         final StringBuffer buf = new StringBuffer();
 
-        Iterator it = tokens.getSelectedTokens().iterator();
+        Iterator<MergerToken> it = tokens.getSelectedTokens().iterator();
         String batchTerminator = adapter.getBatchTerminator();
 
         final String lineEnd = (batchTerminator != null) ? "\n"
@@ -193,7 +195,7 @@ public class MergerOptions extends CayenneController {
         };
 
         while (it.hasNext()) {
-            MergerToken token = (MergerToken) it.next();
+            MergerToken token = it.next();
             token.execute(context);
             // buf.append(token.createSql(adapter)).append(lineEnd);
         }
@@ -249,7 +251,7 @@ public class MergerOptions extends CayenneController {
         refreshGeneratorAction();
 
         // sanity check...
-        List tokensToMigrate = tokens.getSelectedTokens();
+        List<MergerToken> tokensToMigrate = tokens.getSelectedTokens();
         if (tokensToMigrate.isEmpty()) {
             JOptionPane.showMessageDialog(getView(), "Nothing to migrate.");
             return;
@@ -264,10 +266,27 @@ public class MergerOptions extends CayenneController {
                     dataMap,
                     dataSource,
                     adapter);
-            for (Iterator it = tokensToMigrate.iterator(); it.hasNext();) {
-                MergerToken tok = (MergerToken) it.next();
+            boolean modelChanged = false;
+            for (Iterator<MergerToken> it = tokensToMigrate.iterator(); it.hasNext();) {
+                MergerToken tok = it.next();
                 tok.execute(mergerContext);
+                if (!modelChanged && tok.getDirection().equals(MergeDirection.TO_MODEL)) {
+                    modelChanged = true;
+                }
             }
+            
+            if (modelChanged) {
+                // mark the model as unsaved
+                Project project = Application.getProject();
+                project.setModified(true);
+
+                ProjectController projectController = Application
+                        .getInstance()
+                        .getFrameController()
+                        .getProjectController();
+                projectController.setDirty(true);
+            }
+            
             ValidationResult failures = mergerContext.getValidationResult();
 
             if (failures == null || !failures.hasFailures()) {

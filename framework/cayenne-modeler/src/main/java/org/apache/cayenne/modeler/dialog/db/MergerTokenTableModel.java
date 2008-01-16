@@ -34,7 +34,7 @@ public class MergerTokenTableModel extends AbstractTableModel {
 
     private MergerTokenSelectorController controller;
 
-    private List tokens;
+    private List<MergerToken> tokens;
 
     public MergerTokenTableModel(MergerTokenSelectorController controller) {
         this.controller = controller;

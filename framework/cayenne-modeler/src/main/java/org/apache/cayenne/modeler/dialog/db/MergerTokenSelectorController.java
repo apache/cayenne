@@ -47,15 +47,15 @@ public class MergerTokenSelectorController extends CayenneController {
 
     protected MergerToken token;
     protected int permanentlyExcludedCount;
-    protected Set excludedTokens;
-    protected List selectableTokensList;
+    protected Set<MergerToken> excludedTokens;
+    protected List<MergerToken> selectableTokensList;
     protected MergerFactory mergerFactory;
 
     public MergerTokenSelectorController(CayenneController parent) {
         super(parent);
         this.view = new MergerTokenSelectorView();
-        this.excludedTokens = new HashSet();
-        this.selectableTokensList = new ArrayList();
+        this.excludedTokens = new HashSet<MergerToken>();
+        this.selectableTokensList = new ArrayList<MergerToken>();
         initController();
     }
 
@@ -63,19 +63,19 @@ public class MergerTokenSelectorController extends CayenneController {
         this.mergerFactory = mergerFactory;
     }
 
-    public void setTokens(List tokens) {
+    public void setTokens(List<MergerToken> tokens) {
         selectableTokensList.clear();
         selectableTokensList.addAll(tokens);
         excludedTokens.addAll(tokens);
     }
 
-    public List getSelectedTokens() {
-        List t = new ArrayList(selectableTokensList);
+    public List<MergerToken> getSelectedTokens() {
+        List<MergerToken> t = new ArrayList<MergerToken>(selectableTokensList);
         t.removeAll(excludedTokens);
         return Collections.unmodifiableList(t);
     }
 
-    public List getSelectableTokens() {
+    public List<MergerToken> getSelectableTokens() {
         return Collections.unmodifiableList(selectableTokensList);
     }
 
