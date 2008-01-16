@@ -43,6 +43,13 @@ UPGRADING FROM 2.0 AND OTHER APACHE RELEASES
 * DataContextTransactionEventListener, DataObjectTransactionEventListener, DataContextEvent all were deprecated
   favor of callbacks. NOTE THAT THIS API WILL BE REMOVED IN THE FOLLOWING 3.0 MILESTONES.
   
+* Long PK: Cayenne now supports "long" primary key generation (previously it only supported "int"). You may
+  have to change the existing PK lookup tables on some databases to take advantage of that (this is optional,
+  and is needed if you expect your PK to exceed maximum value of an "int" allowed in your database). E.g. on 
+  MySQL you may run the following SQL:
+  
+  ALTER TABLE AUTO_PK_SUPPORT CHANGE COLUMN NEXT_ID NEXT_ID BIGINT NOT NULL;
+  
 
 UPGRADING FROM 1.2 AND OTHER OBJECTSTYLE RELEASES
 

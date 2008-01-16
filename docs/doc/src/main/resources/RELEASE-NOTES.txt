@@ -15,6 +15,7 @@ Date:
 Changes/New Features Since M2:
 
 CAY-263 cdbgen (DbGeneratorTask) must support classpath and classpathref
+CAY-329 Long vs. Integer PK
 CAY-716 DataContext.rollbackChangesLocally() is not implemented for nested DataContexts
 CAY-735 Embeddable class support in the org.apache.cayenne.map package
 CAY-736 Embeddable class support by Cayenne runtime
@@ -40,7 +41,6 @@ CAY-950 Look up callback methods on listener superclasses
 CAY-953 JPA: Single Table inheritance
 CAY-954 EJBQL Query: Support for single table inheritance
 CAY-956 Converter between Expression and EJBQL Expression
-CAY-961 Change PK generator API to take PK DbAttribute parameter; generate pk based on DbAttribute type (partial Long PK implementation)
 
 Bug fixes since M2:
 
