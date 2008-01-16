@@ -53,12 +53,12 @@ public class DataNodeQueriesTest extends CayenneCase {
         DataNode node = getNode();
 
         DbEntity artistEnt = node.getEntityResolver().getDbEntity("ARTIST");
-        assertNotNull(node.getAdapter().getPkGenerator().generatePkForDbEntity(
+        assertNotNull(node.getAdapter().getPkGenerator().generatePk(
                 node,
                 artistEnt.getPrimaryKeys().iterator().next()));
 
         DbEntity exhibitEnt = node.getEntityResolver().getDbEntity("EXHIBIT");
-        assertNotNull(node.getAdapter().getPkGenerator().generatePkForDbEntity(
+        assertNotNull(node.getAdapter().getPkGenerator().generatePk(
                 node,
                 exhibitEnt.getPrimaryKeys().iterator().next()));
     }

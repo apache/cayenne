@@ -68,7 +68,7 @@ public interface PkGenerator {
      * Generates new (unique and non-repeating) primary key for specified DbEntity.
      * 
      * @param ent DbEntity for which automatic PK is generated.
-     * @deprecated since 3.0 use {@link #generatePkForDbEntity(DataNode, DbAttribute)}.
+     * @deprecated since 3.0 use {@link #generatePk(DataNode, DbAttribute)}.
      */
     Object generatePkForDbEntity(DataNode dataNode, DbEntity ent) throws Exception;
 
@@ -77,7 +77,7 @@ public interface PkGenerator {
      * 
      * @since 3.0
      */
-    Object generatePkForDbEntity(DataNode dataNode, DbAttribute pk) throws Exception;
+    Object generatePk(DataNode dataNode, DbAttribute pk) throws Exception;
 
     /**
      * Resets any cached primary keys forcing generator to go to the database next time id

@@ -195,7 +195,7 @@ public class DataContextExtrasTest extends CayenneCase {
             }
             
             @Override
-            public Object generatePkForDbEntity(DataNode node, DbAttribute pk)
+            public Object generatePk(DataNode node, DbAttribute pk)
                     throws Exception {
                 throw new CayenneRuntimeException("Synthetic error....");
             }

@@ -54,7 +54,7 @@ public class PkGeneratorTest extends CayenneCase {
         }
 
         for (int i = 0; i < testSize; i++) {
-            Object pk = pkGen.generatePkForDbEntity(node, paintEnt
+            Object pk = pkGen.generatePk(node, paintEnt
                     .getPrimaryKeys()
                     .iterator()
                     .next());
@@ -72,6 +72,9 @@ public class PkGeneratorTest extends CayenneCase {
         }
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public void testBinaryPK1() throws Exception {
         if (!(pkGen instanceof JdbcPkGenerator)) {
             return;
@@ -81,6 +84,9 @@ public class PkGeneratorTest extends CayenneCase {
         assertNull(((JdbcPkGenerator) pkGen).binaryPK(artistEntity));
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public void testBinaryPK2() throws Exception {
         if (!(pkGen instanceof JdbcPkGenerator)) {
             return;
