@@ -39,6 +39,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -57,7 +58,7 @@ import org.apache.cayenne.query.SQLAction;
  * <h3>Sample Connection Settings</h3>
  * <ul>
  * <li>Adapter name: org.apache.cayenne.dba.mysql.MySQLAdapter</li>
- * <li>DB URL: jdbc: mysql://serverhostname/dbname</li>
+ * <li>DB URL: jdbc:mysql://serverhostname/dbname</li>
  * <li>Driver Class: com.mysql.jdbc.Driver</li>
  * </ul>
  * 
@@ -285,6 +286,11 @@ public class MySQLAdapter extends JdbcAdapter {
         if (column.isGenerated()) {
             sqlBuffer.append(" AUTO_INCREMENT");
         }
+    }
+    
+    @Override
+    public MergerFactory mergerFactory() {
+        return new MySQLMergerFactory();
     }
 
     final class PKComparator implements Comparator<DbAttribute> {
