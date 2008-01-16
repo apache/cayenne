@@ -69,7 +69,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * @since 3.0
      */
     @Override
-    public Object generatePkForDbEntity(DataNode node, DbAttribute pk) throws Exception {
+    public Object generatePk(DataNode node, DbAttribute pk) throws Exception {
 
         DbEntity entity = (DbEntity) pk.getEntity();
 

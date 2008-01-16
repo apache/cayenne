@@ -66,7 +66,7 @@ public class PregeneratedPKTest extends CayenneCase {
         DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
         DataNode node = context.getParentDataDomain().lookupDataNode(entity.getDataMap());
 
-        Object pk = node.getAdapter().getPkGenerator().generatePkForDbEntity(
+        Object pk = node.getAdapter().getPkGenerator().generatePk(
                 node,
                 entity.getPrimaryKeys().iterator().next());
         id.getReplacementIdMap().put(Artist.ARTIST_ID_PK_COLUMN, pk);
