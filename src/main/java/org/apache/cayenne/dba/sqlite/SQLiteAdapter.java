@@ -25,6 +25,7 @@ import java.util.GregorianCalendar;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.query.Query;
@@ -64,7 +65,7 @@ public class SQLiteAdapter extends JdbcAdapter {
     }
 
     @Override
-    public String createUniqueConstraint(DbEntity source, Collection columns) {
+    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
         // TODO: andrus 10/9/2007 - only ALTER TABLE ADD CONSTRAINT is not supported,
         // presumably there's some other syntax (a part of CREATE TABLE?) that would
         // create a unique constraint.
