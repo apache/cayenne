@@ -39,6 +39,8 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class MergerFactoryTest extends CayenneCase {
 
@@ -46,6 +48,8 @@ public class MergerFactoryTest extends CayenneCase {
     private DataMap map;
 
     private List<String> tableNames = Arrays.asList("ARTIST", "PAINTING", "NEW_TABLE");
+    
+    private static final Log logObj = LogFactory.getLog(MergerFactoryTest.class);
 
     public DbMerger createMerger() {
         return new DbMerger() {
@@ -382,11 +386,7 @@ public class MergerFactoryTest extends CayenneCase {
 
     private void logTokens(List<MergerToken> tokens) {
         for (MergerToken token : tokens) {
-            QueryLogger.log("token: " + token.toString());
-            if (token instanceof AbstractToDbToken) {
-                QueryLogger.log("  \\-->  "
-                        + ((AbstractToDbToken) token).createSql(node.getAdapter()));
-            }
+            logObj.info("token: " + token.toString());
         }
     }
 
@@ -440,7 +440,7 @@ public class MergerFactoryTest extends CayenneCase {
         }
 
         for (DbEntity e : entitiesToRemove) {
-            QueryLogger.log("filter away " + e.getName());
+            logObj.info("filter away " + e.getName());
             map.removeDbEntity(e.getName(), true);
         }
 
