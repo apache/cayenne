@@ -110,8 +110,9 @@ public class DbMerger {
                 }
                 dbEntityToDropByName.remove(detectedEntity.getName());
 
+                checkRelationshipsToDrop(adapter, tokens, dbEntity, detectedEntity);
                 checkRows(tokens, dbEntity, detectedEntity);
-                checkRelationships(adapter, tokens, dbEntity, detectedEntity);
+                checkRelationshipsToAdd(adapter, tokens, dbEntity, detectedEntity);
             }
 
             // drop table
@@ -202,7 +203,7 @@ public class DbMerger {
         }
     }
 
-    private void checkRelationships(
+    private void checkRelationshipsToDrop(
             DbAdapter adapter,
             List<MergerToken> tokens,
             DbEntity dbEntity,
@@ -247,7 +248,14 @@ public class DbMerger {
                 tokens.add(token);
             }
         }
+    }
 
+    private void checkRelationshipsToAdd(
+            DbAdapter adapter,
+            List<MergerToken> tokens,
+            DbEntity dbEntity,
+            DbEntity detectedEntity) {
+        
         // relationships to add
         for (DbRelationship rel : dbEntity.getRelationships()) {
             if (findDbRelationship(detectedEntity, rel) == null) {
@@ -260,7 +268,7 @@ public class DbMerger {
             }
         }
     }
-
+    
     /**
      * case insensitive search for a {@link DbEntity} in a {@link DataMap} by name
      */
