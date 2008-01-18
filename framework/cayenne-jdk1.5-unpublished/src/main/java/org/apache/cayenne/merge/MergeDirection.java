@@ -45,7 +45,15 @@ public class MergeDirection {
     public String getName() {
         return name;
     }
+    
+    public boolean isToDb() {
+        return (id == TO_DB_ID);
+    }
 
+    public boolean isToModel() {
+        return (id == TO_MODEL_ID);
+    }
+    
     @Override
     public boolean equals(Object obj) {
         return (obj == this);

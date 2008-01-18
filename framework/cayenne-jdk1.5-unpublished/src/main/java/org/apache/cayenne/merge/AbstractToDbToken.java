@@ -30,7 +30,7 @@ import org.apache.cayenne.dba.DbAdapter;
  */
 public abstract class AbstractToDbToken implements MergerToken {
 
-    public MergeDirection getDirection() {
+    public final MergeDirection getDirection() {
         return MergeDirection.TO_DB;
     }
 

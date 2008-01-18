@@ -26,7 +26,7 @@ package org.apache.cayenne.merge;
  */
 public abstract class AbstractToModelToken implements MergerToken {
 
-    public MergeDirection getDirection() {
+    public final MergeDirection getDirection() {
         return MergeDirection.TO_MODEL;
     }
 
