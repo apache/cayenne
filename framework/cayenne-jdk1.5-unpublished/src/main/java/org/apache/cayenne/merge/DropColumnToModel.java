@@ -20,9 +20,11 @@ package org.apache.cayenne.merge;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
- * A {@link MergerToken} to remove a {@link DbAttribute} from a {@link DbEntity}
+ * A {@link MergerToken} to remove a {@link DbAttribute} from a {@link DbEntity}.
  * 
  * @author halset
  */
@@ -41,6 +43,17 @@ public class DropColumnToModel extends AbstractToModelToken {
     }
 
     public void execute(MergerContext mergerContext) {
+        // remove ObjAttribute mapped to same column
+        for (ObjEntity objEntity : entity.getDataMap().getObjEntities()) {
+            if (objEntity.getDbEntity().equals(entity)) {
+                ObjAttribute objAttribute = objEntity.getAttributeForDbAttribute(column);
+                if (objAttribute != null) {
+                    objEntity.removeAttribute(objAttribute.getName());
+                }
+            }
+        }
+
+        // remove DbAttribute
         entity.removeAttribute(column.getName());
     }
 
