@@ -44,12 +44,10 @@ public class DropColumnToModel extends AbstractToModelToken {
 
     public void execute(MergerContext mergerContext) {
         // remove ObjAttribute mapped to same column
-        for (ObjEntity objEntity : entity.getDataMap().getObjEntities()) {
-            if (objEntity.getDbEntity().equals(entity)) {
-                ObjAttribute objAttribute = objEntity.getAttributeForDbAttribute(column);
-                if (objAttribute != null) {
-                    objEntity.removeAttribute(objAttribute.getName());
-                }
+        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(entity)) {
+            ObjAttribute objAttribute = objEntity.getAttributeForDbAttribute(column);
+            if (objAttribute != null) {
+                objEntity.removeAttribute(objAttribute.getName());
             }
         }
 

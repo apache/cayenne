@@ -18,6 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.MappingNamespace;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.util.EntityMergeSupport;
+
 /**
  * Common abstract superclass for all {@link MergerToken}s going from the database to the
  * model.
@@ -28,6 +37,24 @@ public abstract class AbstractToModelToken implements MergerToken {
 
     public final MergeDirection getDirection() {
         return MergeDirection.TO_MODEL;
+    }
+
+    protected void synchronizeWithObjEntity(DbEntity entity) {
+        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(entity)) {
+            new EntityMergeSupport(objEntity.getDataMap())
+                    .synchronizeWithDbEntity(objEntity);
+        }
+    }
+
+    protected Collection<ObjEntity> objEntitiesMappedToDbEntity(DbEntity entity) {
+        Set<ObjEntity> objEntities = new HashSet<ObjEntity>();
+        MappingNamespace mns = entity.getDataMap().getNamespace();
+        for (ObjEntity objEntity : mns.getObjEntities()) {
+            if (objEntity.getDbEntity().equals(entity)) {
+                objEntities.add(objEntity);
+            }
+        }
+        return objEntities;
     }
 
     @Override
