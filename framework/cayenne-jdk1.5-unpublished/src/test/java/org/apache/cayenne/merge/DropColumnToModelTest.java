@@ -28,6 +28,7 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 
 public class DropColumnToModelTest extends MergeCase {
 
@@ -136,10 +137,13 @@ public class DropColumnToModelTest extends MergeCase {
         rel2To1.setToMany(false);
         rel2To1.addJoin(new DbJoin(rel2To1, e2col2.getName(), e1col1.getName()));
         dbEntity2.addRelationship(rel2To1);
+        assertSame(rel1To2, rel2To1.getReverseRelationship());
+        assertSame(rel2To1, rel1To2.getReverseRelationship());
 
         assertTokensAndExecute(node, map, 4, 0);
         assertTokensAndExecute(node, map, 0, 0);
 
+        // create ObjEntities
         ObjEntity objEntity1 = new ObjEntity("NewTable");
         objEntity1.setDbEntity(dbEntity1);
         ObjAttribute oatr1 = new ObjAttribute("name");
@@ -147,16 +151,33 @@ public class DropColumnToModelTest extends MergeCase {
         oatr1.setType("java.lang.String");
         objEntity1.addAttribute(oatr1);
         map.addObjEntity(objEntity1);
-
         ObjEntity objEntity2 = new ObjEntity("NewTable2");
         objEntity2.setDbEntity(dbEntity1);
         ObjAttribute o2a1 = new ObjAttribute("name");
         o2a1.setDbAttributePath(e1col2.getName());
         o2a1.setType("java.lang.String");
         objEntity2.addAttribute(o2a1);
-        map.addObjEntity(objEntity1);
+        map.addObjEntity(objEntity2);
+        
+        // create ObjRelationships
+        assertEquals(0, objEntity1.getRelationships().size());
+        assertEquals(0, objEntity2.getRelationships().size());
+        ObjRelationship objRel1To2 = new ObjRelationship("objRel1To2");
+        objRel1To2.addDbRelationship(rel1To2);
+        objRel1To2.setSourceEntity(objEntity1);
+        objRel1To2.setTargetEntity(objEntity2);
+        objEntity1.addRelationship(objRel1To2);
+        ObjRelationship objRel2To1 = new ObjRelationship("objRel2To1");
+        objRel2To1.addDbRelationship(rel2To1);
+        objRel2To1.setSourceEntity(objEntity2);
+        objRel2To1.setTargetEntity(objEntity1);
+        objEntity2.addRelationship(objRel2To1);
+        assertEquals(1, objEntity1.getRelationships().size());
+        assertEquals(1, objEntity2.getRelationships().size());
+        assertSame(objRel1To2, objRel2To1.getReverseRelationship());
+        assertSame(objRel2To1, objRel1To2.getReverseRelationship());
 
-        // remove relationship and fk from model, merge to db and add to model
+        // remove relationship and fk from model, merge to db and read to model
         dbEntity2.removeRelationship(rel2To1.getName());
         dbEntity1.removeRelationship(rel1To2.getName());
         dbEntity2.removeAttribute(e2col2.getName());
@@ -182,12 +203,13 @@ public class DropColumnToModelTest extends MergeCase {
         assertTrue(token1 instanceof DropRelationshipToModel);
         execute(token1);
         execute(token0);
-        assertNull(dbEntity2.getAttribute(e2col2.getName()));
-        // TODO: assertTrue(dbEntity1.getRelationships().isEmpty());
-        assertTrue(dbEntity2.getRelationships().isEmpty());
-        // assertNull(objEntity.getAttribute(oatr1.getName()));
-        // TODO: test that relationship is gone
         
+        // check after merging
+        assertNull(dbEntity2.getAttribute(e2col2.getName()));
+        assertEquals(0, dbEntity1.getRelationships().size());
+        assertEquals(0, dbEntity2.getRelationships().size());
+        assertEquals(0, objEntity1.getRelationships().size());
+        assertEquals(0, objEntity2.getRelationships().size());
 
         // clear up
         DataContext ctxt = createDataContext();
