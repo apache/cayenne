@@ -45,11 +45,11 @@ public class SetNotNullToModel extends AbstractToModelToken {
     }
 
     public String getTokenName() {
-        return null;
+        return "Set Not Null";
     }
 
     public String getTokenValue() {
-        return null;
+        return entity.getName() + "." + column.getName();
     }
 
 }
