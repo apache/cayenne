@@ -20,9 +20,11 @@ package org.apache.cayenne.merge;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
- * A {@link MergerToken} to remove a {@link DbEntity} from a {@link DataMap}
+ * A {@link MergerToken} to remove a {@link DbEntity} from a {@link DataMap}. Any
+ * {@link ObjEntity} mapped to the {@link DbEntity} will also be removed.
  * 
  * @author halset
  */
@@ -39,7 +41,10 @@ public class DropTableToModel extends AbstractToModelToken {
     }
 
     public void execute(MergerContext mergerContext) {
-        mergerContext.getDataMap().removeDbEntity(entity.getName(), true);
+        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(entity)) {
+            objEntity.getDataMap().removeObjEntity(objEntity.getName(), true);
+        }
+        entity.getDataMap().removeDbEntity(entity.getName(), true);
     }
 
     public String getTokenName() {
