@@ -31,7 +31,7 @@ import org.apache.cayenne.map.ObjEntity;
 
 public class DropColumnToModelTest extends MergeCase {
 
-    public void XXtestSimpleColumn() throws Exception {
+    public void testSimpleColumn() throws Exception {
         dropTableIfPresent(node, "NEW_TABLE");
 
         assertTokensAndExecute(node, map, 0, 0);
