@@ -72,20 +72,23 @@ public abstract class ObjectContextQueryAction {
     }
 
     /**
-     * Worker method that perfomrs internal query.
+     * Worker method that performs internal query.
      */
     public QueryResponse execute() {
 
         if (interceptOIDQuery() != DONE) {
             if (interceptRelationshipQuery() != DONE) {
-                if (interceptLocalCache() != DONE) {
-                    runQuery();
+                if (interceptRefreshQuery() != DONE) {
+                    if (interceptLocalCache() != DONE) {
+                        if (interceptPaginatedQuery() != DONE) {
+                            runQuery();
+                        }
+                    }
                 }
             }
         }
 
         interceptObjectConversion();
-
         return response;
     }
 
@@ -219,6 +222,17 @@ public abstract class ObjectContextQueryAction {
 
         return !DONE;
     }
+    
+    
+    /**
+     * @since 3.0
+     */
+    protected abstract boolean interceptPaginatedQuery();
+    
+    /**
+     * @since 3.0
+     */
+    protected abstract boolean interceptRefreshQuery();
 
     /**
      * @since 3.0
