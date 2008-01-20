@@ -37,7 +37,8 @@ public class AddRelationshipToModel extends AbstractToModelToken {
 
     public void execute(MergerContext mergerContext) {
         entity.addRelationship(rel);
-        // TODO: add reverse as well?
+        // TODO: add reverse relationship as well if it does not exist
+        synchronizeWithObjEntity(entity);
     }
 
     public String getTokenName() {
