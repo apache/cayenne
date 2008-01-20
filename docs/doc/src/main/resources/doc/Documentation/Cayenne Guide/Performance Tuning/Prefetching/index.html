@@ -168,7 +168,7 @@ query.addPrefetch(<span class="code-quote">"paintingArray.toGallery"</span>);
 context.performQuery(query);</pre>
 </div></div>
 
-<p>Code above will result in a single SQL statement issued.</p>
+<p>Code above will result in a single SQL statement issued. Inner joins will be used for this type of prefetch, so no Artist will be returned who has no Paintings.</p>
 </div>
 </div>
   <div class="clearer">.</div>

@@ -93,12 +93,22 @@
 </tr>
 <tr>
 <td class='confluenceTd'>template</td>
-<td class='confluenceTd'>Location of Velocity template file for Java class generation. If omitted, default template is used.</td>
+<td class='confluenceTd'>Location of Velocity template file for Entity class generation. If omitted, default template is used.</td>
 <td class='confluenceTd'>No</td>
 </tr>
 <tr>
 <td class='confluenceTd'>superTemplate</td>
-<td class='confluenceTd'>Location of Velocity template file for Java superclass generation. Ignored unless "makepairs" set to "true". If omitted, default template is used.</td>
+<td class='confluenceTd'>Location of Velocity template file for Entity superclass generation. Ignored unless "makepairs" set to "true". If omitted, default template is used.</td>
+<td class='confluenceTd'>No</td>
+</tr>
+<tr>
+<td class='confluenceTd'>embeddableTemplate</td>
+<td class='confluenceTd'>Location of Velocity template file for Embeddable class generation. If omitted, default template is used.</td>
+<td class='confluenceTd'>No</td>
+</tr>
+<tr>
+<td class='confluenceTd'>embeddableSuperTemplate</td>
+<td class='confluenceTd'>Location of Velocity template file for Embeddable superclass generation. Ignored unless "makepairs" set to "true". If omitted, default template is used.</td>
 <td class='confluenceTd'>No</td>
 </tr>
 <tr>
@@ -118,7 +128,7 @@
 </tr>
 <tr>
 <td class='confluenceTd'>version</td>
-<td class='confluenceTd'>Specifies template location and generator behavior. "1.1" is the old behavior, with templates located in "dotemplates" and "classgen" as the only velocity context attribute. "1.2" is the new behavior, with templates located in "dotemplates/v1.2" and "objEntity", "entityUtils", "stringUtils", and "importUtils" in the velocity context. (Default is "1.1")</td>
+<td class='confluenceTd'><em><b>(deprecated)</b>)</em> Specifies template location and generator behavior. "1.1" is the old behavior, with templates located in "dotemplates" and "classgen" as the only velocity context attribute. "1.2" is the new behavior, with templates located in "dotemplates/v1.2" and "objEntity", "entityUtils", "stringUtils", and "importUtils" in the velocity context. (Default is "1.2")</td>
 <td class='confluenceTd'>No</td>
 </tr>
 <tr>

@@ -48,6 +48,11 @@
 <th class='confluenceTh'>Default</th>
 </tr>
 <tr>
+<td class='confluenceTd'>org.apache.cayenne.schema.drop</td>
+<td class='confluenceTd'>If true, Cayenne provider will check for the existing schema, and if it is present, will drop it. This may be useful during testing to cleanup and recreate the database.</td>
+<td class='confluenceTd'>false</td>
+</tr>
+<tr>
 <td class='confluenceTd'>org.apache.cayenne.schema.create</td>
 <td class='confluenceTd'>If true, Cayenne provider will check for the existing schema, and if it is absent, will create it. Note that it is useful to quickly bootstrap your application, but Cayenne will make no attempt to upgrade an existing schema</td>
 <td class='confluenceTd'>false</td>

@@ -93,12 +93,22 @@
 </tr>
 <tr>
 <td class='confluenceTd'>template</td>
-<td class='confluenceTd'>Location of Velocity template file for Java class generation. If omitted, default template is used.</td>
+<td class='confluenceTd'>Location of Velocity template file for Entity class generation. If omitted, default template is used.</td>
 <td class='confluenceTd'>No</td>
 </tr>
 <tr>
 <td class='confluenceTd'>supertemplate</td>
-<td class='confluenceTd'>Location of Velocity template file for Java superclass generation. Ignored unless "makepairs" set to "true". If omitted, default template is used.</td>
+<td class='confluenceTd'>Location of Velocity template file for Entity superclass generation. Ignored unless "makepairs" set to "true". If omitted, default template is used.</td>
+<td class='confluenceTd'>No</td>
+</tr>
+<tr>
+<td class='confluenceTd'>embeddabletemplate</td>
+<td class='confluenceTd'><em>(added in 3.0)</em> Location of Velocity template file for Embeddable class generation. If omitted, default template is used.</td>
+<td class='confluenceTd'>No</td>
+</tr>
+<tr>
+<td class='confluenceTd'>embeddablesupertemplate</td>
+<td class='confluenceTd'><em>(added in 3.0)</em> Location of Velocity template file for Embeddable superclass generation. Ignored unless "makepairs" set to "true". If omitted, default template is used.</td>
 <td class='confluenceTd'>No</td>
 </tr>
 <tr>
@@ -117,18 +127,18 @@
 <td class='confluenceTd'>No</td>
 </tr>
 <tr>
-<td class='confluenceTd'>version</td>
-<td class='confluenceTd'>Specifies template location and generator behavior. "1.1" is the old behavior, with templates located in "dotemplates" and "classgen" as the only velocity context attribute. "1.2" is the new behavior, with templates located in "dotemplates/v1.2" and "objEntity", "entityUtils", "stringUtils", and "importUtils" in the velocity context. (Default is "1.1")</td>
+<td class='confluenceTd'><em>version</em> </td>
+<td class='confluenceTd'><em><b>(deprecated)</b></em> Specifies template location and generator behavior. Can either be empty (default) or "1.1" - the old behavior, with templates located in "dotemplates" and "classgen" as the only velocity context attribute. The default behavior, with templates located in "dotemplates/v1.2" and "objEntity", "entityUtils", "stringUtils", and "importUtils" in the velocity context.</td>
 <td class='confluenceTd'>No</td>
 </tr>
 <tr>
 <td class='confluenceTd'>excludeEntities</td>
-<td class='confluenceTd'>Entities (expressed as a perl5 regex) to exclude from template generation. (Default is to include all entities in the DataMap)</td>
+<td class='confluenceTd'>Entities and Embeddables (expressed as a perl5 regex) to exclude from template generation. Default is to include all entities and embeddables that exist in the DataMap)</td>
 <td class='confluenceTd'>No</td>
 </tr>
 <tr>
 <td class='confluenceTd'>includeEntities</td>
-<td class='confluenceTd'>Entities (expressed as a perl5 regex) to include in template generation. (Default is to include all entities in the DataMap)</td>
+<td class='confluenceTd'>Entities and Embeddables (expressed as a perl5 regex) to include in template generation. (Default is to include all entities and embeddables that exist in the DataMap</td>
 <td class='confluenceTd'>No</td>
 </tr>
 <tr>
@@ -164,15 +174,7 @@
 
 <h3><a name="cgen-Examples"></a>Examples</h3>
 
-<p>Load the Ant task <em>(note: if you already loaded all Cayenne tasks via an antlib taskdef <a href="../../../../Documentation/Cayenne Guide/Ant Tasks/index.html" title="Ant Tasks">described before</a>, this step is not needed)</em>: </p>
-
-<div class="code"><div class="codeContent">
-<pre class="code-xml"><span class="code-tag">&lt;taskdef name=<span class="code-quote">"cgen"</span> classname=<span class="code-quote">"org.apache.cayenne.tools.CayenneGenerator"</span>&gt;</span>
-    <span class="code-tag">&lt;classpath refid=<span class="code-quote">"classpath"</span>/&gt;</span>
-<span class="code-tag">&lt;/taskdef&gt;</span></pre>
-</div></div>
-
-<p>Here is an example of using CGen to generate DataObject subclass/superclass pairs from DataMap located in "src/datamap.xml". All generated subclasses and superclasses will be saved in the same directory "src/java/dobj" regardless of their package names:</p>
+<p>Here is an example of using CGen to generate subclass/superclass pairs from DataMap located in "src/datamap.xml". All generated subclasses and superclasses will be saved in the same directory "src/java/dobj" regardless of their package names:</p>
 <div class="code"><div class="codeContent">
 <pre class="code-xml"><span class="code-tag">&lt;cgen map=<span class="code-quote">"src/datamap.xml"</span> destDir=<span class="code-quote">"src/java/dobj"</span> usepkgpath=<span class="code-quote">"false"</span>/&gt;</span></pre>
 </div></div>

@@ -42,20 +42,16 @@
 <div id="ConfluenceContent"><p>Installing Cayenne for JPA use is not much different from the procedure described <a href="../../../Documentation/Cayenne Guide/Installation/index.html" title="Installation">here</a>. A few JPA specific notes:</p>
 
 <ul>
-	<li>JPA requires JDK 1.5 or newer. It won't work with JDK 1.4</li>
 	<li>Provider runtime is included in the <tt>"cayenne-server-x.x.x.jar</tt>. You will need this jar and also <tt>"cayenne-agent-x.x.x.jar</tt>. Cayenne Agent use is <a href="../../../Documentation/JPA Guide/JPA Agent/index.html" title="JPA Agent">described further</a> in this guide.</li>
 </ul>
 
 
 <h3><a name="JPAInstallation-ThirdPartyRuntimeDependencies"></a>Third-Party Runtime Dependencies</h3>
 
-<p><em>TODO: include jpa.jar and other JPA dependencies in Cayenne distro</em></p>
-
-<p><em>Note that you can get all dependencies described below at once from a tutorial project that can be downloaded from <span class="nobr"><a href="http://people.apache.org/~aadamchik/tutorial/" title="Visit page outside Confluence" rel="nofollow">here<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</em> </p>
+<p>In addition to the third-party jars needed by <a href="../../../Documentation/Cayenne Guide/Installation/JAR Files and Dependencies/index.html" title="JAR Files and Dependencies">non-JPA Cayenne applications</a>, <tt>"lib/third-party"</tt> folder contains a few jars needed for JPA:</p>
 
 <ul>
-	<li>All cayenne-server dependencies included in the download under <tt>"lib/third-party"</tt></li>
-	<li><tt>jpa.jar</tt>, e.g. the one <span class="nobr"><a href="http://mirrors.ibiblio.org/pub/mirrors/maven2/org/apache/geronimo/specs/geronimo-jpa_3.0_spec/1.0/geronimo-jpa_3.0_spec-1.0.jar" title="Visit page outside Confluence" rel="nofollow">provided by Geronimo<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</li>
+	<li><tt>geronimo-jpa_3.0_spec-1.0.jar</tt> from the Geronimo project</li>
 	<li><tt>asm-3.0.jar</tt> from <span class="nobr"><a href="http://asm.objectweb.org/" title="Visit page outside Confluence" rel="nofollow">http://asm.objectweb.org/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></li>
 	<li><tt>asm-commons-3.0.jar</tt> from <span class="nobr"><a href="http://asm.objectweb.org/" title="Visit page outside Confluence" rel="nofollow">http://asm.objectweb.org/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></li>
 </ul>
