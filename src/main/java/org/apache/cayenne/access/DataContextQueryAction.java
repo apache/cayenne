@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
@@ -41,31 +40,11 @@ import org.apache.cayenne.util.ObjectContextQueryAction;
  * @since 1.2
  * @author Andrus Adamchik
  */
-// TODO: Andrus, 2/2/2006 - all these DataContext extensions should become available to
-// CayenneContext as well....
 class DataContextQueryAction extends ObjectContextQueryAction {
 
     public DataContextQueryAction(DataContext actingContext, ObjectContext targetContext,
             Query query) {
         super(actingContext, targetContext, query);
-    }
-
-    @Override
-    public QueryResponse execute() {
-        if (interceptPaginatedQuery() != DONE) {
-            if (interceptOIDQuery() != DONE) {
-                if (interceptRelationshipQuery() != DONE) {
-                    if (interceptRefreshQuery() != DONE) {
-                        if (interceptLocalCache() != DONE) {
-                            runQuery();
-                        }
-                    }
-                }
-            }
-        }
-
-        interceptObjectConversion();
-        return response;
     }
 
     /**
@@ -104,7 +83,8 @@ class DataContextQueryAction extends ObjectContextQueryAction {
         return !DONE;
     }
 
-    private boolean interceptPaginatedQuery() {
+    @Override
+    protected boolean interceptPaginatedQuery() {
         if (metadata.getPageSize() > 0) {
             response = new ListResponse(new IncrementalFaultList(
                     (DataContext) actingContext,
@@ -120,7 +100,8 @@ class DataContextQueryAction extends ObjectContextQueryAction {
         return ((DataContext) actingContext).getQueryCache();
     }
 
-    private boolean interceptRefreshQuery() {
+    @Override
+    protected boolean interceptRefreshQuery() {
         if (query instanceof RefreshQuery) {
             RefreshQuery refreshQuery = (RefreshQuery) query;
 

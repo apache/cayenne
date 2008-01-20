@@ -42,25 +42,7 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
     }
 
     @Override
-    public QueryResponse execute() {
-
-        if (interceptOIDQuery() != DONE) {
-            if (interceptRelationshipQuery() != DONE) {
-                if (interceptRefreshQuery() != DONE) {
-                    if (interceptLocalCache() != DONE) {
-                        if (interceptPaginatedQuery() != DONE) {
-                            runQuery();
-                        }
-                    }
-                }
-            }
-        }
-
-        interceptObjectConversion();
-        return response;
-    }
-
-    private boolean interceptPaginatedQuery() {
+    protected boolean interceptPaginatedQuery() {
         if (metadata.getPageSize() > 0) {
             response = new ListResponse(new RemoteIncrementalFaultList(
                     actingContext,
@@ -89,7 +71,8 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
         };
     }
 
-    private boolean interceptRefreshQuery() {
+    @Override
+    protected boolean interceptRefreshQuery() {
         if (query instanceof RefreshQuery) {
             RefreshQuery refreshQuery = (RefreshQuery) query;
 
