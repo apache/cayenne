@@ -49,7 +49,7 @@ public class MergeCase extends CayenneCase {
             "NEW_TABLE",
             "NEW_TABLE2");
 
-    public DbMerger createMerger() {
+    protected DbMerger createMerger() {
         return new DbMerger() {
 
             @Override
@@ -59,7 +59,7 @@ public class MergeCase extends CayenneCase {
         };
     }
     
-    public List<MergerToken> createMergeTokens() {
+    protected List<MergerToken> createMergeTokens() {
         return createMerger().createMergeTokens(node, map);
     }
 
@@ -236,7 +236,7 @@ public class MergeCase extends CayenneCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        // TODO: make this work deleteTestData();
+        deleteTestData();
     }
 
 }
