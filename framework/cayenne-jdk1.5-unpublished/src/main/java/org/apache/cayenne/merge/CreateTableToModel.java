@@ -18,8 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.util.NameConverter;
+import org.apache.cayenne.util.Util;
 
 /**
  * A {@link MergerToken} to add a {@link DbEntity} to a {@link DataMap}
@@ -30,12 +34,57 @@ public class CreateTableToModel extends AbstractToModelToken {
 
     private DbEntity entity;
 
+    private String objEntityClassName = CayenneDataObject.class.getName();
+
     public CreateTableToModel(DbEntity entity) {
         this.entity = entity;
     }
 
+    /**
+     * Set the {@link ObjEntity} className if {@link ObjEntity} should be generated with a
+     * special class name. Set to null if the {@link ObjEntity} should be created with a
+     * name based on {@link DataMap#getDefaultPackage()} and {@link ObjEntity#getName()}
+     * <p>
+     * The default value is the class name of {@link CayenneDataObject}
+     */
+    public void setObjEntityClassName(String n) {
+        objEntityClassName = n;
+    }
+
     public void execute(MergerContext mergerContext) {
-        mergerContext.getDataMap().addDbEntity(entity);
+        DataMap map = mergerContext.getDataMap();
+        map.addDbEntity(entity);
+
+        // create a ObjEntity
+        String objEntityName = NameConverter.underscoredToJava(entity.getName(), true);
+        // this loop will terminate even if no valid name is found
+        // to prevent loader from looping forever (though such case is very unlikely)
+        String baseName = objEntityName;
+        for (int i = 1; i < 1000 && map.getObjEntity(objEntityName) != null; i++) {
+            objEntityName = baseName + i;
+        }
+
+        ObjEntity objEntity = new ObjEntity(objEntityName);
+        objEntity.setDbEntity(entity);
+
+        // try to find a class name for the ObjEntity
+        String className = objEntityClassName;
+        if (className == null) {
+            // we should generate a className based on the objEntityName
+            String packageName = map.getDefaultPackage();
+            if (Util.isEmptyString(packageName)) {
+                packageName = "";
+            }
+            else if (!packageName.endsWith(".")) {
+                packageName = packageName + ".";
+            }
+            className = packageName + objEntityName;
+        }
+
+        objEntity.setClassName(className);
+        map.addObjEntity(objEntity);
+
+        synchronizeWithObjEntity(entity);
     }
 
     public String getTokenName() {
