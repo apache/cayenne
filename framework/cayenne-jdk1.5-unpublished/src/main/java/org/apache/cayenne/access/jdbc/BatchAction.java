@@ -136,15 +136,15 @@ public class BatchAction extends BaseSQLAction {
 
             if (isLoggable) {
                 int totalUpdateCount = 0;
-                for (int i = 0; i < results.length; i++) {
+                for (int result : results) {
 
                     // this means Statement.SUCCESS_NO_INFO or Statement.EXECUTE_FAILED
-                    if (results[i] < 0) {
+                    if (result < 0) {
                         totalUpdateCount = Statement.SUCCESS_NO_INFO;
                         break;
                     }
 
-                    totalUpdateCount += results[i];
+                    totalUpdateCount += result;
                 }
 
                 QueryLogger.logUpdateCount(totalUpdateCount);

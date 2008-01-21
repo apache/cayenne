@@ -119,11 +119,11 @@ public class SybaseStackAdapter extends AccessStackAdapter {
             select.close();
         }
 
-        for (int i = 0; i < names.size(); i++) {
+        for (Object name : names) {
             executeDDL(con, "alter table "
                     + tableName
                     + " drop constraint "
-                    + names.get(i));
+                    + name);
         }
     }
 

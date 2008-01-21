@@ -98,9 +98,9 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         // this is reasonable to expect...
 
         Map id = new TreeMap();
-        for (int i = 0; i < idIndices.length; i++) {
-            Object value = flatRow.get(columns[idIndices[i]].getLabel());
-            id.put(columns[idIndices[i]].getName(), value);
+        for (int idIndex : idIndices) {
+            Object value = flatRow.get(columns[idIndex].getLabel());
+            id.put(columns[idIndex].getName(), value);
         }
 
         return id;
@@ -129,8 +129,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         DataRow row = new DataRow(rowCapacity);
 
         // extract subset of flat row columns, recasting to the target keys
-        for (int i = 0; i < columns.length; i++) {
-            row.put(columns[i].getName(), flatRow.get(columns[i].getLabel()));
+        for (ColumnDescriptor column : columns) {
+            row.put(column.getName(), flatRow.get(column.getLabel()));
         }
 
         return row;
@@ -279,9 +279,9 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
      */
     private String sourceForTarget(String targetColumn) {
         if (targetColumn != null && columns != null) {
-            for (int i = 0; i < columns.length; i++) {
-                if (targetColumn.equals(columns[i].getName())) {
-                    return columns[i].getLabel();
+            for (ColumnDescriptor column : columns) {
+                if (targetColumn.equals(column.getName())) {
+                    return column.getLabel();
                 }
             }
         }

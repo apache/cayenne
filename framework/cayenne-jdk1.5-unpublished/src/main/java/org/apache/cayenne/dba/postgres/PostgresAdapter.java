@@ -218,8 +218,8 @@ public class PostgresAdapter extends JdbcAdapter {
         // "bytea" type does not support length
         String[] externalTypes = externalTypesForJdbcType(type);
         if (externalTypes != null && externalTypes.length > 0) {
-            for (int i = 0; i < externalTypes.length; i++) {
-                if ("bytea".equalsIgnoreCase(externalTypes[i])) {
+            for (String externalType : externalTypes) {
+                if ("bytea".equalsIgnoreCase(externalType)) {
                     return false;
                 }
             }

@@ -224,13 +224,13 @@ public class ImportUtils {
 
             public int compare(String s1, String s2) {
 
-                for (int index = 0; index < importOrdering.length; index++) {
-                    String ordering = importOrdering[index];
-
-                    if ((s1.startsWith(ordering)) && (!s2.startsWith(ordering)))
+                for (String ordering : importOrdering) {
+                    if ((s1.startsWith(ordering)) && (!s2.startsWith(ordering))) {
                         return -1;
-                    if ((!s1.startsWith(ordering)) && (s2.startsWith(ordering)))
+                    }
+                    if ((!s1.startsWith(ordering)) && (s2.startsWith(ordering))) {
                         return 1;
+                    }
                 }
 
                 return s1.compareTo(s2);

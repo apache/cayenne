@@ -156,8 +156,8 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             String[] groups = refreshQuery.getGroupKeys();
             if (groups != null && groups.length > 0) {
 
-                for (int i = 0; i < groups.length; i++) {
-                    context.getQueryCache().removeGroup(groups[i]);
+                for (String group : groups) {
+                    context.getQueryCache().removeGroup(group);
                 }
 
                 // cascade group invalidation

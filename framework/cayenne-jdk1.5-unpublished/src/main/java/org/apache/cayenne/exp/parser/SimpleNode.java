@@ -138,10 +138,10 @@ public abstract class SimpleNode extends Expression implements Node {
         boolean shouldFlatten = false;
         int newSize = 0;
 
-        for (int i = 0; i < children.length; i++) {
-            if (children[i].getClass() == getClass()) {
+        for (Node child : children) {
+            if (child.getClass() == getClass()) {
                 shouldFlatten = true;
-                newSize += children[i].jjtGetNumChildren();
+                newSize += child.jjtGetNumChildren();
             }
             else {
                 newSize++;
@@ -152,11 +152,11 @@ public abstract class SimpleNode extends Expression implements Node {
             Node[] newChildren = new Node[newSize];
             int j = 0;
 
-            for (int i = 0; i < children.length; ++i) {
-                Node c = children[i];
+            for (Node c : children) {
                 if (c.getClass() == getClass()) {
-                    for (int k = 0; k < c.jjtGetNumChildren(); ++k)
+                    for (int k = 0; k < c.jjtGetNumChildren(); ++k) {
                         newChildren[j++] = c.jjtGetChild(k);
+                    }
                 }
                 else {
                     newChildren[j++] = c;
@@ -286,11 +286,11 @@ public abstract class SimpleNode extends Expression implements Node {
      */
     protected void connectChildren() {
         if (children != null) {
-            for (int i = 0; i < children.length; i++) {
+            for (Node child : children) {
                 // although nulls are expected to be wrapped in scalar, still doing a
                 // check here to make it more robust
-                if (children[i] != null) {
-                    children[i].jjtSetParent(this);
+                if (child != null) {
+                    child.jjtSetParent(this);
                 }
             }
         }

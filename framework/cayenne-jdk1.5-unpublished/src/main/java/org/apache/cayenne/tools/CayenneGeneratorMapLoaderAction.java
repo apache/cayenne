@@ -50,9 +50,9 @@ class CayenneGeneratorMapLoaderAction {
                 entityResolver.addDataMap(mainDataMap);
                 mainDataMap.setNamespace(entityResolver);
 
-                for (int i = 0; i < additionalDataMapFiles.length; i++) {
+                for (File additionalDataMapFile : additionalDataMapFiles) {
 
-                    DataMap dataMap = loadDataMap(mapLoader, additionalDataMapFiles[i]);
+                    DataMap dataMap = loadDataMap(mapLoader, additionalDataMapFile);
                     entityResolver.addDataMap(dataMap);
                     dataMap.setNamespace(entityResolver);
                 }

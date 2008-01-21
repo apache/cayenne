@@ -52,8 +52,8 @@ public class ApplicationProjectUpgradeTest extends CayenneCase {
         URL upgradeSrcUrl = CayenneResources.getResourceURL("upgrade/1.1");
         File upgradeSrcDir = new File(new URI(upgradeSrcUrl.toExternalForm()));
         File[] files = upgradeSrcDir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            Util.copy(files[i], new File(upgradeScratchDir, files[i].getName()));
+        for (File file : files) {
+            Util.copy(file, new File(upgradeScratchDir, file.getName()));
         }
 
         File cayenneXml = new File(upgradeScratchDir, "cayenne.xml");
@@ -97,8 +97,8 @@ public class ApplicationProjectUpgradeTest extends CayenneCase {
         URL upgradeSrcUrl = CayenneResources.getResourceURL("upgrade/1.2");
         File upgradeSrcDir = new File(new URI(upgradeSrcUrl.toExternalForm()));
         File[] files = upgradeSrcDir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            Util.copy(files[i], new File(upgradeScratchDir, files[i].getName()));
+        for (File file : files) {
+            Util.copy(file, new File(upgradeScratchDir, file.getName()));
         }
 
         File cayenneXml = new File(upgradeScratchDir, "cayenne.xml");

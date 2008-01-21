@@ -124,8 +124,8 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
                     && refreshQuery.getGroupKeys().length > 0) {
 
                 String[] groups = refreshQuery.getGroupKeys();
-                for (int i = 0; i < groups.length; i++) {
-                    context.getQueryCache().removeGroup(groups[i]);
+                for (String group : groups) {
+                    context.getQueryCache().removeGroup(group);
                 }
 
                 // cascade group invalidation

@@ -334,9 +334,9 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
             StringBuilder buffer = new StringBuilder(name);
 
             if (parameters != null) {
-                for (int i = 0; i < parameters.length; i++) {
-                    if (!parameters[i].isEmpty()) {
-                        buffer.append(parameters[i].hashCode());
+                for (Map<String, ?> parameter : parameters) {
+                    if (!parameter.isEmpty()) {
+                        buffer.append(parameter.hashCode());
                     }
                 }
             }

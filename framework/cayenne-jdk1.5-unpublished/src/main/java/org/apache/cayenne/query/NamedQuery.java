@@ -273,10 +273,10 @@ public class NamedQuery extends IndirectQuery {
                 Object[] keys = parameters.keySet().toArray();
                 Arrays.sort(keys);
 
-                for (int i = 0; i < keys.length; i++) {
+                for (Object key : keys) {
                     // HashCodeBuilder will take care of processing object if it
                     // happens to be a primitive array such as byte[]
-                    builder.append(keys[i]).append(parameters.get(keys[i]));
+                    builder.append(key).append(parameters.get(key));
                 }
 
             }

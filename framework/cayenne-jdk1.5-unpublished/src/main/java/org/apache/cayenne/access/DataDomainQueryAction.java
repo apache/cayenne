@@ -325,8 +325,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     && refreshQuery.getGroupKeys().length > 0) {
 
                 String[] groups = refreshQuery.getGroupKeys();
-                for (int i = 0; i < groups.length; i++) {
-                    domain.getQueryCache().removeGroup(groups[i]);
+                for (String group : groups) {
+                    domain.getQueryCache().removeGroup(group);
                 }
 
                 GenericResponse response = new GenericResponse();

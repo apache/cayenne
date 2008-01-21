@@ -576,8 +576,7 @@ public class SelectTranslator extends QueryAssembler {
         else if (objAttribute != null) {
 
             // record ObjAttribute override
-            for (int i = 0; i < columns.size(); i++) {
-                ColumnDescriptor column = columns.get(i);
+            for (ColumnDescriptor column : columns) {
                 if (attribute.getName().equals(column.getName())) {
 
                     // kick out the original attribute

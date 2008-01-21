@@ -212,12 +212,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
                     CallbackDescriptor[] callbacks = listener
                             .getCallbackMap()
                             .getCallbacks();
-                    for (int i = 0; i < callbacks.length; i++) {
+                    for (CallbackDescriptor callback : callbacks) {
 
-                        for (String method : callbacks[i].getCallbackMethods()) {
+                        for (String method : callback.getCallbackMethods()) {
 
                             // note that callbacks[i].getCallbackType() == i
-                            callbackRegistry.addDefaultListener(callbacks[i]
+                            callbackRegistry.addDefaultListener(callback
                                     .getCallbackType(), listenerInstance, method);
                         }
                     }
@@ -238,11 +238,11 @@ public class EntityResolver implements MappingNamespace, Serializable {
                     CallbackDescriptor[] callbacks = listener
                             .getCallbackMap()
                             .getCallbacks();
-                    for (int i = 0; i < callbacks.length; i++) {
+                    for (CallbackDescriptor callback : callbacks) {
 
-                        for (String method : callbacks[i].getCallbackMethods()) {
+                        for (String method : callback.getCallbackMethods()) {
                             callbackRegistry.addListener(
-                                    callbacks[i].getCallbackType(),
+                                    callback.getCallbackType(),
                                     entityClass,
                                     listenerInstance,
                                     method);
@@ -251,10 +251,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 }
 
                 CallbackDescriptor[] callbacks = entity.getCallbackMap().getCallbacks();
-                for (int i = 0; i < callbacks.length; i++) {
-                    for (String method : callbacks[i].getCallbackMethods()) {
+                for (CallbackDescriptor callback : callbacks) {
+                    for (String method : callback.getCallbackMethods()) {
                         callbackRegistry.addListener(
-                                callbacks[i].getCallbackType(),
+                                callback.getCallbackType(),
                                 entityClass,
                                 method);
                     }

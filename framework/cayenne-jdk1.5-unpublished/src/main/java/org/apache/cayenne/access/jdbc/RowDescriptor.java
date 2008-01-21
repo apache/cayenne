@@ -84,8 +84,8 @@ public class RowDescriptor {
      * @since 3.0 
      */
     public void forceUpperCaseColumnNames() {
-        for(int i = 0; i < columns.length; i++) {
-            columns[i].setLabel(columns[i].getLabel().toUpperCase());
+        for (ColumnDescriptor column : columns) {
+            column.setLabel(column.getLabel().toUpperCase());
         }
     }
     
@@ -95,8 +95,8 @@ public class RowDescriptor {
      * @since 3.0 
      */
     public void forceLowerCaseColumnNames() {
-        for(int i = 0; i < columns.length; i++) {
-            columns[i].setLabel(columns[i].getLabel().toLowerCase());
+        for (ColumnDescriptor column : columns) {
+            column.setLabel(column.getLabel().toLowerCase());
         }
     }
 
@@ -138,11 +138,11 @@ public class RowDescriptor {
      */
     protected void overrideJavaTypes(Map overrides) {
 
-        for (int i = 0; i < columns.length; i++) {
-            String type = (String) overrides.get(columns[i].getName());
+        for (ColumnDescriptor column : columns) {
+            String type = (String) overrides.get(column.getName());
 
             if (type != null) {
-                columns[i].setJavaClass(type);
+                column.setJavaClass(type);
             }
         }
     }
