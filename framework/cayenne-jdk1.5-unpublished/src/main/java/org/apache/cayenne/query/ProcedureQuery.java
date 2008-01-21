@@ -150,7 +150,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     public QueryMetadata getMetaData(EntityResolver resolver) {
 
         metaData.resolve(root, resultClass != null
-                ? (Object) resultClass
+                ? resultClass
                 : resultEntityName, resolver, this);
         return metaData;
     }

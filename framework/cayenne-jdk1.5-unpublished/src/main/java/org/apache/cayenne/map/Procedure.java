@@ -203,7 +203,7 @@ public class Procedure implements CayenneMapEntry, XMLSerializable, Serializable
         // if procedure returns parameters, this must be the first parameter
         // otherwise, return null
         return (returningValue && callParameters.size() > 0)
-                ? (ProcedureParameter) callParameters.get(0)
+                ? callParameters.get(0)
                 : null;
     }
 
