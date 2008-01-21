@@ -22,8 +22,10 @@ package org.apache.cayenne.dba;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -63,21 +65,42 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class AutoAdapter implements DbAdapter {
 
-    // hardcoded factories for adapters that we know how to auto-detect
-    static final DbAdapterFactory[] DEFAULT_FACTORIES = new DbAdapterFactory[] {
-            new MySQLSniffer(), new PostgresSniffer(), new OracleSniffer(),
-            new SQLServerSniffer(), new HSQLDBSniffer(), new DB2Sniffer(),
-            new SybaseSniffer(), new DerbySniffer(), new OpenBaseSniffer(),
-            new FrontBaseSniffer(), new IngresSniffer(), new SQLiteSniffer(),
-            new H2Sniffer()
-    };
+    static final List<DbAdapterFactory> defaultFactories;
+    static {
+        defaultFactories = new ArrayList<DbAdapterFactory>();
+
+        // hardcoded factories for adapters that we know how to auto-detect
+        defaultFactories.addAll(Arrays.asList(
+                new MySQLSniffer(),
+                new PostgresSniffer(),
+                new OracleSniffer(),
+                new SQLServerSniffer(),
+                new HSQLDBSniffer(),
+                new DB2Sniffer(),
+                new SybaseSniffer(),
+                new DerbySniffer(),
+                new OpenBaseSniffer(),
+                new FrontBaseSniffer(),
+                new IngresSniffer(),
+                new SQLiteSniffer(),
+                new H2Sniffer()));
+    }
+
+    /**
+     * Allows application code to add a sniffer to detect a custom adapter.
+     * 
+     * @since 3.0
+     */
+    public static void addFactory(DbAdapterFactory factory) {
+        defaultFactories.add(factory);
+    }
 
     /**
      * Returns a DbAdapterFactory configured to detect all databases officially supported
      * by Cayenne.
      */
     public static DbAdapterFactory getDefaultFactory() {
-        return new DbAdapterFactoryChain(Arrays.asList(DEFAULT_FACTORIES));
+        return new DbAdapterFactoryChain(defaultFactories);
     }
 
     protected DbAdapterFactory adapterFactory;
@@ -208,7 +231,7 @@ public class AutoAdapter implements DbAdapter {
     }
 
     /**
-     * @deprecated since 3.0 as the deocarated method is deprecated.
+     * @deprecated since 3.0 as the decorated method is deprecated.
      */
     public String dropTable(DbEntity entity) {
         return getAdapter().dropTable(entity);
