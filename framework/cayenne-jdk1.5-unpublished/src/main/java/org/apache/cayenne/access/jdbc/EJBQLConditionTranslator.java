@@ -599,7 +599,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             context.append("null");
         }
         else {
-            Object value = new Boolean(expression.getText());
+            Object value = Boolean.valueOf(expression.getText());
             String var = context.bindParameter(value);
             context.append(" #bind($").append(var).append(" 'BOOLEAN')");
         }

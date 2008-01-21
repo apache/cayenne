@@ -84,7 +84,7 @@ public class PropertyUtilsTest extends TestCase {
         assertSame(o1.getNumberField(), PropertyUtils.getProperty(o1, "numberField"));
         assertSame(o1.getObjectField(), PropertyUtils.getProperty(o1, "objectField"));
         assertSame(o1.getStringField(), PropertyUtils.getProperty(o1, "stringField"));
-        assertEquals(new Boolean(o1.isBooleanField()), PropertyUtils.getProperty(
+        assertEquals(Boolean.valueOf(o1.isBooleanField()), PropertyUtils.getProperty(
                 o1,
                 "booleanField"));
     }
@@ -99,7 +99,7 @@ public class PropertyUtilsTest extends TestCase {
         PropertyUtils.setProperty(o2, "numberField", o1.getNumberField());
         PropertyUtils.setProperty(o2, "objectField", o1.getObjectField());
         PropertyUtils.setProperty(o2, "stringField", o1.getStringField());
-        PropertyUtils.setProperty(o2, "booleanField", new Boolean(o1.isBooleanField()));
+        PropertyUtils.setProperty(o2, "booleanField", Boolean.valueOf(o1.isBooleanField()));
     }
 
     public void testGetPropertyMap() {
