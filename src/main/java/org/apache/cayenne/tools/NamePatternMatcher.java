@@ -213,8 +213,8 @@ public class NamePatternMatcher {
             return true;
         }
 
-        for (int i = 0; i < itemExcludeFilters.length; i++) {
-            if (itemExcludeFilters[i].matcher(item).find()) {
+        for (Pattern itemExcludeFilter : itemExcludeFilters) {
+            if (itemExcludeFilter.matcher(item).find()) {
                 return false;
             }
         }
@@ -234,8 +234,8 @@ public class NamePatternMatcher {
         }
 
         String itemName = item.getName();
-        for (int i = 0; i < itemIncludeFilters.length; i++) {
-            if (itemIncludeFilters[i].matcher(itemName).find()) {
+        for (Pattern itemIncludeFilter : itemIncludeFilters) {
+            if (itemIncludeFilter.matcher(itemName).find()) {
                 return true;
             }
         }
@@ -255,8 +255,8 @@ public class NamePatternMatcher {
         }
 
         String itemName = item.getName();
-        for (int i = 0; i < itemExcludeFilters.length; i++) {
-            if (itemExcludeFilters[i].matcher(itemName).find()) {
+        for (Pattern itemExcludeFilter : itemExcludeFilters) {
+            if (itemExcludeFilter.matcher(itemName).find()) {
                 return false;
             }
         }

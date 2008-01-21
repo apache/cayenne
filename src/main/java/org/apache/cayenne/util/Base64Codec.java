@@ -396,15 +396,15 @@ public class Base64Codec {
         byte groomedData[] = new byte[data.length];
         int bytesCopied = 0;
 
-        for (int i = 0; i < data.length; i++) {
-            switch (data[i]) {
+        for (byte datum : data) {
+            switch (datum) {
                 case (byte) ' ':
                 case (byte) '\n':
                 case (byte) '\r':
                 case (byte) '\t':
                     break;
                 default:
-                    groomedData[bytesCopied++] = data[i];
+                    groomedData[bytesCopied++] = datum;
             }
         }
 
@@ -427,9 +427,9 @@ public class Base64Codec {
         byte groomedData[] = new byte[data.length];
         int bytesCopied = 0;
 
-        for (int i = 0; i < data.length; i++) {
-            if (isBase64(data[i])) {
-                groomedData[bytesCopied++] = data[i];
+        for (byte datum : data) {
+            if (isBase64(datum)) {
+                groomedData[bytesCopied++] = datum;
             }
         }
 

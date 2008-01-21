@@ -190,8 +190,8 @@ public class QueryResult extends DefaultOperationObserver {
             }
             else if (object instanceof int[]) {
                 int[] ints = (int[]) object;
-                for (int i = 0; i < ints.length; i++) {
-                    list.add(Integer.valueOf(ints[i]));
+                for (int anInt : ints) {
+                    list.add(Integer.valueOf(anInt));
                 }
             }
         }

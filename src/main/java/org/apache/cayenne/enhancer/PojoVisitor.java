@@ -57,8 +57,8 @@ public abstract class PojoVisitor extends ClassAdapter {
             String superName,
             String[] interfaces) {
 
-        for (int i = 0; i < interfaces.length; i++) {
-            if (ENHANCED_INTERFACE_SIG.equals(interfaces[i])) {
+        for (String anInterface : interfaces) {
+            if (ENHANCED_INTERFACE_SIG.equals(anInterface)) {
                 throw new DoubleEnhanceException(name
                         + " already implements "
                         + ENHANCED_INTERFACE_SIG);

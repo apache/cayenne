@@ -47,8 +47,8 @@ public class SimpleAccessStack extends AbstractAccessStack implements AccessStac
         this.resources = resources;
         this.domain = new UnitTestDomain("domain");
         domain.setEventManager(new EventManager(2));
-        for (int i = 0; i < maps.length; i++) {
-            initNode(maps[i]);
+        for (DataMap map : maps) {
+            initNode(map);
         }
     }
 

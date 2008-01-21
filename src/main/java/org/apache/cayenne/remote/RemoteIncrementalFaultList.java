@@ -161,8 +161,8 @@ public class RemoteIncrementalFaultList implements List {
         byte[] bytes = IDUtil.pseudoUniqueByteSequence8();
         StringBuffer buffer = new StringBuffer(17);
         buffer.append("I");
-        for (int i = 0; i < bytes.length; i++) {
-            IDUtil.appendFormattedByte(buffer, bytes[i]);
+        for (byte aByte : bytes) {
+            IDUtil.appendFormattedByte(buffer, aByte);
         }
 
         return buffer.toString();

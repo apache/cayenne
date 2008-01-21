@@ -256,8 +256,8 @@ public class DbLoader {
                     + tableNamePattern);
 
             if (types != null && types.length > 0) {
-                for (int i = 0; i < types.length; i++) {
-                    logObj.debug("Read tables: table type=" + types[i]);
+                for (String type : types) {
+                    logObj.debug("Read tables: table type=" + type);
                 }
             }
         }

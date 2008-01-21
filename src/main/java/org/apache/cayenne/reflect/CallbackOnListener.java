@@ -78,23 +78,23 @@ class CallbackOnListener extends AbstractCallback {
             throws IllegalArgumentException {
 
         Method[] methods = objectClass.getDeclaredMethods();
-        for (int i = 0; i < methods.length; i++) {
-            if (methodName.equals(methods[i].getName())) {
+        for (Method method : methods) {
+            if (methodName.equals(method.getName())) {
 
                 // must be non-static, void, with a single arg assignable to entity type
                 // JPA spec also requires it to be non-final, but we don't care
-                int modifiers = methods[i].getModifiers();
-                Class<?>[] parameters = methods[i].getParameterTypes();
+                int modifiers = method.getModifiers();
+                Class<?>[] parameters = method.getParameterTypes();
                 if (!Modifier.isStatic(modifiers)
-                        && Void.TYPE.isAssignableFrom(methods[i].getReturnType())
+                        && Void.TYPE.isAssignableFrom(method.getReturnType())
                         && parameters.length == 1
                         && parameters[0].isAssignableFrom(entityType)) {
 
-                    if (!Util.isAccessible(methods[i])) {
-                        methods[i].setAccessible(true);
+                    if (!Util.isAccessible(method)) {
+                        method.setAccessible(true);
                     }
 
-                    return methods[i];
+                    return method;
                 }
             }
         }

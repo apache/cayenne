@@ -200,13 +200,14 @@ public class Util {
         if (!recursive || !file.isDirectory())
             return file.delete();
 
-        String[] list = file.list();
+        String[] contents = file.list();
         
         // list can be null if directory doesn't have an 'x' permission bit set for the user
-        if (list != null) {
-            for (int i = 0; i < list.length; i++) {
-                if (!delete(filePath + File.separator + list[i], true))
+        if (contents != null) {
+            for (String item : contents) {
+                if (!delete(filePath + File.separator + item, true)) {
                     return false;
+                }
             }
         }
 

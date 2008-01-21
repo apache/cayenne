@@ -83,12 +83,12 @@ public class EventUtil {
             Object sender,
             EventSubject[] subjects) {
 
-        for (int i = 0; i < subjects.length; i++) {
+        for (EventSubject subject : subjects) {
             // assume that subject name and listener method name match
-            String fqSubject = subjects[i].getSubjectName();
+            String fqSubject = subject.getSubjectName();
             String method = fqSubject.substring(fqSubject.lastIndexOf('/') + 1);
 
-            manager.addListener(listener, method, GraphEvent.class, subjects[i], sender);
+            manager.addListener(listener, method, GraphEvent.class, subject, sender);
         }
     }
 

@@ -363,8 +363,8 @@ public class ObjectId implements Serializable {
 
         if (isTemporary()) {
             buffer.append(", TEMP:");
-            for (int i = 0; i < key.length; i++) {
-                IDUtil.appendFormattedByte(buffer, key[i]);
+            for (byte aKey : key) {
+                IDUtil.appendFormattedByte(buffer, aKey);
             }
         }
         else if (singleKey != null) {

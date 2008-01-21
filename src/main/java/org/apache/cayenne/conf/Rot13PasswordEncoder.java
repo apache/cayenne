@@ -95,12 +95,9 @@ public class Rot13PasswordEncoder implements PasswordEncoding
   public static void main(String[] args) 
   {
     Rot13PasswordEncoder encoder = new Rot13PasswordEncoder();
-    
-    for (int i = 0; i < args.length; i++)
-    {
-      String string = args[i];
 
-      System.out.println(encoder.rotate(string));
-    }
+      for (String string : args) {
+          System.out.println(encoder.rotate(string));
+      }
   }
 }

@@ -63,21 +63,21 @@ class CallbackOnEntity extends AbstractCallback {
     private Method findMethod(Class<?> objectClass, String methodName)
             throws IllegalArgumentException {
         Method[] methods = objectClass.getDeclaredMethods();
-        for (int i = 0; i < methods.length; i++) {
-            if (methodName.equals(methods[i].getName())) {
+        for (Method method : methods) {
+            if (methodName.equals(method.getName())) {
 
                 // must be non-static, void, with no args
                 // JPA spec also requires it to be non-final, but we don't care
-                int modifiers = methods[i].getModifiers();
+                int modifiers = method.getModifiers();
                 if (!Modifier.isStatic(modifiers)
-                        && Void.TYPE.isAssignableFrom(methods[i].getReturnType())
-                        && methods[i].getParameterTypes().length == 0) {
+                        && Void.TYPE.isAssignableFrom(method.getReturnType())
+                        && method.getParameterTypes().length == 0) {
 
-                    if (!Util.isAccessible(methods[i])) {
-                        methods[i].setAccessible(true);
+                    if (!Util.isAccessible(method)) {
+                        method.setAccessible(true);
                     }
 
-                    return methods[i];
+                    return method;
                 }
             }
         }

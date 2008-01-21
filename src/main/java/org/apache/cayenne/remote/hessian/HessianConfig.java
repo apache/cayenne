@@ -57,14 +57,14 @@ public class HessianConfig {
 
         if (factoryNames != null && factoryNames.length > 0) {
 
-            for (int i = 0; i < factoryNames.length; i++) {
+            for (String factoryName : factoryNames) {
 
                 try {
-                    factory.addFactory(loadFactory(factoryNames[i], resolver));
+                    factory.addFactory(loadFactory(factoryName, resolver));
                 }
                 catch (Exception e) {
                     throw new CayenneRuntimeException("Error configuring factory class "
-                            + factoryNames[i], e);
+                            + factoryName, e);
                 }
             }
         }

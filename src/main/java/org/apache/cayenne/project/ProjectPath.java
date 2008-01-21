@@ -69,9 +69,9 @@ public class ProjectPath {
      * Scans path, looking for the first element that is an instanceof <code>aClass</code>.
      */
     public <T> T firstInstanceOf(Class<T> aClass) {
-        for (int i = 0; i < path.length; i++) {
-            if (path[i] != null && aClass.isAssignableFrom(path[i].getClass())) {
-                return (T) path[i];
+        for (Object aPath : path) {
+            if (aPath != null && aClass.isAssignableFrom(aPath.getClass())) {
+                return (T) aPath;
             }
         }
 

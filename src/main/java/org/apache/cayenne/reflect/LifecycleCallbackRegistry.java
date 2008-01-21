@@ -50,8 +50,8 @@ public class LifecycleCallbackRegistry {
      * Removes all listeners for all event types.
      */
     public void clear() {
-        for (int i = 0; i < eventCallbacks.length; i++) {
-            eventCallbacks[i].clear();
+        for (LifecycleCallbackEventHandler eventCallback : eventCallbacks) {
+            eventCallback.clear();
         }
     }
 

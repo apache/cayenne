@@ -153,8 +153,7 @@ public abstract class SimpleNode implements Node, Serializable, EJBQLExpression 
                 + getName()
                 + (text && this.text != null ? " [" + this.text + "]" : ""));
         if (children != null) {
-            for (int i = 0; i < children.length; ++i) {
-                SimpleNode n = children[i];
+            for (SimpleNode n : children) {
                 if (n != null) {
                     n.dump(out, prefix + " ", text);
                 }

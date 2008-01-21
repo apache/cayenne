@@ -133,16 +133,17 @@ public class ZipUtil {
 
         try {
             // something like an Ant directory scanner wouldn't hurt here
-            for (int i = 0; i < sources.length; i++) {
-                if (!sources[i].exists()) {
+            for (File source : sources) {
+                if (!source.exists()) {
                     throw new IllegalArgumentException(
-                        "File or directory does not exist: " + sources[i]);
+                            "File or directory does not exist: " + source);
                 }
 
-                if (sources[i].isDirectory()) {
-                    zipDirectory(out, stripPath, sources[i], pathSeparator);
-                } else {
-                    zipFile(out, stripPath, sources[i], pathSeparator);
+                if (source.isDirectory()) {
+                    zipDirectory(out, stripPath, source, pathSeparator);
+                }
+                else {
+                    zipFile(out, stripPath, source, pathSeparator);
                 }
             }
         } finally {
@@ -168,11 +169,12 @@ public class ZipUtil {
         }
 
         // recurse via entries
-        for (int i = 0; i < entries.length; i++) {
-            File file = new File(dir, entries[i]);
+        for (String entry : entries) {
+            File file = new File(dir, entry);
             if (file.isDirectory()) {
                 zipDirectory(out, stripPath, file, pathSeparator);
-            } else {
+            }
+            else {
                 zipFile(out, stripPath, file, pathSeparator);
             }
         }
