@@ -72,8 +72,7 @@ public class ToManyListTest extends CayenneCase {
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
         // bypassing normal CayenneDataObject methods
-        ((Artist) list.getRelationshipOwner())
-                .setPersistenceState(PersistenceState.MODIFIED);
+        list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
 
         assertTrue("List must be unresolved for an existing object", list.isFault());
 
@@ -112,8 +111,7 @@ public class ToManyListTest extends CayenneCase {
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
         // bypassing normal CayenneDataObject methods
-        ((Artist) list.getRelationshipOwner())
-                .setPersistenceState(PersistenceState.MODIFIED);
+        list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
 
         assertTrue("List must be unresolved...", list.isFault());
         list.add(p1);
@@ -150,8 +148,7 @@ public class ToManyListTest extends CayenneCase {
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
         // bypassing normal CayenneDataObject methods
-        ((Artist) list.getRelationshipOwner())
-                .setPersistenceState(PersistenceState.MODIFIED);
+        list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
 
         assertTrue("List must be unresolved...", list.isFault());
         list.add(p1);

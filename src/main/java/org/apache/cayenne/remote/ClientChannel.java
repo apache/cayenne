@@ -209,7 +209,7 @@ public class ClientChannel implements DataChannel {
                     }
 
                     Object postedBy = (originatingContext != null)
-                            ? (Object) originatingContext
+                            ? originatingContext
                             : this;
                     GraphEvent e = new GraphEvent(this, postedBy, notification);
                     eventManager.postEvent(e, subject);

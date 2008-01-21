@@ -91,7 +91,7 @@ public class RemoteIncrementalFaultList implements List {
 
         this.pageSize = metadata.getPageSize();
         this.helper = (metadata.isFetchingDataRows())
-                ? (ListHelper) new DataRowListHelper()
+                ? new DataRowListHelper()
                 : new PersistentListHelper();
         this.context = context;
 
