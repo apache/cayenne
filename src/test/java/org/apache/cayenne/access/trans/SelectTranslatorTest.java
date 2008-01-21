@@ -441,9 +441,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         // all DbAttributes must be included
         DbEntity entity = getDbEntity("PAINTING");
-        Iterator it = entity.getAttributes().iterator();
-        while (it.hasNext()) {
-            DbAttribute a = (DbAttribute) it.next();
+        for (final DbAttribute a : entity.getAttributes()) {
             ColumnDescriptor c = new ColumnDescriptor(a, "t0");
             assertTrue("No descriptor for " + a + ", columns: " + columns, columns
                     .contains(c));
@@ -463,9 +461,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         // assert root entity columns
         DbEntity entity = getDbEntity("PAINTING");
-        Iterator it = entity.getAttributes().iterator();
-        while (it.hasNext()) {
-            DbAttribute a = (DbAttribute) it.next();
+        for (final DbAttribute a : entity.getAttributes()) {
             ColumnDescriptor c = new ColumnDescriptor(a, "t0");
             assertTrue("No descriptor for " + a + ", columns: " + columns, columns
                     .contains(c));
@@ -473,9 +469,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
         // assert joined columns
         DbEntity joined = getDbEntity("ARTIST");
-        Iterator itj = joined.getAttributes().iterator();
-        while (itj.hasNext()) {
-            DbAttribute a = (DbAttribute) itj.next();
+        for (final DbAttribute a : joined.getAttributes()) {
 
             // skip ARTIST PK, it is joined from painting
             if (Artist.ARTIST_ID_PK_COLUMN.equals(a.getName())) {

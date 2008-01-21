@@ -221,9 +221,7 @@ class DataRowUtils {
     }
 
     static boolean hasFK(DbRelationship relationship, Map snapshot) {
-        Iterator joins = relationship.getJoins().iterator();
-        while (joins.hasNext()) {
-            DbJoin join = (DbJoin) joins.next();
+        for (final DbJoin join : relationship.getJoins()) {
             if (!snapshot.containsKey(join.getSourceName())) {
                 return false;
             }

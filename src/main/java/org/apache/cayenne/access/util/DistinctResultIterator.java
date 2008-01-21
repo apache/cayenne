@@ -203,9 +203,7 @@ public class DistinctResultIterator implements ResultIterator {
             // to avoid iterating over default entity attributes...
 
             Map id = new HashMap();
-            Iterator it = defaultEntity.getPrimaryKeys().iterator();
-            while (it.hasNext()) {
-                DbAttribute pk = (DbAttribute) it.next();
+            for (final DbAttribute pk : defaultEntity.getPrimaryKeys()) {
                 id.put(pk.getName(), next.get(pk.getName()));
             }
 

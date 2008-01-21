@@ -102,19 +102,17 @@ public class DbEntityValidator extends TreeNodeValidator {
 		}
 
 		// check for duplicate names in the parent context
-		Iterator it = map.getDbEntities().iterator();
-		while (it.hasNext()) {
-			DbEntity otherEnt = (DbEntity) it.next();
-			if (otherEnt == ent) {
-				continue;
-			}
+        for (final DbEntity otherEnt : map.getDbEntities()) {
+            if (otherEnt == ent) {
+                continue;
+            }
 
-			if (name.equals(otherEnt.getName())) {
-				validator.registerError(
-					"Duplicate DbEntity name: " + name + ".",
-					path);
-				break;
-			}
-		}
+            if (name.equals(otherEnt.getName())) {
+                validator.registerError(
+                        "Duplicate DbEntity name: " + name + ".",
+                        path);
+                break;
+            }
+        }
 	}
 }

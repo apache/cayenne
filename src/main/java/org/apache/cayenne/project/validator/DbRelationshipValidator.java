@@ -49,9 +49,7 @@ public class DbRelationshipValidator extends TreeNodeValidator {
         }
         else {
             // validate joins
-            Iterator joins = rel.getJoins().iterator();
-            while (joins.hasNext()) {
-                DbJoin join = (DbJoin) joins.next();
+            for (final DbJoin join : rel.getJoins()) {
                 if (join.getSource() == null && join.getTarget() == null) {
                     validator
                             .registerWarning(

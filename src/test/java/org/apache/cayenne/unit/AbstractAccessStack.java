@@ -92,9 +92,7 @@ public abstract class AbstractAccessStack {
                     }
 
                     boolean hasLob = false;
-                    Iterator attrs = ent.getAttributes().iterator();
-                    while (attrs.hasNext()) {
-                        DbAttribute attr = (DbAttribute) attrs.next();
+                    for (final DbAttribute attr : ent.getAttributes()) {
                         if (attr.getType() == Types.BLOB || attr.getType() == Types.CLOB) {
                             hasLob = true;
                             break;
@@ -109,10 +107,8 @@ public abstract class AbstractAccessStack {
                 // check for BIN PK
                 if (excludeBinPK) {
                     boolean skip = false;
-                    Iterator attrs = ent.getAttributes().iterator();
-                    while (attrs.hasNext()) {
+                    for (final DbAttribute attr : ent.getAttributes()) {
                         // check for BIN PK or FK to BIN Pk
-                        DbAttribute attr = (DbAttribute) attrs.next();
                         if (attr.getType() == Types.BINARY
                                 || attr.getType() == Types.VARBINARY
                                 || attr.getType() == Types.LONGVARBINARY) {

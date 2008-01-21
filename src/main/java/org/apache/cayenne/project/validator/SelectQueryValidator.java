@@ -55,11 +55,10 @@ public class SelectQueryValidator extends TreeNodeValidator {
         if (root != null) {
             validateQualifier(root, query.getQualifier(), treeNodePath, validator);
 
-            Iterator orderings = query.getOrderings().iterator();
-            while (orderings.hasNext()) {
+            for (final Ordering ordering : query.getOrderings()) {
                 validateOrdering(
                         root,
-                        (Ordering) orderings.next(),
+                        ordering,
                         treeNodePath,
                         validator);
             }
@@ -132,9 +131,7 @@ public class SelectQueryValidator extends TreeNodeValidator {
 
         // check for duplicate names in the parent context
 
-        Iterator it = map.getQueries().iterator();
-        while (it.hasNext()) {
-            Query otherQuery = (Query) it.next();
+        for (final Query otherQuery : map.getQueries()) {
             if (otherQuery == query) {
                 continue;
             }

@@ -52,9 +52,7 @@ public class SQLTemplateValidator extends TreeNodeValidator {
         if (Util.isEmptyString(query.getDefaultTemplate())) {
             // see if there is at least one adapter-specific template...
 
-            Iterator it = query.getTemplateKeys().iterator();
-            while (it.hasNext()) {
-                String key = (String) it.next();
+            for (final String key : query.getTemplateKeys()) {
                 if (!Util.isEmptyString(query.getCustomTemplate(key))) {
                     return;
                 }
@@ -86,9 +84,7 @@ public class SQLTemplateValidator extends TreeNodeValidator {
         }
 
         // check for duplicate names in the parent context
-        Iterator it = map.getQueries().iterator();
-        while (it.hasNext()) {
-            Query otherQuery = (Query) it.next();
+        for (final Query otherQuery : map.getQueries()) {
             if (otherQuery == query) {
                 continue;
             }

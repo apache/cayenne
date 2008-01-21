@@ -72,10 +72,7 @@ class ObjectStoreGraphDiff implements GraphDiff {
 
         Collection objectsToValidate = null;
 
-        Iterator it = getChangesByObjectId().values().iterator();
-        while (it.hasNext()) {
-
-            ObjectDiff diff = (ObjectDiff) it.next();
+        for (final ObjectDiff diff : getChangesByObjectId().values()) {
 
             if (!diff.isNoop()) {
 

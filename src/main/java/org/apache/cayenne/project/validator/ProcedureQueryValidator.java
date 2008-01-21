@@ -90,9 +90,7 @@ public class ProcedureQueryValidator extends TreeNodeValidator {
         }
 
         // check for duplicate names in the parent context
-        Iterator it = map.getQueries().iterator();
-        while (it.hasNext()) {
-            Query otherQuery = (Query) it.next();
+        for (final Query otherQuery : map.getQueries()) {
             if (otherQuery == query) {
                 continue;
             }

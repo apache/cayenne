@@ -68,9 +68,7 @@ public class ProcedureValidator extends TreeNodeValidator {
         }
 
         // check for duplicate names in the parent context
-        Iterator it = map.getProcedures().iterator();
-        while (it.hasNext()) {
-            Procedure otherProcedure = (Procedure) it.next();
+        for (final Procedure otherProcedure : map.getProcedures()) {
             if (otherProcedure == procedure) {
                 continue;
             }
