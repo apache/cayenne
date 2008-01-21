@@ -32,7 +32,7 @@ import java.util.StringTokenizer;
 public class MappingNamesHelper {
 
     // TODO: used by StringUtils and ClassGenerationInfo... need to refactor..
-    static final Collection RESERVED_JAVA_KEYWORDS = Arrays.asList(new Object[] {
+    static final Collection RESERVED_JAVA_KEYWORDS = Arrays.asList(
             "abstract", "assert", "default", "if", "private", "this", "boolean", "do",
             "implements", "protected", "throw", "break", "double", "import", "public",
             "throws", "byte", "else", "instanceof", "return", "transient", "case",
@@ -40,7 +40,7 @@ public class MappingNamesHelper {
             "void", "char", "finally", "long", "strictfp", "volatile", "class", "float",
             "native", "super", "while", "const", "for", "new", "switch", "continue",
             "goto", "package", "synchronized"
-    });
+    );
 
     public boolean isReservedJavaKeyword(String word)
     {

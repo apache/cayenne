@@ -109,9 +109,7 @@ public class IdentityColumnsTest extends CayenneCase {
         d.setToMaster(m);
         context.commitChanges();
 
-        context.invalidateObjects(Arrays.asList(new Object[] {
-                m, d
-        }));
+        context.invalidateObjects(Arrays.asList(m, d));
 
         context.prepareForAccess(d, null, false);
 
@@ -225,9 +223,7 @@ public class IdentityColumnsTest extends CayenneCase {
                     GeneratedColumnCompKey.GENERATED_COLUMN_PK_COLUMN);
             assertNotNull(dbGeneratedID2);
 
-            context.invalidateObjects(Arrays.asList(new Object[] {
-                    master, dep1, dep2
-            }));
+            context.invalidateObjects(Arrays.asList(master, dep1, dep2));
 
             Object fetchedDep2 = DataObjectUtils.objectForPK(context, id2);
             assertNotNull(fetchedDep2);
@@ -263,9 +259,7 @@ public class IdentityColumnsTest extends CayenneCase {
         assertTrue(id2 >= 0);
         assertEquals(id1, id2);
 
-        context.invalidateObjects(Arrays.asList(new Object[] {
-                master2, dependent
-        }));
+        context.invalidateObjects(Arrays.asList(master2, dependent));
 
         assertNotNull(DataObjectUtils.objectForPK(
                 context,
@@ -304,9 +298,7 @@ public class IdentityColumnsTest extends CayenneCase {
         assertEquals(id1, id2);
 
         // refetch from DB
-        context.invalidateObjects(Arrays.asList(new Object[] {
-                idObject, dependent
-        }));
+        context.invalidateObjects(Arrays.asList(idObject, dependent));
 
         assertNotNull(DataObjectUtils.objectForPK(
                 context,

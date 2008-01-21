@@ -51,9 +51,7 @@ public class CDOMany2OneNoRevTest extends CayenneCase {
         context.commitChanges();
         ObjectId aid = a1.getObjectId();
         ObjectId pid = p1.getObjectId();
-        context.invalidateObjects(Arrays.asList(new Object[] {
-                a1, p1
-        }));
+        context.invalidateObjects(Arrays.asList(a1, p1));
 
         Painting1 p2 = (Painting1) DataObjectUtils.objectForPK(context, pid);
         Artist a2 = p2.getToArtist();

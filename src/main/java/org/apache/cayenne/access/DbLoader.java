@@ -67,12 +67,12 @@ public class DbLoader {
 
     // TODO: remove this hardcoded stuff once delegate starts to support procedure
     // loading...
-    private static final Collection EXCLUDED_PROCEDURES = Arrays.asList(new Object[] {
+    private static final Collection EXCLUDED_PROCEDURES = Arrays.asList(
             "auto_pk_for_table", "auto_pk_for_table;1" /*
                                                          * the last name is some Mac OS X
                                                          * Sybase artifact
                                                          */
-    });
+    );
 
     public static final String WILDCARD = "%";
 

@@ -59,9 +59,7 @@ public class RefreshQuery implements Query {
      * its relationships.
      */
     public RefreshQuery(Persistent object) {
-        this(Arrays.asList(new Object[] {
-            object
-        }));
+        this(Arrays.asList(object));
     }
 
     /**

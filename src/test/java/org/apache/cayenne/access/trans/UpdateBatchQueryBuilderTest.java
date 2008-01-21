@@ -69,9 +69,7 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
         DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
                 SimpleLockingTestEntity.class).getDbEntity();
 
-        List idAttributes = Arrays.asList(new Object[] {
-                entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME")
-        });
+        List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
 
         List updatedAttributes = Collections.singletonList(entity
                 .getAttribute("DESCRIPTION"));

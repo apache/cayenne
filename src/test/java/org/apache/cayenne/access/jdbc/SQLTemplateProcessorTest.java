@@ -215,9 +215,7 @@ public class SQLTemplateProcessorTest extends BasicCase {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN IN (#bind($list 'VARCHAR'))";
 
         Map map = new HashMap();
-        map.put("list", Arrays.asList(new Object[] {
-                "a", "b", "c"
-        }));
+        map.put("list", Arrays.asList("a", "b", "c"));
         SQLStatement compiled = new SQLTemplateProcessor().processTemplate(
                 sqlTemplate,
                 map);

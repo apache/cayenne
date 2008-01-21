@@ -264,12 +264,8 @@ public class XMLDecoder {
             }
 
             // handle all other primitive types...
-            Constructor c = objectClass.getConstructor(new Class[] {
-                String.class
-            });
-            return c.newInstance(new Object[] {
-                text
-            });
+            Constructor c = objectClass.getConstructor(String.class);
+            return c.newInstance(text);
         }
         catch (Exception e) {
             throw new CayenneRuntimeException("Error decoding tag '"

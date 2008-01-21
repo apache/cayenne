@@ -106,9 +106,7 @@ public class BeanAccessor implements Accessor {
         }
 
         try {
-            writeMethod.invoke(object, new Object[] {
-                newValue
-            });
+            writeMethod.invoke(object, newValue);
         }
         catch (Throwable th) {
             throw new PropertyException(

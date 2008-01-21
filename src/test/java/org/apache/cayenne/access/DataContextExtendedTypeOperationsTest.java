@@ -63,9 +63,7 @@ public class DataContextExtendedTypeOperationsTest extends CayenneCase {
 
         Expression in = ExpressionFactory.inExp(
                 ExtendedTypeEntity.NAME_PROPERTY,
-                new Object[] {
-                        new StringET1("X"), new StringET1("Y")
-                });
+                new StringET1("X"), new StringET1("Y"));
         SelectQuery query = new SelectQuery(ExtendedTypeEntity.class, in);
         assertEquals(2, e1.getObjectContext().performQuery(query).size());
     }

@@ -55,9 +55,7 @@ public class BatchActionLockingTest extends LockingCase {
                 .lookupObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List qualifierAttributes = Arrays.asList(new Object[] {
-                dbEntity.getAttribute("LOCKING_TEST_ID"), dbEntity.getAttribute("NAME")
-        });
+        List qualifierAttributes = Arrays.asList(dbEntity.getAttribute("LOCKING_TEST_ID"), dbEntity.getAttribute("NAME"));
 
         Collection nullAttributeNames = Collections.singleton("NAME");
 
@@ -103,9 +101,7 @@ public class BatchActionLockingTest extends LockingCase {
                 .lookupObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List qualifierAttributes = Arrays.asList(new Object[] {
-                dbEntity.getAttribute("LOCKING_TEST_ID"), dbEntity.getAttribute("NAME")
-        });
+        List qualifierAttributes = Arrays.asList(dbEntity.getAttribute("LOCKING_TEST_ID"), dbEntity.getAttribute("NAME"));
 
         Collection nullAttributeNames = Collections.singleton("NAME");
 

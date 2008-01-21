@@ -56,9 +56,7 @@ class CallbackOnListener extends AbstractCallback {
     @Override
     public void performCallback(Object entity) {
         try {
-            callbackMethod.invoke(listener, new Object[] {
-                entity
-            });
+            callbackMethod.invoke(listener, entity);
         }
         catch (Exception e) {
             throw new CayenneRuntimeException(

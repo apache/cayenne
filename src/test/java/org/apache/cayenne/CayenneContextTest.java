@@ -291,9 +291,7 @@ public class CayenneContextTest extends CayenneCase {
         inflated.setGlobalAttribute1("abc");
 
         MockClientConnection connection = new MockClientConnection(new GenericResponse(
-                Arrays.asList(new Object[] {
-                    inflated
-                })));
+                Arrays.asList(inflated)));
         ClientChannel channel = new ClientChannel(connection);
 
         // check that a HOLLOW object is infalted on "beforePropertyRead"

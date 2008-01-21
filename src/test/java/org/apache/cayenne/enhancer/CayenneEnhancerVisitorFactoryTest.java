@@ -116,16 +116,12 @@ public class CayenneEnhancerVisitorFactoryTest extends TestCase {
                 (Class[]) null);
         Method setObjectContext = e1Class.getDeclaredMethod(
                 "setObjectContext",
-                new Class[] {
-                    ObjectContext.class
-                });
+                ObjectContext.class);
 
         Object o = e1Class.newInstance();
         assertNull(getObjectContext.invoke(o, (Object[]) null));
         ObjectContext oc = new MockObjectContext();
-        setObjectContext.invoke(o, new Object[] {
-            oc
-        });
+        setObjectContext.invoke(o, oc);
         assertSame(oc, getObjectContext.invoke(o, (Object[]) null));
     }
 
@@ -139,16 +135,12 @@ public class CayenneEnhancerVisitorFactoryTest extends TestCase {
                 (Class[]) null);
         Method setPersistenceState = e1Class.getDeclaredMethod(
                 "setPersistenceState",
-                new Class[] {
-                    Integer.TYPE
-                });
+                Integer.TYPE);
 
         Object o = e1Class.newInstance();
         assertEquals(0, getPersistenceState.invoke(o, (Object[]) null));
 
-        setPersistenceState.invoke(o, new Object[] {
-            new Integer(PersistenceState.DELETED)
-        });
+        setPersistenceState.invoke(o, new Integer(PersistenceState.DELETED));
 
         Object state = getPersistenceState.invoke(o, (Object[]) null);
         assertEquals(PersistenceState.DELETED, state);
@@ -181,13 +173,9 @@ public class CayenneEnhancerVisitorFactoryTest extends TestCase {
 
         Method setObjectContext = e1Class.getDeclaredMethod(
                 "setObjectContext",
-                new Class[] {
-                    ObjectContext.class
-                });
+                ObjectContext.class);
 
-        setObjectContext.invoke(o, new Object[] {
-            context
-        });
+        setObjectContext.invoke(o, context);
 
         assertEquals(null, getAttribute1.invoke(o, (Object[]) null));
         assertSame(o, prepared[0]);
@@ -205,14 +193,10 @@ public class CayenneEnhancerVisitorFactoryTest extends TestCase {
 
         // attempt calling on detached object - must not fail
         Method getAttribute1 = e1Class.getDeclaredMethod("getAttribute1", (Class[]) null);
-        Method setAttribute1 = e1Class.getDeclaredMethod("setAttribute1", new Class[] {
-            String.class
-        });
+        Method setAttribute1 = e1Class.getDeclaredMethod("setAttribute1", String.class);
 
         assertEquals(null, getAttribute1.invoke(o, (Object[]) null));
-        setAttribute1.invoke(o, new Object[] {
-            "x"
-        });
+        setAttribute1.invoke(o, "x");
         assertEquals("x", getAttribute1.invoke(o, (Object[]) null));
 
         // now call on attached object
@@ -234,17 +218,11 @@ public class CayenneEnhancerVisitorFactoryTest extends TestCase {
 
         Method setObjectContext = e1Class.getDeclaredMethod(
                 "setObjectContext",
-                new Class[] {
-                    ObjectContext.class
-                });
+                ObjectContext.class);
 
-        setObjectContext.invoke(o, new Object[] {
-            context
-        });
+        setObjectContext.invoke(o, context);
 
-        setAttribute1.invoke(o, new Object[] {
-            "y"
-        });
+        setAttribute1.invoke(o, "y");
         assertEquals("y", getAttribute1.invoke(o, (Object[]) null));
         assertSame(o, change[0]);
         assertEquals("attribute1", change[1]);
@@ -276,13 +254,9 @@ public class CayenneEnhancerVisitorFactoryTest extends TestCase {
 
         Method setObjectContext = e1Class.getDeclaredMethod(
                 "setObjectContext",
-                new Class[] {
-                    ObjectContext.class
-                });
+                ObjectContext.class);
 
-        setObjectContext.invoke(o, new Object[] {
-            context
-        });
+        setObjectContext.invoke(o, context);
 
         assertEquals(new Integer(0), getAttribute2.invoke(o, (Object[]) null));
         assertSame(o, prepared[0]);
@@ -298,14 +272,10 @@ public class CayenneEnhancerVisitorFactoryTest extends TestCase {
 
         // attempt calling on detached object - must not fail
         Method getAttribute2 = e1Class.getDeclaredMethod("getAttribute2", (Class[]) null);
-        Method setAttribute2 = e1Class.getDeclaredMethod("setAttribute2", new Class[] {
-            Integer.TYPE
-        });
+        Method setAttribute2 = e1Class.getDeclaredMethod("setAttribute2", Integer.TYPE);
 
         assertEquals(new Integer(0), getAttribute2.invoke(o, (Object[]) null));
-        setAttribute2.invoke(o, new Object[] {
-            new Integer(3)
-        });
+        setAttribute2.invoke(o, new Integer(3));
         assertEquals(new Integer(3), getAttribute2.invoke(o, (Object[]) null));
 
         // now call on attached object
@@ -327,17 +297,11 @@ public class CayenneEnhancerVisitorFactoryTest extends TestCase {
 
         Method setObjectContext = e1Class.getDeclaredMethod(
                 "setObjectContext",
-                new Class[] {
-                    ObjectContext.class
-                });
+                ObjectContext.class);
 
-        setObjectContext.invoke(o, new Object[] {
-            context
-        });
+        setObjectContext.invoke(o, context);
 
-        setAttribute2.invoke(o, new Object[] {
-            new Integer(4)
-        });
+        setAttribute2.invoke(o, new Integer(4));
         assertEquals(new Integer(4), getAttribute2.invoke(o, (Object[]) null));
         assertSame(o, change[0]);
         assertEquals("attribute2", change[1]);
@@ -369,13 +333,9 @@ public class CayenneEnhancerVisitorFactoryTest extends TestCase {
 
         Method setObjectContext = e1Class.getDeclaredMethod(
                 "setObjectContext",
-                new Class[] {
-                    ObjectContext.class
-                });
+                ObjectContext.class);
 
-        setObjectContext.invoke(o, new Object[] {
-            context
-        });
+        setObjectContext.invoke(o, context);
 
         assertEquals(new Double(0d), getAttribute3.invoke(o, (Object[]) null));
         assertSame(o, prepared[0]);
@@ -391,14 +351,10 @@ public class CayenneEnhancerVisitorFactoryTest extends TestCase {
 
         // attempt calling on detached object - must not fail
         Method getAttribute3 = e1Class.getDeclaredMethod("getAttribute3", (Class[]) null);
-        Method setAttribute3 = e1Class.getDeclaredMethod("setAttribute3", new Class[] {
-            Double.TYPE
-        });
+        Method setAttribute3 = e1Class.getDeclaredMethod("setAttribute3", Double.TYPE);
 
         assertEquals(new Double(0d), getAttribute3.invoke(o, (Object[]) null));
-        setAttribute3.invoke(o, new Object[] {
-            new Double(3.1d)
-        });
+        setAttribute3.invoke(o, new Double(3.1d));
         assertEquals(new Double(3.1d), getAttribute3.invoke(o, (Object[]) null));
 
         // now call on attached object
@@ -420,17 +376,11 @@ public class CayenneEnhancerVisitorFactoryTest extends TestCase {
 
         Method setObjectContext = e1Class.getDeclaredMethod(
                 "setObjectContext",
-                new Class[] {
-                    ObjectContext.class
-                });
+                ObjectContext.class);
 
-        setObjectContext.invoke(o, new Object[] {
-            context
-        });
+        setObjectContext.invoke(o, context);
 
-        setAttribute3.invoke(o, new Object[] {
-            new Double(5.3)
-        });
+        setAttribute3.invoke(o, new Double(5.3));
         assertEquals(new Double(5.3), getAttribute3.invoke(o, (Object[]) null));
         assertSame(o, change[0]);
         assertEquals("attribute3", change[1]);

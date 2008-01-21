@@ -96,12 +96,10 @@ public class OracleAdapter extends JdbcAdapter {
             oracleCursorType = cursorField.getInt(null);
 
             outputStreamFromBlobMethod = Class.forName("oracle.sql.BLOB").getMethod(
-                    "getBinaryOutputStream",
-                    new Class[0]);
+                    "getBinaryOutputStream");
 
             writerFromClobMethod = Class.forName("oracle.sql.CLOB").getMethod(
-                    "getCharacterOutputStream",
-                    new Class[0]);
+                    "getCharacterOutputStream");
             supportsOracleLOB = true;
 
         }
