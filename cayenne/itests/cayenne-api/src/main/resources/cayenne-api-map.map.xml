@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="2.0">
+	<property name="defaultPackage" value="org.apache.cayenne.itest.cpa"/>
+	<db-entity name="entity1">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="name" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="enum_entity1">
+		<db-attribute name="char_enum" type="VARCHAR" length="200"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="int_enum" type="INTEGER"/>
+	</db-entity>
+	<obj-entity name="Entity1" className="org.apache.cayenne.itest.cpa.Entity1" dbEntityName="entity1">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="EnumEntity1" className="org.apache.cayenne.itest.cpa.EnumEntity1" dbEntityName="enum_entity1">
+		<obj-attribute name="charEnum" type="org.apache.cayenne.itest.cpa.Enum1" db-attribute-path="char_enum"/>
+		<obj-attribute name="intEnum" type="org.apache.cayenne.itest.cpa.Enum1" db-attribute-path="int_enum"/>
+	</obj-entity>
+</data-map>

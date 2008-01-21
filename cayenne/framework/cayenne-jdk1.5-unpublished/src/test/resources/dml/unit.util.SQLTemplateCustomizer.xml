@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">
+	<!-- ======================================= -->
+	<!-- Customizer -->
+	<!-- ======================================= -->
+	<bean id="SQLTemplateCustomizer" class="org.apache.cayenne.unit.util.SQLTemplateCustomizer">
+		<constructor-arg>
+			<map>
+				<entry key="SELECT * FROM ARTIST ORDER BY ARTIST_ID"><ref bean="Q1"/></entry>
+				<entry key="SELECT * FROM ARTIST WHERE ARTIST_ID = #bind($id)"><ref bean="Q2"/></entry>
+				<entry key="UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE ARTIST_NAME = #bind($oldName)"><ref bean="Q3"/></entry>
+			</map>
+		</constructor-arg>
+	</bean>
+	
+	<!-- ======================================= -->
+	<!-- Query Maps keyed by adapter class -->
+	<!-- ======================================= -->
+	<bean id="Q1" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="org.apache.cayenne.dba.postgres.PostgresAdapter">
+					<value>SELECT #result('ARTIST_ID'), RTRIM(#result('ARTIST_NAME')), #result('DATE_OF_BIRTH') FROM ARTIST ORDER BY ARTIST_ID</value>
+				</entry>
+				<entry key="org.apache.cayenne.dba.ingres.IngresAdapter">
+					<value>SELECT #result('ARTIST_ID'), TRIM(#result('ARTIST_NAME')), #result('DATE_OF_BIRTH') FROM ARTIST ORDER BY ARTIST_ID</value>
+				</entry>
+				<entry key="org.apache.cayenne.dba.openbase.OpenBaseAdapter">
+					<value>SELECT #result('ARTIST_ID'), #result('ARTIST_NAME'), #result('DATE_OF_BIRTH') FROM ARTIST ORDER BY ARTIST_ID</value>
+				</entry>
+			</map>
+		</constructor-arg>
+	</bean>
+	<bean id="Q2" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="org.apache.cayenne.dba.postgres.PostgresAdapter">
+					<value>SELECT #result('ARTIST_ID'), RTRIM(#result('ARTIST_NAME')), #result('DATE_OF_BIRTH') FROM ARTIST WHERE ARTIST_ID = #bind($id)</value>
+				</entry>
+				<entry key="org.apache.cayenne.dba.ingres.IngresAdapter">
+					<value>SELECT #result('ARTIST_ID'), TRIM(#result('ARTIST_NAME')), #result('DATE_OF_BIRTH') FROM ARTIST WHERE ARTIST_ID = #bind($id)</value>
+				</entry>
+				<entry key="org.apache.cayenne.dba.openbase.OpenBaseAdapter">
+					<value>SELECT #result('ARTIST_ID'), #result('ARTIST_NAME'), #result('DATE_OF_BIRTH') FROM ARTIST WHERE ARTIST_ID = #bind($id)</value>
+				</entry>
+			</map>
+		</constructor-arg>
+	</bean>
+	<bean id="Q3" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="org.apache.cayenne.dba.oracle.OracleAdapter">
+					<value>UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)</value>
+				</entry>
+				<entry key="org.apache.cayenne.dba.oracle.Oracle8Adapter">
+					<value>UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)</value>
+				</entry>
+			</map>
+		</constructor-arg>
+	</bean>
+</beans>

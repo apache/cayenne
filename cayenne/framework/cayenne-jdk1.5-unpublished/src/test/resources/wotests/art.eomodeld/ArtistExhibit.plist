@@ -1,0 +1,42 @@
+{
+    attributes = (
+        {
+            columnName = "ARTIST_ID"; 
+            externalType = int; 
+            name = artistId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            columnName = "EXHIBIT_ID"; 
+            externalType = int; 
+            name = exhibitId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }
+    ); 
+    attributesUsedForLocking = (artistId, exhibitId); 
+    className = "org.apache.art.ArtistExhibit"; 
+    classProperties = (toExhibit, toArtist); 
+    externalName = "ARTIST_EXHIBIT"; 
+    fetchSpecificationDictionary = {}; 
+    internalInfo = {"_nameInObjectStore" = "ARTIST_EXIBIT"; }; 
+    name = ArtistExhibit; 
+    primaryKeyAttributes = (artistId, exhibitId); 
+    relationships = (
+        {
+            destination = Artist; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = artistId; sourceAttribute = artistId; }); 
+            name = toArtist; 
+        }, 
+        {
+            destination = Exhibit; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = exhibitId; sourceAttribute = exhibitId; }); 
+            name = toExhibit; 
+        }
+    ); 
+}

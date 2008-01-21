@@ -1,0 +1,17 @@
+<EncodedTestList type="java.util.ArrayList">
+<Test>
+<Name>George</Name>
+<Age>5</Age>
+<IsOpen>true</IsOpen>
+</Test>
+<Test>
+<Name>Mary</Name>
+<Age>28</Age>
+<IsOpen>false</IsOpen>
+</Test>
+<Test>
+<Name>Joe</Name>
+<Age>31</Age>
+<IsOpen>true</IsOpen>
+</Test>
+</EncodedTestList>

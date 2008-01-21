@@ -1,0 +1,33 @@
+{
+    EOModelVersion = "2.1"; 
+    adaptorName = None; 
+    entities = (
+        {className = AbstractEntityClass; name = AbstractEntity; }, 
+        {
+            className = ConcreteEntityClass; 
+            name = ConcreteEntityOne; 
+            parent = AbstractEntity; 
+        }, 
+        {className = DetailEntityClass; name = DetailEntity; }, 
+        {className = HelperEntityClass; name = HelperEntity; }, 
+        {className = HelperFlatEntityClass; name = HelperFlatEntity; }, 
+        {
+            className = SingeTableConcreteEntityOneClass; 
+            name = SingleTableConcreteEntityOne; 
+            parent = XSingleTableAbstractEntity; 
+        }, 
+        {
+            className = SingeTableConcreteEntityTwoClass; 
+            name = SingleTableConcreteEntityTwo; 
+            parent = XSingleTableAbstractEntity; 
+        }, 
+        {className = EOGenericRecord; name = SingleTableJoin; }, 
+        {
+            className = SingleTableAbstractEntityClass; 
+            name = XSingleTableAbstractEntity; 
+        }
+    ); 
+    internalInfo = {
+        "_deletedEntityNamesInObjectStore" = ("CONCRETE_SUBENTITY", "CONCRETE_SUBENTITY"); 
+    }; 
+}

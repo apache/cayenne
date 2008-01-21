@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data-view>
+    <obj-entity-view name="ObjEntityView1" obj-entity-name="Artist">
+        <field name="field0" calc-type="nocalc" obj-attribute-name="artistName" editable="true" pref-index="0" data-type="String" visible="true" />
+        <field name="field1" calc-type="nocalc" obj-attribute-name="dateOfBirth" editable="true" pref-index="1" data-type="String" visible="true" />
+    </obj-entity-view>
+</data-view>
+
