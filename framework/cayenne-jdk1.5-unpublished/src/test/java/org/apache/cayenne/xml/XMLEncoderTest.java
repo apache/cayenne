@@ -67,7 +67,7 @@ public class XMLEncoderTest extends TestCase {
 
         String comp = loadTestFileAsString("encoded-simple-collection.xml");
 
-        assertEquals(comp.toString(), result);
+        assertEquals(comp, result);
     }
 
     private String loadTestFileAsString(String filename) throws IOException {
@@ -104,10 +104,10 @@ public class XMLEncoderTest extends TestCase {
         // there are differences in attribute order encoding, so there can be more than
         // one valid output depending on the parser used...
 
-        if (!comp.toString().equals(result)) {
+        if (!comp.equals(result)) {
             comp = loadTestFileAsString("encoded-complex-collection-alt1.xml");
         }
-        assertEquals(comp.toString(), result);
+        assertEquals(comp, result);
     }
 
     public void testSimpleMapping() throws Exception {
@@ -122,7 +122,7 @@ public class XMLEncoderTest extends TestCase {
 
         String comp = loadTestFileAsString("simple-mapped.xml");
         
-        assertEquals(comp.toString(), result);
+        assertEquals(comp, result);
     }
     
     //  Added test for 1-to-1 relationship mappings, per CAY-597.
@@ -151,7 +151,7 @@ public class XMLEncoderTest extends TestCase {
 
         String comp = loadTestFileAsString("1to1-mapped.xml");
         
-        assertEquals(comp.toString(), result);
+        assertEquals(comp, result);
     }
     
     // Added test for 1-to-1 relationships, per CAY-597.
@@ -177,7 +177,7 @@ public class XMLEncoderTest extends TestCase {
 
         String comp = loadTestFileAsString("1to1-encoded.xml");
         
-        assertEquals(comp.toString(), xml);
+        assertEquals(comp, xml);
     }
 
     public void testCollectionMapping() throws Exception {
@@ -196,7 +196,7 @@ public class XMLEncoderTest extends TestCase {
 
         String comp = loadTestFileAsString("collection-mapped.xml");
 
-        assertEquals(comp.toString(), result);
+        assertEquals(comp, result);
     }
 
     public void testEncodeDataObjectsList() throws Exception {
@@ -210,7 +210,7 @@ public class XMLEncoderTest extends TestCase {
 
         String comp = loadTestFileAsString("data-objects-encoded.xml");
         
-        assertEquals(comp.toString(), xml);
+        assertEquals(comp, xml);
     }
 
     public void testDataObjectsListMapping() throws Exception {
@@ -227,6 +227,6 @@ public class XMLEncoderTest extends TestCase {
 
         String comp = loadTestFileAsString("data-objects-mapped.xml");
 
-        assertEquals(comp.toString(), xml);
+        assertEquals(comp, xml);
     }
 }
