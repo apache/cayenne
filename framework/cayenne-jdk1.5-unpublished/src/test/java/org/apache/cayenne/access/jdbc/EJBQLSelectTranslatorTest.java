@@ -83,8 +83,8 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
 
         // check that overlapping implicit and explicit joins did not result in duplicates
 
-        assertTrue(sql, sql.indexOf("INNER JOIN GALLERY") >= 0);
-        assertTrue(sql, sql.indexOf("INNER JOIN PAINTING") >= 0);
+        assertTrue(sql, sql.contains("INNER JOIN GALLERY"));
+        assertTrue(sql, sql.contains("INNER JOIN PAINTING"));
 
         int i1 = sql.indexOf("INNER JOIN PAINTING");
         assertTrue(sql, i1 >= 0);
