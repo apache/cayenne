@@ -248,7 +248,7 @@ public class SelectQueryTest extends SelectQueryBase {
     
     public void testSelectEmptyIn() throws Exception {
         query.setRoot(Artist.class);
-        Expression qual = ExpressionFactory.inExp("artistName", new Object[]{});
+        Expression qual = ExpressionFactory.inExp("artistName");
         query.setQualifier(qual);
         performQuery();
 
@@ -259,7 +259,7 @@ public class SelectQueryTest extends SelectQueryBase {
     
     public void testSelectEmptyNotIn() throws Exception {
         query.setRoot(Artist.class);
-        Expression qual = ExpressionFactory.notInExp("artistName", new Object[]{});
+        Expression qual = ExpressionFactory.notInExp("artistName");
         query.setQualifier(qual);
         performQuery();
 

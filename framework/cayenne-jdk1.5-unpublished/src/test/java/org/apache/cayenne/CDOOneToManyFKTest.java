@@ -49,9 +49,7 @@ public class CDOOneToManyFKTest extends RelationshipCase {
         src.addToDeps(target);
         context.commitChanges();
 
-        context.invalidateObjects(Arrays.asList(new Object[] {
-                src, target, src2
-        }));
+        context.invalidateObjects(Arrays.asList(src, target, src2));
 
         ToManyFkRoot src1 = (ToManyFkRoot) DataObjectUtils.objectForPK(context, src
                 .getObjectId());
@@ -60,9 +58,7 @@ public class CDOOneToManyFKTest extends RelationshipCase {
         // resolve HOLLOW
         assertSame(src1, ((ToManyFkDep) src1.getDeps().get(0)).getRoot());
 
-        context.invalidateObjects(Arrays.asList(new Object[] {
-                src1, src1.getDeps().get(0)
-        }));
+        context.invalidateObjects(Arrays.asList(src1, src1.getDeps().get(0)));
 
         ToManyFkDep target2 = (ToManyFkDep) DataObjectUtils.objectForPK(context, target
                 .getObjectId());

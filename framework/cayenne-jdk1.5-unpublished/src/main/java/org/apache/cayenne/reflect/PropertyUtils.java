@@ -232,9 +232,7 @@ public class PropertyUtils {
                     .convert(value, descriptor.getPropertyType());
 
             // set
-            writer.invoke(object, new Object[] {
-                value
-            });
+            writer.invoke(object, value);
         }
         // note that Map has two traditional bean properties - 'empty' and 'class', so
         // do a check here only after descriptor lookup failed.

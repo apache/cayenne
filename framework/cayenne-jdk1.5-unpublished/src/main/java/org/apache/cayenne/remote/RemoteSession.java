@@ -42,10 +42,9 @@ import org.apache.cayenne.event.EventBridgeFactory;
  */
 public class RemoteSession implements Serializable {
 
-    static final Collection SUBJECTS = Arrays.asList(new Object[] {
-            DataChannel.GRAPH_CHANGED_SUBJECT, DataChannel.GRAPH_FLUSHED_SUBJECT,
-            DataChannel.GRAPH_ROLLEDBACK_SUBJECT
-    });
+    static final Collection SUBJECTS = Arrays.asList(DataChannel.GRAPH_CHANGED_SUBJECT,
+            DataChannel.GRAPH_FLUSHED_SUBJECT,
+            DataChannel.GRAPH_ROLLEDBACK_SUBJECT);
 
     protected String name;
     protected String sessionId;

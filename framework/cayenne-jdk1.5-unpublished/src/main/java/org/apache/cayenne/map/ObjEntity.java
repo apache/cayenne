@@ -65,9 +65,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      * @since 1.2
      */
     protected static final Collection<String> DEFAULT_GENERIC_CLASSES = Arrays
-            .asList(new String[] {
-                CAYENNE_DATA_OBJECT_CLASS
-            });
+            .asList(CAYENNE_DATA_OBJECT_CLASS);
 
     protected String superClassName;
     protected String className;

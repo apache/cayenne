@@ -87,13 +87,9 @@ public class JavaGroupsBridgeFactory implements EventBridgeFactory {
         try {
             Constructor<?> c = Class
                     .forName("org.apache.cayenne.event.JavaGroupsBridge")
-                    .getConstructor(new Class[] {
-                            Collection.class, String.class
-                    });
+                    .getConstructor(Collection.class, String.class);
 
-            Object bridge = c.newInstance(new Object[] {
-                    localSubjects, externalSubject
-            });
+            Object bridge = c.newInstance(localSubjects, externalSubject);
 
             // configure properties
             String multicastAddress = (String) properties.get(MCAST_ADDRESS_PROPERTY);

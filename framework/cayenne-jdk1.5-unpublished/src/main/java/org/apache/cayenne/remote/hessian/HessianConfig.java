@@ -84,7 +84,7 @@ public class HessianConfig {
                     + " is not a AbstractSerializerFactory");
         }
 
-        Constructor c = factoryClass.getDeclaredConstructor(new Class[] {});
+        Constructor c = factoryClass.getDeclaredConstructor();
         if (!Util.isAccessible(c)) {
             c.setAccessible(true);
         }
@@ -97,17 +97,13 @@ public class HessianConfig {
 
                 Method setter = factoryClass.getDeclaredMethod(
                         "setEntityResolver",
-                        new Class[] {
-                            EntityResolver.class
-                        });
+                        EntityResolver.class);
 
                 if (!Util.isAccessible(setter)) {
                     setter.setAccessible(true);
                 }
 
-                setter.invoke(object, new Object[] {
-                    resolver
-                });
+                setter.invoke(object, resolver);
             }
             catch (Exception e) {
                 // ignore injection exception

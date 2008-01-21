@@ -50,9 +50,7 @@ public class ClientChannelTest extends CayenneCase {
         o1.setObjectId(oid1);
 
         MockClientConnection connection = new MockClientConnection(new GenericResponse(
-                Arrays.asList(new Object[] {
-                    o1
-                })));
+                Arrays.asList(o1)));
 
         ClientChannel channel = new ClientChannel(connection);
 
@@ -102,9 +100,7 @@ public class ClientChannelTest extends CayenneCase {
         MockPersistentObject o2 = new MockPersistentObject(oid);
 
         MockClientConnection connection = new MockClientConnection(new GenericResponse(
-                Arrays.asList(new Object[] {
-                    o2
-                })));
+                Arrays.asList(o2)));
 
         ClientChannel channel = new ClientChannel(connection);
 
@@ -140,9 +136,7 @@ public class ClientChannelTest extends CayenneCase {
         // cached object instead of the one fetched
         MockPersistentObject o2 = new MockPersistentObject(oid);
         MockClientConnection connection = new MockClientConnection(new GenericResponse(
-                Arrays.asList(new Object[] {
-                    o2
-                })));
+                Arrays.asList(o2)));
 
         ClientChannel channel = new ClientChannel(connection);
 

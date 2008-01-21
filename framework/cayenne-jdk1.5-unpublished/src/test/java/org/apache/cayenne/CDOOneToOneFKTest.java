@@ -48,9 +48,7 @@ public class CDOOneToOneFKTest extends RelationshipCase {
         src.setToOneToFK(target);
         context.commitChanges();
 
-        context.invalidateObjects(Arrays.asList(new Object[] {
-                src, target
-        }));
+        context.invalidateObjects(Arrays.asList(src, target));
 
         ToOneFK2 src1 = (ToOneFK2) DataObjectUtils
                 .objectForPK(context, src.getObjectId());
@@ -58,9 +56,7 @@ public class CDOOneToOneFKTest extends RelationshipCase {
         // resolve HOLLOW
         assertSame(src1, src1.getToOneToFK().getToPK());
 
-        context.invalidateObjects(Arrays.asList(new Object[] {
-                src1, src1.getToOneToFK()
-        }));
+        context.invalidateObjects(Arrays.asList(src1, src1.getToOneToFK()));
 
         ToOneFK1 target2 = (ToOneFK1) DataObjectUtils.objectForPK(context, target
                 .getObjectId());

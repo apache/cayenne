@@ -106,9 +106,7 @@ public class TestDataDomainTest extends CayenneCase {
         pi.setPainting(p);
         context.commitChanges();
 
-        context.invalidateObjects(Arrays.asList(new Object[] {
-                p, pi
-        }));
+        context.invalidateObjects(Arrays.asList(p, pi));
 
         p.getPaintingTitle();
 

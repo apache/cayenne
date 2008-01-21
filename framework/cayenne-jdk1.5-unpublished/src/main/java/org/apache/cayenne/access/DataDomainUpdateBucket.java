@@ -104,9 +104,7 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
                         }
                     }
 
-                    List batchKey = Arrays.asList(new Object[] {
-                            snapshotSet, nullQualifierNames
-                    });
+                    List batchKey = Arrays.asList(snapshotSet, nullQualifierNames);
 
                     UpdateBatchQuery batch = (UpdateBatchQuery) batches.get(batchKey);
                     if (batch == null) {

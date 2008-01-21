@@ -192,18 +192,14 @@ public class DefaultType extends AbstractType {
 
     @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
-        Object val = readMethod.invoke(rs, new Object[] {
-            Integer.valueOf(index)
-        });
+        Object val = readMethod.invoke(rs, Integer.valueOf(index));
         return (rs.wasNull()) ? null : val;
     }
 
     @Override
     public Object materializeObject(CallableStatement st, int index, int type)
             throws Exception {
-        Object val = procReadMethod.invoke(st, new Object[] {
-            Integer.valueOf(index)
-        });
+        Object val = procReadMethod.invoke(st, Integer.valueOf(index));
         return (st.wasNull()) ? null : val;
     }
 }

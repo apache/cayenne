@@ -172,9 +172,7 @@ public class RefreshQueryInContextTest extends CayenneCase {
         SelectQuery q = new SelectQuery(Painting.class, qual);
         q.addOrdering("db:PAINTING_ID", true);
         q.setCachePolicy(QueryMetadata.LOCAL_CACHE);
-        q.setCacheGroups(new String[] {
-            "X"
-        });
+        q.setCacheGroups("X");
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
@@ -234,9 +232,7 @@ public class RefreshQueryInContextTest extends CayenneCase {
         SelectQuery q = new SelectQuery(Painting.class, qual);
         q.addOrdering("db:PAINTING_ID", true);
         q.setCachePolicy(QueryMetadata.SHARED_CACHE);
-        q.setCacheGroups(new String[] {
-            "X"
-        });
+        q.setCacheGroups("X");
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
@@ -296,9 +292,7 @@ public class RefreshQueryInContextTest extends CayenneCase {
         SelectQuery q = new SelectQuery(Painting.class, qual);
         q.addOrdering("db:PAINTING_ID", true);
         q.setCachePolicy(QueryMetadata.LOCAL_CACHE);
-        q.setCacheGroups(new String[] {
-            "X"
-        });
+        q.setCacheGroups("X");
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
