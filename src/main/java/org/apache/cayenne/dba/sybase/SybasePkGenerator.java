@@ -83,13 +83,13 @@ public class SybasePkGenerator extends JdbcPkGenerator {
      * </p>
      * CREATE PROCEDURE auto_pk_for_table
      * 
+     * <pre>
      * @tname VARCHAR(32),
      * @pkbatchsize INT AS BEGIN BEGIN TRANSACTION UPDATE AUTO_PK_SUPPORT set NEXT_ID =
      *              NEXT_ID +
      * @pkbatchsize WHERE TABLE_NAME =
      * @tname SELECT NEXT_ID from AUTO_PK_SUPPORT where NEXT_ID =
-     * @tname COMMIT END
-     * 
+     * @tname COMMIT END 
      * </pre>
      * 
      * @param node node that provides access to a DataSource.

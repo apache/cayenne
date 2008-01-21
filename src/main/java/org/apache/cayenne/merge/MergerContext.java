@@ -26,7 +26,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * An object passed as an argument to {@link MergerToken#execute(MergerContext)}s that a
  * {@link MergerToken} can do its work.
  * 
- * @author
  */
 public interface MergerContext {
 
