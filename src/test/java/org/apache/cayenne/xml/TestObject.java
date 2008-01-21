@@ -122,7 +122,7 @@ public class TestObject extends CayenneDataObject {
         encoder.encodeProperty("parent", parent);
         encoder.encodeProperty("name", name);
         encoder.encodeProperty("age", new Integer(age));
-        encoder.encodeProperty("open", new Boolean(open));
+        encoder.encodeProperty("open", Boolean.valueOf(open));
         encoder.encodeProperty("children", children);
     }
 
