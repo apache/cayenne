@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.dba;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+
 import org.apache.art.Artist;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.query.SQLTemplate;
@@ -28,6 +31,19 @@ import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockDataSource;
 
 public class AutoAdapterTest extends CayenneCase {
+
+    public void testAddFactory() {
+
+        DbAdapterFactory mockFactory = new DbAdapterFactory() {
+
+            public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
+                return null;
+            }
+        };
+        AutoAdapter.addFactory(mockFactory);
+        assertTrue(AutoAdapter.defaultFactories.contains(mockFactory));
+        AutoAdapter.defaultFactories.remove(mockFactory);
+    }
 
     public void testGetAdapter() {
         MockDbAdapter realAdapter = new MockDbAdapter();
