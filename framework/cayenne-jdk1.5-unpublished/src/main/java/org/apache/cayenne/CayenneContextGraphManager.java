@@ -322,9 +322,8 @@ final class CayenneContextGraphManager extends GraphMap {
 
         if (deadIds != null) {
             // unregister dead ids...
-            Iterator<Object> it = deadIds.iterator();
-            while (it.hasNext()) {
-                nodes.remove(it.next());
+            for (final Object deadId : deadIds) {
+                nodes.remove(deadId);
             }
 
             deadIds = null;

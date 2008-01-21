@@ -285,9 +285,7 @@ public abstract class NamedObjectFactory {
             // a duplicate name.. parameters are positional anyway..
             // still try to use unique names for visual consistency
             Procedure procedure = (Procedure) namingContext;
-            Iterator it = procedure.getCallParameters().iterator();
-            while (it.hasNext()) {
-                ProcedureParameter parameter = (ProcedureParameter) it.next();
+            for (final ProcedureParameter parameter : procedure.getCallParameters()) {
                 if (name.equals(parameter.getName())) {
                     return true;
                 }

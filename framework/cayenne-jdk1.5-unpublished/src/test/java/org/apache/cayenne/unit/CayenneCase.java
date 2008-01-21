@@ -179,12 +179,9 @@ public abstract class CayenneCase extends BasicCase {
 
     protected DbEntity getDbEntity(String dbEntityName) {
         // retrieve DbEntity the hard way, bypassing the resolver...
-        Iterator it = getDomain().getDataMaps().iterator();
-        while (it.hasNext()) {
-            DataMap map = (DataMap) it.next();
-            Iterator dbEntities = map.getDbEntities().iterator();
-            while (dbEntities.hasNext()) {
-                DbEntity e = (DbEntity) dbEntities.next();
+
+        for (DataMap map : getDomain().getDataMaps()) {
+            for (DbEntity e : map.getDbEntities()) {
                 if (dbEntityName.equals(e.getName())) {
                     return e;
                 }
@@ -196,12 +193,8 @@ public abstract class CayenneCase extends BasicCase {
 
     protected ObjEntity getObjEntity(String objEntityName) {
         // retrieve ObjEntity the hard way, bypassing the resolver...
-        Iterator it = getDomain().getDataMaps().iterator();
-        while (it.hasNext()) {
-            DataMap map = (DataMap) it.next();
-            Iterator objEntities = map.getObjEntities().iterator();
-            while (objEntities.hasNext()) {
-                ObjEntity e = (ObjEntity) objEntities.next();
+        for (DataMap map : getDomain().getDataMaps()) {
+            for (ObjEntity e : map.getObjEntities()) {
                 if (objEntityName.equals(e.getName())) {
                     return e;
                 }

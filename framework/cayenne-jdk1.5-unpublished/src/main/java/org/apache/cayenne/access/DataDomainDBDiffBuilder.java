@@ -93,9 +93,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
     private void appendSimpleProperties(Map<Object, Object> dbDiff) {
         // populate changed columns
         if (currentPropertyDiff != null) {
-            Iterator<?> it = currentPropertyDiff.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) it.next();
+            for (final Map.Entry<Object, Object> entry : currentPropertyDiff.entrySet()) {
                 ObjAttribute attribute = (ObjAttribute) objEntity.getAttribute(entry
                         .getKey()
                         .toString());
@@ -113,9 +111,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
     private void appendForeignKeys(Map<Object, Object> dbDiff) {
         // populate changed FKs
         if (currentArcDiff != null) {
-            Iterator<?> it = currentArcDiff.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) it.next();
+            for (final Map.Entry<Object, Object> entry : currentArcDiff.entrySet()) {
                 ObjRelationship relation = (ObjRelationship) objEntity
                         .getRelationship(entry.getKey().toString());
 

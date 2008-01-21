@@ -178,9 +178,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
                     .getRelationship()
                     .getDbRelationships()
                     .get(0);
-            Iterator it = r.getJoins().iterator();
-            while (it.hasNext()) {
-                DbJoin join = (DbJoin) it.next();
+            for (final DbJoin join : r.getJoins()) {
 
                 PrefetchProcessorNode parent = (PrefetchProcessorNode) getParent();
                 String source;

@@ -632,9 +632,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
         }
 
         // validate mandatory relationships
-        Iterator<?> relationships = objEntity.getRelationships().iterator();
-        while (relationships.hasNext()) {
-            ObjRelationship relationship = (ObjRelationship) relationships.next();
+        for (final ObjRelationship relationship : objEntity.getRelationships()) {
 
             if (relationship.isSourceIndependentFromTargetChange()) {
                 continue;
@@ -740,9 +738,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
         String[] fields = this.getClass().getName().split("\\.");
         encoder.setRoot(fields[fields.length - 1], this.getClass().getName());
 
-        Iterator<?> it = objectEntity.getDeclaredAttributes().iterator();
-        while (it.hasNext()) {
-            ObjAttribute att = (ObjAttribute) it.next();
+        for (final ObjAttribute att : objectEntity.getDeclaredAttributes()) {
             String name = att.getName();
             encoder.encodeProperty(name, readNestedProperty(name));
         }
@@ -760,9 +756,7 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
                 .getEntityResolver();
         ObjEntity objectEntity = resolver.lookupObjEntity(getClass());
 
-        Iterator<?> it = objectEntity.getDeclaredAttributes().iterator();
-        while (it.hasNext()) {
-            ObjAttribute att = (ObjAttribute) it.next();
+        for (final ObjAttribute att : objectEntity.getDeclaredAttributes()) {
             String name = att.getName();
             writeProperty(name, decoder.decodeObject(name));
         }

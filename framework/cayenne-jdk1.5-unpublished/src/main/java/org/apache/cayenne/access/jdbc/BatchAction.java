@@ -241,9 +241,8 @@ public class BatchAction extends BaseSQLAction {
         if (query instanceof InsertBatchQuery) {
 
             // see if any of the generated attributes is PK
-            Iterator attributes = query.getDbEntity().getGeneratedAttributes().iterator();
-            while (attributes.hasNext()) {
-                if (((DbAttribute) attributes.next()).isPrimaryKey()) {
+            for (final DbAttribute attr : query.getDbEntity().getGeneratedAttributes()) {
+                if (attr.isPrimaryKey()) {
                     return true;
                 }
             }

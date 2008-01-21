@@ -154,9 +154,7 @@ public class DbGenerator {
         createConstraints = new HashMap<String, List<String>>();
 
         DbAdapter adapter = getAdapter();
-        Iterator<DbEntity> it = dbEntitiesInInsertOrder.iterator();
-        while (it.hasNext()) {
-            DbEntity dbe = it.next();
+        for (final DbEntity dbe : this.dbEntitiesInInsertOrder) {
 
             String name = dbe.getName();
 
@@ -218,17 +216,13 @@ public class DbGenerator {
         }
 
         if (shouldCreateTables) {
-            Iterator<DbEntity> it = dbEntitiesInInsertOrder.iterator();
-            while (it.hasNext()) {
-                DbEntity ent = it.next();
+            for (final DbEntity ent : dbEntitiesInInsertOrder) {
                 list.add(createTables.get(ent.getName()));
             }
         }
 
         if (shouldCreateFKConstraints) {
-            Iterator<DbEntity> it = dbEntitiesInInsertOrder.iterator();
-            while (it.hasNext()) {
-                DbEntity ent = it.next();
+            for (final DbEntity ent : dbEntitiesInInsertOrder) {
                 List<String> fks = createConstraints.get(ent.getName());
                 list.addAll(fks);
             }
@@ -292,9 +286,7 @@ public class DbGenerator {
             // create tables
             List<String> createdTables = new ArrayList<String>();
             if (shouldCreateTables) {
-                Iterator<DbEntity> it = dbEntitiesInInsertOrder.iterator();
-                while (it.hasNext()) {
-                    DbEntity ent = it.next();
+                for (final DbEntity ent : dbEntitiesInInsertOrder) {
 
                     // only create missing tables
 
@@ -324,9 +316,8 @@ public class DbGenerator {
                 List<String> dropAutoPKSQL = getAdapter()
                         .getPkGenerator()
                         .dropAutoPkStatements(dbEntitiesRequiringAutoPK);
-                Iterator<String> it = dropAutoPKSQL.iterator();
-                while (it.hasNext()) {
-                    safeExecute(connection, it.next());
+                for (final String sql : dropAutoPKSQL) {
+                    safeExecute(connection, sql);
                 }
             }
 
@@ -335,9 +326,8 @@ public class DbGenerator {
                 List<String> createAutoPKSQL = getAdapter()
                         .getPkGenerator()
                         .createAutoPkStatements(dbEntitiesRequiringAutoPK);
-                Iterator<String> it = createAutoPKSQL.iterator();
-                while (it.hasNext()) {
-                    safeExecute(connection, it.next());
+                for (final String sql : createAutoPKSQL) {
+                    safeExecute(connection, sql);
                 }
             }
 
@@ -394,9 +384,7 @@ public class DbGenerator {
      */
     public List<String> createConstraintsQueries(DbEntity table) {
         List<String> list = new ArrayList<String>();
-        Iterator<DbRelationship> it = table.getRelationships().iterator();
-        while (it.hasNext()) {
-            DbRelationship rel = it.next();
+        for (final DbRelationship rel : table.getRelationships()) {
 
             if (rel.isToMany()) {
                 continue;
@@ -544,9 +532,7 @@ public class DbGenerator {
 
             // tables with invalid DbAttributes are not included
             boolean invalidAttributes = false;
-            Iterator<DbAttribute> nextDbAtributes = nextEntity.getAttributes().iterator();
-            while (nextDbAtributes.hasNext()) {
-                DbAttribute attr = nextDbAtributes.next();
+            for (final DbAttribute attr : nextEntity.getAttributes()) {
                 if (attr.getType() == TypesMapping.NOT_DEFINED) {
                     logObj.info("Skipping entity, attribute type is undefined: "
                             + nextEntity.getName()

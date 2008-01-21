@@ -355,9 +355,7 @@ public class SelectTranslator extends QueryAssembler {
 
         // add remaining needed attrs from DbEntity
         DbEntity table = getRootDbEntity();
-        Iterator pk = table.getPrimaryKeys().iterator();
-        while (pk.hasNext()) {
-            DbAttribute dba = (DbAttribute) pk.next();
+        for (final DbAttribute dba : table.getPrimaryKeys()) {
             appendColumn(columns, null, dba, attributes, null);
         }
 
