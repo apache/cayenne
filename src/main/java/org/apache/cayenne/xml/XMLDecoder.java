@@ -71,7 +71,7 @@ public class XMLDecoder {
     private DataContext dataContext;
 
     // TODO: H to the A to the C to the K
-    private List decodedCollections = new ArrayList();
+    private List<Element> decodedCollections = new ArrayList<Element>();
 
     /**
      * Default constructor. This will create an XMLDecoder instance that will decode

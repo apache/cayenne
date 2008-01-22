@@ -42,7 +42,7 @@ import javax.sql.PooledConnection;
 public class PooledConnectionImpl implements PooledConnection {
 
     private Connection connectionObj;
-    private List connectionEventListeners;
+    private List<ConnectionEventListener> connectionEventListeners;
     private boolean hadErrors;
     private DataSource connectionSource;
     private String userName;
@@ -52,7 +52,7 @@ public class PooledConnectionImpl implements PooledConnection {
         // TODO: maybe remove synchronization and use
         // FastArrayList from commons-collections? After
         // all the only listener is usually pool manager.
-        this.connectionEventListeners = Collections.synchronizedList(new ArrayList(10));
+        this.connectionEventListeners = Collections.synchronizedList(new ArrayList<ConnectionEventListener>(10));
     }
 
     /** Creates new PooledConnection */
@@ -161,9 +161,9 @@ public class PooledConnectionImpl implements PooledConnection {
                 return;
 
             ConnectionEvent closedEvent = new ConnectionEvent(this, exception);
-            Iterator listeners = connectionEventListeners.iterator();
+            Iterator<ConnectionEventListener> listeners = connectionEventListeners.iterator();
             while (listeners.hasNext()) {
-                ConnectionEventListener nextListener = (ConnectionEventListener) listeners
+                ConnectionEventListener nextListener = listeners
                         .next();
                 nextListener.connectionErrorOccurred(closedEvent);
             }
@@ -180,10 +180,10 @@ public class PooledConnectionImpl implements PooledConnection {
                 return;
 
             ConnectionEvent closedEvent = new ConnectionEvent(this);
-            Iterator listeners = connectionEventListeners.iterator();
+            Iterator<ConnectionEventListener> listeners = connectionEventListeners.iterator();
 
             while (listeners.hasNext()) {
-                ConnectionEventListener nextListener = (ConnectionEventListener) listeners
+                ConnectionEventListener nextListener = listeners
                         .next();
                 nextListener.connectionClosed(closedEvent);
             }
