@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.art.Artist;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -33,6 +34,31 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
     @Override
     protected void setUp() throws Exception {
         deleteTestData();
+    }
+
+    public void testDifferentEntity() throws Exception {
+        createTestData("prepare");
+
+        String ejbql = "SELECT a FROM Artist a"
+                + " WHERE EXISTS ("
+                + " SELECT DISTINCT p1 FROM Painting p1"
+                + " WHERE p1.toArtist = a"
+                + ")";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List objects = createDataContext().performQuery(query);
+        assertEquals(1, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(33001l));
+
+        assertTrue("" + objects.get(0), objects.get(0) instanceof Artist);
     }
 
     public void testExists() throws Exception {
@@ -59,12 +85,12 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
         assertTrue(ids.contains(new Integer(33001)));
         assertTrue(ids.contains(new Integer(33003)));
     }
-    
+
     public void testAll() throws Exception {
-        if(!getAccessStackAdapter().supportsAllAnySome()) {
+        if (!getAccessStackAdapter().supportsAllAnySome()) {
             return;
         }
-        
+
         createTestData("prepare");
 
         String ejbql = "SELECT p FROM Painting p"
@@ -87,12 +113,12 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
         assertTrue(ids.contains(new Integer(33003)));
         assertTrue(ids.contains(new Integer(33004)));
     }
-    
+
     public void testAny() throws Exception {
-        if(!getAccessStackAdapter().supportsAllAnySome()) {
+        if (!getAccessStackAdapter().supportsAllAnySome()) {
             return;
         }
-        
+
         createTestData("prepare");
 
         String ejbql = "SELECT p FROM Painting p"
@@ -116,12 +142,12 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
         assertTrue(ids.contains(new Integer(33003)));
         assertTrue(ids.contains(new Integer(33004)));
     }
-    
+
     public void testSome() throws Exception {
-        if(!getAccessStackAdapter().supportsAllAnySome()) {
+        if (!getAccessStackAdapter().supportsAllAnySome()) {
             return;
         }
-        
+
         createTestData("prepare");
 
         String ejbql = "SELECT p FROM Painting p"
