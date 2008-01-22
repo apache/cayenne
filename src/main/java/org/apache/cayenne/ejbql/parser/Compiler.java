@@ -327,7 +327,9 @@ class Compiler {
 
         @Override
         public boolean visitIdentifier(EJBQLExpression expression) {
-            rootId = normalizeIdPath(expression.getText());
+            if (appendingResultColumns) {
+                rootId = normalizeIdPath(expression.getText());
+            }
             return false;
         }
 
