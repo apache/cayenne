@@ -58,8 +58,8 @@ public class PoolManager implements DataSource, ConnectionEventListener {
     protected String password;
     protected String userName;
 
-    protected List unusedPool;
-    protected List usedPool;
+    protected List<PooledConnection> unusedPool;
+    protected List<PooledConnection> usedPool;
 
     private PoolMaintenanceThread poolMaintenanceThread;
 
@@ -161,8 +161,8 @@ public class PoolManager implements DataSource, ConnectionEventListener {
         this.poolDataSource = poolDataSource;
 
         // init pool... use linked lists to use the queue in the FIFO manner
-        usedPool = new LinkedList();
-        unusedPool = new LinkedList();
+        usedPool = new LinkedList<PooledConnection>();
+        unusedPool = new LinkedList<PooledConnection>();
         growPool(minConnections, userName, password);
 
         startMaintenanceThread();
@@ -192,9 +192,9 @@ public class PoolManager implements DataSource, ConnectionEventListener {
     public void dispose() throws SQLException {
         synchronized (this) {
             // clean connections from the pool
-            ListIterator unusedIterator = unusedPool.listIterator();
+            ListIterator<PooledConnection> unusedIterator = unusedPool.listIterator();
             while (unusedIterator.hasNext()) {
-                PooledConnection con = (PooledConnection) unusedIterator.next();
+                PooledConnection con = unusedIterator.next();
                 // close connection
                 con.close();
                 // remove connection from the list
@@ -202,9 +202,9 @@ public class PoolManager implements DataSource, ConnectionEventListener {
             }
 
             // clean used connections
-            ListIterator usedIterator = usedPool.listIterator();
+            ListIterator<PooledConnection> usedIterator = usedPool.listIterator();
             while (usedIterator.hasNext()) {
-                PooledConnection con = (PooledConnection) usedIterator.next();
+                PooledConnection con = usedIterator.next();
                 // stop listening for connection events
                 con.removeConnectionEventListener(this);
                 // close connection
@@ -255,7 +255,7 @@ public class PoolManager implements DataSource, ConnectionEventListener {
     protected synchronized void shrinkPool(int closeConnections) {
         int idleSize = unusedPool.size();
         for (int i = 0; i < closeConnections && i < idleSize; i++) {
-            PooledConnection con = (PooledConnection) unusedPool.remove(i);
+            PooledConnection con = unusedPool.remove(i);
 
             try {
                 con.close();
@@ -426,7 +426,7 @@ public class PoolManager implements DataSource, ConnectionEventListener {
         }
 
         // get first connection... lets cycle them in FIFO manner
-        return (PooledConnection) unusedPool.remove(0);
+        return unusedPool.remove(0);
     }
 
     public int getLoginTimeout() throws java.sql.SQLException {

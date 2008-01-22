@@ -45,7 +45,7 @@ import org.w3c.dom.NamedNodeMap;
 final class XMLMappingDescriptor {
 
     private SerializableEntity rootEntity;
-    private Map entities;
+    private Map<String, SerializableEntity> entities;
     private DataContext dataContext;
 
     /**
@@ -74,7 +74,7 @@ final class XMLMappingDescriptor {
                     "Root of the mapping model must be \"model\"");
         }
 
-        Map entities = new HashMap();
+        Map<String, SerializableEntity> entities = new HashMap<String, SerializableEntity>();
         Iterator it = XMLUtil.getChildren(root).iterator();
         while (it.hasNext()) {
             Element e = (Element) it.next();
@@ -130,7 +130,7 @@ final class XMLMappingDescriptor {
      * @return The entity with "xmlTag" equal to the passed in name.
      */
     SerializableEntity getEntity(String name) {
-        return (SerializableEntity) entities.get(name);
+        return entities.get(name);
     }
 
     /**

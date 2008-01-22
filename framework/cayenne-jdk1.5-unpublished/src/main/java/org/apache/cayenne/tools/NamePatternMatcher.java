@@ -59,7 +59,7 @@ public class NamePatternMatcher {
      */
     public Pattern[] createPatterns(String patternString) {
         String[] patternStrings = tokenizePattern(patternString);
-        List patterns = new ArrayList(patternStrings.length);
+        List<Pattern> patterns = new ArrayList<Pattern>(patternStrings.length);
 
         for (int i = 0; i < patternStrings.length; i++) {
 
@@ -100,7 +100,7 @@ public class NamePatternMatcher {
                 return new String[0];
             }
 
-            List patterns = new ArrayList(len);
+            List<String> patterns = new ArrayList<String>(len);
             for (int i = 0; i < len; i++) {
                 String nextPattern = toks.nextToken();
                 StringBuffer buffer = new StringBuffer();
