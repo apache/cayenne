@@ -118,6 +118,11 @@ public class QueryLogger {
         else if (object instanceof Boolean) {
             buffer.append('\'').append(object).append('\'');
         }
+        else if (object instanceof Enum) {
+            buffer.append(object.getClass().getName()).append(".");
+            buffer.append(((Enum<?>) object).name()).append("=");
+            buffer.append(((Enum<?>) object).ordinal());
+        }
         else if (object instanceof ParameterBinding) {
             sqlLiteralForObject(buffer, ((ParameterBinding) object).getValue());
         }
