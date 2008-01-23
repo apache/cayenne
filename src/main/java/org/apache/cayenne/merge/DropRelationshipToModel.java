@@ -20,8 +20,6 @@ package org.apache.cayenne.merge;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
 
 public class DropRelationshipToModel extends AbstractToModelToken {
 
@@ -39,32 +37,6 @@ public class DropRelationshipToModel extends AbstractToModelToken {
 
     public void execute(MergerContext mergerContext) {
         remove(rel, true);
-    }
-
-    private void remove(DbRelationship rel, boolean reverse) {
-        if (rel == null) {
-            return;
-        }
-        if (reverse) {
-            remove(rel.getReverseRelationship(), false);
-        }
-
-        DbEntity dbEntity = (DbEntity) rel.getSourceEntity();
-        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(dbEntity)) {
-            remove(objEntity.getRelationshipForDbRelationship(rel), true);
-        }
-        
-        rel.getSourceEntity().removeRelationship(rel.getName());
-    }
-
-    private void remove(ObjRelationship rel, boolean reverse) {
-        if (rel == null) {
-            return;
-        }
-        if (reverse) {
-            remove(rel.getReverseRelationship(), false);
-        }
-        rel.getSourceEntity().removeRelationship(rel.getName());
     }
 
     public String getTokenName() {

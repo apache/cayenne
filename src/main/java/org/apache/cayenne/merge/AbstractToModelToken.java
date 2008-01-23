@@ -23,8 +23,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.util.EntityMergeSupport;
 
 /**
@@ -55,6 +57,32 @@ public abstract class AbstractToModelToken implements MergerToken {
             }
         }
         return objEntities;
+    }
+    
+    protected void remove(DbRelationship rel, boolean reverse) {
+        if (rel == null) {
+            return;
+        }
+        if (reverse) {
+            remove(rel.getReverseRelationship(), false);
+        }
+
+        DbEntity dbEntity = (DbEntity) rel.getSourceEntity();
+        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(dbEntity)) {
+            remove(objEntity.getRelationshipForDbRelationship(rel), true);
+        }
+        
+        rel.getSourceEntity().removeRelationship(rel.getName());
+    }
+
+    protected void remove(ObjRelationship rel, boolean reverse) {
+        if (rel == null) {
+            return;
+        }
+        if (reverse) {
+            remove(rel.getReverseRelationship(), false);
+        }
+        rel.getSourceEntity().removeRelationship(rel.getName());
     }
 
     @Override

@@ -30,68 +30,10 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 
-public class DropColumnToModelTest extends MergeCase {
 
-    public void testSimpleColumn() throws Exception {
-        dropTableIfPresent(node, "NEW_TABLE");
+public class DropRelationshipToModelTest extends MergeCase {
 
-        assertTokensAndExecute(node, map, 0, 0);
-
-        DbEntity dbEntity = new DbEntity("NEW_TABLE");
-
-        DbAttribute column1 = new DbAttribute("ID", Types.INTEGER, dbEntity);
-        column1.setMandatory(true);
-        column1.setPrimaryKey(true);
-        dbEntity.addAttribute(column1);
-
-        DbAttribute column2 = new DbAttribute("NAME", Types.VARCHAR, dbEntity);
-        column2.setMaxLength(10);
-        column2.setMandatory(false);
-        dbEntity.addAttribute(column2);
-
-        map.addDbEntity(dbEntity);
-
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
-
-        ObjEntity objEntity = new ObjEntity("NewTable");
-        objEntity.setDbEntity(dbEntity);
-        ObjAttribute oatr1 = new ObjAttribute("name");
-        oatr1.setDbAttributePath(column2.getName());
-        oatr1.setType("java.lang.String");
-        objEntity.addAttribute(oatr1);
-        map.addObjEntity(objEntity);
-
-        // force drop name column in db
-        MergerToken token = mergerFactory().createDropColumToDb(dbEntity, column2);
-        execute(token);
-
-        List<MergerToken> tokens = createMergeTokens();
-        assertEquals(1, tokens.size());
-        token = tokens.get(0);
-        if (token.getDirection().isToDb()) {
-            token = token.createReverse(mergerFactory());
-        }
-        assertTrue(token instanceof DropColumnToModel);
-        execute(token);
-        assertNull(dbEntity.getAttribute(column2.getName()));
-        assertNull(objEntity.getAttribute(oatr1.getName()));
-
-        DataContext ctxt = createDataContext();
-
-        // clear up
-        map.removeObjEntity(objEntity.getName(), true);
-        map.removeDbEntity(dbEntity.getName(), true);
-        ctxt.getEntityResolver().clearCache();
-        assertNull(map.getObjEntity(objEntity.getName()));
-        assertNull(map.getDbEntity(dbEntity.getName()));
-        assertFalse(map.getDbEntities().contains(dbEntity));
-
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
-    }
-
-    public void testRemoveFKColumnWithoutRelationshipInDb() throws Exception {
+    public void testForreignKey() throws Exception {
         dropTableIfPresent(node, "NEW_TABLE");
         dropTableIfPresent(node, "NEW_TABLE2");
 
@@ -124,13 +66,7 @@ public class DropColumnToModelTest extends MergeCase {
 
         map.addDbEntity(dbEntity2);
 
-        assertTokensAndExecute(node, map, 2, 0);
-        assertTokensAndExecute(node, map, 0, 0);
-        
-        // force drop fk column in db
-        execute(mergerFactory().createDropColumToDb(dbEntity2, e2col2));
-
-        // create db relationships, but do not sync them to db
+        // create db relationships
         DbRelationship rel1To2 = new DbRelationship("rel1To2");
         rel1To2.setSourceEntity(dbEntity1);
         rel1To2.setTargetEntity(dbEntity2);
@@ -145,6 +81,9 @@ public class DropColumnToModelTest extends MergeCase {
         dbEntity2.addRelationship(rel2To1);
         assertSame(rel1To2, rel2To1.getReverseRelationship());
         assertSame(rel2To1, rel1To2.getReverseRelationship());
+
+        assertTokensAndExecute(node, map, 4, 0);
+        assertTokensAndExecute(node, map, 0, 0);
 
         // create ObjEntities
         ObjEntity objEntity1 = new ObjEntity("NewTable");
@@ -180,17 +119,31 @@ public class DropColumnToModelTest extends MergeCase {
         assertSame(objRel1To2, objRel2To1.getReverseRelationship());
         assertSame(objRel2To1, objRel1To2.getReverseRelationship());
 
-        // try do use the merger to remove the column and relationship in the model
+        // remove relationship and fk from model, merge to db and read to model
+        dbEntity2.removeRelationship(rel2To1.getName());
+        dbEntity1.removeRelationship(rel1To2.getName());
+        dbEntity2.removeAttribute(e2col2.getName());
         List<MergerToken> tokens = createMergeTokens();
+        assertTokens(tokens, 2, 1);
+        for (MergerToken token : tokens) {
+            if (token.getDirection().isToDb()) {
+                execute(token);
+            }
+        }
+        assertTokensAndExecute(0, 0);
+        dbEntity2.addRelationship(rel2To1);
+        dbEntity1.addRelationship(rel1To2);
+        dbEntity2.addAttribute(e2col2);
+        
+        // try do use the merger to remove the relationship in the model
+        tokens = createMergeTokens();
         assertTokens(tokens, 2, 0);
         // TODO: reversing the following two tokens should also reverse the order
         MergerToken token0 = tokens.get(0).createReverse(mergerFactory());
         MergerToken token1 = tokens.get(1).createReverse(mergerFactory());
-        assertTrue(token0.getClass().getName(), token0 instanceof DropColumnToModel);
-        //assertTrue(((DropColumnToModel)token0).getEntity() == dbEntity2);
-        //assertTrue(((DropColumnToModel)token0).getAttribute() == e2col2);
-        assertTrue(token1.getClass().getName(), token1 instanceof DropRelationshipToModel);
-        // do not execute DropRelationshipToModel, only DropColumnToModel. 
+        assertTrue(token0 instanceof DropColumnToModel);
+        assertTrue(token1 instanceof DropRelationshipToModel);
+        execute(token1);
         execute(token0);
         
         // check after merging
@@ -219,4 +172,5 @@ public class DropColumnToModelTest extends MergeCase {
         assertTokensAndExecute(2, 0);
         assertTokensAndExecute(0, 0);
     }
+
 }
