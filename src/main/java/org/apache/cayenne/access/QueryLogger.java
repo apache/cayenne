@@ -245,6 +245,19 @@ public class QueryLogger {
         logObj.info("*** Connecting: FAILURE.", th);
     }
 
+    /**
+     * @since 3.0
+     */
+    public static void logGeneratedKey(DbAttribute attribute, Object value)
+    {
+        if (isLoggable()) {
+            String entity = attribute.getEntity().getName();
+            String key    = attribute.getName();
+
+            logObj.info("Generated PK: " + entity + "." + key + " = " + value);
+        }
+    }
+
     private static void buildLog(StringBuffer      buffer,
                                  String            prefix,
                                  String            postfix,

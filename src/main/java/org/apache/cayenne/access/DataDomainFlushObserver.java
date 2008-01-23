@@ -113,6 +113,9 @@ class DataDomainFlushObserver implements OperationObserver {
             if (attribute.isPrimaryKey()) {
                 Object value = key.values().iterator().next();
 
+                // Log the generated PK
+                QueryLogger.logGeneratedKey(attribute, value);
+
                 // I guess we should override any existing value,
                 // as generated key is the latest thing that exists in the DB.
                 id.getReplacementIdMap().put(attribute.getName(), value);
