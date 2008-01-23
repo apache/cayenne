@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -46,8 +49,11 @@ public class DropColumnToModel extends AbstractToModelToken {
 
     public void execute(MergerContext mergerContext) {
 
-        // remove relationships mapped to column
-        for (DbRelationship dbRelationship : entity.getRelationships()) {
+        // remove relationships mapped to column. duplicate List to prevent
+        // ConcurrentModificationException
+        List<DbRelationship> dbRelationships = new ArrayList<DbRelationship>(entity
+                .getRelationships());
+        for (DbRelationship dbRelationship : dbRelationships) {
             for (DbJoin join : dbRelationship.getJoins()) {
                 if (join.getSource() == column || join.getTarget() == column) {
                     remove(dbRelationship, true);
