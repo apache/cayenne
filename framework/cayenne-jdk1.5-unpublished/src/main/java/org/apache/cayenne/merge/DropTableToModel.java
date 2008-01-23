@@ -28,31 +28,25 @@ import org.apache.cayenne.map.ObjEntity;
  * 
  * @author halset
  */
-public class DropTableToModel extends AbstractToModelToken {
-
-    private DbEntity entity;
+public class DropTableToModel extends AbstractToModelToken.Entity {
 
     public DropTableToModel(DbEntity entity) {
-        this.entity = entity;
+        super(entity);
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createCreateTableToDb(entity);
+        return factory.createCreateTableToDb(getEntity());
     }
 
     public void execute(MergerContext mergerContext) {
-        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(entity)) {
+        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(getEntity())) {
             objEntity.getDataMap().removeObjEntity(objEntity.getName(), true);
         }
-        entity.getDataMap().removeDbEntity(entity.getName(), true);
+        getEntity().getDataMap().removeDbEntity(getEntity().getName(), true);
     }
 
     public String getTokenName() {
         return "Drop Table";
-    }
-
-    public String getTokenValue() {
-        return entity.getName();
     }
 
 }

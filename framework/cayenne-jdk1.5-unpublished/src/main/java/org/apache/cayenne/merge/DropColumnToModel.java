@@ -33,37 +33,33 @@ import org.apache.cayenne.map.ObjEntity;
  * 
  * @author halset
  */
-public class DropColumnToModel extends AbstractToModelToken {
-
-    private DbEntity entity;
-    private DbAttribute column;
+public class DropColumnToModel extends AbstractToModelToken.EntityAndColumn {
 
     public DropColumnToModel(DbEntity entity, DbAttribute column) {
-        this.entity = entity;
-        this.column = column;
+        super(entity, column);
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createAddColumnToDb(entity, column);
+        return factory.createAddColumnToDb(getEntity(), getColumn());
     }
 
     public void execute(MergerContext mergerContext) {
 
         // remove relationships mapped to column. duplicate List to prevent
         // ConcurrentModificationException
-        List<DbRelationship> dbRelationships = new ArrayList<DbRelationship>(entity
+        List<DbRelationship> dbRelationships = new ArrayList<DbRelationship>(getEntity()
                 .getRelationships());
         for (DbRelationship dbRelationship : dbRelationships) {
             for (DbJoin join : dbRelationship.getJoins()) {
-                if (join.getSource() == column || join.getTarget() == column) {
+                if (join.getSource() == getColumn() || join.getTarget() == getColumn()) {
                     remove(dbRelationship, true);
                 }
             }
         }
 
         // remove ObjAttribute mapped to same column
-        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(entity)) {
-            ObjAttribute objAttribute = objEntity.getAttributeForDbAttribute(column);
+        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(getEntity())) {
+            ObjAttribute objAttribute = objEntity.getAttributeForDbAttribute(getColumn());
             if (objAttribute != null) {
                 objEntity.removeAttribute(objAttribute.getName());
             }
@@ -71,15 +67,11 @@ public class DropColumnToModel extends AbstractToModelToken {
         }
 
         // remove DbAttribute
-        entity.removeAttribute(column.getName());
+        getEntity().removeAttribute(getColumn().getName());
     }
 
     public String getTokenName() {
         return "Drop Column";
-    }
-
-    public String getTokenValue() {
-        return entity.getName() + "." + column.getName();
     }
 
 }

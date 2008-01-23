@@ -21,18 +21,17 @@ package org.apache.cayenne.merge;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
-public class DropRelationshipToModel extends AbstractToModelToken {
+public class DropRelationshipToModel extends AbstractToModelToken.Entity {
 
-    private DbEntity entity;
     private DbRelationship rel;
 
     public DropRelationshipToModel(DbEntity entity, DbRelationship rel) {
-        this.entity = entity;
+        super(entity);
         this.rel = rel;
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createAddRelationshipToDb(entity, rel);
+        return factory.createAddRelationshipToDb(getEntity(), rel);
     }
 
     public void execute(MergerContext mergerContext) {
@@ -43,6 +42,7 @@ public class DropRelationshipToModel extends AbstractToModelToken {
         return "Drop Relationship";
     }
 
+    @Override
     public String getTokenValue() {
         StringBuilder s = new StringBuilder();
         s.append(rel.getSourceEntity().getName());

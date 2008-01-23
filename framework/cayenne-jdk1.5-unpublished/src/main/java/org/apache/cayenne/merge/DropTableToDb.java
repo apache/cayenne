@@ -24,12 +24,10 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
 
-public class DropTableToDb extends AbstractToDbToken {
-
-    private DbEntity entity;
+public class DropTableToDb extends AbstractToDbToken.Entity {
 
     public DropTableToDb(DbEntity entity) {
-        this.entity = entity;
+        super(entity);
     }
 
     @Override
@@ -40,7 +38,7 @@ public class DropTableToDb extends AbstractToDbToken {
         sqls.addAll(adapter.getPkGenerator().dropAutoPkStatements(
                 Collections.singletonList(entity)));
          */
-        sqls.addAll(adapter.dropTableStatements(entity));
+        sqls.addAll(adapter.dropTableStatements(getEntity()));
         return sqls;
     }
 
@@ -48,12 +46,8 @@ public class DropTableToDb extends AbstractToDbToken {
         return "Drop Table";
     }
 
-    public String getTokenValue() {
-        return entity.getName();
-    }
-
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createCreateTableToModel(entity);
+        return factory.createCreateTableToModel(getEntity());
     }
 
 }

@@ -29,21 +29,20 @@ import org.apache.cayenne.map.DbEntity;
  * 
  * @author halset
  */
-public class SetColumnTypeToModel extends AbstractToModelToken {
+public class SetColumnTypeToModel extends AbstractToModelToken.Entity {
 
-    private DbEntity entity;
     private DbAttribute columnOriginal;
     private DbAttribute columnNew;
 
     public SetColumnTypeToModel(DbEntity entity, DbAttribute columnOriginal,
             DbAttribute columnNew) {
-        this.entity = entity;
+        super(entity);
         this.columnOriginal = columnOriginal;
         this.columnNew = columnNew;
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createSetColumnTypeToDb(entity, columnNew, columnOriginal);
+        return factory.createSetColumnTypeToDb(getEntity(), columnNew, columnOriginal);
     }
 
     public void execute(MergerContext mergerContext) {
@@ -57,9 +56,10 @@ public class SetColumnTypeToModel extends AbstractToModelToken {
         return "Set Column Type";
     }
 
+    @Override
     public String getTokenValue() {
         StringBuffer sb = new StringBuffer();
-        sb.append(entity.getName());
+        sb.append(getEntity().getName());
         sb.append(".");
         sb.append(columnNew.getName());
 

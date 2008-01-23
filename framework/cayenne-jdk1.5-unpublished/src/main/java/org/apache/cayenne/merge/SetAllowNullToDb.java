@@ -30,14 +30,10 @@ import org.apache.cayenne.map.DbEntity;
  * 
  * @author halset
  */
-public class SetAllowNullToDb extends AbstractToDbToken {
-
-    private DbEntity entity;
-    private DbAttribute column;
+public class SetAllowNullToDb extends AbstractToDbToken.EntityAndColumn {
 
     public SetAllowNullToDb(DbEntity entity, DbAttribute column) {
-        this.entity = entity;
-        this.column = column;
+        super(entity, column);
     }
 
     @Override
@@ -45,9 +41,9 @@ public class SetAllowNullToDb extends AbstractToDbToken {
         StringBuffer sqlBuffer = new StringBuffer();
 
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(entity.getFullyQualifiedName());
+        sqlBuffer.append(getEntity().getFullyQualifiedName());
         sqlBuffer.append(" ALTER COLUMN ");
-        sqlBuffer.append(column.getName());
+        sqlBuffer.append(getColumn().getName());
         sqlBuffer.append(" DROP NOT NULL");
 
         return Collections.singletonList(sqlBuffer.toString());
@@ -57,12 +53,8 @@ public class SetAllowNullToDb extends AbstractToDbToken {
         return "Set Allow Null";
     }
 
-    public String getTokenValue() {
-        return entity.getName() + "." + column.getName();
-    }
-
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createSetNotNullToModel(entity, column);
+        return factory.createSetNotNullToModel(getEntity(), getColumn());
     }
 
 }

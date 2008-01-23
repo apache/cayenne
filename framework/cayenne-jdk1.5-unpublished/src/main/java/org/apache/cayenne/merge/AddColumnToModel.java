@@ -29,31 +29,23 @@ import org.apache.cayenne.util.EntityMergeSupport;
  * 
  * @author halset
  */
-public class AddColumnToModel extends AbstractToModelToken {
-
-    private DbEntity entity;
-    private DbAttribute column;
+public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
 
     public AddColumnToModel(DbEntity entity, DbAttribute column) {
-        this.entity = entity;
-        this.column = column;
+        super(entity, column);
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createDropColumToDb(entity, column);
+        return factory.createDropColumToDb(getEntity(), getColumn());
     }
 
     public void execute(MergerContext mergerContext) {
-        entity.addAttribute(column);
-        synchronizeWithObjEntity(entity);
+        getEntity().addAttribute(getColumn());
+        synchronizeWithObjEntity(getEntity());
     }
 
     public String getTokenName() {
         return "Add Column";
-    }
-
-    public String getTokenValue() {
-        return entity.getName() + "." + column.getName();
     }
 
 }

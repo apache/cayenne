@@ -26,30 +26,22 @@ import org.apache.cayenne.map.DbEntity;
  * 
  * @author halset
  */
-public class SetAllowNullToModel extends AbstractToModelToken {
-
-    private DbEntity entity;
-    private DbAttribute column;
+public class SetAllowNullToModel extends AbstractToModelToken.EntityAndColumn {
 
     public SetAllowNullToModel(DbEntity entity, DbAttribute column) {
-        this.entity = entity;
-        this.column = column;
+        super(entity, column);
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createSetNotNullToDb(entity, column);
+        return factory.createSetNotNullToDb(getEntity(), getColumn());
     }
 
     public void execute(MergerContext mergerContext) {
-        column.setMandatory(false);
+        getColumn().setMandatory(false);
     }
 
     public String getTokenName() {
         return "Set Allow Null";
-    }
-
-    public String getTokenValue() {
-        return entity.getName() + "." + column.getName();
     }
 
 }

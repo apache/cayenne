@@ -25,14 +25,10 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-public class DropColumnToDb extends AbstractToDbToken {
-
-    private DbEntity entity;
-    private DbAttribute column;
+public class DropColumnToDb extends AbstractToDbToken.EntityAndColumn {
 
     public DropColumnToDb(DbEntity entity, DbAttribute column) {
-        this.entity = entity;
-        this.column = column;
+        super(entity, column);
     }
 
     @Override
@@ -40,9 +36,9 @@ public class DropColumnToDb extends AbstractToDbToken {
         StringBuffer sqlBuffer = new StringBuffer();
 
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(entity.getFullyQualifiedName());
+        sqlBuffer.append(getEntity().getFullyQualifiedName());
         sqlBuffer.append(" DROP COLUMN ");
-        sqlBuffer.append(column.getName());
+        sqlBuffer.append(getColumn().getName());
 
         return Collections.singletonList(sqlBuffer.toString());
     }
@@ -51,12 +47,8 @@ public class DropColumnToDb extends AbstractToDbToken {
         return "Drop Column";
     }
 
-    public String getTokenValue() {
-        return entity.getName() + "." + column.getName();
-    }
-
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createAddColumnToModel(entity, column);
+        return factory.createAddColumnToModel(getEntity(), getColumn());
     }
 
 }

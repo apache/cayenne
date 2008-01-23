@@ -30,14 +30,12 @@ import org.apache.cayenne.util.Util;
  * 
  * @author halset
  */
-public class CreateTableToModel extends AbstractToModelToken {
-
-    private DbEntity entity;
+public class CreateTableToModel extends AbstractToModelToken.Entity {
 
     private String objEntityClassName = CayenneDataObject.class.getName();
 
     public CreateTableToModel(DbEntity entity) {
-        this.entity = entity;
+        super(entity);
     }
 
     /**
@@ -53,10 +51,10 @@ public class CreateTableToModel extends AbstractToModelToken {
 
     public void execute(MergerContext mergerContext) {
         DataMap map = mergerContext.getDataMap();
-        map.addDbEntity(entity);
+        map.addDbEntity(getEntity());
 
         // create a ObjEntity
-        String objEntityName = NameConverter.underscoredToJava(entity.getName(), true);
+        String objEntityName = NameConverter.underscoredToJava(getEntity().getName(), true);
         // this loop will terminate even if no valid name is found
         // to prevent loader from looping forever (though such case is very unlikely)
         String baseName = objEntityName;
@@ -65,7 +63,7 @@ public class CreateTableToModel extends AbstractToModelToken {
         }
 
         ObjEntity objEntity = new ObjEntity(objEntityName);
-        objEntity.setDbEntity(entity);
+        objEntity.setDbEntity(getEntity());
 
         // try to find a class name for the ObjEntity
         String className = objEntityClassName;
@@ -84,19 +82,15 @@ public class CreateTableToModel extends AbstractToModelToken {
         objEntity.setClassName(className);
         map.addObjEntity(objEntity);
 
-        synchronizeWithObjEntity(entity);
+        synchronizeWithObjEntity(getEntity());
     }
 
     public String getTokenName() {
         return "Create Table";
     }
 
-    public String getTokenValue() {
-        return entity.getName();
-    }
-
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createDropTableToDb(entity);
+        return factory.createDropTableToDb(getEntity());
     }
 
 }

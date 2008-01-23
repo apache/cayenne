@@ -26,13 +26,12 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DbRelationshipDetected;
 
-public class DropRelationshipToDb extends AbstractToDbToken {
+public class DropRelationshipToDb extends AbstractToDbToken.Entity {
 
-    private DbEntity entity;
     private DbRelationship rel;
 
     public DropRelationshipToDb(DbEntity entity, DbRelationship rel) {
-        this.entity = entity;
+        super(entity);
         this.rel = rel;
     }
     
@@ -53,7 +52,7 @@ public class DropRelationshipToDb extends AbstractToDbToken {
 
         StringBuilder buf = new StringBuilder();
         buf.append("ALTER TABLE ");
-        buf.append(entity.getFullyQualifiedName());
+        buf.append(getEntity().getFullyQualifiedName());
         buf.append(" DROP CONSTRAINT ");
         buf.append(fkName);
 
@@ -61,13 +60,14 @@ public class DropRelationshipToDb extends AbstractToDbToken {
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createAddRelationshipToModel(entity, rel);
+        return factory.createAddRelationshipToModel(getEntity(), rel);
     }
 
     public String getTokenName() {
         return "Drop Relationship";
     }
 
+    @Override
     public String getTokenValue() {
         StringBuilder s = new StringBuilder();
         s.append(rel.getSourceEntity().getName());
