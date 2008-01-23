@@ -19,6 +19,8 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.reflect.ClassDescriptorFactory;
+import org.apache.cayenne.reflect.ClassDescriptorMap;
+import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
 
 /**
  * An EntityResolver subclass that uses a different default {@link ClassDescriptorFactory}
@@ -35,5 +37,29 @@ class ClientEntityResolver extends EntityResolver {
     @Override
     public EntityResolver getClientEntityResolver() {
         return this;
+    }
+
+    @Override
+    public ClassDescriptorMap getClassDescriptorMap() {
+
+        if (classDescriptorMap == null) {
+            ClassDescriptorMap classDescriptorMap = new ClassDescriptorMap(this);
+
+            classDescriptorMap.addFactory(new ValueHolderDescriptorFactory(
+                    classDescriptorMap));
+
+            // since ClassDescriptorMap is not synchronized, we need to prefill it with
+            // entity proxies here.
+            for (DataMap map : maps) {
+                for (String entityName : map.getObjEntityMap().keySet()) {
+                    classDescriptorMap.getDescriptor(entityName);
+                }
+            }
+
+            this.classDescriptorMap = classDescriptorMap;
+        }
+
+        return classDescriptorMap;
+
     }
 }

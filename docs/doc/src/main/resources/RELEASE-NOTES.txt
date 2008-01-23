@@ -64,6 +64,7 @@ CAY-926 Refactoring class generator classes
 CAY-932 Cancel doesn't cancel when quitting CM with a modified model
 CAY-967 Caching doesn't work for paginated queries
 CAY-974 Subquery EJBQL returns wrong entity in the result
+CAY-976 EntityResolver Fault dependency leads to ClassNotFound on the ROP client
 
 ----------------------------------
 Release: 3.0M2
