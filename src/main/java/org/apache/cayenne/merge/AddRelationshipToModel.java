@@ -21,30 +21,30 @@ package org.apache.cayenne.merge;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
-public class AddRelationshipToModel extends AbstractToModelToken {
+public class AddRelationshipToModel extends AbstractToModelToken.Entity {
 
-    private DbEntity entity;
     private DbRelationship rel;
 
     public AddRelationshipToModel(DbEntity entity, DbRelationship rel) {
-        this.entity = entity;
+        super(entity);
         this.rel = rel;
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createDropRelationshipToDb(entity, rel);
+        return factory.createDropRelationshipToDb(getEntity(), rel);
     }
 
     public void execute(MergerContext mergerContext) {
-        entity.addRelationship(rel);
+        getEntity().addRelationship(rel);
         // TODO: add reverse relationship as well if it does not exist
-        synchronizeWithObjEntity(entity);
+        synchronizeWithObjEntity(getEntity());
     }
 
     public String getTokenName() {
         return "Add Relationship";
     }
 
+    @Override
     public String getTokenValue() {
         StringBuilder s = new StringBuilder();
         s.append(rel.getSourceEntity().getName());

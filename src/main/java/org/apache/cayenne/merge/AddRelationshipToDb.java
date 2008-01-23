@@ -26,13 +26,12 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
-public class AddRelationshipToDb extends AbstractToDbToken {
+public class AddRelationshipToDb extends AbstractToDbToken.Entity {
 
-    private DbEntity entity;
     private DbRelationship rel;
 
     public AddRelationshipToDb(DbEntity entity, DbRelationship rel) {
-        this.entity = entity;
+        super(entity);
         this.rel = rel;
     }
 
@@ -53,13 +52,14 @@ public class AddRelationshipToDb extends AbstractToDbToken {
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createDropRelationshipToModel(entity, rel);
+        return factory.createDropRelationshipToModel(getEntity(), rel);
     }
 
     public String getTokenName() {
         return "Add Relationship";
     }
 
+    @Override
     public String getTokenValue() {
         StringBuilder s = new StringBuilder();
         s.append(rel.getSourceEntity().getName());

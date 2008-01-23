@@ -25,20 +25,18 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
 
-public class CreateTableToDb extends AbstractToDbToken {
-
-    private DbEntity entity;
+public class CreateTableToDb extends AbstractToDbToken.Entity {
 
     public CreateTableToDb(DbEntity entity) {
-        this.entity = entity;
+        super(entity);
     }
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
         List<String> sqls = new ArrayList<String>();
         sqls.addAll(adapter.getPkGenerator().createAutoPkStatements(
-                Collections.singletonList(entity)));
-        sqls.add(adapter.createTable(entity));
+                Collections.singletonList(getEntity())));
+        sqls.add(adapter.createTable(getEntity()));
         return sqls;
     }
 
@@ -46,12 +44,8 @@ public class CreateTableToDb extends AbstractToDbToken {
         return "Create Table";
     }
 
-    public String getTokenValue() {
-        return entity.getName();
-    }
-
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createDropTableToModel(entity);
+        return factory.createDropTableToModel(getEntity());
     }
 
 }

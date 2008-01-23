@@ -21,6 +21,8 @@ package org.apache.cayenne.merge;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 
 /**
  * Common abstract superclass for all {@link MergerToken}s going from the model to the
@@ -29,7 +31,7 @@ import org.apache.cayenne.dba.DbAdapter;
  * @author halset
  */
 public abstract class AbstractToDbToken implements MergerToken {
-
+    
     public final MergeDirection getDirection() {
         return MergeDirection.TO_DB;
     }
@@ -52,5 +54,42 @@ public abstract class AbstractToDbToken implements MergerToken {
     }
 
     public abstract List<String> createSql(DbAdapter adapter);
+    
+    abstract static class Entity extends AbstractToDbToken {
+        
+        private DbEntity entity;
 
+        public Entity(DbEntity entity) {
+            this.entity = entity;
+        }
+
+        public DbEntity getEntity() {
+            return entity;
+        }
+
+        public String getTokenValue() {
+            return getEntity().getName();
+        }
+
+    }
+
+    abstract static class EntityAndColumn extends Entity {
+        
+        private DbAttribute column;
+        
+        public EntityAndColumn(DbEntity entity, DbAttribute column) {
+            super(entity);
+            this.column = column;
+        }
+
+        public DbAttribute getColumn() {
+            return column;
+        }
+        
+        @Override
+        public String getTokenValue() {
+            return getEntity().getName() + "." + getColumn().getName();
+        }
+        
+    }
 }

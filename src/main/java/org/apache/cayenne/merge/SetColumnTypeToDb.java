@@ -30,14 +30,13 @@ import org.apache.cayenne.map.DbEntity;
 /**
  * An {@link MergerToken} to use to set type, length and precision.
  */
-public class SetColumnTypeToDb extends AbstractToDbToken {
+public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
 
-    private DbEntity entity;
     private DbAttribute columnOriginal;
     private DbAttribute columnNew;
 
     public SetColumnTypeToDb(DbEntity entity, DbAttribute columnOriginal, DbAttribute columnNew) {
-        this.entity = entity;
+        super(entity);
         this.columnOriginal = columnOriginal;
         this.columnNew = columnNew;
     }
@@ -47,7 +46,7 @@ public class SetColumnTypeToDb extends AbstractToDbToken {
      */
     protected void appendPrefix(StringBuffer sqlBuffer) {
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(entity.getFullyQualifiedName());
+        sqlBuffer.append(getEntity().getFullyQualifiedName());
         sqlBuffer.append(" ALTER ");
         sqlBuffer.append(columnNew.getName());
         sqlBuffer.append(" TYPE ");
@@ -103,9 +102,10 @@ public class SetColumnTypeToDb extends AbstractToDbToken {
         return "Set Column Type";
     }
     
+    @Override
     public String getTokenValue() {
         StringBuffer sb = new StringBuffer();
-        sb.append(entity.getName());
+        sb.append(getEntity().getName());
         sb.append(".");
         sb.append(columnNew.getName());
 
@@ -141,7 +141,7 @@ public class SetColumnTypeToDb extends AbstractToDbToken {
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createSetColumnTypeToModel(entity, columnNew, columnOriginal);
+        return factory.createSetColumnTypeToModel(getEntity(), columnNew, columnOriginal);
     }
 
 

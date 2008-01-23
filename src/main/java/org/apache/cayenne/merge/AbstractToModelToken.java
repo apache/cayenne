@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.MappingNamespace;
@@ -36,7 +37,7 @@ import org.apache.cayenne.util.EntityMergeSupport;
  * @author halset
  */
 public abstract class AbstractToModelToken implements MergerToken {
-
+    
     public final MergeDirection getDirection() {
         return MergeDirection.TO_MODEL;
     }
@@ -95,5 +96,44 @@ public abstract class AbstractToModelToken implements MergerToken {
         ts.append(getDirection());
         return ts.toString();
     }
+    
+    abstract static class Entity extends AbstractToModelToken {
+        
+        private DbEntity entity;
+
+        public Entity(DbEntity entity) {
+            this.entity = entity;
+        }
+
+        public DbEntity getEntity() {
+            return entity;
+        }
+        
+        public String getTokenValue() {
+            return getEntity().getName();
+        }
+        
+    }
+    
+    abstract static class EntityAndColumn extends Entity {
+        
+        private DbAttribute column;
+        
+        public EntityAndColumn(DbEntity entity, DbAttribute column) {
+            super(entity);
+            this.column = column;
+        }
+
+        public DbAttribute getColumn() {
+            return column;
+        }
+
+        @Override
+        public String getTokenValue() {
+            return getEntity().getName() + "." + getColumn().getName();
+        }
+        
+    }
+
 
 }
