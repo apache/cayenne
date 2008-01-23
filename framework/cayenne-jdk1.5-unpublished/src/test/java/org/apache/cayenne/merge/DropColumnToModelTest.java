@@ -187,8 +187,6 @@ public class DropColumnToModelTest extends MergeCase {
         MergerToken token0 = tokens.get(0).createReverse(mergerFactory());
         MergerToken token1 = tokens.get(1).createReverse(mergerFactory());
         assertTrue(token0.getClass().getName(), token0 instanceof DropColumnToModel);
-        //assertTrue(((DropColumnToModel)token0).getEntity() == dbEntity2);
-        //assertTrue(((DropColumnToModel)token0).getAttribute() == e2col2);
         assertTrue(token1.getClass().getName(), token1 instanceof DropRelationshipToModel);
         // do not execute DropRelationshipToModel, only DropColumnToModel. 
         execute(token0);

@@ -44,14 +44,6 @@ public class DropColumnToModel extends AbstractToModelToken {
         return factory.createAddColumnToDb(entity, column);
     }
 
-    public DbEntity getEntity() {
-        return entity;
-    }
-
-    public DbAttribute getAttribute() {
-        return column;
-    }
-
     public void execute(MergerContext mergerContext) {
 
         // remove relationships mapped to column
