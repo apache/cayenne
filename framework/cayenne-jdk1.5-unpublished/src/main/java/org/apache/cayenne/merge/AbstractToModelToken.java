@@ -53,6 +53,9 @@ public abstract class AbstractToModelToken implements MergerToken {
         Set<ObjEntity> objEntities = new HashSet<ObjEntity>();
         MappingNamespace mns = entity.getDataMap().getNamespace();
         for (ObjEntity objEntity : mns.getObjEntities()) {
+            if (objEntity.getDbEntity() == null) {
+                continue;
+            }
             if (objEntity.getDbEntity().equals(entity)) {
                 objEntities.add(objEntity);
             }
