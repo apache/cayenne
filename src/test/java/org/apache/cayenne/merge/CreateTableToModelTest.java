@@ -60,6 +60,9 @@ public class CreateTableToModelTest extends MergeCase {
 
         ObjEntity objEntity = null;
         for (ObjEntity candiate : map.getObjEntities()) {
+            if (candiate.getDbEntity() == null) {
+                continue;
+            }
             if (candiate.getDbEntity().getName().equalsIgnoreCase(dbEntity.getName())) {
                 objEntity = candiate;
                 break;
