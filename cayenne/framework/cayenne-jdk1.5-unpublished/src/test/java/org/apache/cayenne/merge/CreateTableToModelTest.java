@@ -60,6 +60,9 @@ public class CreateTableToModelTest extends MergeCase {
 
         ObjEntity objEntity = null;
         for (ObjEntity candiate : map.getObjEntities()) {
+            if (candiate.getDbEntity() == null) {
+                continue;
+            }
             if (candiate.getDbEntity().getName().equalsIgnoreCase(dbEntity.getName())) {
                 objEntity = candiate;
                 break;
@@ -79,6 +82,8 @@ public class CreateTableToModelTest extends MergeCase {
         // clear up
         map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
+        // fix psql case issue
+        map.removeDbEntity(objEntity.getDbEntity().getName(), true);
         ctxt.getEntityResolver().clearCache();
         assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
