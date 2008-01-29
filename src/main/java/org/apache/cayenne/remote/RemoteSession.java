@@ -31,6 +31,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventBridgeFactory;
+import org.apache.cayenne.event.EventSubject;
 
 /**
  * A descriptor used by default service implementation to pass session parameters to the
@@ -42,7 +43,7 @@ import org.apache.cayenne.event.EventBridgeFactory;
  */
 public class RemoteSession implements Serializable {
 
-    static final Collection SUBJECTS = Arrays.asList(DataChannel.GRAPH_CHANGED_SUBJECT,
+    static final Collection<EventSubject> SUBJECTS = Arrays.asList(DataChannel.GRAPH_CHANGED_SUBJECT,
             DataChannel.GRAPH_FLUSHED_SUBJECT,
             DataChannel.GRAPH_ROLLEDBACK_SUBJECT);
 

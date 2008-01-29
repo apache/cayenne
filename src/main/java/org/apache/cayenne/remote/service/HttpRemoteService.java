@@ -44,7 +44,7 @@ public abstract class HttpRemoteService extends BaseRemoteService {
     // keep logger non-static so that it could be garbage collected with this instance..
     private final Log logObj = LogFactory.getLog(HttpRemoteService.class);
 
-    private Map sharedChannels = new HashMap();
+    private Map<String, WeakReference<DataChannel>> sharedChannels = new HashMap<String, WeakReference<DataChannel>>();
 
     /**
      * Returns an HttpSession associated with the current request in progress.
@@ -117,13 +117,13 @@ public abstract class HttpRemoteService extends BaseRemoteService {
     }
 
     protected DataChannel getSharedChannel(String name) {
-        WeakReference ref = (WeakReference) sharedChannels.get(name);
-        return (ref != null) ? (DataChannel) ref.get() : null;
+        WeakReference<DataChannel> ref = sharedChannels.get(name);
+        return (ref != null) ? ref.get() : null;
     }
 
     protected void saveSharedChannel(String name, DataChannel channel) {
         // wrap value in a WeakReference so that channels can be deallocated when all
         // sessions that reference this channel time out...
-        sharedChannels.put(name, new WeakReference(channel));
+        sharedChannels.put(name, new WeakReference<DataChannel>(channel));
     }
 }
