@@ -44,7 +44,7 @@ class ServerSerializerFactory extends AbstractSerializerFactory {
 
     private ServerPersistentObjectListSerializer persistentObjectListSerializer;
     private ServerDataRowSerializer dataRowSerilaizer;
-    private Map deserializers;
+    private Map<Class, Deserializer> deserializers;
 
     ServerSerializerFactory() {
         this.persistentObjectListSerializer = new ServerPersistentObjectListSerializer();
@@ -78,7 +78,7 @@ class ServerSerializerFactory extends AbstractSerializerFactory {
             synchronized (this) {
 
                 if (deserializers != null) {
-                    deserializer = (Deserializer) deserializers.get(cl);
+                    deserializer = deserializers.get(cl);
                 }
 
                 if (deserializer == null) {
@@ -86,7 +86,7 @@ class ServerSerializerFactory extends AbstractSerializerFactory {
                             .getClientEntityResolver());
 
                     if (deserializers == null) {
-                        deserializers = new HashMap();
+                        deserializers = new HashMap<Class, Deserializer>();
                     }
 
                     deserializers.put(cl, deserializer);

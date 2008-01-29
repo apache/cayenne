@@ -39,7 +39,7 @@ import com.caucho.hessian.io.Serializer;
  */
 class ClientSerializerFactory extends AbstractSerializerFactory {
 
-    private Map deserializers;
+    private Map<Class, Deserializer> deserializers;
     private Deserializer dataRowDeserializer;
 
     @Override
@@ -56,14 +56,14 @@ class ClientSerializerFactory extends AbstractSerializerFactory {
             synchronized (this) {
 
                 if (deserializers != null) {
-                    deserializer = (Deserializer) deserializers.get(cl);
+                    deserializer = deserializers.get(cl);
                 }
 
                 if (deserializer == null) {
                     deserializer = new JavaDeserializer(cl);
 
                     if (deserializers == null) {
-                        deserializers = new HashMap();
+                        deserializers = new HashMap<Class, Deserializer>();
                     }
 
                     deserializers.put(cl, deserializer);
