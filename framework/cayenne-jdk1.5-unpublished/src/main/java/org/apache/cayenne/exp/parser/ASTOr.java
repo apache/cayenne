@@ -49,12 +49,12 @@ public class ASTOr extends AggregateConditionNode {
         connectChildren();
     }
 
-    public ASTOr(Collection nodes) {
+    public ASTOr(Collection<Node> nodes) {
         super(ExpressionParserTreeConstants.JJTOR);
         int len = nodes.size();
-        Iterator it = nodes.iterator();
+        Iterator<Node> it = nodes.iterator();
         for (int i = 0; i < len; i++) {
-            jjtAddChild((Node) it.next(), i);
+            jjtAddChild(it.next(), i);
         }
         connectChildren();
     }

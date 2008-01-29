@@ -51,10 +51,10 @@ public class ASTSubtract extends SimpleNode {
         connectChildren();
     }
 
-    public ASTSubtract(Collection nodes) {
+    public ASTSubtract(Collection<Object> nodes) {
         super(ExpressionParserTreeConstants.JJTSUBTRACT);
         int len = nodes.size();
-        Iterator it = nodes.iterator();
+        Iterator<Object> it = nodes.iterator();
         for (int i = 0; i < len; i++) {
             jjtAddChild(wrapChild(it.next()), i);
         }
