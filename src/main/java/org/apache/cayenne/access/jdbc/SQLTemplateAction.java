@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -221,7 +222,7 @@ public class SQLTemplateAction implements SQLAction {
                 query.getFetchLimit());
 
         if (!iteratedResult) {
-            List resultRows = result.dataRows(false);
+            List<DataRow> resultRows = result.dataRows(false);
             QueryLogger.logSelectCount(resultRows.size(), System.currentTimeMillis()
                     - startTime);
 

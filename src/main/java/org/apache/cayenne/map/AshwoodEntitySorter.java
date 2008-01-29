@@ -62,7 +62,7 @@ public class AshwoodEntitySorter implements EntitySorter {
     protected Digraph referentialDigraph;
     protected Digraph contractedReferentialDigraph;
     protected Map components;
-    protected Map<DbEntity, List> reflexiveDbEntities;
+    protected Map<DbEntity, List<DbRelationship>> reflexiveDbEntities;
 
     protected TableComparator tableComparator;
     protected DbEntityComparator dbEntityComparator;
@@ -89,7 +89,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
         Collection<Table> tables = new ArrayList<Table>(64);
         dbEntityToTableMap = new HashMap<DbEntity, Table>(64);
-        reflexiveDbEntities = new HashMap<DbEntity, List>(32);
+        reflexiveDbEntities = new HashMap<DbEntity, List<DbRelationship>>(32);
 
         for (DataMap map : dataMaps) {
             for (DbEntity entity : map.getDbEntities()) {
@@ -168,16 +168,16 @@ public class AshwoodEntitySorter implements EntitySorter {
                 .getEntityResolver();
         ClassDescriptor descriptor = resolver.getClassDescriptor(objEntity.getName());
 
-        List reflexiveRels = reflexiveDbEntities.get(dbEntity);
+        List<DbRelationship> reflexiveRels = reflexiveDbEntities.get(dbEntity);
         String[] reflexiveRelNames = new String[reflexiveRels.size()];
         for (int i = 0; i < reflexiveRelNames.length; i++) {
-            DbRelationship dbRel = (DbRelationship) reflexiveRels.get(i);
+            DbRelationship dbRel = reflexiveRels.get(i);
             ObjRelationship objRel = (dbRel != null ? objEntity
                     .getRelationshipForDbRelationship(dbRel) : null);
             reflexiveRelNames[i] = (objRel != null ? objRel.getName() : null);
         }
 
-        List sorted = new ArrayList(size);
+        List<Object> sorted = new ArrayList<Object>(size);
 
         Digraph objectDependencyGraph = new MapDigraph(MapDigraph.HASHMAP_FACTORY);
         Object[] masters = new Object[reflexiveRelNames.length];

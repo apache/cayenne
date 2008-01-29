@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.DbAdapter;
@@ -73,7 +74,7 @@ public abstract class BaseSQLAction implements SQLAction {
                 query.getMetaData(getEntityResolver()).getFetchLimit());
 
         if (!delegate.isIteratedResult()) {
-            List resultRows = resultReader.dataRows(false);
+            List<DataRow> resultRows = resultReader.dataRows(false);
             QueryLogger
                     .logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 

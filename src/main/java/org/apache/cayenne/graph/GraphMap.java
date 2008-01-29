@@ -38,13 +38,13 @@ import java.util.Map;
  */
 public class GraphMap implements GraphManager {
 
-    protected Map nodes;
+    protected Map<Object, Object> nodes;
 
     /**
      * Creates a new GraphMap.
      */
     public GraphMap() {
-        this.nodes = new HashMap();
+        this.nodes = new HashMap<Object, Object>();
     }
 
     // *** GraphMap methods

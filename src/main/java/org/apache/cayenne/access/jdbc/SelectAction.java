@@ -36,6 +36,7 @@ import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.DataRow;
 
 /**
  * A SQLAction that handles SelectQuery execution.
@@ -139,7 +140,7 @@ public class SelectAction extends BaseSQLAction {
         if (!observer.isIteratedResult()) {
             // note that we don't need to close ResultIterator
             // since "dataRows" will do it internally
-            List resultRows = it.dataRows(true);
+            List<DataRow> resultRows = it.dataRows(true);
             QueryLogger
                     .logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 
