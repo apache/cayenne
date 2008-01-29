@@ -53,10 +53,10 @@ public class ASTAnd extends AggregateConditionNode {
         connectChildren();
     }
 
-    public ASTAnd(Collection<Node> nodes) {
+    public ASTAnd(Collection<? extends Node> nodes) {
         super(ExpressionParserTreeConstants.JJTAND);
         int len = nodes.size();
-        Iterator<Node> it = nodes.iterator();
+        Iterator<? extends Node> it = nodes.iterator();
         for (int i = 0; i < len; i++) {
             jjtAddChild(it.next(), i);
         }
