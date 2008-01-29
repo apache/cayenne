@@ -30,6 +30,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
@@ -260,7 +261,7 @@ public class ProjectTraversal {
         }
     }
 
-    public void traverseProcedureParameters(Iterator parameters, ProjectPath path) {
+    public void traverseProcedureParameters(Iterator<? extends ProcedureParameter> parameters, ProjectPath path) {
         // Note: !! do not try to sort parameters - they are positional by definition
 
         while (parameters.hasNext()) {

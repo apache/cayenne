@@ -45,9 +45,9 @@ import org.apache.cayenne.conf.JNDIDataSourceFactory;
  */
 public class PartialProject extends Project {
     protected String projectVersion;
-    protected Map domains;
+    protected Map<String, DomainMetaData> domains;
     protected ConfigLoaderDelegate loadDelegate;
-    protected Map dataViewLocations;
+    protected Map<String, String> dataViewLocations;
 
     /**
      * Constructor PartialProjectHandler.
@@ -71,10 +71,10 @@ public class PartialProject extends Project {
      * DataNodeConfigInfo objects. Only main project file gets updated, the rest
      * are assumed to be in place.
      */
-    public void updateNodes(List list) throws ProjectException {
-        Iterator it = list.iterator();
+    public void updateNodes(List<? extends DataNodeConfigInfo> list) throws ProjectException {
+        Iterator<? extends DataNodeConfigInfo> it = list.iterator();
         while (it.hasNext()) {
-            DataNodeConfigInfo nodeConfig = (DataNodeConfigInfo) it.next();
+            DataNodeConfigInfo nodeConfig = it.next();
             String domainName = nodeConfig.getDomain();
             if (domainName == null && domains.size() != 1) {
                 throw new IllegalArgumentException("Node must have domain set explicitly if there is no default domain.");
@@ -113,7 +113,7 @@ public class PartialProject extends Project {
     @Override
     protected void postInitialize(File projectFile) {
         loadDelegate = new LoadDelegate();
-        domains = new HashMap();
+        domains = new HashMap<String, DomainMetaData>();
 
         try {
             FileInputStream in = new FileInputStream(projectFile);
@@ -136,7 +136,7 @@ public class PartialProject extends Project {
 
     @Override
     public List getChildren() {
-        return new ArrayList(domains.values());
+        return new ArrayList<DomainMetaData>(domains.values());
     }
 
     @Override
@@ -149,7 +149,7 @@ public class PartialProject extends Project {
      */
     @Override
     public List buildFileList() {
-        List list = new ArrayList();
+        List<ProjectFile> list = new ArrayList<ProjectFile>();
         list.add(projectFileForObject(this));
         return list;
     }
@@ -174,7 +174,7 @@ public class PartialProject extends Project {
     }
 
     private DomainMetaData findDomain(String domainName) {
-        DomainMetaData domain = (DomainMetaData) domains.get(domainName);
+        DomainMetaData domain = domains.get(domainName);
         if (domain == null) {
             throw new IllegalArgumentException("Can't find domain: " + domainName);
         }
@@ -187,7 +187,7 @@ public class PartialProject extends Project {
         String nodeName,
         boolean failIfNotFound) {
         DomainMetaData domain = findDomain(domainName);
-        NodeMetaData node = (NodeMetaData) domain.nodes.get(nodeName);
+        NodeMetaData node = domain.nodes.get(nodeName);
         if (node == null && failIfNotFound) {
             throw new IllegalArgumentException(
                 "Can't find node: " + domainName + "." + nodeName);
@@ -198,8 +198,8 @@ public class PartialProject extends Project {
 
     protected class DomainMetaData {
         protected String name;
-        protected Map nodes = new HashMap();
-        protected Map maps = new HashMap();
+        protected Map<String, NodeMetaData> nodes = new HashMap<String, NodeMetaData>();
+        protected Map<String, MapMetaData> maps = new HashMap<String, MapMetaData>();
         protected Map mapDependencies = new HashMap();
         protected Map properties = new HashMap();
 
@@ -213,7 +213,7 @@ public class PartialProject extends Project {
         protected String dataSource;
         protected String adapter;
         protected String factory;
-        protected List maps = new ArrayList();
+        protected List<String> maps = new ArrayList<String>();
 
         public NodeMetaData(String name) {
             this.name = name;
@@ -237,7 +237,7 @@ public class PartialProject extends Project {
         }
 
         protected DomainMetaData findDomain(String name) {
-            DomainMetaData domain = (DomainMetaData) domains.get(name);
+            DomainMetaData domain = domains.get(name);
             if (domain == null) {
                 throw new ProjectException("Can't find domain: " + name);
             }
@@ -247,7 +247,7 @@ public class PartialProject extends Project {
 
         protected MapMetaData findMap(String domainName, String mapName) {
             DomainMetaData domain = findDomain(domainName);
-            MapMetaData map = (MapMetaData) domain.maps.get(mapName);
+            MapMetaData map = domain.maps.get(mapName);
             if (map == null) {
                 throw new ProjectException("Can't find map: " + mapName);
             }
@@ -257,7 +257,7 @@ public class PartialProject extends Project {
 
         protected NodeMetaData findNode(String domainName, String nodeName) {
             DomainMetaData domain = findDomain(domainName);
-            NodeMetaData node = (NodeMetaData) domain.nodes.get(nodeName);
+            NodeMetaData node = domain.nodes.get(nodeName);
             if (node == null) {
                 throw new ProjectException("Can't find node: " + nodeName);
             }
@@ -339,7 +339,7 @@ public class PartialProject extends Project {
             Validate.notNull(dataViewName);
             Validate.notNull(dataViewLocation);
             if (dataViewLocations == null) {
-                dataViewLocations = new HashMap();
+                dataViewLocations = new HashMap<String, String>();
             }
             dataViewLocations.put(dataViewName, dataViewLocation);
         }
@@ -359,16 +359,16 @@ public class PartialProject extends Project {
 
         public Iterator viewNames() {
             if (dataViewLocations == null) {
-                dataViewLocations = new HashMap();
+                dataViewLocations = new HashMap<String, String>();
             }
             return dataViewLocations.keySet().iterator();
         }
 
         public String viewLocation(String dataViewName) {
             if (dataViewLocations == null) {
-                dataViewLocations = new HashMap();
+                dataViewLocations = new HashMap<String, String>();
             }
-            return (String) dataViewLocations.get(dataViewName);
+            return dataViewLocations.get(dataViewName);
         }
 
         public Iterator propertyNames(String domainName) {
@@ -380,13 +380,13 @@ public class PartialProject extends Project {
         }
 
         public Iterator linkedMapNames(String domainName, String nodeName) {
-            return ((NodeMetaData) findDomain(domainName).nodes.get(nodeName))
+            return (findDomain(domainName).nodes.get(nodeName))
                 .maps
                 .iterator();
         }
 
         public String mapLocation(String domainName, String mapName) {
-            return ((MapMetaData) findDomain(domainName).maps.get(mapName)).location;
+            return (findDomain(domainName).maps.get(mapName)).location;
         }
 
         public Iterator mapNames(String domainName) {
@@ -394,15 +394,15 @@ public class PartialProject extends Project {
         }
 
         public String nodeAdapterName(String domainName, String nodeName) {
-            return ((NodeMetaData) findDomain(domainName).nodes.get(nodeName)).adapter;
+            return (findDomain(domainName).nodes.get(nodeName)).adapter;
         }
 
         public String nodeDataSourceName(String domainName, String nodeName) {
-            return ((NodeMetaData) findDomain(domainName).nodes.get(nodeName)).dataSource;
+            return (findDomain(domainName).nodes.get(nodeName)).dataSource;
         }
 
         public String nodeFactoryName(String domainName, String nodeName) {
-            return ((NodeMetaData) findDomain(domainName).nodes.get(nodeName)).factory;
+            return (findDomain(domainName).nodes.get(nodeName)).factory;
         }
 
         public Iterator nodeNames(String domainName) {

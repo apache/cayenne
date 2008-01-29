@@ -107,10 +107,10 @@ public class ProjectConfigurator {
         }
 
         // copy driver files, delete unused
-        Iterator it = info.getNodes().iterator();
+        Iterator<DataNodeConfigInfo> it = info.getNodes().iterator();
         boolean needFix = it.hasNext();
         while (it.hasNext()) {
-            DataNodeConfigInfo nodeInfo = (DataNodeConfigInfo) it.next();
+            DataNodeConfigInfo nodeInfo = it.next();
             String name = nodeInfo.getName();
 
             File targetDriverFile =

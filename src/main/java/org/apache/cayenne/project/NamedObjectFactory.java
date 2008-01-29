@@ -20,7 +20,6 @@
 package org.apache.cayenne.project;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.access.DataDomain;
@@ -69,7 +68,7 @@ import org.apache.cayenne.query.SelectQuery;
  * @author Andrus Adamchik
  */
 public abstract class NamedObjectFactory {
-    private static final Map factories = new HashMap();
+    private static final Map<Class, NamedObjectFactory> factories = new HashMap<Class, NamedObjectFactory>();
 
     static {
         factories.put(DataMap.class, new DataMapFactory());
@@ -87,14 +86,14 @@ public abstract class NamedObjectFactory {
     }
 
     public static String createName(Class objectClass, Object namingContext) {
-        return ((NamedObjectFactory) factories.get(objectClass)).makeName(namingContext);
+        return (factories.get(objectClass)).makeName(namingContext);
     }
     
     /**
      * @since 1.0.5
      */
     public static String createName(Class objectClass, Object namingContext, String nameBase) {
-        return ((NamedObjectFactory) factories.get(objectClass)).makeName(namingContext, nameBase);
+        return (factories.get(objectClass)).makeName(namingContext, nameBase);
     }
 
     /**
@@ -106,7 +105,7 @@ public abstract class NamedObjectFactory {
      * This behavior can be changed later.</i></p>
      */
     public static Object createObject(Class objectClass, Object namingContext) {
-        return ((NamedObjectFactory) factories.get(objectClass)).makeObject(
+        return (factories.get(objectClass)).makeObject(
             namingContext);
     }
 
@@ -114,10 +113,10 @@ public abstract class NamedObjectFactory {
      * @since 1.0.5
      */
     public static Object createObject(
-        Class objectClass,
+        Class<? extends DataMap> objectClass,
         Object namingContext,
         String nameBase) {
-        return ((NamedObjectFactory) factories.get(objectClass)).makeObject(
+        return (factories.get(objectClass)).makeObject(
             namingContext,
             nameBase);
     }

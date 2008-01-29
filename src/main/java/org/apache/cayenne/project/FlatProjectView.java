@@ -44,8 +44,8 @@ public class FlatProjectView {
     /**
      * Returns flat tree view.
      */
-    public List flattenProjectTree(Object rootNode) {
-        List nodes = new ArrayList();
+    public List<ProjectPath> flattenProjectTree(Object rootNode) {
+        List<ProjectPath> nodes = new ArrayList<ProjectPath>();
         TraversalHelper helper = new TraversalHelper(nodes);
         new ProjectTraversal(helper).traverse(rootNode);
         return nodes;
@@ -55,9 +55,9 @@ public class FlatProjectView {
      * Helper class that serves as project traversal helper.
      */
     class TraversalHelper implements ProjectTraversalHandler {
-        protected List nodes;
+        protected List<ProjectPath> nodes;
 
-        public TraversalHelper(List nodes) {
+        public TraversalHelper(List<ProjectPath> nodes) {
             this.nodes = nodes;
         }
 
