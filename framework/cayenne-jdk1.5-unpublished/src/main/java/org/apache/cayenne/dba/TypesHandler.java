@@ -44,16 +44,16 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class TypesHandler {
 
-    private static Map handlerMap = new HashMap();
+    private static Map<URL, TypesHandler> handlerMap = new HashMap<URL, TypesHandler>();
 
-    protected Map typesMap;
+    protected Map<Integer, String[]> typesMap;
 
     /**
      * @since 1.1
      */
     public static TypesHandler getHandler(URL typesConfig) {
         synchronized (handlerMap) {
-            TypesHandler handler = (TypesHandler) handlerMap.get(typesConfig);
+            TypesHandler handler = handlerMap.get(typesConfig);
 
             if (handler == null) {
                 handler = new TypesHandler(typesConfig);
@@ -104,7 +104,7 @@ public class TypesHandler {
     }
 
     public String[] externalTypesForJdbcType(int type) {
-        return (String[]) typesMap.get(Integer.valueOf(type));
+        return typesMap.get(Integer.valueOf(type));
     }
 
     /** 
@@ -115,11 +115,11 @@ public class TypesHandler {
         private static final String DB_TYPE_TAG = "db-type";
         private static final String NAME_ATTR = "name";
 
-        private Map types = new HashMap();
-        private List currentTypes = new ArrayList();
+        private Map<Integer, String[]> types = new HashMap<Integer, String[]>();
+        private List<String> currentTypes = new ArrayList<String>();
         private int currentType = TypesMapping.NOT_DEFINED;
 
-        public Map getTypes() {
+        public Map<Integer, String[]> getTypes() {
             return types;
         }
 

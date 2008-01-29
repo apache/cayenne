@@ -91,7 +91,7 @@ class OracleLOBBatchAction implements SQLAction {
         // may be different depending on whether LOBs are NULL or not..
 
         LOBBatchQueryWrapper selectQuery = new LOBBatchQueryWrapper(query);
-        List qualifierAttributes = selectQuery.getDbAttributesForLOBSelectQualifier();
+        List<DbAttribute> qualifierAttributes = selectQuery.getDbAttributesForLOBSelectQualifier();
 
      
         boolean isLoggable = QueryLogger.isLoggable();
@@ -135,9 +135,9 @@ class OracleLOBBatchAction implements SQLAction {
             Connection con,
             LOBBatchQueryBuilder queryBuilder,
             LOBBatchQueryWrapper selectQuery,
-            List qualifierAttributes) throws SQLException, Exception {
+            List<DbAttribute> qualifierAttributes) throws SQLException, Exception {
 
-        List lobAttributes = selectQuery.getDbAttributesForUpdatedLOBColumns();
+        List<DbAttribute> lobAttributes = selectQuery.getDbAttributesForUpdatedLOBColumns();
         if (lobAttributes.size() == 0) {
             return;
         }
@@ -163,7 +163,7 @@ class OracleLOBBatchAction implements SQLAction {
         try {
             for (int i = 0; i < parametersSize; i++) {
                 Object value = qualifierValues.get(i);
-                DbAttribute attribute = (DbAttribute) qualifierAttributes.get(i);
+                DbAttribute attribute = qualifierAttributes.get(i);
 
                 adapter.bindParameter(
                         selectStatement,
@@ -183,7 +183,7 @@ class OracleLOBBatchAction implements SQLAction {
                 // read the only expected row
 
                 for (int i = 0; i < lobSize; i++) {
-                    DbAttribute attribute = (DbAttribute) lobAttributes.get(i);
+                    DbAttribute attribute = lobAttributes.get(i);
                     int type = attribute.getType();
 
                     if (type == Types.CLOB) {

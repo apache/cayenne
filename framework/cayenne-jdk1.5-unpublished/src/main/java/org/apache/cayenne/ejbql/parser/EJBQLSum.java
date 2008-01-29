@@ -32,10 +32,10 @@ public class EJBQLSum extends EJBQLAggregateColumn {
     // per JPA spec, 4.8.4, SUM type mapping rules are a bit convoluted. Mapping them
     // here...
 
-    static final Map typeMap;
+    static final Map<String, String> typeMap;
 
     static {
-        typeMap = new HashMap();
+        typeMap = new HashMap<String, String>();
         typeMap.put(Integer.class.getName(), Long.class.getName());
         typeMap.put(Short.class.getName(), Long.class.getName());
         typeMap.put(Float.class.getName(), Double.class.getName());
@@ -64,7 +64,7 @@ public class EJBQLSum extends EJBQLAggregateColumn {
 
         // type map only contains mappings that are different from the attribute path, so
         // if no mapping exists, return the argument passed to this method.
-        String mappedType = (String) typeMap.get(pathType);
+        String mappedType = typeMap.get(pathType);
         return mappedType != null ? mappedType : pathType;
     }
 }
