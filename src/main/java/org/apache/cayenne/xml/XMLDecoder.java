@@ -36,6 +36,7 @@ import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.util.Util;
@@ -67,17 +68,17 @@ public class XMLDecoder {
     /** The root of the XML document being decoded. */
     private Element root;
 
-    /** The data context to register decoded DataObjects with. */
-    private DataContext dataContext;
+    /** The context to register decoded DataObjects with. */
+    private ObjectContext objectContext;
 
     // TODO: H to the A to the C to the K
     private List<Element> decodedCollections = new ArrayList<Element>();
 
     /**
      * Default constructor. This will create an XMLDecoder instance that will decode
-     * objects from XML, but will not register them with any DataContext.
+     * objects from XML, but will not register them with any context.
      * 
-     * @see XMLDecoder#XMLDecoder(DataContext)
+     * @see XMLDecoder#XMLDecoder(ObjectContext)
      */
     public XMLDecoder() {
         this(null);
@@ -85,12 +86,12 @@ public class XMLDecoder {
 
     /**
      * Creates an XMLDecoder that will register decoded DataObjects with the specified
-     * DataContext.
+     * context.
      * 
-     * @param dc The DataContext to register decoded DataObjects with.
+     * @param objectContext The context to register decoded DataObjects with.
      */
-    public XMLDecoder(DataContext dc) {
-        this.dataContext = dc;
+    public XMLDecoder(ObjectContext objectContext) {
+        this.objectContext = objectContext;
     }
 
     /**
@@ -320,13 +321,13 @@ public class XMLDecoder {
         // MappingUtils will really do all the work.
         XMLMappingDescriptor mu = new XMLMappingDescriptor(mappingUrl);
 
-        Object ret = mu.decode(data.getDocumentElement(), dataContext);
+        Object ret = mu.decode(data.getDocumentElement(), objectContext);
 
         return ret;
     }
 
     /**
-     * Decodes the XML element to an object. If the supplied DataContext is not null, the
+     * Decodes the XML element to an object. If the supplied context is not null, the
      * object will be registered with it and committed to the database.
      * 
      * @param element The XML element.
@@ -351,8 +352,8 @@ public class XMLDecoder {
             throw new CayenneRuntimeException("Error instantiating object", th);
         }
 
-        if ((null != dataContext) && (object instanceof Persistent)) {
-            dataContext.registerNewObject(object);
+        if ((null != objectContext) && (object instanceof Persistent)) {
+            objectContext.registerNewObject(object);
         }
 
         root = oldRoot;
@@ -363,7 +364,7 @@ public class XMLDecoder {
 
     /**
      * Decodes a Collection represented by XML wrapped by a Reader into a List of objects.
-     * Each object will be registered with the supplied DataContext.
+     * Each object will be registered with the supplied context.
      * 
      * @param xml The XML element representing the elements in the collection to decode.
      * @return A List of all the decoded objects.
@@ -417,16 +418,16 @@ public class XMLDecoder {
     }
 
     /**
-     * Decodes a list of DataObjects, registering them the supplied DataContext.
+     * Decodes a list of DataObjects, registering them the supplied context.
      * 
      * @param xml The wrapped XML encoding of the list of DataObjects.
-     * @param dc The DataContext to register the decode DataObjects with.
+     * @param objectContext The context to register the decode DataObjects with.
      * @return The list of decoded DataObjects.
      * @throws CayenneRuntimeException
      */
-    public static List decodeList(Reader xml, DataContext dc)
+    public static List decodeList(Reader xml, ObjectContext objectContext)
             throws CayenneRuntimeException {
-        return decodeList(xml, null, dc);
+        return decodeList(xml, null, objectContext);
     }
 
     /**
@@ -446,19 +447,19 @@ public class XMLDecoder {
 
     /**
      * Decodes a list of DataObjects using the supplied mapping file to guide the decoding
-     * process, registering them the supplied DataContext.
+     * process, registering them the supplied context.
      * 
      * @param xml The wrapped XML encoding of the list of objects.
      * @param mappingUrl Mapping file describing how the XML elements and object
      *            properties correlate.
-     * @param dataContext The DataContext to register the decode DataObjects with.
+     * @param objectContext The context to register the decode DataObjects with.
      * @return The list of decoded DataObjects.
      * @throws CayenneRuntimeException
      */
-    public static List decodeList(Reader xml, String mappingUrl, DataContext dataContext)
+    public static List decodeList(Reader xml, String mappingUrl, ObjectContext objectContext)
             throws CayenneRuntimeException {
 
-        XMLDecoder decoder = new XMLDecoder(dataContext);
+        XMLDecoder decoder = new XMLDecoder(objectContext);
         Element listRoot = parse(xml).getDocumentElement();
 
         List ret;
@@ -490,10 +491,10 @@ public class XMLDecoder {
             Object o;
 
             if (mu != null) {
-                o = mu.decode(e, dataContext);
+                o = mu.decode(e, objectContext);
             }
             else {
-                // decoder will do DataContext registration if needed.
+                // The decoder will do context registration if needed.
                 o = decoder.decodeElement(e);
             }
 

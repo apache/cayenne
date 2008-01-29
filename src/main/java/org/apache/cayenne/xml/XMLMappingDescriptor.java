@@ -28,6 +28,7 @@ import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.w3c.dom.Attr;
@@ -46,7 +47,7 @@ final class XMLMappingDescriptor {
 
     private SerializableEntity rootEntity;
     private Map<String, SerializableEntity> entities;
-    private DataContext dataContext;
+    private ObjectContext objectContext;
 
     /**
      * Creates new XMLMappingDescriptor using a URL that points to the mapping file.
@@ -102,13 +103,13 @@ final class XMLMappingDescriptor {
      * @return The decoded object.
      * @throws CayenneRuntimeException
      */
-    Object decode(Element xml, DataContext dataContext) throws CayenneRuntimeException {
+    Object decode(Element xml, ObjectContext objectContext) throws CayenneRuntimeException {
 
         // TODO: Add an error check to make sure the mapping file actually is for this
         // data file.
 
         // Store a local copy of the data context.
-        this.dataContext = dataContext;
+        this.objectContext = objectContext;
         
         // Create the object to be returned.
         Object ret = createObject(rootEntity.getDescriptor(), xml);
@@ -244,8 +245,8 @@ final class XMLMappingDescriptor {
         }
         
         // If a data context has been supplied by the user, then register the data object with the context.
-        if ((null != dataContext) && (object instanceof Persistent)) {
-            dataContext.registerNewObject(object);
+        if ((null != objectContext) && (object instanceof Persistent)) {
+            objectContext.registerNewObject(object);
         }
 
         NamedNodeMap attributes = objectData.getAttributes();
