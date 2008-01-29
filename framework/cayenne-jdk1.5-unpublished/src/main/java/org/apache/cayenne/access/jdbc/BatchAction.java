@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
@@ -267,9 +266,9 @@ public class BatchAction extends BaseSQLAction {
 
         if (this.keyRowDescriptor == null) {
             // attempt to figure out the right descriptor from the mapping...
-            Collection generated = query.getDbEntity().getGeneratedAttributes();
+            Collection<DbAttribute> generated = query.getDbEntity().getGeneratedAttributes();
             if (generated.size() == 1) {
-                DbAttribute key = (DbAttribute) generated.iterator().next();
+                DbAttribute key = generated.iterator().next();
 
                 ColumnDescriptor[] columns = new ColumnDescriptor[1];
 

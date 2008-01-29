@@ -44,8 +44,8 @@ import org.apache.cayenne.map.ObjEntity;
 class DataRowPostProcessor {
 
     private EntityInheritanceTree inheritanceTree;
-    private Map columnOverrides;
-    private Collection defaultOverrides;
+    private Map<String, Collection<ColumnOverride>> columnOverrides;
+    private Collection<ColumnOverride> defaultOverrides;
 
     // factory method
     static DataRowPostProcessor createPostProcessor(SelectTranslator translator) {
@@ -56,7 +56,7 @@ class DataRowPostProcessor {
 
         ColumnDescriptor[] columns = translator.getResultColumns();
 
-        Map columnOverrides = new HashMap(2);
+        Map<String, Collection<ColumnOverride>> columnOverrides = new HashMap<String, Collection<ColumnOverride>>(2);
 
         Iterator it = attributeOverrides.entrySet().iterator();
         while (it.hasNext()) {
@@ -92,10 +92,10 @@ class DataRowPostProcessor {
                     .getExtendedTypes()
                     .getRegisteredType(attribute.getType());
 
-            Collection overrides = (Collection) columnOverrides.get(entity.getName());
+            Collection<ColumnOverride> overrides = columnOverrides.get(entity.getName());
 
             if (overrides == null) {
-                overrides = new ArrayList(3);
+                overrides = new ArrayList<ColumnOverride>(3);
                 columnOverrides.put(entity.getName(), overrides);
             }
 
@@ -108,7 +108,7 @@ class DataRowPostProcessor {
     }
 
     private DataRowPostProcessor(EntityInheritanceTree inheritanceTree,
-            Map columnOverrides) {
+            Map<String, Collection<ColumnOverride>> columnOverrides) {
 
         if (inheritanceTree != null && inheritanceTree.getChildren().size() > 0) {
             this.inheritanceTree = inheritanceTree;
@@ -120,18 +120,18 @@ class DataRowPostProcessor {
                         "No inheritance - there must be only one override set");
             }
 
-            defaultOverrides = (Collection) columnOverrides.values().iterator().next();
+            defaultOverrides = columnOverrides.values().iterator().next();
         }
     }
 
     void postprocessRow(ResultSet resultSet, DataRow row) throws Exception {
 
-        Collection overrides = getOverrides(row);
+        Collection<ColumnOverride> overrides = getOverrides(row);
 
         if (overrides != null) {
-            Iterator it = overrides.iterator();
+            Iterator<ColumnOverride> it = overrides.iterator();
             while (it.hasNext()) {
-                ColumnOverride override = (ColumnOverride) it.next();
+                ColumnOverride override = it.next();
 
                 Object newValue = override.converter.materializeObject(
                         resultSet,
@@ -142,14 +142,14 @@ class DataRowPostProcessor {
         }
     }
 
-    private final Collection getOverrides(DataRow row) {
+    private final Collection<ColumnOverride> getOverrides(DataRow row) {
         if (defaultOverrides != null) {
             return defaultOverrides;
         }
         else {
             ObjEntity entity = inheritanceTree.entityMatchingRow(row);
             return entity != null
-                    ? (Collection) columnOverrides.get(entity.getName())
+                    ? columnOverrides.get(entity.getName())
                     : null;
         }
     }
