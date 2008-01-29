@@ -61,9 +61,9 @@ class OracleProcedureAction extends ProcedureAction {
 
         // build result row...
         DataRow result = null;
-        List parameters = getProcedure().getCallParameters();
+        List<ProcedureParameter> parameters = getProcedure().getCallParameters();
         for (int i = 0; i < parameters.size(); i++) {
-            ProcedureParameter parameter = (ProcedureParameter) parameters.get(i);
+            ProcedureParameter parameter = parameters.get(i);
 
             if (!parameter.isOutParam()) {
                 continue;

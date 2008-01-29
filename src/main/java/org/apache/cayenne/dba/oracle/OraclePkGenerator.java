@@ -72,7 +72,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
     @Override
     public List createAutoPkStatements(List dbEntities) {
-        List list = new ArrayList();
+        List<String> list = new ArrayList<String>();
         Iterator it = dbEntities.iterator();
         while (it.hasNext()) {
             DbEntity ent = (DbEntity) it.next();
@@ -98,7 +98,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
     @Override
     public List dropAutoPkStatements(List dbEntities) {
-        List list = new ArrayList();
+        List<String> list = new ArrayList<String>();
         Iterator it = dbEntities.iterator();
         while (it.hasNext()) {
             DbEntity ent = (DbEntity) it.next();
@@ -288,7 +288,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
                 QueryLogger.logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = sel.executeQuery(sql);
                 try {
-                    List sequenceList = new ArrayList();
+                    List<String> sequenceList = new ArrayList<String>();
                     while (rs.next()) {
                         sequenceList.add(rs.getString(1));
                     }

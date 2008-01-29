@@ -151,7 +151,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
         buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");
 
         // columns
-        Iterator it = ent.getAttributes().iterator();
+        Iterator<DbAttribute> it = ent.getAttributes().iterator();
         boolean first = true;
         while (it.hasNext()) {
             if (first) {
@@ -161,7 +161,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
                 buf.append(", ");
             }
 
-            DbAttribute at = (DbAttribute) it.next();
+            DbAttribute at = it.next();
 
             // attribute may not be fully valid, do a simple check
             if (at.getType() == TypesMapping.NOT_DEFINED) {

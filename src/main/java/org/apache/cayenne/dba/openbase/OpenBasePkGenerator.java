@@ -225,7 +225,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      */
     @Override
     public List createAutoPkStatements(List dbEntities) {
-        List list = new ArrayList(2 * dbEntities.size());
+        List<String> list = new ArrayList<String>(2 * dbEntities.size());
         Iterator it = dbEntities.iterator();
         while (it.hasNext()) {
             DbEntity entity = (DbEntity) it.next();
