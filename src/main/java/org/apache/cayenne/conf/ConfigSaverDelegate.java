@@ -38,7 +38,7 @@ public interface ConfigSaverDelegate {
     /**
      * @since 1.1
      */    
-    public Iterator viewNames();
+    public Iterator<String> viewNames();
     
     /**
      * @since 1.1

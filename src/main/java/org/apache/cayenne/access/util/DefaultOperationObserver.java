@@ -45,8 +45,8 @@ import org.apache.cayenne.util.Util;
  */
 public class DefaultOperationObserver implements OperationObserver {
 
-    protected List globalExceptions = new ArrayList();
-    protected Map queryExceptions = new HashMap();
+    protected List<Throwable> globalExceptions = new ArrayList<Throwable>();
+    protected Map<Query, Throwable> queryExceptions = new HashMap<Query, Throwable>();
 
     /**
      * Prints the information about query and global exceptions.
@@ -60,9 +60,9 @@ public class DefaultOperationObserver implements OperationObserver {
                 out.println("Global Exceptions:");
             }
 
-            Iterator it = globalExceptions.iterator();
+            Iterator<Throwable> it = globalExceptions.iterator();
             while (it.hasNext()) {
-                Throwable th = (Throwable) it.next();
+                Throwable th = it.next();
                 th.printStackTrace(out);
             }
         }
@@ -75,21 +75,21 @@ public class DefaultOperationObserver implements OperationObserver {
                 out.println("Query Exceptions:");
             }
 
-            Iterator it = queryExceptions.keySet().iterator();
+            Iterator<Query> it = queryExceptions.keySet().iterator();
             while (it.hasNext()) {
-                Throwable th = (Throwable) queryExceptions.get(it.next());
+                Throwable th = queryExceptions.get(it.next());
                 th.printStackTrace(out);
             }
         }
     }
 
     /** Returns a list of global exceptions that occured during data operation run. */
-    public List getGlobalExceptions() {
+    public List<Throwable> getGlobalExceptions() {
         return globalExceptions;
     }
 
     /** Returns a list of exceptions that occured during data operation run by query. */
-    public Map getQueryExceptions() {
+    public Map<Query, Throwable> getQueryExceptions() {
         return queryExceptions;
     }
 

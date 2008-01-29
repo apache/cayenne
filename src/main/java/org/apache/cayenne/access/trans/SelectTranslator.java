@@ -74,7 +74,7 @@ public class SelectTranslator extends QueryAssembler {
         return false;
     }
 
-    final Map aliasLookup = new HashMap();
+    final Map<DbRelationship, String> aliasLookup = new HashMap<DbRelationship, String>();
 
     final List<DbEntity> tableList = new ArrayList<DbEntity>();
     final List<String> aliasList = new ArrayList<String>();
@@ -82,7 +82,7 @@ public class SelectTranslator extends QueryAssembler {
 
     List<ColumnDescriptor> resultColumns;
     Map attributeOverrides;
-    Map defaultAttributesByColumn;
+    Map<ColumnDescriptor, ObjAttribute> defaultAttributesByColumn;
 
     int aliasCounter;
 
@@ -254,7 +254,7 @@ public class SelectTranslator extends QueryAssembler {
 
     List<ColumnDescriptor> buildResultColumns() {
 
-        this.defaultAttributesByColumn = new HashMap();
+        this.defaultAttributesByColumn = new HashMap<ColumnDescriptor, ObjAttribute>();
 
         // create alias for root table
         newAliasForTable(getRootDbEntity());
@@ -281,7 +281,7 @@ public class SelectTranslator extends QueryAssembler {
             final List<ColumnDescriptor> columns,
             SelectQuery query) {
 
-        final Set attributes = new HashSet();
+        final Set<DbAttribute> attributes = new HashSet<DbAttribute>();
 
         // fetched attributes include attributes that are either:
         // 
@@ -300,7 +300,7 @@ public class SelectTranslator extends QueryAssembler {
 
             public boolean visitAttribute(AttributeProperty property) {
                 ObjAttribute oa = property.getAttribute();
-                Iterator dbPathIterator = oa.getDbPathIterator();
+                Iterator<CayenneMapEntry> dbPathIterator = oa.getDbPathIterator();
                 while (dbPathIterator.hasNext()) {
                     Object pathPart = dbPathIterator.next();
 
@@ -336,10 +336,10 @@ public class SelectTranslator extends QueryAssembler {
                 ObjRelationship rel = property.getRelationship();
                 DbRelationship dbRel = rel.getDbRelationships().get(0);
 
-                List joins = dbRel.getJoins();
+                List<DbJoin> joins = dbRel.getJoins();
                 int len = joins.size();
                 for (int i = 0; i < len; i++) {
-                    DbJoin join = (DbJoin) joins.get(i);
+                    DbJoin join = joins.get(i);
                     DbAttribute src = join.getSource();
                     appendColumn(columns, null, src, attributes, null);
                 }
@@ -366,7 +366,7 @@ public class SelectTranslator extends QueryAssembler {
 
         if (query instanceof PrefetchSelectQuery) {
 
-            Iterator extraPaths = ((PrefetchSelectQuery) query)
+            Iterator<String> extraPaths = ((PrefetchSelectQuery) query)
                     .getResultPaths()
                     .iterator();
 
@@ -374,7 +374,7 @@ public class SelectTranslator extends QueryAssembler {
             // add specified column
             while (extraPaths.hasNext()) {
 
-                String path = (String) extraPaths.next();
+                String path = extraPaths.next();
                 Expression pathExp = oe.translateToDbPath(Expression.fromString(path));
 
                 Iterator<CayenneMapEntry> it = table.resolvePathComponents(pathExp);
@@ -457,9 +457,9 @@ public class SelectTranslator extends QueryAssembler {
                 Collection skipColumns = Collections.EMPTY_LIST;
                 if (r.getSourceEntity() == table) {
                     skipColumns = new ArrayList(2);
-                    Iterator joins = r.getJoins().iterator();
+                    Iterator<DbJoin> joins = r.getJoins().iterator();
                     while (joins.hasNext()) {
-                        DbJoin join = (DbJoin) joins.next();
+                        DbJoin join = joins.next();
                         if (attributes.contains(join.getSource())) {
                             skipColumns.add(join.getTarget());
                         }
@@ -468,15 +468,15 @@ public class SelectTranslator extends QueryAssembler {
 
                 // go via target OE to make sure that Java types are mapped correctly...
                 ObjRelationship targetRel = (ObjRelationship) prefetchExp.evaluate(oe);
-                Iterator targetObjAttrs = targetRel
+                Iterator<ObjAttribute> targetObjAttrs = (Iterator<ObjAttribute>) targetRel
                         .getTargetEntity()
                         .getAttributes()
                         .iterator();
 
                 String labelPrefix = dbPrefetch.toString().substring("db:".length());
                 while (targetObjAttrs.hasNext()) {
-                    ObjAttribute oa = (ObjAttribute) targetObjAttrs.next();
-                    Iterator dbPathIterator = oa.getDbPathIterator();
+                    ObjAttribute oa = targetObjAttrs.next();
+                    Iterator<CayenneMapEntry> dbPathIterator = oa.getDbPathIterator();
                     while (dbPathIterator.hasNext()) {
                         Object pathPart = dbPathIterator.next();
 
@@ -505,12 +505,12 @@ public class SelectTranslator extends QueryAssembler {
                 }
 
                 // append remaining target attributes such as keys
-                Iterator targetAttributes = r
+                Iterator<DbAttribute> targetAttributes = (Iterator<DbAttribute>) r
                         .getTargetEntity()
                         .getAttributes()
                         .iterator();
                 while (targetAttributes.hasNext()) {
-                    DbAttribute attribute = (DbAttribute) targetAttributes.next();
+                    DbAttribute attribute = targetAttributes.next();
                     if (!skipColumns.contains(attribute)) {
                         appendColumn(columns, null, attribute, attributes, labelPrefix
                                 + '.'
@@ -553,7 +553,7 @@ public class SelectTranslator extends QueryAssembler {
             List<ColumnDescriptor> columns,
             ObjAttribute objAttribute,
             DbAttribute attribute,
-            Set skipSet,
+            Set<DbAttribute> skipSet,
             String label) {
 
         if (skipSet.add(attribute)) {
@@ -580,7 +580,7 @@ public class SelectTranslator extends QueryAssembler {
                 if (attribute.getName().equals(column.getName())) {
 
                     // kick out the original attribute
-                    ObjAttribute original = (ObjAttribute) defaultAttributesByColumn
+                    ObjAttribute original = defaultAttributesByColumn
                             .remove(column);
 
                     if (original != null) {
@@ -609,14 +609,14 @@ public class SelectTranslator extends QueryAssembler {
     private void appendJoins(StringBuilder queryBuf, int index) {
         DbRelationship rel = dbRelList.get(index);
         String srcAlias = aliasForTable((DbEntity) rel.getSourceEntity());
-        String targetAlias = (String) aliasLookup.get(rel);
+        String targetAlias = aliasLookup.get(rel);
 
         boolean andFlag = false;
 
-        List joins = rel.getJoins();
+        List<DbJoin> joins = rel.getJoins();
         int len = joins.size();
         for (int i = 0; i < len; i++) {
-            DbJoin join = (DbJoin) joins.get(i);
+            DbJoin join = joins.get(i);
 
             if (andFlag) {
                 queryBuf.append(" AND ");
@@ -640,7 +640,7 @@ public class SelectTranslator extends QueryAssembler {
             forcingDistinct = true;
         }
 
-        String existAlias = (String) aliasLookup.get(rel);
+        String existAlias = aliasLookup.get(rel);
 
         if (existAlias == null) {
             dbRelList.add(rel);
@@ -663,7 +663,7 @@ public class SelectTranslator extends QueryAssembler {
 
     @Override
     public String aliasForTable(DbEntity ent, DbRelationship rel) {
-        return (String) aliasLookup.get(rel);
+        return aliasLookup.get(rel);
     }
 
     /**
