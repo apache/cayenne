@@ -33,7 +33,7 @@ import org.apache.cayenne.map.ObjEntity;
  */
 public class UpdateQuery extends QualifiedQuery {
 
-    protected Map updAttributes = new HashMap();
+    protected Map<String, Object> updAttributes = new HashMap<String, Object>();
 
     /** Creates empty UpdateQuery. */
     public UpdateQuery() {
@@ -112,7 +112,7 @@ public class UpdateQuery extends QualifiedQuery {
     }
 
     /** Returns a map of updated attributes */
-    public Map getUpdAttributes() {
+    public Map<String, Object> getUpdAttributes() {
         return updAttributes;
     }
 }
