@@ -102,7 +102,7 @@ public class DataMapProject extends Project {
      */
     @Override
     public List getChildren() {
-        List entities = new ArrayList();
+        List<DataMap> entities = new ArrayList<DataMap>();
         entities.add(map);
         return entities;
     }

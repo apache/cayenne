@@ -35,7 +35,7 @@ import org.apache.cayenne.project.ProjectPath;
  */
 public class Validator {
     protected Project project;
-    protected List validationResults = new ArrayList();
+    protected List<ValidationInfo> validationResults = new ArrayList<ValidationInfo>();
     protected int maxSeverity;
 
     /**
@@ -59,9 +59,9 @@ public class Validator {
         if (status.hasFailures()) {
             ProjectPath path = new ProjectPath(project);
 
-            Iterator it = status.getOtherFailures().iterator();
+            Iterator<String> it = status.getOtherFailures().iterator();
             while (it.hasNext()) {
-                registerError((String) it.next(), path);
+                registerError(it.next(), path);
             }
 
             it = status.getFailedMaps().keySet().iterator();
@@ -100,7 +100,7 @@ public class Validator {
      */
     protected void reset() {
         if (validationResults != null) {
-            validationResults = new ArrayList();
+            validationResults = new ArrayList<ValidationInfo>();
         }
         maxSeverity = ValidationInfo.VALID;
     }
@@ -139,7 +139,7 @@ public class Validator {
     }
 
     /** Return collection of ValidationInfo objects from last validation. */
-    public List validationResults() {
+    public List<ValidationInfo> validationResults() {
         return validationResults;
     }
 

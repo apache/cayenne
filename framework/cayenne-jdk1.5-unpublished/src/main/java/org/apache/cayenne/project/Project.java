@@ -50,7 +50,7 @@ public abstract class Project {
     protected File projectDir;
     protected List<ProjectFile> files = new ArrayList<ProjectFile>();
     protected int upgradeStatus;
-    protected List upgradeMessages;
+    protected List<String> upgradeMessages;
     protected boolean modified;
 
     /**
@@ -119,7 +119,7 @@ public abstract class Project {
     protected void postInitialize(File projectFile) {
         // take a snapshot of files used by the project
         files = Collections.synchronizedList(buildFileList());
-        upgradeMessages = Collections.synchronizedList(new ArrayList());
+        upgradeMessages = Collections.synchronizedList(new ArrayList<String>());
         checkForUpgrades();
     }
 
@@ -145,7 +145,7 @@ public abstract class Project {
     /**
      * Returns a list of upgrade messages.
      */
-    public List getUpgradeMessages() {
+    public List<String> getUpgradeMessages() {
         return upgradeMessages;
     }
 

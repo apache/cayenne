@@ -86,7 +86,7 @@ public class ObjRelationshipValidator extends TreeNodeValidator {
         }
         else {
             // check for missing DbRelationship mappings
-            List dbRels = rel.getDbRelationships();
+            List<DbRelationship> dbRels = rel.getDbRelationships();
             if (dbRels.size() == 0) {
                 validator.registerWarning("ObjRelationship "
                         + objRelationshipIdentifier(rel)
@@ -97,8 +97,8 @@ public class ObjRelationshipValidator extends TreeNodeValidator {
                 DbEntity expectedTarget = ((ObjEntity) rel.getTargetEntity())
                         .getDbEntity();
 
-                if (((DbRelationship) dbRels.get(0)).getSourceEntity() != expectedSrc
-                        || ((DbRelationship) dbRels.get(dbRels.size() - 1))
+                if ((dbRels.get(0)).getSourceEntity() != expectedSrc
+                        || (dbRels.get(dbRels.size() - 1))
                                 .getTargetEntity() != expectedTarget) {
                     validator.registerWarning("ObjRelationship "
                             + objRelationshipIdentifier(rel)
@@ -117,11 +117,11 @@ public class ObjRelationshipValidator extends TreeNodeValidator {
                 DbRelationship firstRel = inverse
                         .getDbRelationships()
                         .get(0);
-                Iterator attributePairIterator = firstRel.getJoins().iterator();
+                Iterator<DbJoin> attributePairIterator = firstRel.getJoins().iterator();
                 // by default, the relation will be check for mandatory.
                 boolean check = true;
                 while (attributePairIterator.hasNext()) {
-                    DbJoin pair = (DbJoin) attributePairIterator.next();
+                    DbJoin pair = attributePairIterator.next();
                     if (!pair.getSource().isMandatory()) {
                         // a field of the fk can be nullable, cancel the check.
                         check = false;

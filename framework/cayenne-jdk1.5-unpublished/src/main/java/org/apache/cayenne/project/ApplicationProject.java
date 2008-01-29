@@ -157,7 +157,7 @@ public class ApplicationProject extends Project {
      */
     @Override
     public List getChildren() {
-        return new ArrayList(this.getConfiguration().getDomains());
+        return new ArrayList<DataDomain>(this.getConfiguration().getDomains());
     }
 
     /**

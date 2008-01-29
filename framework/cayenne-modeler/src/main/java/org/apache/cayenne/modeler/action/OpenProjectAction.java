@@ -146,7 +146,7 @@ public class OpenProjectAction extends ProjectAction {
 
     protected boolean processUpgrades(Project project) throws ProjectException {
         // must really concat all messages, this is a temp hack...
-        String msg = (String) project.getUpgradeMessages().get(0);
+        String msg = project.getUpgradeMessages().get(0);
         // need an upgrade
         int returnCode = JOptionPane.showConfirmDialog(
                 Application.getFrame(),

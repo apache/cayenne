@@ -86,7 +86,7 @@ public class PartialProjectTest extends CayenneCase {
     }
 
     public void testNodes() throws Exception {
-        PartialProject.DomainMetaData d2 = (PartialProject.DomainMetaData) project.domains
+        PartialProject.DomainMetaData d2 = project.domains
                 .get("d2");
         assertNotNull(d2);
         assertEquals(2, d2.nodes.size());

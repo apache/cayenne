@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.project.validator;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
@@ -41,7 +41,7 @@ public class ProcedureValidator extends TreeNodeValidator {
 
         // check that return value is present
         if (procedure.isReturningValue()) {
-            List parameters = procedure.getCallParameters();
+            List<ProcedureParameter> parameters = procedure.getCallParameters();
             if (parameters.size() == 0) {
                 validator.registerWarning(
                     "Procedure returns a value, but has no parameters.",
