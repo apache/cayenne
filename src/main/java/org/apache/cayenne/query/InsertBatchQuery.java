@@ -52,7 +52,7 @@ public class InsertBatchQuery extends BatchQuery {
 
         this.objectSnapshots = new ArrayList<Map>(batchCapacity);
         this.objectIds = new ArrayList<ObjectId>(batchCapacity);
-        this.dbAttributes = new ArrayList(getDbEntity().getAttributes());
+        this.dbAttributes = new ArrayList<DbAttribute>(getDbEntity().getAttributes());
     }
 
     @Override

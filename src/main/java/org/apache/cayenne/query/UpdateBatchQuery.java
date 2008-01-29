@@ -41,8 +41,8 @@ public class UpdateBatchQuery extends BatchQuery {
      */
     protected List<ObjectId> objectIds;
 
-    protected List qualifierSnapshots;
-    protected List updateSnapshots;
+    protected List<Map> qualifierSnapshots;
+    protected List<Map> updateSnapshots;
 
     protected boolean usingOptimisticLocking;
 
@@ -72,8 +72,8 @@ public class UpdateBatchQuery extends BatchQuery {
                 ? nullQualifierNames
                 : Collections.EMPTY_SET;
 
-        qualifierSnapshots = new ArrayList(batchCapacity);
-        updateSnapshots = new ArrayList(batchCapacity);
+        qualifierSnapshots = new ArrayList<Map>(batchCapacity);
+        updateSnapshots = new ArrayList<Map>(batchCapacity);
         objectIds = new ArrayList<ObjectId>(batchCapacity);
 
         dbAttributes = new ArrayList<DbAttribute>(updatedAttributes.size()
@@ -116,13 +116,13 @@ public class UpdateBatchQuery extends BatchQuery {
         // depending on the index
         Object snapshot = (dbAttributeIndex < updatedAttributes.size()) ? updateSnapshots
                 .get(batchIndex) : qualifierSnapshots.get(batchIndex);
-        return getValue((Map) snapshot, attribute);
+        return getValue((Map<String, Object>) snapshot, attribute);
     }
 
     /**
      * Adds a parameter row to the batch.
      */
-    public void add(Map qualifierSnapshot, Map updateSnapshot) {
+    public void add(Map qualifierSnapshot, Map<?, ?> updateSnapshot) {
         add(qualifierSnapshot, updateSnapshot, null);
     }
 
@@ -131,7 +131,7 @@ public class UpdateBatchQuery extends BatchQuery {
      * 
      * @since 1.2
      */
-    public void add(Map qualifierSnapshot, Map updateSnapshot, ObjectId id) {
+    public void add(Map qualifierSnapshot, Map<?, ?> updateSnapshot, ObjectId id) {
         qualifierSnapshots.add(qualifierSnapshot);
         updateSnapshots.add(updateSnapshot);
         objectIds.add(id);
