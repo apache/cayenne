@@ -176,10 +176,10 @@ public class OSQueryCache implements QueryCache {
             }
 
             // now check for per-query settings
-            Iterator it = properties.entrySet().iterator();
+            Iterator<Map.Entry<Object,Object>> it = properties.entrySet().iterator();
             while (it.hasNext()) {
 
-                Map.Entry entry = (Map.Entry) it.next();
+                Map.Entry<Object,Object> entry = it.next();
 
                 if (entry.getKey() == null || entry.getValue() == null) {
                     continue;
