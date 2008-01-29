@@ -59,7 +59,7 @@ public class ConnectionProperties {
     public static final String DRIVER_KEY = "jdbc.driver";
 
     protected static ConnectionProperties sharedInstance;
-    protected Map connectionInfos = Collections.synchronizedMap(new HashMap());
+    protected Map<String, DataSourceInfo> connectionInfos = Collections.synchronizedMap(new HashMap<String, DataSourceInfo>());
 
     static {
         sharedInstance = loadDefaultProperties();
@@ -147,9 +147,9 @@ public class ConnectionProperties {
      * Constructor for ConnectionProperties.
      */
     public ConnectionProperties(ExtendedProperties props) {
-        Iterator names = extractNames(props).iterator();
+        Iterator<String> names = extractNames(props).iterator();
         while (names.hasNext()) {
-            String name = (String) names.next();
+            String name = names.next();
             DataSourceInfo dsi = buildDataSourceInfo(props.subset(name));
             connectionInfos.put(name, dsi);
         }
@@ -173,7 +173,7 @@ public class ConnectionProperties {
         }
 
         synchronized (connectionInfos) {
-            return (DataSourceInfo) connectionInfos.get(name);
+            return connectionInfos.get(name);
         }
     }
 
@@ -202,9 +202,9 @@ public class ConnectionProperties {
     /**
      * Returns a list of connection names configured in the properties object.
      */
-    protected List extractNames(ExtendedProperties props) {
+    protected List<String> extractNames(ExtendedProperties props) {
         Iterator it = props.getKeys();
-        List list = new ArrayList();
+        List<String> list = new ArrayList<String>();
 
         while (it.hasNext()) {
             String key = (String) it.next();

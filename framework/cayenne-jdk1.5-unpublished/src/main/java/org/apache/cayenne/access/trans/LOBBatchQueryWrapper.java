@@ -163,7 +163,7 @@ public class LOBBatchQueryWrapper {
      * Returns a list of DbAttributes used in the qualifier of the query that selects a
      * LOB row for LOB update.
      */
-    public List getDbAttributesForLOBSelectQualifier() {
+    public List<DbAttribute> getDbAttributesForLOBSelectQualifier() {
 
         int len = qualifierAttributes.length;
         List<DbAttribute> attributes = new ArrayList<DbAttribute>(len);
@@ -181,7 +181,7 @@ public class LOBBatchQueryWrapper {
      * current row in the batch query. The list will not include LOB attributes that are
      * null or empty.
      */
-    public List getDbAttributesForUpdatedLOBColumns() {
+    public List<DbAttribute> getDbAttributesForUpdatedLOBColumns() {
         if (!hasNext) {
             throw new IllegalStateException("No more rows in the BatchQuery.");
         }

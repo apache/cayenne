@@ -46,8 +46,8 @@ import org.apache.cayenne.map.DbEntity;
 public class DistinctResultIterator implements ResultIterator {
 
     protected ResultIterator wrappedIterator;
-    protected Set fetchedIds;
-    protected Map nextDataRow;
+    protected Set<Map<String, Object>> fetchedIds;
+    protected Map<String, Object> nextDataRow;
     protected DbEntity defaultEntity;
     protected boolean compareFullRows;
 
@@ -71,7 +71,7 @@ public class DistinctResultIterator implements ResultIterator {
 
         this.wrappedIterator = wrappedIterator;
         this.defaultEntity = defaultEntity;
-        this.fetchedIds = new HashSet();
+        this.fetchedIds = new HashSet<Map<String, Object>>();
         this.compareFullRows = compareFullRows;
 
         checkNextRow();
@@ -88,7 +88,7 @@ public class DistinctResultIterator implements ResultIterator {
      * Returns all data rows.
      */
     public List dataRows(boolean close) throws CayenneException {
-        List list = new ArrayList();
+        List<Map> list = new ArrayList<Map>();
 
         try {
             while (this.hasNextRow()) {
@@ -117,7 +117,7 @@ public class DistinctResultIterator implements ResultIterator {
                     "An attempt to read uninitialized row or past the end of the iterator.");
         }
 
-        Map row = nextDataRow;
+        Map<String, Object> row = nextDataRow;
         checkNextRow();
         return row;
     }
@@ -132,14 +132,14 @@ public class DistinctResultIterator implements ResultIterator {
                     "An attempt to read uninitialized row or past the end of the iterator.");
         }
 
-        Map row = nextDataRow;
+        Map<String, Object> row = nextDataRow;
 
         // if we were previously reading full rows, we need to strip extra keys...
         if (!readingIds) {
-            Iterator it = row.entrySet().iterator();
+            Iterator<Map.Entry<String,Object>> it = row.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                String name = (String) entry.getKey();
+                Map.Entry<String,Object> entry = it.next();
+                String name = entry.getKey();
                 DbAttribute attribute = (DbAttribute) entity.getAttribute(name);
                 if (attribute == null || !attribute.isPrimaryKey()) {
                     it.remove();
@@ -183,7 +183,7 @@ public class DistinctResultIterator implements ResultIterator {
 
         nextDataRow = null;
         while (wrappedIterator.hasNextRow()) {
-            Map next = wrappedIterator.nextDataRow();
+            Map<String, Object> next = wrappedIterator.nextDataRow();
 
             if (fetchedIds.add(next)) {
                 this.nextDataRow = next;
@@ -196,13 +196,13 @@ public class DistinctResultIterator implements ResultIterator {
 
         nextDataRow = null;
         while (wrappedIterator.hasNextRow()) {
-            Map next = wrappedIterator.nextDataRow();
+            Map<String, Object> next = wrappedIterator.nextDataRow();
 
             // create id map...
             // TODO: this can be optimized by creating an array with id keys
             // to avoid iterating over default entity attributes...
 
-            Map id = new HashMap();
+            Map<String, Object> id = new HashMap<String, Object>();
             for (final DbAttribute pk : defaultEntity.getPrimaryKeys()) {
                 id.put(pk.getName(), next.get(pk.getName()));
             }
@@ -223,7 +223,7 @@ public class DistinctResultIterator implements ResultIterator {
         this.nextDataRow = null;
 
         while (wrappedIterator.hasNextRow()) {
-            Map next = wrappedIterator.nextObjectId(entity);
+            Map<String, Object> next = wrappedIterator.nextObjectId(entity);
 
             // if we are reading ids, we ignore "compareFullRows" setting
             if (fetchedIds.add(next)) {

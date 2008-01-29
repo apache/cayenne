@@ -66,9 +66,9 @@ public class ConfigSaver {
             storeDomain(pw, (String) it.next());
         }
 
-        Iterator views = delegate.viewNames();
+        Iterator<String> views = delegate.viewNames();
         while (views.hasNext()) {
-            storeDataView(pw, (String) views.next());
+            storeDataView(pw, views.next());
         }
         pw.println("</domains>");
     }

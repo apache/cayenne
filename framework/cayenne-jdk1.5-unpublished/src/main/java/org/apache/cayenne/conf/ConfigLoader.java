@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.map.DataMap;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -179,8 +180,8 @@ public class ConfigLoader {
     private class DomainHandler extends AbstractHandler {
 
         private String domainName;
-        private Map properties;
-        private Map mapLocations;
+        private Map<String, String> properties;
+        private Map<String, DataMap> mapLocations;
 
         public DomainHandler(XMLReader parser, ContentHandler parentHandler) {
             super(parser, parentHandler);
@@ -188,8 +189,8 @@ public class ConfigLoader {
 
         public void init(String name, Attributes attrs) {
             domainName = attrs.getValue("", "name");
-            mapLocations = new HashMap();
-            properties = new HashMap();
+            mapLocations = new HashMap<String, DataMap>();
+            properties = new HashMap<String, String>();
             delegate.shouldLoadDataDomain(domainName);
         }
 
@@ -261,7 +262,7 @@ public class ConfigLoader {
             super(parser, parentHandler);
         }
 
-        public void init(Attributes attrs, Map properties) {
+        public void init(Attributes attrs, Map<String, String> properties) {
 
             String name = attrs.getValue("", "name");
             String value = attrs.getValue("", "value");
@@ -282,7 +283,7 @@ public class ConfigLoader {
             super(parser, parentHandler);
         }
 
-        public void init(String name, Attributes attrs, String domainName, Map locations) {
+        public void init(String name, Attributes attrs, String domainName, Map<String, DataMap> locations) {
             this.domainName = domainName;
             this.mapLocations = locations;
             mapName = attrs.getValue("", "name");

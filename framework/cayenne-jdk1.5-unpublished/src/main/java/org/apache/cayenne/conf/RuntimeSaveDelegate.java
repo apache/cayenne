@@ -97,7 +97,7 @@ public class RuntimeSaveDelegate implements ConfigSaverDelegate {
     /**
      * @since 1.1
      */
-    public Iterator viewNames() {
+    public Iterator<String> viewNames() {
         return config.getDataViewLocations().keySet().iterator();
     }
 
@@ -123,7 +123,7 @@ public class RuntimeSaveDelegate implements ConfigSaverDelegate {
     public Iterator mapNames(String domainName) {
 
         // sort maps by name
-        List maps = new ArrayList(findDomain(domainName).getDataMaps());
+        List<DataMap> maps = new ArrayList<DataMap>(findDomain(domainName).getDataMaps());
         Collections.sort(maps, new Comparator() {
 
             public int compare(Object o1, Object o2) {
@@ -166,7 +166,7 @@ public class RuntimeSaveDelegate implements ConfigSaverDelegate {
         };
 
         // sort nodes by name
-        List nodes = new ArrayList(findDomain(domainName).getDataNodes());
+        List<DataNode> nodes = new ArrayList<DataNode>(findDomain(domainName).getDataNodes());
         Collections.sort(nodes, new Comparator() {
 
             public int compare(Object o1, Object o2) {
@@ -187,7 +187,7 @@ public class RuntimeSaveDelegate implements ConfigSaverDelegate {
             }
         };
 
-        Collection maps = findNode(domainName, nodeName).getDataMaps();
+        Collection<DataMap> maps = findNode(domainName, nodeName).getDataMaps();
         return new TransformIterator(maps.iterator(), tr);
     }
 }

@@ -59,7 +59,7 @@ public class ProcedureTranslator extends QueryTranslator {
     private static NotInParam OUT_PARAM = new NotInParam("[OUT]");
 
     protected List<ProcedureParameter> callParams;
-    protected List values;
+    protected List<NotInParam> values;
 
     /**
      * Creates an SQL String for the stored procedure call.
@@ -102,7 +102,7 @@ public class ProcedureTranslator extends QueryTranslator {
         long t1 = System.currentTimeMillis();
 
         this.callParams = getProcedure().getCallParameters();
-        this.values = new ArrayList(callParams.size());
+        this.values = new ArrayList<NotInParam>(callParams.size());
 
         initValues();
         String sqlStr = createSqlString();
@@ -112,7 +112,7 @@ public class ProcedureTranslator extends QueryTranslator {
             long time = System.currentTimeMillis() - t1;
 
             List loggableParameters = new ArrayList(values.size());
-            Iterator it = values.iterator();
+            Iterator<NotInParam> it = values.iterator();
             while (it.hasNext()) {
                 Object val = it.next();
                 if (val instanceof NotInParam) {
@@ -162,7 +162,7 @@ public class ProcedureTranslator extends QueryTranslator {
     }
 
     protected void initValues() {
-        Map queryValues = getProcedureQuery().getParameters();
+        Map<String, NotInParam> queryValues = (Map<String, NotInParam>) getProcedureQuery().getParameters();
 
         // match values with parameters in the correct order.
         // make an assumption that a missing value is NULL
