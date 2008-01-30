@@ -104,8 +104,8 @@ class AntDataPortDelegate implements DataPortDelegate {
         }
 
         String mapName = map.getName();
-        for (int i = 0; i < mapFilters.length; i++) {
-            if (mapFilters[i].matcher(mapName).find()) {
+        for (Pattern mapFilter : mapFilters) {
+            if (mapFilter.matcher(mapName).find()) {
                 return true;
             }
         }

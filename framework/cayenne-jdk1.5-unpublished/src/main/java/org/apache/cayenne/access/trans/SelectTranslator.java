@@ -147,9 +147,8 @@ public class SelectTranslator extends QueryAssembler {
         // uses the DISTINCT modifier
         if (forcingDistinct || getSelectQuery().isDistinct()) {
             List<String> orderByColumnList = orderingTranslator.getOrderByColumnList();
-            for (int i = 0; i < orderByColumnList.size(); i++) {
+            for (String orderByColumnExp : orderByColumnList) {
                 // Convert to ColumnDescriptors??
-                String orderByColumnExp = orderByColumnList.get(i);
                 if (!selectColumnExpList.contains(orderByColumnExp)) {
                     selectColumnExpList.add(orderByColumnExp);
                 }
