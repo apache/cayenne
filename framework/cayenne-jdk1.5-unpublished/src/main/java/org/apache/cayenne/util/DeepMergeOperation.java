@@ -45,11 +45,11 @@ import org.apache.cayenne.reflect.ToOneProperty;
 public class DeepMergeOperation {
 
     protected ObjectContext context;
-    protected Map seen;
+    protected Map<ObjectId, Persistent> seen;
 
     public DeepMergeOperation(ObjectContext context) {
         this.context = context;
-        this.seen = new HashMap();
+        this.seen = new HashMap<ObjectId, Persistent>();
     }
 
     public void reset() {

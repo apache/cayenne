@@ -48,11 +48,11 @@ import org.apache.cayenne.reflect.ToOneProperty;
 public class ObjectDetachOperation {
 
     protected EntityResolver targetResolver;
-    protected Map seen;
+    protected Map<ObjectId, Persistent> seen;
 
     public ObjectDetachOperation(EntityResolver targetResolver) {
         this.targetResolver = targetResolver;
-        this.seen = new HashMap();
+        this.seen = new HashMap<ObjectId, Persistent>();
     }
 
     public void reset() {

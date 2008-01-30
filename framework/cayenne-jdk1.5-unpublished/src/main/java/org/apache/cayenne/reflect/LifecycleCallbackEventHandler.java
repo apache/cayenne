@@ -37,13 +37,13 @@ import org.apache.cayenne.map.ObjEntity;
 class LifecycleCallbackEventHandler {
 
     private EntityResolver resolver;
-    private Map listeners;
-    private Collection defaultListeners;
+    private Map<String, Collection<AbstractCallback>> listeners;
+    private Collection<AbstractCallback> defaultListeners;
 
     LifecycleCallbackEventHandler(EntityResolver resolver) {
         this.resolver = resolver;
-        this.listeners = new HashMap();
-        this.defaultListeners = new ArrayList();
+        this.listeners = new HashMap<String, Collection<AbstractCallback>>();
+        this.defaultListeners = new ArrayList<AbstractCallback>();
     }
 
     private boolean excludingDefaultListeners(String entityName) {
@@ -108,10 +108,10 @@ class LifecycleCallbackEventHandler {
      * Registers a callback object to be invoked when a lifecycle event occurs.
      */
     private void addCallback(Class entityClass, AbstractCallback callback) {
-        Collection entityListeners = (Collection) listeners.get(entityClass.getName());
+        Collection<AbstractCallback> entityListeners = listeners.get(entityClass.getName());
 
         if (entityListeners == null) {
-            entityListeners = new ArrayList(3);
+            entityListeners = new ArrayList<AbstractCallback>(3);
             listeners.put(entityClass.getName(), entityListeners);
         }
 
@@ -126,9 +126,9 @@ class LifecycleCallbackEventHandler {
         // default listeners are invoked first
         if (!defaultListeners.isEmpty()
                 && !excludingDefaultListeners(object.getObjectId().getEntityName())) {
-            Iterator it = defaultListeners.iterator();
+            Iterator<AbstractCallback> it = defaultListeners.iterator();
             while (it.hasNext()) {
-                ((AbstractCallback) it.next()).performCallback(object);
+                (it.next()).performCallback(object);
             }
         }
 
@@ -175,12 +175,12 @@ class LifecycleCallbackEventHandler {
 
         // perform callbacks on provided class
         String key = callbackEntityClass.getName();
-        Collection entityListeners = (Collection) listeners.get(key);
+        Collection<AbstractCallback> entityListeners = listeners.get(key);
 
         if (entityListeners != null) {
-            Iterator it = entityListeners.iterator();
+            Iterator<AbstractCallback> it = entityListeners.iterator();
             while (it.hasNext()) {
-                ((AbstractCallback) it.next()).performCallback(object);
+                (it.next()).performCallback(object);
             }
         }
     }

@@ -40,13 +40,13 @@ public class WebApplicationResourceLocator extends ResourceLocator {
     private static Log logObj = LogFactory.getLog(WebApplicationResourceLocator.class);
 
     protected ServletContext context;
-    protected List additionalContextPaths;
+    protected List<String> additionalContextPaths;
 
     /**
      * @since 1.2
      */
     public WebApplicationResourceLocator() {
-        this.additionalContextPaths = new ArrayList();
+        this.additionalContextPaths = new ArrayList<String>();
         this.addFilesystemPath("/WEB-INF/");
     }
 
@@ -86,9 +86,9 @@ public class WebApplicationResourceLocator extends ResourceLocator {
                 suffix = suffix.substring(1);
             }
 
-            Iterator cpi = this.additionalContextPaths.iterator();
+            Iterator<String> cpi = this.additionalContextPaths.iterator();
             while (cpi.hasNext()) {
-                String prefix = (String) cpi.next();
+                String prefix = cpi.next();
 
                 if (!prefix.endsWith("/")) {
                     prefix += "/";
