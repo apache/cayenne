@@ -679,7 +679,6 @@ public class CayenneDataObject implements DataObject, Validating, XMLSerializabl
 
                 if (failure != null) {
                     validationResult.addFailure(failure);
-                    continue;
                 }
             }
 

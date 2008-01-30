@@ -167,7 +167,7 @@ public class UpdateBatchQuery extends BatchQuery {
      * @since 1.1
      */
     public Map getCurrentQualifier() {
-        return (Map) qualifierSnapshots.get(batchIndex);
+        return qualifierSnapshots.get(batchIndex);
     }
 
     /**

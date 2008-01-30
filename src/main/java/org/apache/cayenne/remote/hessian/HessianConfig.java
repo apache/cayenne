@@ -89,8 +89,7 @@ public class HessianConfig {
             c.setAccessible(true);
         }
 
-        AbstractSerializerFactory object = (AbstractSerializerFactory) c
-                .newInstance(null);
+        AbstractSerializerFactory object = (AbstractSerializerFactory) c.newInstance();
 
         if (resolver != null) {
             try {

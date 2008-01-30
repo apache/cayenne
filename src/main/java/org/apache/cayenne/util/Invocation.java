@@ -34,7 +34,7 @@ import org.apache.cayenne.CayenneRuntimeException;
  * @author Holger Hoffstaette
  * @author Dirk Olmes
  */
-public class Invocation extends Object {
+public class Invocation {
 
     private WeakReference _target;
     private Method _method;
