@@ -60,18 +60,14 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
         allChanges.apply(this);
 
         if (!flattenedInserts.isEmpty()) {
-            Iterator<FlattenedArcKey> it = flattenedInserts.iterator();
-            while (it.hasNext()) {
-                FlattenedArcKey key = it.next();
+            for (final FlattenedArcKey key : flattenedInserts) {
                 DbEntity entity = key.getJoinEntity();
                 parent.addFlattenedInsert(entity, key);
             }
         }
 
         if (!flattenedDeletes.isEmpty()) {
-            Iterator<FlattenedArcKey> it = flattenedDeletes.iterator();
-            while (it.hasNext()) {
-                FlattenedArcKey key = it.next();
+            for (final FlattenedArcKey key : flattenedDeletes) {
                 DbEntity entity = key.getJoinEntity();
                 parent.addFlattenedDelete(entity, key);
             }

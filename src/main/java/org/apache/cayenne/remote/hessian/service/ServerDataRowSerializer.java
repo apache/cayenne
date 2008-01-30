@@ -49,9 +49,7 @@ class ServerDataRowSerializer extends AbstractSerializer {
         out.writeLong(row.getVersion());
         out.writeLong(row.getReplacesVersion());
 
-        Iterator<Map.Entry<String,Object>> it = row.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String,Object> entry = it.next();
+        for (final Map.Entry<String, Object> entry : row.entrySet()) {
             out.writeObject(entry.getKey());
             out.writeObject(entry.getValue());
         }

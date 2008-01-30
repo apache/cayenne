@@ -60,9 +60,7 @@ public class DefaultOperationObserver implements OperationObserver {
                 out.println("Global Exceptions:");
             }
 
-            Iterator<Throwable> it = globalExceptions.iterator();
-            while (it.hasNext()) {
-                Throwable th = it.next();
+            for (final Throwable th : globalExceptions) {
                 th.printStackTrace(out);
             }
         }
@@ -75,9 +73,8 @@ public class DefaultOperationObserver implements OperationObserver {
                 out.println("Query Exceptions:");
             }
 
-            Iterator<Query> it = queryExceptions.keySet().iterator();
-            while (it.hasNext()) {
-                Throwable th = queryExceptions.get(it.next());
+            for (final Query query : queryExceptions.keySet()) {
+                Throwable th = queryExceptions.get(query);
                 th.printStackTrace(out);
             }
         }

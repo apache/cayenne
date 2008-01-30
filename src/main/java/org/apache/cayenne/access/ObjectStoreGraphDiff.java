@@ -153,9 +153,8 @@ class ObjectStoreGraphDiff implements GraphDiff {
             if (!changes.isEmpty()) {
                 List allChanges = new ArrayList(changes.size() * 2);
 
-                Iterator<ObjectDiff> it = changes.values().iterator();
-                while (it.hasNext()) {
-                    (it.next()).appendDiffs(allChanges);
+                for (final ObjectDiff objectDiff : changes.values()) {
+                    objectDiff.appendDiffs(allChanges);
                 }
 
                 Collections.sort(allChanges);

@@ -75,9 +75,7 @@ public class DataDomainLegacyQueryAction implements QueryRouter, OperationObserv
 
         // run categorized queries
         if (queriesByNode != null) {
-            Iterator<Map.Entry<QueryEngine,List<Query>>> nodeIt = queriesByNode.entrySet().iterator();
-            while (nodeIt.hasNext()) {
-                Map.Entry<QueryEngine,List<Query>> entry = nodeIt.next();
+            for (final Map.Entry<QueryEngine, List<Query>> entry : queriesByNode.entrySet()) {
                 QueryEngine nextNode = entry.getKey();
                 Collection<Query> nodeQueries = entry.getValue();
                 nextNode.performQueries(nodeQueries, this);

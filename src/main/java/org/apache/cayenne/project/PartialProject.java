@@ -72,9 +72,7 @@ public class PartialProject extends Project {
      * are assumed to be in place.
      */
     public void updateNodes(List<? extends DataNodeConfigInfo> list) throws ProjectException {
-        Iterator<? extends DataNodeConfigInfo> it = list.iterator();
-        while (it.hasNext()) {
-            DataNodeConfigInfo nodeConfig = it.next();
+        for (final DataNodeConfigInfo nodeConfig : list) {
             String domainName = nodeConfig.getDomain();
             if (domainName == null && domains.size() != 1) {
                 throw new IllegalArgumentException("Node must have domain set explicitly if there is no default domain.");

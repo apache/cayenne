@@ -86,9 +86,7 @@ public class WebApplicationResourceLocator extends ResourceLocator {
                 suffix = suffix.substring(1);
             }
 
-            Iterator<String> cpi = this.additionalContextPaths.iterator();
-            while (cpi.hasNext()) {
-                String prefix = cpi.next();
+            for (String prefix : this.additionalContextPaths) {
 
                 if (!prefix.endsWith("/")) {
                     prefix += "/";

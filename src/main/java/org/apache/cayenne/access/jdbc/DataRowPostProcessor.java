@@ -129,9 +129,7 @@ class DataRowPostProcessor {
         Collection<ColumnOverride> overrides = getOverrides(row);
 
         if (overrides != null) {
-            Iterator<ColumnOverride> it = overrides.iterator();
-            while (it.hasNext()) {
-                ColumnOverride override = it.next();
+            for (final ColumnOverride override : overrides) {
 
                 Object newValue = override.converter.materializeObject(
                         resultSet,
