@@ -293,9 +293,7 @@ class ObjectResolver {
         // ... handle generic case - PK.size > 1
 
         Map<String, Object> idMap = new HashMap<String, Object>(pk.size() * 2);
-        Iterator<DbAttribute> it = pk.iterator();
-        while (it.hasNext()) {
-            DbAttribute attribute = it.next();
+        for (final DbAttribute attribute : pk) {
 
             String key = (prefix) ? namePrefix + attribute.getName() : attribute
                     .getName();

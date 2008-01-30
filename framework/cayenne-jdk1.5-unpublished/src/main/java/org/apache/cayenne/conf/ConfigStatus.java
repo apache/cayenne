@@ -94,9 +94,7 @@ public class ConfigStatus {
 
         StringBuffer buf = new StringBuffer();
 
-        Iterator<String> it = failedMaps.keySet().iterator();
-        while (it.hasNext()) {
-            String name = it.next();
+        for (final String name : failedMaps.keySet()) {
             String location = failedMaps.get(name);
             Object message = messages.get(getMapMessageKey(name, location));
             buf.append("\n\tdomain.map.name=").append(name).append(
@@ -106,9 +104,7 @@ public class ConfigStatus {
             }
         }
 
-        it = failedAdapters.keySet().iterator();
-        while (it.hasNext()) {
-            String node = it.next();
+        for (final String node : failedAdapters.keySet()) {
             String adapter = failedAdapters.get(node);
             Object message = messages.get(getAdapterMessageKey(node, adapter));
             buf.append("\n\tdomain.node.name=").append(node).append(
@@ -118,9 +114,7 @@ public class ConfigStatus {
             }
         }
 
-        it = failedDataSources.keySet().iterator();
-        while (it.hasNext()) {
-            String node = it.next();
+        for (final String node : failedDataSources.keySet()) {
             String location = failedDataSources.get(node);
             Object message = messages.get(getDataSourceMessageKey(node, location));
             buf.append("\n\tdomain.node.name=").append(node).append(
@@ -130,9 +124,7 @@ public class ConfigStatus {
             }
         }
 
-        it = failedMapRefs.iterator();
-        while (it.hasNext()) {
-            String mapName = it.next();
+        for (final String mapName : failedMapRefs) {
             // don't report failed links if the DataMap itself failed to load
             if (failedMaps.get(mapName) == null) {
                 buf.append("\n\tdomain.node.map-ref.name=").append(mapName);

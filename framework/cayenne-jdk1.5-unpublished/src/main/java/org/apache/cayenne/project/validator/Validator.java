@@ -59,29 +59,24 @@ public class Validator {
         if (status.hasFailures()) {
             ProjectPath path = new ProjectPath(project);
 
-            Iterator<String> it = status.getOtherFailures().iterator();
-            while (it.hasNext()) {
-                registerError(it.next(), path);
+            for (final String message : status.getOtherFailures()) {
+                registerError(message, path);
             }
 
-            it = status.getFailedMaps().keySet().iterator();
-            while (it.hasNext()) {
-                registerError("Map failed to load: " + it.next(), path);
+            for (final String message : status.getFailedMaps().keySet()) {
+                registerError("Map failed to load: " + message, path);
             }
 
-            it = status.getFailedAdapters().keySet().iterator();
-            while (it.hasNext()) {
-                registerError("Adapter failed to load: " + it.next(), path);
+            for (final String message : status.getFailedAdapters().keySet()) {
+                registerError("Adapter failed to load: " + message, path);
             }
 
-            it = status.getFailedDataSources().keySet().iterator();
-            while (it.hasNext()) {
-                registerError("DataSource failed to load: " + it.next(), path);
+            for (final String message : status.getFailedDataSources().keySet()) {
+                registerError("DataSource failed to load: " + message, path);
             }
 
-            it = status.getFailedMapRefs().iterator();
-            while (it.hasNext()) {
-                registerError("Map reference failed to load: " + it.next(), path);
+            for (final String message : status.getFailedMapRefs()) {
+                registerError("Map reference failed to load: " + message, path);
             }
         }
     }

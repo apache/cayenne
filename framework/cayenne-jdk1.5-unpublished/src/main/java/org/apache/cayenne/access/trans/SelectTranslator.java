@@ -366,15 +366,10 @@ public class SelectTranslator extends QueryAssembler {
 
         if (query instanceof PrefetchSelectQuery) {
 
-            Iterator<String> extraPaths = ((PrefetchSelectQuery) query)
-                    .getResultPaths()
-                    .iterator();
-
             // for each relationship path add closest FK or PK, for each attribute path,
             // add specified column
-            while (extraPaths.hasNext()) {
+            for (final String path : ((PrefetchSelectQuery) query).getResultPaths()) {
 
-                String path = extraPaths.next();
                 Expression pathExp = oe.translateToDbPath(Expression.fromString(path));
 
                 Iterator<CayenneMapEntry> it = table.resolvePathComponents(pathExp);
@@ -457,9 +452,7 @@ public class SelectTranslator extends QueryAssembler {
                 Collection skipColumns = Collections.EMPTY_LIST;
                 if (r.getSourceEntity() == table) {
                     skipColumns = new ArrayList(2);
-                    Iterator<DbJoin> joins = r.getJoins().iterator();
-                    while (joins.hasNext()) {
-                        DbJoin join = joins.next();
+                    for (final DbJoin join : r.getJoins()) {
                         if (attributes.contains(join.getSource())) {
                             skipColumns.add(join.getTarget());
                         }

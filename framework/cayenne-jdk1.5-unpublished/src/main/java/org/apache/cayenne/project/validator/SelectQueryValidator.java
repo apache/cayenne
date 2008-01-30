@@ -64,13 +64,8 @@ public class SelectQueryValidator extends TreeNodeValidator {
             }
 
             if (query.getPrefetchTree() != null) {
-                Iterator<PrefetchTreeNode> prefetches = query
-                        .getPrefetchTree()
-                        .nonPhantomNodes()
-                        .iterator();
-                while (prefetches.hasNext()) {
-                    validatePrefetch(root, (prefetches.next())
-                            .getPath(), treeNodePath, validator);
+                for (final PrefetchTreeNode prefetchTreeNode : query.getPrefetchTree().nonPhantomNodes()) {
+                    validatePrefetch(root, prefetchTreeNode.getPath(), treeNodePath, validator);
                 }
             }
         }

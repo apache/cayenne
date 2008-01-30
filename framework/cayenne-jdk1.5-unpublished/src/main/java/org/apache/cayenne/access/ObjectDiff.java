@@ -325,9 +325,8 @@ class ObjectDiff extends NodeDiff {
     public void apply(final GraphChangeHandler handler) {
 
         if (otherDiffs != null) {
-            Iterator<GraphDiff> it = otherDiffs.iterator();
-            while (it.hasNext()) {
-                (it.next()).apply(handler);
+            for (final GraphDiff diff : otherDiffs) {
+                diff.apply(handler);
             }
         }
 

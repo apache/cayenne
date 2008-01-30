@@ -161,10 +161,7 @@ public class PooledConnectionImpl implements PooledConnection {
                 return;
 
             ConnectionEvent closedEvent = new ConnectionEvent(this, exception);
-            Iterator<ConnectionEventListener> listeners = connectionEventListeners.iterator();
-            while (listeners.hasNext()) {
-                ConnectionEventListener nextListener = listeners
-                        .next();
+            for (final ConnectionEventListener nextListener : connectionEventListeners) {
                 nextListener.connectionErrorOccurred(closedEvent);
             }
         }
@@ -180,11 +177,8 @@ public class PooledConnectionImpl implements PooledConnection {
                 return;
 
             ConnectionEvent closedEvent = new ConnectionEvent(this);
-            Iterator<ConnectionEventListener> listeners = connectionEventListeners.iterator();
 
-            while (listeners.hasNext()) {
-                ConnectionEventListener nextListener = listeners
-                        .next();
+            for (final ConnectionEventListener nextListener : connectionEventListeners) {
                 nextListener.connectionClosed(closedEvent);
             }
         }

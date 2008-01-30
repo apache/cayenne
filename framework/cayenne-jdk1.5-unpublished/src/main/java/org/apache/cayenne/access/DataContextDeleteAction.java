@@ -143,9 +143,7 @@ class DataContextDeleteAction {
         ClassDescriptor descriptor = dataContext.getEntityResolver().getClassDescriptor(
                 object.getObjectId().getEntityName());
 
-        Iterator<ObjRelationship> it = descriptor.getEntity().getRelationships().iterator();
-        while (it.hasNext()) {
-            ObjRelationship relationship = it.next();
+        for (final ObjRelationship relationship : descriptor.getEntity().getRelationships()) {
 
             boolean processFlattened = relationship.isFlattened()
                     && relationship.isToDependentEntity()

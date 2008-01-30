@@ -306,9 +306,7 @@ public class DbLoader {
     public boolean loadDbEntities(DataMap map, List<? extends Table> tables) throws SQLException {
         this.dbEntityList = new ArrayList<DbEntity>();
 
-        Iterator<? extends Table> iter = tables.iterator();
-        while (iter.hasNext()) {
-            Table table = iter.next();
+        for (final Table table : tables) {
 
             // Check if there already is a DbEntity under such name
             // if so, consult the delegate what to do
@@ -327,8 +325,8 @@ public class DbLoader {
                     }
                     else {
                         logObj.debug("Keep old: " + oldEnt.getName());
-                        
-                        // cay-479 - need to track entities that were not loaded for 
+
+                        // cay-479 - need to track entities that were not loaded for
                         // relationships exported to entities that were
                         skippedEntities.add(oldEnt);
                         continue;
@@ -419,9 +417,7 @@ public class DbLoader {
         }
         
         // get primary keys for each table and store it in dbEntity
-        Iterator<DbEntity> i = map.getDbEntities().iterator();
-        while (i.hasNext()) {
-            DbEntity dbEntity = i.next();
+        for (final DbEntity dbEntity : map.getDbEntities()) {
             String tableName = dbEntity.getName();
             ResultSet rs = metaData.getPrimaryKeys(null, dbEntity.getSchema(), tableName);
 
@@ -447,10 +443,7 @@ public class DbLoader {
         }
         
         // cay-479 - iterate skipped DbEntities to populate exported keys
-        Iterator<DbEntity> skippedEntityIter = skippedEntities.iterator();
-        while (skippedEntityIter.hasNext()) {
-
-            DbEntity skippedEntity = skippedEntityIter.next();
+        for (final DbEntity skippedEntity : skippedEntities) {
             loadDbRelationships(skippedEntity, map);
         }
             
@@ -521,9 +514,7 @@ public class DbLoader {
 
     /** Loads database relationships into a DataMap. */
     public void loadDbRelationships(DataMap map) throws SQLException {
-        Iterator<DbEntity> it = dbEntityList.iterator();
-        while (it.hasNext()) {
-            DbEntity pkEntity = it.next();
+        for (final DbEntity pkEntity : dbEntityList) {
             loadDbRelationships(pkEntity, map);
         }
     }
@@ -655,9 +646,7 @@ public class DbLoader {
         boolean toPK = true;
         List<DbJoin> joins = relationship.getJoins();
 
-        Iterator<DbJoin> joinsIt = joins.iterator();
-        while (joinsIt.hasNext()) {
-            DbJoin join = joinsIt.next();
+        for (final DbJoin join : joins) {
             if (!join.getTarget().isPrimaryKey()) {
                 toPK = false;
                 break;
@@ -905,11 +894,8 @@ public class DbLoader {
             columnsRS.close();
         }
 
-        Iterator<Procedure> it = procedures.values().iterator();
-        while (it.hasNext()) {
+        for (final Procedure procedure : procedures.values()) {
             // overwrite existing procedures...
-
-            Procedure procedure = it.next();
             dataMap.addProcedure(procedure);
         }
     }

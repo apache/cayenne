@@ -297,15 +297,12 @@ public class DbGenerator {
 
             // create FK
             if (shouldCreateTables && shouldCreateFKConstraints) {
-                Iterator<DbEntity> it = dbEntitiesInInsertOrder.iterator();
-                while (it.hasNext()) {
-                    DbEntity ent = it.next();
+                for (DbEntity ent : dbEntitiesInInsertOrder) {
 
                     if (createdTables.contains(ent.getName())) {
                         List<String> fks = createConstraints.get(ent.getName());
-                        Iterator<String> fkIt = fks.iterator();
-                        while (fkIt.hasNext()) {
-                            safeExecute(connection, fkIt.next());
+                        for (String fk : fks) {
+                            safeExecute(connection, fk);
                         }
                     }
                 }

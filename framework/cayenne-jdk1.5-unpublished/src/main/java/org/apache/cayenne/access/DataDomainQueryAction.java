@@ -284,9 +284,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             if (objects != null && !objects.isEmpty()) {
 
                 Collection<ObjectId> ids = new ArrayList<ObjectId>(objects.size());
-                Iterator<Persistent> it = objects.iterator();
-                while (it.hasNext()) {
-                    Persistent object = it.next();
+                for (final Persistent object : objects) {
                     ids.add(object.getObjectId());
                 }
 

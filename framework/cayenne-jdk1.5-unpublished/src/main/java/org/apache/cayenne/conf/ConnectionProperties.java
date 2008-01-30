@@ -147,9 +147,7 @@ public class ConnectionProperties {
      * Constructor for ConnectionProperties.
      */
     public ConnectionProperties(ExtendedProperties props) {
-        Iterator<String> names = extractNames(props).iterator();
-        while (names.hasNext()) {
-            String name = names.next();
+        for (final String name : extractNames(props)) {
             DataSourceInfo dsi = buildDataSourceInfo(props.subset(name));
             connectionInfos.put(name, dsi);
         }
