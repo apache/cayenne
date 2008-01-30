@@ -68,7 +68,7 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
     }
 
     public List dataRows(boolean close) throws CayenneException {
-        List list = new ArrayList();
+        List<Map> list = new ArrayList<Map>();
 
         try {
             while (hasNextRow()) {

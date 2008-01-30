@@ -39,7 +39,7 @@ public abstract class Transaction {
      * 
      * @since 1.2
      */
-    static final ThreadLocal currentTransaction = new InheritableThreadLocal();
+    static final ThreadLocal<Transaction> currentTransaction = new InheritableThreadLocal<Transaction>();
 
     private static final Transaction NO_TRANSACTION = new Transaction() {
 
@@ -67,7 +67,7 @@ public abstract class Transaction {
     public static final int STATUS_NO_TRANSACTION = 6;
     public static final int STATUS_MARKED_ROLLEDBACK = 7;
 
-    protected Map connections;
+    protected Map<String, Connection> connections;
     protected int status;
     protected TransactionDelegate delegate;
 
@@ -108,7 +108,7 @@ public abstract class Transaction {
      * @since 1.2
      */
     public static Transaction getThreadTransaction() {
-        return (Transaction) currentTransaction.get();
+        return currentTransaction.get();
     }
 
     /**
@@ -187,7 +187,7 @@ public abstract class Transaction {
      * @since 1.2
      */
     public Connection getConnection(String name) {
-        return (connections != null) ? (Connection) connections.get(name) : null;
+        return (connections != null) ? connections.get(name) : null;
     }
 
     /**
@@ -199,7 +199,7 @@ public abstract class Transaction {
         }
 
         if (connections == null) {
-            connections = new HashMap();
+            connections = new HashMap<String, Connection>();
         }
 
         return connections.put(name, connection) != connection;
