@@ -49,10 +49,8 @@ public class MappingNamesHelper {
     
     // a property is considered invalid if there is a getter or a setter for it in
     // java.lang.Object or CayenneDataObject
-    static final Collection INVALID_JAVA_PROPERTIES = Arrays.asList(new Object[] {
-            "class", "committedSnapshot", "currentSnapshot", "dataContext", "objectId",
-            "persistenceState", "snapshotVersion"
-    });
+    static final Collection INVALID_JAVA_PROPERTIES = Arrays.asList("class", "committedSnapshot", "currentSnapshot",
+            "dataContext", "objectId", "persistenceState", "snapshotVersion");
 
     static final MappingNamesHelper sharedInstance = new MappingNamesHelper();
 

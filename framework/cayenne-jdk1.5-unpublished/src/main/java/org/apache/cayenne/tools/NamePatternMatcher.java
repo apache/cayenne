@@ -75,11 +75,10 @@ public class NamePatternMatcher {
                             + "], reason: "
                             + e.getMessage());
                 }
-                continue;
             }
         }
 
-        return (Pattern[]) patterns.toArray(new Pattern[patterns.size()]);
+        return patterns.toArray(new Pattern[patterns.size()]);
     }
 
     /**
@@ -120,7 +119,7 @@ public class NamePatternMatcher {
                 patterns.add(buffer.toString());
             }
 
-            return (String[]) patterns.toArray(new String[patterns.size()]);
+            return patterns.toArray(new String[patterns.size()]);
         }
         else {
             return new String[0];
@@ -175,7 +174,6 @@ public class NamePatternMatcher {
 
             if (!passedExcludeFilter(entity)) {
                 it.remove();
-                continue;
             }
         }
 

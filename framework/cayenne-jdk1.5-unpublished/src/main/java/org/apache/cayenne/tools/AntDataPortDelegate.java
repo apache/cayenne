@@ -81,7 +81,6 @@ class AntDataPortDelegate implements DataPortDelegate {
 
             if (!passedDataMapFilter(entity.getDataMap())) {
                 it.remove();
-                continue;
             }
         }
 

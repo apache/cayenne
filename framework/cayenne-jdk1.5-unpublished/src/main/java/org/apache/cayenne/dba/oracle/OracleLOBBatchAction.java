@@ -247,7 +247,7 @@ class OracleLOBBatchAction implements SQLAction {
 
         Method getBinaryStreamMethod = OracleAdapter.getOutputStreamFromBlobMethod();
         try {
-            OutputStream out = (OutputStream) getBinaryStreamMethod.invoke(blob, null);
+            OutputStream out = (OutputStream) getBinaryStreamMethod.invoke(blob);
             try {
                 out.write(value);
                 out.flush();
@@ -275,7 +275,7 @@ class OracleLOBBatchAction implements SQLAction {
         Method getWriterMethod = OracleAdapter.getWriterFromClobMethod();
         try {
 
-            Writer out = (Writer) getWriterMethod.invoke(clob, null);
+            Writer out = (Writer) getWriterMethod.invoke(clob);
             try {
                 out.write(value);
                 out.flush();
@@ -304,7 +304,7 @@ class OracleLOBBatchAction implements SQLAction {
         Method getWriterMethod = OracleAdapter.getWriterFromClobMethod();
         try {
 
-            Writer out = (Writer) getWriterMethod.invoke(clob, null);
+            Writer out = (Writer) getWriterMethod.invoke(clob);
             try {
                 out.write(value);
                 out.flush();
