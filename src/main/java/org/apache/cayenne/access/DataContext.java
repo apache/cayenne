@@ -128,7 +128,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
-    protected Map userProperties;
+    protected Map<String, Object> userProperties;
 
     /**
      * Stores the name of parent DataDomain. Used to defer initialization of the parent
@@ -281,11 +281,11 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 1.2
      */
-    protected Map getUserProperties() {
+    protected Map<String, Object> getUserProperties() {
         // as not all users will take advantage of properties, creating the
         // map on demand to keep DataContext lean...
         if (userProperties == null) {
-            userProperties = new HashMap();
+            userProperties = new HashMap<String, Object>();
         }
 
         return userProperties;
@@ -592,7 +592,7 @@ public class DataContext extends BaseContext implements DataChannel {
                 // target is resolved and we have an FK->PK to it,
                 // so extract it from target...
                 Persistent target = (Persistent) targetObject;
-                Map idParts = target.getObjectId().getIdSnapshot();
+                Map<String, Object> idParts = target.getObjectId().getIdSnapshot();
 
                 // this may happen in uncommitted objects - see the warning in the JavaDoc
                 // of
@@ -602,7 +602,7 @@ public class DataContext extends BaseContext implements DataChannel {
                 }
 
                 DbRelationship dbRel = rel.getDbRelationships().get(0);
-                Map fk = dbRel.srcFkSnapshotWithTargetSnapshot(idParts);
+                Map<String, Object> fk = dbRel.srcFkSnapshotWithTargetSnapshot(idParts);
                 snapshot.putAll(fk);
                 return true;
             }
@@ -657,7 +657,7 @@ public class DataContext extends BaseContext implements DataChannel {
      */
     public List objectsFromDataRows(
             Class objectClass,
-            List dataRows,
+            List<? extends DataRow> dataRows,
             boolean refresh,
             boolean resolveInheritanceHierarchy) {
         ObjEntity entity = this.getEntityResolver().lookupObjEntity(objectClass);
@@ -863,10 +863,10 @@ public class DataContext extends BaseContext implements DataChannel {
                 if (!property.isFault(persistent)) {
 
                     Object value = property.readProperty(persistent);
-                    Collection collection = (value instanceof Map) ? ((Map) value)
+                    Collection<Map.Entry> collection = (value instanceof Map) ? ((Map) value)
                             .entrySet() : (Collection) value;
 
-                    Iterator it = collection.iterator();
+                    Iterator<Map.Entry> it = collection.iterator();
                     while (it.hasNext()) {
                         Object target = it.next();
 

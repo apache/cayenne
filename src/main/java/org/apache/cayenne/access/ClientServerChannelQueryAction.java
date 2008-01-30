@@ -91,7 +91,7 @@ class ClientServerChannelQueryAction {
 
             // send back just one page... query sender will figure out where it fits in
             // the incremental list
-            this.response = new ListResponse(new ArrayList(cachedList.subList(
+            this.response = new ListResponse(new ArrayList<Object>(cachedList.subList(
                     startIndex,
                     endIndex)));
 

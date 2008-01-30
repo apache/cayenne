@@ -172,7 +172,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
     }
 
     private void invalidateLocally(ObjectStore objectStore, Iterator it) {
-        Map diffMap = objectStore.getChangesByObjectId();
+        Map<Object, ObjectDiff> diffMap = objectStore.getChangesByObjectId();
 
         while (it.hasNext()) {
             Persistent object = (Persistent) it.next();
