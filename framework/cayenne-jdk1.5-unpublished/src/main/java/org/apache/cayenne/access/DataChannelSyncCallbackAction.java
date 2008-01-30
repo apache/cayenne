@@ -57,7 +57,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
     Collection updated;
     Collection persisted;
     Collection removed;
-    private Set seenIds;
+    private Set<Object> seenIds;
     private GraphManager graphManager;
 
     DataChannelSyncCallbackAction(LifecycleCallbackRegistry callbackRegistry,
@@ -67,7 +67,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
         this.graphManager = graphManager;
 
         if (hasListeners()) {
-            this.seenIds = new HashSet();
+            this.seenIds = new HashSet<Object>();
             changes.apply(this);
         }
     }
