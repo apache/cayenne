@@ -51,8 +51,8 @@ public class DataDomainLegacyQueryAction implements QueryRouter, OperationObserv
     Query query;
     QueryMetadata metadata;
 
-    Map queriesByNode;
-    Map queriesByExecutedQueries;
+    Map<QueryEngine, List<Query>> queriesByNode;
+    Map<Query, Query> queriesByExecutedQueries;
 
     DataDomainLegacyQueryAction(DataDomain domain, Query query, OperationObserver callback) {
         this.domain = domain;
@@ -75,11 +75,11 @@ public class DataDomainLegacyQueryAction implements QueryRouter, OperationObserv
 
         // run categorized queries
         if (queriesByNode != null) {
-            Iterator nodeIt = queriesByNode.entrySet().iterator();
+            Iterator<Map.Entry<QueryEngine,List<Query>>> nodeIt = queriesByNode.entrySet().iterator();
             while (nodeIt.hasNext()) {
-                Map.Entry entry = (Map.Entry) nodeIt.next();
-                QueryEngine nextNode = (QueryEngine) entry.getKey();
-                Collection nodeQueries = (Collection) entry.getValue();
+                Map.Entry<QueryEngine,List<Query>> entry = nodeIt.next();
+                QueryEngine nextNode = entry.getKey();
+                Collection<Query> nodeQueries = entry.getValue();
                 nextNode.performQueries(nodeQueries, this);
             }
         }
@@ -87,16 +87,16 @@ public class DataDomainLegacyQueryAction implements QueryRouter, OperationObserv
 
     public void route(QueryEngine engine, Query query, Query substitutedQuery) {
 
-        List queries = null;
+        List<Query> queries = null;
         if (queriesByNode == null) {
-            queriesByNode = new HashMap();
+            queriesByNode = new HashMap<QueryEngine, List<Query>>();
         }
         else {
-            queries = (List) queriesByNode.get(engine);
+            queries = queriesByNode.get(engine);
         }
 
         if (queries == null) {
-            queries = new ArrayList(5);
+            queries = new ArrayList<Query>(5);
             queriesByNode.put(engine, queries);
         }
 
@@ -107,7 +107,7 @@ public class DataDomainLegacyQueryAction implements QueryRouter, OperationObserv
         if (substitutedQuery != null && substitutedQuery != query) {
 
             if (queriesByExecutedQueries == null) {
-                queriesByExecutedQueries = new HashMap();
+                queriesByExecutedQueries = new HashMap<Query, Query>();
             }
 
             queriesByExecutedQueries.put(query, substitutedQuery);
@@ -164,7 +164,7 @@ public class DataDomainLegacyQueryAction implements QueryRouter, OperationObserv
         Query q = null;
 
         if (queriesByExecutedQueries != null) {
-            q = (Query) queriesByExecutedQueries.get(executedQuery);
+            q = queriesByExecutedQueries.get(executedQuery);
         }
 
         return q != null ? q : executedQuery;
