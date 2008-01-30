@@ -140,8 +140,8 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
 
             Character[] chars = (Character[]) object;
             StringBuffer buffer = new StringBuffer(chars.length);
-            for (int i = 0; i < chars.length; i++) {
-                buffer.append(chars[i] != null ? chars[i].charValue() : 0);
+            for (Character aChar : chars) {
+                buffer.append(aChar != null ? aChar.charValue() : 0);
             }
 
             return buffer.toString();

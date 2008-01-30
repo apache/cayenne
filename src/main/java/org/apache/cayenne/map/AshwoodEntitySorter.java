@@ -215,8 +215,8 @@ public class AshwoodEntitySorter implements EntitySorter {
                 }
 
                 Object masterCandidate = objects.get(j);
-                for (int k = 0; k < masters.length; k++) {
-                    if (masterCandidate.equals(masters[k])) {
+                for (Object master : masters) {
+                    if (masterCandidate.equals(master)) {
                         objectDependencyGraph.putArc(
                                 masterCandidate,
                                 current,

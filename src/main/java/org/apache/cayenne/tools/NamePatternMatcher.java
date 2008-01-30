@@ -193,8 +193,8 @@ public class NamePatternMatcher {
             return true;
         }
 
-        for (int i = 0; i < itemIncludeFilters.length; i++) {
-            if (itemIncludeFilters[i].matcher(item).find()) {
+        for (Pattern itemIncludeFilter : itemIncludeFilters) {
+            if (itemIncludeFilter.matcher(item).find()) {
                 return true;
             }
         }
