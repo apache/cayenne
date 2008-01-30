@@ -86,14 +86,14 @@ final class FlattenedArcKey {
      * Returns a join DbEntity for the single-step flattened relationship.
      */
     DbEntity getJoinEntity() {
-        List relList = relationship.getDbRelationships();
+        List<DbRelationship> relList = relationship.getDbRelationships();
         if (relList.size() != 2) {
             throw new CayenneRuntimeException(
                     "Only single-step flattened relationships are supported in this operation: "
                             + relationship);
         }
 
-        DbRelationship firstDbRel = (DbRelationship) relList.get(0);
+        DbRelationship firstDbRel = relList.get(0);
         return (DbEntity) firstDbRel.getTargetEntity();
     }
 
@@ -102,8 +102,8 @@ final class FlattenedArcKey {
      * generating value for the primary key column if it is not propagated via the
      * relationships.
      */
-    Map buildJoinSnapshotForInsert(DataNode node) {
-        Map snapshot = lazyJoinSnapshot();
+    Map<String, Object> buildJoinSnapshotForInsert(DataNode node) {
+        Map<String, Object> snapshot = lazyJoinSnapshot();
 
         boolean autoPkDone = false;
         DbEntity joinEntity = getJoinEntity();
@@ -236,15 +236,15 @@ final class FlattenedArcKey {
 
     private Map eagerJoinSnapshot() {
 
-        List relList = relationship.getDbRelationships();
+        List<DbRelationship> relList = relationship.getDbRelationships();
         if (relList.size() != 2) {
             throw new CayenneRuntimeException(
                     "Only single-step flattened relationships are supported in this operation: "
                             + relationship);
         }
 
-        DbRelationship firstDbRel = (DbRelationship) relList.get(0);
-        DbRelationship secondDbRel = (DbRelationship) relList.get(1);
+        DbRelationship firstDbRel = relList.get(0);
+        DbRelationship secondDbRel = relList.get(1);
 
         Map<String, ?> sourceId = this.sourceId.getIdSnapshot();
         Map<String, ?> destinationId = this.destinationId.getIdSnapshot();
@@ -261,32 +261,32 @@ final class FlattenedArcKey {
         return snapshot;
     }
 
-    private Map lazyJoinSnapshot() {
+    private Map<String, Object> lazyJoinSnapshot() {
 
-        List relList = relationship.getDbRelationships();
+        List<DbRelationship> relList = relationship.getDbRelationships();
         if (relList.size() != 2) {
             throw new CayenneRuntimeException(
                     "Only single-step flattened relationships are supported in this operation: "
                             + relationship);
         }
 
-        DbRelationship firstDbRel = (DbRelationship) relList.get(0);
-        DbRelationship secondDbRel = (DbRelationship) relList.get(1);
+        DbRelationship firstDbRel = relList.get(0);
+        DbRelationship secondDbRel = relList.get(1);
 
-        List fromSourceJoins = firstDbRel.getJoins();
-        List toTargetJoins = secondDbRel.getJoins();
+        List<DbJoin> fromSourceJoins = firstDbRel.getJoins();
+        List<DbJoin> toTargetJoins = secondDbRel.getJoins();
 
-        Map snapshot = new HashMap(fromSourceJoins.size() + toTargetJoins.size(), 1);
+        Map<String, Object> snapshot = new HashMap<String, Object>(fromSourceJoins.size() + toTargetJoins.size(), 1);
 
         for (int i = 0, numJoins = fromSourceJoins.size(); i < numJoins; i++) {
-            DbJoin join = (DbJoin) fromSourceJoins.get(i);
+            DbJoin join = fromSourceJoins.get(i);
 
             Object value = new PropagatedValueFactory(sourceId, join.getSourceName());
             snapshot.put(join.getTargetName(), value);
         }
 
         for (int i = 0, numJoins = toTargetJoins.size(); i < numJoins; i++) {
-            DbJoin join = (DbJoin) toTargetJoins.get(i);
+            DbJoin join = toTargetJoins.get(i);
             Object value = new PropagatedValueFactory(destinationId, join.getTargetName());
             snapshot.put(join.getSourceName(), value);
         }

@@ -96,7 +96,7 @@ class ObjectResolver {
     /**
      * Properly synchronized version of 'objectsFromDataRows'.
      */
-    List synchronizedObjectsFromDataRows(List rows) {
+    List<Persistent> synchronizedObjectsFromDataRows(List rows) {
         synchronized (context.getObjectStore()) {
             return objectsFromDataRows(rows);
         }
@@ -109,12 +109,12 @@ class ObjectResolver {
      * and DataRowStore.
      * </p>
      */
-    List objectsFromDataRows(List rows) {
+    List<Persistent> objectsFromDataRows(List rows) {
         if (rows == null || rows.size() == 0) {
-            return new ArrayList(1);
+            return new ArrayList<Persistent>(1);
         }
 
-        List results = new ArrayList(rows.size());
+        List<Persistent> results = new ArrayList<Persistent>(rows.size());
         Iterator it = rows.iterator();
 
         while (it.hasNext()) {
@@ -137,9 +137,9 @@ class ObjectResolver {
      * and DataRowStore.
      * </p>
      */
-    List relatedObjectsFromDataRows(List rows, PrefetchProcessorNode node) {
+    List<Persistent> relatedObjectsFromDataRows(List rows, PrefetchProcessorNode node) {
         if (rows == null || rows.size() == 0) {
-            return new ArrayList(1);
+            return new ArrayList<Persistent>(1);
         }
 
         ObjEntity sourceObjEntity = (ObjEntity) node
@@ -152,7 +152,7 @@ class ObjectResolver {
                 .getReverseDbRelationshipPath()
                 + ".";
 
-        List results = new ArrayList(rows.size());
+        List<Persistent> results = new ArrayList<Persistent>(rows.size());
         Iterator it = rows.iterator();
 
         while (it.hasNext()) {
@@ -292,10 +292,10 @@ class ObjectResolver {
 
         // ... handle generic case - PK.size > 1
 
-        Map idMap = new HashMap(pk.size() * 2);
-        Iterator it = pk.iterator();
+        Map<String, Object> idMap = new HashMap<String, Object>(pk.size() * 2);
+        Iterator<DbAttribute> it = pk.iterator();
         while (it.hasNext()) {
-            DbAttribute attribute = (DbAttribute) it.next();
+            DbAttribute attribute = it.next();
 
             String key = (prefix) ? namePrefix + attribute.getName() : attribute
                     .getName();

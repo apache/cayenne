@@ -52,8 +52,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
     ColumnDescriptor[] columns;
     int[] idIndices;
     int rowCapacity;
-    Map resolved;
-    List resolvedRows;
+    Map<Map, Persistent> resolved;
+    List<DataRow> resolvedRows;
 
     PrefetchProcessorJointNode(PrefetchTreeNode parent, String segmentPath) {
         super(parent, segmentPath);
@@ -73,13 +73,13 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         }
 
         objects = new ArrayList(capacity);
-        resolved = new HashMap(capacity);
-        resolvedRows = new ArrayList(capacity);
+        resolved = new HashMap<Map, Persistent>(capacity);
+        resolvedRows = new ArrayList<DataRow>(capacity);
         buildRowMapping();
         buildPKIndex();
     }
 
-    List getResolvedRows() {
+    List<DataRow> getResolvedRows() {
         return resolvedRows;
     }
 
@@ -91,13 +91,13 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
     /**
      * Returns an ObjectId map from the flat row.
      */
-    Map idFromFlatRow(DataRow flatRow) {
+    Map<String, Object> idFromFlatRow(DataRow flatRow) {
 
         // TODO: should we also check for nulls in ID (and skip such rows) - this will
         // likely be an indicator of an outer join ... and considering SQLTemplate,
         // this is reasonable to expect...
 
-        Map id = new TreeMap();
+        Map<String, Object> id = new TreeMap<String, Object>();
         for (int idIndex : idIndices) {
             Object value = flatRow.get(columns[idIndex].getLabel());
             id.put(columns[idIndex].getName(), value);
@@ -111,7 +111,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
      * if no matching object exists.
      */
     Persistent getResolved(Map id) {
-        return (Persistent) resolved.get(id);
+        return resolved.get(id);
     }
 
     /**
@@ -143,7 +143,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
      * Configures row columns mapping for this node entity.
      */
     private void buildRowMapping() {
-        Map targetSource = new TreeMap();
+        Map<String, ColumnDescriptor> targetSource = new TreeMap<String, ColumnDescriptor>();
 
         // build a DB path .. find parent node that terminates the joint group...
         PrefetchTreeNode jointRoot = this;
@@ -228,8 +228,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         targetSource.values().toArray(columns);
     }
 
-    private ColumnDescriptor appendColumn(Map map, String name, String label) {
-        ColumnDescriptor column = (ColumnDescriptor) map.get(name);
+    private ColumnDescriptor appendColumn(Map<String, ColumnDescriptor> map, String name, String label) {
+        ColumnDescriptor column = map.get(name);
 
         if (column == null) {
             column = new ColumnDescriptor();

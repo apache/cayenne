@@ -37,10 +37,10 @@ import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
  */
 class DbGeneratorPostprocessor {
 
-    private static final Map postprocessors;
+    private static final Map<String, HSQLDBPostprocessor> postprocessors;
 
     static {
-        postprocessors = new HashMap();
+        postprocessors = new HashMap<String, HSQLDBPostprocessor>();
         postprocessors.put(HSQLDBAdapter.class.getName(), new HSQLDBPostprocessor());
     }
 
@@ -49,7 +49,7 @@ class DbGeneratorPostprocessor {
         DbAdapter adapter = AutoAdapter.getDefaultFactory().createAdapter(
                 connection.getMetaData());
         if (adapter != null) {
-            Postprocessor postprocessor = (Postprocessor) postprocessors.get(adapter
+            Postprocessor postprocessor = postprocessors.get(adapter
                     .getClass()
                     .getName());
             if (postprocessor != null) {

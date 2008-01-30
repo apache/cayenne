@@ -54,12 +54,12 @@ class ObjectDiff extends NodeDiff {
 
     private transient ClassDescriptor classDescriptor;
 
-    private Collection otherDiffs;
+    private Collection<GraphDiff> otherDiffs;
 
-    private Map snapshot;
-    private Map arcSnapshot;
-    private Map currentArcSnapshot;
-    private Map flatIds;
+    private Map<String, Object> snapshot;
+    private Map<String, Object> arcSnapshot;
+    private Map<String, Object> currentArcSnapshot;
+    private Map<ArcOperation, ArcOperation> flatIds;
 
     private Persistent object;
 
@@ -87,8 +87,8 @@ class ObjectDiff extends NodeDiff {
             ObjEntity entity = entityResolver.getObjEntity(entityName);
             final boolean lock = entity.getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
 
-            this.snapshot = new HashMap();
-            this.arcSnapshot = new HashMap();
+            this.snapshot = new HashMap<String, Object>();
+            this.arcSnapshot = new HashMap<String, Object>();
 
             classDescriptor.visitProperties(new PropertyVisitor() {
 
@@ -208,10 +208,10 @@ class ObjectDiff extends NodeDiff {
                 if (relationship.isFlattened()) {
 
                     if (flatIds == null) {
-                        flatIds = new HashMap();
+                        flatIds = new HashMap<ArcOperation, ArcOperation>();
                     }
 
-                    ArcOperation oldOp = (ArcOperation) flatIds.put(arcDiff, arcDiff);
+                    ArcOperation oldOp = flatIds.put(arcDiff, arcDiff);
 
                     // "delete" cancels "create" and vice versa...
                     if (oldOp != null && oldOp.isDelete() != arcDiff.isDelete()) {
@@ -227,7 +227,7 @@ class ObjectDiff extends NodeDiff {
             else if (property instanceof ToOneProperty) {
 
                 if (currentArcSnapshot == null) {
-                    currentArcSnapshot = new HashMap();
+                    currentArcSnapshot = new HashMap<String, Object>();
                 }
 
                 currentArcSnapshot.put(arcId, targetId);
@@ -242,7 +242,7 @@ class ObjectDiff extends NodeDiff {
 
         if (addDiff) {
             if (otherDiffs == null) {
-                otherDiffs = new ArrayList(3);
+                otherDiffs = new ArrayList<GraphDiff>(3);
             }
 
             otherDiffs.add(diff);
@@ -325,9 +325,9 @@ class ObjectDiff extends NodeDiff {
     public void apply(final GraphChangeHandler handler) {
 
         if (otherDiffs != null) {
-            Iterator it = otherDiffs.iterator();
+            Iterator<GraphDiff> it = otherDiffs.iterator();
             while (it.hasNext()) {
-                ((GraphDiff) it.next()).apply(handler);
+                (it.next()).apply(handler);
             }
         }
 
@@ -384,7 +384,7 @@ class ObjectDiff extends NodeDiff {
      */
     void updateArcSnapshot(String propertyName, Persistent object) {
         if (arcSnapshot == null) {
-            arcSnapshot = new HashMap();
+            arcSnapshot = new HashMap<String, Object>();
         }
 
         arcSnapshot.put(propertyName, object != null ? object.getObjectId() : null);
