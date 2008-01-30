@@ -49,7 +49,7 @@ public class ToManyList implements List, Serializable, ValueHolder {
 
     // track additions/removals in unresolved...
     LinkedList addedToUnresolved;
-    LinkedList removedFromUnresolved;
+    LinkedList<Object> removedFromUnresolved;
 
     /**
      * Creates ToManyList.
@@ -352,7 +352,7 @@ public class ToManyList implements List, Serializable, ValueHolder {
         }
 
         if (removedFromUnresolved == null) {
-            removedFromUnresolved = new LinkedList();
+            removedFromUnresolved = new LinkedList<Object>();
         }
 
         // No point in adding a new or transient object -- these will never be fetched

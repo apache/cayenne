@@ -159,7 +159,7 @@ public class QueryResult extends DefaultOperationObserver {
             return Collections.EMPTY_LIST;
         }
 
-        List list = new ArrayList(size);
+        List<Object> list = new ArrayList<Object>(size);
         for (Object obj : allResults) {
             if (obj instanceof List) {
                 list.add(obj);
