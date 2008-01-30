@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.DataRow;
@@ -220,7 +219,7 @@ class DataRowUtils {
         });
     }
 
-    static boolean hasFK(DbRelationship relationship, Map snapshot) {
+    static boolean hasFK(DbRelationship relationship, Map<String, Object> snapshot) {
         for (final DbJoin join : relationship.getJoins()) {
             if (!snapshot.containsKey(join.getSourceName())) {
                 return false;

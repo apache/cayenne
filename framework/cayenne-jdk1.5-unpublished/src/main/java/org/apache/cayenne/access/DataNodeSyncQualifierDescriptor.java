@@ -54,10 +54,10 @@ class DataNodeSyncQualifierDescriptor {
         return attributes;
     }
 
-    Map createQualifierSnapshot(ObjectDiff diff) {
+    Map<String, Object> createQualifierSnapshot(ObjectDiff diff) {
         int len = attributes.size();
 
-        Map map = new HashMap(len * 2);
+        Map<String, Object> map = new HashMap<String, Object>(len * 2);
         for (int i = 0; i < len; i++) {
             DbAttribute attribute = attributes.get(i);
             if (!map.containsKey(attribute.getName())) {

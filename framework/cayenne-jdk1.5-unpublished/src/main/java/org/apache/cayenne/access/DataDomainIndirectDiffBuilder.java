@@ -44,15 +44,15 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
     private final DataDomainFlushAction parent;
     private final EntityResolver resolver;
     private final Collection indirectModifications;
-    private final Collection flattenedInserts;
-    private final Collection flattenedDeletes;
+    private final Collection<FlattenedArcKey> flattenedInserts;
+    private final Collection<FlattenedArcKey> flattenedDeletes;
 
     DataDomainIndirectDiffBuilder(DataDomainFlushAction parent) {
         this.parent = parent;
         this.indirectModifications = parent.getResultIndirectlyModifiedIds();
         this.resolver = parent.getDomain().getEntityResolver();
-        this.flattenedInserts = new HashSet();
-        this.flattenedDeletes = new HashSet();
+        this.flattenedInserts = new HashSet<FlattenedArcKey>();
+        this.flattenedDeletes = new HashSet<FlattenedArcKey>();
     }
 
     void processIndirectChanges(GraphDiff allChanges) {
@@ -60,18 +60,18 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
         allChanges.apply(this);
 
         if (!flattenedInserts.isEmpty()) {
-            Iterator it = flattenedInserts.iterator();
+            Iterator<FlattenedArcKey> it = flattenedInserts.iterator();
             while (it.hasNext()) {
-                FlattenedArcKey key = (FlattenedArcKey) it.next();
+                FlattenedArcKey key = it.next();
                 DbEntity entity = key.getJoinEntity();
                 parent.addFlattenedInsert(entity, key);
             }
         }
 
         if (!flattenedDeletes.isEmpty()) {
-            Iterator it = flattenedDeletes.iterator();
+            Iterator<FlattenedArcKey> it = flattenedDeletes.iterator();
             while (it.hasNext()) {
-                FlattenedArcKey key = (FlattenedArcKey) it.next();
+                FlattenedArcKey key = it.next();
                 DbEntity entity = key.getJoinEntity();
                 parent.addFlattenedDelete(entity, key);
             }

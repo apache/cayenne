@@ -280,13 +280,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return DONE;
             }
 
-            Collection<?> objects = refreshQuery.getObjects();
+            Collection<Persistent> objects = (Collection<Persistent>) refreshQuery.getObjects();
             if (objects != null && !objects.isEmpty()) {
 
-                Collection ids = new ArrayList(objects.size());
-                Iterator it = objects.iterator();
+                Collection<ObjectId> ids = new ArrayList<ObjectId>(objects.size());
+                Iterator<Persistent> it = objects.iterator();
                 while (it.hasNext()) {
-                    Persistent object = (Persistent) it.next();
+                    Persistent object = it.next();
                     ids.add(object.getObjectId());
                 }
 
@@ -505,7 +505,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         List mainRows = response.firstList();
         if (mainRows != null && !mainRows.isEmpty()) {
 
-            Collection columns = rsMapping.getColumnResults();
+            Collection<String> columns = rsMapping.getColumnResults();
             if (columns.isEmpty()) {
                 throw new CayenneRuntimeException(
                         "Invalid result set mapping, no columns mapped.");

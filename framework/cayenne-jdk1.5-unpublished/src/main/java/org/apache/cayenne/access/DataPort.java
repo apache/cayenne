@@ -229,7 +229,7 @@ public class DataPort {
 
                     currentRow++;
 
-                    Map nextRow = result.nextDataRow();
+                    Map<String, Object> nextRow = result.nextDataRow();
                     insert.add(nextRow);
                 }
 
