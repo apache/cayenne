@@ -100,7 +100,7 @@ class ObjectTreeResolver {
     final class TreeBuilder implements PrefetchProcessor {
 
         PrefetchProcessorNode root;
-        LinkedList nodeStack;
+        LinkedList<PrefetchProcessorNode> nodeStack;
 
         List mainResultRows;
         Map extraResultsByPath;
@@ -112,7 +112,7 @@ class ObjectTreeResolver {
 
         PrefetchProcessorNode buildTree(PrefetchTreeNode tree) {
             // reset state
-            this.nodeStack = new LinkedList();
+            this.nodeStack = new LinkedList<PrefetchProcessorNode>();
             this.root = null;
 
             tree.traverse(this);
@@ -238,7 +238,7 @@ class ObjectTreeResolver {
         }
 
         PrefetchProcessorNode getParent() {
-            return (nodeStack.isEmpty()) ? null : (PrefetchProcessorNode) nodeStack
+            return (nodeStack.isEmpty()) ? null : nodeStack
                     .getLast();
         }
     }

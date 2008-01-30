@@ -148,14 +148,14 @@ class ObjectStoreGraphDiff implements GraphDiff {
         if (resolvedDiff == null) {
 
             CompoundDiff diff = new CompoundDiff();
-            Map changes = getChangesByObjectId();
+            Map<Object, ObjectDiff> changes = getChangesByObjectId();
 
             if (!changes.isEmpty()) {
                 List allChanges = new ArrayList(changes.size() * 2);
 
-                Iterator it = changes.values().iterator();
+                Iterator<ObjectDiff> it = changes.values().iterator();
                 while (it.hasNext()) {
-                    ((ObjectDiff) it.next()).appendDiffs(allChanges);
+                    (it.next()).appendDiffs(allChanges);
                 }
 
                 Collections.sort(allChanges);
@@ -184,7 +184,7 @@ class ObjectStoreGraphDiff implements GraphDiff {
                 if (!id.equals(objectId)) {
 
                     if (objectId != null) {
-                        Map replacement = id.getReplacementIdMap();
+                        Map<String, Object> replacement = id.getReplacementIdMap();
                         replacement.clear();
                         replacement.putAll(objectId.getIdSnapshot());
                     }

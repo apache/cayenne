@@ -67,7 +67,7 @@ public class DbLoader {
 
     // TODO: remove this hardcoded stuff once delegate starts to support procedure
     // loading...
-    private static final Collection EXCLUDED_PROCEDURES = Arrays.asList(
+    private static final Collection<String> EXCLUDED_PROCEDURES = Arrays.asList(
             "auto_pk_for_table", "auto_pk_for_table;1" /*
                                                          * the last name is some Mac OS X
                                                          * Sybase artifact
@@ -77,13 +77,13 @@ public class DbLoader {
     public static final String WILDCARD = "%";
 
     /** List of db entities to process. */
-    private List dbEntityList = new ArrayList();
+    private List<DbEntity> dbEntityList = new ArrayList<DbEntity>();
     
     /**
      * CAY-479 - need to track which entities are skipped in 
      * the loader so that relationships to non-skipped entities can be loaded 
      */
-    private Set skippedEntities = new HashSet();
+    private Set<DbEntity> skippedEntities = new HashSet<DbEntity>();
 
     /** Creates default name for loaded relationship */
     private static String defaultRelName(String dstName, boolean toMany) {
@@ -171,8 +171,8 @@ public class DbLoader {
      * 
      * @return List with the catalog names, empty Array if none found.
      */
-    public List getCatalogs() throws SQLException {
-        List catalogs = new ArrayList();
+    public List<String> getCatalogs() throws SQLException {
+        List<String> catalogs = new ArrayList<String>();
         ResultSet rs = getMetaData().getCatalogs();
 
         try {
@@ -192,8 +192,8 @@ public class DbLoader {
      * 
      * @return List with the schema names, empty Array if none found.
      */
-    public List getSchemas() throws SQLException {
-        List schemas = new ArrayList();
+    public List<String> getSchemas() throws SQLException {
+        List<String> schemas = new ArrayList<String>();
         ResultSet rs = getMetaData().getSchemas();
 
         try {
@@ -214,8 +214,8 @@ public class DbLoader {
      * 
      * @return List of Strings, empty array if nothing found.
      */
-    public List getTableTypes() throws SQLException {
-        List types = new ArrayList();
+    public List<String> getTableTypes() throws SQLException {
+        List<String> types = new ArrayList<String>();
         ResultSet rs = getMetaData().getTableTypes();
 
         try {
@@ -239,13 +239,13 @@ public class DbLoader {
      * @param types The types of table names to retrieve, null returns all types.
      * @return List of TableInfo objects, empty array if nothing found.
      */
-    public List getTables(
+    public List<Table> getTables(
             String catalog,
             String schemaPattern,
             String tableNamePattern,
             String[] types) throws SQLException {
 
-        List tables = new ArrayList();
+        List<Table> tables = new ArrayList<Table>();
 
         if (logObj.isDebugEnabled()) {
             logObj.debug("Read tables: catalog="
@@ -303,12 +303,12 @@ public class DbLoader {
      *            DbEntities must be created.
      * @return false if loading must be immediately aborted.
      */
-    public boolean loadDbEntities(DataMap map, List tables) throws SQLException {
-        this.dbEntityList = new ArrayList();
+    public boolean loadDbEntities(DataMap map, List<? extends Table> tables) throws SQLException {
+        this.dbEntityList = new ArrayList<DbEntity>();
 
-        Iterator iter = tables.iterator();
+        Iterator<? extends Table> iter = tables.iterator();
         while (iter.hasNext()) {
-            Table table = (Table) iter.next();
+            Table table = iter.next();
 
             // Check if there already is a DbEntity under such name
             // if so, consult the delegate what to do
@@ -419,9 +419,9 @@ public class DbLoader {
         }
         
         // get primary keys for each table and store it in dbEntity
-        Iterator i = map.getDbEntities().iterator();
+        Iterator<DbEntity> i = map.getDbEntities().iterator();
         while (i.hasNext()) {
-            DbEntity dbEntity = (DbEntity) i.next();
+            DbEntity dbEntity = i.next();
             String tableName = dbEntity.getName();
             ResultSet rs = metaData.getPrimaryKeys(null, dbEntity.getSchema(), tableName);
 
@@ -447,10 +447,10 @@ public class DbLoader {
         }
         
         // cay-479 - iterate skipped DbEntities to populate exported keys
-        Iterator skippedEntityIter = skippedEntities.iterator();
+        Iterator<DbEntity> skippedEntityIter = skippedEntities.iterator();
         while (skippedEntityIter.hasNext()) {
 
-            DbEntity skippedEntity = (DbEntity) skippedEntityIter.next();
+            DbEntity skippedEntity = skippedEntityIter.next();
             loadDbRelationships(skippedEntity, map);
         }
             
@@ -464,12 +464,12 @@ public class DbLoader {
      */
     public void loadObjEntities(DataMap map) {
 
-        Iterator dbEntities = dbEntityList.iterator();
+        Iterator<DbEntity> dbEntities = dbEntityList.iterator();
         if (!dbEntities.hasNext()) {
             return;
         }
 
-        List loadedEntities = new ArrayList(dbEntityList.size());
+        List<ObjEntity> loadedEntities = new ArrayList<ObjEntity>(dbEntityList.size());
 
         String packageName = map.getDefaultPackage();
         if (Util.isEmptyString(packageName)) {
@@ -481,10 +481,10 @@ public class DbLoader {
 
         // load empty ObjEntities for all the tables
         while (dbEntities.hasNext()) {
-            DbEntity dbEntity = (DbEntity) dbEntities.next();
+            DbEntity dbEntity = dbEntities.next();
 
             // check if there are existing entities
-            Collection existing = map.getMappedEntities(dbEntity);
+            Collection<ObjEntity> existing = map.getMappedEntities(dbEntity);
             if (existing.size() > 0) {
                 loadedEntities.addAll(existing);
                 continue;
@@ -521,9 +521,9 @@ public class DbLoader {
 
     /** Loads database relationships into a DataMap. */
     public void loadDbRelationships(DataMap map) throws SQLException {
-        Iterator it = dbEntityList.iterator();
+        Iterator<DbEntity> it = dbEntityList.iterator();
         while (it.hasNext()) {
-            DbEntity pkEntity = (DbEntity) it.next();
+            DbEntity pkEntity = it.next();
             loadDbRelationships(pkEntity, map);
         }
     }
@@ -653,11 +653,11 @@ public class DbLoader {
      */
     protected void postprocessMasterDbRelationship(DbRelationship relationship) {
         boolean toPK = true;
-        List joins = relationship.getJoins();
+        List<DbJoin> joins = relationship.getJoins();
 
-        Iterator joinsIt = joins.iterator();
+        Iterator<DbJoin> joinsIt = joins.iterator();
         while (joinsIt.hasNext()) {
-            DbJoin join = (DbJoin) joinsIt.next();
+            DbJoin join = joinsIt.next();
             if (!join.getTarget().isPrimaryKey()) {
                 toPK = false;
                 break;
@@ -694,7 +694,7 @@ public class DbLoader {
         String tableType = adapter.tableTypeForTable();
 
         // use types that are not null
-        List list = new ArrayList();
+        List<String> list = new ArrayList<String>();
         if (viewType != null) {
             list.add(viewType);
         }
@@ -767,7 +767,7 @@ public class DbLoader {
             String namePattern,
             DataMap dataMap) throws SQLException {
 
-        Map procedures = null;
+        Map<String, Procedure> procedures = null;
 
         // get procedures
         ResultSet rs = getMetaData().getProcedures(null, schemaPattern, namePattern);
@@ -801,7 +801,7 @@ public class DbLoader {
                 }
 
                 if (procedures == null) {
-                    procedures = new HashMap();
+                    procedures = new HashMap<String, Procedure>();
                 }
 
                 procedures.put(procedure.getFullyQualifiedName(), procedure);
@@ -844,7 +844,7 @@ public class DbLoader {
                     logObj.debug("skipping ResultSet column: " + key + "." + columnName);
                 }
 
-                Procedure procedure = (Procedure) procedures.get(key);
+                Procedure procedure = procedures.get(key);
 
                 if (procedure == null) {
                     logObj.info("invalid procedure column, no procedure found: "
@@ -905,11 +905,11 @@ public class DbLoader {
             columnsRS.close();
         }
 
-        Iterator it = procedures.values().iterator();
+        Iterator<Procedure> it = procedures.values().iterator();
         while (it.hasNext()) {
             // overwrite existing procedures...
 
-            Procedure procedure = (Procedure) it.next();
+            Procedure procedure = it.next();
             dataMap.addProcedure(procedure);
         }
     }

@@ -382,7 +382,7 @@ public class IncrementalFaultList<E> implements List<E> {
                 buf.append("Expected ").append(ids.size()).append(", fetched ").append(
                         objects.size());
 
-                Iterator idsIt = ids.iterator();
+                Iterator<Object> idsIt = ids.iterator();
                 boolean first = true;
                 while (idsIt.hasNext()) {
                     boolean found = false;

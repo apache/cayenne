@@ -296,7 +296,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             return;
         }
 
-        Collection ids = new ArrayList(objects.size());
+        Collection<ObjectId> ids = new ArrayList<ObjectId>(objects.size());
 
         Iterator it = objects.iterator();
         while (it.hasNext()) {
@@ -600,8 +600,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * Return a subset of registered objects that are in a certian persistence state.
      * Collection is returned by copy.
      */
-    public synchronized List objectsInState(int state) {
-        List filteredObjects = new ArrayList();
+    public synchronized List<Persistent> objectsInState(int state) {
+        List<Persistent> filteredObjects = new ArrayList<Persistent>();
 
         Iterator it = objectMap.values().iterator();
         while (it.hasNext()) {
