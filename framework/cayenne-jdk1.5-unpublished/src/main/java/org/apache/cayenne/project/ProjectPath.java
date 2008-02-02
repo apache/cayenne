@@ -177,7 +177,7 @@ public class ProjectPath {
 
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("[ProjectPath: ");
         for (int i = 0; i < path.length; i++) {
             if (i > 0) {

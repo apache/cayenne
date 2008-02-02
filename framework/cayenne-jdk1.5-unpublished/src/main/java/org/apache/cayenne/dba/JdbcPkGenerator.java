@@ -104,7 +104,7 @@ public class JdbcPkGenerator implements PkGenerator {
     }
 
     protected String pkTableCreateString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf
                 .append("CREATE TABLE AUTO_PK_SUPPORT (")
                 .append("  TABLE_NAME CHAR(100) NOT NULL,")
@@ -116,7 +116,7 @@ public class JdbcPkGenerator implements PkGenerator {
     }
 
     protected String pkDeleteString(List<DbEntity> dbEntities) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("DELETE FROM AUTO_PK_SUPPORT WHERE TABLE_NAME IN (");
         int len = dbEntities.size();
         for (int i = 0; i < len; i++) {
@@ -131,7 +131,7 @@ public class JdbcPkGenerator implements PkGenerator {
     }
 
     protected String pkCreateString(String entName) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf
                 .append("INSERT INTO AUTO_PK_SUPPORT")
                 .append(" (TABLE_NAME, NEXT_ID)")
@@ -142,14 +142,14 @@ public class JdbcPkGenerator implements PkGenerator {
     }
 
     protected String pkSelectString(String entName) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = '").append(
                 entName).append('\'');
         return buf.toString();
     }
 
     protected String pkUpdateString(String entName) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("UPDATE AUTO_PK_SUPPORT").append(" SET NEXT_ID = NEXT_ID + ").append(
                 pkCacheSize).append(" WHERE TABLE_NAME = '").append(entName).append('\'');
         return buf.toString();

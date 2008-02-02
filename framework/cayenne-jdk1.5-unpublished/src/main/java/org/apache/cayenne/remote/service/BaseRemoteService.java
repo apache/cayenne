@@ -170,8 +170,8 @@ public abstract class BaseRemoteService implements RemoteService {
             th.printStackTrace(causeMessage);
             causeMessage.flush();
             Exception cause = new Exception(causeMessageStream.toString());
-            
-            StringBuffer wrapperMessage = new StringBuffer();
+
+            StringBuilder wrapperMessage = new StringBuilder();
             wrapperMessage.append("Exception processing message ")
                 .append(message.getClass().getName())
                 .append(" of type ").append(message.toString());

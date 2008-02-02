@@ -201,7 +201,7 @@ public class SelectQueryValidator extends TreeNodeValidator {
     }
 
     private String buildValidationMessage(ExpressionException e, String prefix) {
-        StringBuffer buffer = new StringBuffer(prefix);
+        StringBuilder buffer = new StringBuilder(prefix);
         if (e.getExpressionString() != null) {
             buffer.append(": '").append(e.getExpressionString()).append("'");
         }

@@ -145,7 +145,7 @@ public class DefaultConfiguration extends Configuration {
 
         InputStream in = this.getDomainConfiguration();
         if (in == null) {
-            StringBuffer msg = new StringBuffer();
+            StringBuilder msg = new StringBuilder();
             msg.append("[").append(this.getClass().getName()).append(
                     "] : Domain configuration file \"").append(
                     this.getDomainConfigurationName()).append("\" is not found.");
@@ -227,7 +227,7 @@ public class DefaultConfiguration extends Configuration {
      */
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf
                 .append('[')
                 .append(this.getClass().getName())

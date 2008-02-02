@@ -530,7 +530,7 @@ public class TypesMapping {
 
         @Override
         public String toString() {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             buf.append("[   TypeInfo: ").append(name);
             buf.append("\n    JDBC Type: ").append(
                     TypesMapping.getSqlNameByType(jdbcType));

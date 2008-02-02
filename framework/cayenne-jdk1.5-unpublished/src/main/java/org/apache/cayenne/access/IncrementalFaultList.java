@@ -377,7 +377,7 @@ public class IncrementalFaultList<E> implements List<E> {
             // sanity check - database data may have changed
             if (objects.size() < ids.size()) {
                 // find missing ids
-                StringBuffer buf = new StringBuffer();
+                StringBuilder buf = new StringBuilder();
                 buf.append("Some ObjectIds are missing from the database. ");
                 buf.append("Expected ").append(ids.size()).append(", fetched ").append(
                         objects.size());

@@ -310,7 +310,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         // problem reported in CAY-360.
 
         if (!Util.isEmptyString(name)) {
-            StringBuffer buffer = new StringBuffer(name);
+            StringBuilder buffer = new StringBuilder(name);
 
             if (parameters != null && !parameters.isEmpty()) {
                 buffer.append(parameters.hashCode());

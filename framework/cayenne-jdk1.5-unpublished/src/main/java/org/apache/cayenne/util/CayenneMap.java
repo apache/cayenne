@@ -96,7 +96,7 @@ public class CayenneMap extends FastTreeMap {
 
         if (containsKey(key) && get(key) != value) {
             // build descriptive failure message
-            StringBuffer message = new StringBuffer();
+            StringBuilder message = new StringBuilder();
             message.append("Attempt to insert duplicate key. [key '");
             message.append(key);
             message.append("'");

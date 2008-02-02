@@ -54,7 +54,7 @@ public class OrderingTranslator extends QueryAssemblerHelper {
         if (q == null || !(q instanceof SelectQuery))
             return null;
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         for (Ordering ord : ((SelectQuery) q).getOrderings()) {
             if (buf.length() > 0)

@@ -58,7 +58,7 @@ public class SetColumnTypeToModel extends AbstractToModelToken.Entity {
 
     @Override
     public String getTokenValue() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(getEntity().getName());
         sb.append(".");
         sb.append(columnNew.getName());

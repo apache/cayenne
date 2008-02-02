@@ -209,7 +209,7 @@ public class ImportUtils {
      * Generate package and list of import statements based on the registered types.
      */
     public String generate() {
-        StringBuffer outputBuffer = new StringBuffer();
+        StringBuilder outputBuffer = new StringBuilder();
 
         if (null != packageName) {
             outputBuffer.append("package ");

@@ -89,7 +89,7 @@ abstract class DataDomainSyncBucket {
 
         if (entity.isReadOnly()) {
 
-            StringBuffer message = new StringBuffer();
+            StringBuilder message = new StringBuilder();
             message
                     .append("Attempt to modify object(s) mapped to a read-only entity: ")
                     .append(entity.getName());

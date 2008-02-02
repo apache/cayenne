@@ -294,7 +294,7 @@ public class ObjRelationship extends Relationship implements EventListener {
                 dbRelationshipPath = null;
             }
             else {
-                StringBuffer path = new StringBuffer();
+                StringBuilder path = new StringBuilder();
 
                 for (int i = 0; i < dbRelationships.size(); i++) {
                     DbRelationship r = dbRelationships.get(i);
@@ -460,7 +460,7 @@ public class ObjRelationship extends Relationship implements EventListener {
                 return null;
             }
 
-            StringBuffer path = new StringBuffer();
+            StringBuilder path = new StringBuilder();
             Iterator<DbRelationship> it = getDbRelationships().iterator();
             while (it.hasNext()) {
                 DbRelationship next = it.next();
@@ -486,7 +486,7 @@ public class ObjRelationship extends Relationship implements EventListener {
             return null;
         }
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         // iterate in reverse order
         ListIterator<DbRelationship> it = relationships
@@ -538,7 +538,7 @@ public class ObjRelationship extends Relationship implements EventListener {
                     "Can't resolve DbRelationships, null source ObjEntity");
         }
 
-        StringBuffer validPath = new StringBuffer();
+        StringBuilder validPath = new StringBuilder();
 
         try {
             Iterator<CayenneMapEntry> it = entity.resolvePathComponents(new ASTDbPath(

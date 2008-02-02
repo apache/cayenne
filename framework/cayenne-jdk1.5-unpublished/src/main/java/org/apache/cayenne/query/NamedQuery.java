@@ -105,7 +105,7 @@ public class NamedQuery extends IndirectQuery {
             // TODO: andrus, 3/29/2006 this is taken from SelectQuery...probably need a
             // central place for converting parameters to a cache key
 
-            StringBuffer buffer = new StringBuffer(name);
+            StringBuilder buffer = new StringBuilder(name);
 
             if (parameters != null && !parameters.isEmpty()) {
                 buffer.append(parameters.hashCode());

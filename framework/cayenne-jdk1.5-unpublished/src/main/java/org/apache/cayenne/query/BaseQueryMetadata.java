@@ -238,7 +238,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         }
 
         if (cacheGroups != null && cacheGroups.length > 0) {
-            StringBuffer buffer = new StringBuffer(cacheGroups[0]);
+            StringBuilder buffer = new StringBuilder(cacheGroups[0]);
             for (int i = 1; i < cacheGroups.length; i++) {
                 buffer.append(',').append(cacheGroups[i]);
             }

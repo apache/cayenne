@@ -194,7 +194,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
         }
         DbAttribute primaryKeyAttribute = ent.getPrimaryKeys().iterator().next();
 
-        StringBuffer buf = new StringBuffer("NEWID FOR ");
+        StringBuilder buf = new StringBuilder("NEWID FOR ");
         buf.append(ent.getName()).append(' ').append(primaryKeyAttribute.getName());
         return buf.toString();
     }

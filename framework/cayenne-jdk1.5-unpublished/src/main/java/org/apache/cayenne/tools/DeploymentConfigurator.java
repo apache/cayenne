@@ -64,7 +64,7 @@ public class DeploymentConfigurator extends CayenneTask {
         catch (Exception ex) {
             Throwable th = Util.unwindException(ex);
             String message = th.getMessage();
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
 
             if (message != null && message.trim().length() > 0) {
                 buf.append("Error: [").append(message).append("].");

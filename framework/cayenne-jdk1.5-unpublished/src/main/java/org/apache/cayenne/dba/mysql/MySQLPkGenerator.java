@@ -224,7 +224,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
     @Override
     protected String pkTableCreateString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE AUTO_PK_SUPPORT (").append(
                 "  TABLE_NAME CHAR(100) NOT NULL,").append(
                 "  NEXT_ID BIGINT NOT NULL, UNIQUE (TABLE_NAME)").append(")");

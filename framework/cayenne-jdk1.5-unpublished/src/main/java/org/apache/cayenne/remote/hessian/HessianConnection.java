@@ -159,7 +159,7 @@ public class HessianConnection extends BaseConnection {
         long t0 = 0;
         if (logger.isInfoEnabled()) {
             t0 = System.currentTimeMillis();
-            StringBuffer log = new StringBuffer("Connecting to [");
+            StringBuilder log = new StringBuilder("Connecting to [");
             if (userName != null) {
                 log.append(userName);
 
@@ -228,7 +228,7 @@ public class HessianConnection extends BaseConnection {
 
     String buildExceptionMessage(String message, Throwable th) {
 
-        StringBuffer buffer = new StringBuffer(message);
+        StringBuilder buffer = new StringBuilder(message);
         buffer.append(". URL - ").append(url);
 
         String thMessage = th.getMessage();

@@ -42,7 +42,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
     
     @Override
     protected String pkTableCreateString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf
                 .append("CREATE TABLE AUTO_PK_SUPPORT (")
                 .append("  TABLE_NAME CHAR(100) NOT NULL,")
@@ -280,7 +280,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
     }
 
     private String safePkTableDrop() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf
                 .append(
                         "if exists (SELECT * FROM sysobjects WHERE name = 'AUTO_PK_SUPPORT')")
@@ -292,7 +292,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
     }
 
     private String unsafePkProcCreate() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf
                 .append(
                         " CREATE PROCEDURE auto_pk_for_table @tname VARCHAR(32), @pkbatchsize INT AS")
@@ -307,7 +307,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
     }
 
     private String safePkProcDrop() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf
                 .append(
                         "if exists (SELECT * FROM sysobjects WHERE name = 'auto_pk_for_table')")

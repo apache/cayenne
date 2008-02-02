@@ -108,7 +108,7 @@ public abstract class PersistentObject implements Persistent {
     public String toString() {
         String state = PersistenceState.persistenceStateName(getPersistenceState());
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer
                 .append("<")
                 .append(getClass().getName())

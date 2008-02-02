@@ -101,7 +101,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
             return "";
         }
 
-        StringBuffer path = new StringBuffer(getName());
+        StringBuilder path = new StringBuilder(getName());
         PrefetchTreeNode node = this.getParent();
 
         // root node has no path

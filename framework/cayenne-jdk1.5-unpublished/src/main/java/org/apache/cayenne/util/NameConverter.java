@@ -54,7 +54,7 @@ public class NameConverter {
         name = specialCharsToJava(name);
 
         char charArray[] = name.toCharArray();
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         for (int i = 0; i < charArray.length; i++) {
             if ((Character.isUpperCase(charArray[i])) && (i != 0)) {
@@ -80,7 +80,7 @@ public class NameConverter {
      */
     public static String underscoredToJava(String name, boolean capitalize) {
         StringTokenizer st = new StringTokenizer(name, "_");
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         boolean first = true;
         while (st.hasMoreTokens()) {
@@ -141,7 +141,7 @@ public class NameConverter {
             return string;
         }
 
-        StringBuffer buffer = new StringBuffer(len);
+        StringBuilder buffer = new StringBuilder(len);
         for (int i = 0; i < len; i++) {
 
             char c = string.charAt(i);

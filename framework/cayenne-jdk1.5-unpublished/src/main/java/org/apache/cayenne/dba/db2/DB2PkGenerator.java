@@ -182,7 +182,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
         try {
             Statement sel = con.createStatement();
             try {
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 buffer.append("SELECT SEQNAME FROM SYSCAT.SEQUENCES ").append(
                         "WHERE SEQNAME LIKE '").append(_SEQUENCE_PREFIX).append("%'");
 
@@ -234,7 +234,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
      * Returns CREATE SEQUENCE statement for entity.
      */
     protected String createSequenceString(DbEntity entity) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf
                 .append("CREATE SEQUENCE ")
                 .append(sequenceName(entity))

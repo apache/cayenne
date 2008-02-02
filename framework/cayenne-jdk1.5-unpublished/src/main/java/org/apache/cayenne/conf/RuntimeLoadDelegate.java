@@ -446,7 +446,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         // check for failures
         if (status.hasFailures()) {
             if (!config.isIgnoringLoadFailures()) {
-                StringBuffer msg = new StringBuffer(128);
+                StringBuilder msg = new StringBuilder(128);
                 msg.append("Load failures. Main configuration class: ");
                 msg.append(config.getClass().getName());
                 msg.append(", details: ");

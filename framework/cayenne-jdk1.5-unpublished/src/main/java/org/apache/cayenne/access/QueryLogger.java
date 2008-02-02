@@ -183,7 +183,7 @@ public class QueryLogger {
     public static void logConnect(String url, String userName, String password) {
 
         if (isLoggable()) {
-            StringBuffer buf = new StringBuffer("Opening connection: ");
+            StringBuilder buf = new StringBuilder("Opening connection: ");
 
             // append URL on the same line to make log somewhat grep-friendly
             buf.append(url);
@@ -201,7 +201,7 @@ public class QueryLogger {
      */
     public static void logPoolCreated(DataSourceInfo dsi) {
         if (isLoggable()) {
-            StringBuffer buf = new StringBuffer("Created connection pool: ");
+            StringBuilder buf = new StringBuilder("Created connection pool: ");
 
             if (dsi != null) {
                 // append URL on the same line to make log somewhat grep-friendly
@@ -379,7 +379,7 @@ public class QueryLogger {
      */
     public static void logSelectCount(int count, long time) {
         if (isLoggable()) {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
 
             if (count == 1) {
                 buf.append("=== returned 1 row.");

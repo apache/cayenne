@@ -234,7 +234,7 @@ public abstract class QueryAssemblerHelper {
 
             Map<String, Object> snap = id.getIdSnapshot();
             if (snap.size() != 1) {
-                StringBuffer msg = new StringBuffer();
+                StringBuilder msg = new StringBuilder();
                 msg
                     .append("Object must have a single primary key column ")
                     .append("to serve as a query parameter. ")
@@ -405,7 +405,7 @@ public abstract class QueryAssemblerHelper {
         // get last DbRelationship on the list
         List<DbJoin> joins = rel.getJoins();
         if (joins.size() != 1) {
-            StringBuffer msg = new StringBuffer();
+            StringBuilder msg = new StringBuilder();
             msg
                 .append("OBJ_PATH expressions are only supported ")
                 .append("for a single-join relationships. ")

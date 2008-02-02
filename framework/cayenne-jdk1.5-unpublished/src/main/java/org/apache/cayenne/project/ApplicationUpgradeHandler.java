@@ -58,7 +58,7 @@ abstract class ApplicationUpgradeHandler {
 
         // leave the first dot, and treat remaining as a fraction
         // remove all non digit chars
-        StringBuffer buffer = new StringBuffer(version.length());
+        StringBuilder buffer = new StringBuilder(version.length());
         boolean dotProcessed = false;
         for (int i = 0; i < version.length(); i++) {
             char nextChar = version.charAt(i);

@@ -118,7 +118,7 @@ public class EventSubject implements Serializable {
      */
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer(64);
+        StringBuilder buf = new StringBuilder(64);
 
         buf.append("<");
         buf.append(this.getClass().getName());

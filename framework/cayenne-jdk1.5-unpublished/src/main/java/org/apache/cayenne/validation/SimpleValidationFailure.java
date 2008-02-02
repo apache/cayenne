@@ -59,7 +59,7 @@ public class SimpleValidationFailure implements ValidationFailure {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         buffer.append("Validation failure for ");
         Object source = getSource();

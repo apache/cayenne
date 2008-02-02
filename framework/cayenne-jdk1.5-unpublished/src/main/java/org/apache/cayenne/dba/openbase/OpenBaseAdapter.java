@@ -147,7 +147,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
     @Override
     public String createTable(DbEntity ent) {
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");
 
         // columns
@@ -226,7 +226,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
      */
     @Override
     public String createFkConstraint(DbRelationship rel) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         // OpendBase Specifics is that we need to create a constraint going
         // from destination to source for this to work...

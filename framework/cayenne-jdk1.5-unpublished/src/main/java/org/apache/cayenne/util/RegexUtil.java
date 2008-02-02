@@ -83,7 +83,7 @@ class RegexUtil {
             throw new IllegalArgumentException("Empty pattern.");
         }
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         // convert * into regex syntax
         // e.g. abc*x becomes ^abc.*x$

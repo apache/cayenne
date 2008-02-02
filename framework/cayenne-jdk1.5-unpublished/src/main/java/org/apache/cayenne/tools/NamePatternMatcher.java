@@ -102,7 +102,7 @@ public class NamePatternMatcher {
             List<String> patterns = new ArrayList<String>(len);
             for (int i = 0; i < len; i++) {
                 String nextPattern = toks.nextToken();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
 
                 // convert * into regex syntax
                 // e.g. abc*x becomes ^abc.*x$
@@ -269,7 +269,7 @@ public class NamePatternMatcher {
         if (null == pattern || null == wildcard)
             return pattern;
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         int lastPos = 0;
         int wildCardPos = pattern.indexOf(wildcard);
         while (-1 != wildCardPos) {
