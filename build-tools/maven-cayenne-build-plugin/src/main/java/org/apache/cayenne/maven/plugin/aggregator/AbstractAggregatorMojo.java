@@ -52,9 +52,11 @@ import org.codehaus.plexus.util.FileUtils;
  */
 public abstract class AbstractAggregatorMojo extends AbstractMojo {
 
-    // by default exclude maven entries from other jars and overlapping manifests
+    // by default exclude maven entries from other jars and overlapping manifests.
+    // note that excludes for the top package Java files and jj artifacts is done as a
+    // hack to remove generated JJTree parser classes placed in the wrong location
     static final String[] DEFAULT_EXCLUDES = new String[] {
-            "META-INF/maven/**", "META-INF/MANIFEST.MF"
+            "META-INF/maven/**", "META-INF/MANIFEST.MF", "**/.svn/**", "*.java", "*.jj"
     };
 
     /**
