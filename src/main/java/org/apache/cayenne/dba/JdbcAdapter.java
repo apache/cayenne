@@ -353,7 +353,7 @@ public class JdbcAdapter implements DbAdapter {
                     "Can't create UNIQUE constraint - no columns specified.");
         }
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         buf.append("ALTER TABLE ").append(source.getFullyQualifiedName()).append(
                 " ADD UNIQUE (");
@@ -378,8 +378,8 @@ public class JdbcAdapter implements DbAdapter {
      * relationship.
      */
     public String createFkConstraint(DbRelationship rel) {
-        StringBuffer buf = new StringBuffer();
-        StringBuffer refBuf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
+        StringBuilder refBuf = new StringBuilder();
 
         buf.append("ALTER TABLE ").append(
                 ((DbEntity) rel.getSourceEntity()).getFullyQualifiedName()).append(

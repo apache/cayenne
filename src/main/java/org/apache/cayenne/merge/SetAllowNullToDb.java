@@ -38,7 +38,7 @@ public class SetAllowNullToDb extends AbstractToDbToken.EntityAndColumn {
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
-        StringBuffer sqlBuffer = new StringBuffer();
+        StringBuilder sqlBuffer = new StringBuilder();
 
         sqlBuffer.append("ALTER TABLE ");
         sqlBuffer.append(getEntity().getFullyQualifiedName());

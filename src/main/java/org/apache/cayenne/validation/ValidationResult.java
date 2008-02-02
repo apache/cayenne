@@ -106,7 +106,7 @@ public class ValidationResult implements Serializable {
 
     @Override
     public String toString() {
-        StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
         String separator = System.getProperty("line.separator");
 
         for (ValidationFailure failure : failures) {

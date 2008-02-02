@@ -78,7 +78,7 @@ public abstract class BaseProperty implements Property {
 
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(getClass().getName()).append('@').append(
                 System.identityHashCode(this)).append('[').append(name).append(']');
         return buffer.toString();

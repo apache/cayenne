@@ -81,7 +81,7 @@ public class DB2Adapter extends JdbcAdapter {
     @Override
     public String createTable(DbEntity ent) {
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");
 
         // columns

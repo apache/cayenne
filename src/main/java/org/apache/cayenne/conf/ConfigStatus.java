@@ -92,7 +92,7 @@ public class ConfigStatus {
             return "[No failures]";
         }
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         for (final String name : failedMaps.keySet()) {
             String location = failedMaps.get(name);

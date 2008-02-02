@@ -37,7 +37,7 @@ public class HSQLDBProcedureTranslator extends ProcedureTranslator {
     protected String createSqlString() {
         Procedure procedure = getProcedure();
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         int totalParams = callParams.size();
 

@@ -354,7 +354,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
             }
 
             // build error message
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             buf
                     .append("Can't resolve path component: [")
                     .append(currentEnt.getName())

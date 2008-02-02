@@ -113,7 +113,7 @@ public class DataSourceInfo implements Cloneable, Serializable {
 
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("[").append(this.getClass().getName()).append(":").append(
                 "\n   user name: ").append(userName).append("\n   password: ");
 

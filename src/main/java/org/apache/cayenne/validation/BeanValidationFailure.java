@@ -37,7 +37,7 @@ public class BeanValidationFailure extends SimpleValidationFailure {
     protected String property;
 
     private static String validationMessage(String attribute, String message) {
-        StringBuffer buffer = new StringBuffer(message.length() + attribute.length() + 5);
+        StringBuilder buffer = new StringBuilder(message.length() + attribute.length() + 5);
         buffer.append('\"').append(attribute).append("\" ").append(message);
         return buffer.toString();
     }
@@ -212,7 +212,7 @@ public class BeanValidationFailure extends SimpleValidationFailure {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         buffer.append("Validation failure for ");
         Object source = getSource();

@@ -222,7 +222,7 @@ public class PropertyListSerialization {
     protected static String escapeString(String str) {
         char[] chars = str.toCharArray();
         int len = chars.length;
-        StringBuffer buf = new StringBuffer(len + 3);
+        StringBuilder buf = new StringBuilder(len + 3);
 
         for (int i = 0; i < len; i++) {
             if (chars[i] == '\"' || chars[i] == '\\') {

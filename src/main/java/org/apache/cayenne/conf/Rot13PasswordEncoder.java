@@ -65,8 +65,8 @@ public class Rot13PasswordEncoder implements PasswordEncoding
    */
   public String rotate(String value)
   {
-    int          length = value.length();
-    StringBuffer result = new StringBuffer();
+    int length = value.length();
+    StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < length; i++)
     {

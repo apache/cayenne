@@ -76,7 +76,7 @@ public class Util {
      * separator.
      */
     public static String stringFromFile(File file, String joinWith) throws IOException {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         BufferedReader in = new BufferedReader(new FileReader(file));
 
         try {
@@ -418,7 +418,7 @@ public class Util {
         }
 
         int len = string.length();
-        StringBuffer buffer = new StringBuffer(len);
+        StringBuilder buffer = new StringBuilder(len);
         for (int i = 0; i < len; i++) {
             char c = string.charAt(i);
 
@@ -452,7 +452,7 @@ public class Util {
         if (len == 0)
             return str;
 
-        StringBuffer encoded = new StringBuffer();
+        StringBuilder encoded = new StringBuilder();
         for (int i = 0; i < len; i++) {
             char c = str.charAt(i);
             if (c == '<')

@@ -46,7 +46,7 @@ public class DeleteTranslator extends QueryAssembler {
      */
     @Override
     public String createSqlString() throws Exception {
-        StringBuffer queryBuf = new StringBuffer("DELETE FROM ");
+        StringBuilder queryBuf = new StringBuilder("DELETE FROM ");
 
         // 1. append table name
         DbEntity dbEnt = getRootDbEntity();

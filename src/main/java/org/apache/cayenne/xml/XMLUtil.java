@@ -92,7 +92,7 @@ class XMLUtil {
             return null;
         }
 
-        StringBuffer text = new StringBuffer();
+        StringBuilder text = new StringBuilder();
         for (int i = 0; i < len; i++) {
             Node child = nodes.item(i);
 

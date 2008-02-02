@@ -109,7 +109,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
     }
 
     protected String createSequenceString(DbEntity ent) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf
                 .append("CREATE SEQUENCE ")
                 .append(sequenceName(ent))
@@ -124,7 +124,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      * primary key generation process for a specific DbEntity.
      */
     protected String dropSequenceString(DbEntity ent) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("DROP SEQUENCE ").append(sequenceName(ent));
         return buf.toString();
     }

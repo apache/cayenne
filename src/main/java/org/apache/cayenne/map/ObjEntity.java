@@ -903,7 +903,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         // TODO: make it a public method - resolveDBPathComponents or something...
         // seems generally useful
         String toDbPath(Iterator<CayenneMapEntry> objectPathComponents) {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             while (objectPathComponents.hasNext()) {
                 Object component = objectPathComponents.next();
 

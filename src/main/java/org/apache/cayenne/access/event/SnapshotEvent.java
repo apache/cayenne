@@ -76,7 +76,7 @@ public class SnapshotEvent extends CayenneEvent {
 
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append("[SnapshotEvent] source: ").append(getSource());
 
         Map modified = getModifiedDiffs();

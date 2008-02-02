@@ -683,7 +683,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
         }
 
         private String convertToPath(List<String> path) {
-            StringBuffer converted = new StringBuffer();
+            StringBuilder converted = new StringBuilder();
             int len = path.size();
             for (int i = 0; i < len; i++) {
                 if (i > 0) {

@@ -64,7 +64,7 @@ public class DeleteDenyException extends CayenneRuntimeException {
 
     @Override
     public String getMessage() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append("Can't delete object");
 
         if (object != null && object.getObjectId() != null) {

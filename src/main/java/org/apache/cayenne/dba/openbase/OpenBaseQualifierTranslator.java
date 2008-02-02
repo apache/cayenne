@@ -105,7 +105,7 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
 
     private String caseSensitiveLikePattern(String pattern) {
         int len = pattern.length();
-        StringBuffer buffer = new StringBuffer(len * 3);
+        StringBuilder buffer = new StringBuilder(len * 3);
 
         for (int i = 0; i < len; i++) {
             char c = pattern.charAt(i);

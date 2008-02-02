@@ -124,7 +124,7 @@ public class DbGeneratorTask extends CayenneTask {
      * Throws BuildException if attributes are invalid.
      */
     protected void validateAttributes() throws BuildException {
-        StringBuffer error = new StringBuffer("");
+        StringBuilder error = new StringBuilder("");
 
         if (map == null) {
             error.append("The 'map' attribute must be set.\n");

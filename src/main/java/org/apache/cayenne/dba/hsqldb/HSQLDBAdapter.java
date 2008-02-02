@@ -107,7 +107,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
         String srcName = getTableName(source);
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         buf.append("ALTER TABLE ").append(srcName);
         buf.append(" ADD CONSTRAINT ");
@@ -141,8 +141,8 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     @Override
     public String createFkConstraint(DbRelationship rel) {
-        StringBuffer buf = new StringBuffer();
-        StringBuffer refBuf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
+        StringBuilder refBuf = new StringBuilder();
 
         String srcName = getTableName((DbEntity) rel.getSourceEntity());
         String dstName = getTableName((DbEntity) rel.getTargetEntity());

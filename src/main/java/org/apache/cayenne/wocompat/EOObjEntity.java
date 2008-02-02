@@ -230,7 +230,7 @@ public class EOObjEntity extends ObjEntity {
 
             // convert obj_path to db_path
 
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             EOObjEntity entity = EOObjEntity.this;
             StringTokenizer toks = new StringTokenizer(expression.toString(), ".");
             while (toks.hasMoreTokens() && entity != null) {

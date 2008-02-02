@@ -60,7 +60,7 @@ public class EJBQLFromItem extends SimpleNode {
         // transform the entity name in such way that two entities that differ only in
         // capitalization would produce different lowercase ids
 
-        StringBuffer id = new StringBuffer(entityNames[0].length() + 2);
+        StringBuilder id = new StringBuilder(entityNames[0].length() + 2);
         for (int i = 0; i < entityNames[0].length(); i++) {
             char c = entityNames[0].charAt(i);
             if (Character.isUpperCase(c)) {
