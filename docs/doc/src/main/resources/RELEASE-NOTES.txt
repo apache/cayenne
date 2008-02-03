@@ -17,9 +17,13 @@ Changes/New Features Since M3:
 CAY-970 Allow application to add DbAdatperFactory to AutoAdapter
 CAY-980 Upgrade Derby to 10.3 to support alter table drop column
 
+Bug fixes since M3:
+
+CAY-574: DataObjectUtils 'objectForPK' should work on the client
+
 ----------------------------------
 Release: 3.0M3
-Date: 
+Date: 02/04/2008
 ----------------------------------
 
 Changes/New Features Since M2:
@@ -69,7 +73,7 @@ CAY-976 EntityResolver Fault dependency leads to ClassNotFound on the ROP client
 
 ----------------------------------
 Release: 3.0M2
-Date: 
+Date: 11/11/2007
 ----------------------------------
 
 Changes/New Features Since M1:
