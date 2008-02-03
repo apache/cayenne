@@ -74,6 +74,24 @@ public class CayenneContextGraphDiffCompressorTest extends CayenneCase {
         assertEquals(0, serverChannel.arcsDeleted);
     }
 
+    public void testDelete() {
+        DiffCounter serverChannel = new DiffCounter(getDomain());
+        LocalConnection connection = new LocalConnection(
+                serverChannel,
+                LocalConnection.HESSIAN_SERIALIZATION);
+        ClientChannel channel = new ClientChannel(connection);
+        CayenneContext context = new CayenneContext(channel);
+
+        ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
+        o1.setGlobalAttribute1("v1");
+        context.deleteObject(o1);
+
+        context.commitChanges();
+        assertEquals(0, serverChannel.nodePropertiesChanged);
+        assertEquals(0, serverChannel.nodesCreated);
+        assertEquals(0, serverChannel.nodesRemoved);
+    }
+
     final class DiffCounter extends ClientServerChannel implements GraphChangeHandler {
 
         int arcsCreated;
