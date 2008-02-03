@@ -65,6 +65,10 @@ public class GraphDiffCompressor {
                     // if the node was inserted in the same transaction and later deleted,
                     // remove all its ops. Otherwise preserve arc ops (since delete rules
                     // depend on them), and delete operation itself.
+
+                    // TODO: andrus 2008/02/04 - this doesn't take into account a
+                    // possibility that a deleted node was re-inserted... Although I don't
+                    // see how this could possibly happen with the present Cayenne API.
                     if (createdNodes != null && createdNodes.contains(nodeId)) {
                         while (it.hasNext()) {
                             NodeDiff diff = (NodeDiff) it.next();
