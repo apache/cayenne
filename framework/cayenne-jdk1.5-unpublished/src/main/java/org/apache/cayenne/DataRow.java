@@ -49,7 +49,7 @@ public class DataRow extends HashMap<String, Object> {
     protected long version = currentVersion++;
     protected long replacesVersion = DataObject.DEFAULT_VERSION;
 
-    public DataRow(Map<String, ? extends Object> map) {
+    public DataRow(Map<String, ?> map) {
         super(map);
     }
 
