@@ -25,6 +25,7 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
@@ -43,19 +44,38 @@ public class CayenneContextGraphDiffCompressorTest extends CayenneCase {
                 LocalConnection.HESSIAN_SERIALIZATION);
         ClientChannel channel = new ClientChannel(connection);
         CayenneContext context = new CayenneContext(channel);
-        
-        
+
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("v1");
         o1.setGlobalAttribute1("v2");
-        
+
         context.commitChanges();
         assertEquals(1, serverChannel.nodePropertiesChanged);
         assertEquals(1, serverChannel.nodesCreated);
     }
 
+    public void testComplimentaryArcs() {
+        DiffCounter serverChannel = new DiffCounter(getDomain());
+        LocalConnection connection = new LocalConnection(
+                serverChannel,
+                LocalConnection.HESSIAN_SERIALIZATION);
+        ClientChannel channel = new ClientChannel(connection);
+        CayenneContext context = new CayenneContext(channel);
+
+        ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
+        ClientMtTable2 o2 = context.newObject(ClientMtTable2.class);
+        o2.setTable1(o1);
+        o2.setTable1(null);
+
+        context.commitChanges();
+        assertEquals(0, serverChannel.nodePropertiesChanged);
+        assertEquals(2, serverChannel.nodesCreated);
+        assertEquals(0, serverChannel.arcsCreated);
+        assertEquals(0, serverChannel.arcsDeleted);
+    }
+
     final class DiffCounter extends ClientServerChannel implements GraphChangeHandler {
-        
+
         int arcsCreated;
         int arcsDeleted;
         int nodesCreated;
@@ -66,15 +86,15 @@ public class CayenneContextGraphDiffCompressorTest extends CayenneCase {
         public DiffCounter(DataDomain domain) {
             super(domain);
         }
-        
+
         @Override
         public GraphDiff onSync(
                 ObjectContext originatingContext,
                 GraphDiff changes,
                 int syncType) {
-            
+
             changes.apply(this);
-            
+
             return super.onSync(originatingContext, changes, syncType);
         }
 
