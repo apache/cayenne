@@ -300,21 +300,15 @@ public final class DataObjectUtils {
             throw new CayenneRuntimeException("Non-existent ObjEntity: " + objEntityName);
         }
 
-        DbEntity dbEntity = entity.getDbEntity();
-        if (dbEntity == null) {
-            throw new CayenneRuntimeException("No DbEntity for ObjEntity: "
-                    + entity.getName());
-        }
-
-        Collection<DbAttribute> pkAttributes = dbEntity.getPrimaryKeys();
+        Collection<String> pkAttributes = entity.getPrimaryKeyNames();
         if (pkAttributes.size() != 1) {
             throw new CayenneRuntimeException("PK contains "
                     + pkAttributes.size()
                     + " columns, expected 1.");
         }
 
-        DbAttribute attr = pkAttributes.iterator().next();
-        return new ObjectId(objEntityName, attr.getName(), pk);
+        String attr = pkAttributes.iterator().next();
+        return new ObjectId(objEntityName, attr, pk);
     }
 
     static ObjectId buildId(ObjectContext context, Class<?> dataObjectClass, Object pk) {
@@ -332,21 +326,15 @@ public final class DataObjectUtils {
                     + dataObjectClass.getName());
         }
 
-        DbEntity dbEntity = entity.getDbEntity();
-        if (dbEntity == null) {
-            throw new CayenneRuntimeException("No DbEntity for ObjEntity: "
-                    + entity.getName());
-        }
-
-        Collection<DbAttribute> pkAttributes = dbEntity.getPrimaryKeys();
+        Collection<String> pkAttributes = entity.getPrimaryKeyNames();
         if (pkAttributes.size() != 1) {
             throw new CayenneRuntimeException("PK contains "
                     + pkAttributes.size()
                     + " columns, expected 1.");
         }
 
-        DbAttribute attr = pkAttributes.iterator().next();
-        return new ObjectId(entity.getName(), attr.getName(), pk);
+        String attr = pkAttributes.iterator().next();
+        return new ObjectId(entity.getName(), attr, pk);
     }
 
     // not intended for instantiation

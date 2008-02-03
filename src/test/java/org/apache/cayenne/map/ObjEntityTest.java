@@ -74,6 +74,43 @@ public class ObjEntityTest extends CayenneCase {
         assertFalse(e1.isClientAllowed());
     }
 
+    public void testGetPrimaryKeyNames() {
+        ObjEntity entity = new ObjEntity("entity");
+        DbEntity dbentity = new DbEntity("dbe");
+
+        // need a container
+        DataMap dataMap = new DataMap();
+        dataMap.addObjEntity(entity);
+        dataMap.addDbEntity(dbentity);
+        entity.setDbEntity(dbentity);
+
+        // Test correctness with no mapped PK.
+        assertEquals(0, entity.getPrimaryKeyNames().size());
+
+
+        // Add a single column PK to the DB entity.
+        DbAttribute pk = new DbAttribute();
+        pk.setName("id");
+        pk.setPrimaryKey(true);
+        dbentity.addAttribute(pk);
+
+        // Test correctness with a single column PK.
+        assertEquals(1, entity.getPrimaryKeyNames().size());
+        assertTrue(entity.getPrimaryKeyNames().contains(pk.getName()));
+
+
+        // Add a multi-column PK to the DB entity.
+        DbAttribute pk2 = new DbAttribute();
+        pk2.setName("id2");
+        pk2.setPrimaryKey(true);
+        dbentity.addAttribute(pk2);
+
+        // Test correctness with a multi-column PK.
+        assertEquals(2, entity.getPrimaryKeyNames().size());
+        assertTrue(entity.getPrimaryKeyNames().contains(pk.getName()));
+        assertTrue(entity.getPrimaryKeyNames().contains(pk2.getName()));
+    }
+
     public void testGetClientEntity() {
         
         DataMap map = new DataMap();
@@ -88,6 +125,10 @@ public class ObjEntityTest extends CayenneCase {
         e1.addAttribute(new ObjAttribute("A1"));
         e1.addAttribute(new ObjAttribute("A2"));
         map.addObjEntity(e1);
+
+        DbEntity dbentity = new DbEntity("dbe");
+        map.addDbEntity(dbentity);
+        e1.setDbEntity(dbentity);
 
         ObjRelationship r1 = new ObjRelationship("r1") {
 

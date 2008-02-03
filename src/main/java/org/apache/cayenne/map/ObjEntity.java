@@ -188,10 +188,11 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
      */
     public ObjEntity getClientEntity() {
 
-        ObjEntity entity = new ObjEntity(getName());
+        ClientObjEntity entity = new ClientObjEntity(getName());
         entity.setClassName(getClientClassName());
         entity.setSuperClassName(getClientSuperClassName());
         entity.setSuperEntityName(getSuperEntityName());
+        entity.setPrimaryKeyNames(getPrimaryKeyNames());
 
         // TODO: should we also copy lock type?
 
@@ -736,6 +737,22 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
 
         return null;
     }
+
+    public Collection<String> getPrimaryKeyNames() {
+        if (getDbEntity() == null) {
+            throw new CayenneRuntimeException("No DbEntity for ObjEntity: " + getName());
+        }
+
+        Collection<DbAttribute> pkAttributes = getDbEntity().getPrimaryKeys();
+        Collection<String> ret = new ArrayList<String>(pkAttributes.size());
+        
+        for (DbAttribute pk : pkAttributes) {
+            ret.add(pk.getName());
+        }
+
+        return Collections.unmodifiableCollection(ret);
+    }
+
 
     /**
      * Returns ObjRelationship of this entity that maps to <code>dbRelationship</code>
