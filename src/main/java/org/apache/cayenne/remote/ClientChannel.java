@@ -34,6 +34,7 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.graph.GraphDiffCompressor;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
@@ -54,6 +55,7 @@ public class ClientChannel implements DataChannel {
     protected EventManager eventManager;
     protected EntityResolver entityResolver;
     protected boolean channelEventsEnabled;
+    protected GraphDiffCompressor diffCompressor;
 
     EventBridge remoteChannelListener;
 
@@ -85,6 +87,7 @@ public class ClientChannel implements DataChannel {
             throws CayenneRuntimeException {
 
         this.connection = connection;
+        this.diffCompressor = new GraphDiffCompressor();
         this.eventManager = eventManager;
         this.channelEventsEnabled = eventManager != null && channelEventsEnabled;
 
@@ -167,6 +170,8 @@ public class ClientChannel implements DataChannel {
             ObjectContext originatingContext,
             GraphDiff changes,
             int syncType) {
+        
+        changes = diffCompressor.compress(changes);
 
         GraphDiff replyDiff = (GraphDiff) send(new SyncMessage(
                 originatingContext,
@@ -270,9 +275,9 @@ public class ClientChannel implements DataChannel {
      * Sends a message via connector, getting a result as an instance of a specific class.
      * 
      * @throws org.apache.cayenne.CayenneRuntimeException if an underlying connector
-     *             exception occured, or a result is not of expected type.
+     *             exception occurred, or a result is not of expected type.
      */
-    protected Object send(ClientMessage message, Class resultClass) {
+    protected Object send(ClientMessage message, Class<?> resultClass) {
         Object result = connection.sendMessage(message);
 
         if (result != null && !resultClass.isInstance(result)) {

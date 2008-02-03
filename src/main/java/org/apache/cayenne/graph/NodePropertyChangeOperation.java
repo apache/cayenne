@@ -43,9 +43,25 @@ public class NodePropertyChangeOperation extends NodeDiff {
     public NodePropertyChangeOperation(Object nodeId, String property, Object oldValue,
             Object newValue, int diffId) {
         super(nodeId, diffId);
-        
+
         this.property = property;
         this.oldValue = oldValue;
+        this.newValue = newValue;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public String getProperty() {
+        return property;
+    }
+
+    /**
+     * Chnages the 'newValue'.
+     * 
+     * @since 3.0
+     */
+    void setNewValue(Object newValue) {
         this.newValue = newValue;
     }
 
