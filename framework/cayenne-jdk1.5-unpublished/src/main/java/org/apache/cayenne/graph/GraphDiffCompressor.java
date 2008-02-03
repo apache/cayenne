@@ -52,10 +52,48 @@ public class GraphDiffCompressor {
         }
 
         public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+
+            if (targetNodeId != null) {
+                List<NodeDiff> diffs = diffsByNode.get(nodeId);
+                if (diffs != null) {
+                    for (int i = diffs.size() - 1; i >= 0; i--) {
+                        NodeDiff diff = diffs.get(i);
+                        if (diff instanceof ArcDeleteOperation) {
+                            ArcDeleteOperation arcDiff = (ArcDeleteOperation) diff;
+                            if (arcId.equals(arcDiff.getArcId())
+                                    && targetNodeId.equals(arcDiff.targetNodeId)) {
+                                diffs.remove(i);
+                                compressed.remove(arcDiff);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
             registerDiff(new ArcCreateOperation(nodeId, targetNodeId, arcId));
         }
 
         public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+
+            if (targetNodeId != null) {
+                List<NodeDiff> diffs = diffsByNode.get(nodeId);
+                if (diffs != null) {
+                    for (int i = diffs.size() - 1; i >= 0; i--) {
+                        NodeDiff diff = diffs.get(i);
+                        if (diff instanceof ArcCreateOperation) {
+                            ArcCreateOperation arcDiff = (ArcCreateOperation) diff;
+                            if (arcId.equals(arcDiff.getArcId())
+                                    && targetNodeId.equals(arcDiff.targetNodeId)) {
+                                diffs.remove(i);
+                                compressed.remove(arcDiff);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
             registerDiff(new ArcDeleteOperation(nodeId, targetNodeId, arcId));
         }
 
