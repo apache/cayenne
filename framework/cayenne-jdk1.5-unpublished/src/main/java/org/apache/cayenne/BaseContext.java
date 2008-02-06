@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,6 +27,11 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.AttributeProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.reflect.ToManyProperty;
 
 /**
  * A common base superclass for Cayenne ObjectContext implementors.
@@ -115,8 +121,60 @@ public abstract class BaseContext implements ObjectContext {
 
         // resolve relationship fault
         if (lazyFaulting && property != null) {
-            Property propertyDescriptor = getEntityResolver().getClassDescriptor(
-                    object.getObjectId().getEntityName()).getProperty(property);
+            ClassDescriptor classDescriptor = getEntityResolver().getClassDescriptor(
+                    object.getObjectId().getEntityName());
+            Property propertyDescriptor = classDescriptor.getProperty(property);
+
+            // If we don't have a property descriptor, there's not much we can do.
+            // Let the caller know that the specified property could not be found and list
+            // all of the properties that could be so the caller knows what can be used.
+            if (propertyDescriptor == null) {
+                final StringBuilder errorMessage = new StringBuilder();
+
+                errorMessage.append(String.format("Property '%s' is not declared for entity '%s'.",
+                        property, object.getObjectId().getEntityName()));
+                
+                errorMessage.append(" Declared properties are: ");
+
+                // Grab each of the declared properties.
+                final List<String> properties = new ArrayList<String>();
+                classDescriptor.visitProperties(new PropertyVisitor() {
+                    public boolean visitAttribute(final AttributeProperty property) {
+                        properties.add(property.getName());
+
+                        return true;
+                    }
+
+                    public boolean visitToOne(final ToOneProperty property) {
+                        properties.add(property.getName());
+
+                        return true;
+                    }
+
+                    public boolean visitToMany(final ToManyProperty property) {
+                        properties.add(property.getName());
+
+                        return true;
+                    }
+                });
+
+                // Now add the declared property names to the error message.
+                boolean first = true;
+                for (String declaredProperty : properties) {
+                    if (first) {
+                        errorMessage.append(String.format("'%s'", declaredProperty));
+
+                        first = false;
+                    }
+                    else {
+                        errorMessage.append(String.format(", '%s'", declaredProperty));
+                    }
+                }
+
+                errorMessage.append(".");
+
+                throw new CayenneRuntimeException(errorMessage.toString());
+            }
 
             // this should trigger fault resolving
             propertyDescriptor.readProperty(object);
