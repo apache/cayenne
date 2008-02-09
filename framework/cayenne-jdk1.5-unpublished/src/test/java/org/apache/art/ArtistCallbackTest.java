@@ -24,9 +24,7 @@ import org.apache.art.auto._ArtistCallbackTest;
  * Class for testing callbacks
  *
  * @author Vasil Tarasevich
- * @version 1.0 Oct 22, 2007
  */
-
 public class ArtistCallbackTest extends _ArtistCallbackTest {
     public void prePersistEntityObjEntity() {}
     public void postPersistEntityObjEntity() {}

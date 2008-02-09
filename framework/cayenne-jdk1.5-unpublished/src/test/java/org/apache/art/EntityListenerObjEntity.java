@@ -22,9 +22,7 @@ package org.apache.art;
  * Class for testing callbacks on ObjEntity level
  *
  * @author Vasil Tarasevich
- * @version 1.0 Oct 22, 2007
  */
-
 public class EntityListenerObjEntity {
     public void prePersistEntityListener(ArtistCallbackTest entity) {}
     public void postPersistEntityListener(ArtistCallbackTest entity) {}
