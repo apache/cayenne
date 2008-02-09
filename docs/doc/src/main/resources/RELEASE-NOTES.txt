@@ -21,6 +21,7 @@ CAY-980 Upgrade Derby to 10.3 to support alter table drop column
 Bug fixes since M3:
 
 CAY-574: DataObjectUtils 'objectForPK' should work on the client
+CAY-983 POST_LOAD called twice
 
 ----------------------------------
 Release: 3.0M3
