@@ -32,8 +32,8 @@ public class Artist extends _Artist {
     protected boolean postUpdated;
     protected boolean postRemoved;
     protected boolean postPersisted;
-    protected boolean postLoaded;
-    
+    protected int postLoaded;
+
     protected String someOtherProperty;
     protected Object someOtherObjectProperty;
 
@@ -56,7 +56,7 @@ public class Artist extends _Artist {
         postUpdated = false;
         postRemoved = false;
         postPersisted = false;
-        postLoaded = false;
+        postLoaded = 0;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class Artist extends _Artist {
     }
 
     public void postLoadCallback() {
-        postLoaded = true;
+        postLoaded++;
     }
 
     public boolean isPrePersisted() {
@@ -120,10 +120,10 @@ public class Artist extends _Artist {
         return postPersisted;
     }
 
-    public boolean isPostLoaded() {
+    public int getPostLoaded() {
         return postLoaded;
     }
-    
+
     public String getSomeOtherProperty() {
         return someOtherProperty;
     }

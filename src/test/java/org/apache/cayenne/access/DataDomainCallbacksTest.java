@@ -59,12 +59,12 @@ public class DataDomainCallbacksTest extends CayenneCase {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XX");
         context.commitChanges();
-        assertFalse(a1.isPostLoaded());
+        assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 
         SelectQuery q = new SelectQuery(Artist.class);
         context.performQuery(q);
-        assertTrue(a1.isPostLoaded());
+        assertEquals(1, a1.getPostLoaded());
         assertSame(a1, listener.getPublicCalledbackEntity());
 
         a1.resetCallbackFlags();
@@ -84,27 +84,27 @@ public class DataDomainCallbacksTest extends CayenneCase {
         listener.reset();
 
         context.rollbackChanges();
-        assertFalse(a1.isPostLoaded());
+        assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 
         // now change and rollback the artist - postLoad must be called
         a1.setArtistName("YY");
         context.rollbackChanges();
-        assertTrue(a1.isPostLoaded());
+        assertEquals(1, a1.getPostLoaded());
         assertSame(a1, listener.getPublicCalledbackEntity());
 
         // test invalidated
         a1.resetCallbackFlags();
         listener.reset();
-        assertFalse(a1.isPostLoaded());
+        assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 
         context.performQuery(new RefreshQuery(a1));
-        assertFalse(a1.isPostLoaded());
+        assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 
         a1.getArtistName();
-        assertTrue(a1.isPostLoaded());
+        assertEquals(1, a1.getPostLoaded());
         assertSame(a1, listener.getPublicCalledbackEntity());
     }
 
