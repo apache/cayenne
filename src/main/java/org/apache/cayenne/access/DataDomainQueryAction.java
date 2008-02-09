@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +40,8 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.EntityResult;
+import org.apache.cayenne.query.FieldResult;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -124,35 +125,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         if (!noObjectConversion) {
-
-            if (interceptMappedConversion() != DONE) {
-                interceptObjectConversion();
-            }
-
-            invokePostLoad();
+            interceptObjectConversion();
         }
 
         return response;
-    }
-
-    private void invokePostLoad() {
-        // TODO: andrus, 9/21/2006 - this method incorrectly calls "postLoad" when query
-        // refresh flag is set to false and object is already there.
-
-        LifecycleCallbackRegistry callbackRegistry = domain
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
-
-            List list = response.firstList();
-            if (list != null
-                    && !list.isEmpty()
-                    && !(query.getMetaData(domain.getEntityResolver()))
-                            .isFetchingDataRows()) {
-                callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, list);
-            }
-        }
     }
 
     private boolean interceptDataDomainQuery() {
@@ -280,7 +256,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return DONE;
             }
 
-            Collection<Persistent> objects = (Collection<Persistent>) refreshQuery.getObjects();
+            Collection<Persistent> objects = (Collection<Persistent>) refreshQuery
+                    .getObjects();
             if (objects != null && !objects.isEmpty()) {
 
                 Collection<ObjectId> ids = new ArrayList<ObjectId>(objects.size());
@@ -446,111 +423,30 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         if (context != null && !metadata.isFetchingDataRows()) {
 
-            List mainRows = response.firstList();
+            List<DataRow> mainRows = response.firstList();
             if (mainRows != null && !mainRows.isEmpty()) {
 
-                List objects;
-                ClassDescriptor descriptor = metadata.getClassDescriptor();
-                PrefetchTreeNode prefetchTree = metadata.getPrefetchTree();
+                ObjectConversionStrategy converter;
 
-                // take a shortcut when no prefetches exist...
-                if (prefetchTree == null) {
-                    objects = new ObjectResolver(context, descriptor, metadata
-                            .isRefreshingObjects(), metadata.isResolvingInherited())
-                            .synchronizedObjectsFromDataRows(mainRows);
+                SQLResultSetMapping rsMapping = metadata.getResultSetMapping();
+                if (rsMapping == null) {
+                    converter = new SingleObjectConversionStrategy();
+                }
+                else if (rsMapping.getEntityResults().size() == 1
+                        && rsMapping.getColumnResults().size() == 0) {
+                    converter = new SingleObjectConversionStrategy();
+                }
+                else if (rsMapping.getEntityResults().size() == 0
+                        && rsMapping.getColumnResults().size() == 1) {
+                    converter = new SingleScalarConversionStrategy();
                 }
                 else {
-
-                    ObjectTreeResolver resolver = new ObjectTreeResolver(
-                            context,
-                            metadata);
-                    objects = resolver.synchronizedObjectsFromDataRows(
-                            prefetchTree,
-                            mainRows,
-                            prefetchResultsByPath);
+                    converter = new MixedConversionStrategy();
                 }
 
-                if (response instanceof GenericResponse) {
-                    ((GenericResponse) response).replaceResult(mainRows, objects);
-                }
-                else if (response instanceof ListResponse) {
-                    this.response = new ListResponse(objects);
-                }
-                else {
-                    throw new IllegalStateException("Unknown response object: "
-                            + this.response);
-                }
-
-                // apply POST_LOAD callback
-                LifecycleCallbackRegistry callbackRegistry = context
-                        .getEntityResolver()
-                        .getCallbackRegistry();
-
-                if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
-                    callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, objects);
-                }
+                converter.convert(mainRows);
             }
         }
-    }
-
-    private boolean interceptMappedConversion() {
-        SQLResultSetMapping rsMapping = metadata.getResultSetMapping();
-
-        if (rsMapping == null) {
-            return !DONE;
-        }
-
-        List mainRows = response.firstList();
-        if (mainRows != null && !mainRows.isEmpty()) {
-
-            Collection<String> columns = rsMapping.getColumnResults();
-            if (columns.isEmpty()) {
-                throw new CayenneRuntimeException(
-                        "Invalid result set mapping, no columns mapped.");
-            }
-
-            Object[] columnsArray = columns.toArray();
-            int rowsLen = mainRows.size();
-            int rowWidth = columnsArray.length;
-
-            List objects = new ArrayList(rowsLen);
-
-            // add scalars to the result
-            if (rowWidth == 1) {
-
-                for (int i = 0; i < rowsLen; i++) {
-                    Map row = (Map) mainRows.get(i);
-                    objects.add(row.get(columnsArray[0]));
-                }
-            }
-            // add Object[]'s to the result
-            else {
-                for (int i = 0; i < rowsLen; i++) {
-                    Map row = (Map) mainRows.get(i);
-                    Object[] rowDecoded = new Object[rowWidth];
-
-                    for (int j = 0; j < rowWidth; j++) {
-                        rowDecoded[j] = row.get(columnsArray[j]);
-                    }
-
-                    objects.add(rowDecoded);
-                }
-            }
-
-            if (response instanceof GenericResponse) {
-                ((GenericResponse) response).replaceResult(mainRows, objects);
-            }
-            else if (response instanceof ListResponse) {
-                this.response = new ListResponse(objects);
-            }
-            else {
-                throw new IllegalStateException("Unknown response object: "
-                        + this.response);
-            }
-
-        }
-
-        return DONE;
     }
 
     public void route(QueryEngine engine, Query query, Query substitutedQuery) {
@@ -642,5 +538,178 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     public boolean isIteratedResult() {
         return false;
+    }
+
+    abstract class ObjectConversionStrategy {
+
+        abstract void convert(List<DataRow> mainRows);
+
+        protected List<Persistent> toObjects(
+                ClassDescriptor descriptor,
+                PrefetchTreeNode prefetchTree,
+                List<DataRow> normalizedRows) {
+            List<Persistent> objects;
+
+            // take a shortcut when no prefetches exist...
+            if (prefetchTree == null) {
+                objects = new ObjectResolver(context, descriptor, metadata
+                        .isRefreshingObjects(), metadata.isResolvingInherited())
+                        .synchronizedObjectsFromDataRows(normalizedRows);
+            }
+            else {
+                ObjectTreeResolver resolver = new ObjectTreeResolver(context, metadata);
+                objects = resolver.synchronizedObjectsFromDataRows(
+                        prefetchTree,
+                        normalizedRows,
+                        prefetchResultsByPath);
+            }
+            return objects;
+        }
+
+        protected List<DataRow> toNormalizedDataRows(
+                EntityResult entityMapping,
+                List<DataRow> dataRows) {
+            List<DataRow> normalized = new ArrayList<DataRow>(dataRows.size());
+
+            FieldResult[] fields = entityMapping.getDbFields(domain.getEntityResolver());
+            int rowCapacity = (int) Math.ceil(fields.length / 0.75);
+
+            for (DataRow src : dataRows) {
+                DataRow target = new DataRow(rowCapacity);
+
+                for (FieldResult columnMapping : fields) {
+                    target.put(columnMapping.getAttributeName(), src.get(columnMapping
+                            .getColumn()));
+                }
+
+                normalized.add(target);
+            }
+
+            return normalized;
+        }
+
+        protected void updateResponse(List sourceObjects, List targetObjects) {
+            if (response instanceof GenericResponse) {
+                ((GenericResponse) response).replaceResult(sourceObjects, targetObjects);
+            }
+            else if (response instanceof ListResponse) {
+                response = new ListResponse(targetObjects);
+            }
+            else {
+                throw new IllegalStateException("Unknown response object: " + response);
+            }
+        }
+    }
+
+    class SingleObjectConversionStrategy extends ObjectConversionStrategy {
+
+        @Override
+        void convert(List<DataRow> mainRows) {
+
+            // convert data rows to standardized format...
+            SQLResultSetMapping rsMapping = metadata.getResultSetMapping();
+            if (rsMapping != null) {
+                // expect 1 and only 1 entityMapping...
+                EntityResult entityMapping = rsMapping.getEntityResults().get(0);
+                mainRows = toNormalizedDataRows(entityMapping, mainRows);
+            }
+
+            ClassDescriptor descriptor = metadata.getClassDescriptor();
+            PrefetchTreeNode prefetchTree = metadata.getPrefetchTree();
+
+            List<Persistent> objects = toObjects(descriptor, prefetchTree, mainRows);
+            updateResponse(mainRows, objects);
+
+            // apply POST_LOAD callback
+            LifecycleCallbackRegistry callbackRegistry = context
+                    .getEntityResolver()
+                    .getCallbackRegistry();
+
+            if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
+                callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, objects);
+            }
+        }
+    }
+
+    class SingleScalarConversionStrategy extends ObjectConversionStrategy {
+
+        @Override
+        void convert(List<DataRow> mainRows) {
+
+            SQLResultSetMapping rsMapping = metadata.getResultSetMapping();
+
+            List<String> columns = rsMapping.getColumnResults();
+
+            int rowsLen = mainRows.size();
+
+            List objects = new ArrayList(rowsLen);
+            String column = columns.get(0);
+
+            // add scalars to the result
+            for (DataRow row : mainRows) {
+                objects.add(row.get(column));
+            }
+
+            updateResponse(mainRows, objects);
+        }
+    }
+
+    class MixedConversionStrategy extends ObjectConversionStrategy {
+
+        @Override
+        void convert(List<DataRow> mainRows) {
+
+            int rowsLen = mainRows.size();
+            List<Object[]> objects = new ArrayList<Object[]>(rowsLen);
+
+            SQLResultSetMapping rsMapping = metadata.getResultSetMapping();
+
+            List<EntityResult> entities = rsMapping.getEntityResults();
+            List<String> columns = rsMapping.getColumnResults();
+
+            // pass 1 - init Object[]'s and resolve scalars
+
+            int resultWidth = entities.size() + columns.size();
+            int scalarOffset = entities.size();
+
+            for (DataRow row : mainRows) {
+                Object[] resultRow = new Object[resultWidth];
+                for (int i = 0; i < columns.size(); i++) {
+                    resultRow[scalarOffset + i] = row.get(columns.get(i));
+                }
+                objects.add(resultRow);
+            }
+
+            // pass 2 - resolve individual object lists
+            List[] resultLists = new List[scalarOffset];
+            for (int i = 0; i < scalarOffset; i++) {
+                EntityResult entityMapping = entities.get(i);
+                List<DataRow> normalized = toNormalizedDataRows(entityMapping, mainRows);
+
+                List<Persistent> nextResult = toObjects(entityMapping
+                        .getClassDescriptor(domain.getEntityResolver()), null, normalized);
+
+                for (int j = 0; j < rowsLen; j++) {
+                    objects.get(j)[i] = nextResult.get(j);
+                }
+
+                resultLists[i] = nextResult;
+            }
+
+            updateResponse(mainRows, objects);
+
+            // invoke callbacks now that all objects are resolved...
+            LifecycleCallbackRegistry callbackRegistry = context
+                    .getEntityResolver()
+                    .getCallbackRegistry();
+
+            if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
+                for (int i = 0; i < scalarOffset; i++) {
+                    callbackRegistry.performCallbacks(
+                            LifecycleEvent.POST_LOAD,
+                            resultLists[i]);
+                }
+            }
+        }
     }
 }

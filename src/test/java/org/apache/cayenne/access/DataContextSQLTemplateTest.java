@@ -34,6 +34,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.query.EntityResult;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
@@ -50,6 +51,49 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         super.setUp();
         deleteTestData();
         context = createDataContext();
+    }
+
+    public void testSQLResultSetMappingMixed() throws Exception {
+        createTestData("prepare");
+
+        String sql = "SELECT t0.ARTIST_ID AS X, t0.ARTIST_NAME AS Y, t0.DATE_OF_BIRTH AS Z, count(t1.PAINTING_ID) AS C "
+                + "FROM ARTIST t0 LEFT JOIN PAINTING t1 ON (t0.ARTIST_ID = t1.ARTIST_ID) "
+                + "GROUP BY t0.ARTIST_ID, t0.ARTIST_NAME, t0.DATE_OF_BIRTH "
+                + "ORDER BY t0.ARTIST_ID";
+
+        DataMap map = getDomain().getMap("testmap");
+        SQLTemplate query = new SQLTemplate(map, sql);
+        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+
+        EntityResult artistResult = new EntityResult(Artist.class);
+        artistResult.addDbField(Artist.ARTIST_ID_PK_COLUMN, "X");
+        artistResult.addObjectField(Artist.ARTIST_NAME_PROPERTY, "Y");
+        artistResult.addObjectField(Artist.DATE_OF_BIRTH_PROPERTY, "Z");
+
+        SQLResultSetMapping rsMap = new SQLResultSetMapping();
+        rsMap.addEntityResult(artistResult);
+        rsMap.addColumnResult("C");
+        query.setResultSetMapping(rsMap);
+
+        List objects = createDataContext().performQuery(query);
+        assertEquals(4, objects.size());
+
+        Object o1 = objects.get(0);
+        assertTrue("Expected Object[]: " + o1, o1 instanceof Object[]);
+        Object[] array1 = (Object[]) o1;
+        assertEquals(2, array1.length);
+        Object[] array2 = (Object[]) objects.get(1);
+        assertEquals(2, array2.length);
+        Object[] array3 = (Object[]) objects.get(2);
+        assertEquals(2, array3.length);
+        Object[] array4 = (Object[]) objects.get(3);
+        assertEquals(2, array3.length);
+        
+        assertEquals(new Integer(1), array1[1]);
+        assertEquals(new Integer(1), array2[1]);
+        assertEquals(new Integer(0), array3[1]);
+        assertEquals(new Integer(0), array4[1]);
+        assertTrue("Unexpected DataObject: " + array1[0], array1[0] instanceof Artist);
     }
 
     public void testSQLResultSetMappingScalar() throws Exception {
