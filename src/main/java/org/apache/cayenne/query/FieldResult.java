@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * A metadata object that maps a result set column to an ObjAttribute or DbAttribute. Used
  * by {@link EntityResult}.
@@ -49,4 +51,10 @@ public class FieldResult {
         return dbAttribute;
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("attributeName", attributeName).append(
+                "column",
+                column).append("db", dbAttribute).toString();
+    }
 }
