@@ -87,6 +87,16 @@ class ModelerProjectLoadDelegate extends RuntimeLoadDelegate {
         }
     }
 
+    @Override
+    public void finishedLoading() {
+        // execute a simplified version of the super method to avoid runtime relationships
+        // and other runtime artifacts...
+        // load missing relationships and update configuration object
+        for (DataDomain domain : getDomains().values()) {
+            config.addDomain(domain);
+        }
+    }
+
     /**
      * Creates a subclass of the DataNode that does not decorate its DataSource, exposing
      * the version that was set on it.
