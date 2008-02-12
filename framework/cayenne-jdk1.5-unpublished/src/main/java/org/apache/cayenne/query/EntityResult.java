@@ -47,13 +47,13 @@ public class EntityResult {
     public EntityResult(String entityName) {
         this.entityName = entityName;
     }
-    
+
     public ClassDescriptor getClassDescriptor(EntityResolver resolver) {
         return resolver.getClassDescriptor(getEntity(resolver).getName());
     }
 
     /**
-     * Returns entity result fields nrmalized to represent DbAttributes.
+     * Returns entity result fields normalized to represent DbAttributes.
      */
     public FieldResult[] getDbFields(EntityResolver resolver) {
         FieldResult[] fields = (this.fields != null)
