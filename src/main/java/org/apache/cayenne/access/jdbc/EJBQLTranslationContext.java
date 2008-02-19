@@ -29,6 +29,7 @@ import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.EntityResult;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -50,7 +51,7 @@ public class EJBQLTranslationContext {
     private Map<String, Object> boundParameters;
     private Map<String, Object> attributes;
     private Map<String, String> idAliases;
-    private int columnAliasPosition;
+    private int resultDescriptorPosition;
     private boolean usingAliases;
     private List<StringBuilder> bufferStack;
     private List<StringBuilder> bufferChain;
@@ -374,6 +375,20 @@ public class EJBQLTranslationContext {
     }
 
     /**
+     * Returns a positional EntityResult, incrementing position index on each call.
+     */
+    EntityResult nextEntityResult() {
+
+        SQLResultSetMapping resultSetMapping = compiledExpression.getResultSetMapping();
+        if (resultSetMapping == null) {
+            throw new EJBQLException(
+                    "No result set mapping exists for expression, can't map EntityResult");
+        }
+
+        return resultSetMapping.getEntityResult(resultDescriptorPosition++);
+    }
+
+    /**
      * Returns a positional column alias, incrementing position index on each call.
      */
     String nextColumnAlias() {
@@ -384,7 +399,7 @@ public class EJBQLTranslationContext {
                     "No result set mapping exists for expression, can't map column aliases");
         }
 
-        return resultSetMapping.getColumnResults().get(columnAliasPosition++);
+        return resultSetMapping.getColumnResult(resultDescriptorPosition++);
     }
 
     boolean isAppendingResultColumns() {

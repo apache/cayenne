@@ -35,8 +35,7 @@ import java.util.List;
 public class SQLResultSetMapping {
 
     protected String name;
-    protected List<EntityResult> entityResults;
-    protected List<String> columnResults;
+    protected List<Object> resultDescriptors;
 
     public SQLResultSetMapping() {
 
@@ -54,33 +53,96 @@ public class SQLResultSetMapping {
         this.name = name;
     }
 
-    public List<EntityResult> getEntityResults() {
-        return entityResults != null ? entityResults : Collections.EMPTY_LIST;
+    /**
+     * Returns a list of result descriptors. Column descriptors are returned as Strings,
+     * entity descriptors - as {@link EntityResult}.
+     */
+    public List<Object> getResultDescriptors() {
+        return resultDescriptors != null ? resultDescriptors : Collections.EMPTY_LIST;
+    }
+
+    public int[] getEntityResultPositions() {
+        if (resultDescriptors == null) {
+            return new int[0];
+        }
+
+        int[] positions = new int[resultDescriptors.size()];
+        int j = 0;
+        for (int i = 0; i < positions.length; i++) {
+            if (resultDescriptors.get(i) instanceof EntityResult) {
+                positions[j++] = i;
+            }
+        }
+
+        int[] trimmed = new int[j];
+        System.arraycopy(positions, 0, trimmed, 0, j);
+        return trimmed;
+    }
+
+    public int[] getColumnResultPositions() {
+        if (resultDescriptors == null) {
+            return new int[0];
+        }
+
+        int[] positions = new int[resultDescriptors.size()];
+        int j = 0;
+        for (int i = 0; i < positions.length; i++) {
+            if (resultDescriptors.get(i) instanceof String) {
+                positions[j++] = i;
+            }
+        }
+
+        int[] trimmed = new int[j];
+        System.arraycopy(positions, 0, trimmed, 0, j);
+        return trimmed;
+    }
+
+    public EntityResult getEntityResult(int position) {
+        if (resultDescriptors == null) {
+            throw new IndexOutOfBoundsException("Invalid EntityResult index: " + position);
+        }
+
+        Object result = resultDescriptors.get(position);
+        if (result instanceof EntityResult) {
+            return (EntityResult) result;
+        }
+
+        throw new IllegalArgumentException("Result at position "
+                + position
+                + " is not an entity result");
+    }
+
+    public String getColumnResult(int position) {
+        if (resultDescriptors == null) {
+            throw new IndexOutOfBoundsException("Invalid column index: " + position);
+        }
+
+        Object result = resultDescriptors.get(position);
+        if (result instanceof String) {
+            return (String) result;
+        }
+
+        throw new IllegalArgumentException("Result at position "
+                + position
+                + " is not a column result");
     }
 
     public void addEntityResult(EntityResult entityResult) {
-        if (entityResults == null) {
-            entityResults = new ArrayList<EntityResult>(3);
+        if (resultDescriptors == null) {
+            resultDescriptors = new ArrayList<Object>(3);
         }
-        
-        entityResults.add(entityResult);
-    }
 
-    /**
-     * Returns a collection of mapped columns.
-     */
-    public List<String> getColumnResults() {
-        return columnResults != null ? columnResults : Collections.EMPTY_LIST;
+        resultDescriptors.add(entityResult);
     }
 
     /**
      * Adds a result set column name to the mapping.
      */
     public void addColumnResult(String column) {
-        if (columnResults == null) {
-            columnResults = new ArrayList<String>(3);
+        if (resultDescriptors == null) {
+            resultDescriptors = new ArrayList<Object>(3);
         }
 
-        columnResults.add(column);
+        resultDescriptors.add(column);
     }
 }

@@ -20,6 +20,7 @@ package org.apache.cayenne.access.jdbc;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -55,9 +56,21 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitIdentifier(EJBQLExpression expression) {
 
+        Map<String, String> xfields = null;
+        if (context.isAppendingResultColumns()) {
+            xfields = context.nextEntityResult().getDbFields(context.getEntityResolver());
+        }
+
+        // assign whatever we have to a final ivar so that it can be accessed within
+        // the inner class
+        final Map<String, String> fields = xfields;
         final String idVar = expression.getText();
 
-        // append all table columns
+        // append all table columns ... the trick is to follow the algorithm for
+        // describing the fields in the expression compiler, so that we could assign
+        // columns labels from FieldResults in the order we encounter them here...
+        // TODO: andrus 2008/02/17 - this is a bit of a hack, think of a better solution
+
         ClassDescriptor descriptor = context.getEntityDescriptor(idVar);
 
         PropertyVisitor visitor = new PropertyVisitor() {
@@ -77,7 +90,6 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                         throw new CayenneRuntimeException(
                                 "ObjAttribute has no component: " + oa.getName());
                     }
-
                     else if (pathPart instanceof DbRelationship) {
 
                         if (marker == null) {
@@ -94,7 +106,8 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                         lhsId = rhsId;
                     }
                     else if (pathPart instanceof DbAttribute) {
-                        appendColumn(idVar, oa, (DbAttribute) pathPart, oa.getType());
+                        appendColumn(idVar, oa, (DbAttribute) pathPart, fields, oa
+                                .getType());
                     }
                 }
                 return true;
@@ -116,7 +129,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
                 for (DbJoin join : dbRel.getJoins()) {
                     DbAttribute src = join.getSource();
-                    appendColumn(idVar, null, src);
+                    appendColumn(idVar, null, src, fields);
                 }
             }
         };
@@ -128,13 +141,13 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
         // append id columns ... (some may have been appended already via relationships)
         DbEntity table = descriptor.getEntity().getDbEntity();
         for (DbAttribute pk : table.getPrimaryKeys()) {
-            appendColumn(idVar, null, pk);
+            appendColumn(idVar, null, pk, fields);
         }
 
         // append inheritance discriminator columns...
         Iterator<DbAttribute> discriminatorColumns = descriptor.getDiscriminatorColumns();
         while (discriminatorColumns.hasNext()) {
-            appendColumn(idVar, null, discriminatorColumns.next());
+            appendColumn(idVar, null, discriminatorColumns.next(), fields);
         }
 
         return false;
@@ -142,22 +155,22 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
     private void appendColumn(
             String identifier,
-            ObjAttribute objectAttribute,
-            DbAttribute column) {
-        appendColumn(identifier, objectAttribute, column, null);
+            ObjAttribute property,
+            DbAttribute column,
+            Map<String, String> fields) {
+        appendColumn(identifier, property, column, fields, null);
     }
 
     private void appendColumn(
             String identifier,
-            ObjAttribute objectAttribute,
+            ObjAttribute property,
             DbAttribute column,
+            Map<String, String> fields,
             String javaType) {
 
         DbEntity table = (DbEntity) column.getEntity();
         String alias = context.getTableAlias(identifier, table.getFullyQualifiedName());
         String columnName = alias + "." + column.getName();
-        String columnLabel = objectAttribute != null ? objectAttribute
-                .getDbAttributePath() : column.getName();
 
         Set<String> columns = getColumns();
 
@@ -176,11 +189,20 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                     javaType = TypesMapping.getJavaBySqlType(column.getType());
                 }
 
+                String columnLabel = fields.get(property != null ? property
+                        .getDbAttributePath() : column.getName());
+
                 // TODO: andrus 6/27/2007 - the last parameter is an unofficial "jdbcType"
                 // pending CAY-813 implementation, switch to #column directive
-                context.append("' '").append(javaType).append("' '").append(
-                        column.getName()).append("' '").append(columnLabel).append(
-                        "' " + column.getType()).append(")");
+                context
+                        .append("' '")
+                        .append(javaType)
+                        .append("' '")
+                        .append(columnLabel)
+                        .append("' '")
+                        .append(columnLabel)
+                        .append("' " + column.getType())
+                        .append(")");
             }
         }
     }
