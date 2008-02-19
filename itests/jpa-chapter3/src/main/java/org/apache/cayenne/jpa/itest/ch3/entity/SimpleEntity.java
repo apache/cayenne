@@ -18,10 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.jpa.itest.ch3.entity;
 
+import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.SqlResultSetMapping;
 
 @Entity
+@SqlResultSetMapping(name = "rs1", columns = {
+        @ColumnResult(name = "X"), @ColumnResult(name = "Y")
+})
 public class SimpleEntity {
 
     @Id
@@ -31,7 +36,7 @@ public class SimpleEntity {
     public int idField() {
         return id;
     }
-    
+
     public void updateIdField(int id) {
         this.id = id;
     }

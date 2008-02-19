@@ -21,19 +21,33 @@ package org.apache.cayenne.ejbql.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.EntityResult;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ArcProperty;
+import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * Produces an {@link EJBQLCompiledExpression} out of an EJBQL expression tree.
@@ -56,7 +70,7 @@ class Compiler {
     private EJBQLExpressionVisitor joinVisitor;
     private EJBQLExpressionVisitor pathVisitor;
     private EJBQLExpressionVisitor rootDescriptorVisitor;
-    private SQLResultSetMapping resultSetMapping;
+    private List<Object> resultSetMappings;
 
     Compiler(EntityResolver resolver) {
         this.resolver = resolver;
@@ -110,9 +124,94 @@ class Compiler {
         compiled.setRootId(rootId);
         compiled.setDescriptorsById(descriptorsById);
         compiled.setIncomingById(incomingById);
-        compiled.setResultSetMapping(resultSetMapping);
+
+        if (resultSetMappings != null) {
+            SQLResultSetMapping mapping = new SQLResultSetMapping();
+
+            for (int i = 0; i < resultSetMappings.size(); i++) {
+                Object nextMapping = resultSetMappings.get(i);
+                if (nextMapping instanceof String) {
+                    mapping.addColumnResult((String) nextMapping);
+                }
+                else if (nextMapping instanceof EJBQLExpression) {
+                    mapping.addEntityResult(compileEntityResult(
+                            (EJBQLExpression) nextMapping,
+                            i));
+                }
+            }
+
+            compiled.setResultSetMapping(mapping);
+        }
 
         return compiled;
+    }
+
+    private EntityResult compileEntityResult(EJBQLExpression expression, int position) {
+        String id = expression.getText().toLowerCase();
+        ClassDescriptor descriptor = descriptorsById.get(id);
+        final EntityResult entityResult = new EntityResult(descriptor.getObjectClass());
+        final String prefix = "ec" + position + "_";
+        final int[] index = {
+            0
+        };
+
+        final Set<String> visited = new HashSet<String>();
+
+        PropertyVisitor visitor = new PropertyVisitor() {
+
+            public boolean visitAttribute(AttributeProperty property) {
+                ObjAttribute oa = property.getAttribute();
+                if (visited.add(oa.getDbAttributePath())) {
+                    entityResult.addObjectField(
+                            oa.getEntity().getName(),
+                            oa.getName(),
+                            prefix + index[0]++);
+                }
+                return true;
+            }
+
+            public boolean visitToMany(ToManyProperty property) {
+                return true;
+            }
+
+            public boolean visitToOne(ToOneProperty property) {
+                ObjRelationship rel = property.getRelationship();
+                DbRelationship dbRel = rel.getDbRelationships().get(0);
+
+                for (DbJoin join : dbRel.getJoins()) {
+                    DbAttribute src = join.getSource();
+                    if (src.isForeignKey() && visited.add(src.getName())) {
+                        entityResult.addDbField(src.getName(), prefix + index[0]++);
+                    }
+                }
+
+                return true;
+            }
+        };
+
+        // EJBQL queries are polymorphic by definition - there is no distinction between
+        // inheritance/no-inheritance fetch
+        descriptor.visitAllProperties(visitor);
+
+        // append id columns ... (some may have been appended already via relationships)
+        DbEntity table = descriptor.getEntity().getDbEntity();
+        for (DbAttribute pk : table.getPrimaryKeys()) {
+            if (visited.add(pk.getName())) {
+                entityResult.addDbField(pk.getName(), prefix + index[0]++);
+            }
+        }
+
+        // append inheritance discriminator columns...
+        Iterator<DbAttribute> discriminatorColumns = descriptor.getDiscriminatorColumns();
+        while (discriminatorColumns.hasNext()) {
+            DbAttribute column = discriminatorColumns.next();
+
+            if (visited.add(column.getName())) {
+                entityResult.addDbField(column.getName(), prefix + index[0]++);
+            }
+        }
+
+        return entityResult;
     }
 
     private void addPath(EJBQLPath path) {
@@ -329,6 +428,7 @@ class Compiler {
         public boolean visitIdentifier(EJBQLExpression expression) {
             if (appendingResultColumns) {
                 rootId = normalizeIdPath(expression.getText());
+                addEntityResult(expression);
             }
             return false;
         }
@@ -346,14 +446,25 @@ class Compiler {
             return false;
         }
 
-        private void addResultSetColumn() {
+        private void addEntityResult(EJBQLExpression expression) {
             if (appendingResultColumns) {
-                if (resultSetMapping == null) {
-                    resultSetMapping = new SQLResultSetMapping();
+                if (resultSetMappings == null) {
+                    resultSetMappings = new ArrayList<Object>();
                 }
 
-                String column = "sc" + resultSetMapping.getColumnResults().size();
-                resultSetMapping.addColumnResult(column);
+                // defer EntityResult creation until we resolve all ids...
+                resultSetMappings.add(expression);
+            }
+        }
+
+        private void addResultSetColumn() {
+            if (appendingResultColumns) {
+                if (resultSetMappings == null) {
+                    resultSetMappings = new ArrayList<Object>();
+                }
+
+                String column = "sc" + resultSetMappings.size();
+                resultSetMappings.add(column);
             }
         }
     }

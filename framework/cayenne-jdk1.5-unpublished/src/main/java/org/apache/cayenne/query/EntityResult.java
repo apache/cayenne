@@ -19,8 +19,10 @@
 package org.apache.cayenne.query;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
@@ -38,7 +40,7 @@ public class EntityResult {
 
     protected String entityName;
     protected Class<?> entityClass;
-    protected List<FieldResult> fields;
+    protected Collection<FieldResult> fields;
 
     public EntityResult(Class<?> entityClass) {
         this.entityClass = entityClass;
@@ -49,43 +51,38 @@ public class EntityResult {
     }
 
     public ClassDescriptor getClassDescriptor(EntityResolver resolver) {
-        return resolver.getClassDescriptor(getEntity(resolver).getName());
+        return resolver.getClassDescriptor(getRootEntity(resolver).getName());
     }
 
     /**
-     * Returns entity result fields normalized to represent DbAttributes.
+     * Returns a map of result column names to attribute db paths from the root entity.
      */
-    public FieldResult[] getDbFields(EntityResolver resolver) {
-        FieldResult[] fields = (this.fields != null)
-                ? new FieldResult[this.fields.size()]
-                : new FieldResult[0];
-        ObjEntity entity = null;
+    public Map<String, String> getDbFields(EntityResolver resolver) {
 
-        for (int i = 0; i < fields.length; i++) {
-            FieldResult field = this.fields.get(i);
+        if (this.fields == null) {
+            return Collections.EMPTY_MAP;
+        }
 
-            if (!field.isDbAttribute()) {
-                if (entity == null) {
-                    entity = getEntity(resolver);
-                }
+        Map<String, String> dbFields = new HashMap<String, String>();
+        for (FieldResult field : fields) {
+
+            if (field.isDbAttribute()) {
+                dbFields.put(field.getAttributeName(), field.getColumn());
+            }
+            else {
+                ObjEntity entity = field.getEntityName() != null ? resolver
+                        .getObjEntity(field.getEntityName()) : getRootEntity(resolver);
 
                 ObjAttribute attribute = (ObjAttribute) entity.getAttribute(field
                         .getAttributeName());
-
-                // TODO: andrus 2/8/2008 - flattened attributes support
-                field = new FieldResult(
-                        attribute.getDbAttributeName(),
-                        field.getColumn(),
-                        true);
+                dbFields.put(attribute.getDbAttributePath(), field.getColumn());
             }
-
-            fields[i] = field;
         }
 
-        return fields;
+        return dbFields;
     }
 
-    public ObjEntity getEntity(EntityResolver resolver) {
+    public ObjEntity getRootEntity(EntityResolver resolver) {
         if (entityName != null) {
             return resolver.getObjEntity(entityName);
         }
@@ -97,12 +94,26 @@ public class EntityResult {
         }
     }
 
+    /**
+     * Adds a result set column mapping for a single object property of the root entity.
+     */
     public void addObjectField(String attributeName, String column) {
-        addField(new FieldResult(attributeName, column, false));
+        addField(new FieldResult(null, attributeName, column, false));
     }
 
+    /**
+     * Adds a result set column mapping for a single object property of a specified entity
+     * that may differ from the root entity if inheritance is involved.
+     */
+    public void addObjectField(String entityName, String attributeName, String column) {
+        addField(new FieldResult(entityName, attributeName, column, false));
+    }
+
+    /**
+     * Adds a result set column mapping for a single DbAttribute.
+     */
     public void addDbField(String dbAttributeName, String column) {
-        addField(new FieldResult(dbAttributeName, column, true));
+        addField(new FieldResult(null, dbAttributeName, column, true));
     }
 
     void addField(FieldResult field) {
@@ -121,7 +132,7 @@ public class EntityResult {
         return entityClass;
     }
 
-    public List<FieldResult> getFields() {
+    public Collection<FieldResult> getFields() {
         return fields != null ? fields : Collections.EMPTY_LIST;
     }
 }

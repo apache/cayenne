@@ -27,18 +27,26 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @since 3.0
  * @author Andrus Adamchik
  */
-public class FieldResult {
+class FieldResult {
 
+    protected String entityName;
     protected String attributeName;
     protected String column;
     protected boolean dbAttribute;
 
-    public FieldResult(String attributeName, String column, boolean dbAttribute) {
+    FieldResult(String entityName, String attributeName, String column,
+            boolean dbAttribute) {
+        
+        this.entityName = entityName;
         this.attributeName = attributeName;
         this.column = column;
         this.dbAttribute = dbAttribute;
     }
 
+    public String getEntityName() {
+        return entityName;
+    }
+    
     public String getAttributeName() {
         return attributeName;
     }

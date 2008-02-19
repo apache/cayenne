@@ -67,24 +67,24 @@ public class DataContextEJBQLArrayResultTest extends CayenneCase {
     }
 
     public void testSQLResultSetMappingMixed() throws Exception {
-//        createTestData("prepare");
-//
-//        String ejbql = "SELECT count(p), a, sum(p.estimatedPrice) "
-//                + "FROM Artist a LEFT JOIN a.paintingArray p "
-//                + "GROUP BY a ORDER BY a.artistName";
-//
-//        EJBQLQuery query = new EJBQLQuery(ejbql);
-//
-//        List objects = createDataContext().performQuery(query);
-//        assertEquals(4, objects.size());
-//
-//        Object o1 = objects.get(0);
-//        assertTrue("Expected Object[]: " + o1, o1 instanceof Object[]);
-//        Object[] array1 = (Object[]) o1;
-//        assertEquals(3, array1.length);
-//
-//        assertEquals(new Long(1), array1[0]);
-//        assertTrue("Expected Artist, got: " + array1[1], array1[1] instanceof Artist);
-//        assertEquals(new BigDecimal(3000), array1[1]);
+        createTestData("prepare");
+
+        String ejbql = "SELECT count(p), a, sum(p.estimatedPrice) "
+                + "FROM Artist a LEFT JOIN a.paintingArray p "
+                + "GROUP BY a ORDER BY a.artistName";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List objects = createDataContext().performQuery(query);
+        assertEquals(4, objects.size());
+
+        Object o1 = objects.get(0);
+        assertTrue("Expected Object[]: " + o1, o1 instanceof Object[]);
+        Object[] array1 = (Object[]) o1;
+        assertEquals(3, array1.length);
+
+        assertEquals(new Long(1), array1[0]);
+        assertTrue("Expected Artist, got: " + array1[1], array1[1] instanceof Artist);
+        assertEquals(new BigDecimal(3000), array1[2]);
     }
 }
