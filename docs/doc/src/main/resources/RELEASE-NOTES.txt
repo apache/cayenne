@@ -23,6 +23,7 @@ Bug fixes since M3:
 CAY-574: DataObjectUtils 'objectForPK' should work on the client
 CAY-983 POST_LOAD called twice
 CAY-984 Runtime relationships leak into CayenneModeler
+CAY-986 LOCAL_CACHE policy fails when query is paged
 
 ----------------------------------
 Release: 3.0M3
