@@ -80,6 +80,10 @@ public abstract class ObjectContextQueryAction {
             if (interceptRelationshipQuery() != DONE) {
                 if (interceptRefreshQuery() != DONE) {
                     if (interceptLocalCache() != DONE) {
+                        // when changing the flow below, make sure to update
+                        // 'getCacheObjectFactory' method that mimics the interceptors
+                        // below 'interceptLocalCache'. See comment in an inner class
+                        // factory in this method...
                         if (interceptPaginatedQuery() != DONE) {
                             runQuery();
                         }
@@ -146,7 +150,7 @@ public abstract class ObjectContextQueryAction {
                 Object object = actingContext.getGraphManager().getNode(
                         oidQuery.getObjectId());
                 if (object != null) {
-                    
+
                     // do not return hollow objects
                     if (((Persistent) object).getPersistenceState() == PersistenceState.HOLLOW) {
                         return !DONE;
@@ -222,13 +226,12 @@ public abstract class ObjectContextQueryAction {
 
         return !DONE;
     }
-    
-    
+
     /**
      * @since 3.0
      */
     protected abstract boolean interceptPaginatedQuery();
-    
+
     /**
      * @since 3.0
      */
@@ -283,7 +286,12 @@ public abstract class ObjectContextQueryAction {
         return new QueryCacheEntryFactory() {
 
             public Object createObject() {
-                runQuery();
+                // must follow the same logic as 'execute' below locla cache interceptor
+                // method... reuse that code somehow???
+                if (interceptPaginatedQuery() != DONE) {
+                    runQuery();
+                }
+
                 return response.firstList();
             }
         };
