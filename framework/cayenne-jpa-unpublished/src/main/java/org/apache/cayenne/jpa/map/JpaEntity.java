@@ -42,7 +42,7 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
     protected JpaDiscriminatorColumn discriminatorColumn;
     protected JpaSequenceGenerator sequenceGenerator;
     protected JpaTableGenerator tableGenerator;
-    protected JpaSqlResultSetMapping sqlResultSetMapping;
+    protected Collection<JpaSqlResultSetMapping> sqlResultSetMappings;
     protected Collection<JpaAttributeOverride> attributeOverrides;
     protected Collection<JpaAssociationOverride> associationOverrides;
     protected JpaEntity superEntity;
@@ -124,8 +124,8 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
             encoder.print(namedNativeQueries);
         }
 
-        if (sqlResultSetMapping != null) {
-            sqlResultSetMapping.encodeAsXML(encoder);
+        if (sqlResultSetMappings != null) {
+            encoder.print(sqlResultSetMappings);
         }
 
         if (excludeDefaultListeners) {
@@ -292,13 +292,13 @@ public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
         this.sequenceGenerator = sequenceGenerator;
     }
 
-    @TreeNodeChild
-    public JpaSqlResultSetMapping getSqlResultSetMapping() {
-        return sqlResultSetMapping;
-    }
-
-    public void setSqlResultSetMapping(JpaSqlResultSetMapping sqlResultSetMapping) {
-        this.sqlResultSetMapping = sqlResultSetMapping;
+    @TreeNodeChild(type = JpaSqlResultSetMapping.class)
+    public Collection<JpaSqlResultSetMapping> getSqlResultSetMappings() {
+        if(sqlResultSetMappings == null) {
+            sqlResultSetMappings = new ArrayList<JpaSqlResultSetMapping>();
+        }
+        
+        return sqlResultSetMappings;
     }
 
     @TreeNodeChild

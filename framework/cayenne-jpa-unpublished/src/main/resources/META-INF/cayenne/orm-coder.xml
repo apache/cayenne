@@ -142,7 +142,7 @@
 		<property name="tableGenerator" xmlTag="table-generator"/>
 		<property name="namedQueries" xmlTag="named-query"/>
 		<property name="namedNativeQueries" xmlTag="named-native-query"/>
-		<property name="sqlResultSetMapping" xmlTag="sql-result-set-mapping"/>
+		<property name="sqlResultSetMappings" xmlTag="sql-result-set-mapping"/>
 		<property name="excludeDefaultListenersTrue" xmlTag="exclude-default-listeners"/>
 		<property name="excludeSuperclassListenersTrue" xmlTag="exclude-superclass-listeners"/>
 		<property name="entityListeners" xmlTag="entity-listeners"/>

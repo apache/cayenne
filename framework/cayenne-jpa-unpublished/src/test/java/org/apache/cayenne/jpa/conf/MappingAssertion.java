@@ -179,7 +179,7 @@ public class MappingAssertion extends Assert {
         assertNativeNamedQuery3(namedNativeQueryIt.next());
         assertNativeNamedQuery4(namedNativeQueryIt.next());
 
-        assertSqlResultSetMapping(entity1.getSqlResultSetMapping());
+        assertSqlResultSetMapping(entity1.getSqlResultSetMappings().iterator().next());
 
         assertTrue(entity1.isExcludeDefaultListeners());
         assertTrue(entity1.isExcludeSuperclassListeners());

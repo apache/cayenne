@@ -54,15 +54,14 @@ public class _3_6_6_SQLQueriesTest extends EntityManagerCase {
                 1,
                 "X").insert(2, "Y");
 
-        // TODO: andrus 2/18/2008 map named JPA SQLResultSetMappings to Cayenne
-        // EntityManager em = getEntityManager();
-        // Query query = em.createNativeQuery(
-        // "SELECT ID as X, ID + 5 as Y, ID + 6 as Z FROM SimpleEntity ORDER BY ID",
-        // "rs1");
-        //
-        // List result = query.getResultList();
-        // assertNotNull(result);
-        // assertEquals(2, result.size());
-        // assertTrue(result.get(0) instanceof Object[]);
+        EntityManager em = getEntityManager();
+        Query query = em.createNativeQuery(
+                "SELECT ID as X, ID + 5 as Y, ID + 6 as Z FROM SimpleEntity ORDER BY ID",
+                "rs1");
+
+        List result = query.getResultList();
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.get(0) instanceof Object[]);
     }
 }

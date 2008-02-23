@@ -611,7 +611,7 @@ class ClassAnnotationProcessorFactory extends AnnotationProcessorFactory {
 
             SqlResultSetMapping annotation = element
                     .getAnnotation(SqlResultSetMapping.class);
-            entity.setSqlResultSetMapping(new JpaSqlResultSetMapping(annotation));
+            entity.getSqlResultSetMappings().add(new JpaSqlResultSetMapping(annotation));
         }
 
         @Override

@@ -296,11 +296,7 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
      * @return the new query instance
      */
     public Query createNativeQuery(String sqlString) {
-        checkClosed();
-
-        return new JpaNativeQuery(context, sqlString, factory
-                .getPersistenceUnitInfo()
-                .getPersistenceUnitName());
+        return createNativeQuery(sqlString, (String) null);
     }
 
     /**
@@ -313,8 +309,9 @@ public class ResourceLocalEntityManager implements EntityManager, CayenneEntityM
     public Query createNativeQuery(String sqlString, String resultSetMapping) {
         checkClosed();
 
-        // TODO: Andrus, 2/10/2006 - implement
-        throw new UnsupportedOperationException("TODO");
+        return new JpaNativeQuery(context, sqlString, factory
+                .getPersistenceUnitInfo()
+                .getPersistenceUnitName(), resultSetMapping);
     }
 
     /**

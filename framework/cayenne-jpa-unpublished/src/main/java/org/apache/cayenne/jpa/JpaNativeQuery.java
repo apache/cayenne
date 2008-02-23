@@ -47,9 +47,17 @@ public class JpaNativeQuery extends JpaQuery {
     }
 
     public JpaNativeQuery(ObjectContext context, String sqlString, String dataMapName) {
+        this(context, sqlString, dataMapName, null);
+    }
+    
+    public JpaNativeQuery(ObjectContext context, String sqlString, String dataMapName, String resultSetMappingName) {
         super(context);
         DataMap map = context.getEntityResolver().getDataMap(dataMapName);
         query = new SQLTemplate(map, processSQLString(sqlString));
+        
+        if(resultSetMappingName != null) {
+            query.setResultSetMapping(map.getResultSetMapping(resultSetMappingName));
+        }
     }
 
     protected String processSQLString(String sqlString) {

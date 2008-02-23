@@ -35,6 +35,7 @@ import org.apache.cayenne.jpa.map.JpaAttributeOverride;
 import org.apache.cayenne.jpa.map.JpaAttributes;
 import org.apache.cayenne.jpa.map.JpaBasic;
 import org.apache.cayenne.jpa.map.JpaColumn;
+import org.apache.cayenne.jpa.map.JpaColumnResult;
 import org.apache.cayenne.jpa.map.JpaDiscriminatorColumn;
 import org.apache.cayenne.jpa.map.JpaEmbeddable;
 import org.apache.cayenne.jpa.map.JpaEmbedded;
@@ -42,6 +43,8 @@ import org.apache.cayenne.jpa.map.JpaEntity;
 import org.apache.cayenne.jpa.map.JpaEntityListener;
 import org.apache.cayenne.jpa.map.JpaEntityListeners;
 import org.apache.cayenne.jpa.map.JpaEntityMap;
+import org.apache.cayenne.jpa.map.JpaEntityResult;
+import org.apache.cayenne.jpa.map.JpaFieldResult;
 import org.apache.cayenne.jpa.map.JpaId;
 import org.apache.cayenne.jpa.map.JpaJoinColumn;
 import org.apache.cayenne.jpa.map.JpaManagedClass;
@@ -56,6 +59,7 @@ import org.apache.cayenne.jpa.map.JpaPrimaryKeyJoinColumn;
 import org.apache.cayenne.jpa.map.JpaQueryHint;
 import org.apache.cayenne.jpa.map.JpaRelationship;
 import org.apache.cayenne.jpa.map.JpaSecondaryTable;
+import org.apache.cayenne.jpa.map.JpaSqlResultSetMapping;
 import org.apache.cayenne.jpa.map.JpaTable;
 import org.apache.cayenne.jpa.map.JpaVersion;
 import org.apache.cayenne.map.DataMap;
@@ -72,6 +76,8 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.query.EntityResult;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.util.BaseTreeVisitor;
 import org.apache.cayenne.util.HierarchicalTreeVisitor;
 import org.apache.cayenne.util.TraversalUtil;
@@ -163,6 +169,9 @@ public class DataMapConverter {
         visitor.addChildVisitor(JpaEmbeddable.class, new JpaEmbeddableVisitor());
         visitor.addChildVisitor(JpaNamedQuery.class, new JpaNamedQueryVisitor());
         visitor.addChildVisitor(JpaPersistenceUnitMetadata.class, metadataVisitor);
+        visitor.addChildVisitor(
+                JpaSqlResultSetMapping.class,
+                new JpaSQLResultSetMappingVisitor());
         return visitor;
     }
 
@@ -637,6 +646,36 @@ public class DataMapConverter {
         }
     }
 
+    class JpaSQLResultSetMappingVisitor extends BaseTreeVisitor {
+
+        @Override
+        public boolean onStartNode(ProjectPath path) {
+            JpaSqlResultSetMapping jpaMapping = (JpaSqlResultSetMapping) path.getObject();
+
+            SQLResultSetMapping mapping = new SQLResultSetMapping(jpaMapping.getName());
+
+            for (JpaColumnResult c : jpaMapping.getColumnResults()) {
+                mapping.addColumnResult(c.getName());
+            }
+
+            for (JpaEntityResult e : jpaMapping.getEntityResults()) {
+
+                EntityResult result = new EntityResult(e.getEntityClassName());
+                for (JpaFieldResult f : e.getFieldResults()) {
+                    result.addObjectField(f.getName(), f.getColumn());
+                }
+
+                // TODO: andrus 2/23/2008 - discriminator column...
+            }
+
+            // my understanding of JPA SQLResultSetMapping is that regardless of whether
+            // it belongs to entity or to the entire persistence unit, the scope is still
+            // persistence unit??
+            targetPath.firstInstanceOf(DataMap.class).addResultSetMapping(mapping);
+            return false;
+        }
+    }
+
     class JpaEntityVisitor extends NestedVisitor {
 
         JpaEntityVisitor() {
@@ -680,6 +719,9 @@ public class DataMapConverter {
             addChildVisitor(JpaSecondaryTable.class, new JpaSecondaryTableVisitor());
             addChildVisitor(JpaNamedQuery.class, new JpaNamedQueryVisitor());
             addChildVisitor(JpaEntityListeners.class, listenersVisitor);
+            addChildVisitor(
+                    JpaSqlResultSetMapping.class,
+                    new JpaSQLResultSetMappingVisitor());
         }
 
         @Override
