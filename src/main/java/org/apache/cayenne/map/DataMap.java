@@ -42,6 +42,7 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -76,7 +77,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
 
     /**
      * Defines the name of the property for default client Java superclass.
-     *
+     * 
      * @since 3.0
      */
     public static final String DEFAULT_CLIENT_SUPERCLASS_PROPERTY = "defaultClientSuperclass";
@@ -127,6 +128,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     private SortedMap<String, DbEntity> dbEntityMap;
     private SortedMap<String, Procedure> procedureMap;
     private SortedMap<String, Query> queryMap;
+    private SortedMap<String, SQLResultSetMapping> resultSetMappings;
 
     private List<EntityListener> defaultEntityListeners;
 
@@ -151,6 +153,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         procedureMap = new TreeMap<String, Procedure>();
         queryMap = new TreeMap<String, Query>();
         defaultEntityListeners = new ArrayList<EntityListener>(3);
+        resultSetMappings = new TreeMap<String, SQLResultSetMapping>();
 
         setName(mapName);
         initWithProperties(properties);
@@ -187,7 +190,8 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
                 .equalsIgnoreCase(clientEntities.toString()) : false;
         this.defaultClientPackage = (clientPackageName != null) ? clientPackageName
                 .toString() : null;
-        this.defaultClientSuperclass = (clientSuperclass != null) ? clientSuperclass.toString() : null;
+        this.defaultClientSuperclass = (clientSuperclass != null) ? clientSuperclass
+                .toString() : null;
     }
 
     /**
@@ -276,7 +280,9 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         }
 
         if (!Util.isEmptyString(defaultClientSuperclass)) {
-            encoder.printProperty(DEFAULT_CLIENT_SUPERCLASS_PROPERTY, defaultClientSuperclass);
+            encoder.printProperty(
+                    DEFAULT_CLIENT_SUPERCLASS_PROPERTY,
+                    defaultClientSuperclass);
         }
 
         // embeddables
@@ -306,7 +312,9 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     // stores relationships for the map of entities
-    private final void encodeDBRelationshipsAsXML(Map<String, DbEntity> entityMap, XMLEncoder encoder) {
+    private final void encodeDBRelationshipsAsXML(
+            Map<String, DbEntity> entityMap,
+            XMLEncoder encoder) {
         for (Entity entity : entityMap.values()) {
             for (Relationship relationship : entity.getRelationships()) {
                 // filter out synthetic
@@ -318,7 +326,9 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     // stores relationships for the map of entities
-    private final void encodeOBJRelationshipsAsXML(Map<String, ObjEntity> entityMap, XMLEncoder encoder) {
+    private final void encodeOBJRelationshipsAsXML(
+            Map<String, ObjEntity> entityMap,
+            XMLEncoder encoder) {
         for (ObjEntity entity : entityMap.values()) {
             for (Relationship relationship : entity.getDeclaredRelationships()) {
                 // filter out synthetic
@@ -468,6 +478,13 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     /**
+     * @since 3.0
+     */
+    public void clearResultSetMappings() {
+        resultSetMappings.clear();
+    }
+
+    /**
      * @since 1.1
      */
     public void clearQueries() {
@@ -543,6 +560,34 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     /**
+     * @since 3.0
+     */
+    public void addResultSetMapping(SQLResultSetMapping resultSetMapping) {
+        if (resultSetMapping == null) {
+            throw new NullPointerException("Null resultSetMapping");
+        }
+
+        if (resultSetMapping.getName() == null) {
+            throw new NullPointerException(
+                    "Attempt to add resultSetMapping with no name.");
+        }
+
+        Object existing = resultSetMappings.get(resultSetMapping.getName());
+        if (existing != null) {
+            if (existing == resultSetMapping) {
+                return;
+            }
+            else {
+                throw new IllegalArgumentException(
+                        "An attempt to override resultSetMapping '"
+                                + resultSetMapping.getName());
+            }
+        }
+
+        resultSetMappings.put(resultSetMapping.getName(), resultSetMapping);
+    }
+
+    /**
      * Adds a new ObjEntity to this DataMap.
      */
     public void addObjEntity(ObjEntity entity) {
@@ -614,6 +659,20 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     public Collection<Embeddable> getEmbeddables() {
         return Collections.unmodifiableCollection(embeddablesMap.values());
     }
+    
+    /**
+     * @since 3.0
+     */
+    public Map<String, SQLResultSetMapping> getResultSetMappingsMap() {
+        return Collections.unmodifiableMap(resultSetMappings);
+    }
+    
+    /**
+     * @since 3.0
+     */
+    public Collection<SQLResultSetMapping> getResultSetMappings() {
+        return Collections.unmodifiableCollection(resultSetMappings.values());
+    }
 
     /**
      * @since 3.0
@@ -625,6 +684,18 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         }
 
         return namespace != null ? namespace.getEmbeddable(className) : null;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public SQLResultSetMapping getResultSetMapping(String name) {
+        SQLResultSetMapping rsMapping = resultSetMappings.get(name);
+        if (rsMapping != null) {
+            return rsMapping;
+        }
+
+        return namespace != null ? namespace.getResultSetMapping(name) : null;
     }
 
     /**
@@ -646,7 +717,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      *             registered.
      */
     public void addDefaultEntityListener(EntityListener listener) {
-         for (EntityListener next : defaultEntityListeners) {
+        for (EntityListener next : defaultEntityListeners) {
             if (listener.getClassName().equals(next.getClassName())) {
                 throw new IllegalArgumentException("Duplicate default listener for "
                         + next.getClassName());
@@ -772,6 +843,13 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         // TODO: andrus, 1/25/2007 - clean up references like removeDbEntity does.
         embeddablesMap.remove(className);
     }
+    
+    /**
+     * @since 3.0
+     */
+    public void removeResultSetMapping(String name) {
+        resultSetMappings.remove(name);
+    }
 
     /**
      * "Dirty" remove of the DbEntity from the data map.
@@ -793,7 +871,8 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         if (dbEntityToDelete != null && clearDependencies) {
             for (DbEntity dbEnt : this.getDbEntities()) {
                 // take a copy since we're going to modify the entity
-                for (Relationship rel : new ArrayList<Relationship>(dbEnt.getRelationships())) {
+                for (Relationship rel : new ArrayList<Relationship>(dbEnt
+                        .getRelationships())) {
                     if (dbEntityName.equals(rel.getTargetEntityName())) {
                         dbEnt.removeRelationship(rel.getName());
                     }
@@ -807,9 +886,10 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
                 }
                 else {
                     for (Relationship rel : objEnt.getRelationships()) {
-                        for (DbRelationship dbRel : ((ObjRelationship)rel).getDbRelationships()) {
+                        for (DbRelationship dbRel : ((ObjRelationship) rel)
+                                .getDbRelationships()) {
                             if (dbRel.getTargetEntity() == dbEntityToDelete) {
-                                ((ObjRelationship)rel).clearDbRelationships();
+                                ((ObjRelationship) rel).clearDbRelationships();
                                 break;
                             }
                         }
@@ -840,7 +920,8 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
             // remove relationships that point to this entity
             for (ObjEntity ent : getObjEntities()) {
                 // take a copy since we're going to modify the entity
-                for (Relationship relationship : new ArrayList<Relationship>(ent.getRelationships())) {
+                for (Relationship relationship : new ArrayList<Relationship>(ent
+                        .getRelationships())) {
                     if (objEntityName.equals(relationship.getTargetEntityName())
                             || objEntityName.equals(relationship.getTargetEntityName())) {
                         ent.removeRelationship(relationship.getName());
@@ -973,7 +1054,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
 
     /**
      * Returns default client superclass.
-     *
+     * 
      * @since 3.0
      */
     public String getDefaultClientSuperclass() {

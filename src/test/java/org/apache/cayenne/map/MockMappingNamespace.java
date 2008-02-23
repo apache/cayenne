@@ -28,20 +28,26 @@ import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SQLResultSetMapping;
 
 /**
  * @author Andrus Adamchik
  */
 public class MockMappingNamespace implements MappingNamespace {
-    private Map dbEntities = new HashMap();
-    private Map objEntities = new HashMap();
-    private Map queries = new HashMap();
-    private Map procedures = new HashMap();
-    
+
+    private Map<String, DbEntity> dbEntities = new HashMap<String, DbEntity>();
+    private Map<String, ObjEntity> objEntities = new HashMap<String, ObjEntity>();
+    private Map<String, Query> queries = new HashMap<String, Query>();
+    private Map<String, Procedure> procedures = new HashMap<String, Procedure>();
+
     public Embeddable getEmbeddable(String className) {
         return null;
     }
-    
+
+    public SQLResultSetMapping getResultSetMapping(String name) {
+        return null;
+    }
+
     public EntityListener getEntityListener(String className) {
         return null;
     }
@@ -63,34 +69,34 @@ public class MockMappingNamespace implements MappingNamespace {
     }
 
     public DbEntity getDbEntity(String name) {
-        return (DbEntity) dbEntities.get(name);
+        return dbEntities.get(name);
     }
 
     public ObjEntity getObjEntity(String name) {
-        return (ObjEntity) objEntities.get(name);
+        return objEntities.get(name);
     }
 
     public Procedure getProcedure(String name) {
-        return (Procedure) procedures.get(name);
+        return procedures.get(name);
     }
 
     public Query getQuery(String name) {
-        return (Query) queries.get(name);
+        return queries.get(name);
     }
 
-    public Collection getDbEntities() {
+    public Collection<DbEntity> getDbEntities() {
         return dbEntities.values();
     }
 
-    public Collection getObjEntities() {
+    public Collection<ObjEntity> getObjEntities() {
         return objEntities.values();
     }
 
-    public Collection getProcedures() {
+    public Collection<Procedure> getProcedures() {
         return procedures.values();
     }
 
-    public Collection getQueries() {
+    public Collection<Query> getQueries() {
         return queries.values();
     }
 }
