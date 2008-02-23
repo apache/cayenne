@@ -30,6 +30,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
@@ -66,6 +67,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     protected transient Map<String, Query> queryCache;
     protected transient Map<String, Embeddable> embeddableCache;
+    protected transient Map<String, SQLResultSetMapping> resultSetMappingCache;
     protected transient Map<String, DbEntity> dbEntityCache;
     protected transient Map<String, ObjEntity> objEntityCache;
     protected transient Map<String, Procedure> procedureCache;
@@ -93,6 +95,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
         this.objEntityCache = new HashMap<String, ObjEntity>();
         this.procedureCache = new HashMap<String, Procedure>();
         this.entityInheritanceCache = new HashMap<String, EntityInheritanceTree>();
+        this.resultSetMappingCache = new HashMap<String, SQLResultSetMapping>();
     }
 
     /**
@@ -384,6 +387,18 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
         return c;
     }
+    
+    /**
+     * @since 3.0
+     */
+    public Collection<SQLResultSetMapping> getResultSetMappings() {
+        CompositeCollection c = new CompositeCollection();
+        for (DataMap map : getDataMaps()) {
+            c.addComposited(map.getResultSetMappings());
+        }
+        
+        return c;
+    }
 
     public Collection<Procedure> getProcedures() {
         CompositeCollection c = new CompositeCollection();
@@ -434,6 +449,22 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
         return result;
     }
+    
+    /**
+     * @since 3.0
+     */
+    public SQLResultSetMapping getResultSetMapping(String name) {
+        SQLResultSetMapping result = resultSetMappingCache.get(name);
+
+        if (result == null) {
+            // reconstruct cache just in case some of the datamaps
+            // have changed and now contain the required information
+            constructCache();
+            result = resultSetMappingCache.get(name);
+        }
+
+        return result;
+    }
 
     /**
      * Returns ClassDescriptor for the ObjEntity matching the name. Returns null if no
@@ -468,6 +499,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
         objEntityCache.clear();
         procedureCache.clear();
         entityInheritanceCache.clear();
+        resultSetMappingCache.clear();
+        embeddableCache.clear();
         clientEntityResolver = null;
     }
 
@@ -480,7 +513,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
         // rebuild index
 
-        // index DbEntities separatly and before ObjEntities to avoid infinite loops when
+        // index DbEntities separately and before ObjEntities to avoid infinite loops when
         // looking up DbEntities during ObjEntity index op
 
         for (DataMap map : maps) {
