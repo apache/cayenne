@@ -21,7 +21,8 @@ CAY-980 Upgrade Derby to 10.3 to support alter table drop column
 
 Bug fixes since M3:
 
-CAY-574: DataObjectUtils 'objectForPK' should work on the client
+CAY-574 DataObjectUtils 'objectForPK' should work on the client
+CAY-982 Client class and superclass names not auto-populated for new ObjEntity.
 CAY-983 POST_LOAD called twice
 CAY-984 Runtime relationships leak into CayenneModeler
 CAY-986 LOCAL_CACHE policy fails when query is paged

@@ -92,6 +92,19 @@ public class CreateObjEntityAction extends CayenneAction {
             entity.setClassName(pkg + entity.getName());
         }
 
+        if (dataMap.isClientSupported()) {
+            String clientPkg = dataMap.getDefaultPackage();
+            if (clientPkg != null) {
+                if (!clientPkg.endsWith(".")) {
+                    clientPkg = clientPkg + ".";
+                }
+
+                entity.setClientClassName(clientPkg + entity.getName());
+            }
+
+            entity.setClientSuperClassName(dataMap.getDefaultClientSuperclass());
+        }
+
         dataMap.addObjEntity(entity);
 
         // perform the merge
