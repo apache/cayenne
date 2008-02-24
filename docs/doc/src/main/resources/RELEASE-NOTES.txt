@@ -27,6 +27,7 @@ CAY-982 Client class and superclass names not auto-populated for new ObjEntity.
 CAY-983 POST_LOAD called twice
 CAY-984 Runtime relationships leak into CayenneModeler
 CAY-986 LOCAL_CACHE policy fails when query is paged
+CAY-989 Garbage SQL generated for EJBQL subqueries
 
 ----------------------------------
 Release: 3.0M3
