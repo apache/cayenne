@@ -31,18 +31,6 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
 
-    static String makeDistinctMarker() {
-        return "DISTINCT_MARKER";
-    }
-
-    static String makeWhereMarker() {
-        return "WHERE_MARKER";
-    }
-
-    static String makeEntityQualifierMarker() {
-        return "ENTITY_QUALIIER";
-    }
-
     EJBQLSelectTranslator(EJBQLTranslationContext context) {
         this.context = context;
     }
@@ -55,7 +43,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     public boolean visitDistinct(EJBQLExpression expression) {
         // "distinct" is appended via a marker as sometimes a later match on to-many would
         // require a DISTINCT insertion.
-        context.pushMarker(makeDistinctMarker(), true);
+        context.pushMarker(context.makeDistinctMarker(), true);
         context.append(" DISTINCT");
         context.popMarker();
         return true;
@@ -66,8 +54,8 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         context.append(" FROM");
         context.setAppendingResultColumns(false);
         expression.visit(context.getTranslatorFactory().getFromTranslator(context));
-        context.markCurrentPosition(makeWhereMarker());
-        context.markCurrentPosition(makeEntityQualifierMarker());
+        context.markCurrentPosition(context.makeWhereMarker());
+        context.markCurrentPosition(context.makeEntityQualifierMarker());
         return false;
     }
 
@@ -103,7 +91,7 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitSelectClause(EJBQLExpression expression) {
         context.append("SELECT");
-        context.markCurrentPosition(makeDistinctMarker());
+        context.markCurrentPosition(context.makeDistinctMarker());
         return true;
     }
 
@@ -118,11 +106,11 @@ class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     public boolean visitWhere(EJBQLExpression expression) {
         // "WHERE" is appended via a marker as it may have been already appended when an
         // entity inheritance qualifier was applied.
-        context.pushMarker(makeWhereMarker(), true);
+        context.pushMarker(context.makeWhereMarker(), true);
         context.append(" WHERE");
         context.popMarker();
 
-        if (context.findOrCreateMarkedBuffer(makeEntityQualifierMarker()).length() > 0) {
+        if (context.findOrCreateMarkedBuffer(context.makeEntityQualifierMarker()).length() > 0) {
             context.append(" AND");
         }
 

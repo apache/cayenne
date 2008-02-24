@@ -184,13 +184,11 @@ public class EJBQLJoinAppender {
                         qualifier,
                         id.getEntityId());
 
-                context.pushMarker(EJBQLSelectTranslator.makeWhereMarker(), true);
+                context.pushMarker(context.makeWhereMarker(), true);
                 context.append(" WHERE");
                 context.popMarker();
 
-                context.pushMarker(
-                        EJBQLSelectTranslator.makeEntityQualifierMarker(),
-                        false);
+                context.pushMarker(context.makeEntityQualifierMarker(), false);
 
                 ejbqlQualifier.visit(context
                         .getTranslatorFactory()
