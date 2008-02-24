@@ -56,6 +56,7 @@ public class EJBQLTranslationContext {
     private List<StringBuilder> bufferStack;
     private List<StringBuilder> bufferChain;
     private StringBuilder stackTop;
+    private int subselectCount;
 
     // a flag indicating whether column expressions should be treated as result columns or
     // not.
@@ -416,5 +417,21 @@ public class EJBQLTranslationContext {
 
     public void setUsingAliases(boolean useAliases) {
         this.usingAliases = useAliases;
+    }
+
+    void onSubselect() {
+        subselectCount++;
+    }
+
+    String makeDistinctMarker() {
+        return "DISTINCT_MARKER" + subselectCount;
+    }
+
+    String makeWhereMarker() {
+        return "WHERE_MARKER" + subselectCount;
+    }
+
+    String makeEntityQualifierMarker() {
+        return "ENTITY_QUALIIER" + subselectCount;
     }
 }

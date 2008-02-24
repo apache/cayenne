@@ -108,7 +108,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         // on the target entity)...
 
         if (expression.isNegated()) {
-            context.pushMarker(EJBQLSelectTranslator.makeDistinctMarker(), true);
+            context.pushMarker(context.makeDistinctMarker(), true);
             context.append(" DISTINCT");
             context.popMarker();
         }
@@ -622,6 +622,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitSubselect(EJBQLExpression expression) {
+        context.onSubselect();
         context.append(" (");
         expression.visit(new EJBQLSelectTranslator(context));
         context.append(')');

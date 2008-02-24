@@ -36,6 +36,32 @@ public class DataContextEJBQLSubqueryTest extends CayenneCase {
         deleteTestData();
     }
 
+    public void testSubqueryNoQualifier() throws Exception {
+        if (!getAccessStackAdapter().supportsAllAnySome()) {
+            return;
+        }
+
+        createTestData("prepare");
+
+        String ejbql = "SELECT DISTINCT p FROM Painting p"
+                + " WHERE p.estimatedPrice = ALL ("
+                + " SELECT MAX(p1.estimatedPrice) FROM Painting p1"
+                + ")";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List objects = createDataContext().performQuery(query);
+        assertEquals(1, objects.size());
+
+        Set ids = new HashSet();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+            ids.add(id);
+        }
+
+        assertTrue(ids.contains(new Integer(33004)));
+    }
+
     public void testDifferentEntity() throws Exception {
         createTestData("prepare");
 
