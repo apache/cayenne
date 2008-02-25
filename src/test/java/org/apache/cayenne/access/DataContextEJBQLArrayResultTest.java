@@ -63,7 +63,7 @@ public class DataContextEJBQLArrayResultTest extends CayenneCase {
         assertEquals(2, array1.length);
 
         assertEquals(new Long(2), array1[0]);
-        assertTrue(0 == new BigDecimal(8000).compareTo((BigDecimal) array1[1]));
+        assertEquals(0, new BigDecimal(8000).compareTo((BigDecimal) array1[1]));
     }
 
     public void testSQLResultSetMappingMixed() throws Exception {
@@ -85,6 +85,6 @@ public class DataContextEJBQLArrayResultTest extends CayenneCase {
 
         assertEquals(new Long(1), array1[0]);
         assertTrue("Expected Artist, got: " + array1[1], array1[1] instanceof Artist);
-        assertTrue(0 == new BigDecimal(3000).compareTo((BigDecimal) array1[2]));
+        assertEquals(0, new BigDecimal(3000).compareTo((BigDecimal) array1[2]));
     }
 }
