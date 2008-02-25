@@ -19,7 +19,9 @@
 package org.apache.cayenne.ejbql;
 
 import org.apache.cayenne.ejbql.parser.EJBQLAggregateColumn;
+import org.apache.cayenne.ejbql.parser.EJBQLDecimalLiteral;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
+import org.apache.cayenne.ejbql.parser.EJBQLIntegerLiteral;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 
@@ -97,7 +99,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitCurrentTimestamp(EJBQLExpression expression);
 
-    boolean visitDecimalLiteral(EJBQLExpression expression);
+    boolean visitDecimalLiteral(EJBQLDecimalLiteral expression);
 
     boolean visitDelete(EJBQLExpression expression);
 
@@ -169,7 +171,7 @@ public interface EJBQLExpressionVisitor {
 
     boolean visitInnerJoin(EJBQLJoin join);
 
-    boolean visitIntegerLiteral(EJBQLExpression expression);
+    boolean visitIntegerLiteral(EJBQLIntegerLiteral expression);
 
     boolean visitIsEmpty(EJBQLExpression expression);
 

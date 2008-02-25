@@ -30,8 +30,10 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.parser.EJBQLDecimalLiteral;
 import org.apache.cayenne.ejbql.parser.EJBQLEquals;
 import org.apache.cayenne.ejbql.parser.EJBQLIdentificationVariable;
+import org.apache.cayenne.ejbql.parser.EJBQLIntegerLiteral;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 import org.apache.cayenne.ejbql.parser.EJBQLSubselect;
@@ -528,15 +530,27 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     }
 
     @Override
-    public boolean visitIntegerLiteral(EJBQLExpression expression) {
+    public boolean visitIntegerLiteral(EJBQLIntegerLiteral expression) {
         if (expression.getText() == null) {
             context.append("null");
         }
         else {
+
+            String text = expression.getText();
+
+            if (expression.isNegative() && text != null) {
+                if (text.startsWith("-")) {
+                    text = text.substring(1);
+                }
+                else {
+                    text = "-" + text;
+                }
+            }
+
             Object value;
 
             try {
-                value = new Integer(expression.getText());
+                value = new Integer(text);
             }
             catch (NumberFormatException nfex) {
                 throw new EJBQLException("Invalid integer: " + expression.getText());
@@ -549,15 +563,27 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     }
 
     @Override
-    public boolean visitDecimalLiteral(EJBQLExpression expression) {
+    public boolean visitDecimalLiteral(EJBQLDecimalLiteral expression) {
         if (expression.getText() == null) {
             context.append("null");
         }
         else {
+
+            String text = expression.getText();
+
+            if (expression.isNegative() && text != null) {
+                if (text.startsWith("-")) {
+                    text = text.substring(1);
+                }
+                else {
+                    text = "-" + text;
+                }
+            }
+
             Object value;
 
             try {
-                value = new BigDecimal(expression.getText());
+                value = new BigDecimal(text);
             }
             catch (NumberFormatException nfex) {
                 throw new EJBQLException("Invalid decimal: " + expression.getText());
@@ -668,6 +694,80 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             // expression to provide a meaningful type.
             context.append(" #bind($").append(boundName).append(" 'VARCHAR')");
         }
+    }
+
+    @Override
+    public boolean visitAdd(EJBQLExpression expression, int finishedChildIndex) {
+
+        switch (finishedChildIndex) {
+            case -1:
+                context.append(" (");
+                break;
+            case 0:
+                context.append(" +");
+                break;
+
+            case 1:
+                context.append(")");
+                break;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean visitSubtract(EJBQLExpression expression, int finishedChildIndex) {
+
+        switch (finishedChildIndex) {
+            case -1:
+                context.append(" (");
+                break;
+            case 0:
+                context.append(" -");
+                break;
+
+            case 1:
+                context.append(")");
+                break;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean visitMultiply(EJBQLExpression expression, int finishedChildIndex) {
+        switch (finishedChildIndex) {
+            case -1:
+                context.append(" (");
+                break;
+            case 0:
+                context.append(" *");
+                break;
+
+            case 1:
+                context.append(")");
+                break;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean visitDivide(EJBQLExpression expression, int finishedChildIndex) {
+        switch (finishedChildIndex) {
+            case -1:
+                context.append(" (");
+                break;
+            case 0:
+                context.append(" /");
+                break;
+
+            case 1:
+                context.append(")");
+                break;
+        }
+
+        return true;
     }
 
     @Override

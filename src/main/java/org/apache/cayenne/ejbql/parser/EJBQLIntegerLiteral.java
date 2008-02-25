@@ -34,4 +34,8 @@ public class EJBQLIntegerLiteral extends SimpleNode {
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitIntegerLiteral(this);
     }
+    
+    public boolean isNegative() {
+        return getChildrenCount() == 1 && getChild(0) instanceof EJBQLNegative;
+    }
 }
