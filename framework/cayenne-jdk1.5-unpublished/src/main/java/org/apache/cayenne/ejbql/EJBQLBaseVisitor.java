@@ -19,7 +19,9 @@
 package org.apache.cayenne.ejbql;
 
 import org.apache.cayenne.ejbql.parser.EJBQLAggregateColumn;
+import org.apache.cayenne.ejbql.parser.EJBQLDecimalLiteral;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
+import org.apache.cayenne.ejbql.parser.EJBQLIntegerLiteral;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 
@@ -122,7 +124,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitDecimalLiteral(EJBQLExpression expression) {
+    public boolean visitDecimalLiteral(EJBQLDecimalLiteral expression) {
         return continueFlag;
     }
 
@@ -202,7 +204,7 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
-    public boolean visitIntegerLiteral(EJBQLExpression expression) {
+    public boolean visitIntegerLiteral(EJBQLIntegerLiteral expression) {
         return continueFlag;
     }
 

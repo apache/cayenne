@@ -34,4 +34,8 @@ public class EJBQLDecimalLiteral extends SimpleNode {
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitDecimalLiteral(this);
     }
+    
+    public boolean isNegative() {
+        return getChildrenCount() == 1 && getChild(0) instanceof EJBQLNegative;
+    }
 }

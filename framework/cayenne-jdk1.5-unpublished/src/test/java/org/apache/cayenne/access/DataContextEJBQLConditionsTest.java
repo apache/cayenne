@@ -37,6 +37,31 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         deleteTestData();
     }
 
+    public void testArithmetics() throws Exception {
+        createTestData("prepareLike");
+
+        // TODO: andrus 02/25/2008 - fails on HSQLDB / succeeds on MySQL. HSQLDB error is
+        // "Unresolved parameter type : as both operands of aritmetic operator in
+        
+        // statement"
+        // String ejbql = "SELECT p FROM Painting p WHERE p.estimatedPrice < (1 + - 4.0 *
+        // - 1000.0)";
+        //
+        // EJBQLQuery query = new EJBQLQuery(ejbql);
+        // List<?> objects = createDataContext().performQuery(query);
+        // assertEquals(2, objects.size());
+        //
+        // Set<Object> ids = new HashSet<Object>();
+        // Iterator<?> it = objects.iterator();
+        // while (it.hasNext()) {
+        // Object id = DataObjectUtils.pkForObject((Persistent) it.next());
+        // ids.add(id);
+        // }
+        //
+        // assertTrue(ids.contains(new Integer(33001)));
+        // assertTrue(ids.contains(new Integer(33002)));
+    }
+
     public void testLike1() throws Exception {
         createTestData("prepareLike");
 
@@ -259,7 +284,7 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
 
         assertTrue(ids.contains(33001l));
     }
-    
+
     public void testCollectionNotMemberOfParameter() throws Exception {
         createTestData("prepareCollection");
 
@@ -281,7 +306,7 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
             Object id = DataObjectUtils.pkForObject((Persistent) it.next());
             ids.add(id);
         }
-        
+
         assertTrue(ids.contains(33002l));
         assertTrue(ids.contains(33003l));
     }
