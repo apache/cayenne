@@ -18,14 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.remote;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.map.LifecycleEvent;
+import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
@@ -74,9 +80,76 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
 
         assertTrue(ids[0] instanceof ObjectId);
         assertTrue(((ObjectId) ids[0]).isTemporary());
-        
+
         assertTrue(ids[1] instanceof ObjectId);
         assertFalse(((ObjectId) ids[1]).isTemporary());
+    }
+
+    public void testReturnDiffInPrePersist() {
+
+        final List<GenericDiff> diffs = new ArrayList<GenericDiff>();
+        final GraphChangeHandler diffReader = new NoopGraphChangeHandler() {
+
+            @Override
+            public void nodePropertyChanged(
+                    Object nodeId,
+                    String property,
+                    Object oldValue,
+                    Object newValue) {
+                diffs
+                        .add(new GenericDiff(
+                                (ObjectId) nodeId,
+                                property,
+                                oldValue,
+                                newValue));
+            }
+        };
+
+        LifecycleCallbackRegistry registry = getDomain()
+                .getEntityResolver()
+                .getCallbackRegistry();
+
+        try {
+
+            registry.addListener(
+                    LifecycleEvent.PRE_PERSIST,
+                    MtTable1.class,
+                    new ClientChannelServerDiffsListener1(),
+                    "prePersist");
+
+            ClientServerChannel csChannel = new ClientServerChannel(getDomain());
+            ClientChannel channel = new ClientChannel(new LocalConnection(csChannel)) {
+
+                @Override
+                public GraphDiff onSync(
+                        ObjectContext originatingContext,
+                        GraphDiff changes,
+                        int syncType) {
+
+                    GraphDiff serverDiff = super.onSync(
+                            originatingContext,
+                            changes,
+                            syncType);
+
+                    assertNotNull(serverDiff);
+                    serverDiff.apply(diffReader);
+                    return serverDiff;
+                }
+            };
+
+            CayenneContext context = new CayenneContext(channel);
+            ClientMtTable1 o = context.newObject(ClientMtTable1.class);
+            context.commitChanges();
+
+//            assertEquals(1, diffs.size());
+//            assertEquals(o.getObjectId(), diffs.get(0).sourceId);
+//            assertEquals(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, diffs.get(0).property);
+//            assertNull(diffs.get(0).oldValue);
+//            assertEquals("XXX", diffs.get(0).newValue);
+        }
+        finally {
+            registry.clear();
+        }
     }
 
     class NoopGraphChangeHandler implements GraphChangeHandler {
@@ -102,6 +175,29 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
 
         public void nodeRemoved(Object nodeId) {
         }
+    }
 
+    class GenericDiff {
+
+        private String property;
+        private Object oldValue;
+        private Object newValue;
+        private ObjectId sourceId;
+        private ObjectId targetId;
+
+        GenericDiff(ObjectId sourceId, String property, Object oldValue, Object newValue) {
+
+            this(sourceId, null, property, oldValue, newValue);
+        }
+
+        GenericDiff(ObjectId sourceId, ObjectId targetId, String property,
+                Object oldValue, Object newValue) {
+
+            this.sourceId = sourceId;
+            this.targetId = targetId;
+            this.property = property;
+            this.oldValue = oldValue;
+            this.newValue = newValue;
+        }
     }
 }
