@@ -656,7 +656,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * @see DataRow
      */
     public List objectsFromDataRows(
-            Class objectClass,
+            Class<?> objectClass,
             List<? extends DataRow> dataRows,
             boolean refresh,
             boolean resolveInheritanceHierarchy) {
@@ -676,10 +676,10 @@ public class DataContext extends BaseContext implements DataChannel {
      * @see DataRow
      */
     public DataObject objectFromDataRow(
-            Class objectClass,
+            Class<?> objectClass,
             DataRow dataRow,
             boolean refresh) {
-        List list = objectsFromDataRows(
+        List<?> list = objectsFromDataRows(
                 objectClass,
                 Collections.singletonList(dataRow),
                 refresh,
@@ -701,7 +701,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
         ObjEntity entity = getEntityResolver().getObjEntity(entityName);
 
-        List list = objectsFromDataRows(
+        List<?> list = objectsFromDataRows(
                 entity,
                 Collections.singletonList(dataRow),
                 refresh,
