@@ -72,6 +72,7 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
+import org.apache.cayenne.util.ObjectContextGraphAction;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -105,7 +106,7 @@ public class DataContext extends BaseContext implements DataChannel {
 
     protected transient DataContextMergeHandler mergeHandler;
 
-    DataContextGraphAction graphAction;
+    ObjectContextGraphAction graphAction;
 
     /**
      * Stores user defined properties associated with this DataContext.

@@ -44,7 +44,7 @@ public abstract class ObjectContextGraphAction implements Serializable {
     }
 
     /**
-     * Handles property change in a Peristent object, routing to either
+     * Handles property change in a Persistent object, routing to either
      * {@link #handleArcPropertyChange(Persistent, ArcProperty, Object, Object)} or
      * {@link #handleSimplePropertyChange(Persistent, String, Object, Object)}.
      */
