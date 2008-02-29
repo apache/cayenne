@@ -75,26 +75,10 @@ import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.Util;
 
 /**
- * Class that provides applications with access to Cayenne persistence features. In most
- * cases this is the only access class directly used in the application.
- * <p>
- * Most common DataContext use pattern is to create one DataContext per session. "Session"
- * may be a an HttpSession in a web application, or any other similar concept in a
- * multiuser application.
- * </p>
- * <p>
- * DataObjects are registered with DataContext either implicitly when they are fetched via
- * a query, or read via a relationship from another object, or explicitly via calling
- * {@link #newObject(Class)}during new DataObject creation. DataContext tracks changes
- * made to its DataObjects in memory, and flushes them to the database when
- * {@link #commitChanges()}is called. Until DataContext is committed, changes made to its
- * objects are not visible in other DataContexts.
- * </p>
- * <p>
- * Each DataObject can belong only to a single DataContext. To create a replica of an
- * object from a different DataContext in a local context, use
- * {@link #localObject(ObjectId, Object)} method.
- * </p>
+ * The most common implementation of {@link ObjectContext}. DataContext is an isolated
+ * container of an object graph, in a sense that any uncommitted changes to persistent
+ * objects that are registered with the context, are not visible to the users of other
+ * contexts.
  * 
  * @author Andrus Adamchik
  */
@@ -259,9 +243,8 @@ public class DataContext extends BaseContext implements DataChannel {
      */
     public synchronized QueryCache getQueryCache() {
         if (queryCache == null) {
-            queryCache = getParentDataDomain()
-                    .getQueryCacheFactory()
-                    .getQueryCache(Collections.EMPTY_MAP);
+            queryCache = getParentDataDomain().getQueryCacheFactory().getQueryCache(
+                    Collections.EMPTY_MAP);
         }
 
         return queryCache;
@@ -679,11 +662,8 @@ public class DataContext extends BaseContext implements DataChannel {
             Class<?> objectClass,
             DataRow dataRow,
             boolean refresh) {
-        List<?> list = objectsFromDataRows(
-                objectClass,
-                Collections.singletonList(dataRow),
-                refresh,
-                true);
+        List<?> list = objectsFromDataRows(objectClass, Collections
+                .singletonList(dataRow), refresh, true);
         return (DataObject) list.get(0);
     }
 
@@ -863,8 +843,9 @@ public class DataContext extends BaseContext implements DataChannel {
                 if (!property.isFault(persistent)) {
 
                     Object value = property.readProperty(persistent);
-                    Collection<Map.Entry> collection = (value instanceof Map) ? ((Map) value)
-                            .entrySet() : (Collection) value;
+                    Collection<Map.Entry> collection = (value instanceof Map)
+                            ? ((Map) value).entrySet()
+                            : (Collection) value;
 
                     Iterator<Map.Entry> it = collection.iterator();
                     while (it.hasNext()) {
@@ -1058,7 +1039,10 @@ public class DataContext extends BaseContext implements DataChannel {
         }
         else {
             if (channel != null) {
-                channel.onSync(this, new CompoundDiff(), DataChannel.ROLLBACK_CASCADE_SYNC);
+                channel.onSync(
+                        this,
+                        new CompoundDiff(),
+                        DataChannel.ROLLBACK_CASCADE_SYNC);
             }
         }
 
