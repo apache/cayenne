@@ -139,6 +139,7 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
 
             CayenneContext context = new CayenneContext(channel);
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
+            o.setServerAttribute1("YY");
             context.commitChanges();
 
 //            assertEquals(1, diffs.size());
