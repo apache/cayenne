@@ -68,7 +68,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitInnerFetchJoin(EJBQLJoin join) {
         // TODO: andrus, 4/9/2007 - support for prefetching
-        return visitInnerJoin(join);
+        throw new UnsupportedOperationException("Fetch joins are not yet supported");
     }
 
     @Override
@@ -83,7 +83,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitOuterFetchJoin(EJBQLJoin join) {
         // TODO: andrus, 4/9/2007 - support for prefetching
-        return visitOuterJoin(join);
+        throw new UnsupportedOperationException("Fetch joins are not yet supported");
     }
 
     @Override
