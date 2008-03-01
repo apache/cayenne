@@ -19,10 +19,19 @@
 package org.apache.cayenne.remote;
 
 import org.apache.cayenne.testdo.mt.MtTable1;
+import org.apache.cayenne.testdo.mt.MtTable2;
 
 public class ClientChannelServerDiffsListener1 {
 
     public void prePersist(MtTable1 object) {
         object.setGlobalAttribute1("XXX");
+    }
+    
+    public void preUpdate(MtTable1 object) {
+        object.setGlobalAttribute1("111");
+    }
+    
+    public void prePersistAddRelationship(MtTable1 object) {
+        object.addToTable2Array(object.getObjectContext().newObject(MtTable2.class));
     }
 }
