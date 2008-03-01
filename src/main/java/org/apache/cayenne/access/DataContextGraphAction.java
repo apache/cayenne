@@ -38,24 +38,6 @@ class DataContextGraphAction extends ObjectContextGraphAction {
     }
 
     @Override
-    protected void handleSimplePropertyChange(
-            Persistent object,
-            String propertyName,
-            Object oldValue,
-            Object newValue) {
-
-        // for simple properties ObjectStore requires a callback only the first time the
-        // object changes
-        if (markAsDirty(object)) {
-            context.getGraphManager().nodePropertyChanged(
-                    object.getObjectId(),
-                    propertyName,
-                    oldValue,
-                    newValue);
-        }
-    }
-
-    @Override
     protected void handleArcPropertyChange(
             Persistent object,
             ArcProperty property,

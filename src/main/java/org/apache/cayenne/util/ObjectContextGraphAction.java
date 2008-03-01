@@ -75,11 +75,19 @@ public abstract class ObjectContextGraphAction implements Serializable {
             Object oldValue,
             Object newValue);
 
-    protected abstract void handleSimplePropertyChange(
+    protected void handleSimplePropertyChange(
             Persistent object,
             String propertyName,
             Object oldValue,
-            Object newValue);
+            Object newValue) {
+        
+        context.getGraphManager().nodePropertyChanged(
+                object.getObjectId(),
+                propertyName,
+                oldValue,
+                newValue);
+        markAsDirty(object);
+    }
 
     /**
      * Changes object state to MODIFIED if needed, returning true if the change has
