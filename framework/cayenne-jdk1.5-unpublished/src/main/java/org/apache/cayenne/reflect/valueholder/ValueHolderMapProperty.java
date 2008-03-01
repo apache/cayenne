@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.valueholder;
 
+import java.util.Map;
+
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.reflect.Accessor;
@@ -39,6 +41,36 @@ class ValueHolderMapProperty extends ValueHolderToManyProperty implements
             Accessor accessor, String reverseName, Accessor mapKeyAccessor) {
         super(owner, targetDescriptor, accessor, reverseName);
         this.mapKeyAccessor = mapKeyAccessor;
+    }
+
+    @Override
+    public void addTarget(Object source, Object target, boolean setReverse) {
+
+        if (target == null) {
+            throw new NullPointerException("Attempt to add null object.");
+        }
+
+        // Now do the rest of the normal handling (regardless of whether it was
+        // flattened or not)
+        Map<Object, Object> collection = (Map<Object, Object>) readProperty(source);
+        collection.put(getMapKey(target), target);
+
+        if (setReverse) {
+            setReverse(source, null, target);
+        }
+    }
+
+    @Override
+    public void removeTarget(Object source, Object target, boolean setReverse) {
+
+        // Now do the rest of the normal handling (regardless of whether it was
+        // flattened or not)
+        Map<Object, Object> collection = (Map<Object, Object>) readProperty(source);
+        collection.remove(getMapKey(target));
+
+        if (target != null && setReverse) {
+            setReverse(source, target, null);
+        }
     }
 
     @Override

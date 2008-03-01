@@ -1116,12 +1116,22 @@ public class DataContext extends BaseContext implements DataChannel {
             GraphDiff changes,
             boolean cascade) {
 
-        if (this != originatingContext && changes != null) {
-            changes.apply(new ChildDiffLoader(this));
-            fireDataChannelChanged(originatingContext, changes);
-        }
+        boolean childContext = this != originatingContext && changes != null;
 
-        return (cascade) ? flushToParent(true) : new CompoundDiff();
+        try {
+            if (childContext) {
+                getObjectStore().childContextSyncStarted();
+                changes.apply(new ChildDiffLoader(this));
+                fireDataChannelChanged(originatingContext, changes);
+            }
+
+            return (cascade) ? flushToParent(true) : new CompoundDiff();
+        }
+        finally {
+            if (childContext) {
+                getObjectStore().childContextSyncStopped();
+            }
+        }
     }
 
     /**
@@ -1141,6 +1151,7 @@ public class DataContext extends BaseContext implements DataChannel {
                 : DataChannel.FLUSH_NOCASCADE_SYNC;
 
         ObjectStore objectStore = getObjectStore();
+        GraphDiff parentChanges = null;
 
         // prevent multiple commits occuring simulteneously
         synchronized (objectStore) {
@@ -1153,46 +1164,62 @@ public class DataContext extends BaseContext implements DataChannel {
             if (noop) {
                 // need to clear phantom changes
                 objectStore.postprocessAfterPhantomCommit();
-                return new CompoundDiff();
+            }
+            else {
+
+                try {
+                    parentChanges = getChannel().onSync(this, changes, syncType);
+
+                    // note that this is a hack resulting from a fix to CAY-766... To
+                    // support
+                    // valid object state in PostPersist callback,
+                    // 'postprocessAfterCommit' is
+                    // invoked by DataDomain.onSync(..). Unless the parent is DataContext,
+                    // and
+                    // this method is not invoked!! As a result, PostPersist will contain
+                    // temp
+                    // ObjectIds in nested contexts and perm ones in flat contexts.
+                    // Pending better callback design .....
+                    if (objectStore.hasChanges()) {
+                        objectStore.postprocessAfterCommit(parentChanges);
+                    }
+
+                    // this event is caught by peer nested DataContexts to synchronize the
+                    // state
+                    fireDataChannelCommitted(this, changes);
+                }
+                // "catch" is needed to unwrap OptimisticLockExceptions
+                catch (CayenneRuntimeException ex) {
+                    Throwable unwound = Util.unwindException(ex);
+
+                    if (unwound instanceof CayenneRuntimeException) {
+                        throw (CayenneRuntimeException) unwound;
+                    }
+                    else {
+                        throw new CayenneRuntimeException("Commit Exception", unwound);
+                    }
+                }
             }
 
-            try {
-                GraphDiff returnChanges = getChannel().onSync(this, changes, syncType);
+            // merge changes from parent as well as changes caused by lifecycle event
+            // callbacks/listeners...
 
-                // note that this is a hack resulting from a fix to CAY-766... To support
-                // valid object state in PostPersist callback, 'postprocessAfterCommit' is
-                // invoked by DataDomain.onSync(..). Unless the parent is DataContext, and
-                // this method is not invoked!! As a result, PostPersist will contain temp
-                // ObjectIds in nested contexts and perm ones in flat contexts.
-                // Pending better callback design .....
-                if (objectStore.hasChanges()) {
-                    objectStore.postprocessAfterCommit(returnChanges);
-                }
+            CompoundDiff diff = new CompoundDiff();
 
-                // this event is caught by peer nested DataContexts to synchronize the
-                // state
-                fireDataChannelCommitted(this, changes);
-
-                // this event is caught by child DataContexts to update temporary
-                // ObjectIds with permanent
-                if (!returnChanges.isNoop()) {
-                    fireDataChannelCommitted(getChannel(), returnChanges);
-                }
-
-                return returnChanges;
+            diff.addAll(objectStore.getLifecycleEventInducedChanges());
+            if (parentChanges != null) {
+                diff.add(parentChanges);
             }
-            // "catch" is needed to unwrap OptimisticLockExceptions
-            catch (CayenneRuntimeException ex) {
-                Throwable unwound = Util.unwindException(ex);
 
-                if (unwound instanceof CayenneRuntimeException) {
-                    throw (CayenneRuntimeException) unwound;
-                }
-                else {
-                    throw new CayenneRuntimeException("Commit Exception", unwound);
-                }
+            // this event is caught by child DataContexts to update temporary
+            // ObjectIds with permanent
+            if (!diff.isNoop()) {
+                fireDataChannelCommitted(getChannel(), diff);
             }
+
+            return diff;
         }
+
     }
 
     /**

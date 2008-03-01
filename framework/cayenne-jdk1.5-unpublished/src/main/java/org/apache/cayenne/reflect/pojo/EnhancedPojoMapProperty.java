@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.pojo;
 
+import java.util.Map;
+
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.reflect.Accessor;
@@ -44,6 +46,36 @@ class EnhancedPojoMapProperty extends EnhancedPojoToManyProperty implements
     @Override
     protected ValueHolder createValueHolder(Persistent relationshipOwner) {
         return new PersistentObjectMap(relationshipOwner, getName(), mapKeyAccessor);
+    }
+    
+    @Override
+    public void addTarget(Object source, Object target, boolean setReverse) {
+
+        if (target == null) {
+            throw new NullPointerException("Attempt to add null object.");
+        }
+
+        // Now do the rest of the normal handling (regardless of whether it was
+        // flattened or not)
+        Map<Object, Object> collection = (Map<Object, Object>) readProperty(source);
+        collection.put(getMapKey(target), target);
+
+        if (setReverse) {
+            setReverse(source, null, target);
+        }
+    }
+
+    @Override
+    public void removeTarget(Object source, Object target, boolean setReverse) {
+
+        // Now do the rest of the normal handling (regardless of whether it was
+        // flattened or not)
+        Map<Object, Object> collection = (Map<Object, Object>) readProperty(source);
+        collection.remove(getMapKey(target));
+
+        if (target != null && setReverse) {
+            setReverse(source, target, null);
+        }
     }
 
     public Object getMapKey(Object target) throws PropertyException {

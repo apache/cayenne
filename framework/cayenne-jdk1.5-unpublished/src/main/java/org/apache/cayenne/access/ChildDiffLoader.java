@@ -50,7 +50,33 @@ import org.apache.cayenne.reflect.ToOneProperty;
  */
 class ChildDiffLoader implements GraphChangeHandler {
 
-    ObjectContext context;
+    static final ThreadLocal<Boolean> childDiffProcessing = new ThreadLocal<Boolean>() {
+
+        @Override
+        protected synchronized Boolean initialValue() {
+            return Boolean.FALSE;
+        }
+    };
+
+    private ObjectContext context;
+
+    /**
+     * Returns whether child diff processing is in progress.
+     * 
+     * @since 3.0
+     */
+    static boolean isProcessingChildDiff() {
+        return childDiffProcessing.get();
+    }
+
+    /**
+     * Sets whether child diff processing is in progress.
+     * 
+     * @since 3.0
+     */
+    static void setExternalChange(Boolean flag) {
+        childDiffProcessing.set(flag);
+    }
 
     ChildDiffLoader(ObjectContext context) {
         this.context = context;
@@ -61,30 +87,47 @@ class ChildDiffLoader implements GraphChangeHandler {
     }
 
     public void nodeCreated(Object nodeId) {
-        ObjectId id = (ObjectId) nodeId;
-        if (id.getEntityName() == null) {
-            throw new NullPointerException("Null entity name in id " + id);
-        }
 
-        ObjEntity entity = context.getEntityResolver().getObjEntity(id.getEntityName());
-        if (entity == null) {
-            throw new IllegalArgumentException("Entity not mapped with Cayenne: " + id);
-        }
+        setExternalChange(Boolean.TRUE);
 
-        Persistent dataObject = null;
         try {
-            dataObject = (Persistent) entity.getJavaClass().newInstance();
-        }
-        catch (Exception ex) {
-            throw new CayenneRuntimeException("Error instantiating object.", ex);
-        }
+            ObjectId id = (ObjectId) nodeId;
+            if (id.getEntityName() == null) {
+                throw new NullPointerException("Null entity name in id " + id);
+            }
 
-        dataObject.setObjectId(id);
-        context.registerNewObject(dataObject);
+            ObjEntity entity = context.getEntityResolver().getObjEntity(
+                    id.getEntityName());
+            if (entity == null) {
+                throw new IllegalArgumentException("Entity not mapped with Cayenne: "
+                        + id);
+            }
+
+            Persistent dataObject = null;
+            try {
+                dataObject = (Persistent) entity.getJavaClass().newInstance();
+            }
+            catch (Exception ex) {
+                throw new CayenneRuntimeException("Error instantiating object.", ex);
+            }
+
+            dataObject.setObjectId(id);
+            context.registerNewObject(dataObject);
+        }
+        finally {
+            setExternalChange(Boolean.FALSE);
+        }
     }
 
     public void nodeRemoved(Object nodeId) {
-        context.deleteObject(findObject(nodeId));
+        setExternalChange(Boolean.TRUE);
+
+        try {
+            context.deleteObject(findObject(nodeId));
+        }
+        finally {
+            setExternalChange(Boolean.FALSE);
+        }
     }
 
     public void nodePropertyChanged(
@@ -99,11 +142,15 @@ class ChildDiffLoader implements GraphChangeHandler {
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 ((ObjectId) nodeId).getEntityName());
 
+        setExternalChange(Boolean.TRUE);
         try {
             descriptor.getProperty(property).writeProperty(object, null, newValue);
         }
         catch (Exception e) {
             throw new CayenneRuntimeException("Error setting property: " + property, e);
+        }
+        finally {
+            setExternalChange(Boolean.FALSE);
         }
     }
 
@@ -116,27 +163,33 @@ class ChildDiffLoader implements GraphChangeHandler {
                 ((ObjectId) nodeId).getEntityName());
         ArcProperty property = (ArcProperty) descriptor.getProperty(arcId.toString());
 
-        property.visit(new PropertyVisitor() {
+        setExternalChange(Boolean.TRUE);
+        try {
+            property.visit(new PropertyVisitor() {
 
-            public boolean visitAttribute(AttributeProperty property) {
-                return false;
-            }
+                public boolean visitAttribute(AttributeProperty property) {
+                    return false;
+                }
 
-            public boolean visitToMany(ToManyProperty property) {
-                // connect reverse arc if the relationship is marked as "runtime"
-                ArcProperty reverseArc = property.getComplimentaryReverseArc();
-                boolean autoConnectReverse = reverseArc != null
-                        && reverseArc.getRelationship().isRuntime();
+                public boolean visitToMany(ToManyProperty property) {
+                    // connect reverse arc if the relationship is marked as "runtime"
+                    ArcProperty reverseArc = property.getComplimentaryReverseArc();
+                    boolean autoConnectReverse = reverseArc != null
+                            && reverseArc.getRelationship().isRuntime();
 
-                property.addTarget(source, target, autoConnectReverse);
-                return false;
-            }
+                    property.addTarget(source, target, autoConnectReverse);
+                    return false;
+                }
 
-            public boolean visitToOne(ToOneProperty property) {
-                property.setTarget(source, target, false);
-                return false;
-            }
-        });
+                public boolean visitToOne(ToOneProperty property) {
+                    property.setTarget(source, target, false);
+                    return false;
+                }
+            });
+        }
+        finally {
+            setExternalChange(Boolean.FALSE);
+        }
     }
 
     public void arcDeleted(Object nodeId, final Object targetNodeId, Object arcId) {
@@ -151,45 +204,54 @@ class ChildDiffLoader implements GraphChangeHandler {
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 ((ObjectId) nodeId).getEntityName());
         Property property = descriptor.getProperty(arcId.toString());
-        property.visit(new PropertyVisitor() {
 
-            public boolean visitAttribute(AttributeProperty property) {
-                return false;
-            }
+        setExternalChange(Boolean.TRUE);
+        try {
+            property.visit(new PropertyVisitor() {
 
-            public boolean visitToMany(ToManyProperty property) {
-                // connect reverse arc if the relationship is marked as "runtime"
-                ArcProperty reverseArc = property.getComplimentaryReverseArc();
-                boolean autoConnectReverse = reverseArc != null
-                        && reverseArc.getRelationship().isRuntime();
-
-                Persistent target = findObject(targetNodeId);
-
-                if (target == null) {
-
-                    // this is usually the case when a NEW object was deleted and then its
-                    // relationships were manipulated; so try to locate the object in the
-                    // collection ...
-                    // the performance of this is rather dubious of course...
-                    target = findObjectInCollection(targetNodeId, property
-                            .readProperty(source));
+                public boolean visitAttribute(AttributeProperty property) {
+                    return false;
                 }
 
-                if (target == null) {
-                    // ignore?
-                }
-                else {
-                    property.removeTarget(source, target, autoConnectReverse);
+                public boolean visitToMany(ToManyProperty property) {
+                    // connect reverse arc if the relationship is marked as "runtime"
+                    ArcProperty reverseArc = property.getComplimentaryReverseArc();
+                    boolean autoConnectReverse = reverseArc != null
+                            && reverseArc.getRelationship().isRuntime();
+
+                    Persistent target = findObject(targetNodeId);
+
+                    if (target == null) {
+
+                        // this is usually the case when a NEW object was deleted and then
+                        // its
+                        // relationships were manipulated; so try to locate the object in
+                        // the
+                        // collection ...
+                        // the performance of this is rather dubious of course...
+                        target = findObjectInCollection(targetNodeId, property
+                                .readProperty(source));
+                    }
+
+                    if (target == null) {
+                        // ignore?
+                    }
+                    else {
+                        property.removeTarget(source, target, autoConnectReverse);
+                    }
+
+                    return false;
                 }
 
-                return false;
-            }
-
-            public boolean visitToOne(ToOneProperty property) {
-                property.setTarget(source, null, false);
-                return false;
-            }
-        });
+                public boolean visitToOne(ToOneProperty property) {
+                    property.setTarget(source, null, false);
+                    return false;
+                }
+            });
+        }
+        finally {
+            setExternalChange(Boolean.FALSE);
+        }
     }
 
     Persistent findObject(Object nodeId) {
@@ -200,9 +262,9 @@ class ChildDiffLoader implements GraphChangeHandler {
         if (object != null) {
             return object;
         }
-        
+
         ObjectId id = (ObjectId) nodeId;
-        
+
         // this can happen if a NEW object is deleted and after that its relationships are
         // modified
         if (id.isTemporary()) {
@@ -225,18 +287,19 @@ class ChildDiffLoader implements GraphChangeHandler {
 
         return (Persistent) objects.get(0);
     }
-    
+
     Persistent findObjectInCollection(Object nodeId, Object toManyHolder) {
-        Collection c = (toManyHolder instanceof Map) ? ((Map) toManyHolder)
-                .values() : (Collection) toManyHolder;
+        Collection c = (toManyHolder instanceof Map)
+                ? ((Map) toManyHolder).values()
+                : (Collection) toManyHolder;
         Iterator it = c.iterator();
         while (it.hasNext()) {
             Persistent o = (Persistent) it.next();
-            if(nodeId.equals(o.getObjectId())) {
+            if (nodeId.equals(o.getObjectId())) {
                 return o;
             }
         }
-        
+
         return null;
     }
 }
