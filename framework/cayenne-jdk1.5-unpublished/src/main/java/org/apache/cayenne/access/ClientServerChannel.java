@@ -103,6 +103,7 @@ public class ClientServerChannel implements DataChannel {
             GraphDiff changes,
             int syncType) {
 
-        return getParentChannel().onSync(null, changes, syncType);
+        GraphDiff diff = getParentChannel().onSync(null, changes, syncType);
+        return new ClientReturnDiffFilter(getEntityResolver()).filter(diff);
     }
 }
