@@ -83,7 +83,7 @@ public abstract class ObjectContextGraphAction implements Serializable {
 
     /**
      * Changes object state to MODIFIED if needed, returning true if the change has
-     * occured, false if not.
+     * occurred, false if not.
      */
     protected boolean markAsDirty(Persistent object) {
         if (object.getPersistenceState() == PersistenceState.COMMITTED) {
