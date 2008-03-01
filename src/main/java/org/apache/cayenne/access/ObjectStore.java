@@ -43,6 +43,7 @@ import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.graph.NodeDeleteOperation;
 import org.apache.cayenne.graph.NodeDiff;
+import org.apache.cayenne.graph.NodePropertyChangeOperation;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -105,6 +106,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     // used to avoid incorrect on-demand DataRowStore initialization after deserialization
     private boolean dataRowCacheSet;
 
+    private Collection<GraphDiff> lifecycleEventInducedChanges;
+
     /**
      * The DataContext that owns this ObjectStore.
      */
@@ -129,6 +132,39 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         setDataRowCache(dataRowCache);
         this.objectMap = objectMap != null ? objectMap : ObjectStore.createObjectMap();
         this.changes = new HashMap<Object, ObjectDiff>();
+    }
+
+    /**
+     * @since 3.0
+     */
+    void childContextSyncStarted() {
+        lifecycleEventInducedChanges = new ArrayList<GraphDiff>();
+    }
+
+    /**
+     * @since 3.0
+     */
+    void childContextSyncStopped() {
+        lifecycleEventInducedChanges = null;
+    }
+
+    /**
+     * @since 3.0
+     */
+    Collection<GraphDiff> getLifecycleEventInducedChanges() {
+        return lifecycleEventInducedChanges != null
+                ? lifecycleEventInducedChanges
+                : Collections.EMPTY_LIST;
+    }
+
+    void registerLifecycleEventInducedChange(GraphDiff diff) {
+        if (ChildDiffLoader.isProcessingChildDiff()) {
+            // reset so that subsequent event-induced changes could get registered...
+            ChildDiffLoader.setExternalChange(Boolean.FALSE);
+        }
+        else {
+            lifecycleEventInducedChanges.add(diff);
+        }
     }
 
     /**
@@ -570,7 +606,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         if (context != null && context.getChannel() != null) {
             ObjectIdQuery query = new ObjectIdQuery(oid, true, ObjectIdQuery.CACHE);
-            List results = context.getChannel().onQuery(context, query).firstList();
+            List<?> results = context.getChannel().onQuery(context, query).firstList();
             return results.isEmpty() ? null : (DataRow) results.get(0);
         }
         else {
@@ -998,14 +1034,27 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 1.2
      */
     public void nodeCreated(Object nodeId) {
-        registerDiff(nodeId, new NodeCreateOperation(nodeId));
+        NodeDiff diff = new NodeCreateOperation(nodeId);
+
+        if (lifecycleEventInducedChanges != null) {
+            registerLifecycleEventInducedChange(diff);
+        }
+
+        registerDiff(nodeId, diff);
     }
 
     /**
      * @since 1.2
      */
     public void nodeRemoved(Object nodeId) {
-        registerDiff(nodeId, new NodeDeleteOperation(nodeId));
+
+        NodeDiff diff = new NodeDeleteOperation(nodeId);
+
+        if (lifecycleEventInducedChanges != null) {
+            registerLifecycleEventInducedChange(diff);
+        }
+
+        registerDiff(nodeId, diff);
     }
 
     /**
@@ -1019,6 +1068,14 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             Object oldValue,
             Object newValue) {
 
+        if (lifecycleEventInducedChanges != null) {
+            registerLifecycleEventInducedChange(new NodePropertyChangeOperation(
+                    nodeId,
+                    property,
+                    oldValue,
+                    newValue));
+        }
+
         registerDiff(nodeId, null);
     }
 
@@ -1026,22 +1083,26 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 1.2
      */
     public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
-        registerDiff(nodeId, new ArcOperation(
-                nodeId,
-                targetNodeId,
-                arcId.toString(),
-                false));
+        NodeDiff diff = new ArcOperation(nodeId, targetNodeId, arcId.toString(), false);
+
+        if (lifecycleEventInducedChanges != null) {
+            registerLifecycleEventInducedChange(diff);
+        }
+
+        registerDiff(nodeId, diff);
     }
 
     /**
      * @since 1.2
      */
     public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
-        registerDiff(nodeId, new ArcOperation(
-                nodeId,
-                targetNodeId,
-                arcId.toString(),
-                true));
+        NodeDiff diff = new ArcOperation(nodeId, targetNodeId, arcId.toString(), true);
+
+        if (lifecycleEventInducedChanges != null) {
+            registerLifecycleEventInducedChange(diff);
+        }
+
+        registerDiff(nodeId, diff);
     }
 
     // an ObjectIdQuery optimized for retrieval of multiple snapshots - it can be reset

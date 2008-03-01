@@ -31,6 +31,7 @@ import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
@@ -88,7 +89,7 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
     public void testReturnDiffInPrePersist() {
 
         final List<GenericDiff> diffs = new ArrayList<GenericDiff>();
-        final GraphChangeHandler diffReader = new NoopGraphChangeHandler() {
+        final NoopGraphChangeHandler diffReader = new NoopGraphChangeHandler() {
 
             @Override
             public void nodePropertyChanged(
@@ -96,6 +97,8 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
                     String property,
                     Object oldValue,
                     Object newValue) {
+
+                super.nodePropertyChanged(nodeId, property, oldValue, newValue);
                 diffs
                         .add(new GenericDiff(
                                 (ObjectId) nodeId,
@@ -103,6 +106,7 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
                                 oldValue,
                                 newValue));
             }
+
         };
 
         LifecycleCallbackRegistry registry = getDomain()
@@ -139,32 +143,66 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
 
             CayenneContext context = new CayenneContext(channel);
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
+            ObjectId tempId = o.getObjectId();
             o.setServerAttribute1("YY");
             context.commitChanges();
 
-//            assertEquals(1, diffs.size());
-//            assertEquals(o.getObjectId(), diffs.get(0).sourceId);
-//            assertEquals(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, diffs.get(0).property);
-//            assertNull(diffs.get(0).oldValue);
-//            assertEquals("XXX", diffs.get(0).newValue);
+            assertEquals(2, diffReader.size);
+            assertEquals(1, diffs.size());
+            assertEquals(tempId, diffs.get(0).sourceId);
+            assertEquals(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, diffs.get(0).property);
+            assertNull(diffs.get(0).oldValue);
+            assertEquals("XXX", diffs.get(0).newValue);
         }
         finally {
             registry.clear();
         }
     }
 
+    public void testReturnDiffClientArcChanges() {
+
+        final NoopGraphChangeHandler diffReader = new NoopGraphChangeHandler();
+
+        ClientServerChannel csChannel = new ClientServerChannel(getDomain());
+        ClientChannel channel = new ClientChannel(new LocalConnection(csChannel)) {
+
+            @Override
+            public GraphDiff onSync(
+                    ObjectContext originatingContext,
+                    GraphDiff changes,
+                    int syncType) {
+
+                GraphDiff serverDiff = super
+                        .onSync(originatingContext, changes, syncType);
+
+                assertNotNull(serverDiff);
+                serverDiff.apply(diffReader);
+                return serverDiff;
+            }
+        };
+
+        CayenneContext context = new CayenneContext(channel);
+        ClientMtTable1 o = context.newObject(ClientMtTable1.class);
+        ClientMtTable2 o2 = context.newObject(ClientMtTable2.class);
+        o.addToTable2Array(o2);
+        context.commitChanges();
+
+        assertEquals(2, diffReader.size);
+
+        diffReader.reset();
+
+        ClientMtTable2 o3 = context.newObject(ClientMtTable2.class);
+        o3.setTable1(o);
+        context.commitChanges();
+        assertEquals(1, diffReader.size);
+    }
+
     class NoopGraphChangeHandler implements GraphChangeHandler {
 
-        public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
-        }
+        int size;
 
-        public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
-        }
-
-        public void nodeCreated(Object nodeId) {
-        }
-
-        public void nodeIdChanged(Object nodeId, Object newId) {
+        void reset() {
+            size = 0;
         }
 
         public void nodePropertyChanged(
@@ -172,9 +210,28 @@ public class ClientChannelServerDiffsTest extends CayenneCase {
                 String property,
                 Object oldValue,
                 Object newValue) {
+
+            size++;
+        }
+
+        public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+            size++;
+        }
+
+        public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+            size++;
+        }
+
+        public void nodeCreated(Object nodeId) {
+            size++;
+        }
+
+        public void nodeIdChanged(Object nodeId, Object newId) {
+            size++;
         }
 
         public void nodeRemoved(Object nodeId) {
+            size++;
         }
     }
 
