@@ -50,5 +50,5 @@ public interface GraphManager extends GraphChangeHandler {
     /**
      * Returns all graph nodes registered with GraphManager.
      */
-    Collection registeredNodes();
+    Collection<Object> registeredNodes();
 }

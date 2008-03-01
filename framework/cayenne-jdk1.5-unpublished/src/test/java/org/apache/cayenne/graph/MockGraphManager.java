@@ -25,13 +25,13 @@ import java.util.Map;
 
 public class MockGraphManager implements GraphManager {
 
-    protected Map map;
+    protected Map<Object, Object> map;
 
     public MockGraphManager() {
-        this.map = new HashMap();
+        this.map = new HashMap<Object, Object>();
     }
 
-    public Collection registeredNodes() {
+    public Collection<Object> registeredNodes() {
         return map.values();
     }
 

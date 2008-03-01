@@ -962,8 +962,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * 
      * @since 1.2
      */
-    public synchronized Collection registeredNodes() {
-        return new ArrayList<Persistent>(objectMap.values());
+    public synchronized Collection<Object> registeredNodes() {
+        return new ArrayList<Object>(objectMap.values());
     }
 
     /**

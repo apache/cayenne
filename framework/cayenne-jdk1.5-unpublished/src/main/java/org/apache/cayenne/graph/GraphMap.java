@@ -52,7 +52,7 @@ public class GraphMap implements GraphManager {
     /**
      * Returns an immutable collection of registered nodes.
      */
-    public Collection registeredNodes() {
+    public Collection<Object> registeredNodes() {
         return Collections.unmodifiableCollection(nodes.values());
     }
 
