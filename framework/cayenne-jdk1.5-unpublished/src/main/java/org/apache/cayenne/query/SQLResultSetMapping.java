@@ -31,7 +31,6 @@ import java.util.List;
  * @since 3.0
  * @author Andrus Adamchik
  */
-// TODO: andrus, 6/22/2007 - support entity results mapping.
 public class SQLResultSetMapping {
 
     protected String name;
