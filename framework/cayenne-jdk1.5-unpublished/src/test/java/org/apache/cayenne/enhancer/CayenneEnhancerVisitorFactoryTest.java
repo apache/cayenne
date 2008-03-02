@@ -30,6 +30,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.MockObjectContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
