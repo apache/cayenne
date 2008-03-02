@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.access.jdbc.ParameterBinding;
+import org.apache.cayenne.access.types.ExtendedEnumeration;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.IDUtil;
@@ -121,7 +122,13 @@ public class QueryLogger {
         else if (object instanceof Enum) {
             buffer.append(object.getClass().getName()).append(".");
             buffer.append(((Enum<?>) object).name()).append("=");
-            buffer.append(((Enum<?>) object).ordinal());
+            if (object instanceof ExtendedEnumeration) {
+                Object value = ((ExtendedEnumeration) object).getDatabaseValue();
+                if (value instanceof String) buffer.append("'");
+                buffer.append(value);
+                if (value instanceof String) buffer.append("'");
+            }
+            else buffer.append(((Enum<?>) object).ordinal()); // FIXME -- this isn't quite right
         }
         else if (object instanceof ParameterBinding) {
             sqlLiteralForObject(buffer, ((ParameterBinding) object).getValue());
