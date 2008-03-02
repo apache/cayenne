@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.types;
+package org.apache.cayenne;
 
 public interface ExtendedEnumeration
 {

@@ -24,8 +24,8 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.ExtendedEnumeration;
 import org.apache.cayenne.access.jdbc.ParameterBinding;
-import org.apache.cayenne.access.types.ExtendedEnumeration;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.IDUtil;
