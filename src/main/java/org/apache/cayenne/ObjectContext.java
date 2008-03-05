@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.Select;
 
 /**
  * A Cayenne object facade to a persistent store. Instances of ObjectContext are used in
@@ -158,6 +159,13 @@ public interface ObjectContext extends Serializable {
      */
     @SuppressWarnings("unchecked")
     List performQuery(Query query);
+    
+    /**
+     * Performs a select query with parameterized result.
+     * 
+     * @since 3.0 
+     */
+    <T> List<T> performSelect(Select<T> query);
 
     /**
      * Executes any kind of query providing the result in a form of QueryResponse.

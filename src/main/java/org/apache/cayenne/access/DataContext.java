@@ -65,6 +65,7 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.RefreshQuery;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;

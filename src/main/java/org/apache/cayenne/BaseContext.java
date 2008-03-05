@@ -26,6 +26,7 @@ import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -75,6 +76,13 @@ public abstract class BaseContext implements ObjectContext {
 
     @SuppressWarnings("unchecked")
     public abstract List performQuery(Query query);
+    
+    /**
+     * @since 3.0
+     */
+    public <T> List<T> performSelect(Select<T> query) {
+        return performQuery(query);
+    }
 
     /**
      * @deprecated since 3.0 this method is replaced by

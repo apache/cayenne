@@ -30,6 +30,7 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.Select;
 
 public class MockObjectContext implements ObjectContext {
 
@@ -95,6 +96,13 @@ public class MockObjectContext implements ObjectContext {
     }
 
     public List performQuery(Query query) {
+        return null;
+    }
+    
+    /**
+     * @since 3.0
+     */
+    public <T> List<T> performSelect(Select<T> query) {
         return null;
     }
 
