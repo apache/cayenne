@@ -34,6 +34,41 @@
 		</value></constructor-arg>
 	</bean>
 	
+	<bean id="INSERT_MT_TABLE13" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (3, 'g3', 's3')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="INSERT_MT_TABLE14" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (4, 'g4', 's4')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="INSERT_MT_TABLE15" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (5, 'g5', 's5')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="INSERT_MT_TABLE16" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (6, 'g6', 's6')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="INSERT_MT_TABLE17" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (7, 'g7', 's7')
+		</value></constructor-arg>
+	</bean>
+	
 	<bean id="INSERT_MT_TABLE21" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable2</value></constructor-arg>
 		<constructor-arg><value>
@@ -62,6 +97,22 @@
 				<ref bean="INSERT_MT_TABLE12"/>
 				<ref bean="INSERT_MT_TABLE21"/>
 				<ref bean="INSERT_MT_TABLE22"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testPaginatedQueryServerCacheOverflow" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="DELETE_MT_TABLE2"/>
+				<ref bean="DELETE_MT_TABLE1"/>
+				<ref bean="INSERT_MT_TABLE11"/>
+				<ref bean="INSERT_MT_TABLE12"/>
+				<ref bean="INSERT_MT_TABLE13"/>
+				<ref bean="INSERT_MT_TABLE14"/>
+				<ref bean="INSERT_MT_TABLE15"/>
+				<ref bean="INSERT_MT_TABLE16"/>
+				<ref bean="INSERT_MT_TABLE17"/>
 			</list>
 		</constructor-arg>
 	</bean>

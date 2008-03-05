@@ -22,11 +22,12 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.CayenneContext;
-import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.NamedQuery;
+import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.service.LocalConnection;
@@ -40,18 +41,53 @@ import org.apache.cayenne.util.PersistentObjectList;
 
 public class ClientServerChannelQueryTest extends CayenneCase {
 
+    private ObjectContext context;
+    private ClientServerChannel serverChannel;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        serverChannel = new ClientServerChannel(getDomain());
+        LocalConnection connector = new LocalConnection(
+                serverChannel,
+                LocalConnection.HESSIAN_SERIALIZATION);
+
+        context = new CayenneContext(new ClientChannel(connector));
+    }
+
     @Override
     protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
+        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
+    }
+
+    public void testPaginatedQueryServerCacheOverflow() throws Exception {
+        createTestData("testPaginatedQueryServerCacheOverflow");
+
+        SelectQuery query = new SelectQuery(ClientMtTable1.class);
+        query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, Ordering.ASC);
+        query.setPageSize(3);
+
+        List<?> results = context.performQuery(query);
+
+        // read page 1
+        assertTrue(results.get(0) instanceof ClientMtTable1);
+
+        // now kick out the server-side list from local cache, and see if the query would
+        // recover...
+        QueryCache qc = serverChannel.getQueryCache();
+        assertEquals(1, qc.size());
+        qc.clear();
+        assertEquals(0, qc.size());
+
+        // assertTrue(results.get(3) instanceof ClientMtTable1);
     }
 
     public void testNamedQuery() throws Exception {
         createTestData("prepare");
 
         NamedQuery q = new NamedQuery("AllMtTable1");
-        List<?> results = buildContext().performQuery(q);
+        List<?> results = context.performQuery(q);
 
         assertEquals(2, results.size());
         assertTrue(results.get(0) instanceof ClientMtTable1);
@@ -61,7 +97,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
         createTestData("prepare");
 
         SelectQuery q = new SelectQuery("MtTable1");
-        List<?> results = buildContext().performQuery(q);
+        List<?> results = context.performQuery(q);
 
         assertEquals(2, results.size());
 
@@ -72,7 +108,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
         createTestData("prepare");
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class);
-        List<?> results = buildContext().performQuery(q);
+        List<?> results = context.performQuery(q);
 
         assertEquals(2, results.size());
         assertTrue(results.get(0) instanceof ClientMtTable1);
@@ -83,7 +119,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class, Expression
                 .fromString("globalAttribute1 = 'g1'"));
-        List<?> results = buildContext().performQuery(q);
+        List<?> results = context.performQuery(q);
 
         assertEquals(1, results.size());
 
@@ -95,7 +131,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class, Expression
                 .fromString("table2Array.globalAttribute = 'g1'"));
-        List<?> results = buildContext().performQuery(q);
+        List<?> results = context.performQuery(q);
 
         assertEquals(1, results.size());
         assertTrue(results.get(0) instanceof ClientMtTable1);
@@ -106,7 +142,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
 
         SelectQuery q = new SelectQuery("MtTable1");
         q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, true);
-        List<?> results = buildContext().performQuery(q);
+        List<?> results = context.performQuery(q);
 
         assertEquals(2, results.size());
 
@@ -119,7 +155,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
 
         q.clearOrderings();
         q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, false);
-        List<?> results1 = buildContext().performQuery(q);
+        List<?> results1 = context.performQuery(q);
 
         assertEquals(2, results1.size());
 
@@ -134,7 +170,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
         SelectQuery q = new SelectQuery(ClientMtTable2.class, Expression
                 .fromString("globalAttribute = 'g1'"));
         q.addPrefetch(ClientMtTable2.TABLE1_PROPERTY);
-        List<?> results = buildContext().performQuery(q);
+        List<?> results = context.performQuery(q);
 
         assertEquals(1, results.size());
 
@@ -156,7 +192,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
         SelectQuery q = new SelectQuery(ClientMtTable1.class, Expression
                 .fromString("globalAttribute1 = 'g1'"));
         q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
-        List<?> results = buildContext().performQuery(q);
+        List<?> results = context.performQuery(q);
 
         assertEquals(1, results.size());
 
@@ -168,18 +204,5 @@ public class ClientServerChannelQueryTest extends CayenneCase {
         PersistentObjectList objectHolder = (PersistentObjectList) holder;
         assertFalse(objectHolder.isFault());
         assertEquals(2, objectHolder.size());
-    }
-
-    /**
-     * Prepares ClientObjectContext that would access regular Cayenne stack over local
-     * adapter with Hessian serialization.
-     */
-    protected CayenneContext buildContext() {
-        DataChannel handler = new ClientServerChannel(getDomain());
-        LocalConnection connector = new LocalConnection(
-                handler,
-                LocalConnection.HESSIAN_SERIALIZATION);
-
-        return new CayenneContext(new ClientChannel(connector));
     }
 }
