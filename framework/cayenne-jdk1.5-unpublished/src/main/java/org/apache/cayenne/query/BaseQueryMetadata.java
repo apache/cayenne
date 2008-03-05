@@ -356,6 +356,10 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     public int getPageSize() {
         return pageSize;
     }
+    
+    public Query getOrginatingQuery() {
+        return null;
+    }
 
     /**
      * Always returns -1.

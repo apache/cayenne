@@ -197,6 +197,17 @@ public interface QueryMetadata {
     int getFetchLimit();
 
     /**
+     * Returns a query that originated this query. Most often than not the returned value
+     * is null. One example of non-null originating query is a query for a range of
+     * objects in a previously fetched paginated list. The query that fetched the original
+     * paginated list is an "originated" query. It may be used to restore a list that got
+     * lost due to a cache overflow, etc.
+     * 
+     * @since 3.0
+     */
+    Query getOrginatingQuery();
+
+    /**
      * Returns a root node of prefetch tree used by this query, or null of no prefetches
      * are configured.
      */

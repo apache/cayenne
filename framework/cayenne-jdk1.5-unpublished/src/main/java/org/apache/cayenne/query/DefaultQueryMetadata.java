@@ -61,6 +61,13 @@ class DefaultQueryMetadata implements QueryMetadata {
     public SQLResultSetMapping getResultSetMapping() {
         return null;
     }
+    
+    /**
+     * @since 3.0
+     */
+    public Query getOrginatingQuery() {
+        return null;
+    }
 
     public DbEntity getDbEntity() {
         return null;

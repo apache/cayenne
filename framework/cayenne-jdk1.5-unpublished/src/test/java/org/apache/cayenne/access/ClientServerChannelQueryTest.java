@@ -80,7 +80,7 @@ public class ClientServerChannelQueryTest extends CayenneCase {
         qc.clear();
         assertEquals(0, qc.size());
 
-        // assertTrue(results.get(3) instanceof ClientMtTable1);
+        assertTrue(results.get(3) instanceof ClientMtTable1);
     }
 
     public void testNamedQuery() throws Exception {

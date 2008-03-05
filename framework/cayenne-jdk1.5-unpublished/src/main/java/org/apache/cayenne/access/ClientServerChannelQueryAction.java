@@ -82,8 +82,23 @@ class ClientServerChannelQueryAction {
 
             List cachedList = channel.getQueryCache().get(serverMetadata);
             if (cachedList == null) {
-                throw new CayenneRuntimeException("No cached list for "
-                        + serverMetadata.getCacheKey());
+
+                // attempt to refetch... respawn the action...
+
+                Query originatingQuery = serverMetadata.getOrginatingQuery();
+                if (originatingQuery != null) {
+
+                    ClientServerChannelQueryAction subaction = new ClientServerChannelQueryAction(
+                            channel,
+                            originatingQuery);
+                    subaction.execute();
+                    cachedList = channel.getQueryCache().get(serverMetadata);
+                }
+
+                if (cachedList == null) {
+                    throw new CayenneRuntimeException("No cached list for "
+                            + serverMetadata.getCacheKey());
+                }
             }
 
             int startIndex = serverMetadata.getFetchStartIndex();

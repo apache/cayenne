@@ -85,6 +85,10 @@ class QueryMetadataWrapper implements QueryMetadata {
         return info.getObjEntity();
     }
     
+    public Query getOrginatingQuery() {
+        return info.getOrginatingQuery();
+    }
+    
     /**
      * @since 3.0
      */

@@ -34,8 +34,8 @@ import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
- * An Query wrapper that triggers pagination processing on the server. This query is
- * client-only and can't be executed on the server.
+ * A Query that fetches a range of objects from a previously fetched server-side paginated
+ * list. This query is client-only and can't be executed on the server.
  * 
  * @since 1.2
  * @author Andrus Adamchik
@@ -45,8 +45,7 @@ class RangeQuery implements Query {
     private String cacheKey;
     private int fetchStartIndex;
     private int fetchLimit;
-    private boolean fetchingDataRows;
-    private PrefetchTreeNode prefetchTree;
+    private Query originatingQuery;
 
     // exists for hessian serialization.
     @SuppressWarnings("unused")
@@ -55,21 +54,25 @@ class RangeQuery implements Query {
     }
 
     /**
-     * Creates a PaginatedQuery that returns a single page from an existing cached
-     * server-side result list.
+     * Creates a query that returns a single page from an existing cached server-side
+     * result list.
      */
-    public RangeQuery(String cacheKey, int fetchStartIndex, int fetchLimit,
-            QueryMetadata rootMetadata) {
+    RangeQuery(String cacheKey, int fetchStartIndex, int fetchLimit, Query originatingQuery) {
         this.cacheKey = cacheKey;
         this.fetchStartIndex = fetchStartIndex;
         this.fetchLimit = fetchLimit;
-        this.fetchingDataRows = rootMetadata.isFetchingDataRows();
-        this.prefetchTree = rootMetadata.getPrefetchTree();
+        this.originatingQuery = originatingQuery;
     }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {
+        final QueryMetadata originatingMetadata = originatingQuery.getMetaData(resolver);
+        
         return new QueryMetadata() {
             
+            public Query getOrginatingQuery() {
+                return originatingQuery;
+            }
+
             public SQLResultSetMapping getResultSetMapping() {
                 return null;
             }
@@ -91,7 +94,7 @@ class RangeQuery implements Query {
             }
 
             public boolean isFetchingDataRows() {
-                return fetchingDataRows;
+                return originatingMetadata.isFetchingDataRows();
             }
 
             public int getPageSize() {
@@ -103,7 +106,7 @@ class RangeQuery implements Query {
             }
 
             public PrefetchTreeNode getPrefetchTree() {
-                return prefetchTree;
+                return originatingMetadata.getPrefetchTree();
             }
 
             public DataMap getDataMap() {

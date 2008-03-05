@@ -90,5 +90,8 @@ public class MockQueryMetadata implements QueryMetadata {
     public PrefetchTreeNode getPrefetchTree() {
         return null;
     }
-
+    
+    public Query getOrginatingQuery() {
+        return null;
+    }
 }

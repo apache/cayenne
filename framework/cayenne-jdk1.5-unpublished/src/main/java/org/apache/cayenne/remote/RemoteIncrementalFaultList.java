@@ -68,7 +68,7 @@ public class RemoteIncrementalFaultList implements List {
     protected String cacheKey;
     protected int pageSize;
     protected int unfetchedObjects;
-    protected QueryMetadata metadata;
+    protected Query paginatedQuery;
 
     protected transient ObjectContext context;
 
@@ -82,7 +82,7 @@ public class RemoteIncrementalFaultList implements List {
 
     public RemoteIncrementalFaultList(ObjectContext context, Query paginatedQuery) {
 
-        this.metadata = paginatedQuery.getMetaData(context.getEntityResolver());
+        QueryMetadata metadata = paginatedQuery.getMetaData(context.getEntityResolver());
 
         if (metadata.getPageSize() <= 0) {
             throw new IllegalArgumentException("Page size must be positive: "
@@ -115,6 +115,9 @@ public class RemoteIncrementalFaultList implements List {
                 query = new IncrementalQuery(paginatedQuery, cacheKey);
             }
         }
+
+        // ensure that originating query is wrapped to include the right cache key....
+        this.paginatedQuery = query;
 
         // select directly from the channel, bypassing the context. Otherwise our query
         // wrapper can be intercepted incorrectly
@@ -251,7 +254,7 @@ public class RemoteIncrementalFaultList implements List {
 
         int fetchLimit = toIndex - fromIndex;
 
-        RangeQuery query = new RangeQuery(cacheKey, fromIndex, fetchLimit, metadata);
+        RangeQuery query = new RangeQuery(cacheKey, fromIndex, fetchLimit, paginatedQuery);
 
         List sublist = context.performQuery(query);
 

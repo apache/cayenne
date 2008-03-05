@@ -60,6 +60,10 @@ class IncrementalQuery implements Query {
         // ClientServerChannel behavior
 
         return new QueryMetadata() {
+            
+            public Query getOrginatingQuery() {
+                return null;
+            }
 
             public String getCacheKey() {
                 return cacheKey;

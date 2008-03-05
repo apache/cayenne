@@ -52,6 +52,10 @@ class DataDomainQuery implements Query, QueryMetadata {
     public SQLResultSetMapping getResultSetMapping() {
         return null;
     }
+    
+    public Query getOrginatingQuery() {
+        return null;
+    }
 
     public String getName() {
         return null;

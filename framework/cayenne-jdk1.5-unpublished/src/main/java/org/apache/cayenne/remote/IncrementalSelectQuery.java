@@ -71,6 +71,10 @@ class IncrementalSelectQuery extends SelectQuery {
 
         return new QueryMetadata() {
 
+            public Query getOrginatingQuery() {
+                return null;
+            }
+            
             public String getCacheKey() {
                 return cacheKey;
             }

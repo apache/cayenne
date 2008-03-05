@@ -50,6 +50,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SQLResultSetMapping;
@@ -1157,6 +1158,10 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         }
 
         public SQLResultSetMapping getResultSetMapping() {
+            return null;
+        }
+        
+        public Query getOrginatingQuery() {
             return null;
         }
 
