@@ -132,6 +132,12 @@ class ClientServerChannelQueryAction {
 
                 // extract and convert first page
 
+                // TODO: andrus, 2008/03/05 - we no longer resolve the first page
+                // automatically on the server... probably should not do it for the client
+                // either... One rare case when this is completely undesirable is
+                // subaction execution from 'interceptSinglePageQuery', as it doesn't even
+                // care about the first page...
+
                 List sublist = list.subList(0, pageSize);
 
                 List firstPage = (serverMetadata.isFetchingDataRows()) ? new ArrayList(
