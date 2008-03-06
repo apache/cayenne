@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -136,9 +137,9 @@ public class DistinctResultIterator implements ResultIterator {
 
         // if we were previously reading full rows, we need to strip extra keys...
         if (!readingIds) {
-            Iterator<Map.Entry<String,Object>> it = row.entrySet().iterator();
+            Iterator<Map.Entry<String, Object>> it = row.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry<String,Object> entry = it.next();
+                Map.Entry<String, Object> entry = it.next();
                 String name = entry.getKey();
                 DbAttribute attribute = (DbAttribute) entity.getAttribute(name);
                 if (attribute == null || !attribute.isPrimaryKey()) {
@@ -149,6 +150,29 @@ public class DistinctResultIterator implements ResultIterator {
 
         checkNextId(entity);
         return row;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public Object nextId(DbEntity entity) throws CayenneException {
+        Collection<DbAttribute> pk = entity.getPrimaryKeys();
+        if (pk.size() != 1) {
+            return nextObjectId(entity);
+        }
+
+        if (!hasNextRow()) {
+            throw new CayenneException(
+                    "An attempt to read uninitialized row or past the end of the iterator.");
+        }
+
+        Map<String, Object> row = nextDataRow;
+
+        checkNextId(entity);
+
+        // TODO: andrus 3/6/2008: not very efficient ... a better algorithm would've
+        // relied on wrapped iterator 'nextId' method.
+        return row.get(pk.iterator().next().getName());
     }
 
     public void skipDataRow() throws CayenneException {

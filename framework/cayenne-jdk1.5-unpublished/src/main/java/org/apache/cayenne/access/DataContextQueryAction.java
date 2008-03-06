@@ -21,12 +21,14 @@ package org.apache.cayenne.access;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.RefreshQuery;
@@ -86,9 +88,16 @@ class DataContextQueryAction extends ObjectContextQueryAction {
     @Override
     protected boolean interceptPaginatedQuery() {
         if (metadata.getPageSize() > 0) {
-            response = new ListResponse(new IncrementalFaultList(
-                    (DataContext) actingContext,
-                    query));
+
+            DbEntity dbEntity = metadata.getDbEntity();
+            List<?> paginatedList = dbEntity != null
+                    && dbEntity.getPrimaryKeys().size() == 1
+                    ? new SimpleIdIncrementalFaultList<Object>(
+                            (DataContext) actingContext,
+                            query)
+                    : new IncrementalFaultList<Object>((DataContext) actingContext, query);
+
+            response = new ListResponse(paginatedList);
             return DONE;
         }
 

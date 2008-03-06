@@ -36,8 +36,9 @@ import org.apache.cayenne.unit.CayenneCase;
  * 
  * @author Andrus Adamchik
  */
-public class IncrementalFaultListDataRowsTest extends CayenneCase {
-    protected IncrementalFaultList list;
+public class SimpleIdIncrementalFaultListDataRowsTest extends CayenneCase {
+
+    protected SimpleIdIncrementalFaultList list;
     protected Query query;
 
     @Override
@@ -53,7 +54,7 @@ public class IncrementalFaultListDataRowsTest extends CayenneCase {
         q.addOrdering("db:ARTIST_ID", Ordering.ASC);
 
         query = q;
-        list = new IncrementalFaultList(super.createDataContext(), query);
+        list = new SimpleIdIncrementalFaultList(super.createDataContext(), query);
     }
 
     public void testGet1() throws Exception {
@@ -61,8 +62,7 @@ public class IncrementalFaultListDataRowsTest extends CayenneCase {
         assertTrue(list.elements.get(0) instanceof Map);
         assertEquals(list.rowWidth, ((Map) list.elements.get(0)).size());
 
-        assertTrue(list.elements.get(19) instanceof Map);
-        assertEquals(1, ((Map) list.elements.get(19)).size());
+        assertTrue(list.elements.get(19) instanceof Long);
 
         Object a = list.get(19);
 
@@ -149,13 +149,14 @@ public class IncrementalFaultListDataRowsTest extends CayenneCase {
             Object obj = it.next();
             assertNotNull(obj);
             assertTrue(
-                "Unexpected object class: " + obj.getClass().getName(),
-                obj instanceof Map);
+                    "Unexpected object class: " + obj.getClass().getName(),
+                    obj instanceof Map);
             assertEquals(list.rowWidth, ((Map) obj).size());
 
             // iterator must be resolved page by page
-            int expectedResolved =
-                list.pageIndex(counter) * list.getPageSize() + list.getPageSize();
+            int expectedResolved = list.pageIndex(counter)
+                    * list.getPageSize()
+                    + list.getPageSize();
             if (expectedResolved > list.size()) {
                 expectedResolved = list.size();
             }
@@ -163,9 +164,7 @@ public class IncrementalFaultListDataRowsTest extends CayenneCase {
             assertEquals(list.size() - expectedResolved, list.getUnfetchedObjects());
 
             if (list.getUnfetchedObjects() >= list.getPageSize()) {
-                // must be map that only contains object id columns
-                assertTrue(list.elements.get(list.size() - 1) instanceof Map);
-                assertEquals(1, ((Map) list.elements.get(list.size() - 1)).size());
+                assertTrue(list.elements.get(list.size() - 1) instanceof Long);
             }
 
             counter++;

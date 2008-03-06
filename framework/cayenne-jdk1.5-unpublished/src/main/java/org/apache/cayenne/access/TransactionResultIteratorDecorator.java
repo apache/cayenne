@@ -99,6 +99,13 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
     public Map nextObjectId(DbEntity entity) throws CayenneException {
         return result.nextObjectId(entity);
     }
+    
+    /**
+     * @since 3.0
+     */
+    public Object nextId(DbEntity entity) throws CayenneException {
+        return result.nextId(entity);
+    }
 
     public void skipDataRow() throws CayenneException {
         result.skipDataRow();

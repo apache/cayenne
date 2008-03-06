@@ -36,9 +36,9 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * @author Andrus Adamchik
  */
-public class IncrementalFaultListTest extends CayenneCase {
+public class SimpleIdIncrementalFaultListTest extends CayenneCase {
 
-    protected IncrementalFaultList list;
+    protected SimpleIdIncrementalFaultList<?> list;
     protected Query query;
 
     protected void prepareList(int pageSize) throws Exception {
@@ -53,7 +53,7 @@ public class IncrementalFaultListTest extends CayenneCase {
         q.setPageSize(pageSize);
         q.addOrdering("db:ARTIST_ID", Ordering.ASC);
         query = q;
-        list = new IncrementalFaultList(super.createDataContext(), query);
+        list = new SimpleIdIncrementalFaultList<Object>(createDataContext(), query);
     }
 
     public void testSize() throws Exception {
@@ -109,7 +109,9 @@ public class IncrementalFaultListTest extends CayenneCase {
         q.setPageSize(6);
         q.addOrdering("db:ARTIST_ID", Ordering.DESC);
 
-        IncrementalFaultList list = new IncrementalFaultList(context, q);
+        SimpleIdIncrementalFaultList<?> list = new SimpleIdIncrementalFaultList<Object>(
+                context,
+                q);
 
         assertSame(newArtist, list.get(DataContextTest.artistCount));
     }
@@ -179,8 +181,8 @@ public class IncrementalFaultListTest extends CayenneCase {
 
     public void testPagesRead1() throws Exception {
         prepareList(6);
-        assertTrue(list.elements.get(0) instanceof Map);
-        assertTrue(list.elements.get(8) instanceof Map);
+        assertTrue(list.elements.get(0) instanceof Long);
+        assertTrue(list.elements.get(8) instanceof Long);
 
         list.resolveInterval(5, 10);
         assertTrue(list.elements.get(7) instanceof Artist);
@@ -191,8 +193,8 @@ public class IncrementalFaultListTest extends CayenneCase {
 
     public void testGet1() throws Exception {
         prepareList(6);
-        assertTrue(list.elements.get(0) instanceof Map);
-        assertTrue(list.elements.get(8) instanceof Map);
+        assertTrue(list.elements.get(0) instanceof Long);
+        assertTrue(list.elements.get(8) instanceof Long);
 
         Object a = list.get(8);
 
@@ -204,8 +206,8 @@ public class IncrementalFaultListTest extends CayenneCase {
     public void testGet2() throws Exception {
         prepareList(6);
         ((SelectQuery) query).setFetchingDataRows(true);
-        assertTrue(list.elements.get(0) instanceof Map);
-        assertTrue(list.elements.get(8) instanceof Map);
+        assertTrue(list.elements.get(0) instanceof Long);
+        assertTrue(list.elements.get(8) instanceof Long);
 
         Object a0 = list.get(0);
 

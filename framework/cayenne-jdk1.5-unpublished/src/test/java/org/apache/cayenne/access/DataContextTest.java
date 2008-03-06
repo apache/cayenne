@@ -314,8 +314,8 @@ public class DataContextTest extends DataContextCase {
         assertNotNull(objects);
         assertTrue(objects instanceof IncrementalFaultList);
 
-        assertTrue(((IncrementalFaultList) objects).elements.get(0) instanceof Map);
-        assertTrue(((IncrementalFaultList) objects).elements.get(7) instanceof Map);
+        assertTrue(((IncrementalFaultList<?>) objects).elements.get(0) instanceof Long);
+        assertTrue(((IncrementalFaultList<?>) objects).elements.get(7) instanceof Long);
         
         assertTrue(objects.get(0) instanceof Artist);
     }

@@ -33,12 +33,21 @@ import org.apache.cayenne.query.SelectQuery;
 /**
  * @author Andrus Adamchik
  */
-public class IncrementalFaultListPrefetchTest extends DataContextCase {
+public class SimpleIdIncrementalFaultListPrefetchTest extends DataContextCase {
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         createTestData("testPaintings");
+    }
+    
+    public void testListType() {
+        Expression e = ExpressionFactory.likeExp("artistName", "artist1%");
+        SelectQuery q = new SelectQuery("Artist", e);
+        q.setPageSize(4);
+
+        List<?> result = context.performQuery(q);
+        assertTrue(result instanceof SimpleIdIncrementalFaultList);
     }
 
     /**

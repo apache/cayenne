@@ -62,6 +62,16 @@ public interface ResultIterator {
     Map<String, Object> nextObjectId(DbEntity entity) throws CayenneException;
 
     /**
+     * Reads and returns an id column or columns for the DbEntity. If an entity has a
+     * single column id, the return value is an Object matching the column type (e.g.
+     * java.lang.Long). If an entity has a compound PK, the return value is a DataRow
+     * (i.e. equivalent to {@link #nextObjectId(DbEntity)}).
+     * 
+     * @since 3.0
+     */
+    Object nextId(DbEntity entity) throws CayenneException;
+
+    /**
      * Skips current data row instead of reading it.
      */
     void skipDataRow() throws CayenneException;

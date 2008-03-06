@@ -177,6 +177,29 @@ public class JDBCResultIterator implements ResultIterator {
         return row;
     }
 
+    /**
+     * @since 3.0
+     */
+    public Object nextId(DbEntity entity) throws CayenneException {
+        if (!hasNextRow()) {
+            throw new CayenneException(
+                    "An attempt to read uninitialized row or past the end of the iterator.");
+        }
+
+        // index id
+        if (rootEntity != entity || pkIndices == null) {
+            this.rootEntity = entity;
+            indexPK();
+        }
+
+        Object id = readId();
+
+        // rewind
+        checkNextRow();
+
+        return id;
+    }
+
     public void skipDataRow() throws CayenneException {
         if (!hasNextRow()) {
             throw new CayenneException(
@@ -304,6 +327,41 @@ public class JDBCResultIterator implements ResultIterator {
         }
         catch (Exception otherex) {
             throw new CayenneException("Exception materializing column.", Util
+                    .unwindException(otherex));
+        }
+    }
+
+    protected Object readId() throws CayenneException {
+
+        int len = pkIndices.length;
+
+        if (len != 1) {
+            return readIdRow();
+        }
+
+        ExtendedType[] converters = rowDescriptor.getConverters();
+
+        try {
+
+            // dereference column index
+            int index = pkIndices[0];
+
+            // note: jdbc column indexes start from 1, not 0 as in arrays
+            Object val = converters[index].materializeObject(
+                    resultSet,
+                    index + 1,
+                    types[index]);
+
+            // note that postProcessor overrides are not applied. ID mapping must be the
+            // same across inheritance hierarchy, so overrides do not make sense.
+            return val;
+        }
+        catch (CayenneException cex) {
+            // rethrow unmodified
+            throw cex;
+        }
+        catch (Exception otherex) {
+            throw new CayenneException("Exception materializing id column.", Util
                     .unwindException(otherex));
         }
     }

@@ -133,12 +133,7 @@ public class IncrementalFaultList<E> implements List<E> {
         this.internalQuery.setResolvingInherited(metadata.isResolvingInherited());
         this.internalQuery.setPrefetchTree(metadata.getPrefetchTree());
 
-        if (metadata.isFetchingDataRows()) {
-            helper = new DataRowListHelper();
-        }
-        else {
-            helper = new PersistentListHelper();
-        }
+        this.helper = createHelper(metadata);
 
         boolean resolvesFirstPage = true;
 
@@ -167,6 +162,18 @@ public class IncrementalFaultList<E> implements List<E> {
         List<Object> elementsUnsynced = new ArrayList<Object>();
         fillIn(query, elementsUnsynced, resolvesFirstPage);
         this.elements = Collections.synchronizedList(elementsUnsynced);
+    }
+
+    /**
+     * @since 3.0
+     */
+    IncrementalListHelper createHelper(QueryMetadata metadata) {
+        if (metadata.isFetchingDataRows()) {
+            return new DataRowListHelper();
+        }
+        else {
+            return new PersistentListHelper();
+        }
     }
 
     /**
@@ -227,7 +234,7 @@ public class IncrementalFaultList<E> implements List<E> {
                 // continue reading ids
                 DbEntity entity = rootEntity.getDbEntity();
                 while (it.hasNextRow()) {
-                    elementsList.add(it.nextObjectId(entity));
+                    elementsList.add(it.nextId(entity));
                 }
 
                 QueryLogger.logSelectCount(elementsList.size(), System
@@ -265,27 +272,6 @@ public class IncrementalFaultList<E> implements List<E> {
      */
     public void resolveAll() {
         resolveInterval(0, size());
-    }
-
-    /**
-     * @param object
-     * @return <code>true</code> if the object corresponds to an unresolved state and
-     *         doesn require a fetch before being returned to the user.
-     */
-    private boolean isUnresolved(Object object) {
-        if (object instanceof Persistent) {
-            return false;
-        }
-
-        if (internalQuery.isFetchingDataRows()) {
-            // both unresolved and resolved objects are represented
-            // as Maps, so no instanceof check is possible.
-            Map<?, ?> map = (Map<?, ?>) object;
-            int size = map.size();
-            return size < rowWidth;
-        }
-
-        return true;
     }
 
     /**
@@ -337,16 +323,10 @@ public class IncrementalFaultList<E> implements List<E> {
             List<Expression> quals = new ArrayList<Expression>(pageSize);
             List<Object> ids = new ArrayList<Object>(pageSize);
             for (int i = fromIndex; i < toIndex; i++) {
-                Object obj = elements.get(i);
-                if (isUnresolved(obj)) {
-                    ids.add(obj);
-
-                    Map<String, ?> map = (Map<String, ?>) obj;
-                    if (map.isEmpty()) {
-                        throw new CayenneRuntimeException("Empty id map at index " + i);
-                    }
-
-                    quals.add(ExpressionFactory.matchAllDbExp(map, Expression.EQUAL_TO));
+                Object object = elements.get(i);
+                if (helper.incorrectObjectType(object)) {
+                    quals.add(buildIdQualifier(object));
+                    ids.add(object);
                 }
             }
 
@@ -376,49 +356,7 @@ public class IncrementalFaultList<E> implements List<E> {
             }
 
             // sanity check - database data may have changed
-            if (objects.size() < ids.size()) {
-                // find missing ids
-                StringBuilder buf = new StringBuilder();
-                buf.append("Some ObjectIds are missing from the database. ");
-                buf.append("Expected ").append(ids.size()).append(", fetched ").append(
-                        objects.size());
-
-                Iterator<Object> idsIt = ids.iterator();
-                boolean first = true;
-                while (idsIt.hasNext()) {
-                    boolean found = false;
-                    Object id = idsIt.next();
-                    Iterator oIt = objects.iterator();
-                    while (oIt.hasNext()) {
-                        if (((Persistent) oIt.next())
-                                .getObjectId()
-                                .getIdSnapshot()
-                                .equals(id)) {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found) {
-                        if (first) {
-                            first = false;
-                        }
-                        else {
-                            buf.append(", ");
-                        }
-
-                        buf.append(id.toString());
-                    }
-                }
-
-                throw new CayenneRuntimeException(buf.toString());
-            }
-            else if (objects.size() > ids.size()) {
-                throw new CayenneRuntimeException("Expected "
-                        + ids.size()
-                        + " objects, retrieved "
-                        + objects.size());
-            }
+            checkPageResultConsistency(objects, ids);
 
             // replace ids in the list with objects
             Iterator it = objects.iterator();
@@ -427,6 +365,67 @@ public class IncrementalFaultList<E> implements List<E> {
             }
 
             unfetchedObjects -= objects.size();
+        }
+    }
+
+    /**
+     * Returns a qualifier expression for an unresolved id object.
+     * 
+     * @since 3.0
+     */
+    Expression buildIdQualifier(Object id) {
+
+        Map<String, ?> map = (Map<String, ?>) id;
+        if (map.isEmpty()) {
+            throw new CayenneRuntimeException("Empty id map");
+        }
+
+        return ExpressionFactory.matchAllDbExp(map, Expression.EQUAL_TO);
+    }
+
+    /**
+     * @since 3.0
+     */
+    void checkPageResultConsistency(List<?> objects, List<?> ids) {
+
+        if (objects.size() < ids.size()) {
+            // find missing ids
+            StringBuilder buffer = new StringBuilder();
+            buffer.append("Some ObjectIds are missing from the database. ");
+            buffer.append("Expected ").append(ids.size()).append(", fetched ").append(
+                    objects.size());
+
+            boolean first = true;
+            for (Object id : ids) {
+                boolean found = false;
+
+                for (Object object : objects) {
+
+                    if (helper.replacesObject(object, id)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    if (first) {
+                        first = false;
+                    }
+                    else {
+                        buffer.append(", ");
+                    }
+
+                    buffer.append(id.toString());
+                }
+            }
+
+            throw new CayenneRuntimeException(buffer.toString());
+        }
+        else if (objects.size() > ids.size()) {
+            throw new CayenneRuntimeException("Expected "
+                    + ids.size()
+                    + " objects, retrieved "
+                    + objects.size());
         }
     }
 
@@ -603,7 +602,7 @@ public class IncrementalFaultList<E> implements List<E> {
         synchronized (elements) {
             Object o = elements.get(index);
 
-            if (isUnresolved(o)) {
+            if (helper.incorrectObjectType(o)) {
                 // read this page
                 int pageStart = pageIndex(index) * pageSize;
                 resolveInterval(pageStart, pageStart + pageSize);
