@@ -91,6 +91,8 @@ public class IncrementalFaultList<E> implements List<E> {
     /**
      * Creates a new list copying settings from another list. Elements WILL NOT be copied
      * or fetched.
+     * 
+     * @deprecated since 3.0 - unused
      */
     public IncrementalFaultList(IncrementalFaultList<E> list) {
         this.pageSize = list.pageSize;
@@ -129,6 +131,7 @@ public class IncrementalFaultList<E> implements List<E> {
         this.internalQuery = new SelectQuery(rootEntity);
         this.internalQuery.setFetchingDataRows(metadata.isFetchingDataRows());
         this.internalQuery.setResolvingInherited(metadata.isResolvingInherited());
+        this.internalQuery.setPrefetchTree(metadata.getPrefetchTree());
 
         if (metadata.isFetchingDataRows()) {
             helper = new DataRowListHelper();
@@ -141,8 +144,6 @@ public class IncrementalFaultList<E> implements List<E> {
 
         if (!metadata.isFetchingDataRows() && (query instanceof SelectQuery)) {
             SelectQuery select = (SelectQuery) query;
-
-            this.internalQuery.setPrefetchTree(select.getPrefetchTree());
 
             // optimize SelectQuery:
             // * just select ID columns - this gives a 5-10x speedup
