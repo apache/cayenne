@@ -340,7 +340,7 @@ public class IncrementalFaultList<E> implements List<E> {
                 if (isUnresolved(obj)) {
                     ids.add(obj);
 
-                    Map map = (Map) obj;
+                    Map<String, ?> map = (Map<String, ?>) obj;
                     if (map.isEmpty()) {
                         throw new CayenneRuntimeException("Empty id map at index " + i);
                     }
@@ -819,7 +819,7 @@ public class IncrementalFaultList<E> implements List<E> {
                 return true;
             }
 
-            Map map = (Map) object;
+            Map<?, ?> map = (Map<?, ?>) object;
             return map.size() != rowWidth;
         }
 
@@ -831,14 +831,11 @@ public class IncrementalFaultList<E> implements List<E> {
 
             if (object != null && objectInTheList != null) {
 
-                Map id = (Map) objectInTheList;
-                Map map = (Map) object;
+                Map<?, ?> id = (Map<?, ?>) objectInTheList;
+                Map<?, ?> map = (Map<?, ?>) object;
 
                 // id must be a subset of this map
-                Iterator it = id.entrySet().iterator();
-
-                while (it.hasNext()) {
-                    Map.Entry entry = (Map.Entry) it.next();
+                for (Map.Entry<?, ?> entry : id.entrySet()) {
                     Object key = entry.getKey();
                     Object value = entry.getValue();
                     if (!Util.nullSafeEquals(value, map.get(key))) {
@@ -855,17 +852,14 @@ public class IncrementalFaultList<E> implements List<E> {
         @Override
         boolean replacesObject(Object object, Object objectInTheList) {
 
-            Map id = (Map) objectInTheList;
+            Map<?, ?> id = (Map<?, ?>) objectInTheList;
             if (id.size() == rowWidth) {
                 return false;
             }
 
             // id must be a subset of this map
-            Map map = (Map) object;
-            Iterator it = id.entrySet().iterator();
-
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
+            Map<?, ?> map = (Map<?, ?>) object;
+            for (Map.Entry<?, ?> entry : id.entrySet()) {
                 Object key = entry.getKey();
                 Object value = entry.getValue();
                 if (!Util.nullSafeEquals(value, map.get(key))) {
