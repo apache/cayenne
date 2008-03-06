@@ -21,6 +21,7 @@ CAY-839 Support combination of Persistent objects and scalars in query results
 CAY-970 Allow application to add DbAdatperFactory to AutoAdapter
 CAY-971 ROP GraphDiff "compressor"
 CAY-980 Upgrade Derby to 10.3 to support alter table drop column
+CAY-999 Scaling paginated list
 
 Bug fixes since M3:
 
