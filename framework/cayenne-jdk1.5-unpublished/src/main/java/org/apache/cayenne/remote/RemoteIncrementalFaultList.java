@@ -103,17 +103,19 @@ public class RemoteIncrementalFaultList implements List {
         }
 
         Query query = paginatedQuery;
-        if (metadata.getCacheKey() == null) {
 
-            // there are some serious pagination optimizations for SelectQuery on the
-            // server-side, so use a special wrapper that is itself a subclass of
-            // SelectQuery
-            if (query instanceof SelectQuery) {
-                query = new IncrementalSelectQuery((SelectQuery) paginatedQuery, cacheKey);
-            }
-            else {
-                query = new IncrementalQuery(paginatedQuery, cacheKey);
-            }
+        // always wrap a query in a Incremental*Query, to ensure cache key is
+        // client-generated (e.g. see CAY-1003 - client and server can be in different
+        // timezones, so the key can be messed up)
+
+        // there are some serious pagination optimizations for SelectQuery on the
+        // server-side, so use a special wrapper that is itself a subclass of
+        // SelectQuery
+        if (query instanceof SelectQuery) {
+            query = new IncrementalSelectQuery((SelectQuery) paginatedQuery, cacheKey);
+        }
+        else {
+            query = new IncrementalQuery(paginatedQuery, cacheKey);
         }
 
         // ensure that originating query is wrapped to include the right cache key....

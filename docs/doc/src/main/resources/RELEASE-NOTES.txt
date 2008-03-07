@@ -32,6 +32,7 @@ CAY-984 Runtime relationships leak into CayenneModeler
 CAY-986 LOCAL_CACHE policy fails when query is paged
 CAY-989 Garbage SQL generated for EJBQL subqueries
 CAY-998 ROP paginated lists must recover from server LRU query cache overflow
+CAY-1003 the paged queries in ROP can fail to fetch the subsequent pages if the client and server are in different timezones
 
 ----------------------------------
 Release: 3.0M3
