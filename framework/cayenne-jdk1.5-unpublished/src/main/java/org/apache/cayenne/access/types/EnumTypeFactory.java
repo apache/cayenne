@@ -16,7 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.access.types;
+
+import org.apache.cayenne.ExtendedEnumeration;
 
 /**
  * ExtendedTypeFactory for handling JDK 1.5 Enums.
@@ -26,14 +29,14 @@ package org.apache.cayenne.access.types;
  */
 class EnumTypeFactory implements ExtendedTypeFactory {
 
-    @SuppressWarnings("all")
+    @SuppressWarnings("unchecked")
     public ExtendedType getType(Class<?> objectClass) {
-        
-        if(objectClass.isEnum()) {
+        if (ExtendedEnumeration.class.isAssignableFrom(objectClass))
+            return new ExtendedEnumType(objectClass);
+        else if (objectClass.isEnum())
             return new EnumType(objectClass);
-        }
-        else {
+        else
             return null;
-        }
     }
+
 }

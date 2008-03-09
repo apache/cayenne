@@ -120,7 +120,7 @@ public class QueryLogger {
             buffer.append('\'').append(object).append('\'');
         }
         else if (object instanceof Enum) {
-            buffer.append(object.getClass().getName()).append(".");
+//            buffer.append(object.getClass().getName()).append(".");
             buffer.append(((Enum<?>) object).name()).append("=");
             if (object instanceof ExtendedEnumeration) {
                 Object value = ((ExtendedEnumeration) object).getDatabaseValue();
