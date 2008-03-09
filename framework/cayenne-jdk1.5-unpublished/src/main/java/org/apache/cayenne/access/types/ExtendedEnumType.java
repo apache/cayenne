@@ -48,18 +48,18 @@ import org.apache.cayenne.validation.ValidationResult;
 public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType
 {
     private Class<T> enumerationClass = null;
-    private Object[] values;
+    private Object[] values           = null;
 
     // Contains a mapping of database values (Integer or String) and the
     // Enum for that value.  This is to facilitate mapping database values
     // back to the Enum upon reading them from the database.
     private Map<Object, Enum<T>> enumerationMappings = new HashMap<Object, Enum<T>>();
 
-    public ExtendedEnumType(Class<ExtendedEnumeration> enumerationClass) {
+    public ExtendedEnumType(Class<T> enumerationClass) {
         if (enumerationClass == null)
             throw new IllegalArgumentException("Null ExtendedEnumType class");
 
-        this.enumerationClass = (Class<T>) enumerationClass;
+        this.enumerationClass = enumerationClass;
 
         try {
             Method m = enumerationClass.getMethod("values");
