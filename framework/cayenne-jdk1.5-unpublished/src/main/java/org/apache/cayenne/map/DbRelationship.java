@@ -74,11 +74,11 @@ public class DbRelationship extends Relationship {
         encoder.print("<db-relationship name=\"");
         encoder.print(Util.encodeXmlAttribute(getName()));
         encoder.print("\" source=\"");
-        encoder.print(getSourceEntity().getName());
+        encoder.print(Util.encodeXmlAttribute(getSourceEntity().getName()));
 
         if (getTargetEntityName() != null && getTargetEntity() != null) {
             encoder.print("\" target=\"");
-            encoder.print(getTargetEntityName());
+            encoder.print(Util.encodeXmlAttribute(getTargetEntityName()));
         }
 
         if (isToDependentPK() && isValidForDepPk()) {
