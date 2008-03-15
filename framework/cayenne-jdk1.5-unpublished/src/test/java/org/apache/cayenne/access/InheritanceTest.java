@@ -31,6 +31,7 @@ import org.apache.cayenne.testdo.inherit.CustomerRepresentative;
 import org.apache.cayenne.testdo.inherit.Department;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
+import org.apache.cayenne.testdo.inherit.HomeAddress;
 import org.apache.cayenne.unit.PeopleCase;
 
 /**
@@ -174,6 +175,25 @@ public class InheritanceTest extends PeopleCase {
         assertEquals(1, countObjectOfClass(abstractPpl, CustomerRepresentative.class));
         assertEquals(5, countObjectOfClass(abstractPpl, Employee.class));
         assertEquals(2, countObjectOfClass(abstractPpl, Manager.class));
+    }
+
+    /**
+     * Test for CAY-1008: Reverse relationships may not be correctly set if inheritance is used.
+     */
+    public void testCAY1008() {
+        Employee e = context.newObject(Employee.class);
+
+        Address a = context.newObject(Address.class);
+        a.setToEmployee(e);
+
+        assertEquals(1, e.getAddresses().size());
+        assertEquals(0, e.getHomeAddresses().size());
+
+        HomeAddress ha = context.newObject(HomeAddress.class);
+        ha.setToEmployee(e);
+
+        assertEquals(2, e.getAddresses().size());
+        assertEquals(1, e.getHomeAddresses().size());
     }
 
     /**

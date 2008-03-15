@@ -3,6 +3,7 @@
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.inherit"/>
 	<db-entity name="ADDRESS">
 		<db-attribute name="ADDRESS_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ADDRESS_TYPE" type="VARCHAR" length="2"/>
 		<db-attribute name="CITY" type="VARCHAR" length="100"/>
 		<db-attribute name="PERSON_ID" type="INTEGER" isMandatory="true"/>
 	</db-entity>
@@ -29,6 +30,7 @@
 		<obj-attribute name="personType" type="java.lang.String" db-attribute-path="PERSON_TYPE"/>
 	</obj-entity>
 	<obj-entity name="Address" className="org.apache.cayenne.testdo.inherit.Address" dbEntityName="ADDRESS">
+		<obj-attribute name="addressType" type="java.lang.String" db-attribute-path="ADDRESS_TYPE"/>
 		<obj-attribute name="city" type="java.lang.String" db-attribute-path="CITY"/>
 	</obj-entity>
 	<obj-entity name="ClientCompany" className="org.apache.cayenne.testdo.inherit.ClientCompany" dbEntityName="CLIENT_COMPANY">
@@ -44,6 +46,8 @@
 	<obj-entity name="Employee" superEntityName="AbstractPerson" className="org.apache.cayenne.testdo.inherit.Employee">
 		<qualifier><![CDATA[personType = "EE"]]></qualifier>
 		<obj-attribute name="salary" type="java.lang.Float" db-attribute-path="SALARY"/>
+	</obj-entity>
+	<obj-entity name="HomeAddress" superEntityName="Address" className="org.apache.cayenne.testdo.inherit.HomeAddress">
 	</obj-entity>
 	<obj-entity name="Manager" superEntityName="Employee" className="org.apache.cayenne.testdo.inherit.Manager">
 		<qualifier><![CDATA[personType = "EM"]]></qualifier>
@@ -78,6 +82,7 @@
 	<obj-relationship name="employees" source="Department" target="Employee" db-relationship-path="employees"/>
 	<obj-relationship name="toManager" source="Department" target="Manager" db-relationship-path="toManager"/>
 	<obj-relationship name="addresses" source="Employee" target="Address" db-relationship-path="employeeAddresses"/>
+	<obj-relationship name="homeAddresses" source="Employee" target="HomeAddress" db-relationship-path="employeeAddresses"/>
 	<obj-relationship name="toDepartment" source="Employee" target="Department" db-relationship-path="toDepartment"/>
 	<obj-relationship name="managedDepartments" source="Manager" target="Department" db-relationship-path="managedDepartments"/>
 </data-map>
