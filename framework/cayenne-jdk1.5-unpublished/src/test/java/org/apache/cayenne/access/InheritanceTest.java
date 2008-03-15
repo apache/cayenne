@@ -21,8 +21,10 @@ package org.apache.cayenne.access;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.inherit.AbstractPerson;
 import org.apache.cayenne.testdo.inherit.Address;
@@ -194,6 +196,34 @@ public class InheritanceTest extends PeopleCase {
 
         assertEquals(2, e.getAddresses().size());
         assertEquals(1, e.getHomeAddresses().size());
+    }
+
+    /**
+     * Test for CAY-1009: Bogus runtime relationships can mess up commit.
+     */
+    public void testCAY1009() {
+
+        // We should have only one relationship.  ClientCompany -> CustomerRepresentative.
+        assertEquals(1, context.getEntityResolver().getObjEntity("ClientCompany").getRelationships().size());
+
+        // Simulate a load from a default configuration.
+        context.getEntityResolver().applyObjectLayerDefaults();
+
+        // We should still just have the one mapped relationship, but we in fact now have two:
+        // ClientCompany -> AbstractPerson and ClientCompany -> CustomerRepresentative.
+        assertEquals(1, context.getEntityResolver().getObjEntity("ClientCompany").getRelationships().size());
+
+        ClientCompany company = context.newObject(ClientCompany.class);
+        company.setName("Company");
+
+        CustomerRepresentative rep = context.newObject(CustomerRepresentative.class);
+        rep.setName("Rep");
+        rep.setToClientCompany(company);
+
+        assertEquals(1, company.getRepresentatives().size());
+
+        context.deleteObject(rep);
+        assertEquals(0, company.getRepresentatives().size());
     }
 
     /**
