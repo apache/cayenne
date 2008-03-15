@@ -22,6 +22,7 @@ CAY-970 Allow application to add DbAdatperFactory to AutoAdapter
 CAY-971 ROP GraphDiff "compressor"
 CAY-980 Upgrade Derby to 10.3 to support alter table drop column
 CAY-999 Scaling paginated list
+CAY-1010 Entity Tab switching on new entity creation
 
 Bug fixes since M3:
 
