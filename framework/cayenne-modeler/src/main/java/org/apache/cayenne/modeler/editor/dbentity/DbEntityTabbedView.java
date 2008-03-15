@@ -28,7 +28,9 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -48,7 +50,7 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
 
     protected ProjectController mediator;
 
-    protected DbEntityTab entityPanel;
+    protected Component entityPanel;
     protected DbEntityAttributeTab attributesPanel;
     protected DbEntityRelationshipTab relationshipsPanel;
 
@@ -65,8 +67,8 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
 
-        entityPanel = new DbEntityTab(mediator);
-        addTab("Entity", new JScrollPane(entityPanel));
+        entityPanel = new JScrollPane(new DbEntityTab(mediator));
+        addTab("Entity", entityPanel);
         attributesPanel = new DbEntityAttributeTab(mediator);
         addTab("Attributes", attributesPanel);
         relationshipsPanel = new DbEntityRelationshipTab(mediator);
@@ -98,6 +100,14 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
 
     /** If entity is null hides it's contents, otherwise makes it visible. */
     public void currentDbEntityChanged(EntityDisplayEvent e) {
+        Entity entity = e.getEntity();
+        if (e.isMainTabFocus() && entity instanceof DbEntity) {
+            if (getSelectedComponent() != entityPanel) {
+                setSelectedComponent(entityPanel);
+                entityPanel.setVisible(true);
+            }
+        }
+        
         resetRemoveButtons();
         setVisible(e.getEntity() != null);
     }

@@ -66,6 +66,7 @@ public class CreateDbEntityAction extends CayenneAction {
         EntityDisplayEvent displayEvent = new EntityDisplayEvent(this, entity, mediator
                 .getCurrentDataMap(), mediator.getCurrentDataNode(), mediator
                 .getCurrentDataDomain());
+        displayEvent.setMainTabFocus(true);
         mediator.fireDbEntityDisplayEvent(displayEvent);
     }
 

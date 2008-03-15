@@ -26,92 +26,72 @@ import org.apache.cayenne.map.Entity;
 
 /**
  * Represents a display event of an Entity.
- * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class EntityDisplayEvent extends DataMapDisplayEvent {
-	protected Entity entity;
 
-    /** True if the event is generated when an entity is beeing searched for */
-    protected boolean searched;
-
-	/** True if different from current entity */
-	protected boolean entityChanged = true;
-	protected boolean unselectAttributes;
-
-	public EntityDisplayEvent(Object src, Entity entity) {
-		this(src, entity, null, null, null);
-	}
-
-	public EntityDisplayEvent(
-		Object src,
-		Entity entity,
-		DataMap map,
-		DataDomain domain) {
-
-		this(src, entity, map, null, domain);
-	}
-
-	public EntityDisplayEvent(
-		Object src,
-		Entity entity,
-		DataMap map,
-		DataNode node,
-		DataDomain domain) {
-
-		super(src, map, domain, node);
-		this.entity = entity;
-		setDataMapChanged(false);
-	}
-
-	/** 
-     * Returns entity associated with this event. 
-     */
-	public Entity getEntity() {
-		return entity;
-	}
-
-	/** True if entity different from current entity. */
-	public boolean isEntityChanged() {
-		return entityChanged;
-	}
-	public void setEntityChanged(boolean temp) {
-		entityChanged = temp;
-	}
-
-	/**
-	 * Returns the unselectAttributes.
-	 * @return boolean
-	 */
-	public boolean isUnselectAttributes() {
-		return unselectAttributes;
-	}
-
-	/**
-	 * Sets the unselectAttributes.
-	 * @param unselectAttributes The unselectAttributes to set
-	 */
-	public void setUnselectAttributes(boolean unselectAttributes) {
-		this.unselectAttributes = unselectAttributes;
-	}
-
-	/**
-	 * Sets the entity.
-	 * @param entity The entity to set
-	 */
-	public void setEntity(Entity entity) {
-		this.entity = entity;
-	}
+    protected Entity entity;
 
     /**
-     * Sets the searched.
-     * @param searched
+     * If true, the event causes entity editor to switch to the main entity tab.
      */
-    public void setSearched(boolean searched) {
-        this.searched = searched;
+    protected boolean mainTabFocus;
+
+    /**
+     * True if different from current entity.
+     */
+    protected boolean entityChanged = true;
+    protected boolean unselectAttributes;
+
+    public EntityDisplayEvent(Object src, Entity entity) {
+        this(src, entity, null, null, null);
     }
-    public boolean isSearched() {
-        return searched;
+
+    public EntityDisplayEvent(Object src, Entity entity, DataMap map, DataDomain domain) {
+
+        this(src, entity, map, null, domain);
+    }
+
+    public EntityDisplayEvent(Object src, Entity entity, DataMap map, DataNode node,
+            DataDomain domain) {
+
+        super(src, map, domain, node);
+        this.entity = entity;
+        setDataMapChanged(false);
+    }
+
+    /**
+     * Returns entity associated with this event.
+     */
+    public Entity getEntity() {
+        return entity;
+    }
+
+    /** True if entity different from current entity. */
+    public boolean isEntityChanged() {
+        return entityChanged;
+    }
+
+    public void setEntityChanged(boolean temp) {
+        entityChanged = temp;
+    }
+
+    public boolean isUnselectAttributes() {
+        return unselectAttributes;
+    }
+
+    public void setUnselectAttributes(boolean unselectAttributes) {
+        this.unselectAttributes = unselectAttributes;
+    }
+
+    public void setEntity(Entity entity) {
+        this.entity = entity;
+    }
+
+    public void setMainTabFocus(boolean searched) {
+        this.mainTabFocus = searched;
+    }
+
+    public boolean isMainTabFocus() {
+        return mainTabFocus;
     }
 }

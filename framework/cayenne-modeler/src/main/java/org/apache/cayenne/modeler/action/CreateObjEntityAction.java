@@ -118,6 +118,7 @@ public class CreateObjEntityAction extends CayenneAction {
                 dataMap,
                 mediator.getCurrentDataNode(),
                 mediator.getCurrentDataDomain());
+        displayEvent.setMainTabFocus(true);
         mediator.fireObjEntityDisplayEvent(displayEvent);
     }
 

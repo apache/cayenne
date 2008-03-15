@@ -137,7 +137,7 @@ public class FindDialog extends CayenneController {
                         (Entity) path[path.length - 1],
                         (DataMap) path[path.length - 2],
                         (DataDomain) path[path.length - 3]);
-                event.setSearched(true);
+                event.setMainTabFocus(true);
 
                 if (path[path.length - 1] instanceof ObjEntity)
                     editor.getObjDetailView().currentObjEntityChanged(event);
@@ -161,7 +161,7 @@ public class FindDialog extends CayenneController {
                             (Entity) path[path.length - 2],
                             (DataMap) path[path.length - 3],
                             (DataDomain) path[path.length - 4]);
-                    event.setSearched(true);
+                    event.setMainTabFocus(true);
                     editor.getDbDetailView().currentDbAttributeChanged(event);
                 }
 
@@ -172,7 +172,7 @@ public class FindDialog extends CayenneController {
                             (Entity) path[path.length - 2],
                             (DataMap) path[path.length - 3],
                             (DataDomain) path[path.length - 4]);
-                    event.setSearched(true);
+                    event.setMainTabFocus(true);
                     editor.getObjDetailView().currentObjAttributeChanged(event);
                 }
 
@@ -184,7 +184,7 @@ public class FindDialog extends CayenneController {
                             (DataMap) path[path.length - 3],
                             (DataDomain) path[path.length - 4]
                     );
-                    event.setSearched(true);
+                    event.setMainTabFocus(true);
                     editor.getDbDetailView().currentDbRelationshipChanged(event);
                 }
             }
@@ -197,7 +197,7 @@ public class FindDialog extends CayenneController {
                             (DataMap) path[path.length - 3],
                             (DataDomain) path[path.length - 4]
                     );
-                    event.setSearched(true);
+                    event.setMainTabFocus(true);
                     editor.getObjDetailView().currentObjRelationshipChanged(event);
                 }
         }

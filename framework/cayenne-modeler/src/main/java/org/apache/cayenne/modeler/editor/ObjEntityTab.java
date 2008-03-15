@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
@@ -68,9 +67,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * Detail view of the ObjEntity properties.
- * 
- * @author Michael Misha Shengaout
- * @author Andrus Adamchik
  */
 public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         ExistingSelectionProcessor {
@@ -205,7 +201,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         builder.append("Qualifier:", qualifier.getComponent(), 3);
         builder.append("Read-Only:", readOnly, 3);
         builder.append("Optimistic Locking:", optimisticLocking, 3);
-        //add callback-related stuff
+        // add callback-related stuff
         builder.append("Exclude superclass listeners:", excludeSuperclassListeners, 3);
         builder.append("Exclude default listeners:", excludeDefaultListeners, 3);
 
@@ -319,31 +315,29 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
             }
         });
 
-        excludeSuperclassListeners.addActionListener(
-                new ActionListener() {
+        excludeSuperclassListeners.addActionListener(new ActionListener() {
 
-                    public void actionPerformed(ActionEvent e) {
-                        ObjEntity entity = mediator.getCurrentObjEntity();
-                        if (entity != null) {
-                            entity.setExcludingSuperclassListeners(excludeSuperclassListeners.isSelected());
-                            mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-                        }
-                    }
+            public void actionPerformed(ActionEvent e) {
+                ObjEntity entity = mediator.getCurrentObjEntity();
+                if (entity != null) {
+                    entity.setExcludingSuperclassListeners(excludeSuperclassListeners
+                            .isSelected());
+                    mediator.fireObjEntityEvent(new EntityEvent(this, entity));
                 }
-        );
+            }
+        });
 
-        excludeDefaultListeners.addActionListener(
-                new ActionListener() {
+        excludeDefaultListeners.addActionListener(new ActionListener() {
 
-                    public void actionPerformed(ActionEvent e) {
-                        ObjEntity entity = mediator.getCurrentObjEntity();
-                        if (entity != null) {
-                            entity.setExcludingDefaultListeners(excludeDefaultListeners.isSelected());
-                            mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-                        }
-                    }
+            public void actionPerformed(ActionEvent e) {
+                ObjEntity entity = mediator.getCurrentObjEntity();
+                if (entity != null) {
+                    entity.setExcludingDefaultListeners(excludeDefaultListeners
+                            .isSelected());
+                    mediator.fireObjEntityEvent(new EntityEvent(this, entity));
                 }
-        );
+            }
+        });
 
         serverOnly.addActionListener(new ActionListener() {
 
@@ -361,7 +355,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
     /**
      * Updates the view from the current model state. Invoked when a currently displayed
      * ObjEntity is changed.
-     *
+     * 
      * @param entity current entity
      */
     private void initFromModel(final ObjEntity entity) {
@@ -544,7 +538,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
             ClassNameUpdater nameUpdater = new ClassNameUpdater(Application
                     .getInstance()
                     .getFrameController(), entity);
-            
+
             if (nameUpdater.doNameUpdate()) {
                 className.setText(entity.getClassName());
                 clientClassName.setText(entity.getClientClassName());
@@ -587,6 +581,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
     }
 
     public void processExistingSelection(EventObject e) {
+
         EntityDisplayEvent ede = new EntityDisplayEvent(this, mediator
                 .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
                 .getCurrentDataDomain());
@@ -600,6 +595,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         }
 
         initFromModel(entity);
+        name.getComponent().requestFocusInWindow();
     }
 
 }

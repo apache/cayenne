@@ -24,7 +24,6 @@ import java.awt.CardLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.EventObject;
-import java.util.Iterator;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -197,6 +196,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         }
 
         if (!e.isEntityChanged()) {
+            name.getComponent().requestFocusInWindow();
             return;
         }
 
@@ -209,9 +209,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
             type = PK_CUSTOM_SEQUENCE_GENERATOR;
         }
         else {
-            Iterator it = entity.getPrimaryKeys().iterator();
-            while (it.hasNext()) {
-                DbAttribute a = (DbAttribute) it.next();
+            for (DbAttribute a : entity.getPrimaryKeys()) {
                 if (a.isGenerated()) {
                     type = PK_DB_GENERATOR;
                     break;
@@ -223,9 +221,11 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         schema.getComponent().setEnabled(true);
         pkGeneratorDetail.setVisible(true);
         pkGeneratorType.setVisible(true);
-        
+
         pkGeneratorType.setSelectedItem(type);
         pkGeneratorDetailLayout.show(pkGeneratorDetail, type);
+
+        name.getComponent().requestFocusInWindow();
     }
 
     void setEntityName(String newName) {
