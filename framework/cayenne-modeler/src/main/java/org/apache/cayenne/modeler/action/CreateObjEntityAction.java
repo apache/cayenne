@@ -93,7 +93,7 @@ public class CreateObjEntityAction extends CayenneAction {
         }
 
         if (dataMap.isClientSupported()) {
-            String clientPkg = dataMap.getDefaultPackage();
+            String clientPkg = dataMap.getDefaultClientPackage();
             if (clientPkg != null) {
                 if (!clientPkg.endsWith(".")) {
                     clientPkg = clientPkg + ".";
