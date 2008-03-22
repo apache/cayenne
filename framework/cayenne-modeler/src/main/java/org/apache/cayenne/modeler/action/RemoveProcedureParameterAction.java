@@ -27,6 +27,7 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.ProcedureParameterEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.dialog.ConfirmDeleteDialog;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
@@ -59,8 +60,13 @@ public class RemoveProcedureParameterAction extends RemoveAction {
     }
 
     public void performAction(ActionEvent e) {
-        if (getProjectController().getCurrentProcedure() != null) {
-            removeProcedureParameter();
+        ConfirmDeleteDialog dialog = getConfirmDeleteDialog();
+
+        if (getProjectController().getCurrentProcedureParameter() != null) {
+            if (dialog.shouldDelete("procedure parameter", getProjectController()
+                    .getCurrentProcedureParameter().getName())) {
+                removeProcedureParameter();
+            }
         }
     }
 

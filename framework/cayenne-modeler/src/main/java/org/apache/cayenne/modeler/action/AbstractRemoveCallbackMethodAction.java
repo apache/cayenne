@@ -24,6 +24,7 @@ import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.dialog.ConfirmDeleteDialog;
 import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -34,7 +35,7 @@ import org.apache.cayenne.modeler.util.CayenneAction;
  * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
-public abstract class AbstractRemoveCallbackMethodAction extends CayenneAction {
+public abstract class AbstractRemoveCallbackMethodAction extends RemoveAction {
 
     /**
      * Constructor.
@@ -63,8 +64,13 @@ public abstract class AbstractRemoveCallbackMethodAction extends CayenneAction {
      * @param e event
      */
     public final void performAction(ActionEvent e) {
+        ConfirmDeleteDialog dialog = getConfirmDeleteDialog();        
+
         if (getProjectController().getCurrentCallbackMethod() != null) {
-            removeCallbackMethod(e);
+            if (dialog.shouldDelete("callback method", getProjectController()
+                    .getCurrentCallbackMethod())) {
+                removeCallbackMethod(e);
+            }
         }
     }
 

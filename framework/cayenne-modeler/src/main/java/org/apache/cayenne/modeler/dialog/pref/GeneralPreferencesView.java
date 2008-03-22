@@ -21,9 +21,7 @@ package org.apache.cayenne.modeler.dialog.pref;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -38,16 +36,18 @@ public class GeneralPreferencesView extends JPanel {
     protected JLabel saveIntervalLabel;
     protected EncodingSelectorView encodingSelector;
     protected JLabel encodingSelectorLabel;
+    protected JCheckBox deletePromptBox;
 
     public GeneralPreferencesView() {
         this.saveInterval = new JTextField();
         this.encodingSelector = new EncodingSelectorView();
         this.saveIntervalLabel = new JLabel("Preferences Save Interval (sec):");
         this.encodingSelectorLabel = new JLabel("File Encoding:");
+        this.deletePromptBox = new JCheckBox("Always delete items without prompt.");
 
         FormLayout layout = new FormLayout(
                 "right:pref, 3dlu, 30dlu, 3dlu, fill:70dlu",
-                "p, 3dlu, p, 12dlu, p, 3dlu, fill:40dlu:grow");
+                "p, 3dlu, p, 12dlu, p, 40dlu, p, 3dlu, p, 3dlu, fill:40dlu:grow");
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(layout);
@@ -57,6 +57,9 @@ public class GeneralPreferencesView extends JPanel {
         builder.add(saveInterval, cc.xy(3, 3));
         builder.add(encodingSelectorLabel, cc.xy(1, 5));
         builder.add(encodingSelector, cc.xywh(3, 5, 3, 3));
+
+        builder.addSeparator("Editor Preferences", cc.xywh(1, 7, 5, 1));
+        builder.add(deletePromptBox, cc.xy(1, 9));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
@@ -76,5 +79,9 @@ public class GeneralPreferencesView extends JPanel {
 
     public EncodingSelectorView getEncodingSelector() {
         return encodingSelector;
+    }
+
+    public JCheckBox getDeletePrompt() {
+        return deletePromptBox;
     }
 }

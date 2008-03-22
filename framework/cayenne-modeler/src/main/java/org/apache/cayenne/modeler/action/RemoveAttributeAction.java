@@ -31,6 +31,7 @@ import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.dialog.ConfirmDeleteDialog;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.ProjectPath;
 
@@ -64,11 +65,19 @@ public class RemoveAttributeAction extends RemoveAction {
     }
 
     public void performAction(ActionEvent e) {
+        ConfirmDeleteDialog dialog = getConfirmDeleteDialog();
+
         if (getProjectController().getCurrentObjAttribute() != null) {
-            removeObjAttribute();
+            if (dialog.shouldDelete("ObjAttribute", getProjectController()
+                    .getCurrentObjAttribute().getName())) {
+                removeObjAttribute();
+            }
         }
         else if (getProjectController().getCurrentDbAttribute() != null) {
-            removeDbAttribute();
+            if (dialog.shouldDelete("DbAttribute", getProjectController()
+                    .getCurrentDbAttribute().getName())) {
+                removeDbAttribute();
+            }
         }
     }
 

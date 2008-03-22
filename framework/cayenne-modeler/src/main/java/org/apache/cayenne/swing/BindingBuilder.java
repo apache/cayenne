@@ -23,10 +23,7 @@ import java.awt.Component;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.AbstractButton;
-import javax.swing.JComboBox;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 /**
  * A builder for component bindings that delegates the creation of the binding to the
@@ -158,6 +155,11 @@ public class BindingBuilder {
 
     public ObjectBinding bindToTextField(JTextField component, String property) {
         ObjectBinding binding = factory.bindToTextField(component, property);
+        return initBinding(binding, delegate);
+    }
+
+    public ObjectBinding bindToCheckBox(JCheckBox component, String property) {
+        ObjectBinding binding = factory.bindToCheckBox(component, property);
         return initBinding(binding, delegate);
     }
 

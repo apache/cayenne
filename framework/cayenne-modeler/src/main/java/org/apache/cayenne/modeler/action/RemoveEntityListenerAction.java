@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.dialog.ConfirmDeleteDialog;
 import org.apache.cayenne.modeler.event.EntityListenerEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
@@ -33,7 +34,7 @@ import org.apache.cayenne.modeler.util.CayenneAction;
  * @author Vasil Tarasevich
  * @version 1.0 Oct 30, 2007
  */
-public class RemoveEntityListenerAction extends CayenneAction {
+public class RemoveEntityListenerAction extends RemoveAction {
     /**
      * unique action name
      */
@@ -67,6 +68,19 @@ public class RemoveEntityListenerAction extends CayenneAction {
      * @param e event
      */
     public void performAction(ActionEvent e) {
+        ConfirmDeleteDialog dialog = getConfirmDeleteDialog();
+
+        if ((getProjectController().getCurrentObjEntity() != null) &&
+            (getProjectController().getCurrentListenerClass() != null)) {
+
+            if (dialog.shouldDelete("entity listener", getProjectController()
+                    .getCurrentListenerClass())) {
+                removeEntityListener();
+            }
+        }
+    }
+
+    protected void removeEntityListener() {
         ObjEntity objEnt = getProjectController().getCurrentObjEntity();
         String listenerClass = getProjectController().getCurrentListenerClass();
 

@@ -47,6 +47,7 @@ import org.apache.cayenne.map.event.ProcedureEvent;
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.dialog.ConfirmDeleteDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.ProjectPath;
@@ -79,37 +80,58 @@ public class RemoveAction extends CayenneAction {
         return KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
     }
 
+    public ConfirmDeleteDialog getConfirmDeleteDialog() {
+        return new ConfirmDeleteDialog();
+    }
+
     public void performAction(ActionEvent e) {
 
         ProjectController mediator = getProjectController();
 
+        ConfirmDeleteDialog dialog = getConfirmDeleteDialog();
+
         if (mediator.getCurrentObjEntity() != null) {
-            removeObjEntity();
+            if (dialog.shouldDelete("ObjEntity", mediator.getCurrentObjEntity().getName())) {
+                removeObjEntity();
+            }
         }
         else if (mediator.getCurrentDbEntity() != null) {
-            removeDbEntity();
+            if (dialog.shouldDelete("DbEntity", mediator.getCurrentDbEntity().getName())) {
+                removeDbEntity();
+            }
         }
         else if (mediator.getCurrentQuery() != null) {
-            removeQuery();
+            if (dialog.shouldDelete("query", mediator.getCurrentQuery().getName())) {
+                removeQuery();
+            }
         }
         else if (mediator.getCurrentProcedure() != null) {
-            removeProcedure();
+            if (dialog.shouldDelete("procedure", mediator.getCurrentProcedure().getName())) {
+                removeProcedure();
+            }
         }
         else if (mediator.getCurrentDataMap() != null) {
-            // In context of Data node just remove from Data Node
-            if (mediator.getCurrentDataNode() != null) {
-                removeDataMapFromDataNode();
-            }
-            else {
-                // Not under Data Node, remove completely
-                removeDataMap();
+            if (dialog.shouldDelete("data map", mediator.getCurrentDataMap().getName())) {
+
+                // In context of Data node just remove from Data Node
+                if (mediator.getCurrentDataNode() != null) {
+                    removeDataMapFromDataNode();
+                }
+                else {
+                    // Not under Data Node, remove completely
+                    removeDataMap();
+                }
             }
         }
         else if (mediator.getCurrentDataNode() != null) {
-            removeDataNode();
+            if (dialog.shouldDelete("data node", mediator.getCurrentDataNode().getName())) {
+                removeDataNode();
+            }
         }
         else if (mediator.getCurrentDataDomain() != null) {
-            removeDomain();
+            if (dialog.shouldDelete("data domain", mediator.getCurrentDataDomain().getName())) {
+                removeDomain();
+            }
         }
     }
 

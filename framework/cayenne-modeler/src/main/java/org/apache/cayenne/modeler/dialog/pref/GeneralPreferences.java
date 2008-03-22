@@ -23,6 +23,7 @@ import java.awt.Component;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.CayennePreferenceService;
 import org.apache.cayenne.pref.Domain;
@@ -37,14 +38,17 @@ import org.apache.cayenne.validation.ValidationException;
  */
 public class GeneralPreferences extends CayenneController {
 
+    public static final String DELETE_PROMPT_PREFERENCE = "deletePrompt";
     public static final String ENCODING_PREFERENCE = "encoding";
 
     protected GeneralPreferencesView view;
     protected CayennePreferenceEditor editor;
     protected PreferenceDetail classGeneratorPreferences;
+    protected PreferenceDetail deletePromptPreference;
 
     protected ObjectBinding saveIntervalBinding;
     protected ObjectBinding encodingBinding;
+    protected ObjectBinding deletePromptBinding;
 
     public GeneralPreferences(PreferenceDialog parentController) {
         super(parentController);
@@ -58,6 +62,7 @@ public class GeneralPreferences extends CayenneController {
 
             saveIntervalBinding.updateView();
             encodingBinding.updateView();
+            deletePromptBinding.updateView();
         }
         else {
             this.view.setEnabled(false);
@@ -75,6 +80,10 @@ public class GeneralPreferences extends CayenneController {
         this.classGeneratorPreferences = classGeneratorDomain
                 .getDetail(ENCODING_PREFERENCE, true);
 
+        this.deletePromptPreference = editor.editableInstance(getApplication().getPreferenceDomain())
+                .getDetail(DELETE_PROMPT_PREFERENCE, true);
+
+
         // build child controllers...
         EncodingSelector encodingSelector = new EncodingSelector(this, view
                 .getEncodingSelector());
@@ -90,6 +99,9 @@ public class GeneralPreferences extends CayenneController {
         this.encodingBinding = builder.bindToProperty(encodingSelector,
                 "classGeneratorPreferences.property[\"encoding\"]",
                 EncodingSelector.ENCODING_PROPERTY_BINDING);
+
+        this.deletePromptBinding = builder.bindToCheckBox(view.getDeletePrompt(),
+                "deletePrompt");
     }
 
     public double getTimeInterval() {
@@ -105,6 +117,14 @@ public class GeneralPreferences extends CayenneController {
         }
 
         this.editor.setSaveInterval(ms);
+    }
+
+    public boolean getDeletePrompt() {
+        return deletePromptPreference.getBooleanProperty(GeneralPreferences.DELETE_PROMPT_PREFERENCE);
+    }
+
+    public void setDeletePrompt(boolean deletePrompt) {
+        deletePromptPreference.setBooleanProperty(GeneralPreferences.DELETE_PROMPT_PREFERENCE, deletePrompt);
     }
 
     public PreferenceDetail getClassGeneratorPreferences() {

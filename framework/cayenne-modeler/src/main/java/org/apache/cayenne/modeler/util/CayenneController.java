@@ -99,7 +99,7 @@ public abstract class CayenneController implements BoundComponent {
     }
 
     /**
-     * Returns preference domaing for this component view.
+     * Returns preference domain for this component view.
      */
     protected Domain getViewDomain() {
         return getApplication().getPreferenceDomain().getSubdomain(getView().getClass());

@@ -21,11 +21,7 @@ package org.apache.cayenne.swing;
 
 import java.awt.Component;
 
-import javax.swing.AbstractButton;
-import javax.swing.JComboBox;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 /**
  * A factory for a number of common bindings.
@@ -128,6 +124,11 @@ public class BindingFactory {
      */
     public ObjectBinding bindToTextField(JTextField component, String property) {
         TextBinding binding = new TextBinding(component, property);
+        return prepareBinding(binding);
+    }
+
+    public ObjectBinding bindToCheckBox(JCheckBox component, String property) {
+        CheckBoxBinding binding = new CheckBoxBinding(component, property);
         return prepareBinding(binding);
     }
 

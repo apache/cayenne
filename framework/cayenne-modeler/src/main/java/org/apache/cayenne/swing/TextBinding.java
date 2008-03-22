@@ -55,7 +55,9 @@ public class TextBinding extends BindingBase {
         textField.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                updateModel();
+                if (!modelUpdateDisabled) {
+                    updateModel();
+                }
             }
         });
 

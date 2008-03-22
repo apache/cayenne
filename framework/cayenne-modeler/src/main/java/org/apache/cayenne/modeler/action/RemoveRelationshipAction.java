@@ -31,6 +31,7 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.dialog.ConfirmDeleteDialog;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.ProjectPath;
 
@@ -64,11 +65,19 @@ public class RemoveRelationshipAction extends RemoveAction {
     }
 
     public void performAction(ActionEvent e) {
+        ConfirmDeleteDialog dialog = getConfirmDeleteDialog();
+
         if (getProjectController().getCurrentObjRelationship() != null) {
-            removeObjRelationship();
+            if (dialog.shouldDelete("ObjRelationship", getProjectController()
+                    .getCurrentObjRelationship().getName())) {
+                removeObjRelationship();
+            }
         }
         else if (getProjectController().getCurrentDbRelationship() != null) {
-            removeDbRelationship();
+            if (dialog.shouldDelete("DbRelationship", getProjectController()
+                    .getCurrentDbRelationship().getName())) {
+                removeDbRelationship();
+            }
         }
     }
 
