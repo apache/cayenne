@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -31,6 +32,9 @@ import javax.swing.UIManager;
 
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.project.CayenneUserDir;
+import org.apache.cayenne.pref.PreferenceDetail;
+import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
+import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -80,7 +84,22 @@ public class Main {
         return null;
     }
 
-    protected void runModeler(File projectFile) {
+    protected static File projectFileFromPrefs() {
+        // This must be run after the application has already been bootstrapped.  Otherwise, the returned
+        // app instance will be null.
+        PreferenceDetail autoLoadPref = Application.getInstance().getPreferenceDomain().getDetail(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE, true);
+        
+        if ((autoLoadPref != null) && (true == autoLoadPref.getBooleanProperty(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE))) {
+            ModelerPreferences modelerPreferences = ModelerPreferences.getPreferences();
+            Vector arr = modelerPreferences.getVector(ModelerPreferences.LAST_PROJ_FILES);
+
+            return new File((String) arr.get(0));
+        }
+
+        return null;
+    }
+
+    protected void runModeler(final File projectFile) {
         logObj.info("Starting CayenneModeler.");
 
         // set up UI
@@ -93,6 +112,16 @@ public class Main {
 
             public void run() {
                 Application.instance.startup();
+
+                if (null == projectFile) {
+                    File projectFileFromPrefs = projectFileFromPrefs();
+
+                    if (null != projectFileFromPrefs) {
+                        OpenProjectAction action = new OpenProjectAction(Application.instance);
+
+                        action.openProject(projectFileFromPrefs);
+                    }
+                }
             }
         };
 
