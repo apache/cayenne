@@ -24,10 +24,9 @@ import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.ConfirmDeleteDialog;
+import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
  * Base class for removing callback methofs
@@ -64,7 +63,7 @@ public abstract class AbstractRemoveCallbackMethodAction extends RemoveAction {
      * @param e event
      */
     public final void performAction(ActionEvent e) {
-        ConfirmDeleteDialog dialog = getConfirmDeleteDialog();        
+        ConfirmRemoveDialog dialog = getConfirmDeleteDialog();
 
         if (getProjectController().getCurrentCallbackMethod() != null) {
             if (dialog.shouldDelete("callback method", getProjectController()

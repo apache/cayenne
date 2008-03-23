@@ -11,7 +11,7 @@ import javax.swing.*;
  *
  * @author Kevin Menard
  */
-public class ConfirmDeleteDialog {
+public class ConfirmRemoveDialog {
     private boolean shouldDelete = true;
 
     private void showDialog(String type, String name) {

@@ -47,7 +47,7 @@ import org.apache.cayenne.map.event.ProcedureEvent;
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.ConfirmDeleteDialog;
+import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.ProjectPath;
@@ -80,15 +80,15 @@ public class RemoveAction extends CayenneAction {
         return KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
     }
 
-    public ConfirmDeleteDialog getConfirmDeleteDialog() {
-        return new ConfirmDeleteDialog();
+    public ConfirmRemoveDialog getConfirmDeleteDialog() {
+        return new ConfirmRemoveDialog();
     }
 
     public void performAction(ActionEvent e) {
 
         ProjectController mediator = getProjectController();
 
-        ConfirmDeleteDialog dialog = getConfirmDeleteDialog();
+        ConfirmRemoveDialog dialog = getConfirmDeleteDialog();
 
         if (mediator.getCurrentObjEntity() != null) {
             if (dialog.shouldDelete("ObjEntity", mediator.getCurrentObjEntity().getName())) {
