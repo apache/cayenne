@@ -21,10 +21,8 @@ package org.apache.cayenne.access;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 
 import org.apache.cayenne.DataObjectUtils;
-import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.inherit.AbstractPerson;
 import org.apache.cayenne.testdo.inherit.Address;
@@ -33,7 +31,10 @@ import org.apache.cayenne.testdo.inherit.CustomerRepresentative;
 import org.apache.cayenne.testdo.inherit.Department;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
-import org.apache.cayenne.testdo.inherit.HomeAddress;
+import org.apache.cayenne.testdo.inherit.RelatedEntity;
+import org.apache.cayenne.testdo.inherit.BaseEntity;
+import org.apache.cayenne.testdo.inherit.SubEntity;
+import org.apache.cayenne.testdo.inherit.DirectToSubEntity;
 import org.apache.cayenne.unit.PeopleCase;
 
 /**
@@ -183,19 +184,19 @@ public class InheritanceTest extends PeopleCase {
      * Test for CAY-1008: Reverse relationships may not be correctly set if inheritance is used.
      */
     public void testCAY1008() {
-        Employee e = context.newObject(Employee.class);
+        RelatedEntity related = context.newObject(RelatedEntity.class);
 
-        Address a = context.newObject(Address.class);
-        a.setToEmployee(e);
+        BaseEntity base = context.newObject(BaseEntity.class);
+        base.setToRelatedEntity(related);
 
-        assertEquals(1, e.getAddresses().size());
-        assertEquals(0, e.getHomeAddresses().size());
+        assertEquals(1, related.getBaseEntities().size());
+        assertEquals(0, related.getSubEntities().size());
 
-        HomeAddress ha = context.newObject(HomeAddress.class);
-        ha.setToEmployee(e);
+        SubEntity sub = context.newObject(SubEntity.class);
+        sub.setToRelatedEntity(related);
 
-        assertEquals(2, e.getAddresses().size());
-        assertEquals(1, e.getHomeAddresses().size());
+        assertEquals(2, related.getBaseEntities().size());
+        assertEquals(1, related.getSubEntities().size());
     }
 
     /**
@@ -203,27 +204,27 @@ public class InheritanceTest extends PeopleCase {
      */
     public void testCAY1009() {
 
-        // We should have only one relationship.  ClientCompany -> CustomerRepresentative.
-        assertEquals(1, context.getEntityResolver().getObjEntity("ClientCompany").getRelationships().size());
+        // We should have only one relationship.  DirectToSubEntity -> SubEntity.
+        assertEquals(1, context.getEntityResolver().getObjEntity("DirectToSubEntity")
+                .getRelationships().size());
 
         // Simulate a load from a default configuration.
         context.getEntityResolver().applyObjectLayerDefaults();
 
         // We should still just have the one mapped relationship, but we in fact now have two:
-        // ClientCompany -> AbstractPerson and ClientCompany -> CustomerRepresentative.
-        assertEquals(1, context.getEntityResolver().getObjEntity("ClientCompany").getRelationships().size());
+        // DirectToSubEntity -> BaseEntity and DirectToSubEntity -> SubEntity.
+        assertEquals(1, context.getEntityResolver().getObjEntity("DirectToSubEntity")
+                .getRelationships().size());
 
-        ClientCompany company = context.newObject(ClientCompany.class);
-        company.setName("Company");
+        DirectToSubEntity direct = context.newObject(DirectToSubEntity.class);
 
-        CustomerRepresentative rep = context.newObject(CustomerRepresentative.class);
-        rep.setName("Rep");
-        rep.setToClientCompany(company);
+        SubEntity sub = context.newObject(SubEntity.class);
+        sub.setToDirectToSubEntity(direct);
 
-        assertEquals(1, company.getRepresentatives().size());
+        assertEquals(1, direct.getSubEntities().size());
 
-        context.deleteObject(rep);
-        assertEquals(0, company.getRepresentatives().size());
+        context.deleteObject(sub);
+        assertEquals(0, direct.getSubEntities().size());
     }
 
     /**

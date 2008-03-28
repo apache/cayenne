@@ -16,11 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.testdo.inherit;
 
-import org.apache.cayenne.testdo.inherit.auto._AbstractAddress;
+import org.apache.cayenne.testdo.inherit.auto._BaseEntity;
 
-public class AbstractAddress extends _AbstractAddress {
+public class BaseEntity extends _BaseEntity {
 
 }

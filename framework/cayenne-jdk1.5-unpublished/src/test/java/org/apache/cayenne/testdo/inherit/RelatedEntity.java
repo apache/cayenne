@@ -16,11 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.testdo.inherit;
 
-import org.apache.cayenne.testdo.inherit.auto._HomeAddress;
+import org.apache.cayenne.testdo.inherit.auto._RelatedEntity;
 
-public class HomeAddress extends _HomeAddress {
+public class RelatedEntity extends _RelatedEntity {
 
 }

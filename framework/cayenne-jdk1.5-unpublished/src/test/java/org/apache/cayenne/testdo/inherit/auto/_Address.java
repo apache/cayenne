@@ -11,18 +11,10 @@ import org.apache.cayenne.testdo.inherit.Employee;
  */
 public abstract class _Address extends CayenneDataObject {
 
-    public static final String ADDRESS_TYPE_PROPERTY = "addressType";
     public static final String CITY_PROPERTY = "city";
     public static final String TO_EMPLOYEE_PROPERTY = "toEmployee";
 
     public static final String ADDRESS_ID_PK_COLUMN = "ADDRESS_ID";
-
-    public void setAddressType(String addressType) {
-        writeProperty("addressType", addressType);
-    }
-    public String getAddressType() {
-        return (String)readProperty("addressType");
-    }
 
     public void setCity(String city) {
         writeProperty("city", city);
