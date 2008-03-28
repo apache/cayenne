@@ -115,6 +115,10 @@
 		<db-attribute name="DECIMAL_PK" type="DECIMAL" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
+	<db-entity name="ENUM_ENTITY">
+		<db-attribute name="ENUM_ATTRIBUTE" type="VARCHAR" length="250"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="EXHIBIT">
 		<db-attribute name="CLOSING_DATE" type="TIMESTAMP" isMandatory="true"/>
 		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -320,6 +324,9 @@
 	<obj-entity name="DecimalPKTestEntity" className="org.apache.art.DecimalPKTestEntity" dbEntityName="DECIMAL_PK_TST">
 		<obj-attribute name="decimalPK" type="java.math.BigDecimal" db-attribute-path="DECIMAL_PK"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="EnumEntity" className="org.apache.art.EnumEntity" dbEntityName="ENUM_ENTITY">
+		<obj-attribute name="enumAttribute" type="org.apache.art.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
 	</obj-entity>
 	<obj-entity name="Exhibit" className="org.apache.art.Exhibit" dbEntityName="EXHIBIT">
 		<obj-attribute name="closingDate" type="java.util.Date" db-attribute-path="CLOSING_DATE"/>

@@ -11,6 +11,4 @@
 	<map name="relationships" location="relationships.map.xml"/>
 	<map name="testmap" location="testmap.map.xml"/>
 </domain>
-<view name="dataview0" location="dataview0.view.xml"/>
-<view name="dataview1" location="dataview1.view.xml"/>
 </domains>
