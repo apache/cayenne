@@ -43,6 +43,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLTemplate;
 
 /**
@@ -51,8 +52,8 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 class OracleSQLTemplateAction extends SQLTemplateAction {
 
-    OracleSQLTemplateAction(SQLTemplate query, DbAdapter adapter) {
-        super(query, adapter);
+    OracleSQLTemplateAction(SQLTemplate query, DbAdapter adapter, EntityResolver resolver) {
+        super(query, adapter, resolver);
     }
 
     @Override
@@ -680,7 +681,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 
         public String getColumnClassName(int column) throws SQLException {
             String className = delegate.getColumnClassName(column);
-            
+
             if (BigDecimal.class.getName().equals(className)
                     && getColumnType(column) == Types.INTEGER) {
                 className = Integer.class.getName();

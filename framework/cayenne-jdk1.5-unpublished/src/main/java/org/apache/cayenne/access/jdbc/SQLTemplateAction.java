@@ -28,20 +28,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.IteratorUtils;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
+import org.apache.commons.collections.IteratorUtils;
 
 /**
  * Implements a strategy for execution of SQLTemplates.
@@ -53,10 +57,16 @@ public class SQLTemplateAction implements SQLAction {
 
     protected DbAdapter adapter;
     protected SQLTemplate query;
+    protected ObjEntity entity;
 
-    public SQLTemplateAction(SQLTemplate query, DbAdapter adapter) {
+    /**
+     * @since 3.0
+     */
+    public SQLTemplateAction(SQLTemplate query, DbAdapter adapter,
+            EntityResolver entityResolver) {
         this.query = query;
         this.adapter = adapter;
+        this.entity = query.getMetaData(entityResolver).getObjEntity();
     }
 
     /**
@@ -199,9 +209,31 @@ public class SQLTemplateAction implements SQLAction {
         boolean iteratedResult = callback.isIteratedResult();
 
         ExtendedTypeMap types = adapter.getExtendedTypes();
-        RowDescriptor descriptor = (compiled.getResultColumns().length > 0)
-                ? new RowDescriptor(compiled.getResultColumns(), types)
-                : new RowDescriptor(resultSet, types);
+        RowDescriptor descriptor;
+
+        // SQLTemplate #result columns take precedence over other ways to determine the
+        // type
+        if (compiled.getResultColumns().length > 0) {
+            descriptor = new RowDescriptor(compiled.getResultColumns(), types);
+        }
+        else if (entity != null) {
+            Map<String, String> typeOverrides = new HashMap<String, String>();
+
+            // TODO: andrus 2008/03/28 support flattened attributes with aliases...
+            for (ObjAttribute attribute : entity.getAttributes()) {
+                String column = attribute.getDbAttributePath();
+                if (column == null || column.indexOf('.') > 0) {
+                    continue;
+                }
+                
+                typeOverrides.put(column, attribute.getType());
+            }
+
+            descriptor = new RowDescriptor(resultSet, types, typeOverrides);
+        }
+        else {
+            descriptor = new RowDescriptor(resultSet, types);
+        }
 
         if (query.getColumnNamesCapitalization() != null) {
             if (SQLTemplate.LOWERCASE_COLUMN_NAMES.equals(query

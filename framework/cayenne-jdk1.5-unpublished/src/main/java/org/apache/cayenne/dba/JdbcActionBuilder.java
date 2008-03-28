@@ -88,7 +88,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     }
 
     public SQLAction sqlAction(SQLTemplate query) {
-        return new SQLTemplateAction(query, adapter);
+        return new SQLTemplateAction(query, adapter, entityResolver);
     }
 
     /**
@@ -97,7 +97,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
      */
     public SQLAction updateAction(Query query) {
         if (query instanceof SQLTemplate) {
-            return new SQLTemplateAction((SQLTemplate) query, adapter);
+            return new SQLTemplateAction((SQLTemplate) query, adapter, entityResolver);
         }
 
         return new UpdateAction(query, adapter, entityResolver);

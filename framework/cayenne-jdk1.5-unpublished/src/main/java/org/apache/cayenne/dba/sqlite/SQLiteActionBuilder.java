@@ -36,6 +36,6 @@ class SQLiteActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        return new SQLiteSQLTemplateAction(query, adapter);
+        return new SQLiteSQLTemplateAction(query, adapter, getEntityResolver());
     }
 }

@@ -52,7 +52,8 @@ public class SQLTemplateActionTest extends CayenneCase {
     public void testProperties() throws Exception {
         DbAdapter adapter = new JdbcAdapter();
         SQLTemplate template = new SQLTemplate(Object.class, "AAAAA");
-        SQLTemplateAction action = new SQLTemplateAction(template, adapter);
+        SQLTemplateAction action = new SQLTemplateAction(template, adapter, getDomain()
+                .getEntityResolver());
         assertSame(adapter, action.getAdapter());
         assertSame(template, action.getQuery());
     }
@@ -246,7 +247,9 @@ public class SQLTemplateActionTest extends CayenneCase {
     public void testExecuteUpdateNoParameters() throws Exception {
         getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
 
-        SQLTemplate template = new SQLTemplate(Object.class, "delete from ARTIST where ARTIST_NAME like 'a%'");
+        SQLTemplate template = new SQLTemplate(
+                Object.class,
+                "delete from ARTIST where ARTIST_NAME like 'a%'");
 
         DbAdapter adapter = getAccessStackAdapter().getAdapter();
         SQLAction action = adapter.getAction(template, getNode());
@@ -331,7 +334,8 @@ public class SQLTemplateActionTest extends CayenneCase {
         SQLTemplate template = new SQLTemplate(Artist.class, "A\nBC");
         SQLTemplateAction action = new SQLTemplateAction(
                 template,
-                getAccessStackAdapter().getAdapter());
+                getAccessStackAdapter().getAdapter(),
+                getDomain().getEntityResolver());
 
         assertEquals("A BC", action.extractTemplateString());
     }
@@ -346,6 +350,8 @@ public class SQLTemplateActionTest extends CayenneCase {
         map.put("id", new Integer(artistId));
 
         template.setParameters(map);
-        getNode().performQueries(Collections.singleton((Query) template), new QueryResult());
+        getNode().performQueries(
+                Collections.singleton((Query) template),
+                new QueryResult());
     }
 }

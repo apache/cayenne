@@ -77,6 +77,6 @@ public class EnumTest extends CayenneCase {
 
         EnumEntity e = (EnumEntity) DataObjectUtils.objectForQuery(context, q);
         assertNotNull(e);
-       // assertSame(Enum1.one, e.getEnumAttribute());
+        assertSame(Enum1.one, e.getEnumAttribute());
     }
 }

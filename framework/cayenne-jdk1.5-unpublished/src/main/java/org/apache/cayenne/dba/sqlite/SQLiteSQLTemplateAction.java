@@ -29,6 +29,7 @@ import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLTemplate;
 
 /**
@@ -37,8 +38,8 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 class SQLiteSQLTemplateAction extends SQLTemplateAction {
 
-    public SQLiteSQLTemplateAction(SQLTemplate query, DbAdapter adapter) {
-        super(query, adapter);
+    public SQLiteSQLTemplateAction(SQLTemplate query, DbAdapter adapter, EntityResolver resolver) {
+        super(query, adapter, resolver);
     }
 
     /**

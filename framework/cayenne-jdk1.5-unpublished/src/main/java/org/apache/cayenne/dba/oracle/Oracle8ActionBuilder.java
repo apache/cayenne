@@ -38,6 +38,6 @@ class Oracle8ActionBuilder extends OracleActionBuilder {
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        return new Oracle8SQLTemplateAction(query, adapter);
+        return new Oracle8SQLTemplateAction(query, adapter, getEntityResolver());
     }
 }
