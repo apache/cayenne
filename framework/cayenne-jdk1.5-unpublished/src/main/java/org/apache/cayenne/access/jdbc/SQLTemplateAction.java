@@ -60,6 +60,16 @@ public class SQLTemplateAction implements SQLAction {
     protected ObjEntity entity;
 
     /**
+     * @deprecated since 3.0 use a
+     *             {@link #SQLTemplateAction(SQLTemplate, DbAdapter, EntityResolver)}
+     *             constructor.
+     */
+    public SQLTemplateAction(SQLTemplate query, DbAdapter adapter) {
+        this.query = query;
+        this.adapter = adapter;
+    }
+
+    /**
      * @since 3.0
      */
     public SQLTemplateAction(SQLTemplate query, DbAdapter adapter,
@@ -225,7 +235,7 @@ public class SQLTemplateAction implements SQLAction {
                 if (column == null || column.indexOf('.') > 0) {
                     continue;
                 }
-                
+
                 typeOverrides.put(column, attribute.getType());
             }
 
