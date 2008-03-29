@@ -26,8 +26,8 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
- * A query that allows to clear both object and list caches either via refetch (eager
- * refresh) or invalidate (lazy refresh).
+ * A query that allows to explicitly clear both object and list caches either via refetch
+ * (eager refresh) or invalidate (lazy refresh). 
  * 
  * @since 3.0
  * @author Andrus Adamchik
@@ -73,7 +73,7 @@ public class RefreshQuery implements Query {
     /**
      * Creates a RefreshQuery that refreshes query results identified by group keys.
      */
-    public RefreshQuery(String[] groupKeys) {
+    public RefreshQuery(String... groupKeys) {
         this.groupKeys = groupKeys;
     }
 
