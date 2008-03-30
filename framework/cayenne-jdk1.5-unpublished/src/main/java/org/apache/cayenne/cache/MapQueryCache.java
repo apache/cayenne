@@ -38,7 +38,7 @@ public class MapQueryCache implements QueryCache, Serializable {
 
     public static final int DEFAULT_CACHE_SIZE = 2000;
 
-    protected Map map;
+    protected Map<String, CacheEntry> map;
 
     public MapQueryCache() {
         this(DEFAULT_CACHE_SIZE);
@@ -56,7 +56,7 @@ public class MapQueryCache implements QueryCache, Serializable {
 
         CacheEntry entry;
         synchronized (this) {
-            entry = (CacheEntry) map.get(key);
+            entry = map.get(key);
         }
 
         return (entry != null) ? entry.list : null;
@@ -117,9 +117,9 @@ public class MapQueryCache implements QueryCache, Serializable {
     public void removeGroup(String groupKey) {
         if (groupKey != null) {
             synchronized (this) {
-                Iterator it = map.values().iterator();
+                Iterator<CacheEntry> it = map.values().iterator();
                 while (it.hasNext()) {
-                    CacheEntry entry = (CacheEntry) it.next();
+                    CacheEntry entry = it.next();
                     if (entry.cacheGroups != null) {
                         for (int i = 0; i < entry.cacheGroups.length; i++) {
 
@@ -146,7 +146,7 @@ public class MapQueryCache implements QueryCache, Serializable {
 
     final class CacheEntry {
 
-        List list;
+        List<?> list;
         String[] cacheGroups;
     }
 }

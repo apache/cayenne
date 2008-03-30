@@ -33,7 +33,7 @@ public class OSQueryCacheFactory implements QueryCacheFactory {
      * Creates QueryCache, ignoring provided properties, and reading data from
      * "oscache.properties" file instead.
      */
-    public QueryCache getQueryCache(Map properties) {
+    public QueryCache getQueryCache(Map<String, String> properties) {
         return new OSQueryCache();
     }
 }

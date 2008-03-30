@@ -28,12 +28,12 @@ public class MapQueryCacheFactory implements QueryCacheFactory {
     
     public static final String CACHE_SIZE_PROPERTY = "cayenne.MapQueryCacheFactory.cacheSize";
 
-    public QueryCache getQueryCache(Map properties) {
+    public QueryCache getQueryCache(Map<String, String> properties) {
         if(properties != null) {
-            Object size = properties.get(CACHE_SIZE_PROPERTY);
+            String size = properties.get(CACHE_SIZE_PROPERTY);
             if(size != null) {
                 try {
-                    return new MapQueryCache(Integer.parseInt(size.toString()));
+                    return new MapQueryCache(Integer.parseInt(size));
                 }
                 catch(NumberFormatException e) {
                     // ignore

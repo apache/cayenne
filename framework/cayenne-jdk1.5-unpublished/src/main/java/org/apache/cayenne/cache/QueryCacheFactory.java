@@ -31,5 +31,5 @@ public interface QueryCacheFactory {
     /**
      * Creates a new instance of the QueryCache, configuring it using provided properties.
      */
-    QueryCache getQueryCache(Map properties);
+    QueryCache getQueryCache(Map<String, String> properties);
 }
