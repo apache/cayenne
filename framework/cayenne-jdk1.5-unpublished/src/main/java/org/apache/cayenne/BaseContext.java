@@ -22,16 +22,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.cayenne.cache.MapQueryCache;
+import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.reflect.Property;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * A common base superclass for Cayenne ObjectContext implementors.
@@ -41,9 +43,10 @@ import org.apache.cayenne.reflect.ToManyProperty;
  */
 public abstract class BaseContext implements ObjectContext {
 
-    // if we are to pass CayenneContext around, channel should be left alone and
+    // if we are to pass the context around, channel should be left alone and
     // reinjected later if needed
     protected transient DataChannel channel;
+    protected QueryCache queryCache;
 
     public abstract void commitChanges();
 
@@ -88,7 +91,10 @@ public abstract class BaseContext implements ObjectContext {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {
 
             ObjectId oid = object.getObjectId();
-            List<?> objects = performQuery(new ObjectIdQuery(oid, false, ObjectIdQuery.CACHE));
+            List<?> objects = performQuery(new ObjectIdQuery(
+                    oid,
+                    false,
+                    ObjectIdQuery.CACHE));
 
             if (objects.size() == 0) {
                 throw new FaultFailureException(
@@ -131,14 +137,17 @@ public abstract class BaseContext implements ObjectContext {
             if (propertyDescriptor == null) {
                 final StringBuilder errorMessage = new StringBuilder();
 
-                errorMessage.append(String.format("Property '%s' is not declared for entity '%s'.",
-                        property, object.getObjectId().getEntityName()));
-                
+                errorMessage.append(String.format(
+                        "Property '%s' is not declared for entity '%s'.",
+                        property,
+                        object.getObjectId().getEntityName()));
+
                 errorMessage.append(" Declared properties are: ");
 
                 // Grab each of the declared properties.
                 final List<String> properties = new ArrayList<String>();
                 classDescriptor.visitProperties(new PropertyVisitor() {
+
                     public boolean visitAttribute(final AttributeProperty property) {
                         properties.add(property.getName());
 
@@ -192,4 +201,28 @@ public abstract class BaseContext implements ObjectContext {
     public abstract void rollbackChangesLocally();
 
     public abstract Collection<?> uncommittedObjects();
+
+    /**
+     * Returns {@link QueryCache}, creating it on the fly if needed.
+     */
+    public synchronized QueryCache getQueryCache() {
+        if (queryCache == null) {
+            synchronized (this) {
+                if (queryCache == null) {
+                    // TODO: andrus, 7/27/2006 - figure out the factory stuff like we have
+                    // in DataContext
+                    queryCache = new MapQueryCache();
+                }
+            }
+        }
+        
+        return queryCache;
+    }
+
+    /**
+     * Sets a QueryCache to be used for storing cached query results.
+     */
+    public synchronized void setQueryCache(QueryCache queryCache) {
+        this.queryCache = queryCache;
+    }
 }

@@ -98,7 +98,6 @@ public class DataContext extends BaseContext implements DataChannel {
     protected boolean usingSharedSnaphsotCache;
     protected boolean validatingObjectsOnCommit;
     protected ObjectStore objectStore;
-    protected QueryCache queryCache;
 
     // note that entity resolver is initialized from the parent channel the first time it
     // is accessed, and later cached in the context
@@ -242,6 +241,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 3.0
      */
+    @Override
     public synchronized QueryCache getQueryCache() {
         if (queryCache == null) {
             queryCache = getParentDataDomain().getQueryCacheFactory().getQueryCache(
@@ -251,14 +251,7 @@ public class DataContext extends BaseContext implements DataChannel {
         return queryCache;
     }
 
-    /**
-     * Sets a QueryCache to be used for storing cached query results.
-     * 
-     * @since 3.0
-     */
-    public synchronized void setQueryCache(QueryCache queryCache) {
-        this.queryCache = queryCache;
-    }
+
 
     /**
      * Returns a map of user-defined properties associated with this DataContext.

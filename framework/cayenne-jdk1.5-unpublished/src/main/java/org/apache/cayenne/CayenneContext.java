@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.cache.MapQueryCache;
-import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
@@ -59,8 +57,6 @@ public class CayenneContext extends BaseContext {
 
     // object that merges "backdoor" changes that come from the channel.
     CayenneContextMergeHandler mergeHandler;
-
-    QueryCache queryCache;
 
     /**
      * @since 3.0
@@ -98,26 +94,6 @@ public class CayenneContext extends BaseContext {
                 syncEventsEnabled);
 
         setChannel(channel);
-    }
-
-    /**
-     * Returns {@link QueryCache}, creating it on the fly if needed.
-     * 
-     * @since 3.0
-     */
-    QueryCache getQueryCache() {
-
-        if (queryCache == null) {
-            synchronized (this) {
-                if (queryCache == null) {
-                    // TODO: andrus, 7/27/2006 - figure out the factory stuff like we have
-                    // in DataContext
-                    queryCache = new MapQueryCache();
-                }
-            }
-        }
-
-        return queryCache;
     }
 
     /**

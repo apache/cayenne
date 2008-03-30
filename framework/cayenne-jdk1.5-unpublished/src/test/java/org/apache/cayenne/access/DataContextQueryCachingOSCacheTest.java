@@ -111,7 +111,7 @@ public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingT
     }
 
     private void runTest(TestRun test) throws Exception {
-        context.queryCache = null;
+        context.setQueryCache(null);
         getDomain().setQueryCacheFactory(new OSQueryCacheFactory());
         getDomain().queryCache = null;
         try {

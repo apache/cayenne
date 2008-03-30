@@ -243,8 +243,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @deprecated since 3.0. See {@link DataContext#getQueryCache()}.
      */
     public int cachedQueriesCount() {
-        return context != null && context.queryCache != null
-                ? context.queryCache.size()
+        return context != null && context.getQueryCache() != null
+                ? context.getQueryCache().size()
                 : 0;
     }
 
@@ -579,7 +579,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @deprecated since 3.0. See {@link DataContext#getQueryCache()}.
      */
     public synchronized List getCachedQueryResult(String name) {
-        return context != null && context.queryCache != null ? context.queryCache
+        return context != null && context.getQueryCache() != null ? context.getQueryCache()
                 .get(new CacheQueryMetadata(name)) : null;
     }
 
