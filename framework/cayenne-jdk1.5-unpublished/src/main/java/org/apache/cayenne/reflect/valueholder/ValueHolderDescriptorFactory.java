@@ -20,6 +20,7 @@ package org.apache.cayenne.reflect.valueholder;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.map.ObjRelationship;
@@ -104,7 +105,7 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
                 .getTargetEntityName());
         String reverseName = relationship.getReverseRelationshipName();
 
-        Accessor accessor = createAccessor(descriptor, relationship.getName(), List.class);
+        Accessor accessor = createAccessor(descriptor, relationship.getName(), Set.class);
         descriptor.addDeclaredProperty(new ValueHolderSetProperty(
                 descriptor,
                 targetDescriptor,

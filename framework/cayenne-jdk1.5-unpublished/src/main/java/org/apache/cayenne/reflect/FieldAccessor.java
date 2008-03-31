@@ -133,10 +133,10 @@ public class FieldAccessor implements Accessor {
                             + propertyType.getName()
                             + "', got '"
                             + field.getType().getName()
-                            + "'. Property: "
+                            + "'. Property: '"
                             + beanClass.getName()
-                            + "."
-                            + propertyName);
+                            + "'.'"
+                            + propertyName + "'");
                 }
             }
         }
