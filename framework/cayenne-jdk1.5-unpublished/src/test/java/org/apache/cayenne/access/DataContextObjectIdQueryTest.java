@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.Collections;
 import java.util.Date;
 
 import org.apache.art.Artist;
@@ -36,7 +37,7 @@ public class DataContextObjectIdQueryTest extends CayenneCase {
         deleteTestData();
     }
 
-    public void testRefreshNullifiedValues() {
+    public void testRefreshNullifiedValuesNew() {
 
         DataContext context = createDataContext();
 
@@ -55,6 +56,34 @@ public class DataContextObjectIdQueryTest extends CayenneCase {
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 id), false, ObjectIdQuery.CACHE_REFRESH);
+
+        Artist a1 = (Artist) DataObjectUtils.objectForQuery(context, query);
+        assertNull(a1.getDateOfBirth());
+        assertEquals("X", a1.getArtistName());
+    }
+
+    public void testRefreshNullifiedValuesExisting() {
+
+        SQLTemplate insert = new SQLTemplate(
+                Artist.class,
+                "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) VALUES (44, 'X', #bind($date 'DATE'))");
+        insert.setParameters(Collections.singletonMap("date", new Date()));
+
+        DataContext context = createDataContext();
+        context.performGenericQuery(insert);
+
+        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 44l);
+        assertNotNull(a.getDateOfBirth());
+        assertEquals("X", a.getArtistName());
+
+        context.performGenericQuery(new SQLTemplate(
+                Artist.class,
+                "UPDATE ARTIST SET DATE_OF_BIRTH = NULL"));
+
+        ObjectIdQuery query = new ObjectIdQuery(new ObjectId(
+                "Artist",
+                Artist.ARTIST_ID_PK_COLUMN,
+                44l), false, ObjectIdQuery.CACHE_REFRESH);
 
         Artist a1 = (Artist) DataObjectUtils.objectForQuery(context, query);
         assertNull(a1.getDateOfBirth());
