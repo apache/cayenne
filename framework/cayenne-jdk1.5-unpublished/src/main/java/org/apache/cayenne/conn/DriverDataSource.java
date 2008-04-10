@@ -52,7 +52,7 @@ public class DriverDataSource implements DataSource {
      */
     private static Driver loadDriver(String driverClassName) throws SQLException {
 
-        Class driverClass;
+        Class<?> driverClass;
         try {
             driverClass = Class.forName(driverClassName, true, Thread
                     .currentThread()
@@ -77,7 +77,10 @@ public class DriverDataSource implements DataSource {
     }
 
     /**
-     * Creates a new DriverDataSource.
+     * Creates a new DriverDataSource. If "driverClassName" is null, DriverDataSource will
+     * consult DriverManager for a registered driver for the given URL. So when specifying
+     * null, a user must take care of registering the driver. "connectionUrl" on the other
+     * hand must NOT be null.
      */
     public DriverDataSource(String driverClassName, String connectionUrl)
             throws SQLException {
@@ -85,6 +88,11 @@ public class DriverDataSource implements DataSource {
     }
 
     /**
+     * Creates a new DriverDataSource. If "driverClassName" is null, DriverDataSource will
+     * consult DriverManager for a registered driver for the given URL. So when specifying
+     * null, a user must take care of registering the driver. "connectionUrl" on the other
+     * hand must NOT be null.
+     * 
      * @since 3.0
      */
     public DriverDataSource(String driverClassName, String connectionUrl,
@@ -98,7 +106,10 @@ public class DriverDataSource implements DataSource {
     }
 
     /**
-     * Creates a new DriverDataSource wrapping a given Driver.
+     * Creates a new DriverDataSource wrapping a given Driver. If "driver" is null,
+     * DriverDataSource will consult DriverManager for a registered driver for the given
+     * URL. So when specifying null, a user must take care of registering the driver.
+     * "connectionUrl" on the other hand must NOT be null.
      * 
      * @since 1.1
      */
