@@ -31,13 +31,9 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.cayenne.map.event.AttributeEvent;
-import org.apache.cayenne.map.event.DbAttributeListener;
 import org.apache.cayenne.map.event.DbEntityListener;
-import org.apache.cayenne.map.event.DbRelationshipListener;
 import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.ObjAttributeListener;
 import org.apache.cayenne.map.event.ObjEntityListener;
-import org.apache.cayenne.map.event.ObjRelationshipListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.NamedQuery;
@@ -52,14 +48,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * Stores a collection of related mapping objects that describe database and object layers
  * of an application. DataMap contains DbEntities mapping database tables, ObjEntities -
  * mapping persistent Java classes, Procedures - mapping database stored procedures.
- * 
- * @author Michael Shengaout
- * @author Andrus Adamchik
- * @author Craig Miskell
  */
 public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
-        DbEntityListener, DbAttributeListener, DbRelationshipListener, ObjEntityListener,
-        ObjAttributeListener, ObjRelationshipListener {
+        DbEntityListener, ObjEntityListener {
 
     /**
      * Defines whether a DataMap supports client entities.
@@ -659,14 +650,14 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     public Collection<Embeddable> getEmbeddables() {
         return Collections.unmodifiableCollection(embeddablesMap.values());
     }
-    
+
     /**
      * @since 3.0
      */
     public Map<String, SQLResultSetMapping> getResultSetMappingsMap() {
         return Collections.unmodifiableMap(resultSetMappings);
     }
-    
+
     /**
      * @since 3.0
      */
@@ -843,7 +834,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         // TODO: andrus, 1/25/2007 - clean up references like removeDbEntity does.
         embeddablesMap.remove(className);
     }
-    
+
     /**
      * @since 3.0
      */
@@ -1153,7 +1144,11 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         // does nothing currently
     }
 
-    /** Attribute property changed. */
+    /**
+     * Attribute property changed.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements DbAttributeListener
+     */
     public void dbAttributeChanged(AttributeEvent e) {
         Entity entity = e.getEntity();
         if (entity instanceof DbEntity) {
@@ -1161,17 +1156,29 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         }
     }
 
-    /** New attribute has been created/added. */
+    /**
+     * New attribute has been created/added.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements DbAttributeListener
+     */
     public void dbAttributeAdded(AttributeEvent e) {
         // does nothing currently
     }
 
-    /** Attribute has been removed. */
+    /**
+     * Attribute has been removed.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements DbAttributeListener
+     */
     public void dbAttributeRemoved(AttributeEvent e) {
         // does nothing currently
     }
 
-    /** Relationship property changed. */
+    /**
+     * Relationship property changed.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements DbRelationshipListener
+     */
     public void dbRelationshipChanged(RelationshipEvent e) {
         Entity entity = e.getEntity();
         if (entity instanceof DbEntity) {
@@ -1179,12 +1186,20 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         }
     }
 
-    /** Relationship has been created/added. */
+    /**
+     * Relationship has been created/added.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements DbRelationshipListener
+     */
     public void dbRelationshipAdded(RelationshipEvent e) {
         // does nothing currently
     }
 
-    /** Relationship has been removed. */
+    /**
+     * Relationship has been removed.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements DbRelationshipListener
+     */
     public void dbRelationshipRemoved(RelationshipEvent e) {
         // does nothing currently
     }
@@ -1231,32 +1246,56 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         // does nothing currently
     }
 
-    /** Attribute property changed. */
+    /**
+     * Attribute property changed.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements ObjAttributeListener
+     */
     public void objAttributeChanged(AttributeEvent e) {
         // does nothing currently
     }
 
-    /** New attribute has been created/added. */
+    /**
+     * New attribute has been created/added.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements ObjAttributeListener
+     */
     public void objAttributeAdded(AttributeEvent e) {
         // does nothing currently
     }
 
-    /** Attribute has been removed. */
+    /**
+     * Attribute has been removed.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements ObjAttributeListener
+     */
     public void objAttributeRemoved(AttributeEvent e) {
         // does nothing currently
     }
 
-    /** Relationship property changed. */
+    /**
+     * Relationship property changed.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements ObjRelationshipListener
+     */
     public void objRelationshipChanged(RelationshipEvent e) {
         // does nothing currently
     }
 
-    /** Relationship has been created/added. */
+    /**
+     * Relationship has been created/added.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements ObjRelationshipListener
+     */
     public void objRelationshipAdded(RelationshipEvent e) {
         // does nothing currently
     }
 
-    /** Relationship has been removed. */
+    /**
+     * Relationship has been removed.
+     * 
+     * @deprecated since 3.0 DataMap no longer implements ObjRelationshipListener
+     */
     public void objRelationshipRemoved(RelationshipEvent e) {
         // does nothing currently
     }

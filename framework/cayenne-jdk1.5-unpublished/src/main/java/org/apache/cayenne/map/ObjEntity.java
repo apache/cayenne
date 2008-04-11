@@ -35,9 +35,7 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.ObjAttributeListener;
 import org.apache.cayenne.map.event.ObjEntityListener;
-import org.apache.cayenne.map.event.ObjRelationshipListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
@@ -51,8 +49,7 @@ import org.apache.commons.collections.Transformer;
  * @author Misha Shengaout
  * @author Andrus Adamchik
  */
-public class ObjEntity extends Entity implements ObjEntityListener, ObjAttributeListener,
-        ObjRelationshipListener {
+public class ObjEntity extends Entity implements ObjEntityListener {
 
     final public static int LOCK_TYPE_NONE = 0;
     final public static int LOCK_TYPE_OPTIMISTIC = 1;
@@ -198,7 +195,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
 
         // copy attributes
         for (Attribute attribute : getDeclaredAttributes()) {
-            entity.addAttribute(((ObjAttribute)attribute).getClientAttribute());
+            entity.addAttribute(((ObjAttribute) attribute).getClientAttribute());
         }
 
         // copy relationships; skip runtime generated relationships
@@ -214,7 +211,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
                 continue;
             }
 
-            entity.addRelationship(((ObjRelationship)relationship).getClientRelationship());
+            entity.addRelationship(((ObjRelationship) relationship)
+                    .getClientRelationship());
         }
 
         // TODO: andrus 2/5/2007 - copy embeddables
@@ -745,7 +743,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
 
         Collection<DbAttribute> pkAttributes = getDbEntity().getPrimaryKeys();
         Collection<String> ret = new ArrayList<String>(pkAttributes.size());
-        
+
         for (DbAttribute pk : pkAttributes) {
             ret.add(pk.getName());
         }
@@ -753,13 +751,12 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         return Collections.unmodifiableCollection(ret);
     }
 
-
     /**
      * Returns ObjRelationship of this entity that maps to <code>dbRelationship</code>
      * parameter. Returns null if no such relationship is found.
      */
     public ObjRelationship getRelationshipForDbRelationship(DbRelationship dbRelationship) {
-        
+
         for (ObjRelationship objRel : getRelationshipMap().values()) {
             List<DbRelationship> relList = objRel.getDbRelationships();
             if (relList.size() != 1) {
@@ -834,7 +831,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
     }
 
     @Override
-    public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp) throws ExpressionException {
+    public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp)
+            throws ExpressionException {
 
         // resolve DB_PATH if we can
         if (pathExp.getType() == Expression.DB_PATH) {
@@ -1013,8 +1011,10 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
             if (map != null) {
                 ObjEntity oe = (ObjEntity) e.getEntity();
                 for (Relationship relationship : oe.getRelationships()) {
-                    relationship = ((ObjRelationship)relationship).getReverseRelationship();
-                    if (null != relationship && relationship.targetEntityName.equals(oldName)) {
+                    relationship = ((ObjRelationship) relationship)
+                            .getReverseRelationship();
+                    if (null != relationship
+                            && relationship.targetEntityName.equals(oldName)) {
                         relationship.targetEntityName = newName;
                     }
                 }
@@ -1032,32 +1032,56 @@ public class ObjEntity extends Entity implements ObjEntityListener, ObjAttribute
         // does nothing currently
     }
 
-    /** Attribute property changed. */
+    /**
+     * Attribute property changed.
+     * 
+     * @deprecated since 3.0 ObjEntity no longer implements ObjAttributeListener
+     */
     public void objAttributeChanged(AttributeEvent e) {
         // does nothing currently
     }
 
-    /** New attribute has been created/added. */
+    /**
+     * New attribute has been created/added.
+     * 
+     * @deprecated since 3.0 ObjEntity no longer implements ObjAttributeListener
+     */
     public void objAttributeAdded(AttributeEvent e) {
         // does nothing currently
     }
 
-    /** Attribute has been removed. */
+    /**
+     * Attribute has been removed.
+     * 
+     * @deprecated since 3.0 ObjEntity no longer implements ObjAttributeListener
+     */
     public void objAttributeRemoved(AttributeEvent e) {
         // does nothing currently
     }
 
-    /** Relationship property changed. */
+    /**
+     * Relationship property changed.
+     * 
+     * @deprecated since 3.0 ObjEntity no longer implements ObjRelationshipListener
+     */
     public void objRelationshipChanged(RelationshipEvent e) {
         // does nothing currently
     }
 
-    /** Relationship has been created/added. */
+    /**
+     * Relationship has been created/added.
+     * 
+     * @deprecated since 3.0 ObjEntity no longer implements ObjRelationshipListener
+     */
     public void objRelationshipAdded(RelationshipEvent e) {
         // does nothing currently
     }
 
-    /** Relationship has been removed. */
+    /**
+     * Relationship has been removed.
+     * 
+     * @deprecated since 3.0 ObjEntity no longer implements ObjRelationshipListener
+     */
     public void objRelationshipRemoved(RelationshipEvent e) {
         // does nothing currently
     }
