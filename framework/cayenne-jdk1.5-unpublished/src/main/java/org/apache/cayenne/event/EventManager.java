@@ -58,6 +58,8 @@ public class EventManager {
      * EventManager is propagated to DataDomains and DataContexts.
      * 
      * @return EventManager the shared EventManager instance
+     * @deprecated since 3.0 users should create their own instances of EventManager using
+     *             constructor and share them as appropriate for their target use.
      */
     public static EventManager getDefaultManager() {
         if (defaultManager == null) {
@@ -90,7 +92,7 @@ public class EventManager {
 
         if (!singleThread) {
             dispatchThreads = new ArrayList<DispatchThread>(dispatchThreadCount);
-            
+
             String prefix = "cayenne-edt-" + hashCode() + "-";
 
             // start dispatch threads
@@ -137,8 +139,8 @@ public class EventManager {
      */
     public void shutdown() {
         this.stopped = true;
-       
-        for(DispatchThread thread : dispatchThreads) {
+
+        for (DispatchThread thread : dispatchThreads) {
             thread.interrupt();
         }
     }
