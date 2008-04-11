@@ -18,6 +18,7 @@ CAY-994 Add extended enumeration support
 CAY-789 return object diff to client in ROP after commit
 CAY-809 Support for explicit mapping of SQL results with SQLResultSetMapping
 CAY-839 Support combination of Persistent objects and scalars in query results
+CAY-868  Deprecate EventManager.getDefaultManager() and stop using it
 CAY-893 CM Usability: Reopen Last Project on Startup
 CAY-970 Allow application to add DbAdapterFactory to AutoAdapter
 CAY-971 ROP GraphDiff "compressor"
