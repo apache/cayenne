@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.util.Util;
 
@@ -57,15 +56,12 @@ public class DataMapDefaults extends _DataMapDefaults {
             setSuperclassPackage(null);
         }
     }
-
-    public void setPersistenceState(int persistenceState) {
-
-        // init defaults on insert...
-        if (this.persistenceState == PersistenceState.TRANSIENT
-                && persistenceState == PersistenceState.NEW) {
-            setGeneratePairs(Boolean.TRUE);
-        }
-        super.setPersistenceState(persistenceState);
+    
+    /**
+     * An initialization callback.
+     */
+    public void prePersist() {
+        setGeneratePairs(Boolean.TRUE);
     }
 
     /**

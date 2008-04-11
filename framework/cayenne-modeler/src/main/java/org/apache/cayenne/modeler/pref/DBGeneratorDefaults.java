@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DbGenerator;
 
 public class DBGeneratorDefaults extends _DBGeneratorDefaults {
@@ -35,19 +34,16 @@ public class DBGeneratorDefaults extends _DBGeneratorDefaults {
         generator.setShouldDropPKSupport(booleanForBooleanProperty(DROP_PK_PROPERTY));
         generator.setShouldDropTables(booleanForBooleanProperty(DROP_TABLES_PROPERTY));
     }
-
-    public void setPersistenceState(int persistenceState) {
-
-        // init defaults on insert...
-        if (this.persistenceState == PersistenceState.TRANSIENT
-                && persistenceState == PersistenceState.NEW) {
-            setCreateFK(Boolean.TRUE);
-            setCreatePK(Boolean.TRUE);
-            setCreateTables(Boolean.TRUE);
-            setDropPK(Boolean.FALSE);
-            setDropTables(Boolean.FALSE);
-        }
-        super.setPersistenceState(persistenceState);
+    
+    /**
+     * An initialization callback.
+     */
+    public void prePersist() {
+        setCreateFK(Boolean.TRUE);
+        setCreatePK(Boolean.TRUE);
+        setCreateTables(Boolean.TRUE);
+        setDropPK(Boolean.FALSE);
+        setDropTables(Boolean.FALSE);
     }
 
     protected boolean booleanForBooleanProperty(String property) {
