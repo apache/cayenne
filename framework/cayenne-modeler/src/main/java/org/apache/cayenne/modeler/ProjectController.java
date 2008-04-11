@@ -1293,9 +1293,9 @@ public class ProjectController extends CayenneController {
     /** Notifies all listeners of the change(add, remove) and does the change. */
     public void fireDbRelationshipEvent(RelationshipEvent e) {
         setDirty(true);
-
-        if (currentState.map != null && e.getId() == MapEvent.CHANGE) {
-            currentState.map.dbRelationshipChanged(e);
+        
+        if(e.getId() == MapEvent.CHANGE && e.getEntity() instanceof DbEntity) {
+            ((DbEntity) e.getEntity()).dbRelationshipChanged(e);
         }
 
         EventListener[] list = listenerList.getListeners(DbRelationshipListener.class);
