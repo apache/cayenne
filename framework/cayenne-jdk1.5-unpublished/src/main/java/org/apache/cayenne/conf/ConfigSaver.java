@@ -26,6 +26,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.Util;
@@ -159,10 +160,12 @@ public class ConfigSaver {
     }
 
     private String attribute(String key, String value) {
-        if (value != null)
+        if (value != null) {
             return " " + key + "=\"" + Util.encodeXmlAttribute(value) + "\"";
-        else
+        }
+        else {
             return "";
+        }
     }
 
     /**
@@ -185,17 +188,18 @@ public class ConfigSaver {
                 + "/>");
 
         pw.print("\t<login");
-        
+
         if (info.getUserName() != null) {
             pw.print(attribute("userName", info.getUserName()));
         }
 
         if (info.getPasswordLocation().equals(DataSourceInfo.PASSWORD_LOCATION_MODEL)) {
             PasswordEncoding encoder = info.getPasswordEncoder();
-            if (encoder != null)
+            if (encoder != null) {
                 pw.print(attribute("password", encoder.encodePassword(
                         info.getPassword(),
                         info.getPasswordEncoderKey())));
+            }
         }
         else if (info.getPasswordLocation().equals(
                 DataSourceInfo.PASSWORD_LOCATION_CLASSPATH)) {
@@ -212,19 +216,39 @@ public class ConfigSaver {
                                 .getPasswordEncoderKey()));
                         out.close();
                     }
-                    catch (FileNotFoundException exception) {
-                        // TODO Auto-generated catch block
-                        exception.printStackTrace();
+                    catch (FileNotFoundException ex) {
+                        throw new CayenneRuntimeException(ex);
                     }
                 }
             }
         }
 
-        pw.println(attribute("encoderClass", info.getPasswordEncoderClass())
-                + attribute("encoderKey", info.getPasswordEncoderKey())
-                + attribute("passwordLocation", info.getPasswordLocation())
-                + attribute("passwordSource", info.getPasswordSource())
-                + "/>");
+        if (info.getPasswordEncoderClass() != null
+                && !PlainTextPasswordEncoder.class.getName().equals(
+                        info.getPasswordEncoderClass())) {
+            pw.print(attribute("encoderClass", info.getPasswordEncoderClass()));
+        }
+
+        if (info.getPasswordEncoderKey() != null
+                && info.getPasswordEncoderKey().length() > 0) {
+            pw.print(attribute("encoderKey", info.getPasswordEncoderKey()));
+        }
+
+        if (info.getPasswordLocation() != null
+                && !info.getPasswordLocation().equals(
+                        DataSourceInfo.PASSWORD_LOCATION_MODEL)) {
+            pw.print(attribute("passwordLocation", info.getPasswordLocation()));
+        }
+
+        // TODO: this is very not nice... we need to clean up the whole DataSourceInfo to
+        // avoid returning arbitrary labels...
+        if (info.getPasswordSource() != null
+                && info.getPasswordSource().length() > 0
+                && !"Not Applicable".equals(info.getPasswordSource())) {
+            pw.print(attribute("passwordSource", info.getPasswordSource()));
+        }
+
+        pw.println("/>");
 
         pw.println("</driver>");
     }
