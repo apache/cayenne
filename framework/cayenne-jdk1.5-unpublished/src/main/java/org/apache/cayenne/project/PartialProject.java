@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.Validate;
 import org.apache.cayenne.conf.ConfigLoader;
 import org.apache.cayenne.conf.ConfigLoaderDelegate;
 import org.apache.cayenne.conf.ConfigSaverDelegate;
@@ -37,13 +36,14 @@ import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.conf.JNDIDataSourceFactory;
 
 /**
- * PartialProject is a "lightweight" project implementation. It can work with
- * projects even when some of the resources are missing. It never instantiates
- * Cayenne stack objects, using other, lightweight, data structures instead.
+ * PartialProject is a "lightweight" project implementation. It can work with projects
+ * even when some of the resources are missing. It never instantiates Cayenne stack
+ * objects, using other, lightweight, data structures instead.
  * 
  * @author Andrus Adamchik
  */
 public class PartialProject extends Project {
+
     protected String projectVersion;
     protected Map<String, DomainMetaData> domains;
     protected ConfigLoaderDelegate loadDelegate;
@@ -51,6 +51,7 @@ public class PartialProject extends Project {
 
     /**
      * Constructor PartialProjectHandler.
+     * 
      * @param projectFile
      */
     public PartialProject(File projectFile) {
@@ -68,14 +69,16 @@ public class PartialProject extends Project {
 
     /**
      * Loads internal project and rewrites its nodes according to the list of
-     * DataNodeConfigInfo objects. Only main project file gets updated, the rest
-     * are assumed to be in place.
+     * DataNodeConfigInfo objects. Only main project file gets updated, the rest are
+     * assumed to be in place.
      */
-    public void updateNodes(List<? extends DataNodeConfigInfo> list) throws ProjectException {
+    public void updateNodes(List<? extends DataNodeConfigInfo> list)
+            throws ProjectException {
         for (final DataNodeConfigInfo nodeConfig : list) {
             String domainName = nodeConfig.getDomain();
             if (domainName == null && domains.size() != 1) {
-                throw new IllegalArgumentException("Node must have domain set explicitly if there is no default domain.");
+                throw new IllegalArgumentException(
+                        "Node must have domain set explicitly if there is no default domain.");
             }
 
             if (domainName == null) {
@@ -104,7 +107,7 @@ public class PartialProject extends Project {
 
     @Override
     protected void prepareSave(List filesToSave, List wrappedObjects)
-        throws ProjectException {
+            throws ProjectException {
         filesToSave.addAll(files);
     }
 
@@ -181,20 +184,23 @@ public class PartialProject extends Project {
     }
 
     private NodeMetaData findNode(
-        String domainName,
-        String nodeName,
-        boolean failIfNotFound) {
+            String domainName,
+            String nodeName,
+            boolean failIfNotFound) {
         DomainMetaData domain = findDomain(domainName);
         NodeMetaData node = domain.nodes.get(nodeName);
         if (node == null && failIfNotFound) {
-            throw new IllegalArgumentException(
-                "Can't find node: " + domainName + "." + nodeName);
+            throw new IllegalArgumentException("Can't find node: "
+                    + domainName
+                    + "."
+                    + nodeName);
         }
 
         return node;
     }
 
     protected class DomainMetaData {
+
         protected String name;
         protected Map<String, NodeMetaData> nodes = new HashMap<String, NodeMetaData>();
         protected Map<String, MapMetaData> maps = new HashMap<String, MapMetaData>();
@@ -207,6 +213,7 @@ public class PartialProject extends Project {
     }
 
     protected class NodeMetaData {
+
         protected String name;
         protected String dataSource;
         protected String adapter;
@@ -219,6 +226,7 @@ public class PartialProject extends Project {
     }
 
     protected class MapMetaData {
+
         protected String name;
         protected String location;
 
@@ -228,6 +236,7 @@ public class PartialProject extends Project {
     }
 
     class LoadDelegate implements ConfigLoaderDelegate {
+
         protected ConfigStatus status = new ConfigStatus();
 
         public void shouldLoadProjectVersion(String version) {
@@ -279,10 +288,7 @@ public class PartialProject extends Project {
             return false;
         }
 
-        public void shouldLinkDataMap(
-            String domainName,
-            String nodeName,
-            String mapName) {
+        public void shouldLinkDataMap(String domainName, String nodeName, String mapName) {
             findNode(domainName, nodeName).maps.add(mapName);
         }
 
@@ -309,7 +315,7 @@ public class PartialProject extends Project {
             // load DataMaps tree
             Iterator it = locations.entrySet().iterator();
             while (it.hasNext()) {
-            	Map.Entry entry = (Map.Entry) it.next();
+                Map.Entry entry = (Map.Entry) it.next();
                 String name = (String) entry.getKey();
                 MapMetaData map = new MapMetaData(name);
                 map.location = (String) entry.getValue();
@@ -318,11 +324,11 @@ public class PartialProject extends Project {
         }
 
         public void shouldLoadDataNode(
-            String domainName,
-            String nodeName,
-            String dataSource,
-            String adapter,
-            String factory) {
+                String domainName,
+                String nodeName,
+                String dataSource,
+                String adapter,
+                String factory) {
 
             NodeMetaData node = new NodeMetaData(nodeName);
             node.adapter = adapter;
@@ -331,11 +337,16 @@ public class PartialProject extends Project {
             findDomain(domainName).nodes.put(nodeName, node);
         }
 
-        public void shouldRegisterDataView(
-            String dataViewName,
-            String dataViewLocation) {
-            Validate.notNull(dataViewName);
-            Validate.notNull(dataViewLocation);
+        public void shouldRegisterDataView(String dataViewName, String dataViewLocation) {
+
+            if (dataViewName == null) {
+                throw new NullPointerException("Null dataViewName");
+            }
+
+            if (dataViewLocation == null) {
+                throw new NullPointerException("Null dataViewLocation");
+            }
+
             if (dataViewLocations == null) {
                 dataViewLocations = new HashMap<String, String>();
             }
@@ -344,6 +355,7 @@ public class PartialProject extends Project {
     }
 
     class SaveDelegate implements ConfigSaverDelegate {
+
         /**
          * @since 1.1
          */
@@ -378,9 +390,7 @@ public class PartialProject extends Project {
         }
 
         public Iterator linkedMapNames(String domainName, String nodeName) {
-            return (findDomain(domainName).nodes.get(nodeName))
-                .maps
-                .iterator();
+            return (findDomain(domainName).nodes.get(nodeName)).maps.iterator();
         }
 
         public String mapLocation(String domainName, String mapName) {
