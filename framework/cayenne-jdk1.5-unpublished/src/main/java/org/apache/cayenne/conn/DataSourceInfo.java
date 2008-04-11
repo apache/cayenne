@@ -56,7 +56,7 @@ public class DataSourceInfo implements Cloneable, Serializable {
     protected String passwordLocation = PASSWORD_LOCATION_MODEL;
     protected String passwordSourceExecutable = "";
     protected String passwordSourceFilename = "";
-    protected String passwordSourceModel = "Not Applicable";
+    protected final String passwordSourceModel = "Not Applicable";
     protected String passwordSourceUrl = "";
 
     @Override
