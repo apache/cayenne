@@ -352,7 +352,7 @@ public class ProjectUtil {
     /**
      * Returns a collection of DbRelationships that use this attribute as a source.
      */
-    public static Collection getRelationshipsUsingAttributeAsSource(DbAttribute attribute) {
+    public static Collection<DbRelationship> getRelationshipsUsingAttributeAsSource(DbAttribute attribute) {
         Entity parent = attribute.getEntity();
 
         if (parent == null) {
@@ -374,7 +374,8 @@ public class ProjectUtil {
     /**
      * Returns a collection of DbRelationships that use this attribute as a source.
      */
-    public static Collection getRelationshipsUsingAttributeAsTarget(DbAttribute attribute) {
+    public static Collection<DbRelationship> getRelationshipsUsingAttributeAsTarget(
+            DbAttribute attribute) {
         Entity parent = attribute.getEntity();
 
         if (parent == null) {

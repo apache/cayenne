@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.editor.dbentity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -56,12 +57,13 @@ public class DbAttributeTableModel extends CayenneTableModel {
 
     public DbAttributeTableModel(DbEntity entity, ProjectController mediator,
             Object eventSource) {
-        this(entity, mediator, eventSource, new ArrayList(entity.getAttributes()));
+        this(entity, mediator, eventSource, new ArrayList<DbAttribute>(entity
+                .getAttributes()));
         this.entity = entity;
     }
 
     public DbAttributeTableModel(DbEntity entity, ProjectController mediator,
-            Object eventSource, java.util.List objectList) {
+            Object eventSource, List<DbAttribute> objectList) {
         super(mediator, eventSource, objectList);
     }
 
@@ -80,7 +82,8 @@ public class DbAttributeTableModel extends CayenneTableModel {
     /**
      * Returns DbAttribute class.
      */
-    public Class getElementsClass() {
+    @Override
+    public Class<?> getElementsClass() {
         return DbAttribute.class;
     }
 
@@ -116,7 +119,8 @@ public class DbAttributeTableModel extends CayenneTableModel {
         }
     }
 
-    public Class getColumnClass(int col) {
+    @Override
+    public Class<?> getColumnClass(int col) {
         switch (col) {
             case DB_ATTRIBUTE_PRIMARY_KEY:
             case DB_ATTRIBUTE_MANDATORY:
@@ -267,15 +271,15 @@ public class DbAttributeTableModel extends CayenneTableModel {
 
             attr.setGenerated(false);
 
-            Collection relationships = ProjectUtil
+            Collection<DbRelationship> relationships = ProjectUtil
                     .getRelationshipsUsingAttributeAsTarget(attr);
             relationships
                     .addAll(ProjectUtil.getRelationshipsUsingAttributeAsSource(attr));
 
             if (relationships.size() > 0) {
-                Iterator it = relationships.iterator();
+                Iterator<DbRelationship> it = relationships.iterator();
                 while (it.hasNext()) {
-                    DbRelationship relationship = (DbRelationship) it.next();
+                    DbRelationship relationship = it.next();
                     if (!relationship.isToDependentPK()) {
                         it.remove();
                     }
@@ -298,9 +302,7 @@ public class DbAttributeTableModel extends CayenneTableModel {
                     }
 
                     // fix target relationships
-                    Iterator fixIt = relationships.iterator();
-                    while (fixIt.hasNext()) {
-                        DbRelationship relationship = (DbRelationship) fixIt.next();
+                    for (DbRelationship relationship : relationships) {
                         relationship.setToDependentPK(false);
                     }
                 }
