@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
@@ -29,6 +28,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.util.Util;
 
 /**
  * A query that selects objects related to a given object via a mapped relationship.
@@ -187,8 +187,6 @@ public class RelationshipQuery extends IndirectQuery {
      */
     @Override
     public String toString() {
-        return StringUtils.substringAfterLast(getClass().getName(), ".")
-                + ":"
-                + getRelationshipName();
+        return Util.stripPackageName(getClass().getName()) + ":" + getRelationshipName();
     }
 }

@@ -201,8 +201,9 @@ public class Util {
             return file.delete();
 
         String[] contents = file.list();
-        
-        // list can be null if directory doesn't have an 'x' permission bit set for the user
+
+        // list can be null if directory doesn't have an 'x' permission bit set for the
+        // user
         if (contents != null) {
             for (String item : contents) {
                 if (!delete(filePath + File.separator + item, true)) {
@@ -358,17 +359,34 @@ public class Util {
     }
 
     /**
+     * Returns an unqualified class name for the fully qualified name.
+     * 
+     * @since 3.0
+     */
+    public static String stripPackageName(String className) {
+        if (className == null || className.length() == 0)
+            return className;
+
+        int lastDot = className.lastIndexOf('.');
+
+        if ((-1 == lastDot) || ((className.length() - 1) == lastDot))
+            return className;
+
+        return className.substring(lastDot + 1);
+    }
+
+    /**
      * Creates a mutable map out of two arrays with keys and values.
      * 
      * @since 1.2
      */
-    public static <K,V> Map<K,V> toMap(K[] keys, V[] values) {
+    public static <K, V> Map<K, V> toMap(K[] keys, V[] values) {
         int keysSize = (keys != null) ? keys.length : 0;
         int valuesSize = (values != null) ? values.length : 0;
 
         if (keysSize == 0 && valuesSize == 0) {
             // return mutable map
-            return new HashMap<K,V>();
+            return new HashMap<K, V>();
         }
 
         if (keysSize != valuesSize) {
@@ -376,7 +394,7 @@ public class Util {
                     "The number of keys doesn't match the number of values.");
         }
 
-        Map<K,V> map = new HashMap<K,V>();
+        Map<K, V> map = new HashMap<K, V>();
         for (int i = 0; i < keysSize; i++) {
             map.put(keys[i], values[i]);
         }

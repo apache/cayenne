@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
@@ -34,7 +33,7 @@ import org.apache.cayenne.util.Util;
  * internally by Cayenne to lookup objects by id. Notice that cache policies of
  * ObjectIdQuery are different from generic {@link QueryMetadata} cache policies.
  * ObjectIdQuery is special - it is the only query that can be done against Cayenne main
- * cache, thus cache handling is singnificantly different from all other of the queries.
+ * cache, thus cache handling is significantly different from all other of the queries.
  * 
  * @since 1.2
  * @author Andrus Adamchik
@@ -157,7 +156,7 @@ public class ObjectIdQuery extends IndirectQuery {
      */
     @Override
     public String toString() {
-        return StringUtils.substringAfterLast(getClass().getName(), ".") + ":" + objectId;
+        return Util.stripPackageName(getClass().getName()) + ":" + objectId;
     }
 
     /**

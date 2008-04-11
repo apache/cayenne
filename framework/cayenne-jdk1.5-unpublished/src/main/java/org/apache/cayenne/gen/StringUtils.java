@@ -21,6 +21,7 @@ package org.apache.cayenne.gen;
 
 import org.apache.cayenne.project.validator.MappingNamesHelper;
 import org.apache.cayenne.util.NameConverter;
+import org.apache.cayenne.util.Util;
 
 /**
  * Methods for mangling strings.
@@ -57,16 +58,8 @@ public class StringUtils {
      * 
      * @since 1.2
      */
-    public String stripPackageName(String aString) {
-        if (aString == null || aString.length() == 0)
-            return aString;
-
-        int lastDot = aString.lastIndexOf('.');
-
-        if ((-1 == lastDot) || ((aString.length() - 1) == lastDot))
-            return aString;
-
-        return aString.substring(lastDot + 1);
+    public String stripPackageName(String fullyQualifiedClassName) {
+        return Util.stripPackageName(fullyQualifiedClassName);
     }
 
     /**
