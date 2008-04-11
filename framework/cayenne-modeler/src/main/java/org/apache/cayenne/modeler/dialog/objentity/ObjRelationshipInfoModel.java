@@ -376,19 +376,23 @@ public class ObjRelationshipInfoModel extends BasicModel {
             // try to connect automatically, if we can't use dummy connector
 
             Entity source = (last == null) ? getStartEntity() : last.getTargetEntity();
-            Relationship anyConnector = source.getAnyRelationship(target);
-            EntityRelationshipsModel connector = null;
+            if (source != null) {
 
-            connector = (anyConnector == null) ? new EntityRelationshipsModel(
-                    source,
-                    getEndEntity()) : new EntityRelationshipsModel(anyConnector);
+                Relationship anyConnector = source != null ? source
+                        .getAnyRelationship(target) : null;
+                EntityRelationshipsModel connector = null;
 
-            dbRelationshipPath.makeActive(false);
-            try {
-                dbRelationshipPath.add(connector);
-            }
-            finally {
-                dbRelationshipPath.makeActive(true);
+                connector = (anyConnector == null) ? new EntityRelationshipsModel(
+                        source,
+                        getEndEntity()) : new EntityRelationshipsModel(anyConnector);
+
+                dbRelationshipPath.makeActive(false);
+                try {
+                    dbRelationshipPath.add(connector);
+                }
+                finally {
+                    dbRelationshipPath.makeActive(true);
+                }
             }
         }
     }

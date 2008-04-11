@@ -63,14 +63,14 @@ public class EntityRelationshipsModel extends BasicModel {
         if (relationship == null) {
             return null;
         }
-        return displayName(
-                relationship.getName(),
-                relationship.getSourceEntity(),
-                relationship.getTargetEntity());
-    }
 
-    static String displayName(String name, Entity source, Entity target) {
-        return name + " [" + source.getName() + " -> " + target.getName() + "]";
+        String src = relationship.getSourceEntity() != null ? relationship
+                .getSourceEntity()
+                .getName() : "?";
+        String target = relationship.getTargetEntityName() != null ? relationship
+                .getTargetEntityName() : "?";
+
+        return relationship.getName() + " [" + src + " -> " + target + "]";
     }
 
     /**
