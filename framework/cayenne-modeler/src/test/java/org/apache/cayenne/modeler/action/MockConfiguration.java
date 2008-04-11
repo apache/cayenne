@@ -22,7 +22,6 @@ import java.io.InputStream;
 
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.util.ResourceLocator;
-import org.apache.commons.lang.NotImplementedException;
 
 public class MockConfiguration extends Configuration {
 
@@ -38,7 +37,7 @@ public class MockConfiguration extends Configuration {
     }
 
     protected InputStream getDomainConfiguration() {
-        throw new NotImplementedException(
+        throw new UnsupportedOperationException(
                 "this is an in-memory mockup...'getDomainConfiguration' is not implemented.");
     }
 
