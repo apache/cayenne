@@ -49,7 +49,8 @@ public class EventManager {
     protected Map<EventSubject, DispatchQueue> subjects;
     protected List<Dispatch> eventQueue;
     protected boolean singleThread;
-    protected boolean stopped;
+    protected volatile boolean stopped;
+    List<DispatchThread> dispatchThreads;
 
     /**
      * Returns the shared EventManager. It is created on demand on the first call to this
@@ -82,13 +83,25 @@ public class EventManager {
      * less.
      */
     public EventManager(int dispatchThreadCount) {
-        this.subjects = Collections.synchronizedMap(new WeakHashMap<EventSubject, DispatchQueue>());
+        this.subjects = Collections
+                .synchronizedMap(new WeakHashMap<EventSubject, DispatchQueue>());
         this.eventQueue = Collections.synchronizedList(new LinkedList<Dispatch>());
         this.singleThread = dispatchThreadCount <= 0;
 
-        // start dispatch threads
-        for (int i = 0; i < dispatchThreadCount; i++) {
-            new DispatchThread("EventDispatchThread-" + i).start();
+        if (!singleThread) {
+            dispatchThreads = new ArrayList<DispatchThread>(dispatchThreadCount);
+            
+            String prefix = "cayenne-edt-" + hashCode() + "-";
+
+            // start dispatch threads
+            for (int i = 0; i < dispatchThreadCount; i++) {
+                DispatchThread thread = new DispatchThread(prefix + i);
+                dispatchThreads.add(thread);
+                thread.start();
+            }
+        }
+        else {
+            dispatchThreads = Collections.emptyList();
         }
     }
 
@@ -118,14 +131,16 @@ public class EventManager {
 
     /**
      * Stops event threads. After the EventManager is stopped, it can not be restarted and
-     * should be discarded. Note that dispatch threads may still run for a few more minutes
-     * after this method call until they time out.
+     * should be discarded.
      * 
      * @since 3.0
      */
     public void shutdown() {
         this.stopped = true;
-        // threads will time out eventually...
+       
+        for(DispatchThread thread : dispatchThreads) {
+            thread.interrupt();
+        }
     }
 
     /**
@@ -431,8 +446,8 @@ public class EventManager {
     // dispatched in a separate thread
     final class NonBlockingInvocation extends Invocation {
 
-        public NonBlockingInvocation(Object target, String methodName, Class<?> parameterType)
-                throws NoSuchMethodException {
+        public NonBlockingInvocation(Object target, String methodName,
+                Class<?> parameterType) throws NoSuchMethodException {
             super(target, methodName, parameterType);
         }
     }

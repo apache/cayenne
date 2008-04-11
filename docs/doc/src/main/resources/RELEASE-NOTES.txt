@@ -25,6 +25,7 @@ CAY-980 Upgrade Derby to 10.3 to support alter table drop column
 CAY-999 Scaling paginated list
 CAY-1010 Entity Tab switching on new entity creation
 CAY-1011 Add confirmation dialog for delete actions
+CAY-1027 Orderly EventManager shutdown
 
 Bug fixes since M3:
 
