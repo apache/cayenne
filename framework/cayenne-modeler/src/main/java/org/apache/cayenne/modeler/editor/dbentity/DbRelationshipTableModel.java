@@ -23,8 +23,11 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
@@ -122,14 +125,9 @@ public class DbRelationshipTableModel extends CayenneTableModel {
         DbRelationship rel = getRelationship(row);
         // If name column
         if (column == NAME) {
-            RelationshipEvent e = new RelationshipEvent(
-                    eventSource,
-                    rel,
-                    entity,
-                    rel.getName());
-            rel.setName((String)aValue);
-            //String text = (String) aValue;
-            //ProjectUtil.setRelationshipName(entity, rel, text);
+            RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity, rel
+                    .getName());
+            rel.setName((String) aValue);
             mediator.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
         }
@@ -152,8 +150,9 @@ public class DbRelationshipTableModel extends CayenneTableModel {
                 DbRelationship reverse = rel.getReverseRelationship();
                 if (reverse != null && reverse.isToDependentPK()) {
                     String message = "Unset reverse relationship's \"To Dep PK\" setting?";
-                    int answer = JOptionPane.showConfirmDialog(Application
-                            .getFrame(), message);
+                    int answer = JOptionPane.showConfirmDialog(
+                            Application.getFrame(),
+                            message);
                     if (answer != JOptionPane.YES_OPTION) {
                         // no action needed
                         return;
@@ -173,6 +172,8 @@ public class DbRelationshipTableModel extends CayenneTableModel {
             rel.setToMany(temp.booleanValue());
             RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity);
             mediator.fireDbRelationshipEvent(e);
+
+            updateDependentObjRelationships(rel);
         }
         fireTableRowsUpdated(row, row);
     }
@@ -184,6 +185,27 @@ public class DbRelationshipTableModel extends CayenneTableModel {
     void removeRelationship(Relationship rel) {
         objectList.remove(rel);
         fireTableDataChanged();
+    }
+
+    void updateDependentObjRelationships(DbRelationship relationship) {
+
+        DataDomain domain = mediator.getCurrentDataDomain();
+        if (domain != null) {
+
+            for (ObjEntity entity : domain.getEntityResolver().getObjEntities()) {
+                for (ObjRelationship objRelationship : entity.getRelationships()) {
+
+                    for (DbRelationship dbRelationship : objRelationship
+                            .getDbRelationships()) {
+                        if (dbRelationship == relationship) {
+                            objRelationship.recalculateToManyValue();
+                            objRelationship.recalculateReadOnlyValue();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public boolean isCellEditable(int row, int col) {

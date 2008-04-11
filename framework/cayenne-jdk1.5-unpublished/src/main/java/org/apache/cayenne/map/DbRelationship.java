@@ -44,7 +44,9 @@ import org.apache.commons.collections.Transformer;
  */
 public class DbRelationship extends Relationship {
 
-    // DbRelationship events
+    /**
+     * @deprecated since 3.0 - unused
+     */
     public static final EventSubject PROPERTY_DID_CHANGE = EventSubject.getSubject(
             DbRelationship.class,
             "PropertyDidChange");
@@ -195,7 +197,7 @@ public class DbRelationship extends Relationship {
             if (rel.getTargetEntity() != src)
                 continue;
 
-            List<DbJoin> otherJoins = ((DbRelationship)rel).getJoins();
+            List<DbJoin> otherJoins = ((DbRelationship) rel).getJoins();
             if (otherJoins.size() != joins.size()) {
                 continue;
             }
@@ -262,10 +264,7 @@ public class DbRelationship extends Relationship {
     }
 
     public void setToDependentPK(boolean toDependentPK) {
-        if (this.toDependentPK != toDependentPK) {
-            this.toDependentPK = toDependentPK;
-            firePropertyDidChange();
-        }
+        this.toDependentPK = toDependentPK;
     }
 
     /**
@@ -332,7 +331,8 @@ public class DbRelationship extends Relationship {
      * CayenneRuntimeException if relationship is "to many" or if snapshot is missing id
      * components.
      */
-    public Map<String, Object> targetPkSnapshotWithSrcSnapshot(Map<String, Object> srcSnapshot) {
+    public Map<String, Object> targetPkSnapshotWithSrcSnapshot(
+            Map<String, Object> srcSnapshot) {
 
         if (isToMany()) {
             throw new CayenneRuntimeException(
@@ -397,7 +397,8 @@ public class DbRelationship extends Relationship {
      * Common code to srcSnapshotWithTargetSnapshot. Both are functionally the same,
      * except for the name, and whether they operate on a toMany or a toOne.
      */
-    private Map<String, Object> srcSnapshotWithTargetSnapshot(Map<String, Object> targetSnapshot) {
+    private Map<String, Object> srcSnapshotWithTargetSnapshot(
+            Map<String, Object> targetSnapshot) {
         int len = joins.size();
 
         // optimize for the most common single column join
@@ -423,7 +424,8 @@ public class DbRelationship extends Relationship {
      * relationship based on a snapshot of a target. Only "to-one" relationships are
      * supported. Throws CayenneRuntimeException if relationship is "to many".
      */
-    public Map<String, Object> srcFkSnapshotWithTargetSnapshot(Map<String, Object> targetSnapshot) {
+    public Map<String, Object> srcFkSnapshotWithTargetSnapshot(
+            Map<String, Object> targetSnapshot) {
 
         if (isToMany()) {
             throw new CayenneRuntimeException(
@@ -438,7 +440,8 @@ public class DbRelationship extends Relationship {
      * relationship based on a snapshot of a target. Only "to-many" relationships are
      * supported. Throws CayenneRuntimeException if relationship is "to one".
      */
-    public Map<String, Object> srcPkSnapshotWithTargetSnapshot(Map<String, Object> targetSnapshot) {
+    public Map<String, Object> srcPkSnapshotWithTargetSnapshot(
+            Map<String, Object> targetSnapshot) {
         if (!isToMany())
             throw new CayenneRuntimeException(
                     "Only 'to many' relationships support this method.");
@@ -449,12 +452,12 @@ public class DbRelationship extends Relationship {
      * Sets relationship multiplicity.
      */
     public void setToMany(boolean toMany) {
-        if (this.toMany != toMany) {
-            this.toMany = toMany;
-            this.firePropertyDidChange();
-        }
+        this.toMany = toMany;
     }
 
+    /**
+     * @deprecated since 3.0 - unused.
+     */
     protected void firePropertyDidChange() {
         RelationshipEvent event = new RelationshipEvent(this, this, this
                 .getSourceEntity());

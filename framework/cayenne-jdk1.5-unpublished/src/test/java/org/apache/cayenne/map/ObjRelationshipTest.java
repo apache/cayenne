@@ -210,11 +210,11 @@ public class ObjRelationshipTest extends CayenneCase {
         assertFalse(relationship.isToMany());
 
         dummyR.setToMany(true);
-        relationship.calculateToManyValue();
+        relationship.recalculateToManyValue();
         assertTrue(relationship.isToMany());
 
         dummyR.setToMany(false);
-        relationship.calculateToManyValue();
+        relationship.recalculateToManyValue();
         assertFalse(relationship.isToMany());
 
         // test chain
@@ -222,7 +222,7 @@ public class ObjRelationshipTest extends CayenneCase {
         assertFalse(relationship.isToMany());
 
         pathR.setToMany(true);
-        relationship.calculateToManyValue();
+        relationship.recalculateToManyValue();
         assertTrue(relationship.isToMany());
     }
 
@@ -456,17 +456,5 @@ public class ObjRelationshipTest extends CayenneCase {
             e.printStackTrace();
             fail("Should not have thrown an exception :" + e.getMessage());
         }
-    }
-
-    public void testWatchesDbRelChanges() {
-        ObjRelationship relationship = new ObjRelationship();
-        DbRelationship r1 = new DbRelationship("X");
-        r1.setToMany(true);
-        relationship.addDbRelationship(r1);
-        assertTrue(relationship.isToMany());
-
-        // rel should be watching r1 (events) to see when that changes
-        r1.setToMany(false);
-        assertFalse(relationship.isToMany());
     }
 }
