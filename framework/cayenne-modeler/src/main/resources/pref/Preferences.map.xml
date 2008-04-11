@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map project-version="2.0">
+<data-map project-version="3.0">
 	<property name="defaultLockType" value="optimistic"/>
 	<property name="defaultPackage" value="org.apache.cayenne.pref"/>
 	<db-entity name="domain">
