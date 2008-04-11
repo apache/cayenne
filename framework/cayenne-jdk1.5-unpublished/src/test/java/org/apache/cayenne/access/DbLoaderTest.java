@@ -32,7 +32,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneCase;
-import org.objectstyle.ashwood.dbutil.Table;
 
 public class DbLoaderTest extends CayenneCase {
 
@@ -75,16 +74,15 @@ public class DbLoaderTest extends CayenneCase {
 
             String tableLabel = getNode().getAdapter().tableTypeForTable();
 
-            List tables = loader.getTables(null, null, "%", new String[] {
+            List<DbEntity> tables = loader.getTables(null, null, "%", new String[] {
                 tableLabel
             });
 
             assertNotNull(tables);
 
-            Iterator it = tables.iterator();
             boolean foundArtist = false;
-            while (it.hasNext()) {
-                Table table = (Table) it.next();
+
+            for (DbEntity table : tables) {
                 if ("ARTIST".equalsIgnoreCase(table.getName())) {
                     foundArtist = true;
                     break;
@@ -312,13 +310,10 @@ public class DbLoaderTest extends CayenneCase {
     }
 
     public void checkAllDBEntities(DataMap map) {
-        Iterator entIt = originalMap().getDbEntities().iterator();
-        while (entIt.hasNext()) {
-            DbEntity origEnt = (DbEntity) entIt.next();
+
+        for (DbEntity origEnt : originalMap().getDbEntities()) {
             DbEntity newEnt = map.getDbEntity(origEnt.getName());
-            Iterator it = origEnt.getAttributes().iterator();
-            while (it.hasNext()) {
-                DbAttribute origAttr = (DbAttribute) it.next();
+            for (DbAttribute origAttr : origEnt.getAttributes()) {
                 DbAttribute newAttr = (DbAttribute) newEnt.getAttribute(origAttr
                         .getName());
                 assertNotNull(

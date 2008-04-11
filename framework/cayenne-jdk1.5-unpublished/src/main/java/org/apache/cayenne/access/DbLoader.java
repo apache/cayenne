@@ -52,7 +52,6 @@ import org.apache.cayenne.util.NameConverter;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.objectstyle.ashwood.dbutil.Table;
 
 /**
  * Utility class that does reverse engineering of the database. It can create DataMaps
@@ -230,26 +229,27 @@ public class DbLoader {
     }
 
     /**
-     * Returns all table names for given combination of the criteria.
+     * Returns all tables for given combination of the criteria. Tables returned as
+     * DbEntities without any attributes or relationships.
      * 
-     * @param catalog The name of the catalog, may be null.
+     * @param catalogPattern The name of the catalog, may be null.
      * @param schemaPattern The pattern for schema name, use "%" for wildcard.
      * @param tableNamePattern The pattern for table names, % for wildcard, if null or ""
      *            defaults to "%".
      * @param types The types of table names to retrieve, null returns all types.
      * @return List of TableInfo objects, empty array if nothing found.
      */
-    public List<Table> getTables(
-            String catalog,
+    public List<DbEntity> getTables(
+            String catalogPattern,
             String schemaPattern,
             String tableNamePattern,
             String[] types) throws SQLException {
 
-        List<Table> tables = new ArrayList<Table>();
+        List<DbEntity> tables = new ArrayList<DbEntity>();
 
         if (logObj.isDebugEnabled()) {
             logObj.debug("Read tables: catalog="
-                    + catalog
+                    + catalogPattern
                     + ", schema="
                     + schemaPattern
                     + ", tableNames="
@@ -263,14 +263,14 @@ public class DbLoader {
         }
 
         ResultSet rs = getMetaData().getTables(
-                catalog,
+                catalogPattern,
                 schemaPattern,
                 tableNamePattern,
                 types);
 
         try {
             while (rs.next()) {
-                String cat = rs.getString("TABLE_CAT");
+                String catalog = rs.getString("TABLE_CAT");
                 String schema = rs.getString("TABLE_SCHEM");
                 String name = rs.getString("TABLE_NAME");
 
@@ -285,8 +285,10 @@ public class DbLoader {
                     continue;
                 }
 
-                Table info = new Table(cat, schema, name);
-                tables.add(info);
+                DbEntity table = new DbEntity(name);
+                table.setCatalog(catalog);
+                table.setSchema(schema);
+                tables.add(table);
             }
         }
         finally {
@@ -303,14 +305,14 @@ public class DbLoader {
      *            DbEntities must be created.
      * @return false if loading must be immediately aborted.
      */
-    public boolean loadDbEntities(DataMap map, List<? extends Table> tables) throws SQLException {
+    public boolean loadDbEntities(DataMap map, List<? extends DbEntity> tables) throws SQLException {
         this.dbEntityList = new ArrayList<DbEntity>();
 
-        for (final Table table : tables) {
+        for (DbEntity dbEntity : tables) {
 
             // Check if there already is a DbEntity under such name
             // if so, consult the delegate what to do
-            DbEntity oldEnt = map.getDbEntity(table.getName());
+            DbEntity oldEnt = map.getDbEntity(dbEntity.getName());
             if (oldEnt != null) {
                 if (delegate == null) {
                     // no delegate, don't know what to do, cancel import
@@ -340,16 +342,12 @@ public class DbLoader {
                 }
             }
 
-            DbEntity dbEntity = new DbEntity();
-            dbEntity.setName(table.getName());
-            dbEntity.setSchema(table.getSchema());
-            dbEntity.setCatalog(table.getCatalog());
 
             // Create DbAttributes from column information --
             ResultSet rs = getMetaData().getColumns(
-                    table.getCatalog(),
-                    table.getSchema(),
-                    table.getName(),
+                    dbEntity.getCatalog(),
+                    dbEntity.getSchema(),
+                    dbEntity.getName(),
                     "%");
 
             try {
@@ -409,9 +407,8 @@ public class DbLoader {
             }
 
             // delegate might have thrown this entity out... so check if it is still
-            // around
-            // before continuing processing
-            if (map.getDbEntity(table.getName()) == dbEntity) {
+            // around  before continuing processing
+            if (map.getDbEntity(dbEntity.getName()) == dbEntity) {
                 this.dbEntityList.add(dbEntity);
             }
         }

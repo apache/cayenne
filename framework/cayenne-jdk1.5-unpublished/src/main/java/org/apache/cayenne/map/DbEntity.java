@@ -395,7 +395,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
                     for (ObjEntity oe : map.getMappedEntities(ent)) {
                         for (ObjAttribute attr : oe.getAttributes()) {
                             if (attr.getDbAttribute() == dbAttribute) {
-                                attr.setDbAttributeName(newName);
+                                attr.setDbAttributePath(newName);
                             }
                         }
                     }
