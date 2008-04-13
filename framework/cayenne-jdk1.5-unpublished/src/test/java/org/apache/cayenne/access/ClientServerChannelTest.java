@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.MockDataChannel;
 import org.apache.cayenne.ObjectContext;
@@ -47,6 +46,7 @@ import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
+import org.apache.cayenne.util.EqualsBuilder;
 
 /**
  * @author Andrus Adamchik
@@ -55,9 +55,7 @@ public class ClientServerChannelTest extends CayenneCase {
 
     @Override
     protected AccessStack buildAccessStack() {
-        return CayenneResources
-                .getResources()
-                .getAccessStack(MULTI_TIER_ACCESS_STACK);
+        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
     }
 
     public void testGetEntityResolver() throws Exception {
