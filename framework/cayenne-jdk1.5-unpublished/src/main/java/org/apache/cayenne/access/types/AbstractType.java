@@ -23,8 +23,8 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 

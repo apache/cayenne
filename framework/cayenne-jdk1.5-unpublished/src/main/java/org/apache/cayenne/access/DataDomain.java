@@ -42,9 +42,9 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryChain;
+import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * DataDomain performs query routing functions in Cayenne. DataDomain creates single data
@@ -172,8 +172,7 @@ public class DataDomain implements QueryEngine, DataChannel {
                     // backwards compatibility mode... only possible in a single-node case
                     // see TODO above
                     if (nodes.size() == 1) {
-                        entitySorter = nodes.values().iterator().next()
-                                .getEntitySorter();
+                        entitySorter = nodes.values().iterator().next().getEntitySorter();
                     }
                     else {
                         entitySorter = new AshwoodEntitySorter(getDataMaps());
@@ -256,8 +255,9 @@ public class DataDomain implements QueryEngine, DataChannel {
         if (queryCacheFactory != null
                 && dataContextFactory != null
                 && !Util.isEmptyString(dataContextFactory.toString())) {
-            queryCacheFactory = createInstance(queryCacheFactory
-                    .toString(), QueryCacheFactory.class);
+            queryCacheFactory = createInstance(
+                    queryCacheFactory.toString(),
+                    QueryCacheFactory.class);
         }
         else {
             queryCacheFactory = null;

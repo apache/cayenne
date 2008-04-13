@@ -39,10 +39,10 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLResultSetMapping;
+import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Stores a collection of related mapping objects that describe database and object layers

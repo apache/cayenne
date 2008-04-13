@@ -25,13 +25,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventBridgeFactory;
 import org.apache.cayenne.event.EventSubject;
+import org.apache.cayenne.util.ToStringBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * A descriptor used by default service implementation to pass session parameters to the

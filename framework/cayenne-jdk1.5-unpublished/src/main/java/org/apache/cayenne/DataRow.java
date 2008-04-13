@@ -27,8 +27,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * DataRow a map that holds values retrieved from the database for a given query row.

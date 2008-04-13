@@ -20,9 +20,9 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Defines a join between two attributes of a given relationship.

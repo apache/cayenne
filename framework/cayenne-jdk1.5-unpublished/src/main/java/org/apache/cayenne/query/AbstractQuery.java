@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.util.ToStringBuilder;
 
 /**
  * A common superclass of Cayenne queries.

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.cayenne.util.ToStringBuilder;
 
 /**
  * A metadata object that maps a result set column to an ObjAttribute or DbAttribute. Used
@@ -36,7 +36,7 @@ class FieldResult {
 
     FieldResult(String entityName, String attributeName, String column,
             boolean dbAttribute) {
-        
+
         this.entityName = entityName;
         this.attributeName = attributeName;
         this.column = column;
@@ -46,7 +46,7 @@ class FieldResult {
     public String getEntityName() {
         return entityName;
     }
-    
+
     public String getAttributeName() {
         return attributeName;
     }

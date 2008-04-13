@@ -30,9 +30,9 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Describes an association between two Java classes mapped as source and target

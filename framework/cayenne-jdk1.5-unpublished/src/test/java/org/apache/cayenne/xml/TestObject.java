@@ -22,8 +22,8 @@ package org.apache.cayenne.xml;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -34,7 +34,7 @@ public class TestObject extends CayenneDataObject {
     protected String name = "";
     protected int age;
     protected boolean open;
-    protected List children = new ArrayList();
+    protected List<TestObject> children = new ArrayList<TestObject>();
     protected TestObject parent = null;
 
     public TestObject() {
@@ -70,16 +70,16 @@ public class TestObject extends CayenneDataObject {
     public void setOpen(boolean open) {
         this.open = open;
     }
-    
+
     public TestObject getParent() {
         return parent;
     }
-    
+
     public void setParent(TestObject parent) {
         this.parent = parent;
     }
 
-    public void setChildren(List children) {
+    public void setChildren(List<TestObject> children) {
         this.children = children;
     }
 
@@ -91,7 +91,7 @@ public class TestObject extends CayenneDataObject {
         children.remove(child);
     }
 
-    public List getChildren() {
+    public List<TestObject> getChildren() {
         return children;
     }
 
@@ -106,7 +106,7 @@ public class TestObject extends CayenneDataObject {
         if (!Util.nullSafeEquals(name, test.getName())) {
             return false;
         }
-        
+
         if (!Util.nullSafeEquals(parent, test.getParent())) {
             return false;
         }
@@ -117,7 +117,7 @@ public class TestObject extends CayenneDataObject {
     @Override
     public void encodeAsXML(XMLEncoder encoder) {
         encoder.setRoot("Test", this.getClass().getName());
-        
+
         // "parent" must come first to fully test 1-to-1 relationships, per CAY-597.
         encoder.encodeProperty("parent", parent);
         encoder.encodeProperty("name", name);
@@ -128,11 +128,11 @@ public class TestObject extends CayenneDataObject {
 
     @Override
     public void decodeFromXML(XMLDecoder decoder) {
-        
+
         if (null != decoder.decodeObject("parent")) {
             parent = (TestObject) decoder.decodeObject("parent");
         }
-        
+
         if (null != decoder.decodeInteger("age")) {
             age = decoder.decodeInteger("age").intValue();
         }
@@ -140,9 +140,9 @@ public class TestObject extends CayenneDataObject {
         if (null != decoder.decodeBoolean("open")) {
             open = decoder.decodeBoolean("open").booleanValue();
         }
-        
+
         name = decoder.decodeString("name");
-        children = (List) decoder.decodeObject("children");
+        children = (List<TestObject>) decoder.decodeObject("children");
     }
 
     @Override

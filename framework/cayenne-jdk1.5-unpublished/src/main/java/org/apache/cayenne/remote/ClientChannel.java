@@ -22,7 +22,6 @@ package org.apache.cayenne.remote;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
@@ -41,6 +40,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.DeepMergeOperation;
+import org.apache.cayenne.util.ToStringBuilder;
 
 /**
  * A {@link org.apache.cayenne.DataChannel} implementation that accesses a remote server
@@ -170,7 +170,7 @@ public class ClientChannel implements DataChannel {
             ObjectContext originatingContext,
             GraphDiff changes,
             int syncType) {
-        
+
         changes = diffCompressor.compress(changes);
 
         GraphDiff replyDiff = (GraphDiff) send(new SyncMessage(

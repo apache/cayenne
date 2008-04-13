@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.map;
 
 import junit.framework.TestCase;
@@ -34,6 +33,17 @@ public class DbJoinTest extends TestCase {
         DbRelationship relationship = new DbRelationship("abc");
         join.setRelationship(relationship);
         assertSame(relationship, join.getRelationship());
+    }
+
+    public void testToString() {
+        DbJoin join = new DbJoin();
+        join.setSourceName("X");
+        join.setTargetName("Y");
+
+        String string = join.toString();
+
+        assertTrue(string, string.startsWith("org.apache.cayenne.map.DbJoin@"));
+        assertTrue(string, string.endsWith("[source=X,target=Y]"));
     }
 
 }
