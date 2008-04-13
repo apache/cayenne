@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.util.EqualsBuilder;
+import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.IDUtil;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * A portable global identifier for persistent objects. ObjectId can be temporary (used

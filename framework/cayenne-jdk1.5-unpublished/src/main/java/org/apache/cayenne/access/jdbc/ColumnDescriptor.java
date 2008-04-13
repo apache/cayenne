@@ -28,8 +28,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.util.EqualsBuilder;
+import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.ToStringBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * A descriptor of a ResultSet column.

@@ -30,8 +30,8 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventBridgeFactory;
 import org.apache.cayenne.event.EventSubject;
+import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.ToStringBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * A descriptor used by default service implementation to pass session parameters to the
@@ -43,7 +43,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  */
 public class RemoteSession implements Serializable {
 
-    static final Collection<EventSubject> SUBJECTS = Arrays.asList(DataChannel.GRAPH_CHANGED_SUBJECT,
+    static final Collection<EventSubject> SUBJECTS = Arrays.asList(
+            DataChannel.GRAPH_CHANGED_SUBJECT,
             DataChannel.GRAPH_FLUSHED_SUBJECT,
             DataChannel.GRAPH_ROLLEDBACK_SUBJECT);
 
@@ -129,7 +130,8 @@ public class RemoteSession implements Serializable {
                     ? eventBridgeParameters
                     : Collections.EMPTY_MAP;
 
-            // must use "name", not the sessionId as an external subject for the event bridge
+            // must use "name", not the sessionId as an external subject for the event
+            // bridge
             return factory.createEventBridge(SUBJECTS, name, parameters);
         }
         catch (Exception ex) {

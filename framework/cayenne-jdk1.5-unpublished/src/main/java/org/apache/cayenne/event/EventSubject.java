@@ -17,14 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.event;
 
 import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.commons.collections.map.ReferenceMap;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * This class encapsulates the String that is used to identify the <em>subject</em> that
