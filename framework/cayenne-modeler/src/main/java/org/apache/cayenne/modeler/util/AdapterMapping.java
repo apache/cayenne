@@ -76,7 +76,7 @@ public class AdapterMapping {
         jdbcDriverToAdapterMap.put("com.openbase.jdbc.ObDriver", OpenBaseAdapter.class
                 .getName());
         jdbcDriverToAdapterMap.put(
-                "com.microsoft.jdbc.sqlserver.SQLServerDriver",
+                "com.microsoft.sqlserver.jdbc.SQLServerDriver",
                 SQLServerAdapter.class.getName());
         jdbcDriverToAdapterMap.put(
                 "org.apache.derby.jdbc.EmbeddedDriver",
