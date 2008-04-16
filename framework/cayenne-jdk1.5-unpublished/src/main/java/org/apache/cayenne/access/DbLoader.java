@@ -164,6 +164,14 @@ public class DbLoader {
     public DbAdapter getAdapter() {
         return adapter;
     }
+    
+    /**
+     * A method that return true if the given table name should be included. The default
+     * implemntation include all tables.
+     */
+    public boolean includeTableName(String tableName) {
+        return true;
+    }
 
     /**
      * Retrieves catalogues for the database associated with this DbLoader.
@@ -282,6 +290,10 @@ public class DbLoader {
                 // TODO: Andrus, 10/29/2005 - this type of filtering should be delegated
                 // to adapter
                 if (name == null || name.startsWith("BIN$")) {
+                    continue;
+                }
+                
+                if (!includeTableName(name)) {
                     continue;
                 }
 
@@ -560,7 +572,11 @@ public class DbLoader {
                     // start new entity
                     String fkEntityName = rs.getString("FKTABLE_NAME");
                     String fkName = rs.getString("FK_NAME");
-
+                    
+                    if (!includeTableName(fkEntityName)) {
+                        continue;
+                    }
+                    
                     fkEntity = map.getDbEntity(fkEntityName);
 
                     if (fkEntity == null) {

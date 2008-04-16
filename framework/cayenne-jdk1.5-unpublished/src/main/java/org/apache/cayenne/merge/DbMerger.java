@@ -53,8 +53,12 @@ import org.apache.cayenne.map.ObjEntity;
 public class DbMerger {
 
     private MergerFactory factory;
-    
-    public boolean includeTableName(String tableName){
+
+    /**
+     * A method that return true if the given table name should be included. The default
+     * implemntation include all tables.
+     */
+    public boolean includeTableName(String tableName) {
         return true;
     }
 
@@ -82,7 +86,15 @@ public class DbMerger {
         try {
             conn = dataSource.getConnection();
 
-            DbLoader dbLoader = new DbLoader(conn, adapter, new LoaderDelegate());
+            final DbMerger merger = this;
+            DbLoader dbLoader = new DbLoader(conn, adapter, new LoaderDelegate()) {
+
+                @Override
+                public boolean includeTableName(String tableName) {
+                    return merger.includeTableName(tableName);
+                }
+            };
+            
             DataMap detectedDataMap = dbLoader.loadDataMapFromDB(
                     null,
                     null,
@@ -94,7 +106,7 @@ public class DbMerger {
             for (DbEntity dbEntity : dataMap.getDbEntities()) {
                 String tableName = dbEntity.getName();
                 
-                if(!includeTableName(tableName)){
+                if (!includeTableName(tableName)) {
                     continue;
                 }
 
@@ -119,7 +131,7 @@ public class DbMerger {
             // TODO: support drop table. currently, too many tables are marked for drop
             for (DbEntity e : dbEntityToDropByName.values()) {
                 
-                if(!includeTableName(e.getName())){
+                if (!includeTableName(e.getName())) {
                     continue;
                 }
                 
@@ -258,6 +270,11 @@ public class DbMerger {
         
         // relationships to add
         for (DbRelationship rel : dbEntity.getRelationships()) {
+            
+            if (!includeTableName(rel.getTargetEntityName())) {
+                continue;
+            }
+            
             if (findDbRelationship(detectedEntity, rel) == null) {
                 // TODO: very ugly. perhaps MergerToken should have a .isNoOp()?
                 AbstractToDbToken t = (AbstractToDbToken) factory
