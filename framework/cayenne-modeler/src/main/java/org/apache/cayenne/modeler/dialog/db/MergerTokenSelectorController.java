@@ -78,6 +78,14 @@ public class MergerTokenSelectorController extends CayenneController {
     public List<MergerToken> getSelectableTokens() {
         return Collections.unmodifiableList(selectableTokensList);
     }
+    
+    public void removeToken(MergerToken token) {
+        selectableTokensList.remove(token);
+        excludedTokens.remove(token);
+
+        AbstractTableModel model = (AbstractTableModel) view.getTokens().getModel();
+        model.fireTableDataChanged();
+    }
 
     // ----- properties -----
 
