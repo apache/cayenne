@@ -62,7 +62,7 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
         builder.addSeparator("", cc.xywh(1, 1, 4, 1));
 
         builder.addLabel("Result Caching:", cc.xy(1, 3));
-        builder.add(cachePolicy, cc.xywh(3, 3, 2, 1));
+        builder.add(cacheStrategy, cc.xywh(3, 3, 2, 1));
         builder.addLabel("Fetch Data Rows:", cc.xy(1, 7));
         builder.add(dataRows, cc.xy(3, 7));
         builder.addLabel("Refresh Results:", cc.xy(1, 9));

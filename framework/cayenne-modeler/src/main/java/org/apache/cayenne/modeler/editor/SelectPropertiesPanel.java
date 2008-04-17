@@ -40,7 +40,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.validation.ValidationException;
 import org.apache.commons.logging.Log;
@@ -58,24 +58,25 @@ public abstract class SelectPropertiesPanel extends JPanel {
     private static final Integer ZERO = new Integer(0);
 
     private static final String NO_CACHE_LABEL = "No Result Caching";
-    private static final String LOCAL_CACHE_LABEL = "DataContext Cache";
+    private static final String LOCAL_CACHE_LABEL = "Local Cache (per ObjectContext)";
     private static final String SHARED_CACHE_LABEL = "Shared Cache";
 
     private static final Object[] CACHE_POLICIES = new Object[] {
-            QueryMetadata.NO_CACHE, QueryMetadata.LOCAL_CACHE, QueryMetadata.SHARED_CACHE
+            QueryCacheStrategy.NO_CACHE, QueryCacheStrategy.LOCAL_CACHE,
+            QueryCacheStrategy.SHARED_CACHE
     };
 
-    private static final Map cachePolicyLabels = new TreeMap();
+    private static final Map<QueryCacheStrategy, String> cachePolicyLabels = new TreeMap<QueryCacheStrategy, String>();
 
     static {
-        cachePolicyLabels.put(QueryMetadata.NO_CACHE, NO_CACHE_LABEL);
-        cachePolicyLabels.put(QueryMetadata.LOCAL_CACHE, LOCAL_CACHE_LABEL);
-        cachePolicyLabels.put(QueryMetadata.SHARED_CACHE, SHARED_CACHE_LABEL);
+        cachePolicyLabels.put(QueryCacheStrategy.NO_CACHE, NO_CACHE_LABEL);
+        cachePolicyLabels.put(QueryCacheStrategy.LOCAL_CACHE, LOCAL_CACHE_LABEL);
+        cachePolicyLabels.put(QueryCacheStrategy.SHARED_CACHE, SHARED_CACHE_LABEL);
     }
 
     protected TextAdapter fetchLimit;
     protected TextAdapter pageSize;
-    protected JComboBox cachePolicy;
+    protected JComboBox cacheStrategy;
     protected JCheckBox refreshesResults;
 
     protected ProjectController mediator;
@@ -101,17 +102,17 @@ public abstract class SelectPropertiesPanel extends JPanel {
             }
         };
 
-        cachePolicy = CayenneWidgetFactory.createComboBox();
-        cachePolicy.setRenderer(new CachePolicyRenderer());
+        cacheStrategy = CayenneWidgetFactory.createComboBox();
+        cacheStrategy.setRenderer(new CacheStrategyRenderer());
         refreshesResults = new JCheckBox();
     }
 
     protected void initController() {
-        cachePolicy.addActionListener(new ActionListener() {
+        cacheStrategy.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                Object policy = cachePolicy.getModel().getSelectedItem();
-                setQueryProperty("cachePolicy", policy);
+                Object strategy = cacheStrategy.getModel().getSelectedItem();
+                setQueryProperty("cacheStrategy", strategy);
             }
         });
 
@@ -131,8 +132,15 @@ public abstract class SelectPropertiesPanel extends JPanel {
     public void initFromModel(Query query) {
         EntityResolver resolver = mediator.getCurrentDataDomain().getEntityResolver();
         DefaultComboBoxModel cacheModel = new DefaultComboBoxModel(CACHE_POLICIES);
-        cacheModel.setSelectedItem(query.getMetaData(resolver).getCachePolicy());
-        cachePolicy.setModel(cacheModel);
+
+        QueryCacheStrategy selectedStrategy = query
+                .getMetaData(resolver)
+                .getCacheStrategy();
+
+        cacheModel.setSelectedItem(selectedStrategy != null
+                ? selectedStrategy
+                : QueryCacheStrategy.getDefaultStrategy());
+        cacheStrategy.setModel(cacheModel);
 
         fetchLimit.setText(String.valueOf(query.getMetaData(resolver).getFetchLimit()));
         pageSize.setText(String.valueOf(query.getMetaData(resolver).getPageSize()));
@@ -200,7 +208,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
         }
     }
 
-    final class CachePolicyRenderer extends DefaultListCellRenderer {
+    final class CacheStrategyRenderer extends DefaultListCellRenderer {
 
         public Component getListCellRendererComponent(
                 JList list,
