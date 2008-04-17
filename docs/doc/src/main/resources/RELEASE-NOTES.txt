@@ -30,6 +30,7 @@ CAY-1011 Add confirmation dialog for delete actions
 CAY-1019 Streamlining LOCAL_CACHE handling
 CAY-1027 Orderly EventManager shutdown
 CAY-1033 remove completed merge tokens from view in cayenne modeler
+CAY-1035  Replace QueryMetadata String cache policies with an enum
 
 Bug fixes since M3:
 
