@@ -48,7 +48,7 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
         if (super.resolve(root, resolver, null)) {
 
             // generate unique cache key...
-            if (QueryMetadata.NO_CACHE.equals(getCachePolicy())) {
+            if (QueryCacheStrategy.NO_CACHE == getCacheStrategy()) {
 
             }
             else if (query.getName() != null) {

@@ -33,12 +33,12 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
         SelectQuery query = new SelectQuery(Artist.class);
 
         QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryMetadata.NO_CACHE, md1.getCachePolicy());
+        assertEquals(QueryCacheStrategy.NO_CACHE, md1.getCacheStrategy());
         assertNull(md1.getCacheKey());
 
         query.setName("XYZ");
         QueryMetadata md2 = query.getMetaData(resolver);
-        assertEquals(QueryMetadata.NO_CACHE, md2.getCachePolicy());
+        assertEquals(QueryCacheStrategy.NO_CACHE, md2.getCacheStrategy());
         assertNull(md2.getCacheKey());
     }
 
@@ -48,10 +48,10 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
 
         SelectQuery query = new SelectQuery(Artist.class);
 
-        query.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryMetadata.LOCAL_CACHE, md1.getCachePolicy());
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
     }
 
@@ -61,10 +61,10 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
 
         SelectQuery query = new SelectQuery(Artist.class);
 
-        query.setCachePolicy(QueryMetadata.SHARED_CACHE);
+        query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
         QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryMetadata.SHARED_CACHE, md1.getCachePolicy());
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
     }
 
@@ -74,11 +74,11 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
 
         SelectQuery query = new SelectQuery(Artist.class);
 
-        query.setCachePolicy(QueryMetadata.SHARED_CACHE);
+        query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         query.setName("XYZ");
 
         QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryMetadata.SHARED_CACHE, md1.getCachePolicy());
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertEquals("XYZ", md1.getCacheKey());
     }
 
@@ -87,13 +87,13 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
         EntityResolver resolver = getDomain().getEntityResolver();
 
         SelectQuery q1 = new SelectQuery(Artist.class);
-        q1.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         SelectQuery q2 = new SelectQuery(Artist.class);
-        q2.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q2.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         SelectQuery q3 = new SelectQuery(Painting.class);
-        q3.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q3.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
         assertEquals(q1.getMetaData(resolver).getCacheKey(), q2
@@ -109,15 +109,15 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
         EntityResolver resolver = getDomain().getEntityResolver();
 
         SelectQuery q1 = new SelectQuery(Artist.class);
-        q1.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         q1.setQualifier(ExpressionFactory.matchExp("a", "b"));
 
         SelectQuery q2 = new SelectQuery(Artist.class);
-        q2.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q2.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         q2.setQualifier(ExpressionFactory.matchExp("a", "b"));
 
         SelectQuery q3 = new SelectQuery(Artist.class);
-        q3.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q3.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         q3.setQualifier(ExpressionFactory.matchExp("a", "c"));
 
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
@@ -134,19 +134,19 @@ public class SelectQueryCacheKeyTest extends CayenneCase {
         EntityResolver resolver = getDomain().getEntityResolver();
 
         SelectQuery q1 = new SelectQuery(Artist.class);
-        q1.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         q1.setFetchLimit(5);
 
         SelectQuery q2 = new SelectQuery(Artist.class);
-        q2.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q2.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         q2.setFetchLimit(5);
 
         SelectQuery q3 = new SelectQuery(Artist.class);
-        q3.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q3.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         q3.setFetchLimit(6);
 
         SelectQuery q4 = new SelectQuery(Artist.class);
-        q4.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        q4.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
         assertEquals(q1.getMetaData(resolver).getCacheKey(), q2

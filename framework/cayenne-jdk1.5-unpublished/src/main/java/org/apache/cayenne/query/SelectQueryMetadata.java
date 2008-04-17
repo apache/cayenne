@@ -32,7 +32,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
         if (super.resolve(root, resolver, null)) {
 
             // generate unique cache key...
-            if (QueryMetadata.NO_CACHE.equals(getCachePolicy())) {
+            if (QueryCacheStrategy.NO_CACHE == getCacheStrategy()) {
 
             }
             else if (query.getName() != null) {
@@ -57,7 +57,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
                 }
 
                 if (!query.getOrderings().isEmpty()) {
-                   for (Ordering o : query.getOrderings()) {
+                    for (Ordering o : query.getOrderings()) {
                         key.append('/').append(o.getSortSpecString());
                         if (!o.isAscending()) {
                             key.append(":d");
@@ -68,8 +68,8 @@ class SelectQueryMetadata extends BaseQueryMetadata {
                         }
                     }
                 }
-                
-                if(query.getFetchLimit() > 0) {
+
+                if (query.getFetchLimit() > 0) {
                     key.append('/').append(query.getFetchLimit());
                 }
 

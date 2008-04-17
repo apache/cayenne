@@ -27,7 +27,7 @@ import org.apache.cayenne.map.EntityResolver;
 
 /**
  * A query that allows to explicitly clear both object and list caches either via refetch
- * (eager refresh) or invalidate (lazy refresh). 
+ * (eager refresh) or invalidate (lazy refresh).
  * 
  * @since 3.0
  * @author Andrus Adamchik
@@ -125,15 +125,15 @@ public class RefreshQuery implements Query {
                 QueryMetadata md = query.getMetaData(resolver);
 
                 QueryMetadataWrapper wrappedMd = new QueryMetadataWrapper(md);
-                if (QueryMetadata.LOCAL_CACHE.equals(md.getCachePolicy())) {
+                if (QueryCacheStrategy.LOCAL_CACHE == md.getCacheStrategy()) {
                     wrappedMd.override(
-                            QueryMetadata.CACHE_POLICY_PROPERTY,
-                            QueryMetadata.LOCAL_CACHE_REFRESH);
+                            QueryMetadata.CACHE_STRATEGY_PROPERTY,
+                            QueryCacheStrategy.LOCAL_CACHE_REFRESH);
                 }
-                else if (QueryMetadata.SHARED_CACHE.equals(md.getCachePolicy())) {
+                else if (QueryCacheStrategy.SHARED_CACHE == md.getCacheStrategy()) {
                     wrappedMd.override(
-                            QueryMetadata.CACHE_POLICY_PROPERTY,
-                            QueryMetadata.SHARED_CACHE_REFRESH);
+                            QueryMetadata.CACHE_STRATEGY_PROPERTY,
+                            QueryCacheStrategy.SHARED_CACHE_REFRESH);
                 }
 
                 return wrappedMd;

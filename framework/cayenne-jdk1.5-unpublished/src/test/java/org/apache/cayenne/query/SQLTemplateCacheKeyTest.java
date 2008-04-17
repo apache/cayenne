@@ -31,12 +31,12 @@ public class SQLTemplateCacheKeyTest extends CayenneCase {
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
         QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryMetadata.NO_CACHE, md1.getCachePolicy());
+        assertEquals(QueryCacheStrategy.NO_CACHE, md1.getCacheStrategy());
         assertNull(md1.getCacheKey());
 
         query.setName("XYZ");
         QueryMetadata md2 = query.getMetaData(resolver);
-        assertEquals(QueryMetadata.NO_CACHE, md2.getCachePolicy());
+        assertEquals(QueryCacheStrategy.NO_CACHE, md2.getCacheStrategy());
         assertNull(md2.getCacheKey());
     }
 
@@ -46,10 +46,10 @@ public class SQLTemplateCacheKeyTest extends CayenneCase {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
-        query.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryMetadata.LOCAL_CACHE, md1.getCachePolicy());
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
     }
 
@@ -59,10 +59,10 @@ public class SQLTemplateCacheKeyTest extends CayenneCase {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
-        query.setCachePolicy(QueryMetadata.SHARED_CACHE);
+        query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
         QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryMetadata.SHARED_CACHE, md1.getCachePolicy());
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
     }
 
@@ -72,11 +72,11 @@ public class SQLTemplateCacheKeyTest extends CayenneCase {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
-        query.setCachePolicy(QueryMetadata.SHARED_CACHE);
+        query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         query.setName("XYZ");
 
         QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryMetadata.SHARED_CACHE, md1.getCachePolicy());
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertEquals("XYZ", md1.getCacheKey());
     }
 

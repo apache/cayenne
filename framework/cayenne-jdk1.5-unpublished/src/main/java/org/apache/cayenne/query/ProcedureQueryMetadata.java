@@ -66,7 +66,7 @@ class ProcedureQueryMetadata extends BaseQueryMetadata {
             }
 
             // generate unique cache key...
-            if (QueryMetadata.NO_CACHE.equals(getCachePolicy())) {
+            if (QueryCacheStrategy.NO_CACHE == getCacheStrategy()) {
 
             }
             else if (query.getName() != null) {

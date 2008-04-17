@@ -81,17 +81,17 @@ public class NamedQuery extends IndirectQuery {
 
         // override cache policy, forcing refresh if needed
         if (forceNoCache) {
-            String policy = base.getCachePolicy();
+            QueryCacheStrategy strategy = base.getCacheStrategy();
 
-            if (QueryMetadata.LOCAL_CACHE.equals(policy)) {
+            if (QueryCacheStrategy.LOCAL_CACHE == strategy) {
                 wrapper.override(
-                        QueryMetadata.CACHE_POLICY_PROPERTY,
-                        QueryMetadata.LOCAL_CACHE_REFRESH);
+                        QueryMetadata.CACHE_STRATEGY_PROPERTY,
+                        QueryCacheStrategy.LOCAL_CACHE_REFRESH);
             }
-            else if (QueryMetadata.SHARED_CACHE.equals(policy)) {
+            else if (QueryCacheStrategy.SHARED_CACHE == strategy) {
                 wrapper.override(
-                        QueryMetadata.CACHE_POLICY_PROPERTY,
-                        QueryMetadata.SHARED_CACHE_REFRESH);
+                        QueryMetadata.CACHE_STRATEGY_PROPERTY,
+                        QueryCacheStrategy.SHARED_CACHE_REFRESH);
             }
         }
 

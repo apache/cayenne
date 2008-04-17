@@ -45,6 +45,7 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.RefreshQuery;
@@ -322,9 +323,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             return !DONE;
         }
 
-        boolean cache = QueryMetadata.SHARED_CACHE.equals(metadata.getCachePolicy());
+        boolean cache = QueryCacheStrategy.SHARED_CACHE == metadata.getCacheStrategy();
         boolean cacheOrCacheRefresh = cache
-                || QueryMetadata.SHARED_CACHE_REFRESH.equals(metadata.getCachePolicy());
+                || QueryCacheStrategy.SHARED_CACHE_REFRESH == metadata.getCacheStrategy();
 
         if (!cacheOrCacheRefresh) {
             return !DONE;
@@ -618,7 +619,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         void convert(List<DataRow> mainRows) {
 
             List<DataRow> normalized;
-            
+
             // convert data rows to standardized format...
             SQLResultSetMapping rsMapping = metadata.getResultSetMapping();
             if (rsMapping != null) {

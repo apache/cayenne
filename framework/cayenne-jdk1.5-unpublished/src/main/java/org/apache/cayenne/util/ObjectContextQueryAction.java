@@ -32,6 +32,7 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.reflect.ArcProperty;
@@ -258,9 +259,9 @@ public abstract class ObjectContextQueryAction {
             return !DONE;
         }
 
-        boolean cache = QueryMetadata.LOCAL_CACHE.equals(metadata.getCachePolicy());
+        boolean cache = QueryCacheStrategy.LOCAL_CACHE == metadata.getCacheStrategy();
         boolean cacheOrCacheRefresh = cache
-                || QueryMetadata.LOCAL_CACHE_REFRESH.equals(metadata.getCachePolicy());
+                || QueryCacheStrategy.LOCAL_CACHE_REFRESH == metadata.getCacheStrategy();
 
         if (!cacheOrCacheRefresh) {
             return !DONE;
