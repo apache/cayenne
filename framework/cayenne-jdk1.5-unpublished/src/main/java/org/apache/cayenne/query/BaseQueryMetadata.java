@@ -79,6 +79,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         this.refreshingObjects = info.isRefreshingObjects();
         this.resolvingInherited = info.isResolvingInherited();
         this.cachePolicy = info.getCachePolicy();
+        this.cacheStrategy = info.getCacheStrategy();
         this.cacheKey = info.getCacheKey();
 
         setPrefetchTree(info.getPrefetchTree());
@@ -161,7 +162,10 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         Object resolvingInherited = properties
                 .get(QueryMetadata.RESOLVING_INHERITED_PROPERTY);
 
+        // deprecated cache policy... handle it for backwards compatibility.
         Object cachePolicy = properties.get(QueryMetadata.CACHE_POLICY_PROPERTY);
+        Object cacheStrategy = properties.get(QueryMetadata.CACHE_STRATEGY_PROPERTY);
+
         Object cacheGroups = properties.get(QueryMetadata.CACHE_GROUPS_PROPERTY);
 
         // init ivars from properties
@@ -189,6 +193,10 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
                 ? cachePolicy.toString()
                 : QueryMetadata.CACHE_POLICY_DEFAULT;
 
+        this.cacheStrategy = (cacheStrategy != null) ? QueryCacheStrategy
+                .safeValueOf(cacheStrategy.toString()) : QueryCacheStrategy
+                .getDefaultStrategy();
+
         this.cacheGroups = null;
         if (cacheGroups instanceof String[]) {
             this.cacheGroups = (String[]) cacheGroups;
@@ -201,7 +209,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
             }
         }
     }
-    
+
     /**
      * @since 3.0
      */
@@ -239,6 +247,12 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         if (cachePolicy != null
                 && !QueryMetadata.CACHE_POLICY_DEFAULT.equals(cachePolicy)) {
             encoder.printProperty(QueryMetadata.CACHE_POLICY_PROPERTY, cachePolicy);
+        }
+
+        if (cacheStrategy != null
+                && QueryCacheStrategy.getDefaultStrategy() != cacheStrategy) {
+            encoder.printProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY, cacheStrategy
+                    .name());
         }
 
         if (prefetchTree != null) {
@@ -295,7 +309,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     public ClassDescriptor getClassDescriptor() {
         return classDescriptor;
     }
-    
+
     /**
      * Always returns null, as this is not supported for most classic queries.
      * 
@@ -364,7 +378,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     public int getPageSize() {
         return pageSize;
     }
-    
+
     public Query getOrginatingQuery() {
         return null;
     }

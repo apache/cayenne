@@ -49,7 +49,7 @@ public class MapLoader extends DefaultHandler {
 
     // TODO: andrus, 7/17/2006 - these variables, and project upgrade logic should be
     // refactored out of the MapLoader. In fact we should either modify raw XML during the
-    // upgrade, or implement some consistent upgrade API across variou loaders
+    // upgrade, or implement some consistent upgrade API across various loaders
     final static String _1_2_PACKAGE_PREFIX = "org.objectstyle.cayenne.";
     final static String _2_0_PACKAGE_PREFIX = "org.apache.cayenne.";
 

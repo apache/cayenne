@@ -57,7 +57,20 @@ public enum QueryCacheStrategy {
      * treat current cache state as expired, and force the database fetch.
      */
     SHARED_CACHE_REFRESH;
-    
+
+    /**
+     * Returns QueryCacheStrategy for the specified string name or default strategy for
+     * invalid names.
+     */
+    public static QueryCacheStrategy safeValueOf(String string) {
+        try {
+            return QueryCacheStrategy.valueOf(string);
+        }
+        catch (IllegalArgumentException e) {
+            return getDefaultStrategy();
+        }
+    }
+
     public static QueryCacheStrategy getDefaultStrategy() {
         return NO_CACHE;
     }
