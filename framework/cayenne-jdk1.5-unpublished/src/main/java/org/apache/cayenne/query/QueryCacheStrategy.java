@@ -71,6 +71,9 @@ public enum QueryCacheStrategy {
         }
     }
 
+    /**
+     * Returns the default strategy - {@link #NO_CACHE}.
+     */
     public static QueryCacheStrategy getDefaultStrategy() {
         return NO_CACHE;
     }

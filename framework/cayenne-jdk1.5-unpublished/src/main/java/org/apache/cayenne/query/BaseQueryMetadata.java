@@ -50,7 +50,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     boolean fetchingDataRows = QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
     boolean refreshingObjects = QueryMetadata.REFRESHING_OBJECTS_DEFAULT;
     boolean resolvingInherited = QueryMetadata.RESOLVING_INHERITED_DEFAULT;
-    String cachePolicy = QueryMetadata.CACHE_POLICY_DEFAULT;
     QueryCacheStrategy cacheStrategy = QueryCacheStrategy.getDefaultStrategy();
 
     PrefetchTreeNode prefetchTree;
@@ -78,7 +77,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         this.pageSize = info.getPageSize();
         this.refreshingObjects = info.isRefreshingObjects();
         this.resolvingInherited = info.isResolvingInherited();
-        this.cachePolicy = info.getCachePolicy();
         this.cacheStrategy = info.getCacheStrategy();
         this.cacheKey = info.getCacheKey();
 
@@ -189,13 +187,14 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
                 ? "true".equalsIgnoreCase(resolvingInherited.toString())
                 : QueryMetadata.RESOLVING_INHERITED_DEFAULT;
 
-        this.cachePolicy = (cachePolicy != null)
-                ? cachePolicy.toString()
-                : QueryMetadata.CACHE_POLICY_DEFAULT;
-
         this.cacheStrategy = (cacheStrategy != null) ? QueryCacheStrategy
                 .safeValueOf(cacheStrategy.toString()) : QueryCacheStrategy
                 .getDefaultStrategy();
+
+        // use legacy cachePolicy if it is provided and no strategy is set...
+        if (cacheStrategy == null && cachePolicy != null) {
+            setCachePolicy(cachePolicy.toString());
+        }
 
         this.cacheGroups = null;
         if (cacheGroups instanceof String[]) {
@@ -208,20 +207,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
                 this.cacheGroups[i] = toks.nextToken();
             }
         }
-    }
-
-    /**
-     * @since 3.0
-     */
-    public QueryCacheStrategy getCacheStrategy() {
-        return cacheStrategy;
-    }
-    
-    /**
-     * @since 3.0
-     */
-    void setCacheStrategy(QueryCacheStrategy cacheStrategy) {
-        this.cacheStrategy = cacheStrategy;
     }
 
     public void encodeAsXML(XMLEncoder encoder) {
@@ -251,11 +236,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
             encoder.printProperty(QueryMetadata.PAGE_SIZE_PROPERTY, pageSize);
         }
 
-        if (cachePolicy != null
-                && !QueryMetadata.CACHE_POLICY_DEFAULT.equals(cachePolicy)) {
-            encoder.printProperty(QueryMetadata.CACHE_POLICY_PROPERTY, cachePolicy);
-        }
-
         if (cacheStrategy != null
                 && QueryCacheStrategy.getDefaultStrategy() != cacheStrategy) {
             encoder.printProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY, cacheStrategy
@@ -271,7 +251,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
             for (int i = 1; i < cacheGroups.length; i++) {
                 buffer.append(',').append(cacheGroups[i]);
             }
-            encoder.printProperty(QueryMetadata.CACHE_GROUPS_PROPERTY, cachePolicy);
+            encoder.printProperty(QueryMetadata.CACHE_GROUPS_PROPERTY, buffer.toString());
         }
     }
 
@@ -356,14 +336,67 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
      * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
      */
     public String getCachePolicy() {
-        return cachePolicy;
+        if (cacheStrategy == null) {
+            return QueryMetadata.CACHE_POLICY_DEFAULT;
+        }
+
+        switch (cacheStrategy) {
+            case NO_CACHE:
+                return QueryMetadata.NO_CACHE;
+            case LOCAL_CACHE:
+                return QueryMetadata.LOCAL_CACHE;
+            case LOCAL_CACHE_REFRESH:
+                return QueryMetadata.LOCAL_CACHE_REFRESH;
+            case SHARED_CACHE:
+                return QueryMetadata.SHARED_CACHE;
+            case SHARED_CACHE_REFRESH:
+                return QueryMetadata.SHARED_CACHE_REFRESH;
+
+            default:
+                return QueryMetadata.CACHE_POLICY_DEFAULT;
+        }
     }
 
     /**
-     * @deprecated since 3.0 {@link #setCacheStrategy(QueryCacheStrategy)} replaces this method.
+     * @deprecated since 3.0 {@link #setCacheStrategy(QueryCacheStrategy)} replaces this
+     *             method.
      */
     void setCachePolicy(String policy) {
-        this.cachePolicy = policy;
+        if (policy == null) {
+            cacheStrategy = null;
+        }
+        else if (QueryMetadata.NO_CACHE.equals(policy)) {
+            cacheStrategy = QueryCacheStrategy.NO_CACHE;
+        }
+        else if (QueryMetadata.LOCAL_CACHE.equals(policy)) {
+            cacheStrategy = QueryCacheStrategy.LOCAL_CACHE;
+        }
+        else if (QueryMetadata.LOCAL_CACHE_REFRESH.equals(policy)) {
+            cacheStrategy = QueryCacheStrategy.LOCAL_CACHE_REFRESH;
+        }
+        else if (QueryMetadata.SHARED_CACHE.equals(policy)) {
+            cacheStrategy = QueryCacheStrategy.SHARED_CACHE;
+        }
+        else if (QueryMetadata.SHARED_CACHE_REFRESH.equals(policy)) {
+            cacheStrategy = QueryCacheStrategy.SHARED_CACHE_REFRESH;
+        }
+        else {
+            cacheStrategy = QueryCacheStrategy.NO_CACHE;
+        }
+    }
+
+    /**
+     * @since 3.0
+     */
+    public QueryCacheStrategy getCacheStrategy() {
+        return cacheStrategy;
+    }
+
+    /**
+     * @since 3.0
+     */
+    void setCacheStrategy(QueryCacheStrategy cacheStrategy) {
+        this.cacheStrategy = cacheStrategy;
     }
 
     /**
