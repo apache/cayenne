@@ -54,19 +54,26 @@ class DefaultQueryMetadata implements QueryMetadata {
 
         return null;
     }
-    
+
     /**
      * @since 3.0
      */
     public SQLResultSetMapping getResultSetMapping() {
         return null;
     }
-    
+
     /**
      * @since 3.0
      */
     public Query getOrginatingQuery() {
         return null;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public QueryCacheStrategy getCacheStrategy() {
+        return QueryCacheStrategy.getDefaultStrategy();
     }
 
     public DbEntity getDbEntity() {
@@ -76,7 +83,7 @@ class DefaultQueryMetadata implements QueryMetadata {
     public ObjEntity getObjEntity() {
         return null;
     }
-    
+
     public ClassDescriptor getClassDescriptor() {
         return null;
     }
@@ -88,11 +95,14 @@ class DefaultQueryMetadata implements QueryMetadata {
     public String getCacheKey() {
         return null;
     }
-    
+
     public String[] getCacheGroups() {
         return null;
     }
 
+    /**
+     * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
+     */
     public String getCachePolicy() {
         return QueryMetadata.CACHE_POLICY_DEFAULT;
     }
@@ -112,7 +122,7 @@ class DefaultQueryMetadata implements QueryMetadata {
     public int getPageSize() {
         return QueryMetadata.PAGE_SIZE_DEFAULT;
     }
-    
+
     public int getFetchStartIndex() {
         return -1;
     }

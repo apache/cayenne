@@ -51,6 +51,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     boolean refreshingObjects = QueryMetadata.REFRESHING_OBJECTS_DEFAULT;
     boolean resolvingInherited = QueryMetadata.RESOLVING_INHERITED_DEFAULT;
     String cachePolicy = QueryMetadata.CACHE_POLICY_DEFAULT;
+    QueryCacheStrategy cacheStrategy = QueryCacheStrategy.getDefaultStrategy();
 
     PrefetchTreeNode prefetchTree;
     String cacheKey;
@@ -199,6 +200,13 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
                 this.cacheGroups[i] = toks.nextToken();
             }
         }
+    }
+    
+    /**
+     * @since 3.0
+     */
+    public QueryCacheStrategy getCacheStrategy() {
+        return cacheStrategy;
     }
 
     public void encodeAsXML(XMLEncoder encoder) {

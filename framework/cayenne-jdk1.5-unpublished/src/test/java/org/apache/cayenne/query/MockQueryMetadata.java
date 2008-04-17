@@ -47,7 +47,14 @@ public class MockQueryMetadata implements QueryMetadata {
         return null;
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public String getCachePolicy() {
+        return null;
+    }
+    
+    public QueryCacheStrategy getCacheStrategy() {
         return null;
     }
     

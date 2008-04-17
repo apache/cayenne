@@ -61,7 +61,7 @@ class QueryMetadataWrapper implements QueryMetadata {
     boolean overrideExists(String key) {
         return overrides != null && overrides.containsKey(key);
     }
-    
+
     /**
      * @since 3.0
      */
@@ -84,11 +84,11 @@ class QueryMetadataWrapper implements QueryMetadata {
     public ObjEntity getObjEntity() {
         return info.getObjEntity();
     }
-    
+
     public Query getOrginatingQuery() {
         return info.getOrginatingQuery();
     }
-    
+
     /**
      * @since 3.0
      */
@@ -101,11 +101,24 @@ class QueryMetadataWrapper implements QueryMetadata {
                 .get(CACHE_KEY_PROPERTY) : info.getCacheKey();
     }
 
+    /**
+     * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
+     */
     public String getCachePolicy() {
         return (overrideExists(QueryMetadata.CACHE_POLICY_PROPERTY)) ? (String) overrides
                 .get(QueryMetadata.CACHE_POLICY_PROPERTY) : info.getCachePolicy();
     }
-    
+
+    /**
+     * @since 3.0
+     */
+    public QueryCacheStrategy getCacheStrategy() {
+        return (overrideExists(QueryMetadata.CACHE_STRATEGY_PROPERTY))
+                ? (QueryCacheStrategy) overrides
+                        .get(QueryMetadata.CACHE_STRATEGY_PROPERTY)
+                : info.getCacheStrategy();
+    }
+
     public String[] getCacheGroups() {
         return (overrideExists(QueryMetadata.CACHE_GROUPS_PROPERTY))
                 ? (String[]) overrides.get(QueryMetadata.CACHE_GROUPS_PROPERTY)
@@ -147,7 +160,7 @@ class QueryMetadataWrapper implements QueryMetadata {
         Number n = (Number) overrides.get(QueryMetadata.PAGE_SIZE_PROPERTY);
         return n != null ? n.intValue() : 0;
     }
-    
+
     public int getFetchStartIndex() {
         return info.getFetchStartIndex();
     }

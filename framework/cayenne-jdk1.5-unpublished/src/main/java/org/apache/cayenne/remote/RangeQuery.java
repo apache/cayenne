@@ -26,6 +26,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
@@ -57,7 +58,8 @@ class RangeQuery implements Query {
      * Creates a query that returns a single page from an existing cached server-side
      * result list.
      */
-    RangeQuery(String cacheKey, int fetchStartIndex, int fetchLimit, Query originatingQuery) {
+    RangeQuery(String cacheKey, int fetchStartIndex, int fetchLimit,
+            Query originatingQuery) {
         this.cacheKey = cacheKey;
         this.fetchStartIndex = fetchStartIndex;
         this.fetchLimit = fetchLimit;
@@ -66,9 +68,9 @@ class RangeQuery implements Query {
 
     public QueryMetadata getMetaData(EntityResolver resolver) {
         final QueryMetadata originatingMetadata = originatingQuery.getMetaData(resolver);
-        
+
         return new QueryMetadata() {
-            
+
             public Query getOrginatingQuery() {
                 return originatingQuery;
             }
@@ -101,8 +103,18 @@ class RangeQuery implements Query {
                 return 0;
             }
 
+            /**
+             * @deprecated since 3.0 in favor of 'getCacheStrategy'.
+             */
             public String getCachePolicy() {
                 return QueryMetadata.NO_CACHE;
+            }
+
+            /**
+             * @since 3.0
+             */
+            public QueryCacheStrategy getCacheStrategy() {
+                return QueryCacheStrategy.getDefaultStrategy();
             }
 
             public PrefetchTreeNode getPrefetchTree() {

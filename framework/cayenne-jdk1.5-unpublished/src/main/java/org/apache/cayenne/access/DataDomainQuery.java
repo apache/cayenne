@@ -25,6 +25,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
@@ -48,11 +49,11 @@ class DataDomainQuery implements Query, QueryMetadata {
     public QueryMetadata getMetaData(EntityResolver resolver) {
         return this;
     }
-    
+
     public SQLResultSetMapping getResultSetMapping() {
         return null;
     }
-    
+
     public Query getOrginatingQuery() {
         return null;
     }
@@ -72,7 +73,14 @@ class DataDomainQuery implements Query, QueryMetadata {
         return null;
     }
 
+    /**
+     * @deprecated since 3.0 in favor of 'getCacheStrategy'.
+     */
     public String getCachePolicy() {
+        return null;
+    }
+
+    public QueryCacheStrategy getCacheStrategy() {
         return null;
     }
 
@@ -95,7 +103,7 @@ class DataDomainQuery implements Query, QueryMetadata {
     public ObjEntity getObjEntity() {
         return null;
     }
-    
+
     public ClassDescriptor getClassDescriptor() {
         return null;
     }

@@ -51,6 +51,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SQLResultSetMapping;
@@ -243,9 +244,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @deprecated since 3.0. See {@link DataContext#getQueryCache()}.
      */
     public int cachedQueriesCount() {
-        return context != null && context.getQueryCache() != null
-                ? context.getQueryCache().size()
-                : 0;
+        return context != null && context.getQueryCache() != null ? context
+                .getQueryCache()
+                .size() : 0;
     }
 
     /**
@@ -579,7 +580,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @deprecated since 3.0. See {@link DataContext#getQueryCache()}.
      */
     public synchronized List getCachedQueryResult(String name) {
-        return context != null && context.getQueryCache() != null ? context.getQueryCache()
+        return context != null && context.getQueryCache() != null ? context
+                .getQueryCache()
                 .get(new CacheQueryMetadata(name)) : null;
     }
 
@@ -1145,6 +1147,10 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         }
     }
 
+    /**
+     * @deprecated since 3.0 as this inner class is used to provide backwards
+     *             compatibility for some deprecated methods.
+     */
     final class CacheQueryMetadata implements QueryMetadata {
 
         private String cacheKey;
@@ -1160,7 +1166,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         public SQLResultSetMapping getResultSetMapping() {
             return null;
         }
-        
+
         public Query getOrginatingQuery() {
             return null;
         }
@@ -1170,6 +1176,10 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         }
 
         public String getCachePolicy() {
+            return null;
+        }
+
+        public QueryCacheStrategy getCacheStrategy() {
             return null;
         }
 

@@ -26,6 +26,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -130,8 +131,15 @@ public class NestedQueryCache implements QueryCache {
             return qualifiedKey(mdDelegate.getCacheKey());
         }
 
+        /**
+         * @deprecated since 3.0 in favor of 'getCacheStrategy'.
+         */
         public String getCachePolicy() {
             return mdDelegate.getCachePolicy();
+        }
+
+        public QueryCacheStrategy getCacheStrategy() {
+            return mdDelegate.getCacheStrategy();
         }
 
         public ClassDescriptor getClassDescriptor() {

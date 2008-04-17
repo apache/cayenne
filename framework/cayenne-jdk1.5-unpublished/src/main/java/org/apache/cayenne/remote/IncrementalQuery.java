@@ -26,6 +26,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
@@ -60,7 +61,7 @@ class IncrementalQuery implements Query {
         // ClientServerChannel behavior
 
         return new QueryMetadata() {
-            
+
             public Query getOrginatingQuery() {
                 return null;
             }
@@ -68,17 +69,27 @@ class IncrementalQuery implements Query {
             public String getCacheKey() {
                 return cacheKey;
             }
-            
+
             public SQLResultSetMapping getResultSetMapping() {
                 return metadata.getResultSetMapping();
             }
-            
+
             public String[] getCacheGroups() {
                 return metadata.getCacheGroups();
             }
 
+            /**
+             * @deprecated since 3.0 in favor of 'getCacheStrategy'.
+             */
             public String getCachePolicy() {
                 return metadata.getCachePolicy();
+            }
+
+            /**
+             * @since 3.0
+             */
+            public QueryCacheStrategy getCacheStrategy() {
+                return metadata.getCacheStrategy();
             }
 
             public DataMap getDataMap() {
@@ -100,7 +111,7 @@ class IncrementalQuery implements Query {
             public ObjEntity getObjEntity() {
                 return metadata.getObjEntity();
             }
-            
+
             public ClassDescriptor getClassDescriptor() {
                 return metadata.getClassDescriptor();
             }

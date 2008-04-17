@@ -31,6 +31,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
@@ -74,7 +75,7 @@ class IncrementalSelectQuery extends SelectQuery {
             public Query getOrginatingQuery() {
                 return null;
             }
-            
+
             public String getCacheKey() {
                 return cacheKey;
             }
@@ -87,8 +88,15 @@ class IncrementalSelectQuery extends SelectQuery {
                 return metadata.getCacheGroups();
             }
 
+            /**
+             * @deprecated since 3.0 in favor of 'getCacheStrategy'.
+             */
             public String getCachePolicy() {
                 return metadata.getCachePolicy();
+            }
+
+            public QueryCacheStrategy getCacheStrategy() {
+                return metadata.getCacheStrategy();
             }
 
             public DataMap getDataMap() {

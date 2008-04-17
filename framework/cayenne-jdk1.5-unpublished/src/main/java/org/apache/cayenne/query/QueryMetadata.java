@@ -35,28 +35,38 @@ public interface QueryMetadata {
 
     /**
      * A cache policy that disables caching of query results.
+     * 
+     * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
      */
     public static final String NO_CACHE = "nocache";
 
     /**
      * A cache policy ruling that query results shall be cached separately for each
      * DataContext.
+     * 
+     * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
      */
     public static final String LOCAL_CACHE = "localcache";
 
     /**
      * Same as {@link #LOCAL_CACHE}, only forcing any current cache expiration.
+     * 
+     * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
      */
     public static final String LOCAL_CACHE_REFRESH = "localcache_refresh";
 
     /**
      * A cache policy ruling that query results shall be stored in a shared cache
      * accessible by all DataContexts.
+     * 
+     * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
      */
     public static final String SHARED_CACHE = "sharedcache";
 
     /**
      * Same as {@link #SHARED_CACHE}, only forcing any current cache expiration.
+     * 
+     * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
      */
     public static final String SHARED_CACHE_REFRESH = "sharedcache_refresh";
 
@@ -93,13 +103,24 @@ public interface QueryMetadata {
 
     public static final boolean RESOLVING_INHERITED_DEFAULT = true;
 
+    /**
+     * @deprecated since 3.0 use {@value #CACHE_STRATEGY_PROPERTY}
+     */
     public static final String CACHE_POLICY_PROPERTY = "cayenne.GenericSelectQuery.cachePolicy";
+    
+    /**
+     * @since 3.0
+     */
+    public static final String CACHE_STRATEGY_PROPERTY = "cayenne.GenericSelectQuery.cacheStrategy";
 
     /**
      * @since 3.0
      */
     public static final String CACHE_GROUPS_PROPERTY = "cayenne.GenericSelectQuery.cacheGroups";
 
+    /**
+     * @deprecated since 3.0 use {@link QueryCacheStrategy} enum.
+     */
     public static final String CACHE_POLICY_DEFAULT = NO_CACHE;
 
     /**
@@ -131,8 +152,16 @@ public interface QueryMetadata {
      * Returns query cache policy, which can be one of {@link #NO_CACHE},
      * {@link #LOCAL_CACHE}, or {@link #SHARED_CACHE}. NO_CACHE is generally a default
      * policy.
+     * 
+     * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
      */
     String getCachePolicy();
+
+    /**
+     * Returns a caching strategy for this query.
+     * @since 3.0
+     */
+    QueryCacheStrategy getCacheStrategy();
 
     /**
      * Returns a String that uniquely identifies this query for the purposes of result
