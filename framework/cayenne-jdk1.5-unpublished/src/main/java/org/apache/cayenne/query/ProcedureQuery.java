@@ -81,7 +81,8 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     protected List<ColumnDescriptor[]> resultDescriptors;
 
     /**
-     * Creates an empty procedure query.
+     * Creates an empty procedure query. The query would fetch DataRows. Use
+     * {@link #setFetchingDataRows(boolean)} method to fetch objects.
      */
     public ProcedureQuery() {
         // for backwards compatibility we go against usual default...
@@ -89,7 +90,8 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     }
 
     /**
-     * Creates a ProcedureQuery based on a Procedure object.
+     * Creates a ProcedureQuery based on a Procedure object. The query would fetch
+     * DataRows. Use {@link #setFetchingDataRows(boolean)} method to fetch objects.
      */
     public ProcedureQuery(Procedure procedure) {
         // for backwards compatibility we go against usual default...
@@ -98,14 +100,8 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     }
 
     /**
-     * Creates a ProcedureQuery based on a stored procedure.
-     * <p>
-     * Performance Note: with current EntityResolver implementation it is preferable to
-     * use Procedure object instead of String as a query root. String root can cause
-     * unneeded EntityResolver reindexing on every call. See this mailing list thread: <a
-     * href="http://objectstyle.org/cayenne/lists/cayenne-user/2005/01/0109.html">
-     * http://objectstyle.org/cayenne/lists/cayenne-user/2005/01/0109.html</a>
-     * </p>
+     * Creates a ProcedureQuery based on a stored procedure. The query would fetch
+     * DataRows. Use {@link #setFetchingDataRows(boolean)} method to fetch objects.
      * 
      * @param procedureName A name of the stored procedure. For this query to work, a
      *            procedure with this name must be mapped in Cayenne.
@@ -149,9 +145,11 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
 
-        metaData.resolve(root, resultClass != null
-                ? resultClass
-                : resultEntityName, resolver, this);
+        metaData.resolve(
+                root,
+                resultClass != null ? resultClass : resultEntityName,
+                resolver,
+                this);
         return metaData;
     }
 
