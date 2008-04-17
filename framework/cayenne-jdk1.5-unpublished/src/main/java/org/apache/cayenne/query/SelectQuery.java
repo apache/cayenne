@@ -52,7 +52,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     protected List<Ordering> orderings;
     protected boolean distinct;
 
-    SelectQueryMetadata selectInfo = new SelectQueryMetadata();
+    SelectQueryMetadata metaData = new SelectQueryMetadata();
 
     /** Creates an empty SelectQuery. */
     public SelectQuery() {
@@ -144,16 +144,16 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      */
     @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
-        selectInfo.resolve(root, resolver, this);
+        metaData.resolve(root, resolver, this);
 
         // must force DataRows if custom attributes are fetched
         if (isFetchingCustomAttributes()) {
-            QueryMetadataWrapper wrapper = new QueryMetadataWrapper(selectInfo);
+            QueryMetadataWrapper wrapper = new QueryMetadataWrapper(metaData);
             wrapper.override(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, Boolean.TRUE);
             return wrapper;
         }
         else {
-            return selectInfo;
+            return metaData;
         }
     }
 
@@ -207,7 +207,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
                 ? "true".equalsIgnoreCase(distinct.toString())
                 : DISTINCT_DEFAULT;
 
-        selectInfo.initWithProperties(properties);
+        metaData.initWithProperties(properties);
     }
 
     /**
@@ -261,7 +261,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
             encoder.printProperty(DISTINCT_PROPERTY, distinct);
         }
 
-        selectInfo.encodeAsXML(encoder);
+        metaData.encodeAsXML(encoder);
 
         // encode qualifier
         if (qualifier != null) {
@@ -301,7 +301,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         SelectQuery query = new SelectQuery();
         query.setDistinct(distinct);
 
-        query.selectInfo.copyFromInfo(this.selectInfo);
+        query.metaData.copyFromInfo(this.metaData);
         query.setRoot(root);
 
         // The following algorithm is for building the new query name based
@@ -458,14 +458,14 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @since 1.2
      */
     public PrefetchTreeNode getPrefetchTree() {
-        return selectInfo.getPrefetchTree();
+        return metaData.getPrefetchTree();
     }
 
     /**
      * @since 1.2
      */
     public void setPrefetchTree(PrefetchTreeNode prefetchTree) {
-        selectInfo.setPrefetchTree(prefetchTree);
+        metaData.setPrefetchTree(prefetchTree);
     }
 
     /**
@@ -474,14 +474,14 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @since 1.2 signature changed to return created PrefetchTreeNode.
      */
     public PrefetchTreeNode addPrefetch(String prefetchPath) {
-        return selectInfo.addPrefetch(prefetchPath, PrefetchTreeNode.UNDEFINED_SEMANTICS);
+        return metaData.addPrefetch(prefetchPath, PrefetchTreeNode.UNDEFINED_SEMANTICS);
     }
 
     /**
      * Clears all stored prefetch paths.
      */
     public void clearPrefetches() {
-        selectInfo.clearPrefetches();
+        metaData.clearPrefetches();
     }
 
     /**
@@ -490,7 +490,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @since 1.1
      */
     public void removePrefetch(String prefetchPath) {
-        selectInfo.removePrefetch(prefetchPath);
+        metaData.removePrefetch(prefetchPath);
     }
 
     /**
@@ -499,7 +499,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * QueryEngine executing this query.
      */
     public boolean isFetchingDataRows() {
-        return this.isFetchingCustomAttributes() || selectInfo.isFetchingDataRows();
+        return this.isFetchingCustomAttributes() || metaData.isFetchingDataRows();
     }
 
     /**
@@ -511,7 +511,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * </p>
      */
     public void setFetchingDataRows(boolean flag) {
-        selectInfo.setFetchingDataRows(flag);
+        metaData.setFetchingDataRows(flag);
     }
 
     /**
@@ -520,56 +520,73 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @since 1.1
      */
     public boolean isRefreshingObjects() {
-        return selectInfo.isRefreshingObjects();
+        return metaData.isRefreshingObjects();
     }
 
     /**
      * @since 1.1
      */
     public void setRefreshingObjects(boolean flag) {
-        selectInfo.setRefreshingObjects(flag);
+        metaData.setRefreshingObjects(flag);
     }
 
     /**
      * @since 1.1
+     * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
      */
     public String getCachePolicy() {
-        return selectInfo.getCachePolicy();
+        return metaData.getCachePolicy();
     }
 
     /**
      * @since 1.1
+     * @deprecated since 3.0 {@link #setCacheStrategy(QueryCacheStrategy)} replaces this
+     *             method.
      */
     public void setCachePolicy(String policy) {
-        this.selectInfo.setCachePolicy(policy);
+        metaData.setCachePolicy(policy);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public QueryCacheStrategy getCacheStrategy() {
+        return metaData.getCacheStrategy();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setCacheStrategy(QueryCacheStrategy strategy) {
+        metaData.setCacheStrategy(strategy);
     }
 
     /**
      * @since 3.0
      */
     public String[] getCacheGroups() {
-        return selectInfo.getCacheGroups();
+        return metaData.getCacheGroups();
     }
 
     /**
      * @since 3.0
      */
     public void setCacheGroups(String... cacheGroups) {
-        this.selectInfo.setCacheGroups(cacheGroups);
+        this.metaData.setCacheGroups(cacheGroups);
     }
 
     /**
      * Returns the fetchLimit.
      */
     public int getFetchLimit() {
-        return selectInfo.getFetchLimit();
+        return metaData.getFetchLimit();
     }
 
     /**
      * Sets the fetchLimit.
      */
     public void setFetchLimit(int fetchLimit) {
-        this.selectInfo.setFetchLimit(fetchLimit);
+        this.metaData.setFetchLimit(fetchLimit);
     }
 
     /**
@@ -578,7 +595,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * in the memory.
      */
     public int getPageSize() {
-        return selectInfo.getPageSize();
+        return metaData.getPageSize();
     }
 
     /**
@@ -587,7 +604,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @param pageSize The pageSize to set
      */
     public void setPageSize(int pageSize) {
-        selectInfo.setPageSize(pageSize);
+        metaData.setPageSize(pageSize);
     }
 
     /**
@@ -597,7 +614,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @since 1.1
      */
     public boolean isResolvingInherited() {
-        return selectInfo.isResolvingInherited();
+        return metaData.isResolvingInherited();
     }
 
     /**
@@ -607,7 +624,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @since 1.1
      */
     public void setResolvingInherited(boolean b) {
-        selectInfo.setResolvingInherited(b);
+        metaData.setResolvingInherited(b);
     }
 
     /**

@@ -99,7 +99,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     protected Map<String, ?>[] parameters;
     protected String columnNamesCapitalization;
 
-    SQLTemplateMetadata selectInfo = new SQLTemplateMetadata();
+    SQLTemplateMetadata metaData = new SQLTemplateMetadata();
 
     /**
      * Creates an empty SQLTemplate. Note this constructor does not specify the "root" of
@@ -156,8 +156,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      */
     @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
-        selectInfo.resolve(root, resolver, this);
-        return selectInfo;
+        metaData.resolve(root, resolver, this);
+        return metaData;
     }
 
     /**
@@ -220,7 +220,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 
         encoder.indent(1);
 
-        selectInfo.encodeAsXML(encoder);
+        metaData.encodeAsXML(encoder);
 
         if (getColumnNamesCapitalization() != null) {
             encoder.printProperty(
@@ -267,7 +267,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      */
     public void initWithProperties(Map<String, ?> properties) {
         // must init defaults even if properties are empty
-        selectInfo.initWithProperties(properties);
+        metaData.initWithProperties(properties);
 
         if (properties == null) {
             properties = Collections.EMPTY_MAP;
@@ -322,7 +322,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
             query.templates = new HashMap<String, String>(templates);
         }
 
-        query.selectInfo.copyFromInfo(this.selectInfo);
+        query.metaData.copyFromInfo(this.metaData);
         query.setParameters(parameters);
 
         // The following algorithm is for building the new query name based
@@ -357,66 +357,87 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         return queryWithParameters(parameters);
     }
 
+    /**
+     * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
+     */
     public String getCachePolicy() {
-        return selectInfo.getCachePolicy();
+        return metaData.getCachePolicy();
     }
 
+    /**
+     * @deprecated since 3.0 {@link #setCacheStrategy(QueryCacheStrategy)} replaces this
+     *             method.
+     */
     public void setCachePolicy(String policy) {
-        this.selectInfo.setCachePolicy(policy);
+        metaData.setCachePolicy(policy);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public QueryCacheStrategy getCacheStrategy() {
+        return metaData.getCacheStrategy();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setCacheStrategy(QueryCacheStrategy strategy) {
+        metaData.setCacheStrategy(strategy);
     }
 
     /**
      * @since 3.0
      */
     public String[] getCacheGroups() {
-        return selectInfo.getCacheGroups();
+        return metaData.getCacheGroups();
     }
 
     /**
      * @since 3.0
      */
     public void setCacheGroups(String[] cachGroups) {
-        this.selectInfo.setCacheGroups(cachGroups);
+        this.metaData.setCacheGroups(cachGroups);
     }
 
     public int getFetchLimit() {
-        return selectInfo.getFetchLimit();
+        return metaData.getFetchLimit();
     }
 
     public void setFetchLimit(int fetchLimit) {
-        this.selectInfo.setFetchLimit(fetchLimit);
+        this.metaData.setFetchLimit(fetchLimit);
     }
 
     public int getPageSize() {
-        return selectInfo.getPageSize();
+        return metaData.getPageSize();
     }
 
     public void setPageSize(int pageSize) {
-        selectInfo.setPageSize(pageSize);
+        metaData.setPageSize(pageSize);
     }
 
     public void setFetchingDataRows(boolean flag) {
-        selectInfo.setFetchingDataRows(flag);
+        metaData.setFetchingDataRows(flag);
     }
 
     public boolean isFetchingDataRows() {
-        return selectInfo.isFetchingDataRows();
+        return metaData.isFetchingDataRows();
     }
 
     public boolean isRefreshingObjects() {
-        return selectInfo.isRefreshingObjects();
+        return metaData.isRefreshingObjects();
     }
 
     public void setRefreshingObjects(boolean flag) {
-        selectInfo.setRefreshingObjects(flag);
+        metaData.setRefreshingObjects(flag);
     }
 
     public boolean isResolvingInherited() {
-        return selectInfo.isResolvingInherited();
+        return metaData.isResolvingInherited();
     }
 
     public void setResolvingInherited(boolean b) {
-        selectInfo.setResolvingInherited(b);
+        metaData.setResolvingInherited(b);
     }
 
     /**
@@ -527,7 +548,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * @since 1.2
      */
     public PrefetchTreeNode getPrefetchTree() {
-        return selectInfo.getPrefetchTree();
+        return metaData.getPrefetchTree();
     }
 
     /**
@@ -537,7 +558,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      */
     public PrefetchTreeNode addPrefetch(String prefetchPath) {
         // by default use JOINT_PREFETCH_SEMANTICS
-        return selectInfo.addPrefetch(
+        return metaData.addPrefetch(
                 prefetchPath,
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
     }
@@ -546,7 +567,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * @since 1.2
      */
     public void removePrefetch(String prefetch) {
-        selectInfo.removePrefetch(prefetch);
+        metaData.removePrefetch(prefetch);
     }
 
     /**
@@ -555,7 +576,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * @since 1.2
      */
     public void addPrefetches(Collection<String> prefetches) {
-        selectInfo.addPrefetches(prefetches, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        metaData.addPrefetches(prefetches, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
     }
 
     /**
@@ -564,7 +585,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * @since 1.2
      */
     public void clearPrefetches() {
-        selectInfo.clearPrefetches();
+        metaData.clearPrefetches();
     }
 
     /**
@@ -607,6 +628,6 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * @since 3.0
      */
     public void setResultSetMapping(SQLResultSetMapping resultSetMapping) {
-        selectInfo.setResultSetMapping(resultSetMapping);
+        metaData.setResultSetMapping(resultSetMapping);
     }
 }

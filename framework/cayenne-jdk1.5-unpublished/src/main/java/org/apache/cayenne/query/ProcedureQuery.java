@@ -286,12 +286,33 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
         return query;
     }
 
+    /**
+     * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
+     */
     public String getCachePolicy() {
         return metaData.getCachePolicy();
     }
 
+    /**
+     * @deprecated since 3.0 {@link #setCacheStrategy(QueryCacheStrategy)} replaces this
+     *             method.
+     */
     public void setCachePolicy(String policy) {
-        this.metaData.setCachePolicy(policy);
+        metaData.setCachePolicy(policy);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public QueryCacheStrategy getCacheStrategy() {
+        return metaData.getCacheStrategy();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setCacheStrategy(QueryCacheStrategy strategy) {
+        metaData.setCacheStrategy(strategy);
     }
 
     /**

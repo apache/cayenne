@@ -216,6 +216,13 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     public QueryCacheStrategy getCacheStrategy() {
         return cacheStrategy;
     }
+    
+    /**
+     * @since 3.0
+     */
+    void setCacheStrategy(QueryCacheStrategy cacheStrategy) {
+        this.cacheStrategy = cacheStrategy;
+    }
 
     public void encodeAsXML(XMLEncoder encoder) {
         if (refreshingObjects != QueryMetadata.REFRESHING_OBJECTS_DEFAULT) {
@@ -345,10 +352,16 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         this.prefetchTree = prefetchTree;
     }
 
+    /**
+     * @deprecated since 3.0 {@link #getCacheStrategy()} replaces this method.
+     */
     public String getCachePolicy() {
         return cachePolicy;
     }
 
+    /**
+     * @deprecated since 3.0 {@link #setCacheStrategy(QueryCacheStrategy)} replaces this method.
+     */
     void setCachePolicy(String policy) {
         this.cachePolicy = policy;
     }
