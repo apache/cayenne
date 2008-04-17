@@ -56,6 +56,7 @@ public abstract class ObjectContextQueryAction {
     protected ObjectContext actingContext;
     protected Query query;
     protected QueryMetadata metadata;
+    protected boolean queryOriginator;
 
     protected transient QueryResponse response;
 
@@ -64,6 +65,12 @@ public abstract class ObjectContextQueryAction {
 
         this.actingContext = actingContext;
         this.query = query;
+
+        // this means that a caller must pass self as both acting context and target
+        // context to indicate that a query originated here... null (ROP) or differing
+        // context indicates that the query was originated elsewhere, which has
+        // consequences in LOCAL_CACHE handling
+        this.queryOriginator = targetContext != null && targetContext == actingContext;
 
         // no special target context and same target context as acting context mean the
         // same thing. "normalize" the internal state to avoid confusion
@@ -243,6 +250,11 @@ public abstract class ObjectContextQueryAction {
     protected boolean interceptLocalCache() {
 
         if (metadata.getCacheKey() == null) {
+            return !DONE;
+        }
+
+        // ignore local cache unless this context originated the query...
+        if (!queryOriginator) {
             return !DONE;
         }
 

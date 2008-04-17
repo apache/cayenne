@@ -22,10 +22,13 @@ package org.apache.cayenne;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.art.Artist;
 import org.apache.cayenne.access.ClientServerChannel;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.remote.ClientChannel;
@@ -47,6 +50,31 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
     @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
+    }
+
+    public void testLocalCacheStaysLocal() {
+
+        DataContext context = createDataContext();
+        ClientServerChannel clientServerChannel = new ClientServerChannel(context);
+        UnitLocalConnection connection = new UnitLocalConnection(
+                clientServerChannel,
+                LocalConnection.HESSIAN_SERIALIZATION);
+        ClientChannel channel = new ClientChannel(connection);
+        CayenneContext clientContext = new CayenneContext(channel);
+
+        SelectQuery query = new SelectQuery(ClientMtTable1.class);
+        query.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+
+        assertEquals(0, clientContext.getQueryCache().size());
+        assertEquals(0, context.getQueryCache().size());
+
+        List<?> results = clientContext.performQuery(query);
+
+        assertEquals(1, clientContext.getQueryCache().size());
+        assertSame(results, clientContext.getQueryCache().get(
+                query.getMetaData(clientContext.getEntityResolver())));
+
+        assertEquals(0, context.getQueryCache().size());
     }
 
     public void testPrePersistCallback() throws Exception {
@@ -192,8 +220,7 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
             CayenneContext context = new CayenneContext(channel);
 
-            ClientMtTable1 object = context
-                    .newObject(ClientMtTable1.class);
+            ClientMtTable1 object = context.newObject(ClientMtTable1.class);
 
             assertFalse(flag[0]);
             context.commitChanges();
@@ -249,12 +276,10 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
             CayenneContext context = new CayenneContext(channel);
 
-            ClientMtReflexive o1 = context
-                    .newObject(ClientMtReflexive.class);
+            ClientMtReflexive o1 = context.newObject(ClientMtReflexive.class);
             o1.setName("parent");
 
-            ClientMtReflexive o2 = context
-                    .newObject(ClientMtReflexive.class);
+            ClientMtReflexive o2 = context.newObject(ClientMtReflexive.class);
             o2.setName("child");
             o2.setToParent(o1);
             context.commitChanges();

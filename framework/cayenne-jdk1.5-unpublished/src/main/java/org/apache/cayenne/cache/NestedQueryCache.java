@@ -59,6 +59,14 @@ public class NestedQueryCache implements QueryCache {
     }
 
     /**
+     * Returns the actual implementation of the query cache that is wrapped by this
+     * NestedQueryCache.
+     */
+    public QueryCache getDelegate() {
+        return delegate;
+    }
+
+    /**
      * Clears the underlying shared cache.
      */
     public void clear() {
