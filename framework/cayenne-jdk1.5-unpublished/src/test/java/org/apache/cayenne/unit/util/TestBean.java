@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * A non-persistent Java Bean. Useful for testing Cayenne operations that rely on
@@ -64,11 +63,6 @@ public class TestBean {
     public TestBean(String string, int intValue) {
         this.string = string;
         this.integer = new Integer(intValue);
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 
     public TestBean(int intValue) {
