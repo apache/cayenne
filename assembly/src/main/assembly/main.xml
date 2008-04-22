@@ -41,7 +41,6 @@
 				<include>asm:asm-commons</include>
 				<include>com.caucho:hessian</include>
 				<include>commons-collections:commons-collections</include>
-				<include>commons-lang:commons-lang</include>
 				<include>commons-logging:commons-logging</include>
 				<include>org.apache.geronimo.specs:geronimo-jpa_3.0_spec</include>
 				<include>org.objectstyle.ashwood:ashwood</include>
