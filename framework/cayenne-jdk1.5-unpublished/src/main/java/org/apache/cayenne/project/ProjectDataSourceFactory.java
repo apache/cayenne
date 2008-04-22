@@ -66,12 +66,12 @@ public class ProjectDataSourceFactory implements DataSourceFactory {
         DataSourceInfo info = null;
 
         if (loadFromXML) {
-           // try {
+            try {
                 info = new XMLConfigLoader().loadDriverInfo(location);
-//            }
-//            catch (ConfigurationException e) {
-//                // ignoring...
-//            }
+            }
+            catch (ConfigurationException e) {
+                // ignoring...
+            }
         }
 
         return info != null ? info : new DataSourceInfo();
