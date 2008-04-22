@@ -21,8 +21,6 @@ package org.apache.cayenne.modeler.util;
 
 import java.lang.reflect.Method;
 
-import org.apache.commons.lang.SystemUtils;
-
 /**
  * Opens a URL in the system default browser.
  * 
@@ -50,12 +48,12 @@ public class BrowserControl {
     // http://www.centerkey.com/java/browser/myapp/BareBonesBrowserLaunch.java
     public static void displayURL(String url) {
         try {
-            if (SystemUtils.IS_OS_WINDOWS) {
+            if (OperatingSystem.getOS() == OperatingSystem.WINDOWS) {
                 // cmd = 'rundll32 url.dll,FileProtocolHandler http://...'
                 String cmd = WIN_PATH + " " + WIN_FLAG + " " + url;
                 Runtime.getRuntime().exec(cmd);
             }
-            else if (SystemUtils.IS_OS_MAC_OSX) {
+            else if (OperatingSystem.getOS() == OperatingSystem.MAC_OS_X) {
                 Class<?> fileManager = Class.forName("com.apple.eio.FileManager");
                 Method openURL = fileManager.getDeclaredMethod("openURL", new Class[] {String.class});
                 openURL.invoke(null, new Object[] {url});

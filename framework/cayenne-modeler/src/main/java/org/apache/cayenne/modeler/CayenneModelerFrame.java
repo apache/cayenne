@@ -80,8 +80,8 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.util.OperatingSystem;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
-import org.apache.commons.lang.SystemUtils;
 
 /**
  * Main frame of CayenneModeler. Responsibilities include coordination of
@@ -120,7 +120,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         JMenu toolMenu = new JMenu("Tools");
         JMenu helpMenu = new JMenu("Help");
 
-        if (!SystemUtils.IS_OS_MAC_OSX) {
+        if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X) {
             fileMenu.setMnemonic(KeyEvent.VK_F);
             projectMenu.setMnemonic(KeyEvent.VK_P);
             toolMenu.setMnemonic(KeyEvent.VK_T);
@@ -143,7 +143,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         fileMenu.add(recentFileMenu);
 
         // Mac OS X doesn't use File->Exit, it uses CayenneModeler->Quit (command-Q)
-        if (!SystemUtils.IS_OS_MAC_OSX) {
+        if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X) {
             fileMenu.addSeparator();
             fileMenu.add(getAction(ExitAction.getActionName()).buildMenu());
         }
@@ -169,14 +169,15 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolMenu.add(getAction(GenerateCodeAction.getActionName()).buildMenu());
         toolMenu.add(getAction(GenerateDBAction.getActionName()).buildMenu());
         toolMenu.add(getAction(MigrateAction.getActionName()).buildMenu());
+        
         // Mac OS X has it's own Preferences menu item under the application menu
-        if (!SystemUtils.IS_OS_MAC_OSX) {
+        if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X) {
             toolMenu.addSeparator();
             toolMenu.add(getAction(ConfigurePreferencesAction.getActionName()).buildMenu());
         }
 
         // Mac OS X "About CayenneModeler" appears under the application menu, per Apple GUI standards
-        if (!SystemUtils.IS_OS_MAC_OSX)
+        if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X)
             helpMenu.add(getAction(AboutAction.getActionName()).buildMenu());
         helpMenu.add(getAction(DocumentationAction.getActionName()).buildMenu());
         
