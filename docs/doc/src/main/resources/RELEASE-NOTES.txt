@@ -28,9 +28,11 @@ CAY-1006 Upgrade Hessian to 3.1.5
 CAY-1010 Entity Tab switching on new entity creation
 CAY-1011 Add confirmation dialog for delete actions
 CAY-1019 Streamlining LOCAL_CACHE handling
+CAY-1026 Drop commons-lang dependency
 CAY-1027 Orderly EventManager shutdown
 CAY-1033 remove completed merge tokens from view in cayenne modeler
 CAY-1035  Replace QueryMetadata String cache policies with an enum
+CAY-1038 Upgrade to Ashood 2.0
 
 Bug fixes since M3:
 
