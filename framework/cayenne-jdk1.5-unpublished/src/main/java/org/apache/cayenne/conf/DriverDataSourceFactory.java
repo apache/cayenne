@@ -114,7 +114,7 @@ public class DriverDataSourceFactory implements DataSourceFactory {
     protected void load(String location) throws Exception {
         logger.info("loading driver information from '" + location + "'.");
 
-        InputStream in = this.getInputStream(location);
+        InputStream in = getInputStream(location);
         if (in == null) {
             logger.info("Error: location '" + location + "' not found.");
             throw new ConfigurationException(

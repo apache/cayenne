@@ -51,17 +51,16 @@ public class ProjectDataSourceFactory extends DriverDataSourceFactory {
             // ignoring
         }
 
-        return new ProjectDataSource(this.getDriverInfo());
+        return new ProjectDataSource(getDriverInfo());
     }
 
     @Override
     protected DataSourceInfo getDriverInfo() {
-        DataSourceInfo temp = super.getDriverInfo();
-        if (null == temp) {
-            temp = new DataSourceInfo();
+        DataSourceInfo info = super.getDriverInfo();
+        if (info == null) {
+            info = new DataSourceInfo();
         }
 
-        return temp;
+        return info;
     }
-
 }

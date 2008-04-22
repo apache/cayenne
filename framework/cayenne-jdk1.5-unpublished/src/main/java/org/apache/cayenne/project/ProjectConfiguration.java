@@ -80,9 +80,7 @@ public class ProjectConfiguration extends FileConfiguration {
     }
 
     /**
-     * Returns a DataSource factory for projects.
-     * 
-     * @see org.apache.cayenne.project.ProjectDataSourceFactory
+     * Returns an instance of {@link ProjectDataSourceFactory}.
      */
     @Override
     public DataSourceFactory getDataSourceFactory() {
