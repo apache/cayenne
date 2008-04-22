@@ -269,7 +269,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         }
 
         if (factory == null) {
-            if (config.getDataSourceFactory() != null) {
+            if (config.getDataSourceFactory(null) != null) {
                 logger.info("Warning: <node> '" + nodeName + "' without 'factory'.");
             }
             else {
@@ -288,7 +288,7 @@ public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
         try {
             // use DomainHelper factory if it exists, if not - use factory specified
             // in configuration data
-            DataSourceFactory confFactory = config.getDataSourceFactory();
+            DataSourceFactory confFactory = config.getDataSourceFactory(factory);
             DataSourceFactory localFactory = (confFactory != null)
                     ? confFactory
                     : (DataSourceFactory) Class.forName(factory).newInstance();

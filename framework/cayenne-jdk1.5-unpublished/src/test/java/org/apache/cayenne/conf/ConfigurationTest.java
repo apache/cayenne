@@ -41,6 +41,9 @@ public class ConfigurationTest extends CayenneCase {
         assertNull(cfg.getDomain(d1.getName()));
     }
     
+    /**
+     * @deprecated since 3.0
+     */
 	public void testOverrideFactory() throws java.lang.Exception {
 		Configuration cfg = new Config();
 

@@ -50,7 +50,7 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
     protected String cayenneConfigPackage;
 
     protected Configuration configuration;
-    
+
     /**
      * Creates a new PreferenceService that stores preferences using Cayenne and embedded
      * HSQLDB engine.
@@ -92,10 +92,15 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
      */
     public void startService() {
         // use custom DataSourceFactory to prepare the DB...
-        HSQLDataSourceFactory dataSourceFactory = new HSQLDataSourceFactory();
+        final HSQLDataSourceFactory dataSourceFactory = new HSQLDataSourceFactory();
 
-        DefaultConfiguration configuration = new DefaultConfiguration();
-        configuration.setDataSourceFactory(dataSourceFactory);
+        DefaultConfiguration configuration = new DefaultConfiguration() {
+
+            @Override
+            public DataSourceFactory getDataSourceFactory(String userFactoryName) {
+                return dataSourceFactory;
+            }
+        };
 
         if (cayenneConfigPackage != null) {
             configuration.addClassPath(cayenneConfigPackage);
@@ -109,7 +114,7 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
         }
 
         configuration.didInitialize();
-        
+
         this.configuration = configuration;
         this.dataContext = configuration.getDomain().createDataContext();
 
@@ -140,9 +145,9 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
             dataContext
                     .performNonSelectingQuery(new SQLTemplate(Domain.class, "SHUTDOWN"));
         }
-        
+
         // shutdown Cayenne
-        if(configuration != null) {
+        if (configuration != null) {
             configuration.shutdown();
         }
 

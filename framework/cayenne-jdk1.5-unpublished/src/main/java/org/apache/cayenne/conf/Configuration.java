@@ -123,7 +123,8 @@ public abstract class Configuration {
      * Creates and initializes a shared Configuration object of a custom Configuration
      * subclass.
      */
-    public static void initializeSharedConfiguration(Class<? extends Configuration> configurationClass) {
+    public static void initializeSharedConfiguration(
+            Class<? extends Configuration> configurationClass) {
         Configuration conf = null;
 
         try {
@@ -264,15 +265,34 @@ public abstract class Configuration {
     }
 
     /**
-     * Returns an internal property for the DataSource factory that will override any
-     * settings configured in XML. Subclasses may override this method to provide a
-     * special factory for DataSource creation that will take precedence over any
-     * factories configured in a cayenne project.
+     * Returns a DataSourceFactory that should override a given factory specified by
+     * caller. Returns null if the user factory should not be overriden.
+     * 
+     * @since 3.0
      */
-    public DataSourceFactory getDataSourceFactory() {
-        return this.overrideFactory;
+    public DataSourceFactory getDataSourceFactory(String userFactoryName) {
+        return overrideFactory;
     }
 
+    /**
+     * Returns an internal DataSourceFactory that will override any settings configured in
+     * XML. Subclasses may override this method to provide a special factory for
+     * DataSource creation that will take precedence over any factories configured in a
+     * Cayenne project.
+     * 
+     * @deprecated since 3.0 this method is no longer called when configuration is loaded.
+     *             Instead {@link #getDataSourceFactory(String)} is invoked, and this is
+     *             the method that should be overriden.
+     */
+    public DataSourceFactory getDataSourceFactory() {
+        return overrideFactory;
+    }
+
+    /**
+     * @deprecated since 3.0 as a more flexible mechanism for customizing
+     *             DataSourceFactory is implemented. Note that the factory set via this
+     *             method would still work, although using this method is discouraged.
+     */
     public void setDataSourceFactory(DataSourceFactory overrideFactory) {
         this.overrideFactory = overrideFactory;
     }
@@ -289,7 +309,7 @@ public abstract class Configuration {
         if (domain.getName() == null) {
             throw new NullPointerException("Attempt to add DataDomain with no name.");
         }
-        
+
         DataDomain old = dataDomains.put(domain.getName(), domain);
         if (old != null && old != domain) {
             dataDomains.put(domain.getName(), old);
@@ -445,13 +465,14 @@ public abstract class Configuration {
         for (DataDomain domain : getDomains()) {
             domain.shutdown();
         }
-        
-        if(eventManager != null) {
+
+        if (eventManager != null) {
             eventManager.shutdown();
         }
     }
 
     private class ConfigurationShutdownHook extends Thread {
+
         @Override
         public void run() {
             shutdown();

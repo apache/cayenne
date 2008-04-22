@@ -111,6 +111,9 @@ public class DriverDataSourceFactory implements DataSourceFactory {
      * Loads driver information from the file at <code>location</code>. Called
      * internally from "getDataSource"
      */
+    // TODO: andrus 2008/04/22, while this never caused any troubles, storing loaded
+    // DataSourceInfo in an ivar clearly violates the scope logic, as "location" is a
+    // local variable.
     protected void load(String location) throws Exception {
         logger.info("loading driver information from '" + location + "'.");
 
@@ -299,7 +302,8 @@ public class DriverDataSourceFactory implements DataSourceFactory {
             logger.info("loading user name and password.");
 
             String encoderClass = atts.getValue("encoderClass");
-            String encoderKey = atts.getValue("encoderKey") == null ? atts.getValue("encoderSalt") : atts.getValue("encoderKey");
+            String encoderKey = atts.getValue("encoderKey") == null ? atts
+                    .getValue("encoderSalt") : atts.getValue("encoderKey");
             String password = atts.getValue("password");
             String passwordLocation = atts.getValue("passwordLocation");
             String passwordSource = atts.getValue("passwordSource");

@@ -23,6 +23,7 @@ import java.io.File;
 
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.conf.DataSourceFactory;
+import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.conf.FileConfiguration;
 import org.apache.cayenne.util.ResourceLocator;
 
@@ -79,13 +80,23 @@ public class ProjectConfiguration extends FileConfiguration {
         }
     }
 
+    @Override
+    public DataSourceFactory getDataSourceFactory(String userFactoryName) {
+        File projectDir = getProjectDirectory();
+        boolean canLoad = DriverDataSourceFactory.class.getName().equals(userFactoryName);
+        ProjectDataSourceFactory factory = new ProjectDataSourceFactory(projectDir, canLoad);
+        return factory;
+    }
+
     /**
      * Returns an instance of {@link ProjectDataSourceFactory}.
+     * 
+     * @deprecated since 3.0 as the super method is deprecated as well.
      */
     @Override
     public DataSourceFactory getDataSourceFactory() {
         try {
-            return new ProjectDataSourceFactory(this.getProjectDirectory());
+            return new ProjectDataSourceFactory(getProjectDirectory());
         }
         catch (Exception e) {
             throw new ProjectException("Error creating DataSourceFactory.", e);

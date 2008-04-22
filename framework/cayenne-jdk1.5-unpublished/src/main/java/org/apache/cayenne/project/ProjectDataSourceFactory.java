@@ -24,6 +24,8 @@ import java.io.File;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.conf.Configuration;
+import org.apache.cayenne.conf.DataSourceFactory;
 import org.apache.cayenne.conf.DriverDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 
@@ -33,34 +35,60 @@ import org.apache.cayenne.conn.DataSourceInfo;
  * 
  * @author Andrus Adamchik
  */
-public class ProjectDataSourceFactory extends DriverDataSourceFactory {
+public class ProjectDataSourceFactory implements DataSourceFactory {
 
     protected File projectDir;
+    protected boolean loadFromXML;
+    protected Configuration parentConfiguration;
 
-    public ProjectDataSourceFactory(File projectDir) throws Exception {
-        super();
+    public ProjectDataSourceFactory(File projectDir) {
         this.projectDir = projectDir;
     }
 
-    @Override
-    public DataSource getDataSource(String location) throws Exception {
-        try {
-            this.load(location);
-        }
-        catch (ConfigurationException e) {
-            // ignoring
-        }
-
-        return new ProjectDataSource(getDriverInfo());
+    public ProjectDataSourceFactory(File projectDir, boolean loadFromXML) {
+        this.projectDir = projectDir;
+        this.loadFromXML = loadFromXML;
     }
 
-    @Override
-    protected DataSourceInfo getDriverInfo() {
-        DataSourceInfo info = super.getDriverInfo();
-        if (info == null) {
-            info = new DataSourceInfo();
+    public void initializeWithParentConfiguration(Configuration parentConfiguration) {
+        this.parentConfiguration = parentConfiguration;
+    }
+
+    public DataSource getDataSource(String location) throws Exception {
+        return new ProjectDataSource(getDriverInfo(location));
+    }
+
+    /**
+     * Returns a {@link DataSourceInfo} object, loading it from XML file if the factory is
+     * configured to do so.
+     */
+    protected DataSourceInfo getDriverInfo(String location) throws Exception {
+        DataSourceInfo info = null;
+
+        if (loadFromXML) {
+           // try {
+                info = new XMLConfigLoader().loadDriverInfo(location);
+//            }
+//            catch (ConfigurationException e) {
+//                // ignoring...
+//            }
         }
 
-        return info;
+        return info != null ? info : new DataSourceInfo();
+    }
+
+    // a helper class that exposes non public methods of DriverDataSourceFactory to load
+    // DS XML
+    final class XMLConfigLoader extends DriverDataSourceFactory {
+
+        XMLConfigLoader() throws Exception {
+            super();
+            initializeWithParentConfiguration(ProjectDataSourceFactory.this.parentConfiguration);
+        }
+
+        DataSourceInfo loadDriverInfo(String location) throws Exception {
+            load(location);
+            return driverInfo;
+        }
     }
 }
