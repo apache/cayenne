@@ -37,6 +37,7 @@ CAY-1038 Upgrade to Ashood 2.0
 Bug fixes since M3:
 
 CAY-574 DataObjectUtils 'objectForPK' should work on the client
+CAY-785 Cayenne Modeler Fails to Open Project 
 CAY-982 Client class and superclass names not auto-populated for new ObjEntity.
 CAY-983 POST_LOAD called twice
 CAY-984 Runtime relationships leak into CayenneModeler
