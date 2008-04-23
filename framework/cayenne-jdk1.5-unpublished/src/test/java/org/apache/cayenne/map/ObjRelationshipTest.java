@@ -56,9 +56,11 @@ public class ObjRelationshipTest extends CayenneCase {
 
         r.encodeAsXML(encoder);
         out.close();
+        
+        String lineBreak = System.getProperty("line.separator");
 
         assertEquals("<obj-relationship name=\"X\" source=\"S\" target=\"T\" "
-                + "collection-type=\"java.util.Map\" map-key=\"bla\"/>\n", buffer.getBuffer().toString());
+                + "collection-type=\"java.util.Map\" map-key=\"bla\"/>" + lineBreak, buffer.getBuffer().toString());
     }
 
     public void testCollectionType() {
