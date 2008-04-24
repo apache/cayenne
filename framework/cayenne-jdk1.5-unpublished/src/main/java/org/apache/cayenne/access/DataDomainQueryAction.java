@@ -218,14 +218,21 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 this.response = new GenericResponse(Collections.singletonList(targetRow));
                 return DONE;
             }
-            // a hack to prevent passing partial snapshots to ObjectResolver ... See
-            // CAY-724 for details.
-            else if (context != null
-                    && domain.getEntityResolver().lookupInheritanceTree(
-                            (ObjEntity) relationship.getTargetEntity()) == null) {
 
+            ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
+
+            // do not create a target hollow object for qualified entities or entities
+            // involved in inheritance, as the target object may be null even for non-null
+            // FK.
+            if (context != null
+                    && !isQualifiedEntity(targetEntity)
+                    && domain.getEntityResolver().lookupInheritanceTree(targetEntity) == null) {
+
+                // prevent passing partial snapshots to ObjectResolver per CAY-724. Create
+                // a hollow object right here and skip object conversion downstream
                 this.noObjectConversion = true;
                 Object object = context.localObject(targetId, null);
+
                 this.response = new GenericResponse(Collections.singletonList(object));
                 return DONE;
             }
@@ -550,6 +557,23 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     public boolean isIteratedResult() {
         return false;
+    }
+
+    /**
+     * Returns true if the entity or its super entities have a limiting qualifier.
+     */
+    private boolean isQualifiedEntity(ObjEntity entity) {
+        if (entity.getDeclaredQualifier() != null) {
+            return true;
+        }
+
+        entity = entity.getSuperEntity();
+
+        if (entity == null) {
+            return false;
+        }
+
+        return isQualifiedEntity(entity);
     }
 
     abstract class ObjectConversionStrategy {
