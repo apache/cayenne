@@ -517,17 +517,9 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     }
 
     /**
-     * Utility method to initialize query with only a single set of parameters. Useful,
-     * since most queries will only have one set. Internally calls
-     * {@link #setParameters(Map[])}.
+     * Utility method to initialize query with one or more sets of parameters.
      */
-    public void setParameters(Map<String, ?> map) {
-        setParameters(map != null ? new Map[] {
-            map
-        } : null);
-    }
-
-    public void setParameters(Map<String, ?>[] parameters) {
+    public void setParameters(Map<String, ?>... parameters) {
 
         if (parameters == null) {
             this.parameters = null;
