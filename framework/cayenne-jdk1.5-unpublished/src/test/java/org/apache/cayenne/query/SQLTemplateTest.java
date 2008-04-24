@@ -141,7 +141,7 @@ public class SQLTemplateTest extends TestCase {
         assertEquals(params, it.next());
         assertFalse(it.hasNext());
 
-        query.setParameters((Map) null);
+        query.setParameters(null);
         assertNotNull(query.getParameters());
         assertTrue(query.getParameters().isEmpty());
         it = query.parametersIterator();
