@@ -163,10 +163,10 @@
 	<query name="AllMtTable1" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
 	</query>
 	<query name="MtQueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
-		<property name="cayenne.GenericSelectQuery.cachePolicy" value="localcache"/>
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
 	</query>
 	<query name="ParameterizedMtQueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
-		<property name="cayenne.GenericSelectQuery.cachePolicy" value="localcache"/>
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
 		<qualifier><![CDATA[globalAttribute1 = $g]]></qualifier>
 	</query>
 </data-map>

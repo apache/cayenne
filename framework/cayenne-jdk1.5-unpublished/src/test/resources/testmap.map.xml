@@ -572,17 +572,17 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<sql adapter-class="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) values (#bind($id), #bind($title), #bind($price))]]></sql>
 	</query>
 	<query name="ParameterizedQueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
-		<property name="cayenne.GenericSelectQuery.cachePolicy" value="localcache"/>
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
 		<qualifier><![CDATA[artistName like $name]]></qualifier>
 	</query>
 	<query name="ParameterizedQueryWithSharedCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
-		<property name="cayenne.GenericSelectQuery.cachePolicy" value="sharedcache"/>
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
 		<qualifier><![CDATA[artistName like $name]]></qualifier>
 	</query>
 	<query name="ProcedureQuery" factory="org.apache.cayenne.map.ProcedureQueryBuilder" root="procedure" root-name="cayenne_tst_select_proc" result-entity="Artist">
 	</query>
 	<query name="QueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
-		<property name="cayenne.GenericSelectQuery.cachePolicy" value="localcache"/>
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
 	</query>
 	<query name="QueryWithOrdering" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
 		<ordering descending="true" ignore-case="true"><![CDATA[artistName]]></ordering>
@@ -595,7 +595,7 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<qualifier><![CDATA[artistName = $param1]]></qualifier>
 	</query>
 	<query name="QueryWithSharedCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
-		<property name="cayenne.GenericSelectQuery.cachePolicy" value="sharedcache"/>
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
 	</query>
 	<entity-listener class="org.apache.art.EntityListenerDataMap">
 		<pre-persist method-name="prePersistDataMap1"/>
