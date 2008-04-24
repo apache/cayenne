@@ -26,15 +26,14 @@ import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.inherit.AbstractPerson;
 import org.apache.cayenne.testdo.inherit.Address;
+import org.apache.cayenne.testdo.inherit.BaseEntity;
 import org.apache.cayenne.testdo.inherit.ClientCompany;
 import org.apache.cayenne.testdo.inherit.CustomerRepresentative;
 import org.apache.cayenne.testdo.inherit.Department;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
 import org.apache.cayenne.testdo.inherit.RelatedEntity;
-import org.apache.cayenne.testdo.inherit.BaseEntity;
 import org.apache.cayenne.testdo.inherit.SubEntity;
-import org.apache.cayenne.testdo.inherit.DirectToSubEntity;
 import org.apache.cayenne.unit.PeopleCase;
 
 /**
