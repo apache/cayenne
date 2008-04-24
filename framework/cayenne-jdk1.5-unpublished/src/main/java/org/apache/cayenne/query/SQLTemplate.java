@@ -301,17 +301,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * Returns a new query built using this query as a prototype and a new set of
      * parameters.
      */
-    public SQLTemplate queryWithParameters(Map<String, ?> parameters) {
-        return queryWithParameters(new Map[] {
-            parameters
-        });
-    }
-
-    /**
-     * Returns a new query built using this query as a prototype and a new set of
-     * parameters.
-     */
-    public SQLTemplate queryWithParameters(Map<String, ?>[] parameters) {
+    public SQLTemplate queryWithParameters(Map<String, ?>... parameters) {
         // create a query replica
         SQLTemplate query = new SQLTemplate();
 
