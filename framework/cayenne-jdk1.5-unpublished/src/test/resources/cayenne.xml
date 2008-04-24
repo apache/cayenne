@@ -8,6 +8,7 @@
 	<map name="map-db2" location="map-db2.map.xml"/>
 	<map name="multi-tier" location="multi-tier.map.xml"/>
 	<map name="people" location="people.map.xml"/>
+	<map name="qualified" location="qualified.map.xml"/>
 	<map name="relationships" location="relationships.map.xml"/>
 	<map name="testmap" location="testmap.map.xml"/>
 </domain>

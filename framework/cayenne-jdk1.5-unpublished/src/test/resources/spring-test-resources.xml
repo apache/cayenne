@@ -99,6 +99,9 @@
 	<bean id="EmbeddingMap" class="org.apache.cayenne.unit.DataMapFactory">
 		<constructor-arg><value>embeddable.map.xml</value></constructor-arg>
 	</bean>
+	<bean id="QualifiedMap" class="org.apache.cayenne.unit.DataMapFactory">
+		<constructor-arg><value>qualified.map.xml</value></constructor-arg>
+	</bean>
 	
 	<!-- ======================================= -->
 	<!-- DataSetFactory -->
@@ -157,6 +160,11 @@
 		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
 		<constructor-arg><list><ref bean="GenericMap"/></list></constructor-arg>
 	</bean>
+	<bean id="QualifiedStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+		<constructor-arg><ref bean="TestResources"/></constructor-arg>
+		<constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+		<constructor-arg><list><ref bean="QualifiedMap"/></list></constructor-arg>
+	</bean>
 	<!-- Used to create DB schema to avoid conflicts when schema for individual stacks is generated. -->
 	<bean id="SchemaSetupStack" class="org.apache.cayenne.unit.SimpleAccessStack">
 		<constructor-arg><ref bean="TestResources"/></constructor-arg>
@@ -172,6 +180,7 @@
 				<ref bean="DB1Map"/>
 				<ref bean="DB2Map"/>
 				<ref bean="EmbeddingMap"/>
+				<ref bean="QualifiedMap"/>
 			</list>
 		</constructor-arg>
 	</bean>

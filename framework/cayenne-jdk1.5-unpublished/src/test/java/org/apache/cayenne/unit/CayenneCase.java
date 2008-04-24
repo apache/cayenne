@@ -21,7 +21,6 @@ package org.apache.cayenne.unit;
 
 import java.sql.Connection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -45,6 +44,7 @@ public abstract class CayenneCase extends BasicCase {
 
     public static final String TEST_ACCESS_STACK = "TestStack";
     public static final String MULTI_TIER_ACCESS_STACK = "MultiTierStack";
+    public static final String QUALIFIED_ACCESS_STACK = "QualifiedStack";
 
     static {
         // create dummy shared config
