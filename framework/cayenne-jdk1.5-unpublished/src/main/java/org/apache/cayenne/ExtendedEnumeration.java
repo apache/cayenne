@@ -19,11 +19,17 @@
 
 package org.apache.cayenne;
 
-public interface ExtendedEnumeration
-{
+/**
+ * An interface that Enum classes may implement to map enum instances to arbitrary DB
+ * values that do not match the enum names or positions.
+ * 
+ * @since 3.0
+ */
+public interface ExtendedEnumeration {
+
     /**
-     * Return the value to be stored in the database for this enumeration.  In
-     * actuality, this should be an Integer or a String.
+     * Return the value to be stored in the database for this enumeration. In actuality,
+     * this should be an Integer or a String.
      */
-    public Object getDatabaseValue();
+    Object getDatabaseValue();
 }
