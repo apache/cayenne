@@ -56,7 +56,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
     public void testSQLResultSetMappingMixed() throws Exception {
         createTestData("prepare");
 
-        String sql = "SELECT t0.ARTIST_ID AS X, t0.ARTIST_NAME AS Y, t0.DATE_OF_BIRTH AS Z, count(t1.PAINTING_ID) AS C "
+        String sql = "SELECT #result('t0.ARTIST_ID' 'long' 'X'), #result('t0.ARTIST_NAME' 'String' 'Y'), #result('t0.DATE_OF_BIRTH' 'Date' 'Z'), #result('count(t1.PAINTING_ID)' 'int' 'C') "
                 + "FROM ARTIST t0 LEFT JOIN PAINTING t1 ON (t0.ARTIST_ID = t1.ARTIST_ID) "
                 + "GROUP BY t0.ARTIST_ID, t0.ARTIST_NAME, t0.DATE_OF_BIRTH "
                 + "ORDER BY t0.ARTIST_ID";
