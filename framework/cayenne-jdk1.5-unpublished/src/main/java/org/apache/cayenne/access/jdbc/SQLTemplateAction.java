@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -219,40 +218,39 @@ public class SQLTemplateAction implements SQLAction {
         boolean iteratedResult = callback.isIteratedResult();
 
         ExtendedTypeMap types = adapter.getExtendedTypes();
-        RowDescriptor descriptor;
+        RowDescriptorBuilder builder = new RowDescriptorBuilder();
 
         // SQLTemplate #result columns take precedence over other ways to determine the
         // type
         if (compiled.getResultColumns().length > 0) {
-            descriptor = new RowDescriptor(compiled.getResultColumns(), types);
-        }
-        else if (entity != null) {
-            Map<String, String> typeOverrides = new HashMap<String, String>();
-
-            // TODO: andrus 2008/03/28 support flattened attributes with aliases...
-            for (ObjAttribute attribute : entity.getAttributes()) {
-                String column = attribute.getDbAttributePath();
-                if (column == null || column.indexOf('.') > 0) {
-                    continue;
-                }
-
-                typeOverrides.put(column, attribute.getType());
-            }
-
-            descriptor = new RowDescriptor(resultSet, types, typeOverrides);
+            builder.setColumns(compiled.getResultColumns());
         }
         else {
-            descriptor = new RowDescriptor(resultSet, types);
+            builder.setResultSet(resultSet);
+
+            if (entity != null) {
+
+                // TODO: andrus 2008/03/28 support flattened attributes with aliases...
+                for (ObjAttribute attribute : entity.getAttributes()) {
+                    String column = attribute.getDbAttributePath();
+                    if (column == null || column.indexOf('.') > 0) {
+                        continue;
+                    }
+
+                    builder.overrideColumnType(column, attribute.getType());
+                }
+            }
+
         }
 
         if (query.getColumnNamesCapitalization() != null) {
             if (SQLTemplate.LOWERCASE_COLUMN_NAMES.equals(query
                     .getColumnNamesCapitalization())) {
-                descriptor.forceLowerCaseColumnNames();
+                builder.useLowercaseColumnNames();
             }
             else if (SQLTemplate.UPPERCASE_COLUMN_NAMES.equals(query
                     .getColumnNamesCapitalization())) {
-                descriptor.forceUpperCaseColumnNames();
+                builder.useUppercaseColumnNames();
             }
         }
 
@@ -260,7 +258,7 @@ public class SQLTemplateAction implements SQLAction {
                 connection,
                 statement,
                 resultSet,
-                descriptor,
+                builder.getDescriptor(types),
                 query.getFetchLimit());
 
         if (!iteratedResult) {

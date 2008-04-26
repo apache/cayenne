@@ -34,7 +34,6 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
  * @since 1.2
  * @author Andrus Adamchik
  */
-// replaces 1.1 ResultDescriptor
 public class RowDescriptor {
 
     protected ColumnDescriptor[] columns;
@@ -48,7 +47,19 @@ public class RowDescriptor {
     }
 
     /**
+     * Creates a fully initialized RowDescriptor.
+     * 
+     * @since 3.0
+     */
+    public RowDescriptor(ColumnDescriptor[] columns, ExtendedType[] converters) {
+        this.columns = columns;
+        this.converters = converters;
+    }
+
+    /**
      * Creates a RowDescriptor for an array of columns.
+     * 
+     * @deprecated since 3.0 use {@link RowDescriptorBuilder}.
      */
     public RowDescriptor(ColumnDescriptor[] columns, ExtendedTypeMap types) {
         this.columns = columns;
@@ -57,6 +68,8 @@ public class RowDescriptor {
 
     /**
      * Creates new RowDescriptor using ResultSet metadata to determine the columns.
+     * 
+     * @deprecated since 3.0 use {@link RowDescriptorBuilder}.
      */
     public RowDescriptor(ResultSet resultSet, ExtendedTypeMap types) {
         this(resultSet, types, null);
@@ -66,6 +79,8 @@ public class RowDescriptor {
      * Creates new RowDescriptor using ResultSet metadata to determine the columns. Note
      * that if javaTypeOverrides array is null, default JDBC to Java types mapping is
      * used.
+     * 
+     * @deprecated since 3.0 use {@link RowDescriptorBuilder}.
      */
     public RowDescriptor(ResultSet resultSet, ExtendedTypeMap types, Map javaTypeOverrides) {
 
@@ -77,31 +92,11 @@ public class RowDescriptor {
 
         indexTypes(types);
     }
-    
-    /**
-     * Converts result column labels to uppercase using the default Locale.
-     * 
-     * @since 3.0 
-     */
-    public void forceUpperCaseColumnNames() {
-        for (ColumnDescriptor column : columns) {
-            column.setLabel(column.getLabel().toUpperCase());
-        }
-    }
-    
-    /**
-     * Converts result column labels to lowercase using the default Locale.
-     * 
-     * @since 3.0 
-     */
-    public void forceLowerCaseColumnNames() {
-        for (ColumnDescriptor column : columns) {
-            column.setLabel(column.getLabel().toLowerCase());
-        }
-    }
 
     /**
      * Initializes converters for columns.
+     * 
+     * @deprecated since 3.0 use {@link RowDescriptorBuilder}.
      */
     protected void indexTypes(ExtendedTypeMap types) {
         this.converters = new ExtendedType[columns.length];
@@ -112,6 +107,8 @@ public class RowDescriptor {
 
     /**
      * Builds columns list from ResultSet metadata.
+     * 
+     * @deprecated since 3.0 use {@link RowDescriptorBuilder}.
      */
     protected void initFromResultSet(ResultSet resultSet) {
         try {
@@ -135,6 +132,8 @@ public class RowDescriptor {
     /**
      * Overrides Java types of result columns. Keys in the map must correspond to the
      * names of the columns.
+     * 
+     * @deprecated since 3.0 use {@link RowDescriptorBuilder}.
      */
     protected void overrideJavaTypes(Map overrides) {
 

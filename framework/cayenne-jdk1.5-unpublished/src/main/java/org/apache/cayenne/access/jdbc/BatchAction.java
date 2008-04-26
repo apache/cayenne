@@ -118,11 +118,11 @@ public class BatchAction extends BaseSQLAction {
             while (query.next()) {
 
                 if (isLoggable) {
-                    QueryLogger.logQueryParameters
-                        ("batch bind",
-                         query.getDbAttributes(), 
-                         queryBuilder.getParameterValues(query),
-                         query instanceof InsertBatchQuery);
+                    QueryLogger.logQueryParameters(
+                            "batch bind",
+                            query.getDbAttributes(),
+                            queryBuilder.getParameterValues(query),
+                            query instanceof InsertBatchQuery);
                 }
 
                 queryBuilder.bindParameters(statement, query);
@@ -184,8 +184,11 @@ public class BatchAction extends BaseSQLAction {
         try {
             while (query.next()) {
                 if (isLoggable) {
-                    QueryLogger.logQueryParameters
-                        ("bind", query.getDbAttributes(), queryBuilder.getParameterValues(query), query instanceof InsertBatchQuery);
+                    QueryLogger.logQueryParameters(
+                            "bind",
+                            query.getDbAttributes(),
+                            queryBuilder.getParameterValues(query),
+                            query instanceof InsertBatchQuery);
                 }
 
                 queryBuilder.bindParameters(statement, query);
@@ -264,9 +267,13 @@ public class BatchAction extends BaseSQLAction {
         // we can support multiple columns.. although need to check how well this works
         // with most common drivers)
 
+        RowDescriptorBuilder builder = new RowDescriptorBuilder();
+
         if (this.keyRowDescriptor == null) {
             // attempt to figure out the right descriptor from the mapping...
-            Collection<DbAttribute> generated = query.getDbEntity().getGeneratedAttributes();
+            Collection<DbAttribute> generated = query
+                    .getDbEntity()
+                    .getGeneratedAttributes();
             if (generated.size() == 1) {
                 DbAttribute key = generated.iterator().next();
 
@@ -277,13 +284,14 @@ public class BatchAction extends BaseSQLAction {
                 columns[0] = new ColumnDescriptor(keysRS.getMetaData(), 1);
                 columns[0].setJdbcType(key.getType());
                 columns[0].setJavaClass(TypesMapping.getJavaBySqlType(key.getType()));
-                keyRowDescriptor = new RowDescriptor(columns, getAdapter()
-                        .getExtendedTypes());
+                builder.setColumns(columns);
             }
             else {
-                keyRowDescriptor = new RowDescriptor(keysRS, getAdapter()
-                        .getExtendedTypes());
+                builder.setResultSet(keysRS);
             }
+
+            this.keyRowDescriptor = builder
+                    .getDescriptor(getAdapter().getExtendedTypes());
         }
 
         ResultIterator iterator = new JDBCResultIterator(

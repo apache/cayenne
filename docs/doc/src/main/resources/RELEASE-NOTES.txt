@@ -47,6 +47,7 @@ CAY-992 Modeler does not escape entity names
 CAY-998 ROP paginated lists must recover from server LRU query cache overflow
 CAY-1003 the paged queries in ROP can fail to fetch the subsequent pages if the client and server are in different timezones
 CAY-1005 CM Qualifier (or Declared Qualifier) is not honoured in 100% cases
+CAY-1014 Enums as meaningful PK
 CAY-1018 Enums fetched via SQLTemplate
 CAY-1020 Problem accessing toMany Set relationships on client.
 CAY-1028 NPE's in the Modeler for incomplete relationships

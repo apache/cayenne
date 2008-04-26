@@ -143,28 +143,36 @@ public class ProcedureAction extends BaseSQLAction {
      * @param resultSet JDBC ResultSet
      * @param setIndex a zero-based index of the ResultSet in the query results.
      */
-    protected RowDescriptor describeResultSet(ResultSet resultSet, int setIndex) {
+    protected RowDescriptor describeResultSet(ResultSet resultSet, int setIndex)
+            throws SQLException {
+
         if (setIndex < 0) {
             throw new IllegalArgumentException(
                     "Expected a non-negative result set index. Got: " + setIndex);
         }
 
+        RowDescriptorBuilder builder = new RowDescriptorBuilder();
+
         List<ColumnDescriptor[]> descriptors = query.getResultDescriptors();
 
         if (descriptors.isEmpty()) {
-            // failover to default JDBC result descriptor
-            return new RowDescriptor(resultSet, getAdapter().getExtendedTypes());
+            builder.setResultSet(resultSet);
         }
+        else {
 
-        // if one result is described, all of them must be present...
-        if (setIndex >= descriptors.size() || descriptors.get(setIndex) == null) {
-            throw new CayenneRuntimeException("No descriptor for result set at index '"
-                    + setIndex
-                    + "' configured.");
+            // if one result is described, all of them must be present...
+            if (setIndex >= descriptors.size() || descriptors.get(setIndex) == null) {
+                throw new CayenneRuntimeException(
+                        "No descriptor for result set at index '"
+                                + setIndex
+                                + "' configured.");
+            }
+
+            ColumnDescriptor[] columns = descriptors.get(setIndex);
+            builder.setColumns(columns);
         }
-
-        ColumnDescriptor[] columns = descriptors.get(setIndex);
-        return new RowDescriptor(columns, getAdapter().getExtendedTypes());
+        
+        return builder.getDescriptor(getAdapter().getExtendedTypes());
     }
 
     /**

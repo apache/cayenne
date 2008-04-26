@@ -72,8 +72,8 @@ public class SelectAction extends BaseSQLAction {
         PreparedStatement prepStmt = translator.createStatement();
         ResultSet rs = prepStmt.executeQuery();
 
-        RowDescriptor descriptor = new RowDescriptor(
-                translator.getResultColumns(),
+        RowDescriptor descriptor = new RowDescriptorBuilder().setColumns(
+                translator.getResultColumns()).getDescriptor(
                 getAdapter().getExtendedTypes());
         JDBCResultIterator workerIterator = new JDBCResultIterator(
                 connection,
