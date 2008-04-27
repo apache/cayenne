@@ -19,7 +19,8 @@
 
 	<formats>
 		<format>tar.gz</format>
-	</formats>
+        <format>zip</format>
+    </formats>
 
 	<includeBaseDirectory>true</includeBaseDirectory>
 

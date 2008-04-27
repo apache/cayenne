@@ -14,7 +14,6 @@ Date:
 
 Changes/New Features Since M3:
 
-CAY-994 Add extended enumeration support
 CAY-789 return object diff to client in ROP after commit
 CAY-809 Support for explicit mapping of SQL results with SQLResultSetMapping
 CAY-839 Support combination of Persistent objects and scalars in query results
@@ -23,15 +22,17 @@ CAY-893 CM Usability: Reopen Last Project on Startup
 CAY-970 Allow application to add DbAdapterFactory to AutoAdapter
 CAY-971 ROP GraphDiff "compressor"
 CAY-980 Upgrade Derby to 10.3 to support alter table drop column
+CAY-994 Add extended enumeration support
 CAY-999 Scaling paginated list
 CAY-1006 Upgrade Hessian to 3.1.5
 CAY-1010 Entity Tab switching on new entity creation
 CAY-1011 Add confirmation dialog for delete actions
 CAY-1019 Streamlining LOCAL_CACHE handling
+CAY-1024 Add .zip generation to Windows profile.
 CAY-1026 Drop commons-lang dependency
 CAY-1027 Orderly EventManager shutdown
 CAY-1033 remove completed merge tokens from view in cayenne modeler
-CAY-1035  Replace QueryMetadata String cache policies with an enum
+CAY-1035 Replace QueryMetadata String cache policies with an enum
 CAY-1038 Upgrade to Ashood 2.0
 
 Bug fixes since M3:
