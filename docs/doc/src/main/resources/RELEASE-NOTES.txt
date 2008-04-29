@@ -53,6 +53,7 @@ CAY-1014 Enums as meaningful PK
 CAY-1018 Enums fetched via SQLTemplate
 CAY-1020 Problem accessing toMany Set relationships on client.
 CAY-1028 NPE's in the Modeler for incomplete relationships
+CAY-1043 NPE in ConnectionWrapper on rollback
 
 ----------------------------------
 Release: 3.0M3

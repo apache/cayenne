@@ -79,32 +79,31 @@ class ExternalTransaction extends Transaction {
 
     @Override
     public void commit() throws IllegalStateException, SQLException, CayenneException {
-        try {
-            if (status == Transaction.STATUS_NO_TRANSACTION) {
-                return;
-            }
 
-            if (delegate != null && !delegate.willCommit(this)) {
-                return;
-            }
-
-            if (status != Transaction.STATUS_ACTIVE) {
-                throw new IllegalStateException(
-                        "Transaction must have 'STATUS_ACTIVE' to be committed. "
-                                + "Current status: "
-                                + Transaction.decodeStatus(status));
-            }
-
-            processCommit();
-
-            status = Transaction.STATUS_COMMITTED;
-            if (delegate != null) {
-                delegate.didCommit(this);
-            }
+        if (status == Transaction.STATUS_NO_TRANSACTION) {
+            return;
         }
-        finally {
-            close();
+
+        if (delegate != null && !delegate.willCommit(this)) {
+            return;
         }
+
+        if (status != Transaction.STATUS_ACTIVE) {
+            throw new IllegalStateException(
+                    "Transaction must have 'STATUS_ACTIVE' to be committed. "
+                            + "Current status: "
+                            + Transaction.decodeStatus(status));
+        }
+
+        processCommit();
+
+        status = Transaction.STATUS_COMMITTED;
+
+        if (delegate != null) {
+            delegate.didCommit(this);
+        }
+
+        close();
     }
 
     @Override
