@@ -160,7 +160,7 @@ public class ObjectIdQuery extends IndirectQuery {
     }
 
     /**
-     * An object is considered equal to this query if it is also a SingleObjectQuery with
+     * An object is considered equal to this query if it is also a ObjectIdQuery with
      * an equal ObjectId.
      */
     @Override
