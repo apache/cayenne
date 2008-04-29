@@ -830,6 +830,33 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         return (superEntity != null) ? superEntity.isSubentityOf(entity) : false;
     }
 
+    /**
+     * Returns an Iterable instance over expression path components based on this entity.
+     * 
+     * @since 3.0
+     */
+    public Iterable<PathComponent<ObjAttribute, ObjRelationship>> pathComponents(
+            final Expression pathExp) {
+
+        if (pathExp.getType() == Expression.OBJ_PATH) {
+
+            return new Iterable<PathComponent<ObjAttribute, ObjRelationship>>() {
+
+                // suppress warning until we parameterize Entity as Entity<T extends
+                // Attribute, U extends Relationship>
+                @SuppressWarnings("unchecked")
+                public Iterator iterator() {
+                    return new PathComponentIterator(ObjEntity.this, (String) pathExp
+                            .getOperand(0));
+                }
+            };
+        }
+
+        throw new ExpressionException("Invalid expression type: '"
+                + pathExp.expName()
+                + "',  OBJ_PATH is expected.");
+    }
+
     @Override
     public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp)
             throws ExpressionException {

@@ -16,48 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.map;
 
-import java.util.Iterator;
-
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.util.XMLEncoder;
-
 /**
+ * @since 3.0
  * @author Andrus Adamchik
  */
-public class MockEntity extends Entity {
+class AttributePathComponent<T extends Attribute, U extends Relationship> implements
+        PathComponent<T, U> {
 
-    public MockEntity() {
-        super();
+    private T attribute;
+
+    AttributePathComponent(T attribute) {
+        this.attribute = attribute;
     }
 
-    public MockEntity(String name) {
-        super(name);
+    public T getAttribute() {
+        return attribute;
     }
 
-    @Override
-    public Expression translateToRelatedEntity(
-            Expression expression,
-            String relationshipPath) {
+    public U getRelationship() {
         return null;
     }
 
-    @Override
-    public Iterator resolvePathComponents(Expression pathExp) throws ExpressionException {
-        return null;
+    public JoinType getJoinType() {
+        return JoinType.UNDEFINED;
+    }
+
+    public String getName() {
+        return attribute.getName();
     }
     
-    @Override
-    public <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> pathComponents(
-            Expression pathExp) {
-        return null;
+    public boolean isLast() {
+        return true;
     }
-
-    public void encodeAsXML(XMLEncoder encoder) {
-    }
-
 }

@@ -28,6 +28,7 @@ import org.apache.cayenne.access.QueryTranslator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.JoinType;
 
 /**
  * Abstract superclass of Query translators.
@@ -44,8 +45,21 @@ public abstract class QueryAssembler extends QueryTranslator {
      */
     protected List<DbAttribute> attributes = new ArrayList<DbAttribute>();
 
-    /** Processes a join being added. */
+    /**
+     * Processes a join being added.
+     * 
+     * @deprecated since 3.0 use {@link #dbRelationshipAdded(DbRelationship, JoinType)}.
+     */
     public abstract void dbRelationshipAdded(DbRelationship dbRel);
+
+    /**
+     * Appends a join with given semantics to the query.
+     * 
+     * @since 3.0
+     */
+    public abstract void dbRelationshipAdded(
+            DbRelationship relationship,
+            JoinType joinType);
 
     /**
      * Translates query into sql string. This is a workhorse method of QueryAssembler. It
@@ -87,8 +101,8 @@ public abstract class QueryAssembler extends QueryTranslator {
         values.add(anObject);
     }
 
-    /** 
-     * Translates internal query into PreparedStatement. 
+    /**
+     * Translates internal query into PreparedStatement.
      */
     @Override
     public PreparedStatement createStatement() throws Exception {

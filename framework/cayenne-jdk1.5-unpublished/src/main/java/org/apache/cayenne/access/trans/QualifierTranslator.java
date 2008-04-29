@@ -29,19 +29,18 @@ import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.commons.collections.IteratorUtils;
 
-/** 
+/**
  * Translates query qualifier to SQL. Used as a helper class by query translators.
  * 
  * @author Andrus Adamchik
  */
-public class QualifierTranslator
-    extends QueryAssemblerHelper
-    implements TraversalHandler {
+public class QualifierTranslator extends QueryAssemblerHelper implements TraversalHandler {
 
     protected StringBuffer qualBuf = new StringBuffer();
 
@@ -56,8 +55,9 @@ public class QualifierTranslator
         super(queryAssembler);
     }
 
-    /** Translates query qualifier to SQL WHERE clause. 
-     *  Qualifier is obtained from <code>queryAssembler</code> object. 
+    /**
+     * Translates query qualifier to SQL WHERE clause. Qualifier is obtained from
+     * <code>queryAssembler</code> object.
      */
     @Override
     public String doTranslation() {
@@ -105,7 +105,7 @@ public class QualifierTranslator
     protected void detectObjectMatch(Expression exp) {
         // On demand initialization of
         // objectMatchTranslator is not possible since there may be null
-        // object values that would not allow to detect the need for 
+        // object values that would not allow to detect the need for
         // such translator in the right time (e.g.: null = dbpath)
 
         matchingObject = false;
@@ -137,16 +137,17 @@ public class QualifierTranslator
             throw new IllegalStateException("An invalid attempt to append object match.");
         }
 
-        // turn off special handling, so that all the methods behave as a superclass's impl.
+        // turn off special handling, so that all the methods behave as a superclass's
+        // impl.
         matchingObject = false;
 
         boolean first = true;
         DbRelationship relationship = objectMatchTranslator.getRelationship();
-        
-        if(!relationship.isToMany() && !relationship.isToPK()) {
-            queryAssembler.dbRelationshipAdded(relationship);
+
+        if (!relationship.isToMany() && !relationship.isToPK()) {
+            queryAssembler.dbRelationshipAdded(relationship, JoinType.INNER);
         }
-        
+
         Iterator<String> it = objectMatchTranslator.keys();
         while (it.hasNext()) {
             if (first) {
@@ -159,7 +160,7 @@ public class QualifierTranslator
             String key = it.next();
             DbAttribute attr = objectMatchTranslator.getAttribute(key);
             Object val = objectMatchTranslator.getValue(key);
-           
+
             processColumn(qualBuf, attr, relationship);
             qualBuf.append(objectMatchTranslator.getOperation());
             appendLiteral(qualBuf, val, attr, objectMatchTranslator.getExpression());
@@ -178,83 +179,83 @@ public class QualifierTranslator
         StringBuffer buf = (matchingObject) ? new StringBuffer() : qualBuf;
 
         switch (node.getType()) {
-            case Expression.AND :
+            case Expression.AND:
                 buf.append(" AND ");
                 break;
-            case Expression.OR :
+            case Expression.OR:
                 buf.append(" OR ");
                 break;
-            case Expression.EQUAL_TO :
+            case Expression.EQUAL_TO:
                 // translate NULL as IS NULL
                 if (childIndex == 0
-                    && node.getOperandCount() == 2
-                    && node.getOperand(1) == null) {
+                        && node.getOperandCount() == 2
+                        && node.getOperand(1) == null) {
                     buf.append(" IS ");
                 }
                 else {
                     buf.append(" = ");
                 }
                 break;
-            case Expression.NOT_EQUAL_TO :
+            case Expression.NOT_EQUAL_TO:
                 // translate NULL as IS NOT NULL
                 if (childIndex == 0
-                    && node.getOperandCount() == 2
-                    && node.getOperand(1) == null) {
+                        && node.getOperandCount() == 2
+                        && node.getOperand(1) == null) {
                     buf.append(" IS NOT ");
                 }
                 else {
                     buf.append(" <> ");
                 }
                 break;
-            case Expression.LESS_THAN :
+            case Expression.LESS_THAN:
                 buf.append(" < ");
                 break;
-            case Expression.GREATER_THAN :
+            case Expression.GREATER_THAN:
                 buf.append(" > ");
                 break;
-            case Expression.LESS_THAN_EQUAL_TO :
+            case Expression.LESS_THAN_EQUAL_TO:
                 buf.append(" <= ");
                 break;
-            case Expression.GREATER_THAN_EQUAL_TO :
+            case Expression.GREATER_THAN_EQUAL_TO:
                 buf.append(" >= ");
                 break;
-            case Expression.IN :
+            case Expression.IN:
                 buf.append(" IN ");
                 break;
-            case Expression.NOT_IN :
+            case Expression.NOT_IN:
                 buf.append(" NOT IN ");
                 break;
-            case Expression.LIKE :
+            case Expression.LIKE:
                 buf.append(" LIKE ");
                 break;
-            case Expression.NOT_LIKE :
+            case Expression.NOT_LIKE:
                 buf.append(" NOT LIKE ");
                 break;
-            case Expression.LIKE_IGNORE_CASE :
+            case Expression.LIKE_IGNORE_CASE:
                 buf.append(") LIKE UPPER(");
                 break;
-            case Expression.NOT_LIKE_IGNORE_CASE :
+            case Expression.NOT_LIKE_IGNORE_CASE:
                 buf.append(") NOT LIKE UPPER(");
                 break;
-            case Expression.ADD :
+            case Expression.ADD:
                 buf.append(" + ");
                 break;
-            case Expression.SUBTRACT :
+            case Expression.SUBTRACT:
                 buf.append(" - ");
                 break;
-            case Expression.MULTIPLY :
+            case Expression.MULTIPLY:
                 buf.append(" * ");
                 break;
-            case Expression.DIVIDE :
+            case Expression.DIVIDE:
                 buf.append(" / ");
                 break;
-            case Expression.BETWEEN :
+            case Expression.BETWEEN:
                 if (childIndex == 0)
                     buf.append(" BETWEEN ");
                 else if (childIndex == 1)
                     buf.append(" AND ");
                 break;
-            case Expression.NOT_BETWEEN :
+            case Expression.NOT_BETWEEN:
                 if (childIndex == 0)
                     buf.append(" NOT BETWEEN ");
                 else if (childIndex == 1)
@@ -270,7 +271,7 @@ public class QualifierTranslator
 
     public void startNode(Expression node, Expression parentNode) {
         int count = node.getOperandCount();
-        
+
         if (count == 2) {
             // binary nodes are the only ones that currently require this
             detectObjectMatch(node);
@@ -279,7 +280,7 @@ public class QualifierTranslator
         if (parenthesisNeeded(node, parentNode)) {
             qualBuf.append('(');
         }
-        
+
         if (count == 0) {
             // not all databases handle true/false
             if (node.getType() == Expression.TRUE) {
@@ -295,12 +296,11 @@ public class QualifierTranslator
                 qualBuf.append('-');
             // ignore POSITIVE - it is a NOOP
             // else if(node.getType() == Expression.POSITIVE)
-            //     qualBuf.append('+');
+            // qualBuf.append('+');
             else if (node.getType() == Expression.NOT)
                 qualBuf.append("NOT ");
         }
-        else if (
-            node.getType() == Expression.LIKE_IGNORE_CASE
+        else if (node.getType() == Expression.LIKE_IGNORE_CASE
                 || node.getType() == Expression.NOT_LIKE_IGNORE_CASE) {
             qualBuf.append("UPPER(");
         }
@@ -321,7 +321,7 @@ public class QualifierTranslator
         }
 
         if (node.getType() == Expression.LIKE_IGNORE_CASE
-            || node.getType() == Expression.NOT_LIKE_IGNORE_CASE) {
+                || node.getType() == Expression.NOT_LIKE_IGNORE_CASE) {
             qualBuf.append(')');
         }
     }
@@ -354,7 +354,7 @@ public class QualifierTranslator
 
         if (node.getType() == Expression.DB_PATH)
             return false;
-        
+
         return true;
     }
 
@@ -370,7 +370,7 @@ public class QualifierTranslator
         else {
             String className = (list != null) ? list.getClass().getName() : "<null>";
             throw new IllegalArgumentException(
-                "Unsupported type for the list expressions: " + className);
+                    "Unsupported type for the list expressions: " + className);
         }
 
         // process first element outside the loop
@@ -388,10 +388,10 @@ public class QualifierTranslator
 
     @Override
     protected void appendLiteral(
-        StringBuffer buf,
-        Object val,
-        DbAttribute attr,
-        Expression parentExpression) {
+            StringBuffer buf,
+            Object val,
+            DbAttribute attr,
+            Expression parentExpression) {
 
         if (!matchingObject) {
             super.appendLiteral(buf, val, attr, parentExpression);
@@ -399,24 +399,28 @@ public class QualifierTranslator
         else if (val == null || (val instanceof Persistent)) {
             objectMatchTranslator.setDataObject((Persistent) val);
         }
-        else if(val instanceof ObjectId) {
+        else if (val instanceof ObjectId) {
             objectMatchTranslator.setObjectId((ObjectId) val);
         }
         else {
-            throw new IllegalArgumentException("Attempt to use literal other than DataObject during object match.");
+            throw new IllegalArgumentException(
+                    "Attempt to use literal other than DataObject during object match.");
         }
     }
 
     @Override
-    protected void processRelTermination(StringBuffer buf, DbRelationship rel) {
+    protected void processRelTermination(
+            StringBuffer buf,
+            DbRelationship rel,
+            JoinType joinType) {
 
         if (!matchingObject) {
-            super.processRelTermination(buf, rel);
+            super.processRelTermination(buf, rel, joinType);
         }
         else {
             if (rel.isToMany()) {
                 // append joins
-                queryAssembler.dbRelationshipAdded(rel);
+                queryAssembler.dbRelationshipAdded(rel, joinType);
             }
             objectMatchTranslator.setRelationship(rel);
         }

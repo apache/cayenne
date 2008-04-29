@@ -16,48 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.map;
 
-import java.util.Iterator;
-
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.util.XMLEncoder;
-
 /**
+ * Enumerates supported JOIN types.
+ * 
  * @author Andrus Adamchik
+ * @since 3.0
  */
-public class MockEntity extends Entity {
+public enum JoinType {
 
-    public MockEntity() {
-        super();
-    }
-
-    public MockEntity(String name) {
-        super(name);
-    }
-
-    @Override
-    public Expression translateToRelatedEntity(
-            Expression expression,
-            String relationshipPath) {
-        return null;
-    }
-
-    @Override
-    public Iterator resolvePathComponents(Expression pathExp) throws ExpressionException {
-        return null;
-    }
-    
-    @Override
-    public <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> pathComponents(
-            Expression pathExp) {
-        return null;
-    }
-
-    public void encodeAsXML(XMLEncoder encoder) {
-    }
-
+    UNDEFINED, INNER, LEFT_OUTER
 }

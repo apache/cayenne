@@ -26,14 +26,16 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.query.UpdateQuery;
 
-/** Class implements default translation mechanism of 
-  * org.apache.cayenne.query.UpdateQuery
-  * objects to SQL UPDATE statements.
-  *
-  * @author Andrus Adamchik
-  */
+/**
+ * Class implements default translation mechanism of org.apache.cayenne.query.UpdateQuery
+ * objects to SQL UPDATE statements.
+ * 
+ * @author Andrus Adamchik
+ * @deprecated since 3.0 use EJBQL or SQLTemplate
+ */
 public class UpdateTranslator extends QueryAssembler {
 
     @Override
@@ -43,6 +45,11 @@ public class UpdateTranslator extends QueryAssembler {
 
     @Override
     public void dbRelationshipAdded(DbRelationship dbRel) {
+        throw new RuntimeException("db relationships not supported");
+    }
+
+    @Override
+    public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType) {
         throw new RuntimeException("db relationships not supported");
     }
 
@@ -60,16 +67,16 @@ public class UpdateTranslator extends QueryAssembler {
         buildSetClause(queryBuf, (UpdateQuery) query);
 
         // 3. build qualifier
-        String qualifierStr =
-            adapter.getQualifierTranslator(this).doTranslation();
+        String qualifierStr = adapter.getQualifierTranslator(this).doTranslation();
         if (qualifierStr != null)
             queryBuf.append(" WHERE ").append(qualifierStr);
 
         return queryBuf.toString();
     }
 
-    /** Translate updated values and relationships into
-     *  "SET ATTR1 = Val1, ..." SQL statement.
+    /**
+     * Translate updated values and relationships into "SET ATTR1 = Val1, ..." SQL
+     * statement.
      */
     private void buildSetClause(StringBuffer queryBuf, UpdateQuery query) {
         Map updAttrs = query.getUpdAttributes();
@@ -87,7 +94,7 @@ public class UpdateTranslator extends QueryAssembler {
 
         // now process other attrs in the loop
         while (attrIt.hasNext()) {
-        	Map.Entry entry = (Map.Entry) attrIt.next();
+            Map.Entry entry = (Map.Entry) attrIt.next();
             String nextKey = (String) entry.getKey();
             Object attrVal = entry.getValue();
 
@@ -95,9 +102,7 @@ public class UpdateTranslator extends QueryAssembler {
                 queryBuf.append(", ");
 
             queryBuf.append(nextKey).append(" = ?");
-            super.addToParamList(
-                (DbAttribute) dbEnt.getAttribute(nextKey),
-                attrVal);
+            super.addToParamList((DbAttribute) dbEnt.getAttribute(nextKey), attrVal);
             appendedSomething = true;
         }
     }

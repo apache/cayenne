@@ -28,6 +28,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.query.Query;
 
 public class TstQueryAssembler extends QueryAssembler {
@@ -52,9 +53,17 @@ public class TstQueryAssembler extends QueryAssembler {
         super.getConnection().close();
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     @Override
     public void dbRelationshipAdded(DbRelationship dbRel) {
         dbRels.add(dbRel);
+    }
+    
+    @Override
+    public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType) {
+        dbRels.add(relationship);
     }
 
     @Override

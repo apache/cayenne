@@ -16,48 +16,42 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.map;
 
-import java.util.Iterator;
-
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.util.XMLEncoder;
-
 /**
+ * @since 3.0
  * @author Andrus Adamchik
  */
-public class MockEntity extends Entity {
+class RelationshipPathComponent<T extends Attribute, U extends Relationship> implements
+        PathComponent<T, U> {
 
-    public MockEntity() {
-        super();
+    private U relationship;
+    private JoinType joinType;
+    private boolean last;
+
+    RelationshipPathComponent(U relationship, JoinType joinType, boolean last) {
+        this.relationship = relationship;
+        this.joinType = joinType;
+        this.last = last;
     }
 
-    public MockEntity(String name) {
-        super(name);
-    }
-
-    @Override
-    public Expression translateToRelatedEntity(
-            Expression expression,
-            String relationshipPath) {
+    public T getAttribute() {
         return null;
     }
 
-    @Override
-    public Iterator resolvePathComponents(Expression pathExp) throws ExpressionException {
-        return null;
-    }
-    
-    @Override
-    public <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> pathComponents(
-            Expression pathExp) {
-        return null;
+    public U getRelationship() {
+        return relationship;
     }
 
-    public void encodeAsXML(XMLEncoder encoder) {
+    public JoinType getJoinType() {
+        return joinType;
     }
 
+    public String getName() {
+        return relationship.getName();
+    }
+
+    public boolean isLast() {
+        return last;
+    }
 }

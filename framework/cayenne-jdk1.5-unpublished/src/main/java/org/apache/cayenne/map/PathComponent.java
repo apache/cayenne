@@ -16,48 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.map;
 
-import java.util.Iterator;
-
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.util.XMLEncoder;
-
 /**
+ * A component in a path chain.
+ * 
+ * @since 3.0
  * @author Andrus Adamchik
  */
-public class MockEntity extends Entity {
+public interface PathComponent<T extends Attribute, U extends Relationship> {
 
-    public MockEntity() {
-        super();
-    }
+    T getAttribute();
 
-    public MockEntity(String name) {
-        super(name);
-    }
+    U getRelationship();
 
-    @Override
-    public Expression translateToRelatedEntity(
-            Expression expression,
-            String relationshipPath) {
-        return null;
-    }
+    String getName();
 
-    @Override
-    public Iterator resolvePathComponents(Expression pathExp) throws ExpressionException {
-        return null;
-    }
-    
-    @Override
-    public <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> pathComponents(
-            Expression pathExp) {
-        return null;
-    }
+    /**
+     * Returns a joint type of this path component in the expression. Attributes always
+     * return undefined type, while relationships may be outer or inner joins.
+     */
+    JoinType getJoinType();
 
-    public void encodeAsXML(XMLEncoder encoder) {
-    }
-
+    boolean isLast();
 }

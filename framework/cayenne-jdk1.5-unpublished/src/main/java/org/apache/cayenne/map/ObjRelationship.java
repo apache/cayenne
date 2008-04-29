@@ -524,19 +524,22 @@ public class ObjRelationship extends Relationship {
             throw new CayenneRuntimeException(
                     "Can't resolve DbRelationships, null source ObjEntity");
         }
+        
+        DbEntity dbEntity = entity.getDbEntity();
+        if(dbEntity == null) {
+            return null;
+        }
 
         StringBuilder validPath = new StringBuilder();
 
         try {
-            Iterator<CayenneMapEntry> it = entity.resolvePathComponents(new ASTDbPath(
-                    path));
-            while (it.hasNext()) {
-                DbRelationship relationship = (DbRelationship) it.next();
-
+            for (PathComponent<DbAttribute, DbRelationship> pathComponent : dbEntity
+                    .pathComponents(new ASTDbPath(path))) {
+                
                 if (validPath.length() > 0) {
                     validPath.append(Entity.PATH_SEPARATOR);
                 }
-                validPath.append(relationship.getName());
+                validPath.append(pathComponent.getName());
             }
         }
         catch (ExpressionException ex) {

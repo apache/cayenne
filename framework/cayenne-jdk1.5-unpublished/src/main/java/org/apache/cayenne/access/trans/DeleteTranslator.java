@@ -21,13 +21,15 @@ package org.apache.cayenne.access.trans;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.query.DeleteQuery;
 
-/** Class implements default translation mechanism of org.apache.cayenne.query.DeleteQuery
- *  objects to SQL DELETE statements.
- *
- *  @author Andrus Adamchik
- *  @deprecated since 3.0 since {@link DeleteQuery} is deprecated.
+/**
+ * Class implements default translation mechanism of org.apache.cayenne.query.DeleteQuery
+ * objects to SQL DELETE statements.
+ * 
+ * @author Andrus Adamchik
+ * @deprecated since 3.0 since {@link DeleteQuery} is deprecated.
  */
 public class DeleteTranslator extends QueryAssembler {
 
@@ -41,8 +43,14 @@ public class DeleteTranslator extends QueryAssembler {
         throw new RuntimeException("db relationships not supported");
     }
 
-    /** Main method of DeleteTranslator class. Translates DeleteQuery
-     *  into a JDBC PreparedStatement
+    @Override
+    public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType) {
+        throw new RuntimeException("db relationships not supported");
+    }
+
+    /**
+     * Main method of DeleteTranslator class. Translates DeleteQuery into a JDBC
+     * PreparedStatement
      */
     @Override
     public String createSqlString() throws Exception {
@@ -53,8 +61,7 @@ public class DeleteTranslator extends QueryAssembler {
         queryBuf.append(dbEnt.getFullyQualifiedName());
 
         // 2. build qualifier
-        String qualifierStr =
-            adapter.getQualifierTranslator(this).doTranslation();
+        String qualifierStr = adapter.getQualifierTranslator(this).doTranslation();
         if (qualifierStr != null)
             queryBuf.append(" WHERE ").append(qualifierStr);
 

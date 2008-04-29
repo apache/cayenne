@@ -44,6 +44,14 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
 
     public static final String PATH_SEPARATOR = ".";
 
+    /**
+     * A prefix or a suffix that can be used in a path component to indicate that an OUTER
+     * JOIN should be used when resolving the expression.
+     * 
+     * @since 3.0
+     */
+    public static final String OUTER_JOIN_INDICATOR = "+";
+
     protected String name;
     protected DataMap dataMap;
 
@@ -133,9 +141,9 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
             if (existingAttribute == attribute)
                 return;
             else
-                throw new IllegalArgumentException("An attempt to override attribute '" +
-                        attribute.getName() +
-                        "'");
+                throw new IllegalArgumentException("An attempt to override attribute '"
+                        + attribute.getName()
+                        + "'");
         }
 
         // Check that there aren't any relationships with the same name as the given
@@ -143,9 +151,9 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
         Object existingRelationship = relationships.get(attribute.getName());
         if (existingRelationship != null)
             throw new IllegalArgumentException(
-                    "Attribute name conflict with existing relationship '" +
-                            attribute.getName() +
-                            "'");
+                    "Attribute name conflict with existing relationship '"
+                            + attribute.getName()
+                            + "'");
 
         attributes.put(attribute.getName(), attribute);
         attribute.setEntity(this);
@@ -183,9 +191,9 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
                 return;
             else
                 throw new IllegalArgumentException(
-                        "An attempt to override relationship '" +
-                                relationship.getName() +
-                                "'");
+                        "An attempt to override relationship '"
+                                + relationship.getName()
+                                + "'");
         }
 
         // Check that there aren't any attributes with the same name as the given
@@ -193,9 +201,9 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
         Object existingAttribute = attributes.get(relationship.getName());
         if (existingAttribute != null)
             throw new IllegalArgumentException(
-                    "Relationship name conflict with existing attribute '" +
-                            relationship.getName() +
-                            "'");
+                    "Relationship name conflict with existing attribute '"
+                            + relationship.getName()
+                            + "'");
 
         relationships.put(relationship.getName(), relationship);
         relationship.setSourceEntity(this);
@@ -275,20 +283,34 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
             String relationshipPath);
 
     /**
-     * Convenience method returning the last component in the path iterator.
+     * Convenience method returning the last component in the path iterator, either an
+     * {@link ObjAttribute} or an {@link ObjRelationship}.
      * 
      * @since 1.1
-     * @see #resolvePathComponents(Expression)
      */
     public Object lastPathComponent(Expression pathExp) {
-        CayenneMapEntry last = null;
-        Iterator<CayenneMapEntry> it = resolvePathComponents(pathExp);
-        while (it.hasNext()) {
-            last = it.next();
+
+        for (PathComponent<Attribute, Relationship> component : pathComponents(pathExp)) {
+            if (component.isLast()) {
+                return component.getAttribute() != null
+                        ? component.getAttribute()
+                        : component.getRelationship();
+            }
         }
 
-        return last;
+        return null;
     }
+
+    /**
+     * Processes expression argument and returns an Iterable over the path components.
+     * Note that if path is invalid and can not be resolved from this entity, this method
+     * will still return an Iterator, but an attempt to read the first invalid path
+     * component will result in ExpressionException.
+     * 
+     * @since 3.0
+     */
+    public abstract <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> pathComponents(
+            Expression pathExp);
 
     /**
      * Processes expression <code>pathExp</code> and returns an Iterator of path
@@ -306,7 +328,8 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * entity, this method will still return an Iterator, but an attempt to read the first
      * invalid path component will result in ExpressionException.
      */
-    public Iterator<CayenneMapEntry> resolvePathComponents(String path) throws ExpressionException {
+    public Iterator<CayenneMapEntry> resolvePathComponents(String path)
+            throws ExpressionException {
         return new PathIterator(path);
     }
 
@@ -338,9 +361,9 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
                 // do a sanity check...
                 if (toks.hasMoreTokens())
                     throw new ExpressionException(
-                            "Attribute must be the last component of the path: '" +
-                                    pathComp +
-                                    "'.",
+                            "Attribute must be the last component of the path: '"
+                                    + pathComp
+                                    + "'.",
                             path,
                             null);
 
@@ -373,9 +396,9 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     final MappingNamespace getNonNullNamespace() {
         MappingNamespace parent = getDataMap();
         if (parent == null)
-            throw new CayenneRuntimeException("Entity '" +
-                    getName() +
-                    "' has no parent MappingNamespace (such as DataMap)");
+            throw new CayenneRuntimeException("Entity '"
+                    + getName()
+                    + "' has no parent MappingNamespace (such as DataMap)");
 
         return parent;
     }

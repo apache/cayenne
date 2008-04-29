@@ -23,10 +23,30 @@ import org.apache.art.Artist;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.Util;
 
 public class ObjEntityTest extends CayenneCase {
+
+    public void testLastPathComponent() {
+        ObjEntity artistE = getObjEntity("Artist");
+
+        Object lastAttribute = artistE.lastPathComponent(Expression
+                .fromString("paintingArray.paintingTitle"));
+        assertTrue(lastAttribute instanceof ObjAttribute);
+        assertEquals("paintingTitle", ((ObjAttribute) lastAttribute).getName());
+
+        Object lastRelationship = artistE.lastPathComponent(Expression
+                .fromString("paintingArray.toGallery"));
+        assertTrue(lastRelationship instanceof ObjRelationship);
+        assertEquals("toGallery", ((ObjRelationship) lastRelationship).getName());
+
+        Object lastLeftJoinRelationship = artistE.lastPathComponent(new ASTObjPath(
+                "paintingArray+.toGallery+"));
+        assertTrue(lastLeftJoinRelationship instanceof ObjRelationship);
+        assertEquals("toGallery", ((ObjRelationship) lastLeftJoinRelationship).getName());
+    }
 
     public void testGeneric() {
         ObjEntity e1 = new ObjEntity("e1");
@@ -87,7 +107,6 @@ public class ObjEntityTest extends CayenneCase {
         // Test correctness with no mapped PK.
         assertEquals(0, entity.getPrimaryKeyNames().size());
 
-
         // Add a single column PK to the DB entity.
         DbAttribute pk = new DbAttribute();
         pk.setName("id");
@@ -97,7 +116,6 @@ public class ObjEntityTest extends CayenneCase {
         // Test correctness with a single column PK.
         assertEquals(1, entity.getPrimaryKeyNames().size());
         assertTrue(entity.getPrimaryKeyNames().contains(pk.getName()));
-
 
         // Add a multi-column PK to the DB entity.
         DbAttribute pk2 = new DbAttribute();
@@ -112,10 +130,10 @@ public class ObjEntityTest extends CayenneCase {
     }
 
     public void testGetClientEntity() {
-        
+
         DataMap map = new DataMap();
         map.setClientSupported(true);
-        
+
         final ObjEntity target = new ObjEntity("te1");
         map.addObjEntity(target);
 
