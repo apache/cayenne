@@ -369,8 +369,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         Painting childMaster = childContext.newObject(Painting.class);
         childMaster.setPaintingTitle("Master");
 
-        PaintingInfo childDetail1 = childContext
-                .newObject(PaintingInfo.class);
+        PaintingInfo childDetail1 = childContext.newObject(PaintingInfo.class);
         childDetail1.setTextReview("Detail1");
         childDetail1.setPainting(childMaster);
 
@@ -542,5 +541,31 @@ public class NestedDataContextWriteTest extends CayenneCase {
         finally {
             unblockQueries();
         }
+    }
+
+    public void testAddRemove() {
+
+        DataContext context = createDataContext();
+        DataContext child = context.createChildDataContext();
+
+        Artist a = child.newObject(Artist.class);
+        a.setArtistName("X");
+        child.commitChanges();
+
+        Painting p1 = child.newObject(Painting.class);
+        p1.setPaintingTitle("P1");
+        a.addToPaintingArray(p1);
+
+        Painting p2 = child.newObject(Painting.class);
+        p2.setPaintingTitle("P2");
+        a.addToPaintingArray(p2);
+
+        a.removeFromPaintingArray(p2);
+
+        // this causes an error on commit
+        child.deleteObject(p2);
+
+        child.commitChangesToParent();
+
     }
 }

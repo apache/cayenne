@@ -159,6 +159,12 @@ class ChildDiffLoader implements GraphChangeHandler {
         final Persistent source = findObject(nodeId);
         final Persistent target = findObject(targetNodeId);
 
+        // if a target was later deleted, the diff for arcCreated is still preserved and
+        // can result in NULL target here.
+        if (target == null) {
+            return;
+        }
+
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 ((ObjectId) nodeId).getEntityName());
         ArcProperty property = (ArcProperty) descriptor.getProperty(arcId.toString());
