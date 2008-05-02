@@ -409,7 +409,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     /**
      * @since 3.0
      */
-    void setCacheGroups(String[] groups) {
+    void setCacheGroups(String... groups) {
         this.cacheGroups = groups;
     }
 

@@ -386,8 +386,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     /**
      * @since 3.0
      */
-    public void setCacheGroups(String[] cachGroups) {
-        this.metaData.setCacheGroups(cachGroups);
+    public void setCacheGroups(String... cacheGroups) {
+        this.metaData.setCacheGroups(cacheGroups);
     }
 
     public int getFetchLimit() {
