@@ -31,16 +31,14 @@ import org.apache.cayenne.query.Query;
 
 /**
  * Defines API for translation Cayenne queries to JDBC PreparedStatements.
- * <p>
- * <i>For more information see <a href="../../../../../../userguide/index.html"
- * target="_top">Cayenne User Guide. </a> </i>
- * </p>
  * 
  * @author Andrus Adamchik
  */
 public abstract class QueryTranslator {
 
-    /** Query being translated. */
+    /** 
+     * Query being translated. 
+     */
     protected Query query;
 
     /**
@@ -65,7 +63,9 @@ public abstract class QueryTranslator {
      */
     public abstract PreparedStatement createStatement() throws Exception;
 
-    /** Returns query object being processed. */
+    /** 
+     * Returns query object being processed. 
+     */
     public Query getQuery() {
         return query;
     }
