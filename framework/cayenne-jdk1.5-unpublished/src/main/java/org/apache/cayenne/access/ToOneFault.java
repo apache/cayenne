@@ -38,6 +38,15 @@ public class ToOneFault extends Fault {
      */
     @Override
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
+
+        if (sourceObject.getObjectContext() == null) {
+            throw new IllegalStateException(
+                    "Null ObjectContext. Can't read a to-one relationshup '"
+                            + relationshipName
+                            + "' for an object with ID: "
+                            + sourceObject.getObjectId());
+        }
+
         int state = sourceObject.getPersistenceState();
         if (state == PersistenceState.NEW) {
             return null;
