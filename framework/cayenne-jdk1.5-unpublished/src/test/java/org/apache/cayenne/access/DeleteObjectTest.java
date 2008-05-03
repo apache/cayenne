@@ -55,6 +55,9 @@ public class DeleteObjectTest extends CayenneCase {
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
         context.deleteObject(artist);
         assertEquals(PersistenceState.DELETED, artist.getPersistenceState());
+        context.commitChanges();
+        assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
+        assertNull(artist.getObjectContext());
     }
 
     public void testDeleteObjects() throws Exception {
