@@ -271,7 +271,8 @@ public abstract class Configuration {
      * @since 3.0
      */
     public DataSourceFactory getDataSourceFactory(String userFactoryName) {
-        return overrideFactory;
+        // call the old implementation for backwards compatibility
+        return getDataSourceFactory();
     }
 
     /**
