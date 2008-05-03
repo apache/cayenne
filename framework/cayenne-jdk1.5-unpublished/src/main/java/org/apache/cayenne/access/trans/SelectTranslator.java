@@ -354,11 +354,12 @@ public class SelectTranslator extends QueryAssembler {
 
                 PathComponent<DbAttribute, DbRelationship> lastComponent = null;
                 for (PathComponent<DbAttribute, DbRelationship> component : table
-                        .pathComponents(pathExp)) {
+                        .pathComponents(pathExp, getJoinAliases())) {
 
                     // do not add join for the last DB Rel
                     if (component.getRelationship() != null && !component.isLast()) {
-                        dbRelationshipAdded(component.getRelationship(), component.getJoinType());
+                        dbRelationshipAdded(component.getRelationship(), component
+                                .getJoinType());
                     }
 
                     lastComponent = component;
@@ -420,7 +421,7 @@ public class SelectTranslator extends QueryAssembler {
 
                 DbRelationship r = null;
                 for (PathComponent<DbAttribute, DbRelationship> component : table
-                        .pathComponents(dbPrefetch)) {
+                        .pathComponents(dbPrefetch, getJoinAliases())) {
                     r = component.getRelationship();
                     dbRelationshipAdded(r, JoinType.INNER);
                 }

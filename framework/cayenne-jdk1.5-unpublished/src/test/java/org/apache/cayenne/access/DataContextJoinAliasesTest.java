@@ -20,7 +20,6 @@ package org.apache.cayenne.access;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.art.Artist;
@@ -53,18 +52,18 @@ public class DataContextJoinAliasesTest extends CayenneCase {
         Artist picasso = DataObjectUtils.objectForPK(context, Artist.class, 1);
         Artist dali = DataObjectUtils.objectForPK(context, Artist.class, 2);
 
-//        SelectQuery query = new SelectQuery(Gallery.class);
-//        String path = "exhibitArray.artistExhibitArray";
-//        query.aliasJoin("p", path);
-//        query.aliasJoin("d", path);
-//
-//        query.andQualifier(ExpressionFactory.matchExp("p.toArtist", picasso));
-//        query.andQualifier(ExpressionFactory.matchExp("d.toArtist", dali));
-//
-//        List<Gallery> galleries = context.performQuery(query);
-//
-//        assertEquals(1, galleries.size());
-//        assertEquals("G1", galleries.get(0).getGalleryName());
+        SelectQuery query = new SelectQuery(Gallery.class);
+        String path = "exhibitArray.artistExhibitArray";
+        query.aliasJoin("p", path);
+        query.aliasJoin("d", path);
+
+        query.andQualifier(ExpressionFactory.matchExp("p.toArtist", picasso));
+        query.andQualifier(ExpressionFactory.matchExp("d.toArtist", dali));
+
+        // List<Gallery> galleries = context.performQuery(query);
+        //
+        // assertEquals(1, galleries.size());
+        // assertEquals("G1", galleries.get(0).getGalleryName());
     }
 
 }

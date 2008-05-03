@@ -39,4 +39,16 @@ public interface PathComponent<T extends Attribute, U extends Relationship> {
     JoinType getJoinType();
 
     boolean isLast();
+
+    /**
+     * Returns true if this component is an alias for a different path. Only the first
+     * path component can be an alias. Aliased path can be obtained by calling
+     * {@link #getAliasedPath()}.
+     */
+    boolean isAlias();
+
+    /**
+     * Returns an aliased path or null if this component is not an alias.
+     */
+    Iterable<PathComponent<T, U>> getAliasedPath();
 }

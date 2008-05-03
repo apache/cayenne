@@ -84,13 +84,15 @@ public abstract class QueryAssemblerHelper {
         return getQueryAssembler().getRootDbEntity();
     }
 
-    /** Processes parts of the OBJ_PATH expression. */
+    /** 
+     * Processes parts of the OBJ_PATH expression. 
+     */
     protected void appendObjPath(StringBuffer buf, Expression pathExp) {
 
         ObjRelationship lastRelationship = null;
 
         for (PathComponent<ObjAttribute, ObjRelationship> component : getObjEntity()
-                .pathComponents(pathExp)) {
+                .pathComponents(pathExp, queryAssembler.getJoinAliases())) {
 
             ObjRelationship relationship = component.getRelationship();
             ObjAttribute attribute = component.getAttribute();
@@ -105,7 +107,8 @@ public abstract class QueryAssemblerHelper {
                 else {
                     // find and add joins ....
                     for (DbRelationship dbRel : relationship.getDbRelationships()) {
-                        queryAssembler.dbRelationshipAdded(dbRel, component.getJoinType());
+                        queryAssembler
+                                .dbRelationshipAdded(dbRel, component.getJoinType());
                     }
                 }
                 lastRelationship = relationship;
@@ -128,7 +131,7 @@ public abstract class QueryAssemblerHelper {
     protected void appendDbPath(StringBuffer buf, Expression pathExp) {
 
         for (PathComponent<DbAttribute, DbRelationship> component : getDbEntity()
-                .pathComponents(pathExp)) {
+                .pathComponents(pathExp, queryAssembler.getJoinAliases())) {
 
             DbRelationship relationship = component.getRelationship();
 
@@ -141,7 +144,8 @@ public abstract class QueryAssemblerHelper {
                 }
                 else {
                     // find and add joins ....
-                    queryAssembler.dbRelationshipAdded(relationship, component.getJoinType());
+                    queryAssembler.dbRelationshipAdded(relationship, component
+                            .getJoinType());
                 }
             }
             else {
@@ -369,13 +373,14 @@ public abstract class QueryAssemblerHelper {
      * primary key. If this is a "to one" relationship, column expression for the source
      * foreign key is added.
      * 
-     * @deprecated since 3.0 use {@link #processRelTermination(StringBuffer, ObjRelationship, JoinType)}.
+     * @deprecated since 3.0 use
+     *             {@link #processRelTermination(StringBuffer, ObjRelationship, JoinType)}.
      */
     protected void processRelTermination(StringBuffer buf, ObjRelationship rel) {
         processRelTermination(buf, rel, JoinType.INNER);
-       
+
     }
-    
+
     /**
      * Processes case when an OBJ_PATH expression ends with relationship. If this is a "to
      * many" relationship, a join is added and a column expression for the target entity
@@ -384,7 +389,10 @@ public abstract class QueryAssemblerHelper {
      * 
      * @since 3.0
      */
-    protected void processRelTermination(StringBuffer buf, ObjRelationship rel, JoinType joinType) {
+    protected void processRelTermination(
+            StringBuffer buf,
+            ObjRelationship rel,
+            JoinType joinType) {
         Iterator<DbRelationship> dbRels = rel.getDbRelationships().iterator();
 
         // scan DbRelationships
@@ -409,13 +417,13 @@ public abstract class QueryAssemblerHelper {
      * primary key. If this is a "to one" relationship, column expression for the source
      * foreign key is added.
      * 
-     * @deprecated since 3.0 use {@link #processRelTermination(StringBuffer, DbRelationship, JoinType)}.
+     * @deprecated since 3.0 use
+     *             {@link #processRelTermination(StringBuffer, DbRelationship, JoinType)}.
      */
     protected void processRelTermination(StringBuffer buf, DbRelationship rel) {
         processRelTermination(buf, rel, JoinType.INNER);
     }
-    
-    
+
     /**
      * Handles case when a DB_NAME expression ends with relationship. If this is a "to
      * many" relationship, a join is added and a column expression for the target entity
@@ -424,7 +432,10 @@ public abstract class QueryAssemblerHelper {
      * 
      * @since 3.0
      */
-    protected void processRelTermination(StringBuffer buf, DbRelationship rel, JoinType joinType) {
+    protected void processRelTermination(
+            StringBuffer buf,
+            DbRelationship rel,
+            JoinType joinType) {
         if (rel.isToMany()) {
             // append joins
             queryAssembler.dbRelationshipAdded(rel, joinType);

@@ -18,24 +18,44 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import java.util.Collections;
+import java.util.Iterator;
+
 /**
+ * Represents an alias for the relationship path.
+ * 
  * @since 3.0
  * @author Andrus Adamchik
  */
-class AttributePathComponent<T extends Attribute, U extends Relationship> implements
+class AliasPathComponent<T extends Attribute, U extends Relationship> implements
         PathComponent<T, U> {
 
-    private T attribute;
+    private Entity root;
+    private String alias;
+    private String path;
+    private boolean last;
 
-    AttributePathComponent(T attribute) {
-        this.attribute = attribute;
+    AliasPathComponent(Entity root, String alias, String path, boolean last) {
+        this.root = root;
+        this.alias = alias;
+        this.path = path;
+        this.last = last;
+    }
+
+    public Iterable<PathComponent<T, U>> getAliasedPath() {
+        return new Iterable<PathComponent<T, U>>() {
+
+            // suppress warning until we parameterize Entity as Entity<T extends
+            // Attribute, U extends Relationship>
+            @SuppressWarnings("unchecked")
+            public Iterator iterator() {
+                return new PathComponentIterator(root, path, Collections
+                        .<String, String> emptyMap());
+            }
+        };
     }
 
     public T getAttribute() {
-        return attribute;
-    }
-
-    public U getRelationship() {
         return null;
     }
 
@@ -44,18 +64,18 @@ class AttributePathComponent<T extends Attribute, U extends Relationship> implem
     }
 
     public String getName() {
-        return attribute.getName();
+        return alias;
     }
-    
-    public boolean isLast() {
+
+    public U getRelationship() {
+        return null;
+    }
+
+    public boolean isAlias() {
         return true;
     }
-    
-    public boolean isAlias() {
-        return false;
-    }
-    
-    public Iterable<PathComponent<T, U>> getAliasedPath() {
-        return null;
+
+    public boolean isLast() {
+        return last;
     }
 }

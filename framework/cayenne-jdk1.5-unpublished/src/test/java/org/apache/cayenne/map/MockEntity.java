@@ -20,10 +20,10 @@
 package org.apache.cayenne.map;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -53,7 +53,7 @@ public class MockEntity extends Entity {
     
     @Override
     public <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> pathComponents(
-            Expression pathExp) {
+            Expression pathExp, Map joinAliases) {
         return null;
     }
 

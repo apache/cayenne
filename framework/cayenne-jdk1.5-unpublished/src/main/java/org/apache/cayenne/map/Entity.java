@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -290,7 +291,9 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      */
     public Object lastPathComponent(Expression pathExp) {
 
-        for (PathComponent<Attribute, Relationship> component : pathComponents(pathExp)) {
+        for (PathComponent<Attribute, Relationship> component : pathComponents(
+                pathExp,
+                Collections.EMPTY_MAP)) {
             if (component.isLast()) {
                 return component.getAttribute() != null
                         ? component.getAttribute()
@@ -303,14 +306,20 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
 
     /**
      * Processes expression argument and returns an Iterable over the path components.
-     * Note that if path is invalid and can not be resolved from this entity, this method
-     * will still return an Iterator, but an attempt to read the first invalid path
-     * component will result in ExpressionException.
+     * Path expression can use aliases. In this case an optional aliasMap parameter will
+     * be consulted to resolve them.
+     * <p>
+     * This method is lazy in a sense that if path is invalid and can not be resolved from
+     * this entity, this method will still return an Iterator, but an attempt to read the
+     * first invalid path component will result in ExpressionException.
+     * </p>
      * 
      * @since 3.0
      */
+    @SuppressWarnings("unchecked")
     public abstract <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> pathComponents(
-            Expression pathExp);
+            Expression pathExp,
+            Map aliasMap);
 
     /**
      * Processes expression <code>pathExp</code> and returns an Iterator of path

@@ -21,7 +21,9 @@ package org.apache.cayenne.access.trans;
 
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.QueryTranslator;
@@ -29,6 +31,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
+import org.apache.cayenne.query.QualifiedQuery;
 
 /**
  * Abstract superclass of Query translators.
@@ -51,6 +54,18 @@ public abstract class QueryAssembler extends QueryTranslator {
      * @deprecated since 3.0 use {@link #dbRelationshipAdded(DbRelationship, JoinType)}.
      */
     public abstract void dbRelationshipAdded(DbRelationship dbRel);
+
+    /**
+     * Returns aliases for the joins defined in the query.
+     * 
+     * @since 3.0
+     */
+    protected Map<String, String> getJoinAliases() {
+        if (query instanceof QualifiedQuery) {
+            return ((QualifiedQuery) query).getJoinAliases();
+        }
+        return Collections.emptyMap();
+    }
 
     /**
      * Appends a join with given semantics to the query.

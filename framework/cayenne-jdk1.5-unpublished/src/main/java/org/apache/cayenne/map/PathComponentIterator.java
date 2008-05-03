@@ -19,6 +19,7 @@
 package org.apache.cayenne.map;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.cayenne.exp.ExpressionException;
@@ -32,11 +33,13 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
     private StringTokenizer toks;
     private Entity currentEntity;
     private String path;
+    private Map<String, String> aliasMap;
 
-    PathComponentIterator(Entity root, String path) {
+    PathComponentIterator(Entity root, String path, Map<String, String> aliasMap) {
         currentEntity = root;
         toks = new StringTokenizer(path, Entity.PATH_SEPARATOR);
         this.path = path;
+        this.aliasMap = aliasMap;
     }
 
     public boolean hasNext() {
@@ -45,13 +48,14 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
 
     public PathComponent<Attribute, Relationship> next() {
         String pathComp = toks.nextToken();
-        
+
         JoinType relationshipJoinType = JoinType.INNER;
-        
+
         // we only support LEFT JOINS for now...
-        if(pathComp.endsWith(Entity.OUTER_JOIN_INDICATOR)) {
+        if (pathComp.endsWith(Entity.OUTER_JOIN_INDICATOR)) {
             relationshipJoinType = JoinType.LEFT_OUTER;
-            pathComp = pathComp.substring(0, pathComp.length() - Entity.OUTER_JOIN_INDICATOR.length());
+            pathComp = pathComp.substring(0, pathComp.length()
+                    - Entity.OUTER_JOIN_INDICATOR.length());
         }
 
         // see if this is an attribute
@@ -75,6 +79,16 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
             return new RelationshipPathComponent<Attribute, Relationship>(
                     rel,
                     relationshipJoinType,
+                    !hasNext());
+        }
+
+        String aliasedPath = (aliasMap != null) ? aliasMap.get(pathComp) : null;
+        if (aliasedPath != null) {
+            // TODO: andrus 5/3/2008 - reset current entity to skip the aliased path
+            return new AliasPathComponent<Attribute, Relationship>(
+                    currentEntity,
+                    pathComp,
+                    aliasedPath,
                     !hasNext());
         }
 

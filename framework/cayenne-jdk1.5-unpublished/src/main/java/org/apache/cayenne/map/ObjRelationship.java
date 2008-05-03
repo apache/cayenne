@@ -524,9 +524,9 @@ public class ObjRelationship extends Relationship {
             throw new CayenneRuntimeException(
                     "Can't resolve DbRelationships, null source ObjEntity");
         }
-        
+
         DbEntity dbEntity = entity.getDbEntity();
-        if(dbEntity == null) {
+        if (dbEntity == null) {
             return null;
         }
 
@@ -534,8 +534,8 @@ public class ObjRelationship extends Relationship {
 
         try {
             for (PathComponent<DbAttribute, DbRelationship> pathComponent : dbEntity
-                    .pathComponents(new ASTDbPath(path))) {
-                
+                    .pathComponents(new ASTDbPath(path), Collections.emptyMap())) {
+
                 if (validPath.length() > 0) {
                     validPath.append(Entity.PATH_SEPARATOR);
                 }

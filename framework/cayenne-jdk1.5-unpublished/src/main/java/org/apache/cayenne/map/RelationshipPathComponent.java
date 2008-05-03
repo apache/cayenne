@@ -54,4 +54,12 @@ class RelationshipPathComponent<T extends Attribute, U extends Relationship> imp
     public boolean isLast() {
         return last;
     }
+
+    public boolean isAlias() {
+        return false;
+    }
+
+    public Iterable<PathComponent<T, U>> getAliasedPath() {
+        return null;
+    }
 }
