@@ -1146,7 +1146,7 @@ public class DataContext extends BaseContext implements DataChannel {
         ObjectStore objectStore = getObjectStore();
         GraphDiff parentChanges = null;
 
-        // prevent multiple commits occuring simulteneously
+        // prevent multiple commits occurring simultaneously
         synchronized (objectStore) {
 
             ObjectStoreGraphDiff changes = objectStore.getChanges();
