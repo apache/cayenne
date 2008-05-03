@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +43,7 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
 
         // TODO: andrus 02/25/2008 - fails on HSQLDB / succeeds on MySQL. HSQLDB error is
         // "Unresolved parameter type : as both operands of aritmetic operator in
-        
+
         // statement"
         // String ejbql = "SELECT p FROM Painting p WHERE p.estimatedPrice < (1 + - 4.0 *
         // - 1000.0)";
@@ -283,6 +284,32 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
         }
 
         assertTrue(ids.contains(33001l));
+    }
+
+    public void testGreaterOrEquals() throws Exception {
+        createTestData("prepareGreaterThan");
+
+        String ejbql = "SELECT p FROM Painting p WHERE p.estimatedPrice >= :estimatedPrice";
+
+        ObjectContext context = createDataContext();
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("estimatedPrice", new BigDecimal(4000));
+        List<?> objects = context.performQuery(query);
+        assertEquals(4, objects.size());
+    }
+
+    public void testLessOrEquals() throws Exception {
+        createTestData("prepareGreaterThan");
+
+        String ejbql = "SELECT p FROM Painting p WHERE p.estimatedPrice <= :estimatedPrice";
+
+        ObjectContext context = createDataContext();
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("estimatedPrice", new BigDecimal(4000));
+        List<?> objects = context.performQuery(query);
+        assertEquals(2, objects.size());
     }
 
     public void testCollectionNotMemberOfParameter() throws Exception {

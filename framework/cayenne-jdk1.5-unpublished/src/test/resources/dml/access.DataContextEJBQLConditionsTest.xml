@@ -209,6 +209,18 @@
 		</constructor-arg>
 	</bean>
 	
+	<bean id="prepareGreaterThan" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="P1" />
+				<ref bean="P2" />
+				<ref bean="P3" />
+				<ref bean="P4" />
+				<ref bean="P5" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
 	<bean id="prepareIn" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
