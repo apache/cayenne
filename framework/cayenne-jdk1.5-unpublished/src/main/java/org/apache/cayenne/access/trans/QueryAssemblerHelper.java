@@ -92,7 +92,7 @@ public abstract class QueryAssemblerHelper {
         ObjRelationship lastRelationship = null;
 
         for (PathComponent<ObjAttribute, ObjRelationship> component : getObjEntity()
-                .pathComponents(pathExp, queryAssembler.getJoinAliases())) {
+                .resolvePath(pathExp, queryAssembler.getJoinAliases())) {
 
             ObjRelationship relationship = component.getRelationship();
             ObjAttribute attribute = component.getAttribute();
@@ -131,7 +131,7 @@ public abstract class QueryAssemblerHelper {
     protected void appendDbPath(StringBuffer buf, Expression pathExp) {
 
         for (PathComponent<DbAttribute, DbRelationship> component : getDbEntity()
-                .pathComponents(pathExp, queryAssembler.getJoinAliases())) {
+                .resolvePath(pathExp, queryAssembler.getJoinAliases())) {
 
             DbRelationship relationship = component.getRelationship();
 

@@ -276,7 +276,7 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Iterable<PathComponent<DbAttribute, DbRelationship>> pathComponents(
+    public Iterable<PathComponent<DbAttribute, DbRelationship>> resolvePath(
             final Expression pathExp,
             final Map aliasMap) {
 

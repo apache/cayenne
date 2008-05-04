@@ -534,7 +534,7 @@ public class ObjRelationship extends Relationship {
 
         try {
             for (PathComponent<DbAttribute, DbRelationship> pathComponent : dbEntity
-                    .pathComponents(new ASTDbPath(path), Collections.emptyMap())) {
+                    .resolvePath(new ASTDbPath(path), Collections.emptyMap())) {
 
                 if (validPath.length() > 0) {
                     validPath.append(Entity.PATH_SEPARATOR);

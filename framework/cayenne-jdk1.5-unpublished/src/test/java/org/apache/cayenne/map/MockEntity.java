@@ -52,7 +52,7 @@ public class MockEntity extends Entity {
     }
     
     @Override
-    public <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> pathComponents(
+    public <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> resolvePath(
             Expression pathExp, Map joinAliases) {
         return null;
     }

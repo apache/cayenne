@@ -289,9 +289,10 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * 
      * @since 1.1
      */
+    // TODO: andrus 2008/05/03 - support aliases?
     public Object lastPathComponent(Expression pathExp) {
 
-        for (PathComponent<Attribute, Relationship> component : pathComponents(
+        for (PathComponent<Attribute, Relationship> component : resolvePath(
                 pathExp,
                 Collections.EMPTY_MAP)) {
             if (component.isLast()) {
@@ -305,19 +306,20 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     }
 
     /**
-     * Processes expression argument and returns an Iterable over the path components.
-     * Path expression can use aliases. In this case an optional aliasMap parameter will
-     * be consulted to resolve them.
+     * Returns an Iterable over the path components with elements represented as
+     * {@link PathComponent} instances, encapsulating a relationship, an attribute or a
+     * subpath alias. An optional "aliasMap" parameter is used to resolve subpaths from
+     * aliases.
      * <p>
-     * This method is lazy in a sense that if path is invalid and can not be resolved from
-     * this entity, this method will still return an Iterator, but an attempt to read the
-     * first invalid path component will result in ExpressionException.
+     * This method is lazy: if path is invalid and can not be resolved from this entity,
+     * this method will still return an Iterator, but an attempt to read the first invalid
+     * path component will result in ExpressionException.
      * </p>
      * 
      * @since 3.0
      */
     @SuppressWarnings("unchecked")
-    public abstract <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> pathComponents(
+    public abstract <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> resolvePath(
             Expression pathExp,
             Map aliasMap);
 

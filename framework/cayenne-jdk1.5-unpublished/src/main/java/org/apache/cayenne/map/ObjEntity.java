@@ -837,7 +837,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Iterable<PathComponent<ObjAttribute, ObjRelationship>> pathComponents(
+    public Iterable<PathComponent<ObjAttribute, ObjRelationship>> resolvePath(
             final Expression pathExp,
             final Map aliasMap) {
 
