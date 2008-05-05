@@ -33,7 +33,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -84,8 +83,8 @@ public abstract class QueryAssemblerHelper {
         return getQueryAssembler().getRootDbEntity();
     }
 
-    /** 
-     * Processes parts of the OBJ_PATH expression. 
+    /**
+     * Processes parts of the OBJ_PATH expression.
      */
     protected void appendObjPath(StringBuffer buf, Expression pathExp) {
 
@@ -319,18 +318,22 @@ public abstract class QueryAssemblerHelper {
             if (op instanceof Expression) {
                 Expression expression = (Expression) op;
                 if (expression.getType() == Expression.OBJ_PATH) {
-                    Object last = getObjEntity().lastPathComponent(expression);
-                    // TODO: handle EmbeddableAttribute
-                    if (last instanceof EmbeddableAttribute)
-                        break;
+                    PathComponent<ObjAttribute, ObjRelationship> last = getObjEntity()
+                            .lastPathComponent(
+                                    expression,
+                                    queryAssembler.getJoinAliases());
 
-                    if (last instanceof ObjAttribute) {
-                        attribute = ((ObjAttribute) last).getDbAttribute();
+                    // TODO: handle EmbeddableAttribute
+                    // if (last instanceof EmbeddableAttribute)
+                    // break;
+
+                    if (last.getAttribute() != null) {
+                        attribute = last.getAttribute().getDbAttribute();
                         break;
                     }
-                    else if (last instanceof ObjRelationship) {
-                        ObjRelationship objRelationship = (ObjRelationship) last;
-                        List<DbRelationship> dbPath = objRelationship
+                    else if (last.getRelationship() != null) {
+                        List<DbRelationship> dbPath = last
+                                .getRelationship()
                                 .getDbRelationships();
                         if (dbPath.size() > 0) {
                             relationship = dbPath.get(dbPath.size() - 1);
@@ -339,13 +342,16 @@ public abstract class QueryAssemblerHelper {
                     }
                 }
                 else if (expression.getType() == Expression.DB_PATH) {
-                    Object last = getDbEntity().lastPathComponent(expression);
-                    if (last instanceof DbAttribute) {
-                        attribute = (DbAttribute) last;
+                    PathComponent<DbAttribute, DbRelationship> last = getDbEntity()
+                            .lastPathComponent(
+                                    expression,
+                                    queryAssembler.getJoinAliases());
+                    if (last.getAttribute() != null) {
+                        attribute = last.getAttribute();
                         break;
                     }
-                    else if (last instanceof DbRelationship) {
-                        relationship = (DbRelationship) last;
+                    else if (last.getRelationship() != null) {
+                        relationship = last.getRelationship();
                         break;
                     }
                 }

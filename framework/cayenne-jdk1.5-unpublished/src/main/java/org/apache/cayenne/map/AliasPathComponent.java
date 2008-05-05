@@ -18,8 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.Collection;
 
 /**
  * Represents an alias for the relationship path.
@@ -30,29 +29,18 @@ import java.util.Iterator;
 class AliasPathComponent<T extends Attribute, U extends Relationship> implements
         PathComponent<T, U> {
 
-    private Entity root;
     private String alias;
-    private String path;
+    private Collection<PathComponent<T, U>> path;
     private boolean last;
 
-    AliasPathComponent(Entity root, String alias, String path, boolean last) {
-        this.root = root;
+    AliasPathComponent(String alias, Collection<PathComponent<T, U>> path, boolean last) {
         this.alias = alias;
         this.path = path;
         this.last = last;
     }
 
     public Iterable<PathComponent<T, U>> getAliasedPath() {
-        return new Iterable<PathComponent<T, U>>() {
-
-            // suppress warning until we parameterize Entity as Entity<T extends
-            // Attribute, U extends Relationship>
-            @SuppressWarnings("unchecked")
-            public Iterator iterator() {
-                return new PathComponentIterator(root, path, Collections
-                        .<String, String> emptyMap());
-            }
-        };
+        return path;
     }
 
     public T getAttribute() {

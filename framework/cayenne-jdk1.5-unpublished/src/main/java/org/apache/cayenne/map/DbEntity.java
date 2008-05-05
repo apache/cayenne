@@ -268,6 +268,17 @@ public class DbEntity extends Entity implements DbEntityListener, DbAttributeLis
     public SortedMap<String, DbRelationship> getRelationshipMap() {
         return (SortedMap<String, DbRelationship>) super.getRelationshipMap();
     }
+    
+    /**
+     * @since 3.0
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public PathComponent<DbAttribute, DbRelationship> lastPathComponent(
+            Expression path,
+            Map aliasMap) {
+        return super.lastPathComponent(path, aliasMap);
+    }
 
     /**
      * Returns an Iterable instance over expression path components based on this entity.

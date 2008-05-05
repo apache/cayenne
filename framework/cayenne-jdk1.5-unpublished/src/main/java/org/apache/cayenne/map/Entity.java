@@ -288,21 +288,60 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * {@link ObjAttribute} or an {@link ObjRelationship}.
      * 
      * @since 1.1
+     * @deprecated since 3.0 use {@link #lastPathComponent(Expression, Map)} method that
+     *             supports aliases.
      */
-    // TODO: andrus 2008/05/03 - support aliases?
-    public Object lastPathComponent(Expression pathExp) {
+    public Object lastPathComponent(Expression path) {
 
-        for (PathComponent<Attribute, Relationship> component : resolvePath(
-                pathExp,
-                Collections.EMPTY_MAP)) {
+        PathComponent<Attribute, Relationship> last = lastPathComponent(
+                path,
+                Collections.EMPTY_MAP);
+        if (last != null) {
+            return last.getAttribute() != null ? last.getAttribute() : last
+                    .getRelationship();
+        }
+
+        return null;
+    }
+
+    /**
+     * Convenience method returning the last component in the path iterator. If the last
+     * component is an alias, it is fully resolved down to the last ObjRelationship.
+     * 
+     * @since 3.0
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Attribute, U extends Relationship> PathComponent<T, U> lastPathComponent(
+            Expression path,
+            Map aliasMap) {
+
+        for (PathComponent component : resolvePath(path, aliasMap)) {
             if (component.isLast()) {
-                return component.getAttribute() != null
-                        ? component.getAttribute()
-                        : component.getRelationship();
+
+                // resolve aliases if needed
+                return lastPathComponent(component);
             }
         }
 
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private PathComponent lastPathComponent(
+            PathComponent<Attribute, Relationship> component) {
+        
+        if (!component.isAlias()) {
+            return component;
+        }
+
+        for (PathComponent subcomponent : component.getAliasedPath()) {
+            if (subcomponent.isLast()) {
+                return lastPathComponent(subcomponent);
+            }
+        }
+
+        throw new IllegalStateException("Invalid last path component: "
+                + component.getName());
     }
 
     /**

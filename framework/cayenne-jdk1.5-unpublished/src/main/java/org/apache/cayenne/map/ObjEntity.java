@@ -829,6 +829,17 @@ public class ObjEntity extends Entity implements ObjEntityListener {
 
         return (superEntity != null) ? superEntity.isSubentityOf(entity) : false;
     }
+    
+    /**
+     * @since 3.0
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public PathComponent<ObjAttribute, ObjRelationship> lastPathComponent(
+            Expression path,
+            Map aliasMap) {
+        return super.lastPathComponent(path, aliasMap);
+    }
 
     /**
      * Returns an Iterable instance over expression path components based on this entity.

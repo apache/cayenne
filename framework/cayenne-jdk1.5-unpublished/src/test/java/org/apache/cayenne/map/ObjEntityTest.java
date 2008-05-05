@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.map;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.art.Artist;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
@@ -29,7 +32,10 @@ import org.apache.cayenne.util.Util;
 
 public class ObjEntityTest extends CayenneCase {
 
-    public void testLastPathComponent() {
+    /**
+     * @deprecated since 3.0 as the method being tested is deprecated.
+     */
+    public void testLastPathComponentLegacy() {
         ObjEntity artistE = getObjEntity("Artist");
 
         Object lastAttribute = artistE.lastPathComponent(Expression
@@ -46,6 +52,37 @@ public class ObjEntityTest extends CayenneCase {
                 "paintingArray+.toGallery+"));
         assertTrue(lastLeftJoinRelationship instanceof ObjRelationship);
         assertEquals("toGallery", ((ObjRelationship) lastLeftJoinRelationship).getName());
+    }
+
+    public void testLastPathComponent() {
+        ObjEntity artistE = getObjEntity("Artist");
+
+        Map<String, String> aliases = new HashMap<String, String>();
+        aliases.put("a", "paintingArray.toGallery");
+
+        PathComponent<ObjAttribute, ObjRelationship> lastAttribute = artistE
+                .lastPathComponent(
+                        Expression.fromString("paintingArray.paintingTitle"),
+                        aliases);
+        assertTrue(lastAttribute.getAttribute() != null);
+        assertEquals("paintingTitle", lastAttribute.getAttribute().getName());
+
+        PathComponent<ObjAttribute, ObjRelationship> lastRelationship = artistE
+                .lastPathComponent(
+                        Expression.fromString("paintingArray.toGallery"),
+                        aliases);
+        assertTrue(lastRelationship.getRelationship() != null);
+        assertEquals("toGallery", lastRelationship.getRelationship().getName());
+
+        PathComponent<ObjAttribute, ObjRelationship> lastLeftJoinRelationship = artistE
+                .lastPathComponent(new ASTObjPath("paintingArray+.toGallery+"), aliases);
+        assertTrue(lastLeftJoinRelationship.getRelationship() != null);
+        assertEquals("toGallery", lastLeftJoinRelationship.getRelationship().getName());
+
+        PathComponent<ObjAttribute, ObjRelationship> lastAliasedRelationship = artistE
+                .lastPathComponent(new ASTObjPath("a"), aliases);
+        assertTrue(lastAliasedRelationship.getRelationship() != null);
+        assertEquals("toGallery", lastAliasedRelationship.getRelationship().getName());
     }
 
     public void testGeneric() {
