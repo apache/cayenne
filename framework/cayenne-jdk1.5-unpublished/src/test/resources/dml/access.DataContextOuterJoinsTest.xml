@@ -49,6 +49,13 @@
 		</value></constructor-arg>
 	</bean>
 	
+	<bean id="P13" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33003, 'P3', null, 6000)
+		</value></constructor-arg>
+	</bean>
+	
 
 	<!-- ======================================= -->
 	<!-- Data Sets -->
@@ -63,6 +70,18 @@
 				<ref bean="A4"/>
 				<ref bean="P11"/>
 				<ref bean="P12"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testSelectWithOuterOrdering" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="A2"/>
+				<ref bean="P11"/>
+				<ref bean="P12"/>
+				<ref bean="P13"/>
 			</list>
 		</constructor-arg>
 	</bean>

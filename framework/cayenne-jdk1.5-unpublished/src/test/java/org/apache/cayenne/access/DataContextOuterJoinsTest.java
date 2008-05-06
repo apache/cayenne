@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.art.Artist;
+import org.apache.art.Painting;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Entity;
@@ -92,5 +93,17 @@ public class DataContextOuterJoinsTest extends CayenneCase {
         assertEquals("AA1", artists.get(0).getArtistName());
         assertEquals("BB1", artists.get(1).getArtistName());
         assertEquals("BB2", artists.get(2).getArtistName());
+    }
+
+    public void testSelectWithOuterOrdering() throws Exception {
+
+        createTestData("testSelectWithOuterOrdering");
+
+        SelectQuery query = new SelectQuery(Painting.class);
+
+        query.addOrdering("toArtist+.artistName", Ordering.DESC);
+
+        List<Artist> paintings = createDataContext().performQuery(query);
+        assertEquals(3, paintings.size());
     }
 }
