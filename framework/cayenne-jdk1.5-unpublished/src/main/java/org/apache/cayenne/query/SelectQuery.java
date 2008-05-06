@@ -410,6 +410,15 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /**
+     * Adds one or more aliases for the qualifier expression path.
+     * 
+     * @since 3.0
+     */
+    public void addPathSplitAliases(String path, String... aliases) {
+        metaData.addPathSplitAliases(path, aliases);
+    }
+
+    /**
      * Returns a list of attributes that will be included in the results of this query.
      */
     public List<String> getCustomDbAttributes() {

@@ -19,6 +19,7 @@
 package org.apache.cayenne.cache;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -176,6 +177,10 @@ public class NestedQueryCache implements QueryCache {
 
         public PrefetchTreeNode getPrefetchTree() {
             return mdDelegate.getPrefetchTree();
+        }
+        
+        public Map<String, String> getPathSplitAliases() {
+            return mdDelegate.getPathSplitAliases();
         }
 
         public Procedure getProcedure() {

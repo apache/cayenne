@@ -277,6 +277,13 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     }
 
     /**
+     * @since 3.0
+     */
+    public Map<String, String> getPathSplitAliases() {
+        return Collections.<String, String> emptyMap();
+    }
+
+    /**
      * @since 1.2
      */
     public DbEntity getDbEntity() {

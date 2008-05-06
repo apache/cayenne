@@ -145,6 +145,15 @@ public abstract class Expression implements Serializable, XMLSerializable {
     }
 
     /**
+     * Returns a map of path aliases for this expression. It returns a non-empty map only
+     * if this is a path expression and the aliases are known at the expression creation
+     * time. Otherwise an empty map is returned.
+     * 
+     * @since 3.0
+     */
+    public abstract Map<String, String> getPathAliases();
+
+    /**
      * Returns String label for this expression. Used for debugging.
      */
     public String expName() {
@@ -563,7 +572,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
         buffer.flush();
         return buffer.toString();
     }
-    
+
     public String toEJBQL(String rootId) {
         StringWriter buffer = new StringWriter();
         PrintWriter pw = new PrintWriter(buffer);

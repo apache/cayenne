@@ -54,12 +54,10 @@ public class DataContextJoinAliasesTest extends CayenneCase {
         Artist dali = DataObjectUtils.objectForPK(context, Artist.class, 2);
 
         SelectQuery query = new SelectQuery(Gallery.class);
-        String path = "exhibitArray.artistExhibitArray";
-        query.aliasJoin("p", path);
-        query.aliasJoin("d", path);
-
-        query.andQualifier(ExpressionFactory.matchExp("p.toArtist", picasso));
-        query.andQualifier(ExpressionFactory.matchExp("d.toArtist", dali));
+        query.andQualifier(ExpressionFactory.matchAllExp(
+                "|exhibitArray.artistExhibitArray.toArtist",
+                picasso,
+                dali));
 
         List<Gallery> galleries = context.performQuery(query);
 

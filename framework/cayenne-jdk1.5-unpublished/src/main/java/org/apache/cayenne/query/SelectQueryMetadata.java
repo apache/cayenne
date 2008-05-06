@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
@@ -26,6 +31,14 @@ import org.apache.cayenne.map.ObjEntity;
  * @author Andrus Adamchik
  */
 class SelectQueryMetadata extends BaseQueryMetadata {
+
+    Map<String, String> pathSplitAliases;
+
+    @Override
+    void copyFromInfo(QueryMetadata info) {
+        super.copyFromInfo(info);
+        this.pathSplitAliases = new HashMap<String, String>(info.getPathSplitAliases());
+    }
 
     boolean resolve(Object root, EntityResolver resolver, SelectQuery query) {
 
@@ -76,9 +89,64 @@ class SelectQueryMetadata extends BaseQueryMetadata {
                 this.cacheKey = key.toString();
             }
 
+            resolveAutoAliases(query);
+
             return true;
         }
 
         return false;
+    }
+
+    private void resolveAutoAliases(SelectQuery query) {
+        Expression qualifier = query.getQualifier();
+        if (qualifier != null) {
+            resolveAutoAliases(qualifier);
+        }
+
+        // TODO: include aliases in prefetches? flattened attributes?
+    }
+
+    private void resolveAutoAliases(Expression expression) {
+        Map<String, String> aliases = expression.getPathAliases();
+        if (!aliases.isEmpty()) {
+            if (pathSplitAliases == null) {
+                pathSplitAliases = new HashMap<String, String>();
+            }
+
+            pathSplitAliases.putAll(aliases);
+        }
+
+        int len = expression.getOperandCount();
+        for (int i = 0; i < len; i++) {
+            Object operand = expression.getOperand(i);
+            if (operand instanceof Expression) {
+                resolveAutoAliases((Expression) operand);
+            }
+        }
+    }
+
+    /**
+     * @since 3.0
+     */
+    public Map<String, String> getPathSplitAliases() {
+        return pathSplitAliases != null ? pathSplitAliases : Collections
+                .<String, String> emptyMap();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void addPathSplitAliases(String path, String... aliases) {
+        if (aliases == null) {
+            throw new NullPointerException("Null aliases");
+        }
+
+        if (aliases.length == 0) {
+            throw new IllegalArgumentException("No aliases specified");
+        }
+
+        if (pathSplitAliases == null) {
+            pathSplitAliases = new HashMap<String, String>();
+        }
     }
 }

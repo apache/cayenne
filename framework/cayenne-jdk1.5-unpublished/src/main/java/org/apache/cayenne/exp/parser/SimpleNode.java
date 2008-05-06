@@ -22,6 +22,8 @@
 package org.apache.cayenne.exp.parser;
 
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -48,7 +50,10 @@ public abstract class SimpleNode extends Expression implements Node {
     /**
      * Utility method that encodes an object that is not an expression Node to String.
      */
-    protected static void encodeScalarAsString(PrintWriter pw, Object scalar, char quoteChar) {
+    protected static void encodeScalarAsString(
+            PrintWriter pw,
+            Object scalar,
+            char quoteChar) {
         boolean quote = scalar instanceof String;
 
         if (quote) {
@@ -112,6 +117,16 @@ public abstract class SimpleNode extends Expression implements Node {
 
     protected SimpleNode(int i) {
         id = i;
+    }
+
+    /**
+     * Always returns empty map.
+     * 
+     * @since 3.0
+     */
+    @Override
+    public Map<String, String> getPathAliases() {
+        return Collections.<String, String> emptyMap();
     }
 
     protected abstract String getExpressionOperator(int index);

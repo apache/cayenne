@@ -1215,6 +1215,10 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             return null;
         }
 
+        public Map<String, String> getPathSplitAliases() {
+            return null;
+        }
+
         public Procedure getProcedure() {
             return null;
         }

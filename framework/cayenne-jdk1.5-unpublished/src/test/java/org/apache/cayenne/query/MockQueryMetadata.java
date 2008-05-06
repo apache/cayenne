@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.query;
 
+import java.util.Map;
+
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -40,6 +42,10 @@ public class MockQueryMetadata implements QueryMetadata {
     }
 
     public Procedure getProcedure() {
+        return null;
+    }
+    
+    public Map<String, String> getPathSplitAliases() {
         return null;
     }
 

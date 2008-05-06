@@ -76,6 +76,13 @@ class QueryMetadataWrapper implements QueryMetadata {
     public Procedure getProcedure() {
         return info.getProcedure();
     }
+    
+    /**
+     * @since 3.0
+     */
+    public Map<String, String> getPathSplitAliases() {
+        return info.getPathSplitAliases();
+    }
 
     public DbEntity getDbEntity() {
         return info.getDbEntity();

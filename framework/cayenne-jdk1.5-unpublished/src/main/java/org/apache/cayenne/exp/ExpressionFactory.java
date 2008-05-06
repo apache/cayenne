@@ -21,8 +21,10 @@ package org.apache.cayenne.exp;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.cayenne.exp.parser.ASTAdd;
 import org.apache.cayenne.exp.parser.ASTAnd;
@@ -49,9 +51,11 @@ import org.apache.cayenne.exp.parser.ASTNotLike;
 import org.apache.cayenne.exp.parser.ASTNotLikeIgnoreCase;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTOr;
+import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.exp.parser.ASTSubtract;
 import org.apache.cayenne.exp.parser.ASTTrue;
 import org.apache.cayenne.exp.parser.SimpleNode;
+import org.apache.cayenne.map.Entity;
 
 /**
  * Helper class to build expressions. Alternatively expressions can be built using
@@ -61,9 +65,21 @@ import org.apache.cayenne.exp.parser.SimpleNode;
  */
 public class ExpressionFactory {
 
+    /**
+     * A "split" character, "|", that is understood by some of the ExpressionFactory
+     * methods that require splitting joins in the middle of the path.
+     * 
+     * @since 3.0
+     */
+    public static final char SPLIT_SEPARATOR = '|';
+
     private static Class<?>[] typeLookup;
+    private static final Random random;
 
     static {
+
+        random = new Random(System.currentTimeMillis());
+
         // make sure all types are small integers, then we can use
         // them as indexes in lookup array
         int[] allTypes = new int[] {
@@ -234,6 +250,86 @@ public class ExpressionFactory {
         }
 
         return joinExp(Expression.OR, pairs);
+    }
+
+    /**
+     * Creates an expression to match a collection of values against a single path
+     * expression.
+     * <h3>Splits</h3>
+     * <p>
+     * Note that "path" argument here can use a split character (a pipe symbol - '|')
+     * instead of dot to indicate that relationship following a path should be split into
+     * a separate set of joins. There can only be one split at most. Split must always
+     * precede a relationship. E.g. "|exhibits.paintings", "exhibits|paintings", etc.
+     * 
+     * @param path
+     * @param values
+     * @since 3.0
+     */
+    @SuppressWarnings("unchecked")
+    public static Expression matchAllExp(String path, Collection values) {
+
+        if (values == null) {
+            throw new NullPointerException("Null values collection");
+        }
+
+        if (values.size() == 0) {
+            return new ASTTrue();
+        }
+
+        return matchAllExp(path, values.toArray());
+    }
+
+    /**
+     * @since 3.0
+     */
+    public static Expression matchAllExp(String path, Object... values) {
+
+        if (values == null) {
+            throw new NullPointerException("Null values collection");
+        }
+
+        if (values.length == 0) {
+            return new ASTTrue();
+        }
+
+        int split = path.indexOf(SPLIT_SEPARATOR);
+
+        List<Expression> matches = new ArrayList<Expression>(values.length);
+
+        if (split >= 0 && split < path.length() - 1) {
+
+            int splitEnd = path.indexOf(Entity.PATH_SEPARATOR, split + 1);
+
+            String beforeSplit = split > 0 ? path.substring(0, split) + "." : "";
+            String afterSplit = splitEnd > 0 ? "." + path.substring(splitEnd + 1) : "";
+            String aliasBase = "split" + random.nextInt(Integer.MAX_VALUE) + "_";
+            String splitChunk = splitEnd > 0 ? path.substring(split + 1, splitEnd) : path
+                    .substring(split + 1);
+
+            // fix the path - replace split with dot if it's in the middle, or strip it if
+            // it's in the beginning
+            path = split == 0 ? path.substring(1) : path.replace(SPLIT_SEPARATOR, '.');
+
+            int i = 0;
+            for (Object value : values) {
+
+                String alias = aliasBase + i;
+                String aliasedPath = beforeSplit + alias + afterSplit;
+                i++;
+
+                ASTPath pathExp = new ASTObjPath(aliasedPath);
+                pathExp.setPathAliases(Collections.singletonMap(alias, splitChunk));
+                matches.add(new ASTEqual(pathExp, value));
+            }
+        }
+        else {
+            for (Object value : values) {
+                matches.add(new ASTEqual(new ASTObjPath(path), value));
+            }
+        }
+
+        return joinExp(Expression.AND, matches);
     }
 
     /**

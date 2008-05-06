@@ -21,7 +21,6 @@ package org.apache.cayenne.access.trans;
 
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +29,6 @@ import org.apache.cayenne.access.QueryTranslator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
-import org.apache.cayenne.query.QualifiedQuery;
 
 /**
  * Abstract superclass of Query translators.
@@ -39,7 +37,9 @@ import org.apache.cayenne.query.QualifiedQuery;
  */
 public abstract class QueryAssembler extends QueryTranslator {
 
-    /** PreparedStatement values. */
+    /**
+     * Holds PreparedStatement values.
+     */
     protected List<Object> values = new ArrayList<Object>();
 
     /**
@@ -53,10 +53,7 @@ public abstract class QueryAssembler extends QueryTranslator {
      * @since 3.0
      */
     protected Map<String, String> getPathAliases() {
-        if (query instanceof QualifiedQuery) {
-            return ((QualifiedQuery) query).getJoinAliases();
-        }
-        return Collections.emptyMap();
+        return query.getMetaData(getEntityResolver()).getPathSplitAliases();
     }
 
     /**

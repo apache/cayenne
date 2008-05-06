@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.query;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -133,5 +136,9 @@ class DefaultQueryMetadata implements QueryMetadata {
 
     public PrefetchTreeNode getPrefetchTree() {
         return null;
+    }
+
+    public Map<String, String> getPathSplitAliases() {
+        return Collections.<String, String> emptyMap();
     }
 }

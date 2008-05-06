@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -33,32 +29,6 @@ import org.apache.cayenne.exp.Expression;
 public abstract class QualifiedQuery extends AbstractQuery {
 
     protected Expression qualifier;
-    protected Map<String, String> joinAliases;
-
-    /**
-     * Returns a map of join aliases.
-     * 
-     * @since 3.0
-     */
-    public Map<String, String> getJoinAliases() {
-        return joinAliases != null ? joinAliases : Collections
-                .<String, String> emptyMap();
-    }
-
-    /**
-     * Creates a named alias that would resolve into a separate chain of joins when
-     * translated to SQL. I.e. if the same path has more than one alias, the joins will be
-     * duplicated.
-     * 
-     * @since 3.0
-     */
-    public void aliasJoin(String alias, String expressionPath) {
-        if (joinAliases == null) {
-            joinAliases = new HashMap<String, String>();
-        }
-
-        joinAliases.put(alias, expressionPath);
-    }
 
     /**
      * Sets new query qualifier.

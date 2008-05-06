@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.remote;
 
+import java.util.Map;
+
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -126,6 +128,10 @@ class IncrementalQuery implements Query {
 
             public Procedure getProcedure() {
                 return metadata.getProcedure();
+            }
+
+            public Map<String, String> getPathSplitAliases() {
+                return metadata.getPathSplitAliases();
             }
 
             public boolean isFetchingDataRows() {

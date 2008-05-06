@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.query;
 
+import java.util.Map;
+
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -107,7 +109,7 @@ public interface QueryMetadata {
      * @deprecated since 3.0 use {@value #CACHE_STRATEGY_PROPERTY}
      */
     public static final String CACHE_POLICY_PROPERTY = "cayenne.GenericSelectQuery.cachePolicy";
-    
+
     /**
      * @since 3.0
      */
@@ -159,6 +161,7 @@ public interface QueryMetadata {
 
     /**
      * Returns a caching strategy for this query.
+     * 
      * @since 3.0
      */
     QueryCacheStrategy getCacheStrategy();
@@ -242,6 +245,13 @@ public interface QueryMetadata {
      * are configured.
      */
     PrefetchTreeNode getPrefetchTree();
+
+    /**
+     * Returns a map of aliases vs. expression subpaths that is used to build split joins.
+     * 
+     * @since 3.0
+     */
+    Map<String, String> getPathSplitAliases();
 
     /**
      * Returns a mapping of the result set data rows. Can be null. If not null overrides

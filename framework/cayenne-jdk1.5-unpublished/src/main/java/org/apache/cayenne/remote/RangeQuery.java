@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.remote;
 
+import java.util.Map;
+
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -138,6 +140,10 @@ class RangeQuery implements Query {
             }
 
             public Procedure getProcedure() {
+                throw new UnsupportedOperationException();
+            }
+            
+            public Map<String, String> getPathSplitAliases() {
                 throw new UnsupportedOperationException();
             }
 

@@ -135,6 +135,10 @@ class IncrementalSelectQuery extends SelectQuery {
                 return metadata.getProcedure();
             }
 
+            public Map<String, String> getPathSplitAliases() {
+                return metadata.getPathSplitAliases();
+            }
+
             public boolean isFetchingDataRows() {
                 return metadata.isFetchingDataRows();
             }
