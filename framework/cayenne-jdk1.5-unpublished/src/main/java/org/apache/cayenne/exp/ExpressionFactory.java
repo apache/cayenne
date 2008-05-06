@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.cayenne.exp.parser.ASTAdd;
 import org.apache.cayenne.exp.parser.ASTAnd;
@@ -74,11 +73,9 @@ public class ExpressionFactory {
     public static final char SPLIT_SEPARATOR = '|';
 
     private static Class<?>[] typeLookup;
-    private static final Random random;
+    private static volatile int autoAliasId;
 
     static {
-
-        random = new Random(System.currentTimeMillis());
 
         // make sure all types are small integers, then we can use
         // them as indexes in lookup array
@@ -303,7 +300,7 @@ public class ExpressionFactory {
 
             String beforeSplit = split > 0 ? path.substring(0, split) + "." : "";
             String afterSplit = splitEnd > 0 ? "." + path.substring(splitEnd + 1) : "";
-            String aliasBase = "split" + random.nextInt(Integer.MAX_VALUE) + "_";
+            String aliasBase = "split" + autoAliasId++ + "_";
             String splitChunk = splitEnd > 0 ? path.substring(split + 1, splitEnd) : path
                     .substring(split + 1);
 
