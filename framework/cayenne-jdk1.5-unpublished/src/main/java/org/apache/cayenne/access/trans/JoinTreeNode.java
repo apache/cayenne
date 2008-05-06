@@ -53,6 +53,18 @@ final class JoinTreeNode {
         this.joinType = joinType;
     }
 
+    int size() {
+        int i = 1;
+
+        if (children != null) {
+            for (JoinTreeNode child : children) {
+                i += child.size();
+            }
+        }
+
+        return i;
+    }
+
     Collection<JoinTreeNode> getChildren() {
         return children != null ? children : Collections.<JoinTreeNode> emptyList();
     }

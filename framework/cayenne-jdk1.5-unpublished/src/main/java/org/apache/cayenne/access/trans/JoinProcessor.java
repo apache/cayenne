@@ -48,10 +48,22 @@ class JoinProcessor {
     }
 
     /**
+     * Returns the number of configured joins.
+     */
+    int size() {
+        // do not count root as a join
+        return root.size() - 1;
+    }
+
+    /**
      * Appends all configured joins to the provided output object.
      */
     void appendJoins(Appendable out) throws IOException {
-        appendJoinSubtree(out, root);
+
+        // skip root, recursively append its children
+        for (JoinTreeNode child : root.getChildren()) {
+            appendJoinSubtree(out, child);
+        }
     }
 
     private void appendJoinSubtree(Appendable out, JoinTreeNode node) throws IOException {
@@ -97,6 +109,10 @@ class JoinProcessor {
         }
 
         out.append(')');
+
+        for (JoinTreeNode child : node.getChildren()) {
+            appendJoinSubtree(out, child);
+        }
     }
 
     /**
