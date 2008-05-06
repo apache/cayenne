@@ -66,12 +66,12 @@ public abstract class QueryAssemblerHelper {
     public DbEntity getDbEntity() {
         return queryAssembler.getRootDbEntity();
     }
-    
+
     public void appendPart(Appendable out) throws IOException {
         this.out = out;
         doAppendPart();
     }
-    
+
     protected abstract void doAppendPart() throws IOException;
 
     /**
@@ -80,9 +80,41 @@ public abstract class QueryAssemblerHelper {
     protected void appendObjPath(Expression pathExp) throws IOException {
 
         queryAssembler.resetJoinStack();
+        String joinSplitAlias = null;
 
         for (PathComponent<ObjAttribute, ObjRelationship> component : getObjEntity()
                 .resolvePath(pathExp, queryAssembler.getPathAliases())) {
+
+            if (component.isAlias()) {
+                joinSplitAlias = component.getName();
+                for (PathComponent<ObjAttribute, ObjRelationship> aliasPart : component
+                        .getAliasedPath()) {
+
+                    ObjRelationship relationship = aliasPart.getRelationship();
+
+                    if (relationship == null) {
+                        throw new IllegalStateException(
+                                "Non-relationship aliased path part: "
+                                        + aliasPart.getName());
+                    }
+
+                    if (aliasPart.isLast() && component.isLast()) {
+                        processRelTermination(
+                                relationship,
+                                aliasPart.getJoinType(),
+                                joinSplitAlias);
+                    }
+                    else {
+                        // find and add joins ....
+                        for (DbRelationship dbRel : relationship.getDbRelationships()) {
+                            queryAssembler.dbRelationshipAdded(dbRel, aliasPart
+                                    .getJoinType(), joinSplitAlias);
+                        }
+                    }
+                }
+
+                continue;
+            }
 
             ObjRelationship relationship = component.getRelationship();
             ObjAttribute attribute = component.getAttribute();
@@ -92,13 +124,18 @@ public abstract class QueryAssemblerHelper {
                 // if this is a last relationship in the path,
                 // it needs special handling
                 if (component.isLast()) {
-                    processRelTermination(relationship, component.getJoinType());
+                    processRelTermination(
+                            relationship,
+                            component.getJoinType(),
+                            joinSplitAlias);
                 }
                 else {
                     // find and add joins ....
                     for (DbRelationship dbRel : relationship.getDbRelationships()) {
-                        queryAssembler
-                                .dbRelationshipAdded(dbRel, component.getJoinType());
+                        queryAssembler.dbRelationshipAdded(
+                                dbRel,
+                                component.getJoinType(),
+                                joinSplitAlias);
                     }
                 }
             }
@@ -114,7 +151,8 @@ public abstract class QueryAssemblerHelper {
                     else if (pathPart instanceof DbRelationship) {
                         queryAssembler.dbRelationshipAdded(
                                 (DbRelationship) pathPart,
-                                JoinType.INNER);
+                                JoinType.INNER,
+                                joinSplitAlias);
                     }
                     else if (pathPart instanceof DbAttribute) {
                         processColumn((DbAttribute) pathPart);
@@ -128,9 +166,38 @@ public abstract class QueryAssemblerHelper {
     protected void appendDbPath(Expression pathExp) throws IOException {
 
         queryAssembler.resetJoinStack();
+        String joinSplitAlias = null;
 
         for (PathComponent<DbAttribute, DbRelationship> component : getDbEntity()
                 .resolvePath(pathExp, queryAssembler.getPathAliases())) {
+
+            if (component.isAlias()) {
+                joinSplitAlias = component.getName();
+                for (PathComponent<DbAttribute, DbRelationship> aliasPart : component
+                        .getAliasedPath()) {
+
+                    DbRelationship relationship = aliasPart.getRelationship();
+
+                    if (relationship == null) {
+                        throw new IllegalStateException(
+                                "Non-relationship aliased path part: "
+                                        + aliasPart.getName());
+                    }
+
+                    if (aliasPart.isLast() && component.isLast()) {
+                        processRelTermination(
+                                relationship,
+                                aliasPart.getJoinType(),
+                                joinSplitAlias);
+                    }
+                    else {
+                        queryAssembler.dbRelationshipAdded(relationship, component
+                                .getJoinType(), joinSplitAlias);
+                    }
+                }
+
+                continue;
+            }
 
             DbRelationship relationship = component.getRelationship();
 
@@ -139,12 +206,15 @@ public abstract class QueryAssemblerHelper {
                 // if this is a last relationship in the path,
                 // it needs special handling
                 if (component.isLast()) {
-                    processRelTermination(relationship, component.getJoinType());
+                    processRelTermination(
+                            relationship,
+                            component.getJoinType(),
+                            joinSplitAlias);
                 }
                 else {
                     // find and add joins ....
                     queryAssembler.dbRelationshipAdded(relationship, component
-                            .getJoinType());
+                            .getJoinType(), joinSplitAlias);
                 }
             }
             else {
@@ -340,8 +410,10 @@ public abstract class QueryAssemblerHelper {
      * 
      * @since 3.0
      */
-    protected void processRelTermination(ObjRelationship rel, JoinType joinType)
-            throws IOException {
+    protected void processRelTermination(
+            ObjRelationship rel,
+            JoinType joinType,
+            String joinSplitAlias) throws IOException {
 
         Iterator<DbRelationship> dbRels = rel.getDbRelationships().iterator();
 
@@ -352,11 +424,11 @@ public abstract class QueryAssemblerHelper {
             // if this is a last relationship in the path,
             // it needs special handling
             if (!dbRels.hasNext()) {
-                processRelTermination(dbRel, joinType);
+                processRelTermination(dbRel, joinType, joinSplitAlias);
             }
             else {
                 // find and add joins ....
-                queryAssembler.dbRelationshipAdded(dbRel, joinType);
+                queryAssembler.dbRelationshipAdded(dbRel, joinType, joinSplitAlias);
             }
         }
     }
@@ -369,11 +441,14 @@ public abstract class QueryAssemblerHelper {
      * 
      * @since 3.0
      */
-    protected void processRelTermination(DbRelationship rel, JoinType joinType)
-            throws IOException {
+    protected void processRelTermination(
+            DbRelationship rel,
+            JoinType joinType,
+            String joinSplitAlias) throws IOException {
+
         if (rel.isToMany()) {
             // append joins
-            queryAssembler.dbRelationshipAdded(rel, joinType);
+            queryAssembler.dbRelationshipAdded(rel, joinType, joinSplitAlias);
         }
 
         // get last DbRelationship on the list

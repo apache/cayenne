@@ -81,7 +81,8 @@ public abstract class QueryAssembler extends QueryTranslator {
      */
     public abstract void dbRelationshipAdded(
             DbRelationship relationship,
-            JoinType joinType);
+            JoinType joinType,
+            String joinSplitAlias);
 
     /**
      * Translates query into sql string. This is a workhorse method of QueryAssembler. It

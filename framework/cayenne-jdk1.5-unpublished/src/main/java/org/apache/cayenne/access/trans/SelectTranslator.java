@@ -282,7 +282,7 @@ public class SelectTranslator extends QueryAssembler {
                     }
                     else if (pathPart instanceof DbRelationship) {
                         DbRelationship rel = (DbRelationship) pathPart;
-                        dbRelationshipAdded(rel, JoinType.INNER);
+                        dbRelationshipAdded(rel, JoinType.INNER, null);
                     }
                     else if (pathPart instanceof DbAttribute) {
                         DbAttribute dbAttr = (DbAttribute) pathPart;
@@ -346,6 +346,7 @@ public class SelectTranslator extends QueryAssembler {
                 // add joins and find terminating element
 
                 resetJoinStack();
+
                 PathComponent<DbAttribute, DbRelationship> lastComponent = null;
                 for (PathComponent<DbAttribute, DbRelationship> component : table
                         .resolvePath(pathExp, getPathAliases())) {
@@ -353,7 +354,7 @@ public class SelectTranslator extends QueryAssembler {
                     // do not add join for the last DB Rel
                     if (component.getRelationship() != null && !component.isLast()) {
                         dbRelationshipAdded(component.getRelationship(), component
-                                .getJoinType());
+                                .getJoinType(), null);
                     }
 
                     lastComponent = component;
@@ -370,7 +371,7 @@ public class SelectTranslator extends QueryAssembler {
 
                         // add last join
                         if (relationship.isToMany()) {
-                            dbRelationshipAdded(relationship, JoinType.INNER);
+                            dbRelationshipAdded(relationship, JoinType.INNER, null);
                         }
 
                         for (DbJoin j : relationship.getJoins()) {
@@ -418,7 +419,7 @@ public class SelectTranslator extends QueryAssembler {
                 for (PathComponent<DbAttribute, DbRelationship> component : table
                         .resolvePath(dbPrefetch, getPathAliases())) {
                     r = component.getRelationship();
-                    dbRelationshipAdded(r, JoinType.INNER);
+                    dbRelationshipAdded(r, JoinType.INNER, null);
                 }
 
                 if (r == null) {
@@ -462,7 +463,7 @@ public class SelectTranslator extends QueryAssembler {
 
                         else if (pathPart instanceof DbRelationship) {
                             DbRelationship rel = (DbRelationship) pathPart;
-                            dbRelationshipAdded(rel, JoinType.INNER);
+                            dbRelationshipAdded(rel, JoinType.INNER, null);
                         }
                         else if (pathPart instanceof DbAttribute) {
                             DbAttribute attribute = (DbAttribute) pathPart;
@@ -580,18 +581,18 @@ public class SelectTranslator extends QueryAssembler {
     }
 
     /**
-     * Stores a new relationship in an internal list. Later it will be used to create
-     * joins to relationship destination table.
-     * 
      * @since 3.0
      */
     @Override
-    public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType) {
+    public void dbRelationshipAdded(
+            DbRelationship relationship,
+            JoinType joinType,
+            String joinSplitAlias) {
         if (relationship.isToMany()) {
             forcingDistinct = true;
         }
 
-        joinStack.pushJoin(relationship, joinType, null);
+        joinStack.pushJoin(relationship, joinType, joinSplitAlias);
     }
 
     /**

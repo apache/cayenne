@@ -39,10 +39,13 @@ import org.apache.cayenne.query.UpdateQuery;
 public class UpdateTranslator extends QueryAssembler {
 
     @Override
-    public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType) {
+    public void dbRelationshipAdded(
+            DbRelationship relationship,
+            JoinType joinType,
+            String joinSplitAlias) {
         throw new UnsupportedOperationException("db relationships not supported");
     }
-    
+
     @Override
     public String getCurrentAlias() {
         throw new UnsupportedOperationException("aliases not supported");

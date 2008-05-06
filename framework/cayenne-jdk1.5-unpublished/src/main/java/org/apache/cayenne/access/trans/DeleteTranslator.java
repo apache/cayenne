@@ -34,7 +34,10 @@ import org.apache.cayenne.query.DeleteQuery;
 public class DeleteTranslator extends QueryAssembler {
 
     @Override
-    public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType) {
+    public void dbRelationshipAdded(
+            DbRelationship relationship,
+            JoinType joinType,
+            String joinAplitAlias) {
         throw new UnsupportedOperationException("db relationships not supported");
     }
 

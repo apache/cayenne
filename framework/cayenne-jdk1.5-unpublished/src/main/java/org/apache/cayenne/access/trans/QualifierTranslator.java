@@ -138,7 +138,10 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
         DbRelationship relationship = objectMatchTranslator.getRelationship();
         if (!relationship.isToMany() && !relationship.isToPK()) {
-            queryAssembler.dbRelationshipAdded(relationship, JoinType.INNER);
+            queryAssembler.dbRelationshipAdded(
+                    relationship,
+                    JoinType.INNER,
+                    objectMatchTranslator.getJoinSplitAlias());
         }
 
         Iterator<String> it = objectMatchTranslator.keys();
@@ -422,18 +425,20 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     }
 
     @Override
-    protected void processRelTermination(DbRelationship rel, JoinType joinType)
-            throws IOException {
+    protected void processRelTermination(
+            DbRelationship rel,
+            JoinType joinType,
+            String joinSplitAlias) throws IOException {
 
         if (!matchingObject) {
-            super.processRelTermination(rel, joinType);
+            super.processRelTermination(rel, joinType, joinSplitAlias);
         }
         else {
             if (rel.isToMany()) {
                 // append joins
-                queryAssembler.dbRelationshipAdded(rel, joinType);
+                queryAssembler.dbRelationshipAdded(rel, joinType, joinSplitAlias);
             }
-            objectMatchTranslator.setRelationship(rel);
+            objectMatchTranslator.setRelationship(rel, joinSplitAlias);
         }
     }
 }

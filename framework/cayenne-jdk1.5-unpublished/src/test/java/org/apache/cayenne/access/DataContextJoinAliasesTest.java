@@ -20,6 +20,7 @@ package org.apache.cayenne.access;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.art.Artist;
@@ -60,10 +61,10 @@ public class DataContextJoinAliasesTest extends CayenneCase {
         query.andQualifier(ExpressionFactory.matchExp("p.toArtist", picasso));
         query.andQualifier(ExpressionFactory.matchExp("d.toArtist", dali));
 
-        // List<Gallery> galleries = context.performQuery(query);
-        //
-        // assertEquals(1, galleries.size());
-        // assertEquals("G1", galleries.get(0).getGalleryName());
+        List<Gallery> galleries = context.performQuery(query);
+
+        assertEquals(1, galleries.size());
+        assertEquals("G1", galleries.get(0).getGalleryName());
     }
 
 }

@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.trans;
 
 import java.util.Collections;
@@ -38,11 +37,13 @@ import org.apache.cayenne.map.DbRelationship;
  * @author Andrus Adamchik
  */
 public class DataObjectMatchTranslator {
+
     protected Map<String, DbAttribute> attributes;
     protected Map<String, Object> values;
     protected String operation;
     protected Expression expression;
     protected DbRelationship relationship;
+    protected String joinSplitAlias;
 
     public Expression getExpression() {
         return expression;
@@ -61,11 +62,13 @@ public class DataObjectMatchTranslator {
     }
 
     /**
-     * Initializes itself to do translation of the match ending 
-     * with a DbRelationship.
+     * Initializes itself to do translation of the match ending with a DbRelationship.
+     * 
+     * @since 3.0
      */
-    public void setRelationship(DbRelationship rel) {
+    public void setRelationship(DbRelationship rel, String joinSplitAlias) {
         this.relationship = rel;
+        this.joinSplitAlias = joinSplitAlias;
         attributes = new HashMap<String, DbAttribute>(rel.getJoins().size() * 2);
 
         if (rel.isToMany() || !rel.isToPK()) {
@@ -77,7 +80,8 @@ public class DataObjectMatchTranslator {
             for (DbAttribute pkAttr : ent.getPrimaryKeys()) {
                 attributes.put(pkAttr.getName(), pkAttr);
             }
-        } else {
+        }
+        else {
 
             // match on this FK
             for (DbJoin join : rel.getJoins()) {
@@ -92,10 +96,10 @@ public class DataObjectMatchTranslator {
             values = Collections.EMPTY_MAP;
             return;
         }
-        
+
         setObjectId(obj.getObjectId());
     }
-    
+
     /**
      * @since 1.2
      */
@@ -116,15 +120,22 @@ public class DataObjectMatchTranslator {
     public Iterator<String> keys() {
         if (attributes == null) {
             throw new IllegalStateException(
-                "An attempt to use uninitialized DataObjectMatchTranslator: "
-                    + "[attributes: null, values: "
-                    + values
-                    + "]");
+                    "An attempt to use uninitialized DataObjectMatchTranslator: "
+                            + "[attributes: null, values: "
+                            + values
+                            + "]");
         }
 
         return attributes.keySet().iterator();
     }
     
+    /**
+     * @since 3.0
+     */
+    public String getJoinSplitAlias() {
+        return joinSplitAlias;
+    }
+
     public DbRelationship getRelationship() {
         return relationship;
     }

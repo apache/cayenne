@@ -52,10 +52,13 @@ public class TstQueryAssembler extends QueryAssembler {
     }
 
     @Override
-    public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType) {
+    public void dbRelationshipAdded(
+            DbRelationship relationship,
+            JoinType joinType,
+            String joinSplitAlias) {
         dbRels.add(relationship);
     }
-    
+
     @Override
     public String getCurrentAlias() {
         return "ta";
