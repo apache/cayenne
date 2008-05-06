@@ -15,6 +15,7 @@ Date:
 Changes/New Features Since M3:
 
 CAY-789 return object diff to client in ROP after commit
+CAY-802 Split Expressions
 CAY-809 Support for explicit mapping of SQL results with SQLResultSetMapping
 CAY-839 Support combination of Persistent objects and scalars in query results
 CAY-868 Deprecate EventManager.getDefaultManager() and stop using it
