@@ -1,6 +1,13 @@
 Apache Cayenne Upgrade Information
 ==================================
 
+UPGRADING FROM 3.0M3
+
+* Per CAY-1049 API of the internal classes that participate in SelectQuery translation has changed in a way that
+  is not backwards compatible. This should not affect regular users, however if you implemented a custom DbAdapter,
+  check for classes that directly or indirectly inherit from QueryAssembler and QueryAssemblerHelper and fix them
+  if needed.
+
 UPGRADING FROM 3.0M2
 
 * Java 5 is now required as a minimum for Cayenne Modeler and the Cayenne libraries.

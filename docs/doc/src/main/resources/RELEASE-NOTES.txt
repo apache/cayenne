@@ -35,6 +35,7 @@ CAY-1027 Orderly EventManager shutdown
 CAY-1033 remove completed merge tokens from view in cayenne modeler
 CAY-1035 Replace QueryMetadata String cache policies with an enum
 CAY-1038 Upgrade to Ashwood 2.0
+CAY-1049 Refactor QueryAssembler/SelectTranslator
 
 Bug fixes since M3:
 
