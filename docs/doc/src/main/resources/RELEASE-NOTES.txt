@@ -15,6 +15,7 @@ Date:
 Changes/New Features Since M3:
 
 CAY-514 implement a "MATCH ALL VALUES" expression
+CAY-560 Add support for outer joins
 CAY-789 return object diff to client in ROP after commit
 CAY-802 Split Expressions
 CAY-809 Support for explicit mapping of SQL results with SQLResultSetMapping
