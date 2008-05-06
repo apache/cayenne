@@ -17,9 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.dba.db2;
 
+import java.io.IOException;
 import java.sql.Types;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -34,41 +34,32 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
 
-    public DB2QualifierTranslator() {
-        super();
-    }
-
-    public DB2QualifierTranslator(
-        QueryAssembler queryAssembler,
-        String trimFunction) {
+    public DB2QualifierTranslator(QueryAssembler queryAssembler, String trimFunction) {
         super(queryAssembler, trimFunction);
     }
 
     @Override
     protected void appendLiteralDirect(
-        StringBuffer buf,
-        Object val,
-        DbAttribute attr,
-        Expression parentExpression) {
+            Object val,
+            DbAttribute attr,
+            Expression parentExpression) throws IOException {
 
         boolean castNeeded = false;
 
         if (parentExpression != null) {
             int type = parentExpression.getType();
 
-            castNeeded =
-                attr != null
+            castNeeded = attr != null
                     && (type == Expression.LIKE
-                        || type == Expression.LIKE_IGNORE_CASE
-                        || type == Expression.NOT_LIKE
-                        || type == Expression.NOT_LIKE_IGNORE_CASE);
+                            || type == Expression.LIKE_IGNORE_CASE
+                            || type == Expression.NOT_LIKE || type == Expression.NOT_LIKE_IGNORE_CASE);
         }
 
         if (castNeeded) {
-            buf.append("CAST (");
+            out.append("CAST (");
         }
 
-        super.appendLiteralDirect(buf, val, attr, parentExpression);
+        super.appendLiteralDirect(val, attr, parentExpression);
 
         if (castNeeded) {
             int jdbcType = attr.getType();
@@ -77,7 +68,7 @@ public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
             // determine CAST type
 
             // LIKE on CHAR may produce unpredictible results
-            // LIKE on LONVARCHAR doesn't seem to be supported 
+            // LIKE on LONVARCHAR doesn't seem to be supported
             if (jdbcType == Types.CHAR || jdbcType == Types.LONGVARCHAR) {
                 jdbcType = Types.VARCHAR;
 
@@ -87,23 +78,24 @@ public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
                 }
             }
 
-            buf.append(" AS ");
-            String[] types =
-                getQueryAssembler().getAdapter().externalTypesForJdbcType(
+            out.append(" AS ");
+            String[] types = queryAssembler.getAdapter().externalTypesForJdbcType(
                     jdbcType);
 
             if (types == null || types.length == 0) {
                 throw new CayenneRuntimeException(
-                    "Can't find database type for JDBC type '"
-                        + TypesMapping.getSqlNameByType(jdbcType));
+                        "Can't find database type for JDBC type '"
+                                + TypesMapping.getSqlNameByType(jdbcType));
             }
 
-            buf.append(types[0]);
+            out.append(types[0]);
             if (len > 0 && TypesMapping.supportsLength(jdbcType)) {
-                buf.append("(").append(len).append(")");
+                out.append("(");
+                out.append(String.valueOf(len));
+                out.append(")");
             }
 
-            buf.append(")");
+            out.append(")");
         }
     }
 }

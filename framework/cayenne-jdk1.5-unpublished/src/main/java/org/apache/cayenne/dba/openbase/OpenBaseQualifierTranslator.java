@@ -19,24 +19,22 @@
 
 package org.apache.cayenne.dba.openbase;
 
+import java.io.IOException;
+
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 
-/** 
+/**
  * Translates query qualifier to SQL. Used as a helper class by query translators.
  * 
  * @author <a href="mailto:mkienenb@alaska.net">Mike Kienenberger</a>
  * @author Andrus Adamchik
- * 
  * @since 1.1
  */
 public class OpenBaseQualifierTranslator extends QualifierTranslator {
-
-    public OpenBaseQualifierTranslator() {
-        this(null);
-    }
 
     public OpenBaseQualifierTranslator(QueryAssembler queryAssembler) {
         super(queryAssembler);
@@ -49,14 +47,19 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
             // binary nodes are the only ones that currently require this
             detectObjectMatch(node);
 
-            if (parenthesisNeeded(node, parentNode)) {
-                qualBuf.append('(');
-            }
+            try {
+                if (parenthesisNeeded(node, parentNode)) {
+                    out.append('(');
+                }
 
-            // super implementation has special handling 
-            // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
-            // OpenBase is case-insensitive by default
-            // ...
+                // super implementation has special handling
+                // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
+                // OpenBase is case-insensitive by default
+                // ...
+            }
+            catch (IOException ioex) {
+                throw new CayenneRuntimeException("Error appending content", ioex);
+            }
         }
         else {
             super.startNode(node, parentNode);
@@ -66,18 +69,25 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
     @Override
     public void endNode(Expression node, Expression parentNode) {
         if (node.getOperandCount() == 2) {
-            // check if we need to use objectMatchTranslator to finish building the expression
-            if (matchingObject) {
-                appendObjectMatch();
+
+            try {
+                // check if we need to use objectMatchTranslator to finish building the
+                // expression
+                if (matchingObject) {
+                    appendObjectMatch();
+                }
+
+                if (parenthesisNeeded(node, parentNode))
+                    out.append(')');
+
+                // super implementation has special handling
+                // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
+                // OpenBase is case-insensitive by default
+                // ...
             }
-
-            if (parenthesisNeeded(node, parentNode))
-                qualBuf.append(')');
-
-            // super implementation has special handling 
-            // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
-            // OpenBase is case-insensitive by default
-            // ...
+            catch (IOException ioex) {
+                throw new CayenneRuntimeException("Error appending content", ioex);
+            }
         }
         else {
             super.endNode(node, parentNode);
@@ -86,21 +96,20 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
 
     @Override
     protected void appendLiteralDirect(
-        StringBuffer buf,
-        Object val,
-        DbAttribute attr,
-        Expression parentExpression) {
+            Object val,
+            DbAttribute attr,
+            Expression parentExpression) throws IOException {
 
         // Special handling of string matching is needed:
         // Case-sensitive LIKE must be converted to [x][Y][z] format
         if (val instanceof String
-            && (parentExpression.getType() == Expression.LIKE
-                || parentExpression.getType() == Expression.NOT_LIKE)) {
+                && (parentExpression.getType() == Expression.LIKE || parentExpression
+                        .getType() == Expression.NOT_LIKE)) {
 
             val = caseSensitiveLikePattern((String) val);
         }
 
-        super.appendLiteralDirect(buf, val, attr, parentExpression);
+        super.appendLiteralDirect(val, attr, parentExpression);
     }
 
     private String caseSensitiveLikePattern(String pattern) {
@@ -126,29 +135,35 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
             return;
         }
 
-        // super implementation has special handling 
+        // super implementation has special handling
         // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
         // OpenBase is case-insensitive by default
         // ...
 
-        switch (node.getType()) {
+        try {
+            switch (node.getType()) {
 
-            case Expression.LIKE_IGNORE_CASE :
-                finishedChildNodeAppendExpression(node, " LIKE ");
-                break;
-            case Expression.NOT_LIKE_IGNORE_CASE :
-                finishedChildNodeAppendExpression(node, " NOT LIKE ");
-                break;
-            default :
-                super.finishedChild(node, childIndex, hasMoreChildren);
+                case Expression.LIKE_IGNORE_CASE:
+                    finishedChildNodeAppendExpression(node, " LIKE ");
+                    break;
+                case Expression.NOT_LIKE_IGNORE_CASE:
+                    finishedChildNodeAppendExpression(node, " NOT LIKE ");
+                    break;
+                default:
+                    super.finishedChild(node, childIndex, hasMoreChildren);
+            }
+        }
+        catch (IOException ioex) {
+            throw new CayenneRuntimeException("Error appending content", ioex);
         }
     }
 
-    private void finishedChildNodeAppendExpression(Expression node, String operation) {
-        StringBuffer buf = (matchingObject) ? new StringBuffer() : qualBuf;
-        buf.append(operation);
+    private void finishedChildNodeAppendExpression(Expression node, String operation)
+            throws IOException {
+        Appendable out = (matchingObject) ? new StringBuilder() : this.out;
+        out.append(operation);
         if (matchingObject) {
-            objectMatchTranslator.setOperation(buf.toString());
+            objectMatchTranslator.setOperation(out.toString());
             objectMatchTranslator.setExpression(node);
         }
     }

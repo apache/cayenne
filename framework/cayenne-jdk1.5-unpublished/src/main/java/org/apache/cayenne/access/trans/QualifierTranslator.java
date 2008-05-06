@@ -19,9 +19,11 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
@@ -42,36 +44,27 @@ import org.apache.commons.collections.IteratorUtils;
  */
 public class QualifierTranslator extends QueryAssemblerHelper implements TraversalHandler {
 
-    protected StringBuffer qualBuf = new StringBuffer();
-
     protected DataObjectMatchTranslator objectMatchTranslator;
     protected boolean matchingObject;
-
-    public QualifierTranslator() {
-        this(null);
-    }
 
     public QualifierTranslator(QueryAssembler queryAssembler) {
         super(queryAssembler);
     }
 
     /**
-     * Translates query qualifier to SQL WHERE clause. Qualifier is obtained from
-     * <code>queryAssembler</code> object.
+     * Translates query qualifier to SQL WHERE clause. Qualifier is obtained from the
+     * parent queryAssembler.
+     * 
+     * @since 3.0
      */
     @Override
-    public String doTranslation() {
-        qualBuf.setLength(0);
-
+    protected void doAppendPart() throws IOException {
         Expression rootNode = extractQualifier();
         if (rootNode == null) {
-            return null;
+            return;
         }
 
-        // build SQL where clause string based on expression
-        // (using '?' for object values)
         rootNode.traverse(this);
-        return qualBuf.length() > 0 ? qualBuf.toString() : null;
     }
 
     protected Expression extractQualifier() {
@@ -132,7 +125,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
         }
     }
 
-    protected void appendObjectMatch() {
+    protected void appendObjectMatch() throws IOException {
         if (!matchingObject || objectMatchTranslator == null) {
             throw new IllegalStateException("An invalid attempt to append object match.");
         }
@@ -154,117 +147,121 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                 first = false;
             }
             else {
-                qualBuf.append(" AND ");
+                out.append(" AND ");
             }
 
             String key = it.next();
             DbAttribute attr = objectMatchTranslator.getAttribute(key);
             Object val = objectMatchTranslator.getValue(key);
 
-            processColumn(qualBuf, attr);
-            qualBuf.append(objectMatchTranslator.getOperation());
-            appendLiteral(qualBuf, val, attr, objectMatchTranslator.getExpression());
+            processColumn(attr);
+            out.append(objectMatchTranslator.getOperation());
+            appendLiteral(val, attr, objectMatchTranslator.getExpression());
         }
 
         objectMatchTranslator.reset();
     }
 
-    /** Opportunity to insert an operation */
     public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
 
         if (!hasMoreChildren) {
             return;
         }
 
-        StringBuffer buf = (matchingObject) ? new StringBuffer() : qualBuf;
+        Appendable out = (matchingObject) ? new StringBuilder() : this.out;
 
-        switch (node.getType()) {
-            case Expression.AND:
-                buf.append(" AND ");
-                break;
-            case Expression.OR:
-                buf.append(" OR ");
-                break;
-            case Expression.EQUAL_TO:
-                // translate NULL as IS NULL
-                if (childIndex == 0
-                        && node.getOperandCount() == 2
-                        && node.getOperand(1) == null) {
-                    buf.append(" IS ");
-                }
-                else {
-                    buf.append(" = ");
-                }
-                break;
-            case Expression.NOT_EQUAL_TO:
-                // translate NULL as IS NOT NULL
-                if (childIndex == 0
-                        && node.getOperandCount() == 2
-                        && node.getOperand(1) == null) {
-                    buf.append(" IS NOT ");
-                }
-                else {
-                    buf.append(" <> ");
-                }
-                break;
-            case Expression.LESS_THAN:
-                buf.append(" < ");
-                break;
-            case Expression.GREATER_THAN:
-                buf.append(" > ");
-                break;
-            case Expression.LESS_THAN_EQUAL_TO:
-                buf.append(" <= ");
-                break;
-            case Expression.GREATER_THAN_EQUAL_TO:
-                buf.append(" >= ");
-                break;
-            case Expression.IN:
-                buf.append(" IN ");
-                break;
-            case Expression.NOT_IN:
-                buf.append(" NOT IN ");
-                break;
-            case Expression.LIKE:
-                buf.append(" LIKE ");
-                break;
-            case Expression.NOT_LIKE:
-                buf.append(" NOT LIKE ");
-                break;
-            case Expression.LIKE_IGNORE_CASE:
-                buf.append(") LIKE UPPER(");
-                break;
-            case Expression.NOT_LIKE_IGNORE_CASE:
-                buf.append(") NOT LIKE UPPER(");
-                break;
-            case Expression.ADD:
-                buf.append(" + ");
-                break;
-            case Expression.SUBTRACT:
-                buf.append(" - ");
-                break;
-            case Expression.MULTIPLY:
-                buf.append(" * ");
-                break;
-            case Expression.DIVIDE:
-                buf.append(" / ");
-                break;
-            case Expression.BETWEEN:
-                if (childIndex == 0)
-                    buf.append(" BETWEEN ");
-                else if (childIndex == 1)
-                    buf.append(" AND ");
-                break;
-            case Expression.NOT_BETWEEN:
-                if (childIndex == 0)
-                    buf.append(" NOT BETWEEN ");
-                else if (childIndex == 1)
-                    buf.append(" AND ");
-                break;
+        try {
+            switch (node.getType()) {
+                case Expression.AND:
+                    out.append(" AND ");
+                    break;
+                case Expression.OR:
+                    out.append(" OR ");
+                    break;
+                case Expression.EQUAL_TO:
+                    // translate NULL as IS NULL
+                    if (childIndex == 0
+                            && node.getOperandCount() == 2
+                            && node.getOperand(1) == null) {
+                        out.append(" IS ");
+                    }
+                    else {
+                        out.append(" = ");
+                    }
+                    break;
+                case Expression.NOT_EQUAL_TO:
+                    // translate NULL as IS NOT NULL
+                    if (childIndex == 0
+                            && node.getOperandCount() == 2
+                            && node.getOperand(1) == null) {
+                        out.append(" IS NOT ");
+                    }
+                    else {
+                        out.append(" <> ");
+                    }
+                    break;
+                case Expression.LESS_THAN:
+                    out.append(" < ");
+                    break;
+                case Expression.GREATER_THAN:
+                    out.append(" > ");
+                    break;
+                case Expression.LESS_THAN_EQUAL_TO:
+                    out.append(" <= ");
+                    break;
+                case Expression.GREATER_THAN_EQUAL_TO:
+                    out.append(" >= ");
+                    break;
+                case Expression.IN:
+                    out.append(" IN ");
+                    break;
+                case Expression.NOT_IN:
+                    out.append(" NOT IN ");
+                    break;
+                case Expression.LIKE:
+                    out.append(" LIKE ");
+                    break;
+                case Expression.NOT_LIKE:
+                    out.append(" NOT LIKE ");
+                    break;
+                case Expression.LIKE_IGNORE_CASE:
+                    out.append(") LIKE UPPER(");
+                    break;
+                case Expression.NOT_LIKE_IGNORE_CASE:
+                    out.append(") NOT LIKE UPPER(");
+                    break;
+                case Expression.ADD:
+                    out.append(" + ");
+                    break;
+                case Expression.SUBTRACT:
+                    out.append(" - ");
+                    break;
+                case Expression.MULTIPLY:
+                    out.append(" * ");
+                    break;
+                case Expression.DIVIDE:
+                    out.append(" / ");
+                    break;
+                case Expression.BETWEEN:
+                    if (childIndex == 0)
+                        out.append(" BETWEEN ");
+                    else if (childIndex == 1)
+                        out.append(" AND ");
+                    break;
+                case Expression.NOT_BETWEEN:
+                    if (childIndex == 0)
+                        out.append(" NOT BETWEEN ");
+                    else if (childIndex == 1)
+                        out.append(" AND ");
+                    break;
+            }
+        }
+        catch (IOException ioex) {
+            throw new CayenneRuntimeException("Error appending content", ioex);
         }
 
         if (matchingObject) {
-            objectMatchTranslator.setOperation(buf.toString());
+            objectMatchTranslator.setOperation(out.toString());
             objectMatchTranslator.setExpression(node);
         }
     }
@@ -277,32 +274,38 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
             detectObjectMatch(node);
         }
 
-        if (parenthesisNeeded(node, parentNode)) {
-            qualBuf.append('(');
-        }
+        try {
 
-        if (count == 0) {
-            // not all databases handle true/false
-            if (node.getType() == Expression.TRUE) {
-                qualBuf.append("1 = 1");
+            if (parenthesisNeeded(node, parentNode)) {
+                out.append('(');
             }
-            if (node.getType() == Expression.FALSE) {
-                qualBuf.append("1 = 0");
-            }
-        }
 
-        if (count == 1) {
-            if (node.getType() == Expression.NEGATIVE)
-                qualBuf.append('-');
-            // ignore POSITIVE - it is a NOOP
-            // else if(node.getType() == Expression.POSITIVE)
-            // qualBuf.append('+');
-            else if (node.getType() == Expression.NOT)
-                qualBuf.append("NOT ");
+            if (count == 0) {
+                // not all databases handle true/false
+                if (node.getType() == Expression.TRUE) {
+                    out.append("1 = 1");
+                }
+                if (node.getType() == Expression.FALSE) {
+                    out.append("1 = 0");
+                }
+            }
+
+            if (count == 1) {
+                if (node.getType() == Expression.NEGATIVE)
+                    out.append('-');
+                // ignore POSITIVE - it is a NOOP
+                // else if(node.getType() == Expression.POSITIVE)
+                // qualBuf.append('+');
+                else if (node.getType() == Expression.NOT)
+                    out.append("NOT ");
+            }
+            else if (node.getType() == Expression.LIKE_IGNORE_CASE
+                    || node.getType() == Expression.NOT_LIKE_IGNORE_CASE) {
+                out.append("UPPER(");
+            }
         }
-        else if (node.getType() == Expression.LIKE_IGNORE_CASE
-                || node.getType() == Expression.NOT_LIKE_IGNORE_CASE) {
-            qualBuf.append("UPPER(");
+        catch (IOException ioex) {
+            throw new CayenneRuntimeException("Error appending content", ioex);
         }
     }
 
@@ -311,33 +314,45 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
      */
     public void endNode(Expression node, Expression parentNode) {
 
-        // check if we need to use objectMatchTranslator to finish building the expression
-        if (node.getOperandCount() == 2 && matchingObject) {
-            appendObjectMatch();
-        }
+        try {
+            // check if we need to use objectMatchTranslator to finish building the
+            // expression
+            if (node.getOperandCount() == 2 && matchingObject) {
+                appendObjectMatch();
+            }
 
-        if (parenthesisNeeded(node, parentNode)) {
-            qualBuf.append(')');
-        }
+            if (parenthesisNeeded(node, parentNode)) {
+                out.append(')');
+            }
 
-        if (node.getType() == Expression.LIKE_IGNORE_CASE
-                || node.getType() == Expression.NOT_LIKE_IGNORE_CASE) {
-            qualBuf.append(')');
+            if (node.getType() == Expression.LIKE_IGNORE_CASE
+                    || node.getType() == Expression.NOT_LIKE_IGNORE_CASE) {
+                out.append(')');
+            }
+        }
+        catch (IOException ioex) {
+            throw new CayenneRuntimeException("Error appending content", ioex);
         }
     }
 
     public void objectNode(Object leaf, Expression parentNode) {
-        if (parentNode.getType() == Expression.OBJ_PATH) {
-            appendObjPath(qualBuf, parentNode);
+
+        try {
+            if (parentNode.getType() == Expression.OBJ_PATH) {
+                appendObjPath(parentNode);
+            }
+            else if (parentNode.getType() == Expression.DB_PATH) {
+                appendDbPath(parentNode);
+            }
+            else if (parentNode.getType() == Expression.LIST) {
+                appendList(parentNode, paramsDbType(parentNode));
+            }
+            else {
+                appendLiteral(leaf, paramsDbType(parentNode), parentNode);
+            }
         }
-        else if (parentNode.getType() == Expression.DB_PATH) {
-            appendDbPath(qualBuf, parentNode);
-        }
-        else if (parentNode.getType() == Expression.LIST) {
-            appendList(parentNode, paramsDbType(parentNode));
-        }
-        else {
-            appendLiteral(qualBuf, leaf, paramsDbType(parentNode), parentNode);
+        catch (IOException ioex) {
+            throw new CayenneRuntimeException("Error appending content", ioex);
         }
     }
 
@@ -358,7 +373,8 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
         return true;
     }
 
-    private final void appendList(Expression listExpr, DbAttribute paramDesc) {
+    private final void appendList(Expression listExpr, DbAttribute paramDesc)
+            throws IOException {
         Iterator<?> it = null;
         Object list = listExpr.getOperand(0);
         if (list instanceof List) {
@@ -376,25 +392,22 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
         // process first element outside the loop
         // (unroll loop to avoid condition checking
         if (it.hasNext())
-            appendLiteral(qualBuf, it.next(), paramDesc, listExpr);
+            appendLiteral(it.next(), paramDesc, listExpr);
         else
             return;
 
         while (it.hasNext()) {
-            qualBuf.append(", ");
-            appendLiteral(qualBuf, it.next(), paramDesc, listExpr);
+            out.append(", ");
+            appendLiteral(it.next(), paramDesc, listExpr);
         }
     }
 
     @Override
-    protected void appendLiteral(
-            StringBuffer buf,
-            Object val,
-            DbAttribute attr,
-            Expression parentExpression) {
+    protected void appendLiteral(Object val, DbAttribute attr, Expression parentExpression)
+            throws IOException {
 
         if (!matchingObject) {
-            super.appendLiteral(buf, val, attr, parentExpression);
+            super.appendLiteral(val, attr, parentExpression);
         }
         else if (val == null || (val instanceof Persistent)) {
             objectMatchTranslator.setDataObject((Persistent) val);
@@ -409,13 +422,11 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     }
 
     @Override
-    protected void processRelTermination(
-            StringBuffer buf,
-            DbRelationship rel,
-            JoinType joinType) {
+    protected void processRelTermination(DbRelationship rel, JoinType joinType)
+            throws IOException {
 
         if (!matchingObject) {
-            super.processRelTermination(buf, rel, joinType);
+            super.processRelTermination(rel, joinType);
         }
         else {
             if (rel.isToMany()) {

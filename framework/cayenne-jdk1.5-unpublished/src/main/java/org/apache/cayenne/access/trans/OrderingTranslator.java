@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -28,82 +30,80 @@ import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 
-/** 
- * Translates query ordering to SQL. 
- * 
- * @author Andrus Adamchik
- * @author Craig Miskell
+/**
+ * Translates query ordering to SQL.
  */
 public class OrderingTranslator extends QueryAssemblerHelper {
 
     protected List<String> orderByColumnList = new ArrayList<String>();
-    
+
     public OrderingTranslator(QueryAssembler queryAssembler) {
         super(queryAssembler);
     }
 
-    /** Translates query Ordering list to SQL ORDER BY clause. 
-     *  Ordering list is obtained from <code>queryAssembler</code>'s query object. 
-     *  In a process of building of ORDER BY clause, <code>queryAssembler</code> 
-     *  is notified when a join needs to be added. */
+    /**
+     * Translates query Ordering list to SQL ORDER BY clause. Ordering list is obtained
+     * from <code>queryAssembler</code>'s query object. In a process of building of
+     * ORDER BY clause, <code>queryAssembler</code> is notified when a join needs to be
+     * added.
+     * 
+     * @since 3.0
+     */
     @Override
-    public String doTranslation() {
+    protected void doAppendPart() throws IOException {
+
         Query q = queryAssembler.getQuery();
 
         // only select queries can have ordering...
-        if (q == null || !(q instanceof SelectQuery))
-            return null;
+        if (q == null || !(q instanceof SelectQuery)) {
+            return;
+        }
 
-        StringBuilder buf = new StringBuilder();
+        Iterator<Ordering> it = ((SelectQuery) q).getOrderings().iterator();
 
-        for (Ordering ord : ((SelectQuery) q).getOrderings()) {
-            if (buf.length() > 0)
-                buf.append(", ");
+        while (it.hasNext()) {
+            Ordering ord = it.next();
 
-            StringBuffer ordComp = new StringBuffer();
-            
-            //UPPER is (I think) part of the SQL99 standard, and I'm not convinced it's universally available
-            // - should the syntax used here be defined by the Db specific adaptor perhaps, or at least
-            // possibly specified by the db adaptor (a DB specific OrderingTranslator hook)?
             if (ord.isCaseInsensitive()) {
-                ordComp.append("UPPER(");
+                out.append("UPPER(");
             }
 
             Expression exp = ord.getSortSpec();
 
             if (exp.getType() == Expression.OBJ_PATH) {
-                appendObjPath(ordComp, exp);
-            } else if (exp.getType() == Expression.DB_PATH) {
-                appendDbPath(ordComp, exp);
-            } else {
-                throw new CayenneRuntimeException(
-                    "Unsupported ordering expression: " + exp);
+                appendObjPath(exp);
+            }
+            else if (exp.getType() == Expression.DB_PATH) {
+                appendDbPath(exp);
+            }
+            else {
+                throw new CayenneRuntimeException("Unsupported ordering expression: "
+                        + exp);
             }
 
-            //Close UPPER() modifier
+            // Close UPPER() modifier
             if (ord.isCaseInsensitive()) {
-                ordComp.append(")");
+                out.append(")");
             }
 
-            orderByColumnList.add(ordComp.toString());
-            
-            buf.append(ordComp.toString());
+            orderByColumnList.add(out.toString());
 
-            // "ASC" is a noop, omit it from the query 
+            // "ASC" is a noop, omit it from the query
             if (!ord.isAscending()) {
-                buf.append(" DESC");
+                out.append(" DESC");
+            }
+
+            if (it.hasNext()) {
+                out.append(", ");
             }
         }
-
-        return buf.length() > 0 ? buf.toString() : null;
     }
 
     /**
-     * Returns the column expressions (not Expressions) used in
-     * the order by clause.  E.g., in the case of an case-insensitive 
-     * order by, an element of the list would be 
+     * Returns the column expressions (not Expressions) used in the order by clause. E.g.,
+     * in the case of an case-insensitive order by, an element of the list would be
      * <code>UPPER(&lt;column reference&gt;)</code>
-     */    
+     */
     public List<String> getOrderByColumnList() {
         return orderByColumnList;
     }

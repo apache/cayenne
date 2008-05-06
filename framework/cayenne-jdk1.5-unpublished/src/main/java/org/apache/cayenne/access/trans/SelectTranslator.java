@@ -102,14 +102,14 @@ public class SelectTranslator extends QueryAssembler {
         // build column list
         this.resultColumns = buildResultColumns();
 
-        QualifierTranslator tr = adapter.getQualifierTranslator(this);
-
         // build qualifier
-        String qualifierStr = tr.doTranslation();
+        StringBuilder qualifierBuffer = new StringBuilder();
+        adapter.getQualifierTranslator(this).appendPart(qualifierBuffer);
 
         // build ORDER BY
         OrderingTranslator orderingTranslator = new OrderingTranslator(this);
-        String orderByStr = orderingTranslator.doTranslation();
+        StringBuilder orderingBuffer = new StringBuilder();
+        orderingTranslator.appendPart(orderingBuffer);
 
         // assemble
         StringBuilder queryBuf = new StringBuilder();
@@ -168,14 +168,14 @@ public class SelectTranslator extends QueryAssembler {
         joinStack.appendJoins(queryBuf);
 
         // append qualifier
-        if (qualifierStr != null) {
+        if (qualifierBuffer.length() > 0) {
             queryBuf.append(" WHERE ");
-            queryBuf.append(qualifierStr);
+            queryBuf.append(qualifierBuffer);
         }
 
         // append prebuilt ordering
-        if (orderByStr != null) {
-            queryBuf.append(" ORDER BY ").append(orderByStr);
+        if (orderingBuffer.length() > 0) {
+            queryBuf.append(" ORDER BY ").append(orderingBuffer);
         }
 
         return queryBuf.toString();

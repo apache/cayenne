@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -48,46 +49,35 @@ import org.apache.cayenne.util.CayenneMapEntry;
 public abstract class QueryAssemblerHelper {
 
     protected QueryAssembler queryAssembler;
+    protected Appendable out;
 
-    public QueryAssemblerHelper() {
-    }
-
-    /** Creates QueryAssemblerHelper. Sets queryAssembler property. */
+    /**
+     * Creates QueryAssemblerHelper initializaing with parent {@link QueryAssembler} and
+     * output buffer object.
+     */
     public QueryAssemblerHelper(QueryAssembler queryAssembler) {
         this.queryAssembler = queryAssembler;
     }
 
-    /** Returns parent QueryAssembler that uses this helper. */
-    public QueryAssembler getQueryAssembler() {
-        return queryAssembler;
-    }
-
-    public void setQueryAssembler(QueryAssembler queryAssembler) {
-        this.queryAssembler = queryAssembler;
-    }
-
-    /**
-     * Translates the part of parent translator's query that is supported by this
-     * PartTranslator. For example, QualifierTranslator will process qualifier expression,
-     * OrderingTranslator - ordering of the query. In the process of translation parent
-     * translator is notified of any join tables added (so that it can update its "FROM"
-     * clause). Also parent translator is consulted about table aliases to use when
-     * translating columns.
-     */
-    public abstract String doTranslation();
-
     public ObjEntity getObjEntity() {
-        return getQueryAssembler().getRootEntity();
+        return queryAssembler.getRootEntity();
     }
 
     public DbEntity getDbEntity() {
-        return getQueryAssembler().getRootDbEntity();
+        return queryAssembler.getRootDbEntity();
     }
+    
+    public void appendPart(Appendable out) throws IOException {
+        this.out = out;
+        doAppendPart();
+    }
+    
+    protected abstract void doAppendPart() throws IOException;
 
     /**
      * Processes parts of the OBJ_PATH expression.
      */
-    protected void appendObjPath(StringBuffer buf, Expression pathExp) {
+    protected void appendObjPath(Expression pathExp) throws IOException {
 
         queryAssembler.resetJoinStack();
 
@@ -102,7 +92,7 @@ public abstract class QueryAssemblerHelper {
                 // if this is a last relationship in the path,
                 // it needs special handling
                 if (component.isLast()) {
-                    processRelTermination(buf, relationship, component.getJoinType());
+                    processRelTermination(relationship, component.getJoinType());
                 }
                 else {
                     // find and add joins ....
@@ -127,7 +117,7 @@ public abstract class QueryAssemblerHelper {
                                 JoinType.INNER);
                     }
                     else if (pathPart instanceof DbAttribute) {
-                        processColumn(buf, (DbAttribute) pathPart);
+                        processColumn((DbAttribute) pathPart);
                     }
                 }
 
@@ -135,7 +125,7 @@ public abstract class QueryAssemblerHelper {
         }
     }
 
-    protected void appendDbPath(StringBuffer buf, Expression pathExp) {
+    protected void appendDbPath(Expression pathExp) throws IOException {
 
         queryAssembler.resetJoinStack();
 
@@ -149,7 +139,7 @@ public abstract class QueryAssemblerHelper {
                 // if this is a last relationship in the path,
                 // it needs special handling
                 if (component.isLast()) {
-                    processRelTermination(buf, relationship, component.getJoinType());
+                    processRelTermination(relationship, component.getJoinType());
                 }
                 else {
                     // find and add joins ....
@@ -158,16 +148,16 @@ public abstract class QueryAssemblerHelper {
                 }
             }
             else {
-                processColumn(buf, component.getAttribute());
+                processColumn(component.getAttribute());
             }
         }
     }
 
-    protected void processColumn(StringBuffer buf, DbAttribute dbAttr) {
+    protected void processColumn(DbAttribute dbAttr) throws IOException {
         String alias = (queryAssembler.supportsTableAliases()) ? queryAssembler
                 .getCurrentAlias() : null;
 
-        buf.append(dbAttr.getAliasedName(alias));
+        out.append(dbAttr.getAliasedName(alias));
     }
 
     /**
@@ -181,19 +171,16 @@ public abstract class QueryAssemblerHelper {
      * If <code>val</code> is a DataObject, its primary key value is used as a
      * parameter. <i>Only objects with a single column primary key can be used.</i>
      * 
-     * @param buf query buffer.
      * @param val object that should be appended as a literal to the query. Must be of one
      *            of "standard JDBC" types, null or a DataObject.
      * @param attr DbAttribute that has information on what type of parameter is being
      *            appended.
      */
-    protected void appendLiteral(
-            StringBuffer buf,
-            Object val,
-            DbAttribute attr,
-            Expression parentExpression) {
+    protected void appendLiteral(Object val, DbAttribute attr, Expression parentExpression)
+            throws IOException {
+
         if (val == null) {
-            buf.append("NULL");
+            out.append("NULL");
         }
         else if (val instanceof Persistent) {
             ObjectId id = ((Persistent) val).getObjectId();
@@ -225,13 +212,12 @@ public abstract class QueryAssemblerHelper {
 
             // checks have been passed, use id value
             appendLiteralDirect(
-                    buf,
                     snap.get(snap.keySet().iterator().next()),
                     attr,
                     parentExpression);
         }
         else {
-            appendLiteralDirect(buf, val, attr, parentExpression);
+            appendLiteralDirect(val, attr, parentExpression);
         }
     }
 
@@ -245,11 +231,10 @@ public abstract class QueryAssemblerHelper {
      *            of "standard JDBC" types. Can not be null.
      */
     protected void appendLiteralDirect(
-            StringBuffer buf,
             Object val,
             DbAttribute attr,
-            Expression parentExpression) {
-        buf.append('?');
+            Expression parentExpression) throws IOException {
+        out.append('?');
 
         // we are hoping that when processing parameter list,
         // the correct type will be
@@ -355,10 +340,9 @@ public abstract class QueryAssemblerHelper {
      * 
      * @since 3.0
      */
-    protected void processRelTermination(
-            StringBuffer buf,
-            ObjRelationship rel,
-            JoinType joinType) {
+    protected void processRelTermination(ObjRelationship rel, JoinType joinType)
+            throws IOException {
+
         Iterator<DbRelationship> dbRels = rel.getDbRelationships().iterator();
 
         // scan DbRelationships
@@ -368,7 +352,7 @@ public abstract class QueryAssemblerHelper {
             // if this is a last relationship in the path,
             // it needs special handling
             if (!dbRels.hasNext()) {
-                processRelTermination(buf, dbRel, joinType);
+                processRelTermination(dbRel, joinType);
             }
             else {
                 // find and add joins ....
@@ -385,10 +369,8 @@ public abstract class QueryAssemblerHelper {
      * 
      * @since 3.0
      */
-    protected void processRelTermination(
-            StringBuffer buf,
-            DbRelationship rel,
-            JoinType joinType) {
+    protected void processRelTermination(DbRelationship rel, JoinType joinType)
+            throws IOException {
         if (rel.isToMany()) {
             // append joins
             queryAssembler.dbRelationshipAdded(rel, joinType);
@@ -433,6 +415,6 @@ public abstract class QueryAssemblerHelper {
             attribute = join.getSource();
         }
 
-        processColumn(buf, attribute);
+        processColumn(attribute);
     }
 }

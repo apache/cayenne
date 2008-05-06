@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.io.IOException;
 import java.sql.Types;
 
 import org.apache.cayenne.map.DbAttribute;
@@ -36,13 +37,6 @@ public class TrimmingQualifierTranslator extends QualifierTranslator {
     /**
      * Constructor for TrimmingQualifierTranslator.
      */
-    protected TrimmingQualifierTranslator() {
-        super();
-    }
-
-    /**
-     * Constructor for TrimmingQualifierTranslator.
-     */
     public TrimmingQualifierTranslator(QueryAssembler queryAssembler, String trimFunction) {
         super(queryAssembler);
         this.trimFunction = trimFunction;
@@ -52,14 +46,14 @@ public class TrimmingQualifierTranslator extends QualifierTranslator {
      * Adds special handling of CHAR columns.
      */
     @Override
-    protected void processColumn(StringBuffer buf, DbAttribute dbAttr) {
+    protected void processColumn(DbAttribute dbAttr) throws IOException {
         if (dbAttr.getType() == Types.CHAR) {
-            buf.append(trimFunction).append("(");
-            super.processColumn(buf, dbAttr);
-            buf.append(')');
+            out.append(trimFunction).append("(");
+            super.processColumn(dbAttr);
+            out.append(')');
         }
         else {
-            super.processColumn(buf, dbAttr);
+            super.processColumn(dbAttr);
         }
     }
 

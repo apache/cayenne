@@ -67,9 +67,10 @@ public class UpdateTranslator extends QueryAssembler {
         buildSetClause(queryBuf, (UpdateQuery) query);
 
         // 3. build qualifier
-        String qualifierStr = adapter.getQualifierTranslator(this).doTranslation();
-        if (qualifierStr != null)
-            queryBuf.append(" WHERE ").append(qualifierStr);
+        StringBuilder qualifier = new StringBuilder();
+        adapter.getQualifierTranslator(this).appendPart(qualifier);
+        if (qualifier.length() > 0)
+            queryBuf.append(" WHERE ").append(qualifier);
 
         return queryBuf.toString();
     }

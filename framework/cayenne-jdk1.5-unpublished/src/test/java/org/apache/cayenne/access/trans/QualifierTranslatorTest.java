@@ -49,7 +49,7 @@ public class QualifierTranslatorTest extends CayenneCase {
         qa = new TstQueryAssembler(getNode(), new MockQuery());
 
         try {
-            new QualifierTranslator(qa).doTranslation();
+            new QualifierTranslator(qa).appendPart(new StringBuilder());
             fail();
         }
         catch (ClassCastException ccex) {
@@ -61,12 +61,15 @@ public class QualifierTranslatorTest extends CayenneCase {
     }
 
     public void testNullQualifier() throws Exception {
+        StringBuilder out = new StringBuilder();
         try {
-            assertNull(new QualifierTranslator(qa).doTranslation());
+            new QualifierTranslator(qa).appendPart(out);
         }
         finally {
             qa.dispose();
         }
+
+        assertEquals(0, out.length());
     }
 
     public void testUnary() throws Exception {
@@ -118,11 +121,15 @@ public class QualifierTranslatorTest extends CayenneCase {
                     ObjEntity ent = getObjEntity(cases[i].getRootEntity());
                     assertNotNull(ent);
                     q.setRoot(ent);
-                    String translated = new QualifierTranslator(qa).doTranslation();
-                    cases[i].assertTranslatedWell(translated);
+                    StringBuilder out = new StringBuilder();
+                    new QualifierTranslator(qa).appendPart(out);
+                    cases[i].assertTranslatedWell(out.toString());
                 }
                 catch (Exception ex) {
-                    throw new CayenneRuntimeException("Failed case: [" + i + "]: " + cases[i], ex);
+                    throw new CayenneRuntimeException("Failed case: ["
+                            + i
+                            + "]: "
+                            + cases[i], ex);
                 }
             }
         }

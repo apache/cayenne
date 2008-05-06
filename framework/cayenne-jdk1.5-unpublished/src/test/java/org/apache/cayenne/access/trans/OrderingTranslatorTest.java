@@ -41,14 +41,18 @@ public class OrderingTranslatorTest extends CayenneCase {
      */
     public void testDoTranslation1() throws Exception {
         try {
-            TranslationCase tstCase =
-                new TranslationCase("Artist", null, "ta.ARTIST_NAME");
+            TranslationCase tstCase = new TranslationCase(
+                    "Artist",
+                    null,
+                    "ta.ARTIST_NAME");
             q.setRoot(Artist.class);
             q.addOrdering("artistName", Ordering.ASC);
-            String orderBySql = new OrderingTranslator(qa).doTranslation();
 
-            assertNotNull(orderBySql);
-            tstCase.assertTranslatedWell(orderBySql);
+            StringBuilder out = new StringBuilder();
+            new OrderingTranslator(qa).appendPart(out);
+
+            assertTrue(out.length() > 0);
+            tstCase.assertTranslatedWell(out.toString());
         }
         finally {
             qa.dispose();
@@ -60,14 +64,18 @@ public class OrderingTranslatorTest extends CayenneCase {
      */
     public void testDoTranslation2() throws Exception {
         try {
-            TranslationCase tstCase =
-                new TranslationCase("Artist", null, "ta.ARTIST_NAME DESC");
+            TranslationCase tstCase = new TranslationCase(
+                    "Artist",
+                    null,
+                    "ta.ARTIST_NAME DESC");
             q.setRoot(Artist.class);
             q.addOrdering("artistName", Ordering.DESC);
-            String orderBySql = new OrderingTranslator(qa).doTranslation();
 
-            assertNotNull(orderBySql);
-            tstCase.assertTranslatedWell(orderBySql);
+            StringBuilder out = new StringBuilder();
+            new OrderingTranslator(qa).appendPart(out);
+
+            assertTrue(out.length() > 0);
+            tstCase.assertTranslatedWell(out.toString());
         }
         finally {
             qa.dispose();
@@ -79,13 +87,17 @@ public class OrderingTranslatorTest extends CayenneCase {
      */
     public void testDoTranslation4() throws Exception {
         try {
-            TranslationCase tstCase =
-                new TranslationCase("Artist", null, "UPPER(ta.ARTIST_NAME)");
+            TranslationCase tstCase = new TranslationCase(
+                    "Artist",
+                    null,
+                    "UPPER(ta.ARTIST_NAME)");
             q.setRoot(Artist.class);
             q.addOrdering("artistName", Ordering.ASC, true);
-            String orderBySql = new OrderingTranslator(qa).doTranslation();
+            StringBuilder out = new StringBuilder();
+            new OrderingTranslator(qa).appendPart(out);
 
-            assertNotNull(orderBySql);
+            assertTrue(out.length() > 0);
+            String orderBySql = out.toString();
             assertTrue(orderBySql.contains("UPPER("));
             tstCase.assertTranslatedWell(orderBySql);
         }
@@ -96,18 +108,20 @@ public class OrderingTranslatorTest extends CayenneCase {
 
     public void testDoTranslation5() throws Exception {
         try {
-            TranslationCase tstCase =
-                new TranslationCase(
+            TranslationCase tstCase = new TranslationCase(
                     "Artist",
                     null,
                     "UPPER(ta.ARTIST_NAME) DESC, ta.ESTIMATED_PRICE");
             q.setRoot(Artist.class);
             q.addOrdering("artistName", Ordering.DESC, true);
             q.addOrdering("paintingArray.estimatedPrice", Ordering.ASC);
-            String orderBySql = new OrderingTranslator(qa).doTranslation();
+            StringBuilder out = new StringBuilder();
+            new OrderingTranslator(qa).appendPart(out);
 
-            assertNotNull(orderBySql);
-            //Check there is an UPPER modifier
+            assertTrue(out.length() > 0);
+            String orderBySql = out.toString();
+
+            // Check there is an UPPER modifier
             int indexOfUpper = orderBySql.indexOf("UPPER(");
             assertTrue(indexOfUpper != -1);
 
@@ -122,18 +136,20 @@ public class OrderingTranslatorTest extends CayenneCase {
 
     public void testDoTranslation6() throws Exception {
         try {
-            TranslationCase tstCase =
-                new TranslationCase(
+            TranslationCase tstCase = new TranslationCase(
                     "Artist",
                     null,
                     "UPPER(ta.ARTIST_NAME), UPPER(ta.ESTIMATED_PRICE)");
             q.setRoot(Artist.class);
             q.addOrdering("artistName", Ordering.ASC, true);
             q.addOrdering("paintingArray.estimatedPrice", Ordering.ASC, true);
-            String orderBySql = new OrderingTranslator(qa).doTranslation();
+            StringBuilder out = new StringBuilder();
+            new OrderingTranslator(qa).appendPart(out);
 
-            assertNotNull(orderBySql);
-            //Check there is at least one UPPER modifier
+            assertTrue(out.length() > 0);
+            String orderBySql = out.toString();
+            
+            // Check there is at least one UPPER modifier
             int indexOfUpper = orderBySql.indexOf("UPPER(");
             assertTrue(indexOfUpper != -1);
 
@@ -149,17 +165,18 @@ public class OrderingTranslatorTest extends CayenneCase {
 
     public void testDoTranslation3() throws Exception {
         try {
-            TranslationCase tstCase =
-                new TranslationCase(
+            TranslationCase tstCase = new TranslationCase(
                     "Artist",
                     null,
                     "ta.ARTIST_NAME DESC, ta.ESTIMATED_PRICE");
             q.setRoot(Artist.class);
             q.addOrdering("artistName", Ordering.DESC);
             q.addOrdering("paintingArray.estimatedPrice", Ordering.ASC);
-            String orderBySql = new OrderingTranslator(qa).doTranslation();
+            StringBuilder out = new StringBuilder();
+            new OrderingTranslator(qa).appendPart(out);
 
-            assertNotNull(orderBySql);
+            assertTrue(out.length() > 0);
+            String orderBySql = out.toString();
             tstCase.assertTranslatedWell(orderBySql);
         }
         finally {

@@ -19,12 +19,15 @@
 
 package org.apache.cayenne.dba.postgres;
 
+import java.io.IOException;
+
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
 
-/** 
- * Uses Postgres extensions to optimize various translations. 
+/**
+ * Uses Postgres extensions to optimize various translations.
  * 
  * @author Andrus Adamchik
  * @since 1.1
@@ -42,14 +45,19 @@ public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {
             // binary nodes are the only ones that currently require this
             detectObjectMatch(node);
 
-            if (parenthesisNeeded(node, parentNode)) {
-                qualBuf.append('(');
-            }
+            try {
+                if (parenthesisNeeded(node, parentNode)) {
+                    out.append('(');
+                }
 
-            // super implementation has special handling 
-            // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
-            // Postgres uses ILIKE
-            // ...
+                // super implementation has special handling
+                // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
+                // Postgres uses ILIKE
+                // ...
+            }
+            catch (IOException ioex) {
+                throw new CayenneRuntimeException("Error appending content", ioex);
+            }
         }
         else {
             super.startNode(node, parentNode);
@@ -59,18 +67,25 @@ public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {
     @Override
     public void endNode(Expression node, Expression parentNode) {
         if (node.getOperandCount() == 2) {
-            // check if we need to use objectMatchTranslator to finish building the expression
-            if (matchingObject) {
-                appendObjectMatch();
+
+            try {
+                // check if we need to use objectMatchTranslator to finish building the
+                // expression
+                if (matchingObject) {
+                    appendObjectMatch();
+                }
+
+                if (parenthesisNeeded(node, parentNode))
+                    out.append(')');
+
+                // super implementation has special handling
+                // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
+                // Postgres uses ILIKE
+                // ...
             }
-
-            if (parenthesisNeeded(node, parentNode))
-                qualBuf.append(')');
-
-            // super implementation has special handling 
-            // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
-            // Postgres uses ILIKE
-            // ...
+            catch (IOException ioex) {
+                throw new CayenneRuntimeException("Error appending content", ioex);
+            }
         }
         else {
             super.endNode(node, parentNode);
@@ -83,23 +98,29 @@ public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {
             return;
         }
 
-        // use ILIKE
+        try {
+            // use ILIKE
 
-        switch (node.getType()) {
+            switch (node.getType()) {
 
-            case Expression.LIKE_IGNORE_CASE :
-                finishedChildNodeAppendExpression(node, " ILIKE ");
-                break;
-            case Expression.NOT_LIKE_IGNORE_CASE :
-                finishedChildNodeAppendExpression(node, " NOT ILIKE ");
-                break;
-            default :
-                super.finishedChild(node, childIndex, hasMoreChildren);
+                case Expression.LIKE_IGNORE_CASE:
+                    finishedChildNodeAppendExpression(node, " ILIKE ");
+                    break;
+                case Expression.NOT_LIKE_IGNORE_CASE:
+                    finishedChildNodeAppendExpression(node, " NOT ILIKE ");
+                    break;
+                default:
+                    super.finishedChild(node, childIndex, hasMoreChildren);
+            }
+        }
+        catch (IOException ioex) {
+            throw new CayenneRuntimeException("Error appending content", ioex);
         }
     }
 
-    private void finishedChildNodeAppendExpression(Expression node, String operation) {
-        StringBuffer buf = (matchingObject) ? new StringBuffer() : qualBuf;
+    private void finishedChildNodeAppendExpression(Expression node, String operation)
+            throws IOException {
+        Appendable buf = (matchingObject) ? new StringBuilder() : this.out;
         buf.append(operation);
         if (matchingObject) {
             objectMatchTranslator.setOperation(buf.toString());
