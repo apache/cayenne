@@ -39,18 +39,18 @@ import org.apache.cayenne.query.UpdateQuery;
 public class UpdateTranslator extends QueryAssembler {
 
     @Override
-    public String aliasForTable(DbEntity dbEnt) {
-        throw new RuntimeException("aliases not supported");
-    }
-
-    @Override
-    public void dbRelationshipAdded(DbRelationship dbRel) {
-        throw new RuntimeException("db relationships not supported");
-    }
-
-    @Override
     public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType) {
-        throw new RuntimeException("db relationships not supported");
+        throw new UnsupportedOperationException("db relationships not supported");
+    }
+    
+    @Override
+    public String getCurrentAlias() {
+        throw new UnsupportedOperationException("aliases not supported");
+    }
+
+    @Override
+    public void resetJoinStack() {
+        // noop - path processing is not supported.
     }
 
     /** Method that converts an update query into SQL string */

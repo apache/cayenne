@@ -22,7 +22,6 @@ package org.apache.cayenne.access.trans;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.art.Artist;
@@ -172,7 +171,7 @@ public class SelectTranslatorTest extends CayenneCase {
                 assertTrue(ind1 > 0);
 
                 int ind2 = generatedSql.indexOf("ARTIST t", ind1 + 1);
-                assertTrue(ind2 < 0);
+                assertTrue(generatedSql, ind2 < 0);
             }
         };
 
@@ -342,7 +341,7 @@ public class SelectTranslatorTest extends CayenneCase {
                 assertTrue(sql, sql.indexOf("PAINTING_ID") > 0);
 
                 // assert we have one join
-                assertEquals(1, transl.dbRelList.size());
+                assertEquals(1, transl.joinStack.size());
             }
         };
 
@@ -364,7 +363,7 @@ public class SelectTranslatorTest extends CayenneCase {
                 transl.createSqlString();
 
                 // assert we only have one join
-                assertEquals(1, transl.dbRelList.size());
+                assertEquals(1, transl.joinStack.size());
             }
         };
 
@@ -399,7 +398,7 @@ public class SelectTranslatorTest extends CayenneCase {
                 assertTrue(sql, sql.indexOf("PAINTING_ID") > 0);
 
                 // assert we have one join
-                assertEquals(1, transl.dbRelList.size());
+                assertEquals(1, transl.joinStack.size());
             }
         };
 

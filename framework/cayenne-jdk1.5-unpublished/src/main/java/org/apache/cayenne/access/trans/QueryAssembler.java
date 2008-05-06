@@ -28,7 +28,6 @@ import java.util.Map;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.QueryTranslator;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.query.QualifiedQuery;
@@ -49,23 +48,31 @@ public abstract class QueryAssembler extends QueryTranslator {
     protected List<DbAttribute> attributes = new ArrayList<DbAttribute>();
 
     /**
-     * Processes a join being added.
-     * 
-     * @deprecated since 3.0 use {@link #dbRelationshipAdded(DbRelationship, JoinType)}.
-     */
-    public abstract void dbRelationshipAdded(DbRelationship dbRel);
-
-    /**
-     * Returns aliases for the joins defined in the query.
+     * Returns aliases for the path splits defined in the query.
      * 
      * @since 3.0
      */
-    protected Map<String, String> getJoinAliases() {
+    protected Map<String, String> getPathAliases() {
         if (query instanceof QualifiedQuery) {
             return ((QualifiedQuery) query).getJoinAliases();
         }
         return Collections.emptyMap();
     }
+
+    /**
+     * A callback invoked by a child qualifier or ordering processor allowing query
+     * assembler to reset its join stack.
+     * 
+     * @since 3.0
+     */
+    public abstract void resetJoinStack();
+
+    /**
+     * Returns an alias of the table which is currently at the top of the join stack.
+     * 
+     * @since 3.0
+     */
+    public abstract String getCurrentAlias();
 
     /**
      * Appends a join with given semantics to the query.
@@ -82,20 +89,6 @@ public abstract class QueryAssembler extends QueryTranslator {
      * to invoke it explicitly.
      */
     public abstract String createSqlString() throws Exception;
-
-    public String aliasForTable(DbEntity ent, DbRelationship rel) {
-        return aliasForTable(ent); // Default implementation
-    }
-
-    /**
-     * Returns a name that can be used as column alias. This can be one of the following:
-     * <ul>
-     * <li>an alias for this table, if it uses aliases</li>
-     * <li>a fully qualified table name, if not.</li>
-     * </ul>
-     * CayenneRuntimeException is thrown if a table alias can not be created.
-     */
-    public abstract String aliasForTable(DbEntity dbEnt);
 
     /**
      * Returns <code>true</code> if table aliases are supported. Default implementation

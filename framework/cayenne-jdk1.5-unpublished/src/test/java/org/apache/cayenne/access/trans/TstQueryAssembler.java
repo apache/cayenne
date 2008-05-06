@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.trans;
 
 import java.sql.SQLException;
@@ -26,7 +25,6 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.query.Query;
@@ -53,22 +51,19 @@ public class TstQueryAssembler extends QueryAssembler {
         super.getConnection().close();
     }
 
-    /**
-     * @deprecated since 3.0
-     */
-    @Override
-    public void dbRelationshipAdded(DbRelationship dbRel) {
-        dbRels.add(dbRel);
-    }
-    
     @Override
     public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType) {
         dbRels.add(relationship);
     }
+    
+    @Override
+    public String getCurrentAlias() {
+        return "ta";
+    }
 
     @Override
-    public String aliasForTable(DbEntity dbEnt) {
-        return "ta";
+    public void resetJoinStack() {
+        // noop
     }
 
     @Override

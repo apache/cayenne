@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.util.Util;
@@ -39,15 +38,15 @@ final class JoinTreeNode {
     private String alias;
     private JoinType joinType;
     private Collection<JoinTreeNode> children;
-    private SelectTranslator tableAliasSource;
+    private JoinStack joinProcessor;
 
-    JoinTreeNode(SelectTranslator tableAliasSource) {
-        this.tableAliasSource = tableAliasSource;
+    JoinTreeNode(JoinStack joinProcessor) {
+        this.joinProcessor = joinProcessor;
     }
 
-    JoinTreeNode(SelectTranslator tableAliasSource, DbRelationship relationship,
+    JoinTreeNode(JoinStack joinProcessor, DbRelationship relationship,
             JoinType joinType, String alias) {
-        this(tableAliasSource);
+        this(joinProcessor);
         this.relationship = relationship;
         this.alias = alias;
         this.joinType = joinType;
@@ -87,13 +86,12 @@ final class JoinTreeNode {
         }
 
         JoinTreeNode child = new JoinTreeNode(
-                tableAliasSource,
+                joinProcessor,
                 relationship,
                 joinType,
                 alias);
         child.setSourceTableAlias(this.targetTableAlias);
-        child.setTargetTableAlias(tableAliasSource
-                .newAliasForTable((DbEntity) relationship.getTargetEntity()));
+        child.setTargetTableAlias(joinProcessor.newAlias());
         children.add(child);
         return child;
     }

@@ -142,8 +142,8 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
         matchingObject = false;
 
         boolean first = true;
-        DbRelationship relationship = objectMatchTranslator.getRelationship();
 
+        DbRelationship relationship = objectMatchTranslator.getRelationship();
         if (!relationship.isToMany() && !relationship.isToPK()) {
             queryAssembler.dbRelationshipAdded(relationship, JoinType.INNER);
         }
@@ -161,7 +161,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
             DbAttribute attr = objectMatchTranslator.getAttribute(key);
             Object val = objectMatchTranslator.getValue(key);
 
-            processColumn(qualBuf, attr, relationship);
+            processColumn(qualBuf, attr);
             qualBuf.append(objectMatchTranslator.getOperation());
             appendLiteral(qualBuf, val, attr, objectMatchTranslator.getExpression());
         }

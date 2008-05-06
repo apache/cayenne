@@ -38,6 +38,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.PathComponent;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Translates parts of the query to SQL. Always works in the context of parent Translator.
@@ -88,10 +89,10 @@ public abstract class QueryAssemblerHelper {
      */
     protected void appendObjPath(StringBuffer buf, Expression pathExp) {
 
-        ObjRelationship lastRelationship = null;
+        queryAssembler.resetJoinStack();
 
         for (PathComponent<ObjAttribute, ObjRelationship> component : getObjEntity()
-                .resolvePath(pathExp, queryAssembler.getJoinAliases())) {
+                .resolvePath(pathExp, queryAssembler.getPathAliases())) {
 
             ObjRelationship relationship = component.getRelationship();
             ObjAttribute attribute = component.getAttribute();
@@ -110,27 +111,36 @@ public abstract class QueryAssemblerHelper {
                                 .dbRelationshipAdded(dbRel, component.getJoinType());
                     }
                 }
-                lastRelationship = relationship;
             }
             else {
-                if (lastRelationship != null) {
-                    List<DbRelationship> lastDbRelList = lastRelationship
-                            .getDbRelationships();
-                    DbRelationship lastDbRel = lastDbRelList
-                            .get(lastDbRelList.size() - 1);
-                    processColumn(buf, attribute.getDbAttribute(), lastDbRel);
+                Iterator<CayenneMapEntry> dbPathIterator = attribute.getDbPathIterator();
+                while (dbPathIterator.hasNext()) {
+                    Object pathPart = dbPathIterator.next();
+
+                    if (pathPart == null) {
+                        throw new CayenneRuntimeException(
+                                "ObjAttribute has no component: " + attribute.getName());
+                    }
+                    else if (pathPart instanceof DbRelationship) {
+                        queryAssembler.dbRelationshipAdded(
+                                (DbRelationship) pathPart,
+                                JoinType.INNER);
+                    }
+                    else if (pathPart instanceof DbAttribute) {
+                        processColumn(buf, (DbAttribute) pathPart);
+                    }
                 }
-                else {
-                    processColumn(buf, attribute.getDbAttribute());
-                }
+
             }
         }
     }
 
     protected void appendDbPath(StringBuffer buf, Expression pathExp) {
 
+        queryAssembler.resetJoinStack();
+
         for (PathComponent<DbAttribute, DbRelationship> component : getDbEntity()
-                .resolvePath(pathExp, queryAssembler.getJoinAliases())) {
+                .resolvePath(pathExp, queryAssembler.getPathAliases())) {
 
             DbRelationship relationship = component.getRelationship();
 
@@ -153,49 +163,9 @@ public abstract class QueryAssemblerHelper {
         }
     }
 
-    /** 
-     * Appends column name of a column in a root entity.
-     * 
-     *  @deprecated since 3.0 - unused
-     */
-    protected void processColumn(StringBuffer buf, Expression nameExp) {
-        if (queryAssembler.supportsTableAliases()) {
-            String alias = queryAssembler.aliasForTable(getDbEntity());
-            buf.append(alias).append('.');
-        }
-
-        buf.append(nameExp.getOperand(0));
-    }
-
-    protected void processColumn(
-            StringBuffer buf,
-            DbAttribute dbAttr,
-            DbRelationship relationship) {
-        String alias = null;
-
-        if (queryAssembler.supportsTableAliases()) {
-
-            if (relationship != null) {
-                alias = queryAssembler.aliasForTable(
-                        (DbEntity) dbAttr.getEntity(),
-                        relationship);
-            }
-
-            // sometimes lookup for relationship fails (any specific case other than
-            // relationship being null?), so lookup by entity. Note that as CAY-194
-            // shows, lookup by DbEntity may produce incorrect results for
-            // reflexive relationships.
-            if (alias == null) {
-                alias = queryAssembler.aliasForTable((DbEntity) dbAttr.getEntity());
-            }
-        }
-
-        buf.append(dbAttr.getAliasedName(alias));
-    }
-
     protected void processColumn(StringBuffer buf, DbAttribute dbAttr) {
         String alias = (queryAssembler.supportsTableAliases()) ? queryAssembler
-                .aliasForTable((DbEntity) dbAttr.getEntity()) : null;
+                .getCurrentAlias() : null;
 
         buf.append(dbAttr.getAliasedName(alias));
     }
@@ -325,7 +295,7 @@ public abstract class QueryAssemblerHelper {
                     PathComponent<ObjAttribute, ObjRelationship> last = getObjEntity()
                             .lastPathComponent(
                                     expression,
-                                    queryAssembler.getJoinAliases());
+                                    queryAssembler.getPathAliases());
 
                     // TODO: handle EmbeddableAttribute
                     // if (last instanceof EmbeddableAttribute)
@@ -349,7 +319,7 @@ public abstract class QueryAssemblerHelper {
                     PathComponent<DbAttribute, DbRelationship> last = getDbEntity()
                             .lastPathComponent(
                                     expression,
-                                    queryAssembler.getJoinAliases());
+                                    queryAssembler.getPathAliases());
                     if (last.getAttribute() != null) {
                         attribute = last.getAttribute();
                         break;
@@ -383,20 +353,6 @@ public abstract class QueryAssemblerHelper {
      * primary key. If this is a "to one" relationship, column expression for the source
      * foreign key is added.
      * 
-     * @deprecated since 3.0 use
-     *             {@link #processRelTermination(StringBuffer, ObjRelationship, JoinType)}.
-     */
-    protected void processRelTermination(StringBuffer buf, ObjRelationship rel) {
-        processRelTermination(buf, rel, JoinType.INNER);
-
-    }
-
-    /**
-     * Processes case when an OBJ_PATH expression ends with relationship. If this is a "to
-     * many" relationship, a join is added and a column expression for the target entity
-     * primary key. If this is a "to one" relationship, column expression for the source
-     * foreign key is added.
-     * 
      * @since 3.0
      */
     protected void processRelTermination(
@@ -419,19 +375,6 @@ public abstract class QueryAssemblerHelper {
                 queryAssembler.dbRelationshipAdded(dbRel, joinType);
             }
         }
-    }
-
-    /**
-     * Handles case when a DB_NAME expression ends with relationship. If this is a "to
-     * many" relationship, a join is added and a column expression for the target entity
-     * primary key. If this is a "to one" relationship, column expression for the source
-     * foreign key is added.
-     * 
-     * @deprecated since 3.0 use
-     *             {@link #processRelTermination(StringBuffer, DbRelationship, JoinType)}.
-     */
-    protected void processRelTermination(StringBuffer buf, DbRelationship rel) {
-        processRelTermination(buf, rel, JoinType.INNER);
     }
 
     /**

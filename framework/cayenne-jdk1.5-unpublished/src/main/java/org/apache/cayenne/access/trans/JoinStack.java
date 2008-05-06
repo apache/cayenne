@@ -34,17 +34,21 @@ import org.apache.cayenne.map.JoinType;
  * @since 3.0
  * @author Andrus Adamchik
  */
-class JoinProcessor {
+class JoinStack {
 
-    private JoinTreeNode root;
+    private JoinTreeNode rootNode;
     private JoinTreeNode topNode;
 
-    JoinProcessor(SelectTranslator tableAliasSource) {
-        String rootAlias = tableAliasSource.aliasForTable(tableAliasSource
-                .getRootDbEntity());
-        this.root = new JoinTreeNode(tableAliasSource);
-        this.root.setTargetTableAlias(rootAlias);
+    private int aliasCounter;
+
+    JoinStack() {
+        this.rootNode = new JoinTreeNode(this);
+        this.rootNode.setTargetTableAlias(newAlias());
         resetStack();
+    }
+    
+    String getCurrentAlias() {
+        return topNode.getTargetTableAlias();
     }
 
     /**
@@ -52,7 +56,12 @@ class JoinProcessor {
      */
     int size() {
         // do not count root as a join
-        return root.size() - 1;
+        return rootNode.size() - 1;
+    }
+
+    void appendRoot(Appendable out, DbEntity rootEntity) throws IOException {
+        out.append(rootEntity.getFullyQualifiedName());
+        out.append(' ').append(rootNode.getTargetTableAlias());
     }
 
     /**
@@ -61,7 +70,7 @@ class JoinProcessor {
     void appendJoins(Appendable out) throws IOException {
 
         // skip root, recursively append its children
-        for (JoinTreeNode child : root.getChildren()) {
+        for (JoinTreeNode child : rootNode.getChildren()) {
             appendJoinSubtree(out, child);
         }
     }
@@ -119,7 +128,7 @@ class JoinProcessor {
      * Pops the stack all the way to the root node.
      */
     void resetStack() {
-        topNode = root;
+        topNode = rootNode;
     }
 
     /**
@@ -128,5 +137,9 @@ class JoinProcessor {
      */
     void pushJoin(DbRelationship relationship, JoinType joinType, String alias) {
         topNode = topNode.findOrCreateChild(relationship, joinType, alias);
+    }
+
+    protected String newAlias() {
+        return "t" + aliasCounter++;
     }
 }

@@ -76,18 +76,11 @@ public class SelectTranslator extends QueryAssembler {
         return false;
     }
 
-    final Map<DbRelationship, String> aliasLookup = new HashMap<DbRelationship, String>();
-
-    final List<DbEntity> tableList = new ArrayList<DbEntity>();
-    final List<String> aliasList = new ArrayList<String>();
-    final List<DbRelationship> dbRelList = new ArrayList<DbRelationship>();
-    final List<JoinType> dbRelationshipSemantics = new ArrayList<JoinType>();
+    JoinStack joinStack = new JoinStack();
 
     List<ColumnDescriptor> resultColumns;
     Map attributeOverrides;
     Map<ColumnDescriptor, ObjAttribute> defaultAttributesByColumn;
-
-    int aliasCounter;
 
     boolean suppressingDistinct;
 
@@ -171,11 +164,8 @@ public class SelectTranslator extends QueryAssembler {
         queryBuf.append(" FROM ");
 
         // append tables and joins
-        appendRootTable(queryBuf);
-        int joinCount = dbRelList.size();
-        for (int i = 0; i < joinCount; i++) {
-            appendJoins(queryBuf, i);
-        }
+        joinStack.appendRoot(queryBuf, getRootDbEntity());
+        joinStack.appendJoins(queryBuf);
 
         // append qualifier
         if (qualifierStr != null) {
@@ -189,6 +179,11 @@ public class SelectTranslator extends QueryAssembler {
         }
 
         return queryBuf.toString();
+    }
+
+    @Override
+    public String getCurrentAlias() {
+        return joinStack.getCurrentAlias();
     }
 
     /**
@@ -234,9 +229,6 @@ public class SelectTranslator extends QueryAssembler {
 
         this.defaultAttributesByColumn = new HashMap<ColumnDescriptor, ObjAttribute>();
 
-        // create alias for root table
-        newAliasForTable(getRootDbEntity());
-
         List<ColumnDescriptor> columns = new ArrayList<ColumnDescriptor>();
         SelectQuery query = getSelectQuery();
 
@@ -278,6 +270,8 @@ public class SelectTranslator extends QueryAssembler {
 
             public boolean visitAttribute(AttributeProperty property) {
                 ObjAttribute oa = property.getAttribute();
+
+                resetJoinStack();
                 Iterator<CayenneMapEntry> dbPathIterator = oa.getDbPathIterator();
                 while (dbPathIterator.hasNext()) {
                     Object pathPart = dbPathIterator.next();
@@ -286,7 +280,6 @@ public class SelectTranslator extends QueryAssembler {
                         throw new CayenneRuntimeException(
                                 "ObjAttribute has no component: " + oa.getName());
                     }
-
                     else if (pathPart instanceof DbRelationship) {
                         DbRelationship rel = (DbRelationship) pathPart;
                         dbRelationshipAdded(rel, JoinType.INNER);
@@ -352,9 +345,10 @@ public class SelectTranslator extends QueryAssembler {
 
                 // add joins and find terminating element
 
+                resetJoinStack();
                 PathComponent<DbAttribute, DbRelationship> lastComponent = null;
                 for (PathComponent<DbAttribute, DbRelationship> component : table
-                        .resolvePath(pathExp, getJoinAliases())) {
+                        .resolvePath(pathExp, getPathAliases())) {
 
                     // do not add join for the last DB Rel
                     if (component.getRelationship() != null && !component.isLast()) {
@@ -419,9 +413,10 @@ public class SelectTranslator extends QueryAssembler {
                 Expression prefetchExp = Expression.fromString(prefetch.getPath());
                 Expression dbPrefetch = oe.translateToDbPath(prefetchExp);
 
+                resetJoinStack();
                 DbRelationship r = null;
                 for (PathComponent<DbAttribute, DbRelationship> component : table
-                        .resolvePath(dbPrefetch, getJoinAliases())) {
+                        .resolvePath(dbPrefetch, getPathAliases())) {
                     r = component.getRelationship();
                     dbRelationshipAdded(r, JoinType.INNER);
                 }
@@ -522,8 +517,7 @@ public class SelectTranslator extends QueryAssembler {
                         + customAttributes.get(i));
             }
 
-            String alias = aliasForTable((DbEntity) attribute.getEntity());
-            columns.add(new ColumnDescriptor(attribute, alias));
+            columns.add(new ColumnDescriptor(attribute, getCurrentAlias()));
         }
 
         return columns;
@@ -537,7 +531,7 @@ public class SelectTranslator extends QueryAssembler {
             String label) {
 
         if (skipSet.add(attribute)) {
-            String alias = aliasForTable((DbEntity) attribute.getEntity());
+            String alias = getCurrentAlias();
             ColumnDescriptor column = (objAttribute != null) ? new ColumnDescriptor(
                     objAttribute,
                     attribute,
@@ -577,67 +571,12 @@ public class SelectTranslator extends QueryAssembler {
         }
     }
 
-    private void appendRootTable(StringBuilder queryBuf) {
-        DbEntity ent = tableList.get(0);
-        queryBuf.append(ent.getFullyQualifiedName());
-
-        // The alias should be the alias from the same index in aliasList, not that
-        // returned by aliasForTable.
-        queryBuf.append(' ').append(aliasList.get(0));
-    }
-
-    private void appendJoins(StringBuilder queryBuf, int index) {
-
-        DbRelationship relationship = dbRelList.get(index);
-        JoinType joinType = dbRelationshipSemantics.get(index);
-
-        DbEntity targetEntity = (DbEntity) relationship.getTargetEntity();
-        String srcAlias = aliasForTable((DbEntity) relationship.getSourceEntity());
-        String targetAlias = aliasLookup.get(relationship);
-
-        switch (joinType) {
-            case INNER:
-                queryBuf.append(" JOIN");
-                break;
-            case LEFT_OUTER:
-                queryBuf.append(" LEFT JOIN");
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported join type: " + joinType);
-        }
-
-        queryBuf
-                .append(' ')
-                .append(targetEntity.getFullyQualifiedName())
-                .append(' ')
-                .append(targetAlias)
-                .append(" ON (");
-
-        List<DbJoin> joins = relationship.getJoins();
-        int len = joins.size();
-        for (int i = 0; i < len; i++) {
-            DbJoin join = joins.get(i);
-
-            if (i > 0) {
-                queryBuf.append(" AND ");
-            }
-
-            queryBuf.append(srcAlias).append('.').append(join.getSourceName()).append(
-                    " = ").append(targetAlias).append('.').append(join.getTargetName());
-        }
-
-        queryBuf.append(')');
-    }
-
     /**
-     * Stores a new relationship in an internal list. Later it will be used to create
-     * joins to relationship destination table.
-     * 
-     * @deprecated since 3.0 as super is deprecated.
+     * @since 3.0
      */
     @Override
-    public void dbRelationshipAdded(DbRelationship rel) {
-        dbRelationshipAdded(rel, JoinType.INNER);
+    public void resetJoinStack() {
+        joinStack.resetStack();
     }
 
     /**
@@ -652,61 +591,7 @@ public class SelectTranslator extends QueryAssembler {
             forcingDistinct = true;
         }
 
-        String existingAlias = aliasLookup.get(relationship);
-
-        if (existingAlias == null) {
-            dbRelList.add(relationship);
-            dbRelationshipSemantics.add(joinType);
-
-            // add alias for the destination table of the relationship
-            String newAlias = newAliasForTable((DbEntity) relationship.getTargetEntity());
-            aliasLookup.put(relationship, newAlias);
-        }
-    }
-
-    /**
-     * Sets up and returns a new alias for a specified table.
-     */
-    protected String newAliasForTable(DbEntity ent) {
-        String newAlias = "t" + aliasCounter++;
-        tableList.add(ent);
-        aliasList.add(newAlias);
-        return newAlias;
-    }
-
-    @Override
-    public String aliasForTable(DbEntity ent, DbRelationship rel) {
-        return aliasLookup.get(rel);
-    }
-
-    /**
-     * Overrides superclass implementation. Will return an alias that should be used for a
-     * specified DbEntity in the query (or null if this DbEntity is not included in the
-     * FROM clause).
-     */
-    @Override
-    public String aliasForTable(DbEntity ent) {
-
-        int entIndex = tableList.indexOf(ent);
-        if (entIndex >= 0) {
-            return aliasList.get(entIndex);
-        }
-        else {
-            StringBuilder msg = new StringBuilder();
-            msg.append("Alias not found, DbEntity: '").append(
-                    ent != null ? ent.getName() : "<null entity>").append(
-                    "'\nExisting aliases:");
-
-            int len = aliasList.size();
-            for (int i = 0; i < len; i++) {
-                String dbeName = (tableList.get(i) != null)
-                        ? tableList.get(i).getName()
-                        : "<null entity>";
-                msg.append("\n").append(aliasList.get(i)).append(" => ").append(dbeName);
-            }
-
-            throw new CayenneRuntimeException(msg.toString());
-        }
+        joinStack.pushJoin(relationship, joinType, null);
     }
 
     /**

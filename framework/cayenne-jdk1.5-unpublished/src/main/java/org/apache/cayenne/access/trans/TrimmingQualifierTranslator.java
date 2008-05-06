@@ -17,18 +17,15 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.trans;
 
 import java.sql.Types;
 
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbRelationship;
 
-/** 
- * QualifierTranslator that allows translation of qualifiers that perform
- * comparison with CHAR columns. Some databases require trimming the values for
- * this to work.
+/**
+ * QualifierTranslator that allows translation of qualifiers that perform comparison with
+ * CHAR columns. Some databases require trimming the values for this to work.
  * 
  * @author Andrus Adamchik
  */
@@ -46,9 +43,7 @@ public class TrimmingQualifierTranslator extends QualifierTranslator {
     /**
      * Constructor for TrimmingQualifierTranslator.
      */
-    public TrimmingQualifierTranslator(
-        QueryAssembler queryAssembler,
-        String trimFunction) {
+    public TrimmingQualifierTranslator(QueryAssembler queryAssembler, String trimFunction) {
         super(queryAssembler);
         this.trimFunction = trimFunction;
     }
@@ -62,30 +57,15 @@ public class TrimmingQualifierTranslator extends QualifierTranslator {
             buf.append(trimFunction).append("(");
             super.processColumn(buf, dbAttr);
             buf.append(')');
-        } else {
+        }
+        else {
             super.processColumn(buf, dbAttr);
         }
     }
 
     /**
-     * Adds special handling of CHAR columns.
-     */
-    @Override
-    protected void processColumn(
-        StringBuffer buf,
-        DbAttribute dbAttr,
-        DbRelationship rel) {
-        if (dbAttr.getType() == Types.CHAR) {
-            buf.append(trimFunction).append("(");
-            super.processColumn(buf, dbAttr, rel);
-            buf.append(')');
-        } else {
-            super.processColumn(buf, dbAttr, rel);
-        }
-    }
-
-    /**
      * Returns the trimFunction.
+     * 
      * @return String
      */
     public String getTrimFunction() {
@@ -94,6 +74,7 @@ public class TrimmingQualifierTranslator extends QualifierTranslator {
 
     /**
      * Sets the trimFunction.
+     * 
      * @param trimFunction The trimFunction to set
      */
     public void setTrimFunction(String trimFunction) {
