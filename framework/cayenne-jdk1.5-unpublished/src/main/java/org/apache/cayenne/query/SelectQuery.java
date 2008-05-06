@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
@@ -410,11 +411,14 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /**
-     * Adds one or more aliases for the qualifier expression path.
+     * Adds one or more aliases for the qualifier expression path. Aliases serve to
+     * instruct Cayenne to generate separate sets of joins for overlapping paths, that
+     * maybe needed for complex conditions. An example of an <i>implicit<i> splits is
+     * this method: {@link ExpressionFactory#matchAllExp(String, Object...)}.
      * 
      * @since 3.0
      */
-    public void addPathSplitAliases(String path, String... aliases) {
+    public void aliasPathSplits(String path, String... aliases) {
         metaData.addPathSplitAliases(path, aliases);
     }
 
