@@ -184,7 +184,7 @@
 				<version>2.1</version>
 				<executions>
 					<execution>
-						<id>jjtree-jpql</id>
+						<id>jjtree-ejbql</id>
 						<phase>generate-sources</phase>
 						<configuration>
 							<sourceDirectory>
@@ -215,6 +215,45 @@
 							<goal>javacc</goal>
 						</goals>
 					</execution>
+					
+					<!-- Commented out expression executions, as exp/parser package is not properly setup - 
+					it stores generated parser in SVN in src/main/java. So the executions below are used
+					for manual generation -->
+					<!-- 
+					<execution>
+						<id>jjtree-exp</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceDirectory>
+								${basedir}/src/main/jjtree/org/apache/cayenne/exp/parser
+							</sourceDirectory>
+							<outputDirectory>
+								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/exp/parser
+							</outputDirectory>
+							<buildNodeFiles>false</buildNodeFiles>
+						</configuration>
+						<goals>
+							<goal>jjtree</goal>
+						</goals>
+					</execution>
+					
+					<execution>
+						<id>javacc-exp</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceDirectory>
+								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/exp/parser
+							</sourceDirectory>
+							<outputDirectory>
+								${project.build.directory}/generated-sources/javacc/org/apache/cayenne/exp/parser
+							</outputDirectory>
+						</configuration>
+						<goals>
+							<goal>javacc</goal>
+						</goals>
+					</execution>
+					
+					 -->
 				</executions>
 			</plugin>
 			<plugin>

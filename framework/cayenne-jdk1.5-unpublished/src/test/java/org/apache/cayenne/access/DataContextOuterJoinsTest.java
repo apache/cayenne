@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.query.Ordering;
@@ -53,7 +54,37 @@ public class DataContextOuterJoinsTest extends CayenneCase {
         mixedConditionQuery.andQualifier(ExpressionFactory.matchExp(
                 Artist.PAINTING_ARRAY_PROPERTY + Entity.OUTER_JOIN_INDICATOR,
                 null));
-        mixedConditionQuery.orQualifier(ExpressionFactory.matchExp(Artist.ARTIST_NAME_PROPERTY, "AA1"));
+        mixedConditionQuery.orQualifier(ExpressionFactory.matchExp(
+                Artist.ARTIST_NAME_PROPERTY,
+                "AA1"));
+        mixedConditionQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+
+        artists = createDataContext().performQuery(mixedConditionQuery);
+        assertEquals(3, artists.size());
+        assertEquals("AA1", artists.get(0).getArtistName());
+        assertEquals("BB1", artists.get(1).getArtistName());
+        assertEquals("BB2", artists.get(2).getArtistName());
+    }
+
+    public void testSelectWithOuterJoinFromString() throws Exception {
+
+        createTestData("testSelectWithOuterJoin");
+
+        SelectQuery missingToManyQuery = new SelectQuery(Artist.class);
+        missingToManyQuery.andQualifier(Expression.fromString("paintingArray+ = null"));
+        missingToManyQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+
+        List<Artist> artists = createDataContext().performQuery(missingToManyQuery);
+        assertEquals(2, artists.size());
+        assertEquals("BB1", artists.get(0).getArtistName());
+
+        SelectQuery mixedConditionQuery = new SelectQuery(Artist.class);
+        mixedConditionQuery.andQualifier(ExpressionFactory.matchExp(
+                Artist.PAINTING_ARRAY_PROPERTY + Entity.OUTER_JOIN_INDICATOR,
+                null));
+        mixedConditionQuery.orQualifier(ExpressionFactory.matchExp(
+                Artist.ARTIST_NAME_PROPERTY,
+                "AA1"));
         mixedConditionQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
 
         artists = createDataContext().performQuery(mixedConditionQuery);

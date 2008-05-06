@@ -340,7 +340,7 @@ TOKEN : {
 
 TOKEN :
 {
-  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* (["+"])? >
 |
   < #LETTER: ["_","a"-"z","A"-"Z"] >
 |

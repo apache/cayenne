@@ -25,7 +25,7 @@ package org.apache.cayenne.exp.parser;
  * Describes the input token stream.
  */
 
-class Token {
+public class Token {
 
   /**
    * An integer that describes the kind of this token.  This numbering
@@ -73,8 +73,7 @@ class Token {
   /**
    * Returns the image.
    */
-  @Override
-public String toString()
+  public String toString()
   {
      return image;
   }
