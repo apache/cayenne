@@ -40,7 +40,7 @@ CAY-1035 Replace QueryMetadata String cache policies with an enum
 CAY-1038 Upgrade to Ashwood 2.0
 CAY-1049 Refactor QueryAssembler/SelectTranslator
 CAY-1050 MySQLSniffer should configure created adapter to use MySQL default engine for tables
-CAY-1051 Drop OracleAdapter "optimizations"
+CAY-1051 Oracle 11 driver support - Drop OracleAdapter "optimizations"
 
 Bug fixes since M3:
 
