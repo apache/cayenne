@@ -65,12 +65,18 @@ import org.apache.cayenne.query.SQLAction;
  * @author Andrus Adamchik
  */
 public class MySQLAdapter extends JdbcAdapter {
+    
+    final static String DEFAULT_STORAGE_ENGINE = "InnoDB";
+
+    protected String storageEngine;
 
     public MySQLAdapter() {
+
         // init defaults
-        this.setSupportsFkConstraints(false);
-        this.setSupportsUniqueConstraints(true);
-        this.setSupportsGeneratedKeys(true);
+        this.storageEngine = DEFAULT_STORAGE_ENGINE;
+        setSupportsFkConstraints(true);
+        setSupportsUniqueConstraints(true);
+        setSupportsGeneratedKeys(true);
     }
 
     /**
@@ -210,8 +216,11 @@ public class MySQLAdapter extends JdbcAdapter {
     @Override
     public String createTable(DbEntity entity) {
         String ddlSQL = super.createTable(entity);
-        // force InnoDB tables - by default constraints are enabled
-        ddlSQL += " ENGINE=InnoDB";
+        
+        if (storageEngine != null) {
+            ddlSQL += " ENGINE=" + storageEngine;
+        }
+
         return ddlSQL;
     }
 
@@ -287,7 +296,7 @@ public class MySQLAdapter extends JdbcAdapter {
             sqlBuffer.append(" AUTO_INCREMENT");
         }
     }
-    
+
     @Override
     public MergerFactory mergerFactory() {
         return new MySQLMergerFactory();
@@ -303,5 +312,19 @@ public class MySQLAdapter extends JdbcAdapter {
                 return a1.getName().compareTo(a2.getName());
             }
         }
+    }
+
+    /**
+     * @since 3.0
+     */
+    public String getStorageEngine() {
+        return storageEngine;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setStorageEngine(String engine) {
+        this.storageEngine = engine;
     }
 }

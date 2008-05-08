@@ -44,14 +44,21 @@ public class MySQLSniffer implements DbAdapterFactory {
         // if InnoDB is used as a default engine, allow PK
         Statement statement = md.getConnection().createStatement();
         boolean supportFK = false;
+        String adapterStorageEngine = MySQLAdapter.DEFAULT_STORAGE_ENGINE;
 
         try {
+            // http://dev.mysql.com/doc/refman/5.0/en/storage-engines.html
+            // per link above "table type" concept is deprecated in favor of "storage
+            // engine". Not sure if we should check "storage_engine" variable and in what
+            // version of MySQL it got introduced...
             ResultSet rs = statement.executeQuery("SHOW VARIABLES LIKE 'table_type'");
             try {
                 if (rs.next()) {
-                    String tableType = rs.getString(2);
-                    supportFK = tableType != null
-                            && tableType.toUpperCase().equals("INNODB");
+                    String storageEngine = rs.getString(2);
+                    if (storageEngine != null) {
+                        adapterStorageEngine = storageEngine;
+                        supportFK = storageEngine.toUpperCase().equals("INNODB");
+                    }
                 }
             }
             finally {
@@ -64,6 +71,7 @@ public class MySQLSniffer implements DbAdapterFactory {
 
         MySQLAdapter adapter = new MySQLAdapter();
         adapter.setSupportsFkConstraints(supportFK);
+        adapter.setStorageEngine(adapterStorageEngine);
         return adapter;
     }
 }
