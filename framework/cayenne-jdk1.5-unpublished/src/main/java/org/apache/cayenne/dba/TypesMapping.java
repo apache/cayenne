@@ -412,7 +412,7 @@ public class TypesMapping {
                 return Types.VARBINARY;
             }
         }
-        
+
         if (Calendar.class.isAssignableFrom(javaClass)) {
             return Types.TIMESTAMP;
         }
@@ -429,7 +429,10 @@ public class TypesMapping {
     }
 
     /**
-     * Get the corresponding Java type by its java.sql.Types counterpart.
+     * Get the corresponding Java type by its java.sql.Types counterpart. Note that this
+     * method should be used as a last resort, with explicit mapping provided by user used
+     * as a first choice, as it can only guess how to map certain types, such as NUMERIC,
+     * etc.
      * 
      * @return Fully qualified Java type name or null if not found.
      */
@@ -438,21 +441,24 @@ public class TypesMapping {
     }
 
     /**
-     * Get the corresponding Java type by its java.sql.Types counterpart.
+     * Get the corresponding Java type by its java.sql.Types counterpart. Note that this
+     * method should be used as a last resort, with explicit mapping provided by user used
+     * as a first choice, as it can only guess how to map certain types, such as NUMERIC,
+     * etc.
      * 
      * @return Fully qualified Java type name or null if not found.
      */
     public static String getJavaBySqlType(int type, int length, int scale) {
 
+        // this does not always produce the correct result. See for instance CAY-1052 - PG
+        // drivers from 8.2 and newer decided that the scale of "0" means "undefined", not
+        // really zero.
         if (type == Types.NUMERIC && scale == 0) {
             type = Types.INTEGER;
         }
+
         return sqlEnumJava.get(Integer.valueOf(type));
     }
-
-    // *************************************************************
-    // non-static code
-    // *************************************************************
 
     protected Map<Integer, List<TypeInfo>> databaseTypes = new HashMap<Integer, List<TypeInfo>>();
 
