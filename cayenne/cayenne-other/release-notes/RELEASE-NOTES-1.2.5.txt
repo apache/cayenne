@@ -14,4 +14,6 @@ CAY-263 cdbgen (DbGeneratorTask) must support classpath and classpathref
 
 Bug Fixes:
 
+CAY-672 Change the logic to get the Java class from ResultSetMetadata
 CAY-941 NPE in SimpleNode.connectChildren()
+CAY-1052  Invalid cast on NUMERICs with scale of 0 using Postgres JDBC 8.2+
