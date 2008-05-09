@@ -62,6 +62,7 @@ CAY-1020 Problem accessing toMany Set relationships on client.
 CAY-1028 NPE's in the Modeler for incomplete relationships
 CAY-1043 NPE in ConnectionWrapper on rollback
 CAY-1044 NPE on commit when the new object was deleted before commit
+CAY-1053 MapQueryCache.CacheEntry not serializable
 
 ----------------------------------
 Release: 3.0M3
