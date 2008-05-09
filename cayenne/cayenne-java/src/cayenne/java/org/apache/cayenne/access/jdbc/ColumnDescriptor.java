@@ -153,8 +153,7 @@ public class ColumnDescriptor implements Serializable {
         this.qualifiedColumnName = name;
         this.label = name;
         this.jdbcType = metaData.getColumnType(position);
-        this.javaClass = getDefaultJavaClass(metaData.getColumnDisplaySize(position),
-                metaData.getScale(position));
+        this.javaClass = metaData.getColumnClassName(position);
     }
 
     /**
