@@ -37,18 +37,24 @@ public class MergerFactoryTest extends MergeCase {
 
         // create and add new column to model and db
         DbAttribute column = new DbAttribute("NEWCOL1", Types.VARCHAR, dbEntity);
-        column.setMandatory(false);
-        column.setMaxLength(10);
-        dbEntity.addAttribute(column);
-        assertTokensAndExecute(node, map, 1, 0);
 
-        // try merge once more to check that is was merged
-        assertTokensAndExecute(node, map, 0, 0);
+        try {
+            column.setMandatory(false);
+            column.setMaxLength(10);
+            dbEntity.addAttribute(column);
+            assertTokensAndExecute(node, map, 1, 0);
 
-        // remove it from model and db
-        dbEntity.removeAttribute(column.getName());
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+            // try merge once more to check that is was merged
+            assertTokensAndExecute(node, map, 0, 0);
+
+            // remove it from model and db
+            dbEntity.removeAttribute(column.getName());
+            assertTokensAndExecute(node, map, 1, 0);
+            assertTokensAndExecute(node, map, 0, 0);
+        }
+        finally {
+            dbEntity.removeAttribute(column.getName());
+        }
     }
 
     public void testChangeVarcharSizeToDb() throws Exception {
@@ -57,27 +63,33 @@ public class MergerFactoryTest extends MergeCase {
 
         // create and add new column to model and db
         DbAttribute column = new DbAttribute("NEWCOL2", Types.VARCHAR, dbEntity);
-        column.setMandatory(false);
-        column.setMaxLength(10);
-        dbEntity.addAttribute(column);
-        assertTokensAndExecute(node, map, 1, 0);
 
-        // check that is was merged
-        assertTokensAndExecute(node, map, 0, 0);
+        try {
+            column.setMandatory(false);
+            column.setMaxLength(10);
+            dbEntity.addAttribute(column);
+            assertTokensAndExecute(node, map, 1, 0);
 
-        // change size
-        column.setMaxLength(20);
+            // check that is was merged
+            assertTokensAndExecute(node, map, 0, 0);
 
-        // merge to db
-        assertTokensAndExecute(node, map, 1, 0);
+            // change size
+            column.setMaxLength(20);
 
-        // check that is was merged
-        assertTokensAndExecute(node, map, 0, 0);
+            // merge to db
+            assertTokensAndExecute(node, map, 1, 0);
 
-        // clean up
-        dbEntity.removeAttribute(column.getName());
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+            // check that is was merged
+            assertTokensAndExecute(node, map, 0, 0);
+
+            // clean up
+            dbEntity.removeAttribute(column.getName());
+            assertTokensAndExecute(node, map, 1, 0);
+            assertTokensAndExecute(node, map, 0, 0);
+        }
+        finally {
+            dbEntity.removeAttribute(column.getName());
+        }
     }
 
     public void testMultipleTokensToDb() throws Exception {
@@ -92,26 +104,33 @@ public class MergerFactoryTest extends MergeCase {
         column2.setMandatory(false);
         column2.setMaxLength(10);
         dbEntity.addAttribute(column2);
-        assertTokensAndExecute(node, map, 2, 0);
 
-        // check that is was merged
-        assertTokensAndExecute(node, map, 0, 0);
+        try {
+            assertTokensAndExecute(node, map, 2, 0);
 
-        // change size
-        column1.setMaxLength(20);
-        column2.setMaxLength(30);
+            // check that is was merged
+            assertTokensAndExecute(node, map, 0, 0);
 
-        // merge to db
-        assertTokensAndExecute(node, map, 2, 0);
+            // change size
+            column1.setMaxLength(20);
+            column2.setMaxLength(30);
 
-        // check that is was merged
-        assertTokensAndExecute(node, map, 0, 0);
+            // merge to db
+            assertTokensAndExecute(node, map, 2, 0);
 
-        // clean up
-        dbEntity.removeAttribute(column1.getName());
-        dbEntity.removeAttribute(column2.getName());
-        assertTokensAndExecute(node, map, 2, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+            // check that is was merged
+            assertTokensAndExecute(node, map, 0, 0);
+
+            // clean up
+            dbEntity.removeAttribute(column1.getName());
+            dbEntity.removeAttribute(column2.getName());
+            assertTokensAndExecute(node, map, 2, 0);
+            assertTokensAndExecute(node, map, 0, 0);
+        }
+        finally {
+            dbEntity.removeAttribute(column1.getName());
+            dbEntity.removeAttribute(column2.getName());
+        }
     }
 
     public void testAddTableToDb() throws Exception {
@@ -133,36 +152,43 @@ public class MergerFactoryTest extends MergeCase {
 
         map.addDbEntity(dbEntity);
 
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        try {
 
-        ObjEntity objEntity = new ObjEntity("NewTable");
-        objEntity.setDbEntity(dbEntity);
-        ObjAttribute oatr1 = new ObjAttribute("name");
-        oatr1.setDbAttributePath(column2.getName());
-        oatr1.setType("java.lang.String");
-        objEntity.addAttribute(oatr1);
-        map.addObjEntity(objEntity);
+            assertTokensAndExecute(node, map, 1, 0);
+            assertTokensAndExecute(node, map, 0, 0);
 
-        // try to insert some rows to check that pk stuff is working
-        DataContext ctxt = createDataContext();
-        for (int i = 0; i < 5; i++) {
-            CayenneDataObject dao = (CayenneDataObject) ctxt.newObject(objEntity
-                    .getName());
-            dao.writeProperty(oatr1.getName(), "test " + i);
+            ObjEntity objEntity = new ObjEntity("NewTable");
+            objEntity.setDbEntity(dbEntity);
+            ObjAttribute oatr1 = new ObjAttribute("name");
+            oatr1.setDbAttributePath(column2.getName());
+            oatr1.setType("java.lang.String");
+            objEntity.addAttribute(oatr1);
+            map.addObjEntity(objEntity);
+
+            // try to insert some rows to check that pk stuff is working
+            DataContext ctxt = createDataContext();
+            for (int i = 0; i < 5; i++) {
+                CayenneDataObject dao = (CayenneDataObject) ctxt.newObject(objEntity
+                        .getName());
+                dao.writeProperty(oatr1.getName(), "test " + i);
+            }
+            ctxt.commitChanges();
+
+            // clear up
+            map.removeObjEntity(objEntity.getName(), true);
+            map.removeDbEntity(dbEntity.getName(), true);
+            ctxt.getEntityResolver().clearCache();
+            assertNull(map.getObjEntity(objEntity.getName()));
+            assertNull(map.getDbEntity(dbEntity.getName()));
+            assertFalse(map.getDbEntities().contains(dbEntity));
+
+            assertTokensAndExecute(node, map, 1, 0);
+            assertTokensAndExecute(node, map, 0, 0);
         }
-        ctxt.commitChanges();
-
-        // clear up
-        map.removeObjEntity(objEntity.getName(), true);
-        map.removeDbEntity(dbEntity.getName(), true);
-        ctxt.getEntityResolver().clearCache();
-        assertNull(map.getObjEntity(objEntity.getName()));
-        assertNull(map.getDbEntity(dbEntity.getName()));
-        assertFalse(map.getDbEntities().contains(dbEntity));
-
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        finally {
+            map.removeObjEntity("NewTable", true);
+            map.removeDbEntity(dbEntity.getName(), true);
+        }
     }
 
     public void testAddForeignKeyWithTable() throws Exception {
@@ -191,44 +217,50 @@ public class MergerFactoryTest extends MergeCase {
         DbEntity artistDbEntity = map.getDbEntity("ARTIST");
         assertNotNull(artistDbEntity);
 
-        // relation from new_table to artist
-        DbRelationship r1 = new DbRelationship("toArtistR1");
-        r1.setSourceEntity(dbEntity);
-        r1.setTargetEntity(artistDbEntity);
-        r1.setToMany(false);
-        r1.addJoin(new DbJoin(r1, "ARTIST_ID", "ARTIST_ID"));
-        dbEntity.addRelationship(r1);
+        try {
 
-        // relation from artist to new_table
-        DbRelationship r2 = new DbRelationship("toNewTableR2");
-        r2.setSourceEntity(artistDbEntity);
-        r2.setTargetEntity(dbEntity);
-        r2.setToMany(true);
-        r2.addJoin(new DbJoin(r2, "ARTIST_ID", "ARTIST_ID"));
-        artistDbEntity.addRelationship(r2);
+            // relation from new_table to artist
+            DbRelationship r1 = new DbRelationship("toArtistR1");
+            r1.setSourceEntity(dbEntity);
+            r1.setTargetEntity(artistDbEntity);
+            r1.setToMany(false);
+            r1.addJoin(new DbJoin(r1, "ARTIST_ID", "ARTIST_ID"));
+            dbEntity.addRelationship(r1);
 
-        assertTokensAndExecute(node, map, 2, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+            // relation from artist to new_table
+            DbRelationship r2 = new DbRelationship("toNewTableR2");
+            r2.setSourceEntity(artistDbEntity);
+            r2.setTargetEntity(dbEntity);
+            r2.setToMany(true);
+            r2.addJoin(new DbJoin(r2, "ARTIST_ID", "ARTIST_ID"));
+            artistDbEntity.addRelationship(r2);
 
-        DataContext ctxt = createDataContext();
+            assertTokensAndExecute(node, map, 2, 0);
+            assertTokensAndExecute(node, map, 0, 0);
 
-        // remove relationships
-        dbEntity.removeRelationship(r1.getName());
-        artistDbEntity.removeRelationship(r2.getName());
-        ctxt.getEntityResolver().clearCache();
-        assertTokensAndExecute(node, map, 1, 1);
-        assertTokensAndExecute(node, map, 0, 0);
+            DataContext ctxt = createDataContext();
 
-        // clear up
-        // map.removeObjEntity(objEntity.getName(), true);
-        map.removeDbEntity(dbEntity.getName(), true);
-        ctxt.getEntityResolver().clearCache();
-        // assertNull(map.getObjEntity(objEntity.getName()));
-        assertNull(map.getDbEntity(dbEntity.getName()));
-        assertFalse(map.getDbEntities().contains(dbEntity));
-        
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+            // remove relationships
+            dbEntity.removeRelationship(r1.getName());
+            artistDbEntity.removeRelationship(r2.getName());
+            ctxt.getEntityResolver().clearCache();
+            assertTokensAndExecute(node, map, 1, 1);
+            assertTokensAndExecute(node, map, 0, 0);
+
+            // clear up
+            // map.removeObjEntity(objEntity.getName(), true);
+            map.removeDbEntity(dbEntity.getName(), true);
+            ctxt.getEntityResolver().clearCache();
+            // assertNull(map.getObjEntity(objEntity.getName()));
+            assertNull(map.getDbEntity(dbEntity.getName()));
+            assertFalse(map.getDbEntities().contains(dbEntity));
+
+            assertTokensAndExecute(node, map, 1, 0);
+            assertTokensAndExecute(node, map, 0, 0);
+        }
+        finally {
+            artistDbEntity.removeRelationship("toNewTableR2");
+        }
     }
 
     public void testAddForeignKeyAfterTable() throws Exception {
@@ -257,47 +289,53 @@ public class MergerFactoryTest extends MergeCase {
         DbEntity artistDbEntity = map.getDbEntity("ARTIST");
         assertNotNull(artistDbEntity);
 
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        try {
+            assertTokensAndExecute(node, map, 1, 0);
+            assertTokensAndExecute(node, map, 0, 0);
 
-        // relation from new_table to artist
-        DbRelationship r1 = new DbRelationship("toArtistR1");
-        r1.setSourceEntity(dbEntity);
-        r1.setTargetEntity(artistDbEntity);
-        r1.setToMany(false);
-        r1.addJoin(new DbJoin(r1, "ARTIST_ID", "ARTIST_ID"));
-        dbEntity.addRelationship(r1);
+            // relation from new_table to artist
+            DbRelationship r1 = new DbRelationship("toArtistR1");
+            r1.setSourceEntity(dbEntity);
+            r1.setTargetEntity(artistDbEntity);
+            r1.setToMany(false);
+            r1.addJoin(new DbJoin(r1, "ARTIST_ID", "ARTIST_ID"));
+            dbEntity.addRelationship(r1);
 
-        // relation from artist to new_table
-        DbRelationship r2 = new DbRelationship("toNewTableR2");
-        r2.setSourceEntity(artistDbEntity);
-        r2.setTargetEntity(dbEntity);
-        r2.setToMany(true);
-        r2.addJoin(new DbJoin(r2, "ARTIST_ID", "ARTIST_ID"));
-        artistDbEntity.addRelationship(r2);
+            // relation from artist to new_table
+            DbRelationship r2 = new DbRelationship("toNewTableR2");
+            r2.setSourceEntity(artistDbEntity);
+            r2.setTargetEntity(dbEntity);
+            r2.setToMany(true);
+            r2.addJoin(new DbJoin(r2, "ARTIST_ID", "ARTIST_ID"));
+            artistDbEntity.addRelationship(r2);
 
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+            assertTokensAndExecute(node, map, 1, 0);
+            assertTokensAndExecute(node, map, 0, 0);
 
-        DataContext ctxt = createDataContext();
+            DataContext ctxt = createDataContext();
 
-        // remove relationships
-        dbEntity.removeRelationship(r1.getName());
-        artistDbEntity.removeRelationship(r2.getName());
-        ctxt.getEntityResolver().clearCache();
-        assertTokensAndExecute(node, map, 1, 1);
-        assertTokensAndExecute(node, map, 0, 0);
+            // remove relationships
+            dbEntity.removeRelationship(r1.getName());
+            artistDbEntity.removeRelationship(r2.getName());
+            ctxt.getEntityResolver().clearCache();
+            assertTokensAndExecute(node, map, 1, 1);
+            assertTokensAndExecute(node, map, 0, 0);
 
-        // clear up
-        // map.removeObjEntity(objEntity.getName(), true);
-        map.removeDbEntity(dbEntity.getName(), true);
-        ctxt.getEntityResolver().clearCache();
-        // assertNull(map.getObjEntity(objEntity.getName()));
-        assertNull(map.getDbEntity(dbEntity.getName()));
-        assertFalse(map.getDbEntities().contains(dbEntity));
-        
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
-    } 
+            // clear up
+            // map.removeObjEntity(objEntity.getName(), true);
+            map.removeDbEntity(dbEntity.getName(), true);
+            ctxt.getEntityResolver().clearCache();
+            // assertNull(map.getObjEntity(objEntity.getName()));
+            assertNull(map.getDbEntity(dbEntity.getName()));
+            assertFalse(map.getDbEntities().contains(dbEntity));
+
+            assertTokensAndExecute(node, map, 1, 0);
+            assertTokensAndExecute(node, map, 0, 0);
+        }
+        finally {
+            artistDbEntity.removeRelationship("toArtistR1");
+            artistDbEntity.removeRelationship("toNewTableR2");
+        }
+    }
 
 }
