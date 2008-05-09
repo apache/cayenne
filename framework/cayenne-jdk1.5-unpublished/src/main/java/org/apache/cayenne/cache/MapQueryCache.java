@@ -144,7 +144,7 @@ public class MapQueryCache implements QueryCache, Serializable {
         return map.size();
     }
 
-    final class CacheEntry {
+    final class CacheEntry implements Serializable {
 
         List<?> list;
         String[] cacheGroups;
