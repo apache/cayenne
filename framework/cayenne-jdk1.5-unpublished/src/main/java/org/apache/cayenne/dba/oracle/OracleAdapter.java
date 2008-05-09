@@ -21,7 +21,10 @@ package org.apache.cayenne.dba.oracle;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,6 +40,7 @@ import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.DefaultType;
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -48,6 +52,7 @@ import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS </a>. Sample
@@ -208,6 +213,8 @@ public class OracleAdapter extends JdbcAdapter {
         // Integer and Double
         map.registerType(new OracleIntegerType());
         map.registerType(new OracleDoubleType());
+
+        map.registerType(new OracleBooleanType());
     }
 
     /**
@@ -230,6 +237,26 @@ public class OracleAdapter extends JdbcAdapter {
         return Collections.singleton("DROP TABLE "
                 + table.getFullyQualifiedName()
                 + " CASCADE CONSTRAINTS");
+    }
+
+    @Override
+    public void bindParameter(
+            PreparedStatement statement,
+            Object object,
+            int pos,
+            int sqlType,
+            int scale) throws SQLException, Exception {
+
+        // Oracle doesn't support BOOLEAN even when binding NULL, so have to intercept
+        // NULL Boolean here, as super doesn't pass it through ExtendedType...
+        if (object == null && sqlType == Types.BOOLEAN) {
+            ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(
+                    Boolean.class);
+            typeProcessor.setJdbcObject(statement, object, pos, sqlType, scale);
+        }
+        else {
+            super.bindParameter(statement, object, pos, sqlType, scale);
+        }
     }
 
     /**
@@ -350,6 +377,64 @@ public class OracleAdapter extends JdbcAdapter {
             else {
                 super.setJdbcObject(st, val, pos, type, precision);
             }
+        }
+    }
+
+    /**
+     * @since 3.0
+     */
+    final class OracleBooleanType implements ExtendedType {
+
+        public String getClassName() {
+            return Boolean.class.getName();
+        }
+
+        /**
+         * @deprecated since 3.0 as validation should not be done at the DataNode level.
+         */
+        public boolean validateProperty(
+                Object source,
+                String property,
+                Object value,
+                DbAttribute dbAttribute,
+                ValidationResult validationResult) {
+            return true;
+        }
+
+        public void setJdbcObject(
+                PreparedStatement st,
+                Object val,
+                int pos,
+                int type,
+                int precision) throws Exception {
+
+            // Oracle does not support Types.BOOLEAN, so we have to override user mapping
+            // unconditionally
+            if (val == null) {
+                st.setNull(pos, Types.INTEGER);
+            }
+            else {
+                boolean flag = Boolean.TRUE.equals(val);
+                st.setInt(pos, flag ? 1 : 0);
+            }
+        }
+
+        public Object materializeObject(ResultSet rs, int index, int type)
+                throws Exception {
+
+            // Oracle does not support Types.BOOLEAN, so we have to override user mapping
+            // unconditionally
+            int i = rs.getInt(index);
+            return (rs.wasNull()) ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
+        }
+
+        public Object materializeObject(CallableStatement st, int index, int type)
+                throws Exception {
+
+            // Oracle does not support Types.BOOLEAN, so we have to override user mapping
+            // unconditionally
+            int i = st.getInt(index);
+            return (st.wasNull()) ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
         }
     }
 }
