@@ -414,10 +414,20 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         return metaData.isFetchingDataRows();
     }
 
+    /**
+     * @deprecate since 3.0. With introduction of the cache strategies this setting is
+     *            redundant, although it is still being taken into account. It will be
+     *            removed in the later versions of Cayenne.
+     */
     public boolean isRefreshingObjects() {
         return metaData.isRefreshingObjects();
     }
 
+    /**
+     * @deprecate since 3.0. With introduction of the cache strategies this setting is
+     *            redundant, although it is still being taken into account. It will be
+     *            removed in the later versions of Cayenne.
+     */
     public void setRefreshingObjects(boolean flag) {
         metaData.setRefreshingObjects(flag);
     }

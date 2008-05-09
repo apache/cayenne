@@ -531,6 +531,9 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * Returns refresh policy of this query. Default is <code>true</code>.
      * 
      * @since 1.1
+     * @deprecate since 3.0. With introduction of the cache strategies this setting is
+     *            redundant, although it is still being taken into account. It will be
+     *            removed in the later versions of Cayenne.
      */
     public boolean isRefreshingObjects() {
         return metaData.isRefreshingObjects();
@@ -538,6 +541,9 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * @since 1.1
+     * @deprecate since 3.0. With introduction of the cache strategies this setting is
+     *            redundant, although it is still being taken into account. It will be
+     *            removed in the later versions of Cayenne.
      */
     public void setRefreshingObjects(boolean flag) {
         metaData.setRefreshingObjects(flag);
