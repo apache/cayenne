@@ -26,7 +26,7 @@ Oracle types mapping
 <types>
    <jdbc-type name="ARRAY"/>
    <jdbc-type name="BIGINT">
-       <db-type name="INTEGER"/>
+       <db-type name="NUMBER"/>
    </jdbc-type>
    <jdbc-type name="BINARY">
        <db-type name="RAW"/>
