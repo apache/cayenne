@@ -442,9 +442,9 @@ public class TypesMapping {
      * 
      * @return Fully qualified Java type name or null if not found.
      */
-    public static String getJavaBySqlType(int type, int length, int precision) {
+    public static String getJavaBySqlType(int type, int length, int scale) {
 
-        if (type == Types.NUMERIC && precision == 0) {
+        if (type == Types.NUMERIC && scale == 0) {
             type = Types.INTEGER;
         }
         return sqlEnumJava.get(Integer.valueOf(type));
