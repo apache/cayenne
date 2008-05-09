@@ -89,7 +89,12 @@ public class SQLTemplateActionTest extends CayenneCase {
         assertEquals(1, rows.size());
         Map row = (Map) rows.get(0);
 
-        assertEquals(bindings.get("id"), row.get("ARTIST_ID"));
+        // In the absence of ObjEntity most DB's return a Long here, except for Oracle
+        // that has no BIGINT type and
+        // returns BigDecimal, so do a Number comparison
+        Number id = (Number) row.get("ARTIST_ID");
+        assertNotNull(id);
+        assertEquals(((Number) bindings.get("id")).longValue(), id.longValue());
         assertEquals("artist5", row.get("ARTIST_NAME"));
         assertTrue(row.containsKey("DATE_OF_BIRTH"));
     }
