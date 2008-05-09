@@ -189,11 +189,16 @@ public class RowDescriptorBuilder {
     }
 
     public RowDescriptorBuilder overrideColumnType(String columnName, String type) {
+
         if (typeOverrides == null) {
             typeOverrides = new HashMap<String, String>();
         }
-
+        
         typeOverrides.put(columnName, type);
         return this;
+    }
+    
+    public boolean isOverriden(String columnName) {
+        return typeOverrides != null && typeOverrides.containsKey(columnName);
     }
 }

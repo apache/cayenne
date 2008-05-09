@@ -40,9 +40,13 @@ import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.jdbc.RowDescriptorBuilder;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLTemplate;
 
@@ -52,8 +56,12 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 class OracleSQLTemplateAction extends SQLTemplateAction {
 
-    OracleSQLTemplateAction(SQLTemplate query, DbAdapter adapter, EntityResolver resolver) {
-        super(query, adapter, resolver);
+    protected DbEntity dbEntity;
+
+    OracleSQLTemplateAction(SQLTemplate query, DbAdapter adapter,
+            EntityResolver entityResolver) {
+        super(query, adapter, entityResolver);
+        this.dbEntity = query.getMetaData(entityResolver).getDbEntity();
     }
 
     @Override
@@ -79,6 +87,36 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
                 resultSet,
                 callback,
                 startTime);
+    }
+
+    /**
+     * @since 3.0
+     */
+    @Override
+    protected RowDescriptorBuilder configureRowDescriptorBuilder(
+            SQLStatement compiled,
+            ResultSet resultSet) throws SQLException {
+
+        RowDescriptorBuilder builder = super.configureRowDescriptorBuilder(
+                compiled,
+                resultSet);
+
+        // override numeric Java types based on JDBC defaults for DbAttributes, as Oracle
+        // ResultSetMetadata is not very precise about NUMERIC distinctions...
+        // (BigDecimal vs Long vs. Integer)
+        if (dbEntity != null) {
+            for (DbAttribute attribute : dbEntity.getAttributes()) {
+
+                if (!builder.isOverriden(attribute.getName())
+                        && TypesMapping.isNumeric(attribute.getType())) {
+
+                    builder.overrideColumnType(attribute.getName(), TypesMapping
+                            .getJavaBySqlType(attribute.getType()));
+                }
+            }
+        }
+
+        return builder;
     }
 
     final class OracleResultSetWrapper implements ResultSet {
@@ -709,6 +747,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         public int getColumnType(int column) throws SQLException {
             int type = delegate.getColumnType(column);
 
+            // this only detects INTEGER but not BIGINT...
             if (type == Types.NUMERIC) {
                 int precision = delegate.getPrecision(column);
                 if ((precision == 10 || precision == 38)

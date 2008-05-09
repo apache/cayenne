@@ -218,41 +218,7 @@ public class SQLTemplateAction implements SQLAction {
         boolean iteratedResult = callback.isIteratedResult();
 
         ExtendedTypeMap types = adapter.getExtendedTypes();
-        RowDescriptorBuilder builder = new RowDescriptorBuilder();
-
-        // SQLTemplate #result columns take precedence over other ways to determine the
-        // type
-        if (compiled.getResultColumns().length > 0) {
-            builder.setColumns(compiled.getResultColumns());
-        }
-        else {
-            builder.setResultSet(resultSet);
-
-            if (entity != null) {
-
-                // TODO: andrus 2008/03/28 support flattened attributes with aliases...
-                for (ObjAttribute attribute : entity.getAttributes()) {
-                    String column = attribute.getDbAttributePath();
-                    if (column == null || column.indexOf('.') > 0) {
-                        continue;
-                    }
-
-                    builder.overrideColumnType(column, attribute.getType());
-                }
-            }
-
-        }
-
-        if (query.getColumnNamesCapitalization() != null) {
-            if (SQLTemplate.LOWERCASE_COLUMN_NAMES.equals(query
-                    .getColumnNamesCapitalization())) {
-                builder.useLowercaseColumnNames();
-            }
-            else if (SQLTemplate.UPPERCASE_COLUMN_NAMES.equals(query
-                    .getColumnNamesCapitalization())) {
-                builder.useUppercaseColumnNames();
-            }
-        }
+        RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
 
         JDBCResultIterator result = new JDBCResultIterator(
                 connection,
@@ -278,6 +244,55 @@ public class SQLTemplateAction implements SQLAction {
                 throw ex;
             }
         }
+    }
+
+    /**
+     * @since 3.0
+     */
+    protected RowDescriptorBuilder configureRowDescriptorBuilder(
+            SQLStatement compiled,
+            ResultSet resultSet) throws SQLException {
+        RowDescriptorBuilder builder = new RowDescriptorBuilder();
+
+        // SQLTemplate #result columns take precedence over other ways to determine the
+        // type
+        if (compiled.getResultColumns().length > 0) {
+            builder.setColumns(compiled.getResultColumns());
+        }
+        else {
+            builder.setResultSet(resultSet);
+
+            if (entity != null) {
+
+                // TODO: andrus 2008/03/28 support flattened attributes with aliases...
+                for (ObjAttribute attribute : entity.getAttributes()) {
+                    String column = attribute.getDbAttributePath();
+                    if (column == null || column.indexOf('.') > 0) {
+                        continue;
+                    }
+
+                    builder.overrideColumnType(column, attribute.getType());
+
+                    // note that some DB's (Oracle) also add default JDBC overrides for
+                    // DbAttributes that have no ObjAttributes (very common for PK's). If
+                    // we find that there is more than one such DB, we can make that a
+                    // default policy.
+                }
+            }
+        }
+
+        if (query.getColumnNamesCapitalization() != null) {
+            if (SQLTemplate.LOWERCASE_COLUMN_NAMES.equals(query
+                    .getColumnNamesCapitalization())) {
+                builder.useLowercaseColumnNames();
+            }
+            else if (SQLTemplate.UPPERCASE_COLUMN_NAMES.equals(query
+                    .getColumnNamesCapitalization())) {
+                builder.useUppercaseColumnNames();
+            }
+        }
+
+        return builder;
     }
 
     /**
