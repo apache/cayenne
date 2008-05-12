@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.DataObject;
@@ -40,6 +39,33 @@ public class SimpleIdIncrementalFaultListTest extends CayenneCase {
 
     protected SimpleIdIncrementalFaultList<?> list;
     protected Query query;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        deleteTestData();
+    }
+
+    public void testRemoveDeleted() throws Exception {
+        createTestData("testArtists");
+
+        DataContext context = createDataContext();
+
+        SelectQuery query = new SelectQuery(Artist.class);
+        query.setPageSize(10);
+        SimpleIdIncrementalFaultList<Artist> list = new SimpleIdIncrementalFaultList<Artist>(
+                context,
+                query);
+
+        assertEquals(25, list.size());
+
+        Artist a1 = list.get(0);
+        context.deleteObject(a1);
+        context.commitChanges();
+
+        list.remove(0);
+        assertEquals(24, list.size());
+    }
 
     protected void prepareList(int pageSize) throws Exception {
         super.setUp();

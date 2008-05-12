@@ -775,12 +775,14 @@ public class IncrementalFaultList<E> implements List<E> {
                 return true;
             }
 
-            Persistent dataObj = (Persistent) object;
-            if (dataObj.getObjectContext() != dataContext) {
+            Persistent persistent = (Persistent) object;
+            // NULL ObjectContext can be a result of a delete/commit operation
+            if (persistent.getObjectContext() != null
+                    && persistent.getObjectContext() != dataContext) {
                 return true;
             }
 
-            if (!dataObj.getObjectId().getEntityName().equals(rootEntity.getName())) {
+            if (!persistent.getObjectId().getEntityName().equals(rootEntity.getName())) {
                 return true;
             }
 

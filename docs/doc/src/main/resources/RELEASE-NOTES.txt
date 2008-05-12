@@ -64,6 +64,7 @@ CAY-1028 NPE's in the Modeler for incomplete relationships
 CAY-1043 NPE in ConnectionWrapper on rollback
 CAY-1044 NPE on commit when the new object was deleted before commit
 CAY-1053 MapQueryCache.CacheEntry not serializable
+CAY-1054 Error removing object from a paginated list after the object was deleted and the context committed
 
 ----------------------------------
 Release: 3.0M3
