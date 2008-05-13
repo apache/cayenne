@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<property name="defaultPackage" value="org.objectstyle.art.oneway"/>
+	<db-entity name="ARTIST">
+		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
+		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
+	</db-entity>
+	<db-entity name="GALLERY">
+		<db-attribute name="GALLERY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="GALLERY_NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<db-entity name="PAINTING">
+		<db-attribute name="ARTIST_ID" type="INTEGER"/>
+		<db-attribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" precision="2"/>
+		<db-attribute name="GALLERY_ID" type="INTEGER"/>
+		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="PAINTING_TITLE" type="VARCHAR" isMandatory="true" length="255"/>
+	</db-entity>
+	<obj-entity name="Artist" className="org.objectstyle.art.oneway.Artist" dbEntityName="ARTIST">
+		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
+		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
+	</obj-entity>
+	<obj-entity name="Gallery" className="org.objectstyle.art.oneway.Gallery" dbEntityName="GALLERY">
+		<obj-attribute name="galleryName" type="java.lang.String" db-attribute-path="GALLERY_NAME"/>
+	</obj-entity>
+	<obj-entity name="Painting" className="org.objectstyle.art.oneway.Painting" dbEntityName="PAINTING" superClassName="org.objectstyle.art.ArtDataObject">
+		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
+		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
+	</obj-entity>
+	<db-relationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="toArtist" source="PAINTING" target="ARTIST" toMany="false">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="toGallery" source="PAINTING" target="GALLERY" toMany="false">
+		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
+	</db-relationship>
+	<obj-relationship name="paintingArray" source="Artist" target="Painting" deleteRule="Cascade" db-relationship-path="paintingArray"/>
+	<obj-relationship name="toGallery" source="Painting" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
+</data-map>

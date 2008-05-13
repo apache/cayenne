@@ -1,0 +1,42 @@
+{
+    attributes = (
+        {
+            columnName = "GALLERY_ID"; 
+            externalType = int; 
+            name = galleryId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            columnName = "GALLERY_NAME"; 
+            externalType = varchar; 
+            name = galleryName; 
+            valueClassName = NSString; 
+            width = 100; 
+        }
+    ); 
+    attributesUsedForLocking = (galleryId); 
+    className = "org.apache.art.Gallery"; 
+    classProperties = (galleryName, paintingArray, exhibitArray); 
+    externalName = GALLERY; 
+    fetchSpecificationDictionary = {}; 
+    name = Gallery; 
+    primaryKeyAttributes = (galleryId); 
+    relationships = (
+        {
+            deleteRule = EODeleteRuleCascade; 
+            destination = Exhibit; 
+            isToMany = Y; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = galleryId; sourceAttribute = galleryId; }); 
+            name = exhibitArray; 
+        }, 
+        {
+            destination = Painting; 
+            isToMany = Y; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = galleryId; sourceAttribute = galleryId; }); 
+            name = paintingArray; 
+        }
+    ); 
+}

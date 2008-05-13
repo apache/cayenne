@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<property name="defaultPackage" value="org.apache.cayenne.profile.entity"/>
+	<db-entity name="ENTITY1">
+		<db-attribute name="DESCRIPTION" type="VARCHAR" length="1000"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="ENTITY2">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="255"/>
+	</db-entity>
+	<db-entity name="ENTITY3">
+		<db-attribute name="ENTITY2_ID" type="INTEGER"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<obj-entity name="Entity1" className="org.apache.cayenne.profile.entity.Entity1" dbEntityName="ENTITY1">
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="DESCRIPTION"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="Entity2" className="org.apache.cayenne.profile.entity.Entity2" dbEntityName="ENTITY2">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="Entity3" className="org.apache.cayenne.profile.entity.Entity3" dbEntityName="ENTITY3">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="entity3s" source="ENTITY2" target="ENTITY3" toMany="true">
+		<db-attribute-pair source="ID" target="ENTITY2_ID"/>
+	</db-relationship>
+	<db-relationship name="entity2" source="ENTITY3" target="ENTITY2" toMany="false">
+		<db-attribute-pair source="ENTITY2_ID" target="ID"/>
+	</db-relationship>
+	<obj-relationship name="entity3s" source="Entity2" target="Entity3" db-relationship-path="entity3s"/>
+	<obj-relationship name="entity2" source="Entity3" target="Entity2" db-relationship-path="entity2"/>
+</data-map>

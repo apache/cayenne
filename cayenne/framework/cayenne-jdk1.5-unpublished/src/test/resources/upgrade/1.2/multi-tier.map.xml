@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="1.1">
+	<property name="defaultPackage" value="org.objectstyle.cayenne.testdo.mt"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="org.objectstyle.cayenne.testdo.mt"/>
+	<db-entity name="MT_DELETE_CASCADE">
+		<db-attribute name="DELETE_CASCADE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="MT_DELETE_DENY">
+		<db-attribute name="DELETE_DENY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="MT_DELETE_NULLIFY">
+		<db-attribute name="DELETE_NULLIFY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="MT_DELETE_RULE">
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="MT_TABLE1">
+		<db-attribute name="GLOBAL_ATTRIBUTE1" type="VARCHAR" length="100"/>
+		<db-attribute name="SERVER_ATTRIBUTE1" type="VARCHAR" length="100"/>
+		<db-attribute name="TABLE1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MT_TABLE2">
+		<db-attribute name="GLOBAL_ATTRIBUTE" type="VARCHAR" length="100"/>
+		<db-attribute name="TABLE1_ID" type="INTEGER"/>
+		<db-attribute name="TABLE2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MT_TABLE3">
+		<db-attribute name="BINARY_COLUMN" type="VARBINARY" length="100"/>
+		<db-attribute name="CHAR_COLUMN" type="VARCHAR" length="100"/>
+		<db-attribute name="INT_COLUMN" type="INTEGER"/>
+		<db-attribute name="TABLE3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="MtDeleteCascade" className="org.objectstyle.cayenne.testdo.mt.MtDeleteCascade" clientClassName="org.objectstyle.cayenne.testdo.mt.ClientMtDeleteCascade" dbEntityName="MT_DELETE_CASCADE">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MtDeleteDeny" className="org.objectstyle.cayenne.testdo.mt.MtDeleteDeny" clientClassName="org.objectstyle.cayenne.testdo.mt.ClientMtDeleteDeny" dbEntityName="MT_DELETE_DENY">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MtDeleteNullify" className="org.objectstyle.cayenne.testdo.mt.MtDeleteNullify" clientClassName="org.objectstyle.cayenne.testdo.mt.ClientMtDeleteNullify" dbEntityName="MT_DELETE_NULLIFY">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MtDeleteRule" className="org.objectstyle.cayenne.testdo.mt.MtDeleteRule" clientClassName="org.objectstyle.cayenne.testdo.mt.ClientMtDeleteRule" dbEntityName="MT_DELETE_RULE">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="MtTable1" className="org.objectstyle.cayenne.testdo.mt.MtTable1" clientClassName="org.objectstyle.cayenne.testdo.mt.ClientMtTable1" dbEntityName="MT_TABLE1">
+		<obj-attribute name="globalAttribute1" type="java.lang.String" db-attribute-path="GLOBAL_ATTRIBUTE1"/>
+		<obj-attribute name="serverAttribute1" type="java.lang.String" db-attribute-path="SERVER_ATTRIBUTE1"/>
+	</obj-entity>
+	<obj-entity name="MtTable1Subclass" superEntityName="MtTable1" className="org.objectstyle.cayenne.testdo.mt.MtTable1Subclass" clientClassName="org.objectstyle.cayenne.testdo.mt.ClientMtTable1Subclass">
+		<qualifier><![CDATA[globalAttribute1 = "sub1"]]></qualifier>
+	</obj-entity>
+	<obj-entity name="MtTable2" className="org.objectstyle.cayenne.testdo.mt.MtTable2" clientClassName="org.objectstyle.cayenne.testdo.mt.ClientMtTable2" dbEntityName="MT_TABLE2">
+		<obj-attribute name="globalAttribute" type="java.lang.String" db-attribute-path="GLOBAL_ATTRIBUTE"/>
+	</obj-entity>
+	<obj-entity name="MtTable3" className="org.objectstyle.cayenne.testdo.mt.MtTable3" clientClassName="org.objectstyle.cayenne.testdo.mt.ClientMtTable3" dbEntityName="MT_TABLE3">
+		<obj-attribute name="binaryColumn" type="byte[]" db-attribute-path="BINARY_COLUMN"/>
+		<obj-attribute name="charColumn" type="java.lang.String" db-attribute-path="CHAR_COLUMN"/>
+		<obj-attribute name="intColumn" type="java.lang.Integer" db-attribute-path="INT_COLUMN"/>
+	</obj-entity>
+	<db-relationship name="cascade" source="MT_DELETE_CASCADE" target="MT_DELETE_RULE" toMany="false">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="deny" source="MT_DELETE_DENY" target="MT_DELETE_RULE" toMany="false">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="nullify" source="MT_DELETE_NULLIFY" target="MT_DELETE_RULE" toMany="false">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="fromCascade" source="MT_DELETE_RULE" target="MT_DELETE_CASCADE" toMany="true">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="fromDeny" source="MT_DELETE_RULE" target="MT_DELETE_DENY" toMany="true">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="fromNullify" source="MT_DELETE_RULE" target="MT_DELETE_NULLIFY" toMany="true">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="table2Array" source="MT_TABLE1" target="MT_TABLE2" toMany="true">
+		<db-attribute-pair source="TABLE1_ID" target="TABLE1_ID"/>
+	</db-relationship>
+	<db-relationship name="table1" source="MT_TABLE2" target="MT_TABLE1" toMany="false">
+		<db-attribute-pair source="TABLE1_ID" target="TABLE1_ID"/>
+	</db-relationship>
+	<obj-relationship name="cascade" source="MtDeleteCascade" target="MtDeleteRule" deleteRule="Cascade" db-relationship-path="cascade"/>
+	<obj-relationship name="deny" source="MtDeleteDeny" target="MtDeleteRule" deleteRule="Deny" db-relationship-path="deny"/>
+	<obj-relationship name="nullify" source="MtDeleteNullify" target="MtDeleteRule" deleteRule="Nullify" db-relationship-path="nullify"/>
+	<obj-relationship name="fromCascade" source="MtDeleteRule" target="MtDeleteCascade" db-relationship-path="fromCascade"/>
+	<obj-relationship name="fromDeny" source="MtDeleteRule" target="MtDeleteDeny" db-relationship-path="fromDeny"/>
+	<obj-relationship name="fromNullify" source="MtDeleteRule" target="MtDeleteNullify" db-relationship-path="fromNullify"/>
+	<obj-relationship name="table2Array" source="MtTable1" target="MtTable2" db-relationship-path="table2Array"/>
+	<obj-relationship name="table1" source="MtTable2" target="MtTable1" db-relationship-path="table1"/>
+	<query name="AllMtTable1" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
+	</query>
+	<query name="MtQueryWithLocalCache" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
+		<property name="cayenne.GenericSelectQuery.cachePolicy" value="localcache"/>
+	</query>
+	<query name="ParameterizedMtQueryWithLocalCache" factory="org.objectstyle.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
+		<property name="cayenne.GenericSelectQuery.cachePolicy" value="localcache"/>
+		<qualifier><![CDATA[globalAttribute1 = $g]]></qualifier>
+	</query>
+</data-map>

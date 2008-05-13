@@ -1,0 +1,48 @@
+{
+    E1FS1 = {
+        class = EOFetchSpecification; 
+        entityName = Entity1; 
+        fetchLimit = 500; 
+        isDeep = YES; 
+        locksObjects = YES; 
+        prefetchingRelationshipKeyPaths = (e2); 
+        qualifier = {
+            class = EOAndQualifier; 
+            qualifiers = (
+                {
+                    class = EOKeyValueQualifier; 
+                    key = name; 
+                    selectorName = "isEqualTo:"; 
+                    value = aa; 
+                }, 
+                {
+                    class = EOKeyValueQualifier; 
+                    key = id; 
+                    selectorName = "isGreaterThanOrEqualTo:"; 
+                    value = {class = NSNumber; value = 7; }; 
+                }, 
+                {
+                    class = EOOrQualifier; 
+                    qualifiers = (
+                        {
+                            class = EOKeyValueQualifier; 
+                            key = "e2.name"; 
+                            selectorName = "isEqualTo:"; 
+                            value = bb; 
+                        }, 
+                        {
+                            class = EOKeyValueQualifier; 
+                            key = "e2.id"; 
+                            selectorName = "isNotEqualTo:"; 
+                            value = {class = NSNumber; value = 5; }; 
+                        }
+                    ); 
+                }
+            ); 
+        }; 
+        rawRowKeyPaths = (); 
+        requiresAllQualifierBindingVariables = YES; 
+        sortOrderings = ({class = EOSortOrdering; key = name; selectorName = "compareDescending:"; }); 
+        usesDistinct = YES; 
+    }; 
+}

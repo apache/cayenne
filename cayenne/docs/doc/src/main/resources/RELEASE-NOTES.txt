@@ -1,0 +1,300 @@
+Apache Cayenne Release Notes
+============================
+
+For the latest information visit project web site: 
+http://cayenne.apache.org/
+
+To browse individual bug reports check out project issue tracker:
+http://issues.apache.org/cayenne/
+
+----------------------------------
+Release: 3.0M4
+Date: 
+----------------------------------
+
+Changes/New Features Since M3:
+
+CAY-514 implement a "MATCH ALL VALUES" expression
+CAY-560 Add support for outer joins
+CAY-789 return object diff to client in ROP after commit
+CAY-802 Split Expressions
+CAY-809 Support for explicit mapping of SQL results with SQLResultSetMapping
+CAY-839 Support combination of Persistent objects and scalars in query results
+CAY-868 Deprecate EventManager.getDefaultManager() and stop using it
+CAY-893 CM Usability: Reopen Last Project on Startup
+CAY-929 SelectTranslator support for standard SQL join syntax, including outer joins
+CAY-970 Allow application to add DbAdapterFactory to AutoAdapter
+CAY-971 ROP GraphDiff "compressor"
+CAY-980 Upgrade Derby to 10.3 to support alter table drop column
+CAY-994 Add extended enumeration support
+CAY-999 Scaling paginated list
+CAY-1006 Upgrade Hessian to 3.1.5
+CAY-1010 Entity Tab switching on new entity creation
+CAY-1011 Add confirmation dialog for delete actions
+CAY-1019 Streamlining LOCAL_CACHE handling
+CAY-1024 Add .zip generation to Windows profile.
+CAY-1026 Drop commons-lang dependency
+CAY-1027 Orderly EventManager shutdown
+CAY-1033 remove completed merge tokens from view in cayenne modeler
+CAY-1035 Replace QueryMetadata String cache policies with an enum
+CAY-1038 Upgrade to Ashwood 2.0
+CAY-1046 Make PK metadata available via Obj* API.
+CAY-1048 Deprecate but preserve functionality of QueryMetadata.isRefreshingObjects() 
+CAY-1049 Refactor QueryAssembler/SelectTranslator
+CAY-1050 MySQLSniffer should configure created adapter to use MySQL default engine for tables
+CAY-1051 Oracle 11 driver support - Drop OracleAdapter "optimizations"
+
+Bug fixes since M3:
+
+CAY-574 DataObjectUtils 'objectForPK' should work on the client
+CAY-732 Incorrect query with self joins
+CAY-785 Cayenne Modeler Fails to Open Project 
+CAY-982 Client class and superclass names not auto-populated for new ObjEntity.
+CAY-983 POST_LOAD called twice
+CAY-984 Runtime relationships leak into CayenneModeler
+CAY-986 LOCAL_CACHE policy fails when query is paged
+CAY-989 Garbage SQL generated for EJBQL subqueries
+CAY-992 Modeler does not escape entity names
+CAY-998 ROP paginated lists must recover from server LRU query cache overflow
+CAY-1003 the paged queries in ROP can fail to fetch the subsequent pages if the client and server are in different timezones
+CAY-1005 CM Qualifier (or Declared Qualifier) is not honoured in 100% cases
+CAY-1014 Enums as meaningful PK
+CAY-1018 Enums fetched via SQLTemplate
+CAY-1020 Problem accessing toMany Set relationships on client.
+CAY-1028 NPE's in the Modeler for incomplete relationships
+CAY-1043 NPE in ConnectionWrapper on rollback
+CAY-1044 NPE on commit when the new object was deleted before commit
+CAY-1053 MapQueryCache.CacheEntry not serializable
+CAY-1054 Error removing object from a paginated list after the object was deleted and the context committed
+
+----------------------------------
+Release: 3.0M3
+Date: 02/04/2008
+----------------------------------
+
+Changes/New Features Since M2:
+
+CAY-263 cdbgen (DbGeneratorTask) must support classpath and classpathref
+CAY-329 Long vs. Integer PK
+CAY-716 DataContext.rollbackChangesLocally() is not implemented for nested DataContexts
+CAY-735 Embeddable class support in the org.apache.cayenne.map package
+CAY-736 Embeddable class support by Cayenne runtime
+CAY-879 Storing lifecycle listeners and callbacks in the *.map.xml and loading them back
+CAY-884 Add support for H2 Database
+CAY-885 merge changes between model and db
+CAY-900 Create CayenneModeler Swing UI for managing callbacks and lifecycle listeners
+CAY-903 Support primitive types in DataObjects
+CAY-904 Switch cayenne to Java 5: merge cayenne-jdk1.4-unpublished to cayenne-jdk1.5-unpublished
+CAY-916 Ordering should be able to ignore paths with null elements
+CAY-918 An exception during in-memory sorting of IncrementalFaultList
+CAY-921 Remove DerviedDbEntity support from Cayenne
+CAY-927 Switch to version 1.2 as default generation mechanism , deprecate 1.1 generator
+CAY-931 Enable revert action even for projects that are not modified
+CAY-933 Embeddable classes - support class generation
+CAY-936 Update Velocity templates for generics.
+CAY-939 Add a means of updating custom superclass for all client classes.
+CAY-945 PropertyUtils support for "compiled" property access
+CAY-946 JPA: property-based access to persistent objects
+CAY-948 Implement flattened attributes in Cayenne
+CAY-949 Factory for lifecycle listeners
+CAY-950 Look up callback methods on listener superclasses
+CAY-953 JPA: Single Table inheritance
+CAY-954 EJBQL Query: Support for single table inheritance
+CAY-956 Converter between Expression and EJBQL Expression
+
+Bug fixes since M2:
+
+CAY-882 Configuration shutdown hook thread may lead to memory leaks
+CAY-887 CM Usability:Recent Files list shold be longer
+CAY-899 Default POST_LOAD callbacks break aggregate queries
+CAY-913 ToMany Map relationships cause ClassCastExceptions on commit when the source is Fault
+CAY-914 cdataport classloader trouble
+CAY-920 ClassCastException when processing delete rules for Map relationships
+CAY-924 Update CayenneModeler for OS X Leopard
+CAY-926 Refactoring class generator classes
+CAY-932 Cancel doesn't cancel when quitting CM with a modified model
+CAY-967 Caching doesn't work for paginated queries
+CAY-974 Subquery EJBQL returns wrong entity in the result
+CAY-976 EntityResolver Fault dependency leads to ClassNotFound on the ROP client
+
+----------------------------------
+Release: 3.0M2
+Date: 11/11/2007
+----------------------------------
+
+Changes/New Features Since M1:
+
+CAY-610 A way to shutdown EventManager
+CAY-757 JPA should handle managed classes not listed in persistence.xml
+CAY-819 Support for per-adapter customization of EJBQL translator
+CAY-824 Extract all DataView related code in a separate module
+CAY-826 Modeler support for the extra simple property types that Cayenne now supports
+CAY-828 Remove DataContextTransactionEventListener, DataObjectTransactionEventListener, DataContextEvent
+CAY-833 Remove API for flipping callbacks state in the ClientServerChannel - this is a non-feature
+CAY-834 DataContext and DataDomain must support lifecycle callbacks out of the box without wrapping
+CAY-836 EJBQL Delete Statement Support
+CAY-837 EJBQL Update Statement Support
+CAY-838 EJBQL GROUP BY and HAVING support
+CAY-840 EJBQL Subquery Support
+CAY-841 EJBQL Support for LIKE/ESCAPE and IN conditions
+CAY-842 EJBQL Collections condition support
+CAY-843 Remove arbitrary reverse relationship mapping limitations
+CAY-844 _Auto classes should be "abstract"
+CAY-846 EJBQL Support for Functional Expressions
+CAY-848 Support for mapping to-many as Maps and Sets and Collections
+CAY-855 Add DataContext.objectFromDataRow variety for generic classes
+CAY-856 Deprecate CayenneMap and replace all references to it with standard java.util package Maps
+CAY-857 Deprecate derived DbEntity and all associated API's - schedule for removal in 3.0M3
+CAY-859 Cayenne agent misses JPA entity classes that were loaded before their PersistenceUnits
+CAY-867 Special exception for accessing previously shutdown domain
+CAY-869 CayenneModeler free-text search
+CAY-875 DbAdapter for SQLite
+
+Bug Fixes Since M1:
+
+CAY-770 bug / memory leak in DispatchQueue and EventManager
+CAY-796 Deserialization of DataContext fails when useSharedCache is false
+CAY-797 Lifecycle callbacks *CallbackInterceptor concept introduces problems for testing equality of contexts
+CAY-832 enum-mapped columns improperly handled in in expressions
+CAY-835 setting meaningful pk to zero turn on autogenerated keys
+CAY-845 DataContext.localObject() object update race condition
+CAY-847 Expression NULL handling
+CAY-852 NPE in Util.delete for read-protected directories
+CAY-853 JPA EntityTransaction must allow multiple begin/commit cycles
+CAY-854 the relationships to entities which are "not for client use" are being returned by ${objEntity.DeclaredRelationships} tag in superclass template
+CAY-860 JPA no joins created for to-many relationship
+CAY-861 ObjRelationship 'addDbRelationship()' and 'removeDbRelationship' leave object in an inconsistent state
+CAY-863 Object property unexpectedly set to null through forceMergeWithSnapshot
+CAY-870 Race condition in ClassDescriptorMap
+CAY-872 Potential bug deleting uncommited objects from a nested DataContext
+CAY-873 maven-cayenne-plugin requires transitive deps declared
+CAY-901 Cannot set more than one to-one relationship to null.
+
+----------------------------------
+Release: 3.0M1
+Date: 07/17/2007
+----------------------------------
+
+Changes/New Features:
+----------------------------------
+- Removed all API deprecated as of 1.2 and 2.0.
+CAY-460 javax.persistence.spi.ClassTransformer to turn POJO into DataObject
+CAY-540	extended type and subclasses
+CAY-576 Support for cached lists invalidation
+CAY-586 Implement commit validation hooks in CayenneContext
+CAY-598 JPA patches
+CAY-600 Add support for ordering property list serialization in a consistent way
+CAY-613 Pluggable Query Cache
+CAY-623 Removing broken FireBird adapter
+CAY-625	Implement correct "scale" and "precision" for DbAttribute
+CAY-632	RefreshQuery - a common mechanism for object and object list invalidation
+CAY-636	Switch Cayenne HEAD to hessian 3.0.20
+CAY-642 Add support for encrypted JDBC passwords
+CAY-645	Support for persisting java.util.Calendar
+CAY-647	Support for persisting java.math.BigInteger
+CAY-648	Support for persisting java.io.Serializable
+CAY-650	Support for char[], java.lang.Character, java.lang.Character[], java.lang.Byte[] as "simple" persistence types
+CAY-651	Add convenience method to create missing DB_PATH expressions where there is a corresponding OBJ_PATH expression
+CAY-657	Removing/Deprecating ExtendedType.validateProperty()
+CAY-660	JPA-like callbacks support in the main Cayenne stack
+CAY-666	Support for entity lifecycle callbacks in ClientServerChannel
+CAY-667	Support default entity lifecycle callbacks
+CAY-668 Link Cayenne callback API with JPA provider
+CAY-669	Support superclass entity callbacks
+CAY-672	Change the logic to get the Java class from ResultSetMetadata
+CAY-673 Removed DVModeler from the release. For backwards compatibility DVModeler from 2.0.x release can be used.
+CAY-674	ROP client side validation
+CAY-679	Add a new method to ObjectContext: registerNewObject(Object)
+CAY-680	Deprecate DataObject.[get|set]DataContext in favor of [get|set]ObjectContext
+CAY-681	Deprecate DataObject.fetchFinished() in favor of the callbacks
+CAY-683	Deprecate DataContext.createAndRegisterNewObject()
+CAY-685	OSQueryCache concurrency improvements
+CAY-686	Weed out DataObject references from the access stack classes, replacing them with Persistent and ClassDescriptor
+CAY-687	New method: QueryMetadata.getClassDescriptor()
+CAY-688	Change signatures of ObjectContext.deleteObject/registerNewObject/localObject to take Object instead of Persistent as an argument
+CAY-689	DataObjectUtils must return "Object" instead of "DataObject" from all pk lookup methods
+CAY-692	Extra argument needed in ObjectContext.prepareForAccess - whether the property is a fault or not.
+CAY-693	DataContext should not return HOLLOW objects in response to ObjectIdQuery()
+CAY-694 Support for serialization of enhanced serializable POJO's that do not declare 'serialVersionUID'
+CAY-696	true/false in expression
+CAY-700	where in () with empty collection
+CAY-701	"property" package refactoring
+CAY-702	Improve DBCPDataSourceFactory to use it for a JettyPlus DataSource
+CAY-703	Cache EntityResolver in the ClientChannel
+CAY-713	Improved Meaningful PK support
+CAY-717	Modeler doesn't manage FK constraints with MYSQL
+CAY-722	Investigate reducing the shared cache lock scope on commit
+CAY-737 Deprecate DataContextTransactionEventListener, DataObjectTransactionEventListener, DataContextEvent
+CAY-740 MapLoader algorithm improvement
+CAY-741 Indexing entities with inheritance across datamaps
+CAY-750 Stored procedures without parameters fail on Postgres 8
+CAY-763 XML Deserialization fails on relationships when using a mapping file
+CAY-773	MySQL stored procedure support
+CAY-781 Bug in CayenneDataObject.readNestedProperty
+CAY-800 SQLTemplate improvement - API to control the capitalization of the data row labels
+CAY-803 EJBQL Parameters support
+CAY-805 SQLTemplate improvement: new #bindObjectEqual #bindObjectNotEqual directives
+CAY-810 IncrementalFaultList performance improvements
+CAY-812 Add ability to drag cayenne.xml to the Modeler from the filesystem
+
+
+Bug Fixes since 1.2/2.0 final:
+(note that many of these fixes are also available from the later stable releases of 1.2/2.0 branches)
+
+CAY-565 LRUMap NPE
+CAY-583	Enable batching on Derby
+CAY-597 XML Encoder with Mapping outputs incorrect XML
+CAY-601 Problem resolving relationships in nested DataContext
+CAY-603 QueryChain.isFetchingDataRows() incorrectly returns "false" - must be "true" all the time
+CAY-607	Long query name or qualifier expand query text field off screen
+CAY-618	Support optional remote events in the ClientChannel
+CAY-639	JDBC datatype of MySQL INT UNSIGNED is mapped as java.lang.Integer should be java.lang.Long
+CAY-617	ROP: shared session functionality over XMPP is broken
+CAY-614	ToManyList contains references to transient objects
+CAY-609	Modeler prevents intermediate prefetch creation
+CAY-608	Prefetch validation incorrectly reports error on multi-step prefetches
+CAY-641	Stack trace instead of error message when relationship and attribute have the same name
+CAY-646	Class generator - incorrect java types for classes like java.lang.whatever.XYZ
+CAY-649	ExtenedTypeMap.getRegisteredType(Class) incorrectly handles array types
+CAY-652 Exception with Tomcat's session restore capability
+CAY-653 overriding setPersistentState() in unreliable in three tier environment with CayenneContext
+CAY-663	localObject and new objects
+CAY-664	Simplify EntityResolver serialization
+CAY-671	custom exception class for ROP missing session
+CAY-675	compound primary key change
+CAY-690 Exception in the Modeler when changing schema on derived entities
+CAY-707	SelectQuery automatic cache key build mechanism produces wrong results when DO's are used in qualifier
+CAY-710	XMLDecoder decodes Dates wrong
+CAY-711	SQLTemplate data row query of PostgreSQL Blob
+CAY-712 Allow modifying objects in validate* methods
+CAY-718	ROP: handle non-serializable server side exceptions
+CAY-721	DataContext shouldn't attempt to fix objects on FaultFailureExceptions
+CAY-723	Enable batching on MS SQL Server
+CAY-724 Bogus FaultFailureExceptions
+CAY-726 SQLTemplate parsing bug when macros appear at the end of line
+CAY-743 Reordering mappings from domain in xml resulting in StackOverflowException
+CAY-746	Change ConnectionProperties.ADAPTER_KEY value from "cayenne.adapter" to "adapter"
+CAY-751 AS400 datafields containing # in field names do not get mapped correctly
+CAY-752 Importing EOModel gives Cast Exception
+CAY-754 Local jNDI hack breaks when running with Jetty6-Maven
+CAY-764 Exception when importing an EOModel with single table inheritance
+CAY-765 Programmatically overriding "use share cache" fails
+CAY-775 AutoAdapter fails to detect Sybase when running with jTDS driver
+CAY-776	1.2 -> 2.0/3.0 Migration - modeler preferences still store org.objectstyle adapter names
+CAY-779	Improve usability of non-pooling DriverDataSource for uses outside Cayenne
+CAY-783 jgroups config file not removed from cayenne.xml
+CAY-784 Deleting an object with a read-only flattened relationship fails
+CAY-786 Race condition in DataContext.localObject()
+CAY-788 prefetch can set state to modified
+CAY-792	Date has issues with different locales when using XMLEncoder/XMLDecoder
+CAY-817 HSQLDB schema generation may not correctly flush the changes
+CAY-818 Frontbase NUMBERIC type mapping typo
+CAY-823 Db-generated PK type mismatch
+CAY-830 DataChannelCallbackInterceptor.onQuery NPE
+
+API Changes
+----------------------------------
+
+* Due to the caching mechanism changes, the following methods were removed (there is no sensible deprecation path)
+  - DataRowStore.cacheSnapshots(String, List)
+  - DataRowStore.getCachedSnapshots(String)

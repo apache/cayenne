@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="1.0">
+<domain name="domain">
+	<map name="map1" location="map1.map.xml"/>
+	<node name="node3"
+		 datasource="abc/xyz"
+		 adapter="org.apache.cayenne.dba.mysql.MySQLAdapter"
+		 factory="org.apache.cayenne.conf.JNDIDataSourceFactory">
+		 <map-ref name="map1"/>
+	 </node>
+</domain>
+</domains>

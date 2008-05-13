@@ -1,0 +1,1 @@
+DROP PROCEDURE cayenne_tst_upd_proc2

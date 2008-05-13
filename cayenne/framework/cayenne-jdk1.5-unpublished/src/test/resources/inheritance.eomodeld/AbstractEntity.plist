@@ -1,0 +1,28 @@
+{
+    attributes = (
+        {
+            columnName = PK; 
+            externalType = int; 
+            name = pk; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }
+    ); 
+    attributesUsedForLocking = (pk); 
+    className = AbstractEntityClass; 
+    classProperties = (details); 
+    fetchSpecificationDictionary = {}; 
+    isAbstractEntity = Y; 
+    name = AbstractEntity; 
+    primaryKeyAttributes = (pk); 
+    relationships = (
+        {
+            deleteRule = EODeleteRuleCascade; 
+            destination = DetailEntity; 
+            isToMany = Y; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = masterFK; sourceAttribute = pk; }); 
+            name = details; 
+        }
+    ); 
+}
