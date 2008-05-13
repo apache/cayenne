@@ -258,6 +258,12 @@ public class ObjAttribute extends Attribute {
 
         DbAttribute dbAttribute = getDbAttribute();
         if (dbAttribute != null) {
+            
+            // expose PK attribute names - the client may need those to build ObjectIds
+            if (dbAttribute.isPrimaryKey()) {
+                attribute.setDbAttributePath(dbAttribute.getName());
+            }
+
             attribute.setMandatory(dbAttribute.isMandatory());
             attribute.setMaxLength(dbAttribute.getMaxLength());
         }

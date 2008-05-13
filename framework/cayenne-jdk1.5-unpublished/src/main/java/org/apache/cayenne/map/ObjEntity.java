@@ -30,6 +30,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -38,6 +39,7 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.util.NameConverter;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.Transformer;
@@ -189,17 +191,32 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         entity.setClassName(getClientClassName());
         entity.setSuperClassName(getClientSuperClassName());
         entity.setSuperEntityName(getSuperEntityName());
-        entity.setPrimaryKeyNames(getPrimaryKeyNames());
 
         // TODO: should we also copy lock type?
 
-        // copy attributes
-        for (Attribute attribute : getDeclaredAttributes()) {
-            entity.addAttribute(((ObjAttribute) attribute).getClientAttribute());
+        Collection<ObjAttribute> primaryKeys = getMutablePrimaryKeys();
+        Collection<ObjAttribute> clientPK = new ArrayList<ObjAttribute>(primaryKeys
+                .size());
+
+        for (ObjAttribute attribute : getDeclaredAttributes()) {
+            ObjAttribute clientAttribute = attribute.getClientAttribute();
+            entity.addAttribute(clientAttribute);
+
+            if (primaryKeys.remove(attribute)) {
+                clientPK.add(clientAttribute);
+            }
         }
 
+        // after all meaningful pks got removed, here we only have synthetic pks left...
+        for (ObjAttribute attribute : primaryKeys) {
+            ObjAttribute clientAttribute = attribute.getClientAttribute();
+            clientPK.add(clientAttribute);
+        }
+
+        entity.setPrimaryKeys(clientPK);
+
         // copy relationships; skip runtime generated relationships
-        for (Relationship relationship : getDeclaredRelationships()) {
+        for (ObjRelationship relationship : getDeclaredRelationships()) {
             if (relationship.isRuntime()) {
                 continue;
             }
@@ -211,8 +228,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
                 continue;
             }
 
-            entity.addRelationship(((ObjRelationship) relationship)
-                    .getClientRelationship());
+            entity.addRelationship(relationship.getClientRelationship());
         }
 
         // TODO: andrus 2/5/2007 - copy embeddables
@@ -571,6 +587,46 @@ public class ObjEntity extends Entity implements ObjEntityListener {
     }
 
     /**
+     * Returns an unmodifiable collection of ObjAttributes representing the primary key of
+     * the table described by this DbEntity. Note that since PK is very often not an
+     * object property, the returned collection may contain "synthetic" ObjAttributes that
+     * are created on the fly and are not a part of ObjEntity and will not be a part of
+     * entity.getAttributes(). Real meaningful PK attributes
+     * 
+     * @since 3.0
+     */
+    public Collection<ObjAttribute> getPrimaryKeys() {
+        return Collections.unmodifiableCollection(getMutablePrimaryKeys());
+    }
+
+    private Collection<ObjAttribute> getMutablePrimaryKeys() {
+        if (getDbEntity() == null) {
+            throw new CayenneRuntimeException("No DbEntity for ObjEntity: " + getName());
+        }
+
+        Collection<DbAttribute> pkAttributes = getDbEntity().getPrimaryKeys();
+        Collection<ObjAttribute> attributes = new ArrayList<ObjAttribute>(pkAttributes
+                .size());
+
+        for (DbAttribute pk : pkAttributes) {
+            ObjAttribute attribute = getAttributeForDbAttribute(pk);
+
+            // create synthetic attribute
+            if (attribute == null) {
+                attribute = new SyntheticPKObjAttribute(NameConverter.underscoredToJava(
+                        pk.getName(),
+                        false));
+                attribute.setDbAttributePath(pk.getName());
+                attribute.setType(TypesMapping.getJavaBySqlType(pk.getType()));
+            }
+
+            attributes.add(attribute);
+        }
+
+        return attributes;
+    }
+
+    /**
      * Returns a named attribute that either belongs to this ObjEntity or is inherited.
      * Returns null if no matching attribute is found.
      */
@@ -736,19 +792,22 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         return null;
     }
 
+    /**
+     * @since 3.0
+     */
     public Collection<String> getPrimaryKeyNames() {
         if (getDbEntity() == null) {
             throw new CayenneRuntimeException("No DbEntity for ObjEntity: " + getName());
         }
 
         Collection<DbAttribute> pkAttributes = getDbEntity().getPrimaryKeys();
-        Collection<String> ret = new ArrayList<String>(pkAttributes.size());
+        Collection<String> names = new ArrayList<String>(pkAttributes.size());
 
         for (DbAttribute pk : pkAttributes) {
-            ret.add(pk.getName());
+            names.add(pk.getName());
         }
 
-        return Collections.unmodifiableCollection(ret);
+        return Collections.unmodifiableCollection(names);
     }
 
     /**
@@ -829,7 +888,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
 
         return (superEntity != null) ? superEntity.isSubentityOf(entity) : false;
     }
-    
+
     /**
      * @since 3.0
      */

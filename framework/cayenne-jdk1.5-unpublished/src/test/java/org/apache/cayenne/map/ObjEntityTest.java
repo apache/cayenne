@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.map;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,44 @@ import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.Util;
 
 public class ObjEntityTest extends CayenneCase {
+
+    public void testGetPrimaryKeys() {
+        ObjEntity artistE = getObjEntity("Artist");
+        Collection<ObjAttribute> pks = artistE.getPrimaryKeys();
+        assertEquals(1, pks.size());
+
+        ObjAttribute pk = pks.iterator().next();
+        assertEquals("java.lang.Long", pk.getType());
+        assertEquals("ARTIST_ID", pk.getDbAttributePath());
+        assertEquals("artistId", pk.getName());
+        assertNull(pk.getEntity());
+        assertFalse(artistE.getAttributes().contains(pk));
+
+        ObjEntity clientArtistE = artistE.getClientEntity();
+        Collection<ObjAttribute> clientpks = clientArtistE.getPrimaryKeys();
+        assertEquals(1, clientpks.size());
+        ObjAttribute clientPk = clientpks.iterator().next();
+        assertEquals("java.lang.Long", clientPk.getType());
+        assertEquals("ARTIST_ID", clientPk.getDbAttributePath());
+        assertEquals("artistId", clientPk.getName());
+        assertNull(clientPk.getEntity());
+        assertFalse(clientArtistE.getAttributes().contains(pk));
+
+        ObjEntity meaningfulPKE = getObjEntity("MeaningfulPKTest1");
+        Collection<ObjAttribute> mpks = meaningfulPKE.getPrimaryKeys();
+        assertEquals(1, mpks.size());
+
+        ObjAttribute mpk = mpks.iterator().next();
+        assertTrue(meaningfulPKE.getAttributes().contains(mpk));
+        
+        ObjEntity clientMeaningfulPKE = meaningfulPKE.getClientEntity();
+        Collection<ObjAttribute> clientmpks = clientMeaningfulPKE.getPrimaryKeys();
+        assertEquals(1, clientmpks.size());
+
+        ObjAttribute clientmpk = clientmpks.iterator().next();
+        assertEquals("java.lang.Integer", clientmpk.getType());
+        assertTrue(clientMeaningfulPKE.getAttributes().contains(clientmpk));
+    }
 
     /**
      * @deprecated since 3.0 as the method being tested is deprecated.

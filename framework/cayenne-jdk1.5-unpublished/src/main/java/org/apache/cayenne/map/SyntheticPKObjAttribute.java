@@ -16,44 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.map;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
- * A client version of ObjEntity that overrides server entity algorithms for accessing
- * some pieces of information
+ * A "synthetic" server-side ObjAttribute used to describe unmapped PK>.
  * 
  * @since 3.0
- * @author Kevin Menard
+ * @author Andrus Adamchik
  */
-class ClientObjEntity extends ObjEntity {
+class SyntheticPKObjAttribute extends ObjAttribute {
 
-    private Collection<ObjAttribute> primaryKeys;
-
-    ClientObjEntity(String name) {
+    SyntheticPKObjAttribute(String name) {
         super(name);
-        this.primaryKeys = Collections.<ObjAttribute> emptyList();
     }
 
     @Override
-    public Collection<String> getPrimaryKeyNames() {
-        Collection<String> names = new ArrayList<String>(primaryKeys.size());
-        for (ObjAttribute attribute : primaryKeys) {
-            names.add(attribute.getName());
+    public ObjAttribute getClientAttribute() {
+        ClientObjAttribute attribute = new ClientObjAttribute(getName());
+        attribute.setType(getType());
+
+        // unconditionally expose DbAttribute path and configure as mandatory.
+        attribute.setDbAttributePath(dbAttributePath);
+        attribute.setMandatory(true);
+
+        DbAttribute dbAttribute = getDbAttribute();
+        if (dbAttribute != null) {
+            attribute.setMaxLength(dbAttribute.getMaxLength());
         }
-        return Collections.unmodifiableCollection(names);
-    }
 
-    @Override
-    public Collection<ObjAttribute> getPrimaryKeys() {
-        return Collections.unmodifiableCollection(primaryKeys);
-    }
+        // TODO: will likely need "userForLocking" property as well.
 
-    void setPrimaryKeys(Collection<ObjAttribute> primaryKeys) {
-        this.primaryKeys = primaryKeys;
+        return attribute;
     }
 }

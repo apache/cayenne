@@ -38,6 +38,7 @@ CAY-1027 Orderly EventManager shutdown
 CAY-1033 remove completed merge tokens from view in cayenne modeler
 CAY-1035 Replace QueryMetadata String cache policies with an enum
 CAY-1038 Upgrade to Ashwood 2.0
+CAY-1046 Make PK metadata available via Obj* API.
 CAY-1048 Deprecate but preserve functionality of QueryMetadata.isRefreshingObjects() 
 CAY-1049 Refactor QueryAssembler/SelectTranslator
 CAY-1050 MySQLSniffer should configure created adapter to use MySQL default engine for tables
