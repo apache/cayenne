@@ -117,7 +117,7 @@ public class HessianConnection extends BaseConnection {
     /**
      * Returns internal RemoteSession instance.
      */
-    RemoteSession getSession() {
+    public RemoteSession getSession() {
         return session;
     }
 
