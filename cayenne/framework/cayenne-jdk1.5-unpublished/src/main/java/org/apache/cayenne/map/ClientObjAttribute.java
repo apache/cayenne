@@ -29,9 +29,15 @@ class ClientObjAttribute extends ObjAttribute {
 
     boolean mandatory;
     int maxLength = -1;
+    private boolean primaryKey;
 
     ClientObjAttribute(String name) {
         super(name);
+    }
+    
+    @Override
+    public boolean isPrimaryKey() {
+        return primaryKey;
     }
 
     /**
@@ -56,4 +62,8 @@ class ClientObjAttribute extends ObjAttribute {
         this.maxLength = maxLength;
     }
 
+    
+    public void setPrimaryKey(boolean primaryKey) {
+        this.primaryKey = primaryKey;
+    }
 }

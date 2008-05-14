@@ -116,6 +116,18 @@ public class ObjAttribute extends Attribute {
     public void setType(String type) {
         this.type = type;
     }
+    
+    /**
+     * @since 3.0
+     */
+    public boolean isPrimaryKey() {
+        if(dbAttributePath == null) {
+            return false;
+        }
+        
+        DbAttribute dbAttribute = getDbAttribute();
+        return dbAttribute != null && dbAttribute.isPrimaryKey();
+    }
 
     /**
      * Returns whether this attribute should be used for locking.
@@ -262,6 +274,7 @@ public class ObjAttribute extends Attribute {
             // expose PK attribute names - the client may need those to build ObjectIds
             if (dbAttribute.isPrimaryKey()) {
                 attribute.setDbAttributePath(dbAttribute.getName());
+                attribute.setPrimaryKey(true);
             }
 
             attribute.setMandatory(dbAttribute.isMandatory());

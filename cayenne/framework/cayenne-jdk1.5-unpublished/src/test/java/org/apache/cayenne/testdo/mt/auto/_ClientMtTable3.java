@@ -21,66 +21,66 @@ public abstract class _ClientMtTable3 extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "binaryColumn", false);
         }
-        
+
         return binaryColumn;
     }
     public void setBinaryColumn(byte[] binaryColumn) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "binaryColumn", false);
         }
-        
+
         Object oldValue = this.binaryColumn;
         this.binaryColumn = binaryColumn;
-        
+
         // notify objectContext about simple property change
         if(objectContext != null) {
             objectContext.propertyChanged(this, "binaryColumn", oldValue, binaryColumn);
         }
     }
-    
-    
+
+
     public String getCharColumn() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "charColumn", false);
         }
-        
+
         return charColumn;
     }
     public void setCharColumn(String charColumn) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "charColumn", false);
         }
-        
+
         Object oldValue = this.charColumn;
         this.charColumn = charColumn;
-        
+
         // notify objectContext about simple property change
         if(objectContext != null) {
             objectContext.propertyChanged(this, "charColumn", oldValue, charColumn);
         }
     }
-    
-    
+
+
     public Integer getIntColumn() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "intColumn", false);
         }
-        
+
         return intColumn;
     }
     public void setIntColumn(Integer intColumn) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "intColumn", false);
         }
-        
+
         Object oldValue = this.intColumn;
         this.intColumn = intColumn;
-        
+
         // notify objectContext about simple property change
         if(objectContext != null) {
             objectContext.propertyChanged(this, "intColumn", oldValue, intColumn);
         }
     }
-    
-    
+
+
 }

@@ -19,15 +19,15 @@ public abstract class _ClientMtMapToManyTarget extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "mapToMany", true);
         }
-        
+
         return (ClientMtMapToMany) mapToMany.getValue();
     }
     public void setMapToMany(ClientMtMapToMany mapToMany) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "mapToMany", true);
         }
-        
+
         this.mapToMany.setValue(mapToMany);
     }
-    
+
 }

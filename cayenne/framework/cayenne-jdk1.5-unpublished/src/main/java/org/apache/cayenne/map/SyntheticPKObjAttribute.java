@@ -49,4 +49,9 @@ class SyntheticPKObjAttribute extends ObjAttribute {
 
         return attribute;
     }
+    
+    @Override
+    public boolean isPrimaryKey() {
+        return true;
+    }
 }

@@ -22,12 +22,12 @@ package org.apache.cayenne;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.art.Artist;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
@@ -35,6 +35,7 @@ import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.RemoteIncrementalFaultList;
 import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.testdo.mt.ClientMtMeaningfulPk;
 import org.apache.cayenne.testdo.mt.ClientMtReflexive;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
@@ -350,6 +351,21 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
         catch (FaultFailureException e) {
             // expected
         }
+    }
+    
+    public void testMeaningfulPK() throws Exception {
+        createTestData("testMeaningfulPK");
+        
+        SelectQuery query = new SelectQuery(ClientMtMeaningfulPk.class);
+        query.addOrdering(ClientMtMeaningfulPk.PK_PROPERTY, Ordering.DESC);
+        
+        UnitLocalConnection connection = new UnitLocalConnection(new ClientServerChannel(
+                getDomain()), LocalConnection.HESSIAN_SERIALIZATION);
+        ClientChannel channel = new ClientChannel(connection);
+        CayenneContext context = new CayenneContext(channel);
+
+        List results = context.performQuery(query);
+        assertEquals(2, results.size());
     }
 
     public void testPrefetchingToOne() throws Exception {

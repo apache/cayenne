@@ -33,6 +33,9 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
 	</db-entity>
+	<db-entity name="MT_MEANINGFUL_PK">
+		<db-attribute name="PK" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="100"/>
+	</db-entity>
 	<db-entity name="MT_REFLEXIVE">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="200"/>
@@ -75,6 +78,9 @@
 	<obj-entity name="MtMapToMany" className="org.apache.cayenne.testdo.mt.MtMapToMany" clientClassName="org.apache.cayenne.testdo.mt.ClientMtMapToMany" dbEntityName="MT_MAP_TO_MANY">
 	</obj-entity>
 	<obj-entity name="MtMapToManyTarget" className="org.apache.cayenne.testdo.mt.MtMapToManyTarget" clientClassName="org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget" dbEntityName="MT_MAP_TO_MANY_TARGET">
+	</obj-entity>
+	<obj-entity name="MtMeaningfulPk" className="org.apache.cayenne.testdo.mt.MtMeaningfulPk" clientClassName="org.apache.cayenne.testdo.mt.ClientMtMeaningfulPk" dbEntityName="MT_MEANINGFUL_PK">
+		<obj-attribute name="pk" type="java.lang.String" db-attribute-path="PK"/>
 	</obj-entity>
 	<obj-entity name="MtReflexive" className="org.apache.cayenne.testdo.mt.MtReflexive" clientClassName="org.apache.cayenne.testdo.mt.ClientMtReflexive" dbEntityName="MT_REFLEXIVE">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>

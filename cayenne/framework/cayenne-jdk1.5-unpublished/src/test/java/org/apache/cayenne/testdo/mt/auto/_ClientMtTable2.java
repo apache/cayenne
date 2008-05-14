@@ -21,37 +21,37 @@ public abstract class _ClientMtTable2 extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "globalAttribute", false);
         }
-        
+
         return globalAttribute;
     }
     public void setGlobalAttribute(String globalAttribute) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "globalAttribute", false);
         }
-        
+
         Object oldValue = this.globalAttribute;
         this.globalAttribute = globalAttribute;
-        
+
         // notify objectContext about simple property change
         if(objectContext != null) {
             objectContext.propertyChanged(this, "globalAttribute", oldValue, globalAttribute);
         }
     }
-    
-    
+
+
     public ClientMtTable1 getTable1() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table1", true);
         }
-        
+
         return (ClientMtTable1) table1.getValue();
     }
     public void setTable1(ClientMtTable1 table1) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table1", true);
         }
-        
+
         this.table1.setValue(table1);
     }
-    
+
 }
