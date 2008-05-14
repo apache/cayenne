@@ -88,8 +88,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 
         if (property instanceof AttributeProperty) {
             ObjAttribute attribute = ((AttributeProperty) property).getAttribute();
-            if (attribute.getDbAttributeName() != null
-                    && attribute.getDbAttribute().isPrimaryKey()) {
+            if (attribute.isPrimaryKey()) {
 
                 if (declaredIdProperties == null) {
                     declaredIdProperties = new ArrayList<Property>(2);

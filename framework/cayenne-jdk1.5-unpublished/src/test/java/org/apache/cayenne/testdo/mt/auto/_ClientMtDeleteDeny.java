@@ -21,37 +21,37 @@ public abstract class _ClientMtDeleteDeny extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "name", false);
         }
-        
+
         return name;
     }
     public void setName(String name) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "name", false);
         }
-        
+
         Object oldValue = this.name;
         this.name = name;
-        
+
         // notify objectContext about simple property change
         if(objectContext != null) {
             objectContext.propertyChanged(this, "name", oldValue, name);
         }
     }
-    
-    
+
+
     public ClientMtDeleteRule getDeny() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "deny", true);
         }
-        
+
         return (ClientMtDeleteRule) deny.getValue();
     }
     public void setDeny(ClientMtDeleteRule deny) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "deny", true);
         }
-        
+
         this.deny.setValue(deny);
     }
-    
+
 }

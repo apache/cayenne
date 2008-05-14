@@ -1,5 +1,7 @@
 package org.apache.cayenne.testdo.mt.auto;
 
+import java.util.Map;
+
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget;
 
@@ -12,28 +14,28 @@ public abstract class _ClientMtMapToMany extends PersistentObject {
 
     public static final String TARGETS_PROPERTY = "targets";
 
-    protected java.util.Map targets;
+    protected Map<Object, ClientMtMapToManyTarget> targets;
 
-    public java.util.Map getTargets() {
+    public Map<Object, ClientMtMapToManyTarget> getTargets() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "targets", true);
         }
-        
+
         return targets;
     }
 	public void addToTargets(ClientMtMapToManyTarget object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "targets", true);
         }
-        
+
         this.targets.put(getMapKey("targets", object), object);
     }
     public void removeFromTargets(ClientMtMapToManyTarget object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "targets", true);
         }
-        
+
         this.targets.remove(getMapKey("targets", object));
     }
-    
+
 }

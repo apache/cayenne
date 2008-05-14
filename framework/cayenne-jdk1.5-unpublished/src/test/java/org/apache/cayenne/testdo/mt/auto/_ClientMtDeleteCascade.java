@@ -21,37 +21,37 @@ public abstract class _ClientMtDeleteCascade extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "name", false);
         }
-        
+
         return name;
     }
     public void setName(String name) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "name", false);
         }
-        
+
         Object oldValue = this.name;
         this.name = name;
-        
+
         // notify objectContext about simple property change
         if(objectContext != null) {
             objectContext.propertyChanged(this, "name", oldValue, name);
         }
     }
-    
-    
+
+
     public ClientMtDeleteRule getCascade() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "cascade", true);
         }
-        
+
         return (ClientMtDeleteRule) cascade.getValue();
     }
     public void setCascade(ClientMtDeleteRule cascade) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "cascade", true);
         }
-        
+
         this.cascade.setValue(cascade);
     }
-    
+
 }

@@ -92,6 +92,20 @@
 		</value></constructor-arg>
 	</bean>
 	
+	<bean id="INSERT_MT_MEANINGFUL_PK1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable2</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_MEANINGFUL_PK (PK) values ('A')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="INSERT_MT_MEANINGFUL_PK2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable2</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_MEANINGFUL_PK (PK) values ('B')
+		</value></constructor-arg>
+	</bean>
+	
 	<!-- ======================================= -->
 	<!-- Data Sets -->
 	<!-- ======================================= -->	
@@ -139,6 +153,15 @@
 				<ref bean="INSERT_MT_TABLE16"/>
 				<ref bean="INSERT_MT_TABLE17"/>
 				<ref bean="INSERT_MT_TABLE18"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testMeaningfulPK" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="INSERT_MT_MEANINGFUL_PK1"/>
+				<ref bean="INSERT_MT_MEANINGFUL_PK2"/>
 			</list>
 		</constructor-arg>
 	</bean>
