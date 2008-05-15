@@ -56,7 +56,7 @@ public class CayenneWidgetFactory {
     /**
      * Creates a new JComboBox with a collection of model objects.
      */
-    public static JComboBox createComboBox(Collection model, boolean sort) {
+    public static JComboBox createComboBox(Collection<String> model, boolean sort) {
         return createComboBox(model.toArray(), sort);
     }
 
