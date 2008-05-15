@@ -54,16 +54,16 @@ public class RecentFileMenu extends JMenu {
 
     /**
      * Rebuilds internal menu items list with the files stored in CayenneModeler
-     * properences.
+     * preferences.
      */
     public void rebuildFromPreferences() {
         ModelerPreferences pref = ModelerPreferences.getPreferences();
-        Vector arr = pref.getVector(ModelerPreferences.LAST_PROJ_FILES);
+        Vector<?> arr = pref.getVector(ModelerPreferences.LAST_PROJ_FILES);
         while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
             arr.remove(arr.size() - 1);
         }
 
-        // readd menus
+        // read menus
         Component[] comps = getMenuComponents();
         int curSize = comps.length;
         int prefSize = arr.size();
