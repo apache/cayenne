@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -102,7 +101,7 @@ public final class ModelerUtil {
 
     public static String[] getRegisteredTypeNames() {
         String[] explicitList = new ExtendedTypeMap().getRegisteredTypeNames();
-        Set nonPrimitives = new HashSet(Arrays.asList(explicitList));
+        Set<String> nonPrimitives = new HashSet<String>(Arrays.asList(explicitList));
 
         // add types that are not mapped explicitly, but nevertheless supported by Cayenne
         nonPrimitives.add(Calendar.class.getName());
@@ -140,19 +139,23 @@ public final class ModelerUtil {
     }
 
     public static DataNode getNodeLinkedToMap(DataDomain domain, DataMap map) {
-        Collection nodes = domain.getDataNodes();
+        Collection<DataNode> nodes = domain.getDataNodes();
 
         // go via an iterator in an indexed loop, since
         // we already obtained the size
         // (and index is required to initialize array)
-        Iterator nodesIt = nodes.iterator();
-        while (nodesIt.hasNext()) {
-            DataNode node = (DataNode) nodesIt.next();
-
-            if (node.getDataMaps().contains(map)) {
+        for (DataNode node : nodes)
+            if (node.getDataMaps().contains(map))
                 return node;
-            }
-        }
+            
+//        Iterator nodesIt = nodes.iterator();
+//        while (nodesIt.hasNext()) {
+//            DataNode node = (DataNode) nodesIt.next();
+//
+//            if (node.getDataMaps().contains(map)) {
+//                return node;
+//            }
+//        }
 
         return null;
     }
