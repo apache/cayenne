@@ -42,7 +42,7 @@ import org.apache.cayenne.map.Relationship;
  */
 public class EntityTreeModel implements TreeModel {
     protected Entity root;
-    protected Map sortedChildren;
+    protected Map<String, Object[]> sortedChildren;
 
     // TODO: in the future replace with a more generic filter 
     // to allow arbitrary tree customization
@@ -50,7 +50,7 @@ public class EntityTreeModel implements TreeModel {
 
     public EntityTreeModel(Entity root) {
         this.root = root;
-        sortedChildren = Collections.synchronizedMap(new HashMap());
+        sortedChildren = Collections.synchronizedMap(new HashMap<String, Object[]>());
     }
 
     public Object getRoot() {
@@ -115,8 +115,8 @@ public class EntityTreeModel implements TreeModel {
             Object[] sortedForNode = (Object[]) sortedChildren.get(key);
 
             if (sortedForNode == null) {
-                Collection attributes = entity.getAttributes();
-                Collection relationships = entity.getRelationships();
+                Collection<? extends Attribute> attributes = entity.getAttributes();
+                Collection<? extends Relationship> relationships = entity.getRelationships();
 
                 // combine two collections in an array
                 int alen = (hideAttributes) ? 0 : attributes.size();
@@ -124,13 +124,13 @@ public class EntityTreeModel implements TreeModel {
                 sortedForNode = new Object[alen + rlen];
 
                 if (!hideAttributes) {
-                    Iterator ait = attributes.iterator();
+                    Iterator<? extends Attribute> ait = attributes.iterator();
                     for (int i = 0; i < alen; i++) {
                         sortedForNode[i] = ait.next();
                     }
                 }
 
-                Iterator rit = relationships.iterator();
+                Iterator<? extends Relationship> rit = relationships.iterator();
                 for (int i = 0; i < rlen; i++) {
                     sortedForNode[alen + i] = rit.next();
                 }
