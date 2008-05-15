@@ -88,8 +88,7 @@ public class ModelerDbAdapter extends AutoAdapter {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
             try {
-                Class adapterClass = Class.forName(adapterClassName, true, loader);
-                return (DbAdapter) adapterClass.newInstance();
+                return ((Class<DbAdapter>) Class.forName(adapterClassName, true, loader)).newInstance();
             }
             catch (Exception ex) {
                 throw new CayenneRuntimeException("Can't load DbAdapter class: "
