@@ -89,12 +89,12 @@ public final class ModelerUtil {
     /**
      * Returns array of db attribute names for DbEntity mapped to current ObjEntity.
      */
-    public static Collection getDbAttributeNames(
+    public static Collection<String> getDbAttributeNames(
             ProjectController mediator,
             DbEntity entity) {
 
-        Set keys = entity.getAttributeMap().keySet();
-        List list = new ArrayList(keys.size());
+        Set<String> keys = entity.getAttributeMap().keySet();
+        List<String> list = new ArrayList<String>(keys.size() + 1);
         list.add("");
         list.addAll(keys);
         return list;
