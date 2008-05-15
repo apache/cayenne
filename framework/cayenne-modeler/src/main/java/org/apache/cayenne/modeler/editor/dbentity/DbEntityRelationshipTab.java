@@ -28,9 +28,12 @@ import java.util.EventObject;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
@@ -60,6 +63,7 @@ import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
@@ -81,6 +85,13 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
     protected ProjectController mediator;
     protected CayenneTable table;
     protected JButton resolve;
+    
+    /**
+     * By now popup menu item is made similiar to toolbar button. 
+     * (i.e. all functionality is here)
+     * This should be probably refactored as Action.
+     */
+    protected JMenuItem resolveMenu;
 
     public DbEntityRelationshipTab(ProjectController mediator) {
 
@@ -90,12 +101,16 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         this.mediator.addDbRelationshipListener(this);
 
         init();
-        resolve.addActionListener(new ActionListener() {
+        
+        ActionListener resolver = new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 resolveRelationship();
             }
-        });
+        };
+        
+        resolve.addActionListener(resolver);
+        resolveMenu.addActionListener(resolver);
     }
 
     protected void init() {
@@ -113,7 +128,10 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         toolBar.addSeparator();
 
         resolve = new JButton();
-        resolve.setIcon(ModelerUtil.buildIcon("icon-info.gif"));
+        
+        Icon ico = ModelerUtil.buildIcon("icon-info.gif");
+        
+        resolve.setIcon(ico);
         resolve.setToolTipText("Database Mapping");
         toolBar.add(resolve);
 
@@ -127,6 +145,17 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
 
         table = new CayenneTable();
         table.setDefaultRenderer(DbEntity.class, new EntityRenderer());
+        
+        /**
+         * Create and install a popup
+         */
+        resolveMenu = new JMenuItem("Database Mapping", ico);
+        
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(resolveMenu);
+        popup.add(app.getAction(RemoveRelationshipAction.getActionName()).buildMenu());
+        
+        TablePopupHandler.install(table, popup);
 
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
     }
@@ -141,6 +170,7 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
             DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
             rel = model.getRelationship(table.getSelectedRow());
             resolve.setEnabled(rel.getTargetEntity() != null);
+            resolveMenu.setEnabled(resolve.isEnabled());
         }
     }
 
@@ -185,6 +215,8 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         }
         else
             resolve.setEnabled(false);
+        
+        resolveMenu.setEnabled(resolve.isEnabled());
 
         RelationshipDisplayEvent ev = new RelationshipDisplayEvent(this, rel, mediator
                 .getCurrentDbEntity(), mediator.getCurrentDataMap(), mediator

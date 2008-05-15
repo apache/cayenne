@@ -31,6 +31,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.event.ListSelectionEvent;
@@ -49,6 +50,7 @@ import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.CallbackMethodListener;
+import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
@@ -62,9 +64,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * methods displaying, creating, removing, esiting, reordering
  * 
  * @author Vasil Tarasevich
- * @version 1.0 Oct 23, 2007
  */
-
 public abstract class AbstractCallbackMethodsTab extends JPanel {
 
     /**
@@ -199,6 +199,15 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                 // System.out.println("c");
             }
         });
+
+        /**
+         * Create and install a popup
+         */
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(getRemoveCallbackMethodAction().buildMenu());
+
+        TablePopupHandler.install(table, popup);
+
         auxPanel.add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
 
         add(auxPanel, BorderLayout.CENTER);

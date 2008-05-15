@@ -29,10 +29,13 @@ import java.util.EventObject;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
@@ -61,6 +64,7 @@ import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfoController
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
@@ -93,6 +97,13 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
 
     CayenneTable table;
     JButton resolve;
+    
+    /**
+     * By now popup menu item is made similiar to toolbar button. 
+     * (i.e. all functionality is here)
+     * This should be probably refactored as Action.
+     */
+    protected JMenuItem resolveMenu;
 
     public ObjEntityRelationshipTab(ProjectController mediator) {
         this.mediator = mediator;
@@ -113,9 +124,11 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         toolBar.add(app.getAction(ObjEntitySyncAction.getActionName()).buildButton());
 
         toolBar.addSeparator();
+        
+        Icon ico = ModelerUtil.buildIcon("icon-info.gif");
 
         resolve = new JButton();
-        resolve.setIcon(ModelerUtil.buildIcon("icon-info.gif"));
+        resolve.setIcon(ico);
         resolve.setToolTipText("Edit Relationship");
         toolBar.add(resolve);
 
@@ -130,6 +143,17 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         table = new CayenneTable();
         table.setDefaultRenderer(String.class, new StringRenderer());
         table.setDefaultRenderer(ObjEntity.class, new EntityRenderer());
+        
+        /**
+         * Create and install a popup
+         */
+        resolveMenu = new JMenuItem("Database Mapping", ico);
+        
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(resolveMenu);
+        popup.add(app.getAction(RemoveRelationshipAction.getActionName()).buildMenu());
+        
+        TablePopupHandler.install(table, popup);
 
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
     }
@@ -139,7 +163,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         mediator.addObjEntityListener(this);
         mediator.addObjRelationshipListener(this);
 
-        resolve.addActionListener(new ActionListener() {
+        ActionListener resolver = new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 int row = table.getSelectedRow();
@@ -157,7 +181,10 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                 table.getSelectionModel().clearSelection();
                 table.select(row);
             }
-        });
+        };
+        
+        resolve.addActionListener(resolver);
+        resolveMenu.addActionListener(resolver);
 
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -214,6 +241,8 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         }
         else
             resolve.setEnabled(false);
+        
+        resolveMenu.setEnabled(resolve.isEnabled());
 
         RelationshipDisplayEvent ev = new RelationshipDisplayEvent(this, rel, mediator
                 .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
@@ -335,6 +364,8 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                     }
                     else
                         resolve.setEnabled(false);
+                    
+                    resolveMenu.setEnabled(resolve.isEnabled());
                 }
             }
         });

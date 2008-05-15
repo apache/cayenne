@@ -26,9 +26,12 @@ import java.awt.event.ActionListener;
 import java.util.EventObject;
 
 import javax.swing.DefaultCellEditor;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -51,6 +54,7 @@ import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
+import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -74,6 +78,15 @@ public class ProcedureParameterTab
     protected JButton removeParameterButton;
     protected JButton moveUp;
     protected JButton moveDown;
+    
+    /**
+     * By now popup menu items are made similiar to toolbar button. 
+     * (i.e. all functionality is here)
+     * This should be probably refactored as Action.
+     */
+    protected JMenuItem removeParameterMenu;
+    protected JMenuItem moveUpMenu;
+    protected JMenuItem moveDownMenu;
 
     public ProcedureParameterTab(ProjectController eventController) {
         this.eventController = eventController;
@@ -91,6 +104,9 @@ public class ProcedureParameterTab
         
         moveDown.addActionListener(this);
         moveUp.addActionListener(this);
+        
+        moveDownMenu.addActionListener(this);
+        moveUpMenu.addActionListener(this);
     }
 
     protected void init() {
@@ -103,14 +119,17 @@ public class ProcedureParameterTab
         removeParameterButton = app.getAction(RemoveProcedureParameterAction.getActionName()).buildButton();
         toolBar.add(removeParameterButton);
         toolBar.addSeparator();
+        
+        Icon up = ModelerUtil.buildIcon("icon-move_up.gif");
+        Icon down = ModelerUtil.buildIcon("icon-move_down.gif");
 
         moveUp = new JButton();
-        moveUp.setIcon(ModelerUtil.buildIcon("icon-move_up.gif"));
+        moveUp.setIcon(up);
         moveUp.setToolTipText("Move Parameter Up");
         toolBar.add(moveUp);
         
         moveDown = new JButton();
-        moveDown.setIcon(ModelerUtil.buildIcon("icon-move_down.gif"));
+        moveDown.setIcon(down);
         moveDown.setToolTipText("Move Parameter Down");
         toolBar.add(moveDown);
         
@@ -118,6 +137,25 @@ public class ProcedureParameterTab
 
         // Create table with two columns and no rows.
         table = new CayenneTable();
+        
+        /**
+         * Create and install a popup
+         */
+        JPopupMenu popup = new JPopupMenu();
+        
+        removeParameterMenu = app.getAction(RemoveProcedureParameterAction.getActionName()).buildMenu(); 
+        
+        popup.add(removeParameterMenu);
+        popup.addSeparator();
+        
+        moveUpMenu = new JMenuItem("Move Parameter Up", up);
+        moveDownMenu = new JMenuItem("Move Parameter Down", down);
+        
+        popup.add(moveUpMenu);
+        popup.add(moveDownMenu);
+        
+        TablePopupHandler.install(table, popup);
+        
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
     }
     
@@ -151,6 +189,8 @@ public class ProcedureParameterTab
         removeParameterButton.setEnabled(enableRemoveButton);
         moveUp.setEnabled(enableUp);
         moveDown.setEnabled(enableDown);
+        
+        syncButtons();
 
         ProcedureParameterDisplayEvent ppde =
             new ProcedureParameterDisplayEvent(
@@ -262,10 +302,10 @@ public class ProcedureParameterTab
         
         int index = -1;
 
-        if (e.getSource() == moveUp) {
+        if (e.getSource() == moveUp || e.getSource() == moveUpMenu) {
             index = model.moveRowUp(parameter);
         }
-        else if (e.getSource() == moveDown) {
+        else if (e.getSource() == moveDown || e.getSource() == moveDownMenu) {
             index = model.moveRowDown(parameter);
         }
 
@@ -277,5 +317,15 @@ public class ProcedureParameterTab
             eventController.fireProcedureEvent(
                 new ProcedureEvent(this, parameter.getProcedure(), MapEvent.CHANGE));
         }
-    }    
+    }
+    
+    /**
+     * Synchronizes state of toolbar and popup menu buttons
+     */
+    private void syncButtons()
+    {
+        removeParameterMenu.setEnabled(removeParameterButton.isEnabled());
+        moveUpMenu.setEnabled(moveUp.isEnabled());
+        moveDownMenu.setEnabled(moveDown.isEnabled());   
+    }
 }

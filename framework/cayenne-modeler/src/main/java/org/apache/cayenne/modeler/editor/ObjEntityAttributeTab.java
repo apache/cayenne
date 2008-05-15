@@ -27,6 +27,7 @@ import java.util.EventObject;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
@@ -49,6 +50,7 @@ import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -87,6 +89,14 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
         table = new CayenneTable();
         table.setDefaultRenderer(String.class, new CellRenderer());
+        
+        /**
+         * Create and install a popup
+         */
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(app.getAction(RemoveAttributeAction.getActionName()).buildMenu());
+        
+        TablePopupHandler.install(table, popup);
 
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
     }

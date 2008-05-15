@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.modeler;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,6 +28,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -54,6 +58,15 @@ import org.apache.cayenne.map.event.ProcedureEvent;
 import org.apache.cayenne.map.event.ProcedureListener;
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.map.event.QueryListener;
+import org.apache.cayenne.modeler.action.CreateDataMapAction;
+import org.apache.cayenne.modeler.action.CreateDbEntityAction;
+import org.apache.cayenne.modeler.action.CreateDomainAction;
+import org.apache.cayenne.modeler.action.CreateNodeAction;
+import org.apache.cayenne.modeler.action.CreateObjEntityAction;
+import org.apache.cayenne.modeler.action.CreateProcedureAction;
+import org.apache.cayenne.modeler.action.CreateQueryAction;
+import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
+import org.apache.cayenne.modeler.action.RemoveAction;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.DataMapDisplayListener;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
@@ -88,6 +101,11 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
     protected ProjectController mediator;
     protected TreeSelectionListener treeSelectionListener;
+    
+    /**
+     * Popup menu containing basic functions
+     */
+    protected JPopupMenu popup;
 
     public ProjectTreeView(ProjectController mediator) {
         super();
@@ -111,6 +129,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         };
 
         addTreeSelectionListener(treeSelectionListener);
+        
+        addMouseListener(new PopupHandler());
 
         mediator.addDomainListener(this);
         mediator.addDomainDisplayListener(this);
@@ -811,5 +831,65 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
     public TreeSelectionListener getTreeSelectionListener() {
         return treeSelectionListener;
+    }
+    
+    /**
+     * Creates JPopupMenu containing main functions
+     */
+    private JPopupMenu createJPopupMenu()
+    {
+        JPopupMenu popup = new JPopupMenu();
+        
+        popup.add(buildMenu(CreateDomainAction.getActionName()));
+        popup.add(buildMenu(CreateNodeAction.getActionName()));
+        popup.add(buildMenu(CreateDataMapAction.getActionName()));
+
+        popup.add(buildMenu(CreateObjEntityAction.getActionName()));
+        popup.add(buildMenu(CreateDbEntityAction.getActionName()));
+        popup.add(buildMenu(CreateProcedureAction.getActionName()));
+        popup.add(buildMenu(CreateQueryAction.getActionName()));
+        popup.addSeparator();
+        popup.add(buildMenu(ObjEntitySyncAction.getActionName()));
+        popup.addSeparator();
+        popup.add(buildMenu(RemoveAction.getActionName()));
+        
+        return popup;
+    }
+    
+    /**
+     * Creates and returns an menu item associated with the key.
+     * @param key action key
+     */
+    private JMenuItem buildMenu(String key) {
+        return mediator.getApplication().getAction(key).buildMenu();
+    }
+
+    /**
+     * Class to handle right-click and show popup for selected tree row 
+     */
+    class PopupHandler extends MouseAdapter
+    {
+        public void mousePressed(MouseEvent e) 
+        {
+            mouseReleased(e);
+        }
+
+        public void mouseReleased(MouseEvent e) 
+        {
+            if(e.isPopupTrigger())
+            {
+                if(popup == null)
+                    popup = createJPopupMenu();
+                
+                /**
+                 * Selecting specified row
+                 */
+                int row = getRowForLocation(e.getX(), e.getY());
+                if(row != -1)
+                    setSelectionRow(row);
+                
+                popup.show(ProjectTreeView.this, e.getX(), e.getY());
+            }
+        }
     }
 }

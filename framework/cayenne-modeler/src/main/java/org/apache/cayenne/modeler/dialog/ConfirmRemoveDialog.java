@@ -1,10 +1,12 @@
 package org.apache.cayenne.modeler.dialog;
 
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.pref.PreferenceDetail;
-
-import javax.swing.*;
 
 /**
  * Used to confirm deleting items in the model.
@@ -22,7 +24,7 @@ public class ConfirmRemoveDialog {
 
         JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
 
-        JDialog dialog = pane.createDialog(Application.getFrame(), "File exists");
+        JDialog dialog = pane.createDialog(Application.getFrame(), "Confirm Remove");
         dialog.setVisible(true);
 
         Object selectedValue = pane.getValue();

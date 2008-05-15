@@ -25,6 +25,7 @@ import java.util.EventObject;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
@@ -46,6 +47,7 @@ import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.PanelFactory;
@@ -88,9 +90,18 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
         toolBar.add(app.getAction(RemoveAttributeAction.getActionName()).buildButton());
 
         add(toolBar, BorderLayout.NORTH);
-
+        
         // Create table with two columns and no rows.
         table = new CayenneTable();
+        
+        /**
+         * Create and install a popup
+         */
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(app.getAction(RemoveAttributeAction.getActionName()).buildMenu());
+        
+        TablePopupHandler.install(table, popup);
+        
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
     }
 
