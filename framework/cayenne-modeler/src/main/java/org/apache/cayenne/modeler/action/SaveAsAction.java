@@ -59,9 +59,10 @@ public class SaveAsAction extends CayenneAction {
     }
 
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke
-                 (KeyEvent.VK_S,
-                  Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | ActionEvent.SHIFT_MASK);
+        return KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit
+                .getDefaultToolkit()
+                .getMenuShortcutKeyMask()
+                | ActionEvent.SHIFT_MASK);
     }
 
     /**
@@ -78,6 +79,8 @@ public class SaveAsAction extends CayenneAction {
             return false;
         }
 
+        getProjectController().getProjectWatcher().pauseWatching();
+
         p.save();
 
         // update preferences domain key
@@ -85,6 +88,12 @@ public class SaveAsAction extends CayenneAction {
 
         getApplication().getFrameController().addToLastProjListAction(
                 p.getMainFile().getAbsolutePath());
+
+        /**
+         * Reset the watcher now
+         */
+        getProjectController().getProjectWatcher().reconfigure();
+
         return true;
     }
 

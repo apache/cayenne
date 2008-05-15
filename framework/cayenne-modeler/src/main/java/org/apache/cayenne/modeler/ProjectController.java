@@ -220,6 +220,12 @@ public class ProjectController extends CayenneController {
     protected CircularArray controllerStateHistory;
     protected int maxHistorySize = 20;
 
+    /**
+     * Project files watcher. When project file is changed, user will be asked to confirm
+     * loading the changes
+     */
+    protected ProjectWatchdog watchdog;
+
     public ProjectController(CayenneModelerController parent) {
         super(parent);
         this.listenerList = new EventListenerList();
@@ -236,8 +242,29 @@ public class ProjectController extends CayenneController {
     }
 
     public void setProject(Project currentProject) {
-        this.project = currentProject;
-        this.projectPreferences = null;
+        if (this.project != currentProject) // strange enough, this method is called twice
+        // during project opening. Not to disturb
+        // watchdog extra time, adding this check
+        {
+            this.project = currentProject;
+            this.projectPreferences = null;
+
+            if (project == null) // null project -> no files to watch
+            {
+                if (watchdog != null) {
+                    watchdog.interrupt();
+                    watchdog = null;
+                }
+            }
+            else {
+                if (watchdog == null) {
+                    watchdog = new ProjectWatchdog(this);
+                    watchdog.start();
+                }
+
+                watchdog.reconfigure();
+            }
+        }
     }
 
     /**
@@ -1293,8 +1320,8 @@ public class ProjectController extends CayenneController {
     /** Notifies all listeners of the change(add, remove) and does the change. */
     public void fireDbRelationshipEvent(RelationshipEvent e) {
         setDirty(true);
-        
-        if(e.getId() == MapEvent.CHANGE && e.getEntity() instanceof DbEntity) {
+
+        if (e.getId() == MapEvent.CHANGE && e.getEntity() instanceof DbEntity) {
             ((DbEntity) e.getEntity()).dbRelationshipChanged(e);
         }
 
@@ -1449,7 +1476,6 @@ public class ProjectController extends CayenneController {
         return currentState.callbackMethod;
     }
 
-
     /**
      * @return currently selecte entity listener class
      */
@@ -1473,14 +1499,16 @@ public class ProjectController extends CayenneController {
 
     /**
      * adds callback method manipulation listener
+     * 
      * @param listener listener
      */
     public void addCallbackMethodListener(CallbackMethodListener listener) {
         listenerList.add(CallbackMethodListener.class, listener);
     }
-    
+
     /**
      * fires callback method manipulation event
+     * 
      * @param e event
      */
     public void fireCallbackMethodEvent(CallbackMethodEvent e) {
@@ -1508,6 +1536,7 @@ public class ProjectController extends CayenneController {
 
     /**
      * adds listener class manipulation listener
+     * 
      * @param listener listener
      */
     public void addEntityListenerListener(EntityListenerListener listener) {
@@ -1516,6 +1545,7 @@ public class ProjectController extends CayenneController {
 
     /**
      * fires entity listener manipulation event
+     * 
      * @param e event
      */
     public void fireEntityListenerEvent(EntityListenerEvent e) {
@@ -1539,5 +1569,12 @@ public class ProjectController extends CayenneController {
                             + e.getId());
             }
         }
+    }
+
+    /**
+     * @return the project files' watcher
+     */
+    public ProjectWatchdog getProjectWatcher() {
+        return watchdog;
     }
 }
