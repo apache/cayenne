@@ -26,7 +26,7 @@ import java.util.StringTokenizer;
  * 
  * @author Andrus Adamchik
  */
-public class Version implements Comparable {
+public class Version implements Comparable<Object> {
 
     protected String versionString;
     protected int[] versionParts;
