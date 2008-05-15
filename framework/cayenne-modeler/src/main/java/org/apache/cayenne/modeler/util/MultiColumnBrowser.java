@@ -27,7 +27,6 @@ import java.awt.Rectangle;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
@@ -83,9 +82,9 @@ public class MultiColumnBrowser extends JPanel {
     protected Object[] selectionPath;
     protected Dimension preferredColumnSize;
 
-    private List columns;
+    private List<BrowserPanel> columns;
     private ListSelectionListener browserSelector;
-    private List treeSelectionListeners;
+    private List<TreeSelectionListener> treeSelectionListeners;
 
     public MultiColumnBrowser() {
         this(DEFAULT_MIN_COLUMNS_COUNT);
@@ -102,7 +101,7 @@ public class MultiColumnBrowser extends JPanel {
 
         this.minColumns = minColumns;
         this.browserSelector = new PanelController();
-        this.treeSelectionListeners = Collections.synchronizedList(new ArrayList());
+        this.treeSelectionListeners = Collections.synchronizedList(new ArrayList<TreeSelectionListener>());
         initView();
     }
 
@@ -127,11 +126,13 @@ public class MultiColumnBrowser extends JPanel {
         TreeSelectionEvent e =
             new TreeSelectionEvent(this, new TreePath(selectionPath), false, null, null);
         synchronized (treeSelectionListeners) {
-            Iterator it = treeSelectionListeners.iterator();
-            while (it.hasNext()) {
-                TreeSelectionListener listener = (TreeSelectionListener) it.next();
+            for (TreeSelectionListener listener : treeSelectionListeners)
                 listener.valueChanged(e);
-            }
+//            Iterator<TreeSelectionListener> it = treeSelectionListeners.iterator();
+//            while (it.hasNext()) {
+//                TreeSelectionListener listener = (TreeSelectionListener) it.next();
+//                listener.valueChanged(e);
+//            }
         }
     }
 
@@ -195,11 +196,13 @@ public class MultiColumnBrowser extends JPanel {
 
             // update existing browser
             if (columns != null && columns.size() > 0) {
-                Iterator it = columns.iterator();
-                while (it.hasNext()) {
-                    JList column = (JList) it.next();
+                for (JList column : columns)
                     column.setCellRenderer(renderer);
-                }
+//                Iterator it = columns.iterator();
+//                while (it.hasNext()) {
+//                    JList column = (JList) it.next();
+//                    column.setCellRenderer(renderer);
+//                }
             }
         }
     }
@@ -239,7 +242,7 @@ public class MultiColumnBrowser extends JPanel {
     // ====================================================
 
     private void initView() {
-        columns = Collections.synchronizedList(new ArrayList(minColumns));
+        columns = Collections.synchronizedList(new ArrayList<BrowserPanel>(minColumns));
         adjustViewColumns(minColumns);
     }
 
