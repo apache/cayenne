@@ -33,7 +33,7 @@ import org.scopemvc.model.basic.BasicModel;
  */
 public abstract class MapModel extends BasicModel {
     
-    protected Map map;
+    protected Map<String, String> map;
 
     public MapModel() {
         super();
@@ -48,14 +48,14 @@ public abstract class MapModel extends BasicModel {
     /**
      * Saves properties in provided map.
      */
-    public void storeProperties(Map map) {
+    public void storeProperties(Map<String, String> map) {
         String[] properties = supportedProperties();
         for (int i = 0; i < properties.length; i++) {
             map.put(properties[i], this.map.get(properties[i]));
         }
     }
 
-    public void setMap(Map map) {
+    public void setMap(Map<String, String> map) {
         this.map = map;
     }
 
