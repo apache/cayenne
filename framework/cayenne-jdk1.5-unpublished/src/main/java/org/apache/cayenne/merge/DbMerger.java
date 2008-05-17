@@ -56,7 +56,7 @@ public class DbMerger {
 
     /**
      * A method that return true if the given table name should be included. The default
-     * implemntation include all tables.
+     * implementation include all tables.
      */
     public boolean includeTableName(String tableName) {
         return true;
