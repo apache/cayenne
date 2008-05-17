@@ -38,7 +38,7 @@
 <li><a href="../../../Documentation/Overview/Guide to 1.1 Features/index.html">Guide to 1.1 Features</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>This page summarizes the new features and changes introduced in 3.0 release, roughly corresponding to the latest released milestone. Consult RELEASE-NOTES.txt file bundled with each release for the full list of changes, fixes and improvements.</p>
+<div id="ConfluenceContent"><p>This page highlights the new features and changes introduced in 3.0 release, roughly corresponding to the latest released milestone. It is a high level overview and as such is by no means complete. Consult RELEASE-NOTES.txt file included in each release for the full list of changes.</p>
 
 <h2><a name="Guideto3.0Features-DistributionContentsStructure"></a>Distribution Contents Structure</h2>
 
@@ -77,14 +77,30 @@
 <p>Stopped supporting <tt>DerivedDbEntity</tt> - its functionality (aggregate queries) is achieved via EJBQL and other means.</p>
 
 <h3><a name="Guideto3.0Features-Embeddables"></a>Embeddables</h3>
-<p><em>(as of M3 there's no Modeler support)</em></p>
+<p><em>(as of M4 there's no Modeler support)</em></p>
 
 <p>Added a new mapping artifact - Embeddable, that allows to map composite objects to a single table. </p>
 
 <h3><a name="Guideto3.0Features-FlattenedAttributes"></a>Flattened Attributes</h3>
-<p><em>(as of M3 there's no Modeler support)</em></p>
+<p><em>(as of M4 there's no Modeler support)</em></p>
 
 <p>Just like with "flattened" relationships, now there is a way to map an ObjAttribute that spans one or more DbRelationships and is mapped to a column of a joined table.</p>
+
+<h3><a name="Guideto3.0Features-PersistingPrimitivesandaNumberofOtherSimpleProperties"></a>Persisting Primitives and a Number of Other Simple Properties</h3>
+
+<p>DataObjects are now allowed to have primitive properties, such as int, boolean, etc. Also Cayenne can now persist the following extra simple property types: java.util.Calendar, java.math.BigInteger, java.io.Serializable, char[], java.lang.Character, java.lang.Character[], java.lang.Byte[].</p>
+
+<h3><a name="Guideto3.0Features-SupportforToManyRelationshipMapsandCollections."></a>Support for To-Many Relationship Maps and Collections.</h3>
+
+<p>In addition to mapping a to-many relationship as a List, Cayenne now supports to-many Maps (keyed by target object pk, or an arbitrary unique property), Sets and generic Collections. Note that relationship maps is the only conceptually new type of relationships. Collection and Set are not that different from the earlier List behavior (that was a Collection, and just like Set ensured uniqueness of its objects).</p>
+
+<h3><a name="Guideto3.0Features-Supportfor%22extended%22EnumsMapping"></a>Support for "extended" Enums Mapping</h3>
+
+<p>In addition to vanilla Java enums, Cayenne allows enums to provide a custom database value for each enumerated instance by implementing <tt>org.apache.cayenne.ExtendedEnumeration</tt>. This way a persistent value doesn't have to be tied to the enum Java name or position.</p>
+
+<h3><a name="Guideto3.0Features-DbAttributeScaleandPrecision"></a>DbAttribute Scale and Precision</h3>
+
+<p>Changed DbAttribute "precision" property to "scale" (as it meant scale all along) and added a separate "precision" attribute to track precision.</p>
 
 
 <h2><a name="Guideto3.0Features-CayennePersistenceAPI"></a>Cayenne Persistence API</h2>
@@ -104,24 +120,28 @@
 <pre class="code-java">ObjectContext context = DataContext.createDataContext();</pre>
 </div></div>
 
-<p>This protects your code from the actual implementation evolution, allows you to customize context behavior by using interface wrappers. There are plans to update all Cayenne API to return ObjectContext everywhere DataContext might be returned.</p>
+<p>This protects your code from the evolution of the underlying implementation, allows you to customize context behavior by using interface wrappers. There are plans to update all Cayenne API to return ObjectContext everywhere DataContext might be returned.</p>
 
 <h3><a name="Guideto3.0Features-EJBQLQueries"></a>EJB QL Queries</h3>
 <p><em>(as of M3 there's no Modeler support)</em></p>
 
 <p>Never mind the "EJB" in the name. EJBQL queries are a powerful object query mechanism borrowed from the JPA specification and added to Cayenne API. <a href="../../../Documentation/Cayenne Guide/Queries/EJBQLQuery/index.html" title="EJBQLQuery">EJBQLQuery</a> is a first-class citizen, just like SelectQuery.</p>
 
+<h3><a name="Guideto3.0Features-SQLTemplateQueryImprovements"></a>SQLTemplate Query Improvements</h3>
+
+<ul>
+	<li><a href="../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/Advanced SQLTemplate/index.html" title="Advanced SQLTemplate">Significantly simplified</a> the process for fetching DataObjects (vs. DataRows) via a SQLTemplate query with <tt>'setColumnNamesCapitalization'</tt> method.</li>
+	<li>Added support for <a href="../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/SQLTemplate Result Mapping/index.html" title="SQLTemplate Result Mapping">fetching scalar and mixed scalar/object results</a> using <tt>SQLResultSetMapping</tt>.</li>
+</ul>
+
+
 <h3><a name="Guideto3.0Features-EntityLifecycleCallbacks"></a>Entity Lifecycle Callbacks</h3>
 
 <p>Just like EJBQL, lifecycle callbacks is a JPA-inspired feature that allows to perform custom operations at certain points in the object lifecycle. For more details see <a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">this page</a>.</p>
 
-
 <h3><a name="Guideto3.0Features-DataContextChanges"></a>DataContext Changes</h3>
 
-<ul>
-	<li>Implemented <tt>DataContext.rollbackChangesLocally()</tt>. This was missing in 2.0, limiting the operation of the nested DataContexts.</li>
-</ul>
-
+<p>Implemented <tt>DataContext.rollbackChangesLocally()</tt>. This was missing in 2.0, limiting the operation of the nested DataContexts.</p>
 
 <h3><a name="Guideto3.0Features-CacheManagement"></a>Cache Management</h3>
 
@@ -137,6 +157,7 @@
 
 <ul>
 	<li>Added missing DB expressions to ExpressionFactory.</li>
+	<li>Added support for OUTER JOINS <em>(as of M4 there is no <tt>Expression.fromString()</tt> support)</em>.</li>
 	<li>Added support for matching against TRUE and FALSE.</li>
 </ul>
 
@@ -162,28 +183,11 @@
 
 
 
-<h3><a name="Guideto3.0Features-DbAttributeScaleandPrecision"></a>DbAttribute Scale and Precision</h3>
-
-<p>Changed DbAttribute "precision" property to "scale" (as it meant scale all along) and added a separate "precision" attribute to track precision.</p>
-
-<h3><a name="Guideto3.0Features-PrimitivePropertiesinDataObjects"></a>Primitive Properties in DataObjects</h3>
-
-<p>DataObjects are now allowed to have primitive properties, such as int, boolean, etc.</p>
-
-<h3><a name="Guideto3.0Features-SupportforPersistingaNumberofExtraSimplePropertyTypes"></a>Support for Persisting a Number of Extra Simple Property Types</h3>
-
-<p>Cayenne can now persist the following extra simple property types: java.util.Calendar, java.math.BigInteger, java.io.Serializable, char[], java.lang.Character, java.lang.Character[], java.lang.Byte[].</p>
-
-<h3><a name="Guideto3.0Features-SupportforToManyRelationshipMapsandCollections."></a>Support for To-Many Relationship Maps and Collections.</h3>
-
-<p>In addition to mapping a to-many relationship as a List, Cayenne now supports to-many Maps (keyed by target object pk, or an arbitrary unique property), Sets and generic Collections. Note that relationship maps is the only conceptually new type of relationships. Collection and Set are not that different from the earlier List behavior (that was a Collection, and just like Set ensured uniqueness of its objects).</p>
-
 
 <h2><a name="Guideto3.0Features-RemoteObjectPersistence"></a>Remote Object Persistence</h2>
 
 <h3><a name="Guideto3.0Features-ValidationcallbackssupportforROPObjectContext."></a>Validation callbacks support for ROP ObjectContext. </h3>
 <p>Now object validation works the same way on the ROP client as it did on the server.</p>
-
 
 
 
@@ -197,6 +201,8 @@
 	<li>Added lifecycle callback and listener mapping functionality.</li>
 	<li>Added support for merging DataMap changes back to the database.</li>
 	<li>Removed support for DerivedDbEntity</li>
+	<li>Added confirmation dialog for delete actions</li>
+	<li>Reopen Last Project on Startup</li>
 </ul>
 
 
@@ -206,9 +212,10 @@
 <h3><a name="Guideto3.0Features-ImprovedPerformance"></a>Improved Performance</h3>
 
 <ul>
-	<li>Paginated query algorithm is changed, resulting in very significant performance improvements on large data sets (this also improves ROP paginated query performance).</li>
-	<li>ROP new context creation speed is improved, as EntityResolver is cached on the client after first retrieval.</li>
+	<li>Paginated query algorithm is changed, resulting in very significant performance improvements on large data sets (this also improves ROP paginated query performance). This includes faster query times and much smaller memory footprint of an unresolved list.</li>
 	<li>Reduced the scope of lock on a shared cache during commit, that should result in improved concurrency.</li>
+	<li>ROP new context creation speed is improved, as EntityResolver is cached on the client after first retrieval.</li>
+	<li>ROP uses a "diff compression" algorithm on commit, reducing the amount of data passed around.</li>
 </ul>
 
 
@@ -241,7 +248,7 @@
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2007 Apache Software Foundation
+    Copyright &copy;2001-2008 Apache Software Foundation
   </div>
 
 </body>

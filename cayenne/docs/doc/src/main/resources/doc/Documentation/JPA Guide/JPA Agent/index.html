@@ -39,17 +39,39 @@
 <li><a href="../../../Documentation/JPA Guide/JPA Cayenne Provider Properties/index.html">JPA Cayenne Provider Properties</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><p>Cayenne JPA provider requires enhancement of the Entity classes. In J2EE environment container takes care of registering the enhancer classes. In J2SE environment (such as command-line applications, or web containers like Jetty or Tomcat) runtime class enhancement is more tricky.</p>
+<div id="ConfluenceContent"><h2><a name="JPAAgent-CayenneAgent"></a>Cayenne Agent</h2>
+
+<p>Cayenne JPA provider requires enhancement of the Entity classes. In J2EE environment container takes care of registering the enhancer classes. In J2SE environment (such as command-line applications, or web containers like Jetty or Tomcat) runtime class enhancement is more tricky.</p>
 
 <p>A common portable approach to integrate enhancer in J2SE environment is via Java instrumentation API (see <tt>java.lang.instrument</tt> package documentation for details). This requires Cayenne "agent" to be specified in the JVM startup options. Cayenne Agent is a special jar file that comes with Cayenne distribution called <tt>"cayenne-agent-x.x.x.jar"</tt>. It has no external dependencies (not even on Cayenne itself).</p>
 
+
+<h2><a name="JPAAgent-AgentArguments"></a>Agent Arguments</h2>
+
+<p>The following arguments can be optionally passed to Cayenne Agent on startup:</p>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'><tt>jpa-eager-load</tt></td>
+<td class='confluenceTd'>Loads all JPA units available on CLASSPATH. This option ensures correct enhancement of all persistent classes, regardless of the provider loading order. Without this option, classes loaded before their persistence unit was instantiated will not be properly enhanced. However use with caution as this option can slow down the application significantly (i.e. use only if you are having problems with class enhancement).</td>
+</tr>
+</tbody></table>
+
+
+<h2><a name="JPAAgent-Examples"></a>Examples</h2>
+
 <ul>
-	<li>Command-line example:
-<div class="preformatted"><div class="preformattedContent">
-<pre>java -javaagent:/path/to/cayenne-agent-xxxx.jar org.example.Main</pre>
-</div></div></li>
+	<li>Command-line example:</li>
 </ul>
 
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>java -javaagent:/path/to/cayenne-agent-xxxx.jar org.example.Main</pre>
+</div></div>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>java -javaagent:/path/to/cayenne-agent-xxxx.jar=jpa-eager-load org.example.Main</pre>
+</div></div>
 
 <ul>
 	<li>Jetty Example<br/>
@@ -67,7 +89,7 @@
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2007 Apache Software Foundation
+    Copyright &copy;2001-2008 Apache Software Foundation
   </div>
 
 </body>
