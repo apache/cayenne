@@ -67,29 +67,31 @@
 <li><a href="../../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>This chapter is dedicated to the use of expressions as qualifiers. A detailed discussion on expressions in general is provided at <a href="../../../../../Documentation/Cayenne Guide/Expressions/index.html" title="Expressions">Expressions</a>.</td></tr></table>
+<div id="ConfluenceContent"><p>This chapter is dedicated to the use of expressions as qualifiers in SelectQuery. Expressions in general are discussed <a href="../../../../../Documentation/Cayenne Guide/Expressions/index.html" title="Expressions">here</a>.</p>
+
+<h3><a name="QualifierExpressions-BuildingQualifier"></a>Building Qualifier </h3>
 
 <p>The previous chapter showed how to build a query to fetch all data from a single table. In most situations though only a subset of data matching a certain criteria is needed. Cayenne provides an expressions package to control the filtering behavior of the queries. Expressions applied to queries are called "qualifiers".</p>
 
 <p>SelectQuery provides a few ways to initialize and modify the qualifier:</p>
 
 <ul>
-	<li>public <b>SelectQuery</b>(Class objectClass, Expression e)<br/>
-      Passing expression as a second argument in constructor.</li>
-	<li>public void <b>setQualifier</b>(Expression qualifier)<br/>
-      Explicitly setting the qualifier expression.</li>
-	<li>public void <b>andQualifier</b>(Expression e)<br/>
-      Adding an expression to an already existing qualifier using logical AND.</li>
-	<li>public void <b>orQualifier</b>(Expression e)<br/>
-      Adding an expression to an already existing qualifier using logical OR.</li>
+	<li><tt>public <b>SelectQuery</b>(Class&lt;?&gt; objectClass, Expression e)</tt> : Passing expression as a second argument in constructor.</li>
+	<li><tt>public void <b>setQualifier</b>(Expression qualifier)</tt> : Explicitly setting the qualifier expression.</li>
+	<li><tt>public void <b>andQualifier</b>(Expression e)</tt> : Chaining an expression with an already existing qualifier using logical AND.</li>
+	<li><tt>public void <b>orQualifier</b>(Expression e)</tt> : Chaining an expression with an already existing qualifier using logical OR.</li>
 </ul>
-</div>
+
+
+<h3><a name="QualifierExpressions-SpecifyingJoinSemantics"></a>Specifying Join Semantics</h3>
+
+<p>Each <a href="../../../../../Documentation/Cayenne Guide/Expressions/Path Expressions/index.html" title="Path Expressions">path expression</a> in a qualifier results in a SQL JOIN in a generated SQL. By default all joins are INNER joins. If LEFT OUTER joins are desirable, users can specify them with a plus sign ("&#43;") after each affected relationship segment in a path expression. E.g. a path like <tt>"paintingArray&#43;.name"</tt> would result in a LEFT OUTER JOIN for an Artist SelectQuery, ensuring that artists without joins are also included in the query result.</p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2007 Apache Software Foundation
+    Copyright &copy;2001-2008 Apache Software Foundation
   </div>
 
 </body>

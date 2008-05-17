@@ -50,9 +50,6 @@
 </ul>
 </div>
 <div id="ConfluenceContent"><h2><a name="LifecycleCallbacks-LifecycleCallbacks"></a>Lifecycle Callbacks</h2>
-<p><em>(since 3.0M1)</em></p>
-
-<p><em>TODO: annotations, Modeler support</em></p>
 
 <p>Users can register callback methods that will be invoked during the lifecycle of persistent objects. Callback mechanism matches closely the one defined in the <a href="../../../Documentation/JPA Guide/index.html" title="JPA Guide">JPA Specification</a> (except that it works with JDK 1.4 and allows preconfigured listeners). There are seven lifecycle callbacks described below (PrePersist, PostPersist, PreUpdate, PostUpdate, PreRemove, PostRemove, PostLoad). There are two types of invocations for each one of them: <b>callback on a persistent object</b> itself or a <b>callback on  an arbitrary listener object</b>.</p>
 
@@ -152,9 +149,7 @@
 
 <h2><a name="LifecycleCallbacks-RegisteringCallbacks"></a>Registering Callbacks</h2>
 
-<p>Listeners and persistent object callbacks can be mapped in the Modeler <em>(TODO: GUI not implemented yet</em>)_</p>
-
-<p>Alternatively callbacks can be registered with <tt>LifecycleCallbackRegistry</tt>, which is shared by all contexts within DataDomain.</p>
+<p>Normally listeners and persistent object callbacks are mapped in the Modeler, but here we'll show how to do that in the code. Callbacks can be registered with <tt>LifecycleCallbackRegistry</tt>, which is shared by all contexts within DataDomain.</p>
 
 <p>Obtaining the shared registry instance:</p>
 <div class="code"><div class="codeContent">
@@ -240,7 +235,7 @@ registry.addListener(LifecycleListener.PRE_UPDATE, Artist.class, listener, <span
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2007 Apache Software Foundation
+    Copyright &copy;2001-2008 Apache Software Foundation
   </div>
 
 </body>

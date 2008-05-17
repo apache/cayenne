@@ -83,9 +83,87 @@
 </ul>
 
 
+<h3><a name="Upgrade-Upgradingto3.0"></a>Upgrading to 3.0</h3>
+
+<ul>
+	<li>If you are still using ObjectStyle.org releases of Cayenne, read "Upgrading to 2.0" for the information on how to change the package names.</li>
+</ul>
+
+
+<ul>
+	<li>Java 5 is now required as a minimum for Cayenne Modeler and the Cayenne libraries.</li>
+</ul>
+
+
+<ul>
+	<li>After the move to Java 5, generics have been implemented in many of the Cayenne APIs. If you don't use generics in your project this should not affect you, but if you do you will need to review any new compiler errors or warnings. The effect of generics is at compile time only, so their introduction will not change the runtime behaviour of your application once compiled.</li>
+</ul>
+
+
+<ul>
+	<li>Jar files:
+	<ul>
+		<li>all jar files now include version numbers in their names.</li>
+		<li>"cayenne-nodeps.jar" is renamed to "cayenne-server-x.x.x.jar"</li>
+		<li>"fat" cayenne.jar file that included dependencies is no longer distributed. All dependencies that it contained are included as separate jars under "cayenne-x.x.x/lib/third-party/". The new "cayenne-server-x.x.x.jar" plus dependencies should be used in place of cayenne.jar.</li>
+		<li>A new "cayenne-agent-x.x.x.jar" is included. It is used for class enhancement with POJO's and JPA. "Classic" Cayenne users can ignore this file.</li>
+	</ul>
+	</li>
+</ul>
+
+
+<ul>
+	<li>Ant class generator is using what was called "version 1.2" by default. This means that if you were<br/>
+  using custom Velocity templates in 1.1 mode, you should either change the templates or specify 'version="1.1"'<br/>
+  in the buildfile explicitly.</li>
+</ul>
+
+
+<ul>
+	<li>Cross-platform Modeler Startup is now done without a batch file or a shell script.<br/>
+  A "fat" CayenneModeler.jar is included in the "cayenne-x.x.x/bin" directory<br/>
+  and can be run either by double-clicking the jar (on platforms that support that)<br/>
+  or by running "java -jar CayenneModeler.jar".</li>
+</ul>
+
+
+<ul>
+	<li>FireBird adapter is no longer distributed with Cayenne. The one we had was half-working<br/>
+  and we could not support it anymore.</li>
+</ul>
+
+
+<ul>
+	<li>DerivedDbEntities are removed from Cayenne.</li>
+</ul>
+
+
+<ul>
+	<li>DVModeler and DataViews are no longer shipped with Cayenne. See <span class="nobr"><a href="http://cwiki.apache.org/CAYDV/" title="Visit page outside Confluence" rel="nofollow">http://cwiki.apache.org/CAYDV/<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> for more details.</li>
+</ul>
+
+
+<ul>
+	<li>DataContextTransactionEventListener, DataObjectTransactionEventListener, DataContextEvent are removed.</li>
+</ul>
+
+
+<ul>
+	<li>Long PK: Cayenne now supports "long" primary key generation (previously it only supported "int"). You may<br/>
+  have to change the existing PK lookup tables on some databases to take advantage of that (this is optional,<br/>
+  and is needed if you expect your PK to exceed maximum value of an "int" allowed in your database). E.g. on <br/>
+  MySQL you may run the following SQL:</li>
+</ul>
+
+
+  <div class="code"><div class="codeContent">
+<pre class="code-java">ALTER TABLE AUTO_PK_SUPPORT CHANGE COLUMN NEXT_ID NEXT_ID BIGINT NOT NULL;</pre>
+</div></div>
+
+
 <h3><a name="Upgrade-Upgradingto2.0"></a>Upgrading to 2.0</h3>
 
-<p>2.0 is a mirror of 1.2 (third digit in release number is a patch level that matches 1.2 version, e.g. "2.0.1" has the same patch level as "1.2.1"). The main change is that all packages were renamed from "org.objectstyle.&#42;" to "org.apache.&#42;". This affects user API and also mapping XML files (as they sometimes reference Cayenne classes by name).</p>
+<p>2.0 is a mirror of 1.2 (third digit in release number is a patch level that matches 1.2 version, e.g. "2.0.1" has the same patch level as "1.2.1"). The main change is that all packages were renamed from "org.objectstyle.cayenne&#42;" to "org.apache.cayenne.&#42;". This affects user API and also mapping XML files (as they sometimes reference Cayenne classes by name).</p>
 
 <ul>
 	<li>First you need to upgrade the mapping files as described in general upgrade instructions above.</li>
@@ -93,12 +171,12 @@
 
 
 <ul>
-	<li>Upgrading the code: Replace "org.objectstyle." with "org.apache." everywhere in imports and do a clean recompile.</li>
+	<li>Upgrading the code: Replace "org.objectstyle.cayenne" with "org.apache.cayenne" everywhere in imports and do a clean recompile.</li>
 </ul>
 
 
 <ul>
-	<li>Upgrading logging configuration: If you are using custom logging configuration file, make sure that all the Cayenne loggers are changed from "org.objectstyle" to "org.apache".</li>
+	<li>Upgrading logging configuration: If you are using custom logging configuration file, make sure that all the Cayenne loggers are changed from "org.objectstyle.cayene" to "org.apache.cayenne".</li>
 </ul>
 
 
@@ -181,7 +259,7 @@
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2007 Apache Software Foundation
+    Copyright &copy;2001-2008 Apache Software Foundation
   </div>
 
 </body>

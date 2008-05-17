@@ -51,17 +51,16 @@
 
 <h3><a name="RemoteObjectPersistenceInstallation-ServerJarFiles"></a>Server Jar Files</h3>
 
-<p>Cayenne web service is no different from a regular Cayenne application, so it requires <b><tt>cayenne.jar</tt></b> or <b><tt>cayenne-nodeps.jar</tt></b>. One additional required third party library is <b><tt>hessian.jar</tt></b>, version 3.0.20. Hessian can be downloaded from <span class="nobr"><a href="http://www.caucho.com/hessian/" title="Visit page outside Confluence" rel="nofollow">http://www.caucho.com/hessian/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</p>
+<p>Cayenne web service is no different from a regular Cayenne application, so it requires <b><tt>cayenne-server.jar</tt></b> and all standard dependencies. One additional required third party library is <b><tt>hessian.jar</tt></b>, version 3.1.5, which is included in "lib/third-party" or can be downloaded from <span class="nobr"><a href="http://www.caucho.com/hessian/" title="Visit page outside Confluence" rel="nofollow">http://www.caucho.com/hessian/<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>.</p>
 
 <h3><a name="RemoteObjectPersistenceInstallation-ClientJarFiles"></a>Client Jar Files</h3>
 
-<p>On the client <b><tt>cayenne-client-nodeps.jar</tt></b> is needed. This is a stripped down version of Cayenne runtime. It doesn't bundle any dependencies, so the following third-party libraries need to be installed: </p>
+<p>On the client <b><tt>cayenne-client.jar</tt></b> is needed. This is a stripped down version of Cayenne runtime. The following third party dependencies are needed (all included in "lib/third-party" directory of the distribution):</p>
 
 <ul>
 	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/logging/" title="Visit page outside Confluence" rel="nofollow">Apache Commons Logging<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 1.1.</li>
-	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/lang/" title="Visit page outside Confluence" rel="nofollow">Apache Commons Lang<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 2.1.</li>
 	<li><span class="nobr"><a href="http://jakarta.apache.org/commons/collections" title="Visit page outside Confluence" rel="nofollow">Apache Commons Collections<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 3.1.</li>
-	<li><span class="nobr"><a href="http://www.caucho.com/hessian/" title="Visit page outside Confluence" rel="nofollow">Hessian Library<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 3.0.20.</li>
+	<li><span class="nobr"><a href="http://www.caucho.com/hessian/" title="Visit page outside Confluence" rel="nofollow">Hessian Library<sup><img class="rendericon" src="../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span>, version 3.1.5.</li>
 </ul>
 </div>
 </div>
@@ -69,7 +68,7 @@
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2007 Apache Software Foundation
+    Copyright &copy;2001-2008 Apache Software Foundation
   </div>
 
 </body>

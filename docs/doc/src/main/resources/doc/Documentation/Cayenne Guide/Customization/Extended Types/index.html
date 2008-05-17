@@ -78,38 +78,13 @@
 
 <h3><a name="ExtendedTypes-Threetierconsiderations"></a>Three tier considerations</h3>
 
-<p>If you are using Cayenne in a three tier (ROP) environment, serialization of the extended type becomes important. More information can be found <a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Customization/index.html" title="Remote Object Persistence Customization">here.</a></p>
-
-<h3><a name="ExtendedTypes-MappingJavaEnums"></a>Mapping Java Enums</h3>
-
-<p>Note that <span class="nobr"><a href="http://java.sun.com/j2se/1.5.0/docs/guide/language/enums.html" title="Visit page outside Confluence" rel="nofollow">custom enums<sup><img class="rendericon" src="../../../../images/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> are supported by Cayenne natively. Cayenne stores an enum name in the database if the corresponding database column is a character column, and enum ordinal, if the column is numeric. So in a simple case no special ExtendedType is needed to map enums. Still often you may need one when you want to store a non-standard enum property in the database. </p>
-
-<p>Take for example the following enum:</p>
-<div class="code"><div class="codeContent">
-<pre class="code-java"><span class="code-keyword">public</span> <span class="code-keyword">enum</span> MyEnum {
-
-	E1(55), E2(97), E3(101);
-	
-	<span class="code-keyword">private</span> <span class="code-object">int</span> code;
-	
-	<span class="code-keyword">private</span> MyEnum(<span class="code-object">int</span> code) {
-		<span class="code-keyword">this</span>.code = code;
-	}
-	
-	<span class="code-keyword">public</span> <span class="code-object">int</span> getCode() {
-		<span class="code-keyword">return</span> code;
-	}
-}</pre>
-</div></div>
-
-<p>To store and retrieve string values "E1", "E2", "E3" no ExtendedType is needed. To store "code" value a custom ExtendedType is needed. </p>
-</div>
+<p>If you are using Cayenne in a three tier (ROP) environment, serialization of the extended type becomes important. More information can be found <a href="../../../../Documentation/Remote Object Persistence Guide/Remote Object Persistence Customization/index.html" title="Remote Object Persistence Customization">here.</a></p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2007 Apache Software Foundation
+    Copyright &copy;2001-2008 Apache Software Foundation
   </div>
 
 </body>

@@ -54,10 +54,7 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent">
-<p>If a stored procedure is known to return at least one result set, procedure queries can be executed just like normal select queries. Of course in addtion to returning data, such procedures can perform any other database operations.</p>
-
-<table cellpadding='5' width='85%' cellspacing='8px' class='infoMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>Currently all procedure queries will return data rows, not DataObjects. If the returned row (Map) contains all the attributes needed to recreate a DataObject, this can be done by calling <tt>DataContext.objectFromDataRow()</tt>.</td></tr></table>
+<div id="ConfluenceContent"><p>If a stored procedure is known to return at least one result set, procedure queries can be executed just like normal select queries. Of course in addition to returning data, such procedures can perform any other database operations.</p>
 
 <p>Below is an example of creating a ProcedureQuery, initializing its parameters, and processing execution results.</p>
 
@@ -66,22 +63,19 @@
 
 <span class="code-comment">// <span class="code-quote">"my_procedure"</span> is a name of a stored procedure,
 </span><span class="code-comment">// that must exist in the DataMap
-</span>ProcedureQuery query = <span class="code-keyword">new</span> ProcedureQuery(<span class="code-quote">"my_procedure"</span>);
+</span>ProcedureQuery query = <span class="code-keyword">new</span> ProcedureQuery(<span class="code-quote">"my_procedure"</span>, Artist.class);
 
 <span class="code-comment">// Set <span class="code-quote">"IN"</span> parameter values
 </span>query.addParam(<span class="code-quote">"paramter1"</span>, <span class="code-quote">"abc"</span>);
 query.addParam(<span class="code-quote">"parameter2"</span>, <span class="code-keyword">new</span> <span class="code-object">Integer</span>(3000));
 
 <span class="code-comment">// run query as a normal select query
-</span>List rows = ctxt.performQuery(query);
+</span>List objects = ctxt.performQuery(query);
 
 <span class="code-comment">// process results
-</span>Iterator it = rows.iterator();
+</span>Iterator it = objects.iterator();
 <span class="code-keyword">while</span>(it.hasNext()) {
-  Map row = (Map)it.next();
-  
-  <span class="code-comment">// <span class="code-keyword">do</span> something with result, e.g. instantiate a real DataObject
-</span>  MyDataObject object = (MyDataObject)ctxt.objectFromDataRow(<span class="code-quote">"MyDataObject"</span>, row);
+  Artist artist = (Artist) it.next();
   ....
 }</pre>
 </div></div></div>
@@ -90,7 +84,7 @@ query.addParam(<span class="code-quote">"parameter2"</span>, <span class="code-k
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2007 Apache Software Foundation
+    Copyright &copy;2001-2008 Apache Software Foundation
   </div>
 
 </body>

@@ -57,17 +57,26 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent">
-<p>Before we start discussing how to build expressions, it is important to understand one group of expressions widely used in Cayenne: path expressions. There are two types of path expressions: object path used to navigate graphs of Java objects that follow Java Bean property naming conventions and database path used to navigate the database schema.</p>
+<div id="ConfluenceContent"><p>Before we start discussing how to build expressions, it is important to understand one group of expressions widely used in Cayenne: <em>path expressions</em>. There are two types of path expressions: object path used to navigate graphs of Java objects that follow Java Bean property naming conventions and database path used to navigate the database schema. General form of path expressions is the following:</p>
+
+<div class="preformatted"><div class="preformattedContent">
+<pre>[db:]segment[+][.segment[+]...]</pre>
+</div></div>
+
+<ul>
+	<li>"db:" an optional prefix indicating the the following path is a DB path.</li>
+	<li>"segment" - a name of a relationship or an attribute in the path. Path must have at least one segment; segments are separated by dot (".").</li>
+	<li>"+" - OUTER JOIN indicator: a plus sign at the end of a segment name indicates that when a JOIN is created for the path, it must be an OUTER JOIN.</li>
+</ul>
+
 
 <h3><a name="PathExpressions-ObjectPathExpressions"></a>Object Path Expressions</h3>
 <p>An Object Path Expression is a property navigation path. Such path is represented by a String made of dot-separated names of properties of a Java Bean class. E.g. a path expression "toArtist.artistName" is a valid property path for a Painting class, pointing to the name of the Artist who created a given Painting. A few more examples:</p>
 
 <ul>
-	<li><b>paintingTitle</b><br/>
-      Can be used to navigate to the value of "paintingTitle" property of the Painting class.</li>
-	<li><b>toArtist.exhibitArray.closingDate</b><br/>
-      Can be used to navigate to a closing date of any of the exhibits of a Painting's Artist object.</li>
+	<li><tt>paintingTitle</tt> Can be used to navigate to the value of "paintingTitle" property of the Painting class.</li>
+	<li><tt>toArtist.exhibitArray.closingDate</tt> Can be used to navigate to a closing date of any of the exhibits of a Painting's Artist object.</li>
+	<li><tt>toArtist.exhibitArray+.closingDate</tt> Same with an OUTER JOIN on exhibits</li>
 </ul>
 
 
@@ -77,14 +86,12 @@
 <p>Database Path Expressions provide an easy way to navigate through DB table joins. Instead of complex join semantics such expressions utilize the names of DbRelationships defined in Cayenne DataMap. Translating the above object path examples into the DB realm, database path expressions might look like this:</p>
 
 <ul>
-	<li><b>PAINTING_TITLE</b><br/>
-      Can be used to match the value of "PAINTING_TITLE" column of a PAINTING table.</li>
-	<li><b>toArtist.artistExhibitArray.toExhibit.CLOSING_DATE</b><br/>
-      Can be used to match a closing date of any of the exhibits of a related artist record.</li>
+	<li><tt>db:PAINTING_TITLE</tt> Can be used to match the value of "PAINTING_TITLE" column of a PAINTING table.</li>
+	<li><tt>db:toArtist.artistExhibitArray.toExhibit.CLOSING_DATE</tt> Can be used to match a closing date of any of the exhibits of a related artist record.</li>
 </ul>
 
 
-<p>Though database path expressions are widely used by Cayenne framework internally, they are rarely used in applications. There are only a few cases when their explicit use is justified.</p>
+<p>Though database path expressions are widely used by Cayenne framework internally, they are rarely used in applications. Although there are a few cases when their explicit use is justified.</p>
 
 <h3><a name="PathExpressions-MatchingPathExpressions"></a>Matching Path Expressions</h3>
 
@@ -94,7 +101,7 @@
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2007 Apache Software Foundation
+    Copyright &copy;2001-2008 Apache Software Foundation
   </div>
 
 </body>

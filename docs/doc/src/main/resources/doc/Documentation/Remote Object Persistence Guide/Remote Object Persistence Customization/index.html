@@ -55,7 +55,7 @@
 
 
 <ul>
-	<li>Hessian will then set the values for all fields in your custom extended type. These fields therefore need to be serializable in themselves unless they are set as volatile.</li>
+	<li>Hessian will then set the values for all fields in your custom extended type, except those set as transient. These fields therefore need to be serializable in themselves.</li>
 </ul>
 
 
@@ -81,7 +81,7 @@
   <div style="height: 12px; background-image: url('../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2007 Apache Software Foundation
+    Copyright &copy;2001-2008 Apache Software Foundation
   </div>
 
 </body>

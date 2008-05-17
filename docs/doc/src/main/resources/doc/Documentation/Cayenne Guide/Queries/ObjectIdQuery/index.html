@@ -61,10 +61,7 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent">
-<p><em>(DataObjectUtils API below is available since 1.2M10. SingleObjectQuery, a precursor of ObjectIdQuery, was available since 1.2M9. In 1.2M12 SingleObjectQuery was renamed to ObjectIdQuery)</em></p>
-
-<p><tt>ObjectIdQuery</tt> is a query that selects objects matching an ObjectId. Considering that ObjectId must be unique, the result of such query is a single object or no objects.</p>
+<div id="ConfluenceContent"><p><tt>ObjectIdQuery</tt> is a query that selects objects matching an ObjectId. Considering that ObjectId must be unique, the result of such query is a single object or no objects.</p>
 
 <p>Normally if you need to find an object that matches a certain primary key value, you would use <tt>DataObjectUtils.objectForPK(DataContext,String,int)</tt>. This method will look up an object in the cache, and only run a query if it is not yet cached. <tt>ObjectIdQuery</tt> gives the user more control of the object caching behavior. It supports three possible caching policies:</p>
 
@@ -119,7 +116,7 @@ Artist object = (Artist) DataObjectUtils.objectForQuery(context, query);
   <div style="height: 12px; background-image: url('../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>
 
   <div class="smalltext copyright">
-    Copyright &copy;2001-2007 Apache Software Foundation
+    Copyright &copy;2001-2008 Apache Software Foundation
   </div>
 
 </body>
