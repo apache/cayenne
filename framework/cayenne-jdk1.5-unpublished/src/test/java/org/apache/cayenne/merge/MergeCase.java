@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -32,9 +35,12 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.xml.sax.InputSource;
 
 public class MergeCase extends CayenneCase {
 
@@ -58,22 +64,36 @@ public class MergeCase extends CayenneCase {
             }
         };
     }
-    
+
     protected List<MergerToken> createMergeTokens() {
         return createMerger().createMergeTokens(node, map);
+    }
+
+    protected DataMap createDataMap() {
+        // clone DataMap by saving and loading from XML as to avoid modifying shared test
+        // DataMap
+        DataMap originalMap = getDomain().getMap("testmap");
+        StringWriter out = new StringWriter();
+        PrintWriter outWriter = new PrintWriter(out);
+        originalMap.encodeAsXML(outWriter);
+        outWriter.flush();
+        StringReader in = new StringReader(out.toString());
+        DataMap map = new MapLoader().loadDataMap(new InputSource(in));
+
+        // map must operate in an EntityResolve namespace...
+        EntityResolver testResolver = new EntityResolver();
+        testResolver.addDataMap(map);
+        return map;
     }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        // getAccessStack().dropSchema();
-        // getAccessStack().dropPKSupport();
-
         deleteTestData();
         createTestData("testArtists");
         node = getDomain().getDataNodes().iterator().next();
-        map = getDomain().getMap("testmap");
+        map = createDataMap();
 
         filterDataMap(node, map);
 
