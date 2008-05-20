@@ -47,6 +47,9 @@ public class ResourceLocatorTest extends TestCase {
             throw new Exception("Error deleting temporary file: " + fTmpFileInCurrentDir);
     }
 
+    /**
+     * @deprecated since 3.0 unused
+     */
     public void testFindResourceInCurrentDirectory() throws java.lang.Exception {
         InputStream in = ResourceLocator.findResourceInFileSystem(fTmpFileName);
         try {
@@ -57,6 +60,9 @@ public class ResourceLocatorTest extends TestCase {
         }
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public void testClassBaseUrl() throws java.lang.Exception {
         String me = ResourceLocator.classBaseUrl(this.getClass());
         assertNotNull(me);
@@ -64,6 +70,9 @@ public class ResourceLocatorTest extends TestCase {
                 || me.startsWith("file:"));
     }
 
+    /**
+     * @deprecated since 3.0 unused
+     */
     public void testFindResourceInClasspath() throws java.lang.Exception {
         InputStream in = ResourceLocator.findResourceInClasspath("testfile1.txt");
         try {

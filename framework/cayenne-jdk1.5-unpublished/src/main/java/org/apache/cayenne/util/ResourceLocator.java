@@ -57,6 +57,8 @@ public class ResourceLocator {
      * Returns a resource as InputStream if it is found in CLASSPATH or <code>null</code>
      * otherwise. Lookup is normally performed in all JAR and ZIP files and directories
      * available to the ClassLoader.
+     * 
+     * @deprecated since 3.0 unused.
      */
     public static InputStream findResourceInClasspath(String name) {
         try {
@@ -80,6 +82,8 @@ public class ResourceLocator {
      * <code>null</code> otherwise. Lookup is first performed relative to the user's
      * home directory (as defined by "user.home" system property), and then relative to
      * the current directory.
+     * 
+     * @deprecated since 3.0 unused
      */
     public static InputStream findResourceInFileSystem(String name) {
         try {
@@ -213,6 +217,8 @@ public class ResourceLocator {
     /**
      * Returns a base URL as a String from which this class was loaded. This is normally a
      * JAR or a file URL, but it is ClassLoader dependent.
+     * 
+     * @deprecated since 3.0 unused.
      */
     public static String classBaseUrl(Class<?> aClass) {
         String pathToClass = aClass.getName().replace('.', '/') + ".class";
