@@ -16,6 +16,7 @@ Date:
 Changes/New Features Since M4:
 
 CAY-1055 Right-click contextual menu for entities/attributes/relationships that would include common operations, like "delete".
+CAY-1058 Add a maven plugin for starting up the modeler.
 
 ----------------------------------
 Release: 3.0M4
