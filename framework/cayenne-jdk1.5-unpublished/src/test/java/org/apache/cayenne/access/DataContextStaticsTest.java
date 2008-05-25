@@ -74,16 +74,7 @@ public class DataContextStaticsTest extends CayenneCase {
         }
 
         @Override
-        public boolean canInitialize() {
-            return true;
-        }
-
-        @Override
         public void initialize() throws Exception {
-        }
-
-        @Override
-        public void didInitialize() {
         }
 
         @Override

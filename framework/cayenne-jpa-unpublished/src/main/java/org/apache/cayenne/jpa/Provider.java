@@ -558,16 +558,7 @@ public class Provider implements PersistenceProvider {
     class LazyConfiguration extends Configuration {
 
         @Override
-        public boolean canInitialize() {
-            return true;
-        }
-
-        @Override
         public void initialize() throws Exception {
-        }
-
-        @Override
-        public void didInitialize() {
         }
 
         @Override

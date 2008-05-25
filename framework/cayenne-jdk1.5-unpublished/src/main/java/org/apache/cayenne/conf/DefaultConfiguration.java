@@ -124,18 +124,6 @@ public class DefaultConfiguration extends Configuration {
     }
 
     /**
-     * Default implementation of {@link Configuration#canInitialize}. Creates a
-     * ResourceLocator suitable for loading from the CLASSPATH, unless it has already been
-     * set in a subclass. Always returns <code>true</code>.
-     */
-    @Override
-    public boolean canInitialize() {
-        logger.debug("canInitialize started.");
-        // allow to proceed
-        return true;
-    }
-
-    /**
      * Initializes all Cayenne resources. Loads all configured domains and their data
      * maps, initializes all domain Nodes and their DataSources.
      */
@@ -173,16 +161,6 @@ public class DefaultConfiguration extends Configuration {
     }
 
     /**
-     * Default implementation of {@link Configuration#didInitialize}. Currently does
-     * nothing except logging.
-     */
-    @Override
-    public void didInitialize() {
-        // empty default implementation
-        logger.debug("didInitialize finished.");
-    }
-
-    /**
      * Returns the default ResourceLocator configured for CLASSPATH lookups.
      */
     @Override
@@ -208,9 +186,9 @@ public class DefaultConfiguration extends Configuration {
     }
 
     /**
-     * Returns the {@link org.apache.cayenne.map.DataMap} configuration from a
-     * specified location or <code>null</code> if it cannot be found. Uses the
-     * configured {@link ResourceLocator} to find the file.
+     * Returns the {@link org.apache.cayenne.map.DataMap} configuration from a specified
+     * location or <code>null</code> if it cannot be found. Uses the configured
+     * {@link ResourceLocator} to find the file.
      */
     @Override
     protected InputStream getMapConfiguration(String location) {

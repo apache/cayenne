@@ -193,9 +193,16 @@ public abstract class Configuration {
 
     /**
      * Indicates whether {@link #initialize}can be called. Returning <code>false</code>
-     * allows new instances to delay or refuse the initialization process.
+     * allows new instances to delay or refuse the initialization process. This
+     * impementation returns true unconditionally.
+     * 
+     * @deprecated since 3.0 - this method is redundant, as subclasses can prevent
+     *             initialization by overriding {@link #initialize()} and throwing an
+     *             exception.
      */
-    public abstract boolean canInitialize();
+    public boolean canInitialize() {
+        return true;
+    }
 
     /**
      * Initializes the new instance.
@@ -205,9 +212,14 @@ public abstract class Configuration {
     public abstract void initialize() throws Exception;
 
     /**
-     * Called after successful completion of {@link #initialize}.
+     * Called after successful completion of {@link #initialize}. This implementation is
+     * a noop.
+     * 
+     * @deprecated since 3.0 subclasses are recommended to override {@link #initialize()}.
      */
-    public abstract void didInitialize();
+    public void didInitialize() {
+        // noop
+    }
 
     /**
      * Returns the resource locator used for finding and loading resources.
@@ -217,8 +229,8 @@ public abstract class Configuration {
     /**
      * Returns a DataDomain as a stream or <code>null</code> if it cannot be found.
      * 
-     * @deprecated since 3.0 This method is specific to subclass, so it should not be in the
-     *             superclass.
+     * @deprecated since 3.0 This method is specific to subclass, so it should not be in
+     *             the superclass.
      */
     protected InputStream getDomainConfiguration() {
         throw new UnsupportedOperationException();

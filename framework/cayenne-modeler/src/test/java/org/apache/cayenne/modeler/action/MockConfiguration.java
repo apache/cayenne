@@ -25,17 +25,6 @@ import org.apache.cayenne.util.ResourceLocator;
 
 public class MockConfiguration extends Configuration {
 
-    public MockConfiguration() {
-        super();
-    }
-
-    public boolean canInitialize() {
-        return true;
-    }
-
-    public void didInitialize() {
-    }
-
     protected InputStream getMapConfiguration(String name) {
         return null;
     }
