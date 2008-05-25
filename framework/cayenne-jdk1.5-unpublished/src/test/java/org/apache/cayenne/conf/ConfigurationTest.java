@@ -20,18 +20,16 @@
 package org.apache.cayenne.conf;
 
 import java.io.File;
-import java.io.InputStream;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.project.ProjectDataSourceFactory;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.ResourceLocator;
 
 public class ConfigurationTest extends CayenneCase {
 
-    public void testDomain() throws java.lang.Exception {
-        Configuration cfg = new Config();
+    public void testDomain() throws Exception {
+        Configuration cfg = new MockConfiguration();
 
         DataDomain d1 = new DataDomain("d1");
         cfg.addDomain(d1);
@@ -40,83 +38,47 @@ public class ConfigurationTest extends CayenneCase {
         cfg.removeDomain(d1.getName());
         assertNull(cfg.getDomain(d1.getName()));
     }
-    
+
     /**
      * @deprecated since 3.0
      */
-	public void testOverrideFactory() throws java.lang.Exception {
-		Configuration cfg = new Config();
+    public void testOverrideFactory() throws java.lang.Exception {
+        Configuration cfg = new MockConfiguration();
 
         assertNull(cfg.getDataSourceFactory());
-		ProjectDataSourceFactory factory = new ProjectDataSourceFactory(null);
+        ProjectDataSourceFactory factory = new ProjectDataSourceFactory(null);
         cfg.setDataSourceFactory(factory);
         assertSame(factory, cfg.getDataSourceFactory());
-	}
+    }
 
-	public void testDefaultConfigurationConstructorWithNullName() {
-		try {
-			new DefaultConfiguration(null);
-			fail("expected ConfigurationException!");
-		}
-		catch (ConfigurationException ex) {
-			// OK
-		}
-	}
-
-	public void testFileConfigurationConstructorWithNullFile() {
-		try {
-			new FileConfiguration((File)null);
-			fail("expected ConfigurationException!");
-		}
-		catch (ConfigurationException ex) {
-			// OK
-		}
-	}
-
-	public void testFileConfigurationConstructorWithNullName() {
-		try {
-			new FileConfiguration((String)null);
-			fail("expected ConfigurationException!");
-		}
-		catch (ConfigurationException ex) {
-			// OK
-		}
-	}
-
-    /** Concrete Configuration subclass used for tests. */
-    public static class Config extends Configuration {
-
-		@Override
-        public boolean canInitialize() {
-			return true;
-		}
-
-		@Override
-        public void initialize() throws Exception {
-		}
-
-		@Override
-        public void didInitialize() {
-		}
-
-		@Override
-        public ResourceLocator getResourceLocator() {
-			return null;
-		}
-
-		@Override
-        protected InputStream getDomainConfiguration() {
-            return null;
+    public void testDefaultConfigurationConstructorWithNullName() {
+        try {
+            new DefaultConfiguration(null);
+            fail("expected ConfigurationException!");
         }
-
-		@Override
-        protected InputStream getMapConfiguration(String location) {
-            return null;
-        }
-        
-        @Override
-        protected InputStream getViewConfiguration(String location) {
-            return null;
+        catch (ConfigurationException ex) {
+            // OK
         }
     }
+
+    public void testFileConfigurationConstructorWithNullFile() {
+        try {
+            new FileConfiguration((File) null);
+            fail("expected ConfigurationException!");
+        }
+        catch (ConfigurationException ex) {
+            // OK
+        }
+    }
+
+    public void testFileConfigurationConstructorWithNullName() {
+        try {
+            new FileConfiguration((String) null);
+            fail("expected ConfigurationException!");
+        }
+        catch (ConfigurationException ex) {
+            // OK
+        }
+    }
+
 }

@@ -216,10 +216,13 @@ public abstract class Configuration {
 
     /**
      * Returns a DataDomain as a stream or <code>null</code> if it cannot be found.
+     * 
+     * @deprecated since 3.0 This method is specific to subclass, so it should not be in the
+     *             superclass.
      */
-    // TODO: this method is only used in sublcass (DefaultConfiguration),
-    // should we remove it from here?
-    protected abstract InputStream getDomainConfiguration();
+    protected InputStream getDomainConfiguration() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns a DataMap with the given name or <code>null</code> if it cannot be found.

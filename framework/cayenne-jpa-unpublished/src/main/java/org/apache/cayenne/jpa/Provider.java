@@ -576,11 +576,6 @@ public class Provider implements PersistenceProvider {
         }
 
         @Override
-        protected InputStream getDomainConfiguration() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         protected InputStream getMapConfiguration(String name) {
             throw new UnsupportedOperationException();
         }

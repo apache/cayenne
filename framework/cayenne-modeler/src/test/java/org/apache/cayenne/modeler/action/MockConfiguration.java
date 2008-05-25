@@ -36,11 +36,6 @@ public class MockConfiguration extends Configuration {
     public void didInitialize() {
     }
 
-    protected InputStream getDomainConfiguration() {
-        throw new UnsupportedOperationException(
-                "this is an in-memory mockup...'getDomainConfiguration' is not implemented.");
-    }
-
     protected InputStream getMapConfiguration(String name) {
         return null;
     }

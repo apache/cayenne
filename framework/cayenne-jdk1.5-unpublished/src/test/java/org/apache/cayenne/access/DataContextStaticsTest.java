@@ -29,6 +29,7 @@ import org.apache.cayenne.util.ResourceLocator;
  * @author Andrus Adamchik
  */
 public class DataContextStaticsTest extends CayenneCase {
+
     protected Configuration savedConfig;
 
     public void testCreateDataContext1() throws Exception {
@@ -38,7 +39,8 @@ public class DataContextStaticsTest extends CayenneCase {
             assertNotNull(c1);
             assertSame(c1.getParentDataDomain(), getDomain());
             assertTrue(c1 != DataContext.createDataContext());
-        } finally {
+        }
+        finally {
             conf.restoreConfig();
         }
     }
@@ -51,12 +53,14 @@ public class DataContextStaticsTest extends CayenneCase {
             assertNotNull(c1);
             assertSame(c1.getParentDataDomain(), getDomain());
             assertTrue(c1 != DataContext.createDataContext(name));
-        } finally {
+        }
+        finally {
             conf.restoreConfig();
         }
     }
 
     class TestConfig extends Configuration {
+
         protected Configuration savedConfig;
 
         public TestConfig(DataDomain domain) {
@@ -69,26 +73,21 @@ public class DataContextStaticsTest extends CayenneCase {
             Configuration.sharedConfiguration = savedConfig;
         }
 
-		@Override
+        @Override
         public boolean canInitialize() {
-			return true;
-		}
-
-		@Override
-        public void initialize() throws Exception {
-		}
-
-		@Override
-        public void didInitialize() {
-		}
-
-		@Override
-        public ResourceLocator getResourceLocator() {
-			return null;
-		}
+            return true;
+        }
 
         @Override
-        protected InputStream getDomainConfiguration() {
+        public void initialize() throws Exception {
+        }
+
+        @Override
+        public void didInitialize() {
+        }
+
+        @Override
+        public ResourceLocator getResourceLocator() {
             return null;
         }
 
@@ -96,7 +95,7 @@ public class DataContextStaticsTest extends CayenneCase {
         protected InputStream getMapConfiguration(String location) {
             return null;
         }
-        
+
         @Override
         protected InputStream getViewConfiguration(String location) {
             return null;
