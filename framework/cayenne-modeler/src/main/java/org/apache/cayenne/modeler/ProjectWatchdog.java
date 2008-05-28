@@ -90,12 +90,14 @@ public class ProjectWatchdog extends FileWatchdog {
             }
 
         }
+        else
+            mediator.setDirty(true);
     }
 
     @Override
     protected void doOnRemove(FileInfo fileInfo) {
         if (mediator.getProject() != null
-                && fileInfo.getFile().equals(mediator.getProject().getMainFile())) {
+                /*&& fileInfo.getFile().equals(mediator.getProject().getMainFile()) */ ) {
             FileDeletedDialog dialog = new FileDeletedDialog(Application.getFrame());
             dialog.show();
 
@@ -112,9 +114,9 @@ public class ProjectWatchdog extends FileWatchdog {
 
                 controller.projectClosedAction();
             }
+            else
+                mediator.setDirty(true);
         }
-        else
-            ;// pretend that nothing happened by now
     }
 
     /**

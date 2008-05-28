@@ -46,7 +46,7 @@ public class FileDeletedDialog {
 
     public void show() {
         JOptionPane pane = new JOptionPane(
-                "Main project file was deleted or renamed. "
+                "One or more project files were deleted or renamed. "
                         + "Do you want to save the changes or close the project?",
                 JOptionPane.QUESTION_MESSAGE);
         pane.setOptions(OPTIONS);
