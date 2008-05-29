@@ -20,13 +20,11 @@
 package org.apache.cayenne.modeler.editor.dbentity;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventObject;
 
 import javax.swing.ComboBoxModel;
-import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -34,20 +32,17 @@ import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.DbRelationshipListener;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -70,7 +65,7 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
-import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
 /**
  * Displays DbRelationships for the current DbEntity.
@@ -92,6 +87,11 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
      * This should be probably refactored as Action.
      */
     protected JMenuItem resolveMenu;
+    
+    /**
+     * Combo to edit 'target' field
+     */
+    protected JComboBox targetCombo;
 
     public DbEntityRelationshipTab(ProjectController mediator) {
 
@@ -144,7 +144,7 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         add(toolBar, BorderLayout.NORTH);
 
         table = new CayenneTable();
-        table.setDefaultRenderer(DbEntity.class, new EntityRenderer());
+        table.setDefaultRenderer(DbEntity.class, CellRenderers.entityTableRendererWithIcons(mediator));
         
         /**
          * Create and install a popup
@@ -271,11 +271,12 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         col = table.getColumnModel().getColumn(DbRelationshipTableModel.TARGET);
         col.setMinWidth(150);
 
-        JComboBox combo = CayenneWidgetFactory.createComboBox();
-        combo.setRenderer(CellRenderers.entityListRendererWithIcons(entity.getDataMap()));
-        combo.setModel(createComboModel());
-        combo.setEditable(false);
-        col.setCellEditor(new DefaultCellEditor(combo));
+        targetCombo = CayenneWidgetFactory.createComboBox();
+        AutoCompletion.enable(targetCombo);
+        
+        targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity.getDataMap()));
+        targetCombo.setModel(createComboModel());
+        col.setCellEditor(CayenneWidgetFactory.createCellEditor(targetCombo));
         table.getSelectionModel().addListSelectionListener(this);
     }
 
@@ -327,11 +328,7 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         // If this is just loading new currentDbEntity, do nothing
         if (mediator.getCurrentDbEntity() == null)
             return;
-        TableColumn col = table.getColumnModel().getColumn(
-                DbRelationshipTableModel.TARGET);
-        DefaultCellEditor editor = (DefaultCellEditor) col.getCellEditor();
-        JComboBox combo = (JComboBox) editor.getComponent();
-        combo.setModel(createComboModel());
+        targetCombo.setModel(createComboModel());
 
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
         model.fireTableDataChanged();
@@ -345,45 +342,6 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         DataMap map = mediator.getCurrentDataMap();
         Object[] objects = map.getNamespace().getDbEntities().toArray();
         return new DefaultComboBoxModel(objects);
-    }
-
-    class EntityRenderer extends DefaultTableCellRenderer {
-
-        public Component getTableCellRendererComponent(
-                JTable table,
-                Object value,
-                boolean isSelected,
-                boolean hasFocus,
-                int row,
-                int column) {
-
-            if (value instanceof CayenneMapEntry) {
-                CayenneMapEntry mapObject = (CayenneMapEntry) value;
-                String label = mapObject.getName();
-
-                if (mapObject instanceof Entity) {
-                    Entity entity = (Entity) mapObject;
-
-                    // for different namespace display its name
-                    DataMap dataMap = entity.getDataMap();
-                    if (dataMap != null && dataMap != mediator.getCurrentDataMap()) {
-                        label += " (" + dataMap.getName() + ")";
-                    }
-                }
-
-                value = label;
-            }
-
-            super.getTableCellRendererComponent(
-                    table,
-                    value,
-                    isSelected,
-                    hasFocus,
-                    row,
-                    column);
-
-            return this;
-        }
     }
 
 }

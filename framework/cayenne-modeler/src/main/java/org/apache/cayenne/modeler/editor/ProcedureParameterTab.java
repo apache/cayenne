@@ -60,6 +60,7 @@ import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
 /**
  * @author Andrus Adamchik
@@ -258,8 +259,8 @@ public class ProcedureParameterTab
 
         JComboBox typesEditor =
             CayenneWidgetFactory.createComboBox(TypesMapping.getDatabaseTypes(), true);
-        typesEditor.setEditable(true);
-        typesColumn.setCellEditor(new DefaultCellEditor(typesEditor));
+        AutoCompletion.enable(typesEditor);
+        typesColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(typesEditor));
 
         // direction column tweaking
         TableColumn directionColumn =
@@ -322,8 +323,7 @@ public class ProcedureParameterTab
     /**
      * Synchronizes state of toolbar and popup menu buttons
      */
-    private void syncButtons()
-    {
+    private void syncButtons() {
         removeParameterMenu.setEnabled(removeParameterButton.isEnabled());
         moveUpMenu.setEnabled(moveUp.isEnabled());
         moveDownMenu.setEnabled(moveDown.isEnabled());   

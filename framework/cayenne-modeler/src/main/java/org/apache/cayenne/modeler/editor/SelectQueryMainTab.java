@@ -40,6 +40,7 @@ import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
@@ -76,16 +77,19 @@ public class SelectQueryMainTab extends JPanel {
         // create widgets
         name = new TextAdapter(new JTextField()) {
 
+            @Override
             protected void updateModel(String text) {
                 setQueryName(text);
             }
         };
 
         queryRoot = CayenneWidgetFactory.createComboBox();
+        AutoCompletion.enable(queryRoot);
         queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
 
         qualifier = new TextAdapter(new JTextField()) {
 
+            @Override
             protected void updateModel(String text) {
                 setQueryQualifier(text);
             }

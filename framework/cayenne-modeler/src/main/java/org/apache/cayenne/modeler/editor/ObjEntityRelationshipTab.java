@@ -48,7 +48,6 @@ import javax.swing.table.TableColumn;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DeleteRule;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -71,7 +70,7 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
-import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -387,13 +386,12 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         JComboBox targetCombo = CayenneWidgetFactory.createComboBox(
                 createObjEntityComboModel(),
                 false);
+        AutoCompletion.enable(targetCombo);        
+        
         targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity
                 .getDataMap()));
-        targetCombo.setEditable(false);
         targetCombo.setSelectedIndex(-1);
-        DefaultCellEditor editor = new DefaultCellEditor(targetCombo);
-        editor.setClickCountToStart(1);
-        col.setCellEditor(editor);
+        col.setCellEditor(CayenneWidgetFactory.createCellEditor(targetCombo));
 
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_SEMANTICS);
         col.setMinWidth(150);
@@ -405,13 +403,12 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                 false);
         deleteRulesCombo.setEditable(false);
         deleteRulesCombo.setSelectedIndex(0); // Default to the first value
-        editor = new DefaultCellEditor(deleteRulesCombo);
-        editor.setClickCountToStart(1);
-        col.setCellEditor(editor);
+        col.setCellEditor(CayenneWidgetFactory.createCellEditor(deleteRulesCombo));
     }
 
     class EntityRenderer extends StringRenderer {
 
+        @Override
         public Component getTableCellRendererComponent(
                 JTable table,
                 Object value,
@@ -420,35 +417,25 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                 int row,
                 int column) {
 
-            if (value instanceof CayenneMapEntry) {
-                CayenneMapEntry mapObject = (CayenneMapEntry) value;
-                String label = mapObject.getName();
+            Object oldValue = value;
+            value = CellRenderers.asString(value);
 
-                if (mapObject instanceof Entity) {
-                    Entity entity = (Entity) mapObject;
-
-                    // for different namespace display its name
-                    DataMap dataMap = entity.getDataMap();
-                    if (dataMap != null && dataMap != mediator.getCurrentDataMap()) {
-                        label += " (" + dataMap.getName() + ")";
-                    }
-                }
-
-                value = label;
-            }
-
-            return super.getTableCellRendererComponent(
+            super.getTableCellRendererComponent(
                     table,
                     value,
                     isSelected,
                     hasFocus,
                     row,
                     column);
+            
+            setIcon(CellRenderers.iconForObject(oldValue));
+            return this;
         }
     }
 
     class StringRenderer extends DefaultTableCellRenderer {
 
+        @Override
         public Component getTableCellRendererComponent(
                 JTable table,
                 Object value,

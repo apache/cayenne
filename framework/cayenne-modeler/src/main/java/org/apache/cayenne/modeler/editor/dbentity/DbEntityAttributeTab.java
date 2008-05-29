@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.editor.dbentity;
 import java.awt.BorderLayout;
 import java.util.EventObject;
 
-import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -52,6 +51,7 @@ import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
 /**
  * Detail view of the DbEntity attributes.
@@ -198,7 +198,10 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
 
         String[] types = TypesMapping.getDatabaseTypes();
         JComboBox comboBox = CayenneWidgetFactory.createComboBox(types, true);
-        col.setCellEditor(new DefaultCellEditor(comboBox));
+        
+        AutoCompletion.enable(comboBox);
+        
+        col.setCellEditor(CayenneWidgetFactory.createCellEditor(comboBox));
 
         table.getSelectionModel().addListSelectionListener(this);
     }

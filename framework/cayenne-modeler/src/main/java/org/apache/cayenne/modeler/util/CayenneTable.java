@@ -25,10 +25,11 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableCellEditor;
 import javax.swing.text.JTextComponent;
 
-/**  
+/**
  * Common superclass of tables used in Cayenne. Contains some common configuration
  * settings and utility methods.
  * 
@@ -43,9 +44,10 @@ public class CayenneTable extends JTable {
         this.setRowMargin(3);
     }
 
+    @Override
     protected void createDefaultEditors() {
         super.createDefaultEditors();
-        
+
         JTextField textField = CayenneWidgetFactory.createTextField(0);
         final DefaultCellEditor textEditor = new DefaultCellEditor(textField);
         textEditor.setClickCountToStart(1);
@@ -57,21 +59,20 @@ public class CayenneTable extends JTable {
     public CayenneTableModel getCayenneModel() {
         return (CayenneTableModel) getModel();
     }
-    
+
     /**
-     * Cancels editing of any cells that maybe currently edited.
-     * This method should be called before updating any selections.
+     * Cancels editing of any cells that maybe currently edited. This method should be
+     * called before updating any selections.
      */
-    protected void cancelEditing() {
-    	editingCanceled(new ChangeEvent(this));
+    public void cancelEditing() {
+        editingCanceled(new ChangeEvent(this));
     }
 
     public void select(Object row) {
         if (row == null) {
             return;
         }
-		cancelEditing();
-		
+
         CayenneTableModel model = getCayenneModel();
         int ind = model.getObjectList().indexOf(row);
 
@@ -81,8 +82,7 @@ public class CayenneTable extends JTable {
     }
 
     public void select(int index) {
-		cancelEditing();
-		
+
         CayenneTableModel model = getCayenneModel();
         if (index >= model.getObjectList().size()) {
             index = model.getObjectList().size() - 1;
@@ -108,5 +108,11 @@ public class CayenneTable extends JTable {
             }
         }
         return null;
+    }
+
+    @Override
+    public void tableChanged(TableModelEvent e) {
+        cancelEditing();
+        super.tableChanged(e);
     }
 }

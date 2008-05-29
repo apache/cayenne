@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -55,6 +54,7 @@ import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 
@@ -172,8 +172,9 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         JComboBox comboBox = CayenneWidgetFactory.createComboBox(ModelerUtil
                 .getDbAttributeNames(getMediator(), (DbEntity) relationship
                         .getSourceEntity()), true);
-        comboBox.setEditable(false);
-        sourceColumn.setCellEditor(new DefaultCellEditor(comboBox));
+        
+        AutoCompletion.enable(comboBox);
+        sourceColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(comboBox));
 
         TableColumn targetColumn = table.getColumnModel().getColumn(
                 DbJoinTableModel.TARGET);
@@ -181,8 +182,9 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         comboBox = CayenneWidgetFactory.createComboBox(ModelerUtil.getDbAttributeNames(
                 getMediator(),
                 (DbEntity) relationship.getTargetEntity()), true);
-        comboBox.setEditable(false);
-        targetColumn.setCellEditor(new DefaultCellEditor(comboBox));
+        AutoCompletion.enable(comboBox);
+        
+        targetColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(comboBox));
 
         if (reverseRelationship != null) {
             reverseName.setText(reverseRelationship.getName());
@@ -400,6 +402,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
 
         final Dimension preferredSize = new Dimension(203, 100);
 
+        @Override
         public Dimension getPreferredScrollableViewportSize() {
             return preferredSize;
         }

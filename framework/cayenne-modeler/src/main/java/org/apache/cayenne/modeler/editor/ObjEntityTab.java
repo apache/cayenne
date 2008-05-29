@@ -56,6 +56,7 @@ import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -132,24 +133,28 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         // create widgets
         name = new TextAdapter(new JTextField()) {
 
+            @Override
             protected void updateModel(String text) {
                 setEntityName(text);
             }
         };
         superClassName = new TextAdapter(new JTextField()) {
 
+            @Override
             protected void updateModel(String text) {
                 setSuperClassName(text);
             }
         };
         className = new TextAdapter(new JTextField()) {
 
+            @Override
             protected void updateModel(String text) {
                 setClassName(text);
             }
         };
         qualifier = new TextAdapter(new JTextField()) {
 
+            @Override
             protected void updateModel(String text) {
                 setQualifier(text);
             }
@@ -157,6 +162,9 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
         dbEntityCombo = CayenneWidgetFactory.createComboBox();
         superEntityCombo = CayenneWidgetFactory.createComboBox();
+        
+        AutoCompletion.enable(dbEntityCombo);
+        AutoCompletion.enable(superEntityCombo);
 
         readOnly = new JCheckBox();
         optimisticLocking = new JCheckBox();
@@ -171,12 +179,14 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         serverOnly = new JCheckBox();
         clientClassName = new TextAdapter(new JTextField()) {
 
+            @Override
             protected void updateModel(String text) {
                 setClientClassName(text);
             }
         };
         clientSuperClassName = new TextAdapter(new JTextField()) {
 
+            @Override
             protected void updateModel(String text) {
                 setClientSuperClassName(text);
             }

@@ -48,7 +48,7 @@ public class ModelerPreferences extends ExtendedProperties {
 
     // Keys for the preference file.
 
-    /** List of the last 4 opened project files. */
+    /** List of the last 12 opened project files. */
     public static final String LAST_PROJ_FILES = "Editor.lastSeveralProjectFiles";
     public static final int LAST_PROJ_FILES_SIZE = 12;
 
@@ -59,6 +59,11 @@ public class ModelerPreferences extends ExtendedProperties {
     /** Log file */
     public static final String EDITOR_LOGFILE_ENABLED = "Editor.logfileEnabled";
     public static final String EDITOR_LOGFILE = "Editor.logfile";
+    
+    /*
+     * Number of items in combobox visible without scrolling 
+     */
+    public static final int COMBOBOX_MAX_VISIBLE_SIZE = 12;
 
     protected static ModelerPreferences sharedInstance;
 

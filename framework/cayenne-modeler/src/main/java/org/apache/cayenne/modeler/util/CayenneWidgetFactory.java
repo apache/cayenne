@@ -28,12 +28,18 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collection;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.table.TableCellEditor;
+
+import org.apache.cayenne.modeler.ModelerPreferences;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.modeler.util.combo.ComboBoxCellEditor;
 
 /**
  * Utility class to create standard Swing widgets following default look-and-feel of
@@ -59,7 +65,7 @@ public class CayenneWidgetFactory {
     public static JComboBox createComboBox(Collection<String> model, boolean sort) {
         return createComboBox(model.toArray(), sort);
     }
-
+    
     /**
      * Creates a new JComboBox with an array of model objects.
      */
@@ -73,7 +79,7 @@ public class CayenneWidgetFactory {
         comboBox.setModel(new DefaultComboBoxModel(model));
         return comboBox;
     }
-
+    
     /**
      * Creates a new JComboBox.
      */
@@ -81,7 +87,26 @@ public class CayenneWidgetFactory {
         JComboBox comboBox = new JComboBox();
         initFormWidget(comboBox);
         comboBox.setBackground(Color.WHITE);
+        comboBox.setMaximumRowCount(ModelerPreferences.COMBOBOX_MAX_VISIBLE_SIZE);
+                
         return comboBox;
+    }
+    
+    /**
+     * Creates cell editor for a table with combo as editor component. Type of this editor
+     * depends on auto-completion behavior of JComboBox
+     * 
+     * @param combo JComboBox to be used as editor component
+     */
+    public static TableCellEditor createCellEditor(JComboBox combo) {
+        if (Boolean.TRUE.equals(combo.getClientProperty(AutoCompletion.AUTOCOMPLETION_PROPERTY))) {
+            return new ComboBoxCellEditor(combo);
+        }
+        
+        DefaultCellEditor editor = new DefaultCellEditor(combo);
+        editor.setClickCountToStart(1);        
+
+        return editor;
     }
 
     /**

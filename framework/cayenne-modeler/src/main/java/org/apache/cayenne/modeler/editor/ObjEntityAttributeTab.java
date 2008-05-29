@@ -24,7 +24,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.EventObject;
 
-import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -56,6 +55,7 @@ import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
 /**
  * Detail view of the ObjEntity attributes.
@@ -214,8 +214,8 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
         JComboBox javaTypesCombo = CayenneWidgetFactory.createComboBox(ModelerUtil
                 .getRegisteredTypeNames(), false);
-        javaTypesCombo.setEditable(true);
-        typeColumn.setCellEditor(new DefaultCellEditor(javaTypesCombo));
+        AutoCompletion.enable(javaTypesCombo, false, true);
+        typeColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(javaTypesCombo));
 
         TableColumn lockColumn = table.getColumnModel().getColumn(
                 ObjAttributeTableModel.LOCKING);
@@ -234,9 +234,9 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
                     .createComboBox(ModelerUtil.getDbAttributeNames(mediator, model
                             .getEntity()
                             .getDbEntity()), true);
+            AutoCompletion.enable(dbAttributesCombo);
 
-            dbAttributesCombo.setEditable(false);
-            dbNameColumn.setCellEditor(new DefaultCellEditor(dbAttributesCombo));
+            dbNameColumn.setCellEditor(CayenneWidgetFactory.createCellEditor(dbAttributesCombo));
         }
     }
 
@@ -269,6 +269,7 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     // custom renderer used for inherited attributes highlighting
     final class CellRenderer extends DefaultTableCellRenderer {
 
+        @Override
         public Component getTableCellRendererComponent(
                 JTable table,
                 Object value,

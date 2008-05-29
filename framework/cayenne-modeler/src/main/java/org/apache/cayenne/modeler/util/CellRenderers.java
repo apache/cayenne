@@ -24,8 +24,11 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
+import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ListCellRenderer;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
@@ -40,6 +43,8 @@ import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -140,6 +145,52 @@ public final class CellRenderers {
     public static ListCellRenderer entityListRendererWithIcons(MappingNamespace namespace) {
         return new EntityRenderer(namespace);
     }
+    
+    /**
+     * Returns a TableCellRenderer to display Cayenne project entities with icons in table.
+     */
+    public static TableCellRenderer entityTableRendererWithIcons(ProjectController mediator) {
+        return new EntityTableRenderer(mediator);
+    }
+    
+    /**
+     * Converts non-String Object used in renderers (currently CayenneMapEntry
+     * instances only) to String
+     * 
+     * @param obj Object to be converted
+     */
+    public static String asString(Object obj) {
+        return asString(obj, Application.getInstance(). //none of these is suppeosed to be null
+           getFrameController().getProjectController().getCurrentDataMap());
+    }
+    
+    /**
+     * Converts non-String Object used in renderers (currently CayenneMapEntry
+     * instances only) to String
+     * 
+     * @param obj Object to be converted
+     * @param namespace the current namespace
+     */
+    public static String asString(Object obj, MappingNamespace namespace) {
+        if (obj instanceof CayenneMapEntry) {
+            CayenneMapEntry mapObject = (CayenneMapEntry) obj;
+            String label = mapObject.getName();
+
+            if (mapObject instanceof Entity) {
+                Entity entity = (Entity) mapObject;
+
+                // for different namespace display its name
+                DataMap dataMap = entity.getDataMap();
+                if (dataMap != null && dataMap != namespace) {
+                    label += " (" + dataMap.getName() + ")";
+                }
+            }
+            
+            obj = label;
+        }
+        
+        return obj == null ? null : String.valueOf(obj);
+    }
 
     final static class EntityRenderer extends DefaultListCellRenderer {
         MappingNamespace namespace;
@@ -162,22 +213,7 @@ public final class CellRenderers {
             // then set an icon, and then return "this" 
             ImageIcon icon = CellRenderers.iconForObject(value);
 
-            if (value instanceof CayenneMapEntry) {
-                CayenneMapEntry mapObject = (CayenneMapEntry) value;
-                String label = mapObject.getName();
-
-                if (mapObject instanceof Entity) {
-                    Entity entity = (Entity) mapObject;
-
-                    // for different namespace display its name
-                    DataMap dataMap = entity.getDataMap();
-                    if (dataMap != null && dataMap != this.namespace) {
-                        label += " (" + dataMap.getName() + ")";
-                    }
-                }
-                
-                value = label;
-            }
+            value = asString(value, namespace);
 
             super.getListCellRendererComponent(
                 list,
@@ -257,6 +293,39 @@ public final class CellRenderers {
 
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
             setIcon(iconForObject(node.getUserObject()));
+
+            return this;
+        }
+    }
+    
+    final static class EntityTableRenderer extends DefaultTableCellRenderer {
+        
+        private ProjectController mediator;
+        
+        public EntityTableRenderer(ProjectController mediator) {
+            this.mediator = mediator;
+        }
+
+        public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
+                int column) {
+
+            Object oldValue = value;
+            value = CellRenderers.asString(value, mediator.getCurrentDataMap());
+
+            super.getTableCellRendererComponent(
+                    table,
+                    value,
+                    isSelected,
+                    hasFocus,
+                    row,
+                    column);
+            
+            setIcon(CellRenderers.iconForObject(oldValue));
 
             return this;
         }
