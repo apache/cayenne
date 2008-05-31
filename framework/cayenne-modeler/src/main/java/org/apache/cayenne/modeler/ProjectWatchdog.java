@@ -24,7 +24,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.action.SaveAsAction;
+import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.dialog.FileDeletedDialog;
 import org.apache.cayenne.modeler.util.FileWatchdog;
 import org.apache.cayenne.project.Project;
@@ -104,7 +104,7 @@ public class ProjectWatchdog extends FileWatchdog {
             if (dialog.shouldSave()) {
                 Application
                         .getInstance()
-                        .getAction(SaveAsAction.getActionName())
+                        .getAction(SaveAction.getActionName())
                         .performAction(null);
             }
             else if (dialog.shouldClose()) {
