@@ -20,7 +20,7 @@ package org.apache.cayenne.conf;
 
 import java.net.URL;
 import java.util.Collection;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 /**
  * A ResourceFinder that looks up resources in the classpath.
@@ -31,7 +31,12 @@ import java.util.List;
 public class ClasspathResourceFinder implements ResourceFinder {
 
     protected ClassLoader classLoader;
-    protected List<String> extraResourcePackages;
+    protected Collection<String> rootPaths;
+
+    public ClasspathResourceFinder() {
+        rootPaths = new LinkedHashSet<String>(2);
+        rootPaths.add("");
+    }
 
     public URL getResource(String name) {
         return null;
@@ -41,14 +46,40 @@ public class ClasspathResourceFinder implements ResourceFinder {
         return null;
     }
 
-    public void addResourcePackage() {
+    /**
+     * Adds a base path to be used for resource lookup. In the context of
+     * ClasspathResourceFinder, a "path" corresponds to a package name, only separated by
+     * "/" instead of ".". Default root path is empty String. This method allows to add
+     * more lookup roots.
+     */
+    public void addRootPath(String path) {
+        if (path == null) {
+            throw new NullPointerException("Null path");
+        }
 
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+
+        rootPaths.add(path);
     }
 
+    /**
+     * Returns ClassLoader override initialized via {@link #setClassLoader(ClassLoader)}.
+     * Null by default.
+     */
     public ClassLoader getClassLoader() {
         return classLoader;
     }
 
+    /**
+     * Sets an overriding ClassLoader for this resource finder. Setting it is only needed
+     * if the default thread class loader is not appropriate for looking up the resources.
+     */
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
@@ -72,6 +103,7 @@ public class ClasspathResourceFinder implements ResourceFinder {
         if (loader == null) {
             loader = ClassLoader.getSystemClassLoader();
         }
+
         if (loader == null) {
             throw new IllegalStateException(
                     "Can't detect ClassLoader to use for resouyrce location");

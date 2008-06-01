@@ -57,4 +57,18 @@ public class ClasspathResourceFinderTest extends BasicCase {
             Thread.currentThread().setContextClassLoader(old);
         }
     }
+    
+    public void testRootPaths() {
+        ClasspathResourceFinder f1 = new ClasspathResourceFinder();
+        assertEquals(1, f1.rootPaths.size());
+        assertTrue(f1.rootPaths.contains(""));
+        
+        f1.addRootPath("/");
+        assertEquals(1, f1.rootPaths.size());
+        assertTrue(f1.rootPaths.contains(""));
+        
+        f1.addRootPath("/my/package/name/");
+        assertEquals(2, f1.rootPaths.size());
+        assertTrue("" + f1.rootPaths, f1.rootPaths.contains("my/package/name"));
+    }
 }
