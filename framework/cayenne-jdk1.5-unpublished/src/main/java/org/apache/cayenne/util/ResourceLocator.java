@@ -26,8 +26,11 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.conf.ResourceFinder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Andrus Adamchik
  */
-public class ResourceLocator {
+public class ResourceLocator implements ResourceFinder {
 
     private static Log logObj = LogFactory.getLog(ResourceLocator.class);
 
@@ -265,6 +268,22 @@ public class ResourceLocator {
             logObj.debug("Error reading URL, ignoring", ioex);
             return null;
         }
+    }
+
+    /**
+     * @since 3.0
+     */
+    public URL getResource(String name) {
+        return findResource(name);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public Collection<URL> getResources(String name) {
+        URL resource = getResource(name);
+        return resource != null ? Collections.<URL> singleton(resource) : Collections
+                .<URL> emptySet();
     }
 
     /**
