@@ -20,11 +20,11 @@ package org.apache.cayenne.conf;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.util.Properties;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.util.ResourceLocator;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
 /**
@@ -42,22 +42,23 @@ class DBCPDataSourceProperties {
     /**
      * Loads properties from the specified location.
      */
-    static Properties loadProperties(ResourceLocator resourceLocator, String location)
+    static Properties loadProperties(ResourceFinder resourceLocator, String location)
             throws IOException {
 
-        InputStream in = resourceLocator.findResourceStream(location);
+        URL url = resourceLocator.getResource(location);
 
         // try appending ".properties" extension..
-        if (in == null && !location.endsWith(".properties")) {
-            in = resourceLocator.findResourceStream(location + ".properties");
+        if (url == null && !location.endsWith(".properties")) {
+            url = resourceLocator.getResource(location + ".properties");
         }
 
-        if (in == null) {
+        if (url == null) {
             throw new ConfigurationException("DBCP properties file not found: "
                     + location);
         }
 
         Properties properties = new Properties();
+        InputStream in = url.openStream();
         try {
             properties.load(in);
         }
@@ -72,7 +73,7 @@ class DBCPDataSourceProperties {
         return properties;
     }
 
-    DBCPDataSourceProperties(ResourceLocator resourceLocator, String location)
+    DBCPDataSourceProperties(ResourceFinder resourceLocator, String location)
             throws IOException {
         this(loadProperties(resourceLocator, location));
     }

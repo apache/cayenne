@@ -22,7 +22,6 @@ package org.apache.cayenne.conf;
 import java.io.File;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.util.ResourceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -67,7 +66,6 @@ public class FileConfiguration extends DefaultConfiguration {
         this.projectFile = new File(domainConfigurationName);
 
         // configure the ResourceLocator for plain files
-        ResourceLocator locator = this.getResourceLocator();
         locator.setSkipAbsolutePath(false);
         locator.setSkipClasspath(true);
         locator.setSkipCurrentDirectory(false);
@@ -93,10 +91,9 @@ public class FileConfiguration extends DefaultConfiguration {
         logger.debug("using domain file: " + domainConfigurationFile);
 
         // set the project file
-        this.setProjectFile(domainConfigurationFile);
+        setProjectFile(domainConfigurationFile);
 
         // configure the ResourceLocator for plain files
-        ResourceLocator locator = this.getResourceLocator();
         locator.setSkipAbsolutePath(false);
         locator.setSkipClasspath(true);
         locator.setSkipCurrentDirectory(false);
@@ -127,7 +124,7 @@ public class FileConfiguration extends DefaultConfiguration {
      * @throws IllegalArgumentException if <code>path</code> is <code>null</code>.
      */
     public void addFilesystemPath(String path) {
-        this.getResourceLocator().addFilesystemPath(path);
+        locator.addFilesystemPath(path);
     }
 
     /**
@@ -138,7 +135,7 @@ public class FileConfiguration extends DefaultConfiguration {
      *             not a directory or not readable.
      */
     public void addFilesystemPath(File path) {
-        this.getResourceLocator().addFilesystemPath(path);
+        locator.addFilesystemPath(path);
     }
 
     /**

@@ -104,7 +104,14 @@ public class DriverDataSourceFactory implements DataSourceFactory {
                     "No parent Configuration set - cannot continue.");
         }
 
-        return this.parentConfiguration.getResourceLocator().findResourceStream(location);
+        URL url = parentConfiguration.getResourceFinder().getResource(location);
+
+        try {
+            return url != null ? url.openStream() : null;
+        }
+        catch (IOException e) {
+            throw new ConfigurationException("Error reading URL " + url, e);
+        }
     }
 
     /**
@@ -327,8 +334,7 @@ public class DriverDataSourceFactory implements DataSourceFactory {
             // locations
             {
                 if (passwordLocation.equals(DataSourceInfo.PASSWORD_LOCATION_CLASSPATH)) {
-                    URL url = parentConfiguration.getResourceLocator().findResource(
-                            passwordSource);
+                    URL url = parentConfiguration.getResourceFinder().getResource(passwordLocation);
 
                     if (url != null)
                         password = passwordFromURL(url);

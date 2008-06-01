@@ -36,10 +36,7 @@ public class DefaultConfiguration extends Configuration {
 
     private static Log logger = LogFactory.getLog(DefaultConfiguration.class);
 
-    /**
-     * the default ResourceLocator used for CLASSPATH loading
-     */
-    private ResourceLocator locator;
+    protected ResourceLocator locator;
 
     /**
      * Default constructor. Simply calls
@@ -105,7 +102,7 @@ public class DefaultConfiguration extends Configuration {
      * </pre>
      */
     public void addClassPath(String customPath) {
-        this.getResourceLocator().addClassPath(customPath);
+        locator.addClassPath(customPath);
     }
 
     /**
@@ -118,7 +115,7 @@ public class DefaultConfiguration extends Configuration {
      * @since 1.2 moved from subclass - FileConfiguration.
      */
     public void addResourcePath(String path) {
-        this.getResourceLocator().addFilesystemPath(path);
+        locator.addFilesystemPath(path);
     }
 
     @Override

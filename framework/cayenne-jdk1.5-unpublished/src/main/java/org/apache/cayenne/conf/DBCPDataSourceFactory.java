@@ -65,21 +65,22 @@ public class DBCPDataSourceFactory implements DataSourceFactory {
      */
     public DataSource getDataSource(String location) throws Exception {
 
-        ResourceLocator resourceLocator;
+        ResourceFinder resourceFinder;
 
         if (parentConfiguration != null) {
-            resourceLocator = parentConfiguration.getResourceLocator();
+            resourceFinder = parentConfiguration.getResourceFinder();
         }
         else {
-            resourceLocator = new ResourceLocator();
+            ResourceLocator resourceLocator = new ResourceLocator();
             resourceLocator.setSkipAbsolutePath(false);
             resourceLocator.setSkipHomeDirectory(true);
             resourceLocator.setSkipClasspath(false);
             resourceLocator.setSkipCurrentDirectory(false);
+            resourceFinder = resourceLocator;
         }
 
         DBCPDataSourceProperties properties = new DBCPDataSourceProperties(
-                resourceLocator,
+                resourceFinder,
                 location);
 
         if (logger.isDebugEnabled()) {
