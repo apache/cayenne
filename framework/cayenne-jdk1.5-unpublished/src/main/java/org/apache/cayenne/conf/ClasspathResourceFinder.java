@@ -18,9 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.conf;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.LinkedHashSet;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A ResourceFinder that looks up resources in the classpath.
@@ -29,6 +35,8 @@ import java.util.LinkedHashSet;
  * @author Andrus Adamchik
  */
 public class ClasspathResourceFinder implements ResourceFinder {
+
+    static final Log logger = LogFactory.getLog(ClasspathResourceFinder.class);
 
     protected ClassLoader classLoader;
     protected Collection<String> rootPaths;
@@ -39,11 +47,60 @@ public class ClasspathResourceFinder implements ResourceFinder {
     }
 
     public URL getResource(String name) {
+
+        if (name == null) {
+            throw new NullPointerException("Null resource name");
+        }
+
+        if (name.startsWith("/")) {
+            name = name.substring(1);
+        }
+
+        ClassLoader loader = getResourceClassLoader();
+
+        for (String root : rootPaths) {
+            String fullName = root.length() > 0 ? root + "/" + name : name;
+            logger.debug("searching for resource under: " + fullName);
+            URL url = loader.getResource(fullName);
+            if (url != null) {
+                return url;
+            }
+        }
+
         return null;
     }
 
     public Collection<URL> getResources(String name) {
-        return null;
+        if (name == null) {
+            throw new NullPointerException("Null resource name");
+        }
+
+        if (name.startsWith("/")) {
+            name = name.substring(1);
+        }
+
+        ClassLoader loader = getResourceClassLoader();
+
+        Collection<URL> urls = new LinkedHashSet<URL>();
+        for (String root : rootPaths) {
+            String fullName = root.length() > 0 ? root + "/" + name : name;
+            logger.debug("searching for resources under: " + fullName);
+
+            Enumeration<URL> urlsEn;
+            try {
+                urlsEn = loader.getResources(fullName);
+            }
+            catch (IOException e) {
+                throw new CayenneRuntimeException("Error reading URL resources from "
+                        + fullName);
+            }
+
+            while (urlsEn.hasMoreElements()) {
+                urls.add(urlsEn.nextElement());
+            }
+        }
+
+        return urls;
     }
 
     /**

@@ -20,6 +20,7 @@ package org.apache.cayenne.conf;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collection;
 
 import org.apache.cayenne.unit.BasicCase;
 
@@ -70,5 +71,29 @@ public class ClasspathResourceFinderTest extends BasicCase {
         f1.addRootPath("/my/package/name/");
         assertEquals(2, f1.rootPaths.size());
         assertTrue("" + f1.rootPaths, f1.rootPaths.contains("my/package/name"));
+    }
+    
+    public void testGetResource() {
+        ClasspathResourceFinder f1 = new ClasspathResourceFinder();
+        assertNotNull(f1.getResource("org/apache/cayenne/Persistent.class"));
+        
+        assertNull(f1.getResource("/apache/cayenne/Persistent.class"));
+        f1.addRootPath("org");
+        assertNotNull(f1.getResource("/apache/cayenne/Persistent.class"));
+    }
+    
+    public void testGetResources() {
+        ClasspathResourceFinder f1 = new ClasspathResourceFinder();
+        Collection<URL> r1 = f1.getResources("org/apache/cayenne/Persistent.class");
+        assertNotNull(r1);
+        assertEquals(1, r1.size());
+        
+        Collection<URL> r2 = f1.getResources("/apache/cayenne/Persistent.class");
+        assertNotNull(r2);
+        assertEquals(0, r2.size());
+        f1.addRootPath("org");
+        Collection<URL> r3 = f1.getResources("/apache/cayenne/Persistent.class");
+        assertNotNull(r3);
+        assertEquals(1, r3.size());
     }
 }
