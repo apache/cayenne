@@ -21,6 +21,10 @@ CAY-1055 Right-click contextual menu for entities/attributes/relationships that 
 CAY-1058 Add a maven plugin for starting up the modeler.
 CAY-1061 ResourceFinder: abstract API for looking up resources, including multiple resources for a given name
 
+Bug fixes since M4:
+
+CAY-1062 Code Generation line ending consistency: ImportUtils
+
 ----------------------------------
 Release: 3.0M4
 Date: 

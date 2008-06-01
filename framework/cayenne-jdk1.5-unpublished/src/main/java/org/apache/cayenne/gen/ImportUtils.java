@@ -58,10 +58,10 @@ public class ImportUtils {
 
     protected Map<String, String> importTypesMap = new HashMap<String, String>();
     protected Map<String, String> reservedImportTypesMap = new HashMap<String, String>(); // Types
-                                                                                            // forced
-                                                                                            // to
-                                                                                            // be
-                                                                                            // FQN
+    // forced
+    // to
+    // be
+    // FQN
 
     protected String packageName;
 
@@ -214,9 +214,11 @@ public class ImportUtils {
         if (null != packageName) {
             outputBuffer.append("package ");
             outputBuffer.append(packageName);
-            outputBuffer.append(';');
-            outputBuffer.append(System.getProperty("line.separator"));
-            outputBuffer.append(System.getProperty("line.separator"));
+
+            // Using UNIX line endings intentionally - generated Java files should look
+            // the same regardless of platform to prevent developer teams working on
+            // multiple OS's to override each other's work
+            outputBuffer.append(";\n\n");
         }
 
         List<String> typesList = new ArrayList<String>(importTypesMap.values());
@@ -245,7 +247,7 @@ public class ImportUtils {
                 firstIteration = false;
             }
             else {
-                outputBuffer.append(System.getProperty("line.separator"));
+                outputBuffer.append('\n');
             }
             // Output another newline if we're in a different root package.
             // Find root package
@@ -258,8 +260,8 @@ public class ImportUtils {
             if (null != lastStringPrefix) {
                 // and it's different from the last import
                 if (false == thisStringPrefix.equals(lastStringPrefix)) {
-                    // output a newline
-                    outputBuffer.append(System.getProperty("line.separator"));
+                    // output a newline; force UNIX style per comment above
+                    outputBuffer.append("\n");
                 }
             }
             lastStringPrefix = thisStringPrefix;
