@@ -21,11 +21,13 @@ package org.apache.cayenne.map;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.conf.ResourceFinder;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.project.DataMapFile;
@@ -87,7 +89,7 @@ public class MapLoader extends DefaultHandler {
     public static final String PROCEDURE_TAG = "procedure";
     public static final String PROCEDURE_PARAMETER_TAG = "procedure-parameter";
 
-    //lifecycle listeners and callbacks related
+    // lifecycle listeners and callbacks related
     public static final String ENTITY_LISTENER_TAG = "entity-listener";
     public static final String PRE_PERSIST_TAG = "pre-persist";
     public static final String POST_PERSIST_TAG = "post-persist";
@@ -95,7 +97,7 @@ public class MapLoader extends DefaultHandler {
     public static final String POST_UPDATE_TAG = "post-update";
     public static final String PRE_REMOVE_TAG = "pre-remove";
     public static final String POST_REMOVE_TAG = "post-remove";
-    public static final String POST_LOAD_TAG = "post-load";    
+    public static final String POST_LOAD_TAG = "post-load";
 
     // Query-related
     public static final String QUERY_TAG = "query";
@@ -112,32 +114,31 @@ public class MapLoader extends DefaultHandler {
     public static final String DB_GENERATOR_TYPE_TAG = "db-generator-type";
     public static final String DB_GENERATOR_NAME_TAG = "db-generator-name";
     public static final String DB_KEY_CACHE_SIZE_TAG = "db-key-cache-size";
-    
+
     /**
      * @since 3.0
      */
     public static final String OBJ_ENTITY_ROOT = "obj-entity";
-    
+
     /**
      * @since 3.0
      */
     public static final String DB_ENTITY_ROOT = "db-entity";
-    
+
     /**
      * @since 3.0
      */
     public static final String PROCEDURE_ROOT = "procedure";
-    
+
     /**
      * @since 3.0
      */
     public static final String DATA_MAP_ROOT = "data-map";
-    
+
     /**
      * @since 3.0
      */
     public static final String JAVA_CLASS_ROOT = "java-class";
-
 
     // Reading from XML
     private DataMap dataMap;
@@ -327,6 +328,7 @@ public class MapLoader extends DefaultHandler {
         });
 
         startTagOpMap.put(ENTITY_LISTENER_TAG, new StartClosure() {
+
             @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartEntitylistener(attributes);
@@ -334,6 +336,7 @@ public class MapLoader extends DefaultHandler {
         });
 
         startTagOpMap.put(PRE_PERSIST_TAG, new StartClosure() {
+
             @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartPrePersist(attributes);
@@ -341,6 +344,7 @@ public class MapLoader extends DefaultHandler {
         });
 
         startTagOpMap.put(POST_PERSIST_TAG, new StartClosure() {
+
             @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartPostPersist(attributes);
@@ -444,7 +448,7 @@ public class MapLoader extends DefaultHandler {
                 processEndDbAttribute();
             }
         });
-        
+
         endTagOpMap.put(DB_RELATIONSHIP_TAG, new EndClosure() {
 
             @Override
@@ -531,6 +535,7 @@ public class MapLoader extends DefaultHandler {
         });
 
         endTagOpMap.put(ENTITY_LISTENER_TAG, new EndClosure() {
+
             @Override
             void execute() throws SAXException {
                 processEndEntitylistener();
@@ -541,11 +546,11 @@ public class MapLoader extends DefaultHandler {
     private void processStartEntitylistener(Attributes attributes) {
         entityListener = new EntityListener(attributes.getValue("", "class"));
         if (objEntity != null) {
-            //we are inside of obj-entity tag
+            // we are inside of obj-entity tag
             objEntity.addEntityListener(entityListener);
         }
         else if (dataMap != null) {
-            //we are inside of datamap tag
+            // we are inside of datamap tag
             dataMap.addDefaultEntityListener(entityListener);
         }
     }
@@ -554,15 +559,14 @@ public class MapLoader extends DefaultHandler {
         entityListener = null;
     }
 
-
     private void processStartPrePersist(Attributes attributes) {
         String methodName = attributes.getValue("", "method-name");
         if (entityListener != null) {
-            //new "entity-listener" tag as a child of "obj-entity"
+            // new "entity-listener" tag as a child of "obj-entity"
             entityListener.getCallbackMap().getPrePersist().addCallbackMethod(methodName);
         }
         else if (objEntity != null) {
-            //new callback tags - children of "obj-entity"
+            // new callback tags - children of "obj-entity"
             objEntity.getCallbackMap().getPrePersist().addCallbackMethod(methodName);
         }
     }
@@ -570,7 +574,10 @@ public class MapLoader extends DefaultHandler {
     private void processStartPostPersist(Attributes attributes) {
         String methodName = attributes.getValue("", "method-name");
         if (entityListener != null) {
-            entityListener.getCallbackMap().getPostPersist().addCallbackMethod(methodName);
+            entityListener
+                    .getCallbackMap()
+                    .getPostPersist()
+                    .addCallbackMethod(methodName);
         }
         else if (objEntity != null) {
             objEntity.getCallbackMap().getPostPersist().addCallbackMethod(methodName);
@@ -608,7 +615,7 @@ public class MapLoader extends DefaultHandler {
     }
 
     private void processStartPostRemove(Attributes attributes) {
-        String methodName = attributes.getValue("", "method-name"); 
+        String methodName = attributes.getValue("", "method-name");
         if (entityListener != null) {
             entityListener.getCallbackMap().getPostRemove().addCallbackMethod(methodName);
         }
@@ -667,12 +674,20 @@ public class MapLoader extends DefaultHandler {
      */
     public DataMap loadDataMap(String uri) throws CayenneRuntimeException {
         // configure resource locator
-        ResourceLocator locator = configLocator();
-        InputStream in = locator.findResourceStream(uri);
-        if (in == null) {
+        ResourceFinder locator = createResourceFinder();
+        URL url = locator.getResource(uri);
+        if (url == null) {
             throw new CayenneRuntimeException("Can't find data map " + uri);
         }
 
+        InputStream in;
+        try {
+            in = url.openStream();
+        }
+        catch (IOException e) {
+            throw new CayenneRuntimeException(e);
+        }
+        
         try {
             InputSource inSrc = new InputSource(in);
             inSrc.setSystemId(uri);
@@ -715,8 +730,18 @@ public class MapLoader extends DefaultHandler {
     /**
      * Creates, configures and returns ResourceLocator object used to lookup DataMap
      * files.
+     * @deprecated since 3.0 use {@link #createResourceFinder()}.
      */
     protected ResourceLocator configLocator() {
+        return (ResourceLocator) createResourceFinder();
+    }
+    
+    /**
+     * Creates, configures and returns a default ResourceFinder.
+     * 
+     * @since 3.0
+     */
+    protected ResourceFinder createResourceFinder() {
         ResourceLocator locator = new ResourceLocator();
         locator.setSkipAbsolutePath(true);
         locator.setSkipClasspath(false);
@@ -724,6 +749,7 @@ public class MapLoader extends DefaultHandler {
         locator.setSkipHomeDirectory(false);
         return locator;
     }
+    
 
     @Override
     public void startElement(
@@ -849,11 +875,15 @@ public class MapLoader extends DefaultHandler {
         String serverOnly = atts.getValue("", "serverOnly");
         objEntity.setServerOnly(TRUE.equalsIgnoreCase(serverOnly));
 
-        String excludeSuperclassListeners = atts.getValue("", "exclude-superclass-listeners");
-        objEntity.setExcludingSuperclassListeners(TRUE.equalsIgnoreCase(excludeSuperclassListeners));
+        String excludeSuperclassListeners = atts.getValue(
+                "",
+                "exclude-superclass-listeners");
+        objEntity.setExcludingSuperclassListeners(TRUE
+                .equalsIgnoreCase(excludeSuperclassListeners));
 
         String excludeDefaultListeners = atts.getValue("", "exclude-default-listeners");
-        objEntity.setExcludingDefaultListeners(TRUE.equalsIgnoreCase(excludeDefaultListeners));
+        objEntity.setExcludingDefaultListeners(TRUE
+                .equalsIgnoreCase(excludeDefaultListeners));
 
         String lockType = atts.getValue("", "lock-type");
         if ("optimistic".equals(lockType)) {
@@ -955,7 +985,7 @@ public class MapLoader extends DefaultHandler {
                     + " Unable to parse target. Attributes:\n"
                     + printAttributes(atts));
         }
-        
+
         String collectionType = atts.getValue("", "collection-type");
         String mapKey = atts.getValue("", "map-key");
 
@@ -1255,7 +1285,8 @@ public class MapLoader extends DefaultHandler {
         for (int i = 0; i < atts.getLength(); i++) {
             value = atts.getQName(i);
             name = atts.getValue(i);
-            sb.append("Name: ").append(name).append("\tValue: ").append(value).append("\n");
+            sb.append("Name: ").append(name).append("\tValue: ").append(value).append(
+                    "\n");
         }
         return sb;
     }

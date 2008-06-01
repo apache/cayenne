@@ -42,6 +42,7 @@ import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.UtilDateType;
+import org.apache.cayenne.conf.ClasspathResourceFinder;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -79,7 +80,7 @@ public class JdbcAdapter implements DbAdapter {
         this.setSupportsFkConstraints(true);
 
         this.pkGenerator = createPkGenerator();
-        this.typesHandler = TypesHandler.getHandler(findAdapterResource("/types.xml"));
+        this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
         this.extendedTypes = new ExtendedTypeMap();
         this.configureExtendedTypes(extendedTypes);
         this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
@@ -104,14 +105,30 @@ public class JdbcAdapter implements DbAdapter {
      * </p>
      * 
      * @since 1.1
+     * @deprecated since 3.0 replaced with protected method {@link #findResource(String)}.
      */
     public URL findAdapterResource(String name) {
-        Class<?> adapterClass = this.getClass();
+        return findResource(name);
+    }
+
+    /**
+     * * Locates and returns a named adapter resource. A resource can be an XML file, etc.
+     * <p>
+     * This implementation is based on the premise that each adapter is located in its own
+     * Java package and all resources are in the same package as well. Resource lookup is
+     * recursive, so that if DbAdapter is a subclass of another adapter, parent adapter
+     * package is searched as a failover.
+     * </p>
+     * 
+     * @since 3.0
+     */
+    protected URL findResource(String name) {
+        Class<?> adapterClass = getClass();
 
         while (adapterClass != null && JdbcAdapter.class.isAssignableFrom(adapterClass)) {
 
             String path = Util.getPackagePath(adapterClass.getName()) + name;
-            URL url = ResourceLocator.findURLInClasspath(path);
+            URL url = new ClasspathResourceFinder().getResource(path);
             if (url != null) {
                 return url;
             }

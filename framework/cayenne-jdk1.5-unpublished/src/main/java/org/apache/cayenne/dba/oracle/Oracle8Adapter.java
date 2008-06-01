@@ -41,14 +41,14 @@ public class Oracle8Adapter extends OracleAdapter {
         return query.createSQLAction(new Oracle8ActionBuilder(this, node
                 .getEntityResolver()));
     }
-   
+
     @Override
-    public URL findAdapterResource(String name) {
-        
-        if("/types.xml".equals(name)) {
+    protected URL findResource(String name) {
+
+        if ("/types.xml".equals(name)) {
             name = "/types-oracle8.xml";
         }
-        
-        return super.findAdapterResource(name);
+
+        return super.findResource(name);
     }
 }

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.net.URL;
 import java.sql.Types;
 
 import org.apache.cayenne.map.DataMap;
@@ -44,13 +43,5 @@ public class OracleAdapterTest extends CayenneCase {
         assertNotNull(types);
         assertEquals(1, types.length);
         assertEquals("TIMESTAMP", types[0]);
-    }
-
-    public void testFindAdapterResource() throws Exception {
-
-        URL typesURL = new OracleAdapter().findAdapterResource("/types.xml");
-        assertNotNull(typesURL);
-        assertTrue("Unexpected url:" + typesURL, typesURL.toExternalForm().endsWith(
-                "types.xml"));
     }
 }

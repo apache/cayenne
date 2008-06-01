@@ -44,7 +44,7 @@ public class MultiProjectConfiguration extends Configuration {
     @Override
     public void initialize() throws Exception {
 
-        logger.debug("initialize starting.");
+        logger.debug("loading configuration");
 
         InputStream in = this.getDomainConfiguration();
         if (in == null) {
