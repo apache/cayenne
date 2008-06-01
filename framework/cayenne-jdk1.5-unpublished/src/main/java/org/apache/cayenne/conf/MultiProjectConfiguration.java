@@ -78,14 +78,4 @@ public class MultiProjectConfiguration extends Configuration {
     protected ResourceFinder getResourceFinder() {
         return resourceFinder;
     }
-
-    @Override
-    protected InputStream getMapConfiguration(String name) {
-        return null;
-    }
-
-    @Override
-    protected InputStream getViewConfiguration(String location) {
-        return null;
-    }
 }
