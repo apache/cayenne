@@ -45,8 +45,6 @@ public class DefaultConfiguration extends Configuration {
      * Default constructor. Simply calls
      * {@link DefaultConfiguration#DefaultConfiguration(String)} with
      * {@link Configuration#DEFAULT_DOMAIN_FILE} as argument.
-     * 
-     * @see Configuration#Configuration()
      */
     public DefaultConfiguration() {
         this(Configuration.DEFAULT_DOMAIN_FILE);
@@ -123,6 +121,12 @@ public class DefaultConfiguration extends Configuration {
         this.getResourceLocator().addFilesystemPath(path);
     }
 
+    @Override
+    protected InputStream getDomainConfiguration() {
+        // deprecation in superclass does not affect subclass...
+        return super.getDomainConfiguration();
+    }
+
     /**
      * Initializes all Cayenne resources. Loads all configured domains and their data
      * maps, initializes all domain Nodes and their DataSources.
@@ -131,7 +135,7 @@ public class DefaultConfiguration extends Configuration {
     public void initialize() throws Exception {
         logger.debug("initialize starting.");
 
-        InputStream in = this.getDomainConfiguration();
+        InputStream in = getDomainConfiguration();
         if (in == null) {
             StringBuilder msg = new StringBuilder();
             msg.append("[").append(this.getClass().getName()).append(
@@ -162,10 +166,20 @@ public class DefaultConfiguration extends Configuration {
 
     /**
      * Returns the default ResourceLocator configured for CLASSPATH lookups.
+     * 
+     * @deprecated since 3.0 as super is deprecated.
      */
     @Override
     protected ResourceLocator getResourceLocator() {
-        return this.locator;
+        return locator;
+    }
+
+    /**
+     * @since 3.0
+     */
+    @Override
+    protected ResourceFinder getResourceFinder() {
+        return locator;
     }
 
     /**
@@ -176,33 +190,6 @@ public class DefaultConfiguration extends Configuration {
         this.locator = locator;
     }
 
-    /**
-     * Returns the domain configuration as a stream or <code>null</code> if it cannot be
-     * found. Uses the configured {@link ResourceLocator} to find the file.
-     */
-    @Override
-    protected InputStream getDomainConfiguration() {
-        return locator.findResourceStream(this.getDomainConfigurationName());
-    }
-
-    /**
-     * Returns the {@link org.apache.cayenne.map.DataMap} configuration from a specified
-     * location or <code>null</code> if it cannot be found. Uses the configured
-     * {@link ResourceLocator} to find the file.
-     */
-    @Override
-    protected InputStream getMapConfiguration(String location) {
-        return locator.findResourceStream(location);
-    }
-
-    @Override
-    protected InputStream getViewConfiguration(String location) {
-        return locator.findResourceStream(location);
-    }
-
-    /**
-     * @see Object#toString()
-     */
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
@@ -214,5 +201,4 @@ public class DefaultConfiguration extends Configuration {
                 .append(']');
         return buf.toString();
     }
-
 }

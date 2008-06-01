@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.jpa;
 
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.instrument.ClassFileTransformer;
 import java.sql.Connection;
@@ -40,6 +39,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.conf.ConnectionProperties;
+import org.apache.cayenne.conf.ResourceFinder;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.enhancer.Enhancer;
@@ -57,7 +57,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
-import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
@@ -562,17 +561,7 @@ public class Provider implements PersistenceProvider {
         }
 
         @Override
-        protected ResourceLocator getResourceLocator() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        protected InputStream getMapConfiguration(String name) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        protected InputStream getViewConfiguration(String location) {
+        protected ResourceFinder getResourceFinder() {
             throw new UnsupportedOperationException();
         }
     }

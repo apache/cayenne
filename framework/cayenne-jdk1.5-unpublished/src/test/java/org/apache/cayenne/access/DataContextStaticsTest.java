@@ -19,11 +19,9 @@
 
 package org.apache.cayenne.access;
 
-import java.io.InputStream;
-
 import org.apache.cayenne.conf.Configuration;
+import org.apache.cayenne.conf.ResourceFinder;
 import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.util.ResourceLocator;
 
 /**
  * @author Andrus Adamchik
@@ -78,17 +76,7 @@ public class DataContextStaticsTest extends CayenneCase {
         }
 
         @Override
-        public ResourceLocator getResourceLocator() {
-            return null;
-        }
-
-        @Override
-        protected InputStream getMapConfiguration(String location) {
-            return null;
-        }
-
-        @Override
-        protected InputStream getViewConfiguration(String location) {
+        protected ResourceFinder getResourceFinder() {
             return null;
         }
     }

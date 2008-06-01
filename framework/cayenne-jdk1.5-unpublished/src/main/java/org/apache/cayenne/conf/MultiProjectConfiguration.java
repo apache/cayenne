@@ -19,11 +19,8 @@
 package org.apache.cayenne.conf;
 
 import java.io.InputStream;
-import java.net.URL;
-import java.util.Collection;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.util.ResourceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -77,23 +74,13 @@ public class MultiProjectConfiguration extends Configuration {
         logger.debug("initialize finished.");
     }
 
-    /**
-     * Returns a collection of all available unit descriptor URLs. Unit descriptors
-     * (usually cayenne.xml files) are looked up using the internal resource locator.
-     * 
-     * @since 3.0
-     */
-    protected Collection<URL> getUnitDescriptors() {
-        return resourceFinder.getResources(getDomainConfigurationName());
+    @Override
+    protected ResourceFinder getResourceFinder() {
+        return resourceFinder;
     }
 
     @Override
     protected InputStream getMapConfiguration(String name) {
-        return null;
-    }
-
-    @Override
-    protected ResourceLocator getResourceLocator() {
         return null;
     }
 

@@ -19,27 +19,13 @@
 
 package org.apache.cayenne.conf;
 
-import java.io.InputStream;
-
-import org.apache.cayenne.util.ResourceLocator;
-
 /**
  * @author Andrus Adamchik
  */
 public class MockConfiguration extends Configuration {
 
     @Override
-    protected InputStream getMapConfiguration(String name) {
-        return null;
-    }
-
-    @Override
-    protected ResourceLocator getResourceLocator() {
-        return null;
-    }
-
-    @Override
-    protected InputStream getViewConfiguration(String location) {
+    protected ResourceFinder getResourceFinder() {
         return null;
     }
 

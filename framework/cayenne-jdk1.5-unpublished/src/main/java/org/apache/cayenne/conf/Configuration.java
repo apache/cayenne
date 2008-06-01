@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.conf;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -223,8 +225,30 @@ public abstract class Configuration {
 
     /**
      * Returns the resource locator used for finding and loading resources.
+     * 
+     * @deprecated since 3.0 use/override {@link #getResourceFinder()}.
      */
-    protected abstract ResourceLocator getResourceLocator();
+    protected ResourceLocator getResourceLocator() {
+        ResourceFinder finder = getResourceFinder();
+        if (finder == null) {
+            return null;
+        }
+
+        if (finder instanceof ResourceLocator) {
+            return (ResourceLocator) finder;
+        }
+
+        throw new IllegalStateException("ResourceFinder is not a ResourceLocator: "
+                + finder);
+    }
+
+    /**
+     * Returns {@link ResourceFinder} associated with this Configuration that is to be
+     * used for config files lookup.
+     * 
+     * @since 3.0
+     */
+    protected abstract ResourceFinder getResourceFinder();
 
     /**
      * Returns a DataDomain as a stream or <code>null</code> if it cannot be found.
@@ -233,26 +257,50 @@ public abstract class Configuration {
      *             the superclass.
      */
     protected InputStream getDomainConfiguration() {
-        throw new UnsupportedOperationException();
+        URL url = getResourceFinder().getResource(getDomainConfigurationName());
+        try {
+            return url != null ? url.openStream() : null;
+        }
+        catch (IOException e) {
+            throw new ConfigurationException("Can't open config file URL: " + url, e);
+        }
     }
 
     /**
      * Returns a DataMap with the given name or <code>null</code> if it cannot be found.
      */
-    protected abstract InputStream getMapConfiguration(String name);
+    protected InputStream getMapConfiguration(String name) {
+        URL url = getResourceFinder().getResource(name);
+        try {
+            return url != null ? url.openStream() : null;
+        }
+        catch (IOException e) {
+            throw new ConfigurationException("Can't open config file URL: " + url, e);
+        }
+    }
 
     /**
      * See 'https://svn.apache.org/repos/asf/cayenne/dataviews/trunk' for DataViews code,
      * which is not a part of Cayenne since 3.0.
+     * 
+     * @deprecated since 3.0 as Cayenne no longer cares to read view config files.
      */
-    protected abstract InputStream getViewConfiguration(String location);
+    protected InputStream getViewConfiguration(String location) {
+        URL url = getResourceFinder().getResource(location);
+        try {
+            return url != null ? url.openStream() : null;
+        }
+        catch (IOException e) {
+            throw new ConfigurationException("Can't open config file URL: " + url, e);
+        }
+    }
 
     /**
      * Returns the name of the main domain configuration resource. Defaults to
      * {@link Configuration#DEFAULT_DOMAIN_FILE}.
      */
     public String getDomainConfigurationName() {
-        return this.domainConfigurationName;
+        return domainConfigurationName;
     }
 
     /**

@@ -18,22 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import java.io.InputStream;
-
 import org.apache.cayenne.conf.Configuration;
-import org.apache.cayenne.util.ResourceLocator;
+import org.apache.cayenne.conf.ResourceFinder;
 
 public class MockConfiguration extends Configuration {
 
-    protected InputStream getMapConfiguration(String name) {
-        return null;
-    }
-
-    protected ResourceLocator getResourceLocator() {
-        return null;
-    }
-
-    protected InputStream getViewConfiguration(String location) {
+    @Override
+    protected ResourceFinder getResourceFinder() {
         return null;
     }
 
