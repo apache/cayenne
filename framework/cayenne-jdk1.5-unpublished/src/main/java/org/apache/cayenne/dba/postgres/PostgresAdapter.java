@@ -45,11 +45,11 @@ import org.apache.cayenne.query.SQLAction;
  * 
  * <pre>
  *    
- *      test-postgresql.cayenne.adapter = org.apache.cayenne.dba.postgres.PostgresAdapter
- *      test-postgresql.jdbc.username = test
- *      test-postgresql.jdbc.password = secret
- *      test-postgresql.jdbc.url = jdbc:postgresql://serverhostname/cayenne
- *      test-postgresql.jdbc.driver = org.postgresql.Driver
+ *      postgres.cayenne.adapter = org.apache.cayenne.dba.postgres.PostgresAdapter
+ *      postgres.jdbc.username = test
+ *      postgres.jdbc.password = secret
+ *      postgres.jdbc.url = jdbc:postgresql://serverhostname/cayenne
+ *      postgres.jdbc.driver = org.postgresql.Driver
  *     
  * </pre>
  * 
