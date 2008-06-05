@@ -18,10 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.dba.hsqldb;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
+import org.apache.cayenne.merge.SetAllowNullToDb;
 import org.apache.cayenne.merge.SetColumnTypeToDb;
 
 public class HSQLMergerFactory extends MergerFactory {
@@ -42,6 +47,26 @@ public class HSQLMergerFactory extends MergerFactory {
                 sqlBuffer.append(columnNew.getName());
                 sqlBuffer.append(" ");
             }
+        };
+    }
+
+    @Override
+    public MergerToken createSetAllowNullToDb(DbEntity entity, DbAttribute column) {
+        return new SetAllowNullToDb(entity, column) {
+
+            @Override
+            public List<String> createSql(DbAdapter adapter) {
+                StringBuilder sqlBuffer = new StringBuilder();
+
+                sqlBuffer.append("ALTER TABLE ");
+                sqlBuffer.append(getEntity().getFullyQualifiedName());
+                sqlBuffer.append(" ALTER COLUMN ");
+                sqlBuffer.append(getColumn().getName());
+                sqlBuffer.append(" NULL");
+
+                return Collections.singletonList(sqlBuffer.toString());
+            }
+
         };
     }
 

@@ -18,11 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.dba.derby;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
+import org.apache.cayenne.merge.SetAllowNullToDb;
 import org.apache.cayenne.merge.SetColumnTypeToDb;
+import org.apache.cayenne.merge.SetNotNullToDb;
 
 public class DerbyMergerFactory extends MergerFactory {
 
@@ -45,4 +51,45 @@ public class DerbyMergerFactory extends MergerFactory {
             }
         };
     }
+
+    @Override
+    public MergerToken createSetNotNullToDb(DbEntity entity, DbAttribute column) {
+        return new SetNotNullToDb(entity, column) {
+
+            @Override
+            public List<String> createSql(DbAdapter adapter) {
+                StringBuilder sqlBuffer = new StringBuilder();
+
+                sqlBuffer.append("ALTER TABLE ");
+                sqlBuffer.append(getEntity().getFullyQualifiedName());
+                sqlBuffer.append(" ALTER COLUMN ");
+                sqlBuffer.append(getColumn().getName());
+                sqlBuffer.append(" NOT NULL");
+
+                return Collections.singletonList(sqlBuffer.toString());
+            }
+
+        };
+    }
+
+    @Override
+    public MergerToken createSetAllowNullToDb(DbEntity entity, DbAttribute column) {
+        return new SetAllowNullToDb(entity, column) {
+
+            @Override
+            public List<String> createSql(DbAdapter adapter) {
+                StringBuilder sqlBuffer = new StringBuilder();
+
+                sqlBuffer.append("ALTER TABLE ");
+                sqlBuffer.append(getEntity().getFullyQualifiedName());
+                sqlBuffer.append(" ALTER COLUMN ");
+                sqlBuffer.append(getColumn().getName());
+                sqlBuffer.append(" NULL");
+
+                return Collections.singletonList(sqlBuffer.toString());
+            }
+
+        };
+    }
+
 }

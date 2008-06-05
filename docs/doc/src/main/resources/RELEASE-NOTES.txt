@@ -24,6 +24,7 @@ CAY-1061 ResourceFinder: abstract API for looking up resources, including multip
 Bug fixes since M4:
 
 CAY-1062 Code Generation line ending consistency: ImportUtils
+CAY-1063 Derby adapter is not able to remove NOT NULL relationship
 
 ----------------------------------
 Release: 3.0M4
