@@ -31,6 +31,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
@@ -42,6 +43,7 @@ import javax.swing.tree.TreeModel;
 
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.QueryEvent;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -90,9 +92,15 @@ public class SelectQueryOrderingTab extends JPanel {
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(createEditorPanel(), BorderLayout.CENTER);
-        mainPanel.add(createSelectorPanel(), BorderLayout.SOUTH);
+        /**
+         * As of CAY-888 #3 main pane is now a JSplitPane.
+         * Top component is a bit larger.
+         */
+        JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        mainPanel.setDividerLocation(Application.getFrame().getHeight() / 2);
+        
+        mainPanel.setTopComponent(createEditorPanel());
+        mainPanel.setBottomComponent(createSelectorPanel());
 
         setLayout(cardLayout);
         add(mainPanel, REAL_PANEL);
@@ -161,7 +169,7 @@ public class SelectQueryOrderingTab extends JPanel {
         browser = new MultiColumnBrowser();
         browser.setPreferredColumnSize(BROWSER_CELL_DIM);
         browser.setDefaultRenderer();
-
+        
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(createToolbar(), BorderLayout.NORTH);
         panel.add(new JScrollPane(
@@ -169,6 +177,10 @@ public class SelectQueryOrderingTab extends JPanel {
                 JScrollPane.VERTICAL_SCROLLBAR_NEVER,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
 
+        //setting minimal size, otherwise scrolling looks awful, because of 
+        //VERTICAL_SCROLLBAR_NEVER strategy
+        panel.setMinimumSize(panel.getPreferredSize());
+        
         return panel;
     }
 
@@ -274,7 +286,7 @@ public class SelectQueryOrderingTab extends JPanel {
     final class OrderingModel extends AbstractTableModel {
 
         Ordering getOrdering(int row) {
-            return (Ordering) selectQuery.getOrderings().get(row);
+            return selectQuery.getOrderings().get(row);
         }
 
         public int getColumnCount() {
@@ -300,6 +312,7 @@ public class SelectQueryOrderingTab extends JPanel {
             }
         }
 
+        @Override
         public Class getColumnClass(int column) {
             switch (column) {
                 case 0:
@@ -312,6 +325,7 @@ public class SelectQueryOrderingTab extends JPanel {
             }
         }
 
+        @Override
         public String getColumnName(int column) {
             switch (column) {
                 case 0:
@@ -325,10 +339,12 @@ public class SelectQueryOrderingTab extends JPanel {
             }
         }
 
+        @Override
         public boolean isCellEditable(int row, int column) {
             return column == 1 || column == 2;
         }
 
+        @Override
         public void setValueAt(Object value, int row, int column) {
             Ordering ordering = getOrdering(row);
 

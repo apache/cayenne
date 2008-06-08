@@ -22,7 +22,10 @@ package org.apache.cayenne.modeler.editor;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -31,7 +34,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
@@ -40,10 +46,12 @@ import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.modeler.util.ValidatorTextAdapter;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -87,11 +95,16 @@ public class SelectQueryMainTab extends JPanel {
         AutoCompletion.enable(queryRoot);
         queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
 
-        qualifier = new TextAdapter(new JTextField()) {
+        qualifier = new ValidatorTextAdapter(new JTextField()) {
 
             @Override
             protected void updateModel(String text) {
                 setQueryQualifier(text);
+            }
+
+            @Override
+            protected void validate(String text) throws ValidationException {
+                createQualifier(text);
             }
         };
 
@@ -123,17 +136,11 @@ public class SelectQueryMainTab extends JPanel {
     }
 
     private void initController() {
-
-        queryRoot.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent event) {
-                SelectQuery query = getQuery();
-                if (query != null) {
-                    query.setRoot(queryRoot.getModel().getSelectedItem());
-                    mediator.fireQueryEvent(new QueryEvent(this, query));
-                }
-            }
-        });
+        RootSelectionHandler rootHandler = new RootSelectionHandler();
+        
+        queryRoot.addActionListener(rootHandler);
+        queryRoot.addFocusListener(rootHandler);
+        queryRoot.getEditor().getEditorComponent().addFocusListener(rootHandler);
 
         distinct.addActionListener(new ActionListener() {
 
@@ -206,19 +213,46 @@ public class SelectQueryMainTab extends JPanel {
             text = null;
         }
 
+        Expression qualifier = createQualifier(text);
+        if (qualifier != null)
+        {
+            //getQuery() is not null if we reached here
+            getQuery().setQualifier(qualifier);
+            mediator.fireQueryEvent(new QueryEvent(this, getQuery()));
+        }
+        
+    }
+    
+    /**
+     * Method to create and check an expression
+     * @param text String to be converted as Expression
+     * @return Expression if a new expression was created, null otherwise.
+     * @throws ValidationException if <code>text</code> can't be converted  
+     */
+    Expression createQualifier(String text) throws ValidationException
+    {
         SelectQuery query = getQuery();
         if (query == null) {
-            return;
+            return null;
         }
-
+        
         ExpressionConvertor convertor = new ExpressionConvertor();
         try {
             String oldQualifier = convertor.valueAsString(query.getQualifier());
             if (!Util.nullSafeEquals(oldQualifier, text)) {
                 Expression exp = (Expression) convertor.stringAsValue(text);
-                query.setQualifier(exp);
-                mediator.fireQueryEvent(new QueryEvent(this, query));
+                
+                /**
+                 * Advanced checking. See CAY-888 #1
+                 */
+                if(query.getRoot() != null) {
+                    checkExpression((Entity) query.getRoot(), exp);
+                }
+                
+                return exp;
             }
+            
+            return null;
         }
         catch (IllegalArgumentException ex) {
             // unparsable qualifier
@@ -262,6 +296,112 @@ public class SelectQueryMainTab extends JPanel {
             throw new ValidationException("There is another query named '"
                     + newName
                     + "'. Use a different name.");
+        }
+    }
+    
+    /**
+     * Advanced checking of an expression, needed because Expression.fromString()
+     * might terminate normally, but returned Expression will not be appliable
+     * for real Entities.
+     * Current implementation assures all attributes in expression are present in
+     * Entity  
+     * @param root Root of a query
+     * @param ex Expression to check
+     * @throws ValidationException when something's wrong
+     */
+    static void checkExpression(Entity root, Expression ex) throws ValidationException {
+        try {
+            if (ex instanceof ASTPath) {
+                /**
+                 * Try to iterate through path, if some attributes are not present,
+                 * exception will be raised
+                 */
+                
+                Iterator<CayenneMapEntry> path = root.resolvePathComponents(ex);
+                while (path.hasNext()) {
+                    path.next();
+                }
+            }
+            
+            if (ex != null) {
+                for (int i = 0; i < ex.getOperandCount(); i++) {
+                    if (ex.getOperand(i) instanceof Expression) {
+                        checkExpression(root, (Expression)ex.getOperand(i));
+                    }
+                }
+            }
+        }
+        catch (ExpressionException eex) {
+            throw new ValidationException(eex.getUnlabeledMessage());
+        }
+    }
+    
+    /**
+     * Handler to user's actions with root selection combobox
+     */
+    class RootSelectionHandler implements FocusListener, ActionListener {
+        String newName = null;
+        boolean needChangeName;
+
+        public void actionPerformed(ActionEvent ae) {
+            SelectQuery query = getQuery();
+            if (query != null) {
+                query.setRoot(queryRoot.getModel().getSelectedItem());
+                
+                if (needChangeName) { //not changed by user
+                    /**
+                     * Doing auto name change, following CAY-888 #2
+                     */
+                    Entity e = (Entity)queryRoot.getModel().getSelectedItem();
+                    
+                    String newPrefix = e.getName() + "Query";
+                    newName = newPrefix;
+                    
+                    DataMap map = mediator.getCurrentDataMap();
+                    long postfix = 1;
+                    
+                    while (map.getQuery(newName) != null) {
+                        newName = newPrefix + (postfix++);
+                    }
+                    
+                    name.setText(newName);
+                }
+            }
+        }
+
+        public void focusGained(FocusEvent e) {
+            //reset new name tracking
+            newName = null;
+            
+            SelectQuery query = getQuery();
+            if (query != null) {
+                needChangeName = hasDefaultName(query);
+            }
+            else {
+                needChangeName = false;
+            }
+        }
+
+        public void focusLost(FocusEvent e) {
+            if (newName != null) {
+                setQueryName(newName);
+            }
+            
+            newName = null;
+            needChangeName = false;
+        }
+
+        /**
+         * @return whether specified's query name is 'default' i.e. Cayenne generated
+         * A query's name is 'default' if it starts with 'UntitledQuery' or with root name.
+         * 
+         * We cannot follow user input because tab might be opened many times
+         */
+        boolean hasDefaultName(SelectQuery query) {
+            String prefix = query.getRoot() == null ? "UntitledQuery" :
+                ((Entity)query.getRoot()).getName() + "Query";
+            
+            return name.getComponent().getText().startsWith(prefix);
         }
     }
 }
