@@ -33,7 +33,6 @@ import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
@@ -194,10 +193,9 @@ class Compiler {
         descriptor.visitAllProperties(visitor);
 
         // append id columns ... (some may have been appended already via relationships)
-        DbEntity table = descriptor.getEntity().getDbEntity();
-        for (DbAttribute pk : table.getPrimaryKeys()) {
-            if (visited.add(pk.getName())) {
-                entityResult.addDbField(pk.getName(), prefix + index[0]++);
+        for (String pkName : descriptor.getEntity().getPrimaryKeyNames()) {
+            if (visited.add(pkName)) {
+                entityResult.addDbField(pkName, prefix + index[0]++);
             }
         }
 
