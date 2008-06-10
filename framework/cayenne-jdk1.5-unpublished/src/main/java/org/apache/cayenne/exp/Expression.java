@@ -573,6 +573,9 @@ public abstract class Expression implements Serializable, XMLSerializable {
         return buffer.toString();
     }
 
+    /**
+     * @since 3.0
+     */
     public String toEJBQL(String rootId) {
         StringWriter buffer = new StringWriter();
         PrintWriter pw = new PrintWriter(buffer);

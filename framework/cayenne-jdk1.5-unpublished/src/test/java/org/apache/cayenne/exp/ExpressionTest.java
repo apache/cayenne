@@ -34,17 +34,17 @@ public class ExpressionTest extends TestCase {
         Expression e = Expression.fromString("216201000180L");
         assertEquals(new Long(216201000180L), e.evaluate(new Object()));
     }
-    
+
     public void testFromStringPath() {
         Expression e1 = Expression.fromString("object.path");
         assertEquals(Expression.OBJ_PATH, e1.getType());
-        
+
         Expression e2 = Expression.fromString("db:object.path");
         assertEquals(Expression.DB_PATH, e2.getType());
-        
+
         Expression e3 = Expression.fromString("object+.path");
         assertEquals(Expression.OBJ_PATH, e3.getType());
-        
+
         Expression e4 = Expression.fromString("db:object.path+");
         assertEquals(Expression.DB_PATH, e4.getType());
     }
@@ -90,5 +90,19 @@ public class ExpressionTest extends TestCase {
         String ejbql = buffer.toString();
 
         assertEquals("x.artistName.stuff = :name", ejbql);
+    }
+
+    public void testEncodeAsEJBQL3_EncodeListOfParameters() {
+
+        Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
+
+        StringWriter buffer = new StringWriter();
+        PrintWriter pw = new PrintWriter(buffer);
+        e.encodeAsEJBQL(pw, "x");
+        pw.close();
+        buffer.flush();
+        String ejbql = buffer.toString();
+
+        assertEquals("x.artistName in ('a', 'b', 'c')", ejbql);
     }
 }

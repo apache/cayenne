@@ -113,6 +113,36 @@ public class ASTList extends SimpleNode {
 
         pw.print(')');
     }
+    
+    /**
+     * @since 3.0
+     */
+    @Override
+    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+        if (parent != null) {
+            pw.print("(");
+        }
+
+        if ((values != null) && (values.length > 0)) {
+            for (int i = 0; i < values.length; ++i) {
+                if (i > 0) {
+                    pw.print(getExpressionOperator(i));
+                    pw.print(' ');
+                }
+
+                if (values[i] == null) {
+                    pw.print("null");
+                }
+                else {
+                    SimpleNode.encodeScalarAsString(pw, values[i], '\'');
+                }
+            }
+        }
+
+        if (parent != null) {
+            pw.print(')');
+        }
+    }
 
     @Override
     public int getOperandCount() {
