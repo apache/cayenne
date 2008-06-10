@@ -111,8 +111,62 @@ public abstract class ValidatorTextAdapter extends TextAdapter {
         }
         catch (ValidationException vex) {
             textComponent.setBackground(errorColor);
-            textComponent.setToolTipText(vex.getUnlabeledMessage());
+            textComponent.setToolTipText(wrapTooltip(vex.getUnlabeledMessage()));
         }
+    }
+    
+    /**
+     * Wraps the tooltip, making it multi-lined if needed.
+     * Current implementation uses HTML markup to break the lines
+     * @param tooltip single-line tooltip
+     * @return multi-line tooltip.
+     */
+    protected String wrapTooltip(String tooltip) {
+        tooltip = encodeHTMLAttribute(tooltip);
+        tooltip = tooltip.replaceAll(System.getProperty("line.separator"), "<br>");
+        
+        return "<html>" + tooltip + "</html>";
+    }
+    
+    /**
+     * Encodes a string so that it can be used as an attribute value in an HMTL document.
+     * Will do conversion of the greater/less signs and ampersands.
+     * 
+     * ***
+     * This method is almost a copy of Util.encodeXmlAttribute(), but it does not replace
+     * single quotes. So only '<', '>', '&', '"' chars will be replaced. 
+     */
+    public static String encodeHTMLAttribute(String str) {
+        if (str == null) {
+            return null;
+        }
+
+        int len = str.length();
+        if (len == 0) {
+            return str;
+        }
+
+        StringBuilder encoded = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+            char c = str.charAt(i);
+            if (c == '<') {
+                encoded.append("&lt;");
+            }
+            else if (c == '\"') {
+                encoded.append("&quot;");
+            }
+            else if (c == '>') {
+                encoded.append("&gt;");
+            }
+            else if (c == '&') {
+                encoded.append("&amp;");
+            }
+            else {
+                encoded.append(c);
+            }
+        }
+
+        return encoded.toString();
     }
     
     /**

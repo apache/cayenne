@@ -15,6 +15,7 @@ Date:
 
 Changes/New Features Since M4:
 
+CAY-888 CM Usability: Object Select Query Improvements
 CAY-911 CM Usability: JComboBox Autocompletion
 CAY-1056 Detection of the project file changes on disk.
 CAY-1055 Right-click contextual menu for entities/attributes/relationships that would include common operations, like "delete".
@@ -28,7 +29,7 @@ CAY-1063 Derby adapter is not able to remove NOT NULL relationship
 
 ----------------------------------
 Release: 3.0M4
-Date: 
+Date: 05/29/2008
 ----------------------------------
 
 Changes/New Features Since M3:
