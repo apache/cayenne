@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ObjEntity;
  */
 class EJBQLQueryMetadata extends BaseQueryMetadata {
 
-    private SQLResultSetMapping resultSetMapping;
+    private transient SQLResultSetMapping resultSetMapping;
 
     void setResultSetMapping(SQLResultSetMapping resultSetMapping) {
         this.resultSetMapping = resultSetMapping;
