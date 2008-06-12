@@ -61,41 +61,53 @@ public class OrderingTranslator extends QueryAssemblerHelper {
 
         Iterator<Ordering> it = ((SelectQuery) q).getOrderings().iterator();
 
-        while (it.hasNext()) {
-            Ordering ord = it.next();
+        Appendable mainBuffer = this.out;
 
-            if (ord.isCaseInsensitive()) {
-                out.append("UPPER(");
-            }
+        try {
+            while (it.hasNext()) {
+                Ordering ord = it.next();
 
-            Expression exp = ord.getSortSpec();
+                // reset buffer to collect SQL for the single column, that we'll be reusing 
+                this.out = new StringBuilder();
 
-            if (exp.getType() == Expression.OBJ_PATH) {
-                appendObjPath(exp);
-            }
-            else if (exp.getType() == Expression.DB_PATH) {
-                appendDbPath(exp);
-            }
-            else {
-                throw new CayenneRuntimeException("Unsupported ordering expression: "
-                        + exp);
-            }
+                if (ord.isCaseInsensitive()) {
+                    out.append("UPPER(");
+                }
 
-            // Close UPPER() modifier
-            if (ord.isCaseInsensitive()) {
-                out.append(")");
-            }
+                Expression exp = ord.getSortSpec();
 
-            orderByColumnList.add(out.toString());
+                if (exp.getType() == Expression.OBJ_PATH) {
+                    appendObjPath(exp);
+                }
+                else if (exp.getType() == Expression.DB_PATH) {
+                    appendDbPath(exp);
+                }
+                else {
+                    throw new CayenneRuntimeException("Unsupported ordering expression: "
+                            + exp);
+                }
 
-            // "ASC" is a noop, omit it from the query
-            if (!ord.isAscending()) {
-                out.append(" DESC");
-            }
+                // Close UPPER() modifier
+                if (ord.isCaseInsensitive()) {
+                    out.append(")");
+                }
 
-            if (it.hasNext()) {
-                out.append(", ");
+                String columnSQL = out.toString();
+                mainBuffer.append(columnSQL);
+                orderByColumnList.add(columnSQL);
+
+                // "ASC" is a noop, omit it from the query
+                if (!ord.isAscending()) {
+                    mainBuffer.append(" DESC");
+                }
+
+                if (it.hasNext()) {
+                    mainBuffer.append(", ");
+                }
             }
+        }
+        finally {
+            this.out = mainBuffer;
         }
     }
 

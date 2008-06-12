@@ -18,10 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
 
 import org.apache.art.Artist;
+import org.apache.art.Painting;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -37,32 +40,76 @@ public class DataContextOrderingTest extends CayenneCase {
     public void testMultipleOrdering() throws Exception {
 
         Calendar c = Calendar.getInstance();
-        
+
         DataContext context = createDataContext();
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("2");
         a1.setDateOfBirth(c.getTime());
-        
+
         c.add(Calendar.DAY_OF_MONTH, -1);
         Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("3");
         a2.setDateOfBirth(c.getTime());
-        
+
         c.add(Calendar.DAY_OF_MONTH, -1);
         Artist a3 = context.newObject(Artist.class);
         a3.setArtistName("3");
         a3.setDateOfBirth(c.getTime());
-        
+
         context.commitChanges();
-        
+
         SelectQuery query = new SelectQuery(Artist.class);
         query.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.DESC);
         query.addOrdering(Artist.DATE_OF_BIRTH_PROPERTY, Ordering.DESC);
-        
+
         List<Artist> list = context.performQuery(query);
         assertEquals(3, list.size());
         assertSame(a2, list.get(0));
         assertSame(a3, list.get(1));
         assertSame(a1, list.get(2));
+    }
+
+    public void testMultipleOrderingInSelectClauseCAY_1074() throws Exception {
+
+        Calendar c = Calendar.getInstance();
+
+        DataContext context = createDataContext();
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("2");
+        a1.setDateOfBirth(c.getTime());
+
+        c.add(Calendar.DAY_OF_MONTH, -1);
+        Artist a2 = context.newObject(Artist.class);
+        a2.setArtistName("3");
+        a2.setDateOfBirth(c.getTime());
+
+        c.add(Calendar.DAY_OF_MONTH, -1);
+        Artist a3 = context.newObject(Artist.class);
+        a3.setArtistName("3");
+        a3.setDateOfBirth(c.getTime());
+
+        Painting p1 = context.newObject(Painting.class);
+        p1.setEstimatedPrice(new BigDecimal(1));
+        p1.setPaintingTitle("Y");
+        a1.addToPaintingArray(p1);
+
+        Painting p2 = context.newObject(Painting.class);
+        p2.setEstimatedPrice(new BigDecimal(2));
+        p2.setPaintingTitle("X");
+        a2.addToPaintingArray(p2);
+
+        context.commitChanges();
+
+        SelectQuery query1 = new SelectQuery(Artist.class);
+
+        // per CAY-1074, adding a to-many join to expression messes up the ordering
+        query1.andQualifier(ExpressionFactory.noMatchExp(
+                Artist.PAINTING_ARRAY_PROPERTY,
+                null));
+        query1.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.DESC);
+        query1.addOrdering(Artist.DATE_OF_BIRTH_PROPERTY, Ordering.DESC);
+
+        List<Artist> list1 = context.performQuery(query1);
+        assertEquals(2, list1.size());
     }
 }

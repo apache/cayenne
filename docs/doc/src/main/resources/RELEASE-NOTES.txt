@@ -28,6 +28,7 @@ CAY-1062 Code Generation line ending consistency: ImportUtils
 CAY-1063 Derby adapter is not able to remove NOT NULL relationship
 CAY-1072 EJBQLQuery non-serializable exception when run via ROP
 CAY-1073 Bug in Expression.toEJBQL with inExp/notInExp
+CAY-1074 Derby: Wrong SQL Generated for select items -- DESC follows column name
 
 ----------------------------------
 Release: 3.0M4
