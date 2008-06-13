@@ -27,6 +27,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.relationship.FlattenedCircular;
 import org.apache.cayenne.testdo.relationship.FlattenedTest1;
 import org.apache.cayenne.testdo.relationship.FlattenedTest2;
 import org.apache.cayenne.testdo.relationship.FlattenedTest3;
@@ -48,12 +49,9 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
     }
 
     public void testInsertJoinWithPK() throws Exception {
-        FlattenedTest1 obj01 = context
-                .newObject(FlattenedTest1.class);
-        FlattenedTest3 obj11 = context
-                .newObject(FlattenedTest3.class);
-        FlattenedTest3 obj12 = context
-                .newObject(FlattenedTest3.class);
+        FlattenedTest1 obj01 = context.newObject(FlattenedTest1.class);
+        FlattenedTest3 obj11 = context.newObject(FlattenedTest3.class);
+        FlattenedTest3 obj12 = context.newObject(FlattenedTest3.class);
 
         obj01.setName("t01");
         obj11.setName("t11");
@@ -88,10 +86,8 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
         joinSelect.setFetchingDataRows(true);
         assertEquals(3, context.performQuery(joinSelect).size());
 
-        FlattenedTest1 ft1 = DataObjectUtils.objectForPK(
-                context,
-                FlattenedTest1.class,
-                2);
+        FlattenedTest1 ft1 = DataObjectUtils
+                .objectForPK(context, FlattenedTest1.class, 2);
 
         assertEquals("ft12", ft1.getName());
         List related = ft1.getFt3OverComplex();
@@ -99,10 +95,8 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
 
         assertEquals(2, related.size());
 
-        FlattenedTest3 ft3 = DataObjectUtils.objectForPK(
-                context,
-                FlattenedTest3.class,
-                3);
+        FlattenedTest3 ft3 = DataObjectUtils
+                .objectForPK(context, FlattenedTest3.class, 3);
         assertTrue(related.contains(ft3));
 
         ft1.removeFromFt3OverComplex(ft3);
@@ -116,21 +110,14 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
     }
 
     public void testQualifyOnToManyFlattened() throws Exception {
-        FlattenedTest1 obj01 = context
-                .newObject(FlattenedTest1.class);
-        FlattenedTest2 obj02 = context
-                .newObject(FlattenedTest2.class);
-        FlattenedTest3 obj031 = context
-                .newObject(FlattenedTest3.class);
-        FlattenedTest3 obj032 = context
-                .newObject(FlattenedTest3.class);
+        FlattenedTest1 obj01 = context.newObject(FlattenedTest1.class);
+        FlattenedTest2 obj02 = context.newObject(FlattenedTest2.class);
+        FlattenedTest3 obj031 = context.newObject(FlattenedTest3.class);
+        FlattenedTest3 obj032 = context.newObject(FlattenedTest3.class);
 
-        FlattenedTest1 obj11 = context
-                .newObject(FlattenedTest1.class);
-        FlattenedTest2 obj12 = context
-                .newObject(FlattenedTest2.class);
-        FlattenedTest3 obj131 = context
-                .newObject(FlattenedTest3.class);
+        FlattenedTest1 obj11 = context.newObject(FlattenedTest1.class);
+        FlattenedTest2 obj12 = context.newObject(FlattenedTest2.class);
+        FlattenedTest3 obj131 = context.newObject(FlattenedTest3.class);
 
         obj01.setName("t01");
         obj02.setName("t02");
@@ -166,14 +153,11 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
     }
 
     public void testToOneSeriesFlattenedRel() {
-        FlattenedTest1 ft1 = (FlattenedTest1) context
-                .newObject("FlattenedTest1");
+        FlattenedTest1 ft1 = (FlattenedTest1) context.newObject("FlattenedTest1");
         ft1.setName("FT1Name");
-        FlattenedTest2 ft2 = (FlattenedTest2) context
-                .newObject("FlattenedTest2");
+        FlattenedTest2 ft2 = (FlattenedTest2) context.newObject("FlattenedTest2");
         ft2.setName("FT2Name");
-        FlattenedTest3 ft3 = (FlattenedTest3) context
-                .newObject("FlattenedTest3");
+        FlattenedTest3 ft3 = (FlattenedTest3) context.newObject("FlattenedTest3");
         ft3.setName("FT3Name");
 
         ft2.setToFT1(ft1);
@@ -224,4 +208,20 @@ public class FlattenedRelationshipsTest extends RelationshipCase {
         context.performQuery(new SelectQuery(FlattenedTest3.class));
         assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
     }
+
+    public void testFlattenedCircular() throws Exception {
+        createTestData("testFlattenedCircular");
+        context = createDataContext();
+        FlattenedCircular fc1 = DataObjectUtils.objectForPK(
+                context,
+                FlattenedCircular.class,
+                1);
+
+        List<FlattenedCircular> side2s = fc1.getSide2s();
+        assertEquals(2, side2s.size());
+
+        List<FlattenedCircular> side1s = fc1.getSide1s();
+        assertTrue(side1s.isEmpty());
+    }
+
 }

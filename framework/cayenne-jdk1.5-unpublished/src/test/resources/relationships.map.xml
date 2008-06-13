@@ -49,6 +49,13 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="RELATIONSHIP_HELPER_FK" type="SMALLINT"/>
 	</db-entity>
+	<db-entity name="FLATTENED_CIRCULAR">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="FLATTENED_CIRCULAR_JOIN">
+		<db-attribute name="SIDE1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="SIDE2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="FLATTENED_TEST_1">
 		<db-attribute name="FT1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
@@ -142,6 +149,8 @@
 	<obj-entity name="DeleteRuleTest3" className="org.apache.cayenne.testdo.relationship.DeleteRuleTest3" dbEntityName="DELETE_RULE_TEST3">
 	</obj-entity>
 	<obj-entity name="FkOfDifferentType" className="org.apache.cayenne.testdo.relationship.FkOfDifferentType" dbEntityName="FK_OF_DIFFERENT_TYPE">
+	</obj-entity>
+	<obj-entity name="FlattenedCircular" className="org.apache.cayenne.testdo.relationship.FlattenedCircular" dbEntityName="FLATTENED_CIRCULAR">
 	</obj-entity>
 	<obj-entity name="FlattenedTest1" className="org.apache.cayenne.testdo.relationship.FlattenedTest1" dbEntityName="FLATTENED_TEST_1">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
@@ -237,6 +246,18 @@
 	<db-relationship name="relationshipHelper" source="FK_OF_DIFFERENT_TYPE" target="RELATIONSHIP_HELPER" toMany="false">
 		<db-attribute-pair source="RELATIONSHIP_HELPER_FK" target="RELATIONSHIP_HELPER_ID"/>
 	</db-relationship>
+	<db-relationship name="side1s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="ID" target="SIDE2_ID"/>
+	</db-relationship>
+	<db-relationship name="side2s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="ID" target="SIDE1_ID"/>
+	</db-relationship>
+	<db-relationship name="side1" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR" toMany="false">
+		<db-attribute-pair source="SIDE1_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="side2" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR" toMany="false">
+		<db-attribute-pair source="SIDE2_ID" target="ID"/>
+	</db-relationship>
 	<db-relationship name="complexJoins" source="FLATTENED_TEST_1" target="COMPLEX_JOIN" toMany="true">
 		<db-attribute-pair source="FT1_ID" target="FT1_FK"/>
 	</db-relationship>
@@ -323,6 +344,8 @@
 	<obj-relationship name="test1Array" source="DeleteRuleTest2" target="DeleteRuleTest1" deleteRule="Nullify" db-relationship-path="test1Array"/>
 	<obj-relationship name="toDeleteRuleTest2" source="DeleteRuleTest3" target="DeleteRuleTest2" db-relationship-path="toDeleteRuleTest2"/>
 	<obj-relationship name="relationshipHelper" source="FkOfDifferentType" target="RelationshipHelper" db-relationship-path="relationshipHelper"/>
+	<obj-relationship name="side2s" source="FlattenedCircular" target="FlattenedCircular" db-relationship-path="side2s.side2"/>
+	<obj-relationship name="side1s" source="FlattenedCircular" target="FlattenedCircular" db-relationship-path="side1s.side1"/>
 	<obj-relationship name="ft2Array" source="FlattenedTest1" target="FlattenedTest2" db-relationship-path="ft2Array"/>
 	<obj-relationship name="ft3Array" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="ft2Array.ft3Array"/>
 	<obj-relationship name="ft3OverComplex" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="complexJoins.toFT3"/>

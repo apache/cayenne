@@ -59,10 +59,37 @@
 		insert into COMPLEX_JOIN (PK, FT1_FK, FT3_FK, EXTRA_COLUMN) values (2002, 2, 3, 'C')
 		</value></constructor-arg>
 	</bean>
-
-	<!-- ======================================= -->
-	<!-- Data Sets -->
-	<!-- ======================================= -->	
+	<bean id="FC1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedCircular</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_CIRCULAR (ID) values (1)
+		</value></constructor-arg>
+	</bean>
+	<bean id="FC2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedCircular</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_CIRCULAR (ID) values (2)
+		</value></constructor-arg>
+	</bean>
+	<bean id="FC3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedCircular</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_CIRCULAR (ID) values (3)
+		</value></constructor-arg>
+	</bean>
+	<bean id="FCJ1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedCircular</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_CIRCULAR_JOIN (SIDE1_ID, SIDE2_ID) values (1, 2)
+		</value></constructor-arg>
+	</bean>
+	<bean id="FCJ2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.relationship.FlattenedCircular</value></constructor-arg>
+		<constructor-arg><value>
+		insert into FLATTENED_CIRCULAR_JOIN (SIDE1_ID, SIDE2_ID) values (1, 3)
+		</value></constructor-arg>
+	</bean>
+	
 	<bean id="test" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
@@ -70,6 +97,17 @@
 				<ref bean="FT12"/>
 				<ref bean="FT2"/>
 				<ref bean="FT31"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="testFlattenedCircular" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="FC1"/>
+				<ref bean="FC2"/>
+				<ref bean="FC3"/>
+				<ref bean="FCJ1"/>
+				<ref bean="FCJ2"/>
 			</list>
 		</constructor-arg>
 	</bean>
