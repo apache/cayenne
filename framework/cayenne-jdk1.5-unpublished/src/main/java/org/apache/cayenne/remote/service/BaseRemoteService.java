@@ -158,18 +158,7 @@ public abstract class BaseRemoteService implements RemoteService {
 
             // This exception will probably be propagated to the client.
             // Recast the exception to a serializable form.
-            ByteArrayOutputStream causeMessageStream = new ByteArrayOutputStream();
-            PrintWriter causeMessage = new PrintWriter(causeMessageStream);
-            
-            String exceptionText = th.getLocalizedMessage();
-            if (exceptionText != null) {
-                causeMessage.print(exceptionText);
-                causeMessage.print(System.getProperty("line.separator"));
-            }
-
-            th.printStackTrace(causeMessage);
-            causeMessage.flush();
-            Exception cause = new Exception(causeMessageStream.toString());
+            Exception cause = new Exception(th.getLocalizedMessage());
 
             StringBuilder wrapperMessage = new StringBuilder();
             wrapperMessage.append("Exception processing message ")

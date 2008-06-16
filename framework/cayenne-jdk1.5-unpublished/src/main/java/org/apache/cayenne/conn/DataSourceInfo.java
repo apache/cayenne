@@ -24,6 +24,8 @@ import java.io.Serializable;
 import org.apache.cayenne.conf.PasswordEncoding;
 import org.apache.cayenne.conf.PlainTextPasswordEncoder;
 import org.apache.cayenne.util.Util;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Helper JavaBean class that holds DataSource login information.
@@ -35,7 +37,8 @@ import org.apache.cayenne.util.Util;
  * @author Andrus Adamchik
  */
 public class DataSourceInfo implements Cloneable, Serializable {
-
+    private static Log logger = LogFactory.getLog(DataSourceInfo.class);
+    
     protected String userName;
     protected String password;
     protected String jdbcDriver;
@@ -212,17 +215,8 @@ public class DataSourceInfo implements Cloneable, Serializable {
             // encoder = (PasswordEncoding)
             // Class.forName(getPasswordEncoderClass()).newInstance();
         }
-        catch (InstantiationException exception) {
-            // TODO Auto-generated catch block
-            exception.printStackTrace();
-        }
-        catch (IllegalAccessException exception) {
-            // TODO Auto-generated catch block
-            exception.printStackTrace();
-        }
-        catch (ClassNotFoundException exception) {
-            // TODO Auto-generated catch block
-            exception.printStackTrace();
+        catch (Exception exception) {
+            logger.warn(exception);
         }
 
         return encoder;

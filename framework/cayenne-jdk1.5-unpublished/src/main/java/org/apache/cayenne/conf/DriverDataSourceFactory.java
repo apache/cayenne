@@ -237,7 +237,6 @@ public class DriverDataSourceFactory implements DataSourceFactory {
     }
 
     private class LoginHandler extends AbstractHandler {
-
         /**
          * Constructor which just delegates to the superconstructor.
          * 
@@ -259,7 +258,7 @@ public class DriverDataSourceFactory implements DataSourceFactory {
                 password = bufferedReader.readLine();
             }
             catch (IOException exception) {
-                exception.printStackTrace();
+                logger.warn(exception);
             }
             finally {
                 try {
@@ -299,7 +298,7 @@ public class DriverDataSourceFactory implements DataSourceFactory {
             catch (IOException exception) {
                 // Log the error while trying to open the stream. A null
                 // password will be returned as a result.
-                exception.printStackTrace();
+                logger.warn(exception);
             }
 
             return password;
@@ -347,7 +346,7 @@ public class DriverDataSourceFactory implements DataSourceFactory {
                         password = passwordFromURL(new URL(passwordSource));
                     }
                     catch (MalformedURLException exception) {
-                        exception.printStackTrace();
+                        logger.warn(exception);
                     }
                 }
                 else if (passwordLocation
@@ -359,10 +358,10 @@ public class DriverDataSourceFactory implements DataSourceFactory {
                             process.waitFor();
                         }
                         catch (IOException exception) {
-                            exception.printStackTrace();
+                            logger.warn(exception);
                         }
                         catch (InterruptedException exception) {
-                            exception.printStackTrace();
+                            logger.warn(exception);
                         }
                     }
                 }

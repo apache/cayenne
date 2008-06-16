@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,6 +35,8 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.Util;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A ResultIterator over the underlying JDBC ResultSet.
@@ -47,7 +46,8 @@ import org.apache.cayenne.util.Util;
  */
 // Replaces DefaultResultIterator
 public class JDBCResultIterator implements ResultIterator {
-
+    private static Log logger = LogFactory.getLog(JDBCResultIterator.class);
+    
     // Connection information
     protected Connection connection;
     protected Statement statement;
@@ -216,18 +216,15 @@ public class JDBCResultIterator implements ResultIterator {
      */
     public void close() throws CayenneException {
         if (!closed) {
-
             nextRow = false;
 
-            StringWriter errors = new StringWriter();
-            PrintWriter out = new PrintWriter(errors);
+            StringBuffer errors = new StringBuffer();
 
             try {
                 resultSet.close();
             }
             catch (SQLException e1) {
-                out.println("Error closing ResultSet");
-                e1.printStackTrace(out);
+                errors.append("Error closing ResultSet.");
             }
 
             if (statement != null) {
@@ -235,8 +232,7 @@ public class JDBCResultIterator implements ResultIterator {
                     statement.close();
                 }
                 catch (SQLException e2) {
-                    out.println("Error closing PreparedStatement");
-                    e2.printStackTrace(out);
+                    errors.append("Error closing PreparedStatement.");
                 }
             }
 
@@ -251,23 +247,12 @@ public class JDBCResultIterator implements ResultIterator {
                     connection.close();
                 }
                 catch (SQLException e3) {
-                    out.println("Error closing Connection");
-                    e3.printStackTrace(out);
+                    errors.append("Error closing Connection.");
                 }
             }
 
-            try {
-                out.close();
-                errors.close();
-            }
-            catch (IOException ioex) {
-                // ignore - this is never going to happen, after all we are writing to
-                // StringBuffer in memory
-            }
-
-            StringBuffer buf = errors.getBuffer();
-            if (buf.length() > 0) {
-                throw new CayenneException("Error closing ResultIterator: " + buf);
+            if (errors.length() > 0) {
+                throw new CayenneException("Error closing ResultIterator: " + errors.toString());
             }
 
             closed = true;

@@ -26,6 +26,8 @@ import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.remote.RemoteSession;
 import org.apache.cayenne.util.Util;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.caucho.hessian.client.HessianRuntimeException;
 import com.caucho.hessian.io.HessianProtocolException;
@@ -42,6 +44,8 @@ import com.caucho.hessian.io.HessianProtocolException;
  */
 public class HessianConnection extends BaseConnection {
 
+    private static Log logger = LogFactory.getLog(HessianConnection.class);
+    
     public static final String[] CLIENT_SERIALIZER_FACTORIES = new String[] {
             ClientSerializerFactory.class.getName(), EnumSerializerProxy.class.getName()
     };
@@ -216,10 +220,10 @@ public class HessianConnection extends BaseConnection {
         }
         catch (Throwable th) {
             th = unwindThrowable(th);
-            th.printStackTrace();
             String message = buildExceptionMessage(
                     "Error establishing remote session",
                     th);
+            logger.info(message, th);
             throw new CayenneRuntimeException(message, th);
         }
 
