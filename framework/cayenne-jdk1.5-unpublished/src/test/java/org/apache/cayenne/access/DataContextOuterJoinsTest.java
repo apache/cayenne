@@ -36,6 +36,20 @@ public class DataContextOuterJoinsTest extends CayenneCase {
         super.setUp();
         deleteTestData();
     }
+    
+    public void testSelectWithOuterJoinFlattened() throws Exception {
+        createTestData("testSelectWithOuterJoinFlattened");
+
+        SelectQuery missingToManyQuery = new SelectQuery(Artist.class);
+        missingToManyQuery.andQualifier(ExpressionFactory.matchExp(
+                Artist.GROUP_ARRAY_PROPERTY + Entity.OUTER_JOIN_INDICATOR,
+                null));
+        missingToManyQuery.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+
+        List<Artist> artists = createDataContext().performQuery(missingToManyQuery);
+        assertEquals(1, artists.size());
+        assertEquals("BB1", artists.get(0).getArtistName());
+    }
 
     public void testSelectWithOuterJoin() throws Exception {
 

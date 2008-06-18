@@ -35,6 +35,34 @@
 		</value></constructor-arg>
 	</bean>
 	
+	<bean id="AG1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTGROUP (GROUP_ID, NAME) values (1, 'G1')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="AG11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST_GROUP (GROUP_ID, ARTIST_ID) values (1, 33001)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="AG12" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST_GROUP (GROUP_ID, ARTIST_ID) values (1, 33002)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="AG14" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST_GROUP (GROUP_ID, ARTIST_ID) values (1, 33004)
+		</value></constructor-arg>
+	</bean>
+	
 	<bean id="P11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
 		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
 		<constructor-arg><value>
@@ -60,6 +88,21 @@
 	<!-- ======================================= -->
 	<!-- Data Sets -->
 	<!-- ======================================= -->	
+	
+	<bean id="testSelectWithOuterJoinFlattened" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="A2"/>
+				<ref bean="A3"/>
+				<ref bean="A4"/>
+				<ref bean="AG1"/>
+				<ref bean="AG11"/>
+				<ref bean="AG12"/>
+				<ref bean="AG14"/>
+			</list>
+		</constructor-arg>
+	</bean>
 	
 	<bean id="testSelectWithOuterJoin" class="java.util.ArrayList">
 		<constructor-arg>
