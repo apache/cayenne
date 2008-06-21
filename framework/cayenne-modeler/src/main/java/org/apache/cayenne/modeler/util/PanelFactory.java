@@ -125,7 +125,7 @@ public class PanelFactory {
         panel.setLayout(new BorderLayout(5, 5));
 
         // Create table with two columns and no rows.
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         // Panel to add space between table and EAST/WEST borders

@@ -33,6 +33,11 @@ public class RemoveCallbackMethodAction extends AbstractRemoveCallbackMethodActi
      * unique action name
      */
     public final static String ACTION_NAME = "Remove Callback Method";
+    
+    /**
+     * action name for multiple selection
+     */
+    private final static String ACTION_NAME_MULTIPLE = "Remove Callback Methods";
 
     /**
      * Constructor.
@@ -53,8 +58,14 @@ public class RemoveCallbackMethodAction extends AbstractRemoveCallbackMethodActi
     /**
      * @return CallbackMap fom which remove callback method
      */
+    @Override
     public CallbackMap getCallbackMap() {
         return getProjectController().getCurrentObjEntity().getCallbackMap();
+    }
+
+    @Override
+    public String getActionName(boolean multiple) {
+        return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
     }
 }
 

@@ -74,6 +74,8 @@ import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.MultipleObjectsDisplayEvent;
+import org.apache.cayenne.modeler.event.MultipleObjectsDisplayListener;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
@@ -89,7 +91,7 @@ import org.apache.cayenne.modeler.util.RecentFileMenu;
  */
 public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListener,
         DataMapDisplayListener, ObjEntityDisplayListener, DbEntityDisplayListener,
-        QueryDisplayListener, ProcedureDisplayListener {
+        QueryDisplayListener, ProcedureDisplayListener, MultipleObjectsDisplayListener {
 
     protected EditorView view;
     protected RecentFileMenu recentFileMenu;
@@ -279,6 +281,10 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
     public void currentProcedureChanged(ProcedureDisplayEvent e) {
         actionManager.procedureSelected();
+    }
+    
+    public void currentObjectsChanged(MultipleObjectsDisplayEvent e) {
+        actionManager.multipleObjectsSelected();
     }
 
     /**

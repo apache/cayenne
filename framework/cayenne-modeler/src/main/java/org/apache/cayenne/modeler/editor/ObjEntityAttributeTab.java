@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.EventObject;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -50,6 +51,7 @@ import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -117,42 +119,54 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     /**
      * Selects a specified attribute.
      */
-    public void selectAttribute(ObjAttribute attr) {
-        if (attr == null) {
-            Application
-                    .getInstance()
-                    .getAction(RemoveAttributeAction.getActionName())
-                    .setEnabled(false);
+    public void selectAttributes(ObjAttribute[] attrs) {
+        CayenneAction removeAction = Application
+            .getInstance()
+            .getAction(RemoveAttributeAction.getActionName());
+        
+        if (attrs.length == 0) {
+            removeAction.setEnabled(false);
             return;
         }
         // enable the remove button
-        Application
-                .getInstance()
-                .getAction(RemoveAttributeAction.getActionName())
-                .setEnabled(true);
+        removeAction.setEnabled(true);
+        removeAction.setName(RemoveAttributeAction.getActionName(attrs.length > 1));
 
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
-        java.util.List attrs = model.getObjectList();
-        int attrPos = attrs.indexOf(attr);
-        if (attrPos >= 0) {
-            table.select(attrPos);
+        
+        List listAttrs = model.getObjectList();
+        int[] newSel = new int[attrs.length];
+        
+        for (int i = 0; i < attrs.length; i++) {
+            newSel[i] = listAttrs.indexOf(attrs[i]);
         }
+        
+        table.select(newSel);
     }
 
     public void processExistingSelection(EventObject e) {
         if (e instanceof ChangeEvent) {
             table.clearSelection();
         }
-        ObjAttribute attribute = null;
+        
+        ObjAttribute[] attrs = new ObjAttribute[0];
         if (table.getSelectedRow() >= 0) {
             ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
-            attribute = model.getAttribute(table.getSelectedRow());
-
-            // scroll table
-            UIUtil.scrollToSelectedRow(table);
+            
+            int[] sel = table.getSelectedRows();
+            attrs = new ObjAttribute[sel.length];
+            
+            for (int i = 0; i < sel.length; i++) {
+                attrs[i] = model.getAttribute(sel[i]);
+            }
+     
+            if (sel.length == 1) {
+                // scroll table
+                UIUtil.scrollToSelectedRow(table);
+            }
         }
 
-        AttributeDisplayEvent ev = new AttributeDisplayEvent(this, attribute, mediator
+        AttributeDisplayEvent ev = new AttributeDisplayEvent(this, attrs, mediator
                 .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
                 .getCurrentDataDomain());
 

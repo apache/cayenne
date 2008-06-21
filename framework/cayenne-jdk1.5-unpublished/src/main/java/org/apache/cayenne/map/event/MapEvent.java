@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.map.event;
 
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.event.CayenneEvent;
 import org.apache.cayenne.util.Util;
 
@@ -48,6 +49,11 @@ public abstract class MapEvent extends CayenneEvent {
     protected int id = CHANGE;
     protected String oldName;
     protected boolean oldNameSet;
+    
+    /**
+     * Domain of event object. Might be null
+     */
+    protected DataDomain domain;
 
     /**
      * Constructor for MapEvent.
@@ -106,5 +112,19 @@ public abstract class MapEvent extends CayenneEvent {
     public void setOldName(String oldName) {
         this.oldName = oldName;
         this.oldNameSet = true;
+    }
+    
+    /**
+     * Sets domain of event object.
+     */
+    public void setDomain(DataDomain domain) {
+        this.domain = domain;
+    }
+    
+    /**
+     * @return Domain of event object. Might be null
+     */
+    public DataDomain getDomain() {
+        return domain;
     }
 }

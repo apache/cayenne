@@ -93,6 +93,13 @@ public class CayenneWidgetFactory {
     }
     
     /**
+     * Creates cell editor for text field
+     */
+    public static DefaultCellEditor createCellEditor(JTextField textField) {
+        return new CayenneCellEditor(textField);
+    }
+    
+    /**
      * Creates cell editor for a table with combo as editor component. Type of this editor
      * depends on auto-completion behavior of JComboBox
      * 

@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventObject;
+import java.util.List;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -59,6 +60,7 @@ import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
@@ -177,48 +179,60 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
     /**
      * Selects a specified relationship in the relationships table.
      */
-    public void selectRelationship(DbRelationship rel) {
-        if (rel == null) {
-            Application
-                    .getInstance()
-                    .getAction(RemoveRelationshipAction.getActionName())
-                    .setEnabled(false);
+    public void selectRelationships(DbRelationship[] rels) {
+        CayenneAction removeAction = Application
+            .getInstance()
+            .getAction(RemoveRelationshipAction.getActionName());
+        
+        if (rels.length == 0) {
+            removeAction.setEnabled(false);
             return;
         }
         // enable the remove button
-        Application
-                .getInstance()
-                .getAction(RemoveRelationshipAction.getActionName())
-                .setEnabled(true);
+        removeAction.setEnabled(true);
+        removeAction.setName(RemoveRelationshipAction.getActionName(rels.length > 1));
 
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
-        java.util.List rels = model.getObjectList();
-        int relPos = rels.indexOf(rel);
-        if (relPos >= 0) {
-            table.select(relPos);
+        
+        List listAttrs = model.getObjectList();
+        int[] newSel = new int[rels.length];
+        
+        for (int i = 0; i < rels.length; i++) {
+            newSel[i] = listAttrs.indexOf(rels[i]);
         }
+        
+        table.select(newSel);
     }
 
     public void processExistingSelection(EventObject e) {
         if (e instanceof ChangeEvent) {
             table.clearSelection();
         }
-        DbRelationship rel = null;
+        
+        DbRelationship[] rels = new DbRelationship[0];
         if (table.getSelectedRow() >= 0) {
-            DbRelationshipTableModel model;
-            model = (DbRelationshipTableModel) table.getModel();
-            rel = model.getRelationship(table.getSelectedRow());
-            resolve.setEnabled(rel.getTargetEntity() != null);
+            DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
+            
+            int[] sel = table.getSelectedRows();
+            rels = new DbRelationship[sel.length];
+            
+            for (int i = 0; i < sel.length; i++) {
+                rels[i] = model.getRelationship(sel[i]);
+            }
+            
+            resolve.setEnabled(rels.length == 1 && rels[0].getTargetEntity() != null);
 
-            // scroll table
-            UIUtil.scrollToSelectedRow(table);
+            if (sel.length == 1) {
+                // scroll table
+                UIUtil.scrollToSelectedRow(table);
+            }
         }
         else
             resolve.setEnabled(false);
         
         resolveMenu.setEnabled(resolve.isEnabled());
 
-        RelationshipDisplayEvent ev = new RelationshipDisplayEvent(this, rel, mediator
+        RelationshipDisplayEvent ev = new RelationshipDisplayEvent(this, rels, mediator
                 .getCurrentDbEntity(), mediator.getCurrentDataMap(), mediator
                 .getCurrentDataDomain());
 

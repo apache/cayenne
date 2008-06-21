@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.util;
 import java.awt.Component;
 
 import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultListSelectionModel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -42,6 +43,8 @@ public class CayenneTable extends JTable {
         super();
         this.setRowHeight(25);
         this.setRowMargin(3);
+        
+        setSelectionModel(new CayenneListSelectionModel());
     }
 
     @Override
@@ -49,7 +52,7 @@ public class CayenneTable extends JTable {
         super.createDefaultEditors();
 
         JTextField textField = CayenneWidgetFactory.createTextField(0);
-        final DefaultCellEditor textEditor = new DefaultCellEditor(textField);
+        final DefaultCellEditor textEditor = CayenneWidgetFactory.createCellEditor(textField);
         textEditor.setClickCountToStart(1);
 
         setDefaultEditor(Object.class, textEditor);
@@ -92,6 +95,14 @@ public class CayenneTable extends JTable {
             getSelectionModel().setSelectionInterval(index, index);
         }
     }
+    
+    /**
+     * Selects multiple rows at once. Fires not more than only one 
+     * ListSelectionEvent
+     */
+    public void select(int[] rows) {
+        ((CayenneListSelectionModel) getSelectionModel()).setSelection(rows);
+    }
 
     public JTextComponent getSelectedTextComponent() {
         int row = getSelectedRow();
@@ -114,5 +125,71 @@ public class CayenneTable extends JTable {
     public void tableChanged(TableModelEvent e) {
         cancelEditing();
         super.tableChanged(e);
+    }
+    
+    /**
+     * ListSelectionModel for Cayenne table. Has a method to set multiple
+     * rows selection at once.
+     */
+    class CayenneListSelectionModel extends DefaultListSelectionModel {
+        boolean fireForbidden = false;
+        
+        /**
+         * Selects selection on multiple rows at once. Fires no more than one
+         * ListSelectionEvent
+         */
+        public void setSelection(int[] rows) {
+            /**
+             * First check if we must do anything at all
+             */
+            boolean selectionChanged = false;
+            for (int i = 0; i < rows.length; i++) {
+                if (!isRowSelected(rows[i])) {
+                    selectionChanged = true;
+                    break;
+                }
+            }
+            
+            if (!selectionChanged) {
+                for (int i = getMinSelectionIndex(); i < getMaxSelectionIndex(); i++) {
+                    if (isSelectedIndex(i)) {
+                        boolean inNewSelection = false;
+                        for (int j = 0; j < rows.length; j++) {
+                            if (rows[j] == i) {
+                                inNewSelection = true;
+                                break;
+                            }
+                        }
+                        
+                        if(!inNewSelection) {
+                            selectionChanged = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (!selectionChanged) {
+                return;
+            }
+            
+            fireForbidden = true;
+            
+            clearSelection();
+            for (int i = 0; i < rows.length; i++) {
+                addRowSelectionInterval(rows[i], rows[i]);
+            }
+            
+            fireForbidden = false;
+            
+            fireValueChanged(getValueIsAdjusting());
+        }
+        
+        @Override
+        protected void fireValueChanged(int firstIndex, int lastIndex, boolean isAdjusting) {
+            if (!fireForbidden) {
+                super.fireValueChanged(firstIndex, lastIndex, isAdjusting);
+            }
+        }
     }
 }

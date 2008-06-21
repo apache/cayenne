@@ -146,14 +146,17 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         }
 
         // update relationship selection
-        Relationship rel = e.getRelationship();
-        if (rel instanceof ObjRelationship) {
-            if (getSelectedComponent() != relationshipsPanel) {
-                setSelectedComponent(relationshipsPanel);
-                relationshipsPanel.setVisible(true);
-            }
-            relationshipsPanel.selectRelationship((ObjRelationship) rel);
+        Relationship[] rels = e.getRelationships();
+        ObjRelationship[] objRels = new ObjRelationship[rels.length];
+        
+        System.arraycopy(rels, 0, objRels, 0, rels.length);
+        
+        if (getSelectedComponent() != relationshipsPanel) {
+            setSelectedComponent(relationshipsPanel);
+            relationshipsPanel.setVisible(true);
         }
+        
+        relationshipsPanel.selectRelationships(objRels);
     }
 
     public void currentObjAttributeChanged(AttributeDisplayEvent e) {
@@ -161,13 +164,16 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
             return;
 
         // update relationship selection
-        Attribute attr = e.getAttribute();
-        if (attr instanceof ObjAttribute) {
-            if (getSelectedComponent() != attributesPanel) {
-                setSelectedComponent(attributesPanel);
-                attributesPanel.setVisible(true);
-            }
-            attributesPanel.selectAttribute((ObjAttribute) attr);
+        Attribute[] attrs = e.getAttributes();
+        ObjAttribute[] objAttrs = new ObjAttribute[attrs.length];
+        
+        System.arraycopy(attrs, 0, objAttrs, 0, attrs.length);
+        
+        if (getSelectedComponent() != attributesPanel) {
+            setSelectedComponent(attributesPanel);
+            attributesPanel.setVisible(true);
         }
+        
+        attributesPanel.selectAttributes(objAttrs);
     }
 }

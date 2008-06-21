@@ -15,12 +15,12 @@ import org.apache.cayenne.pref.PreferenceDetail;
  */
 public class ConfirmRemoveDialog {
     private boolean shouldDelete = true;
-
-    private void showDialog(String type, String name) {
+    
+    private void showDialog(String name) {
 
         JCheckBox neverPromptAgainBox = new JCheckBox("Always delete without prompt.");
 
-        Object message[] = {String.format("Are you sure you would like to delete the %s named '%s'?", type, name), neverPromptAgainBox};
+        Object message[] = {String.format("Are you sure you would like to delete the %s?", name), neverPromptAgainBox};
 
         JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
 
@@ -37,14 +37,18 @@ public class ConfirmRemoveDialog {
             Application.getInstance().getPreferenceService().savePreferences();
         }
     }
-
+    
     public boolean shouldDelete(String type, String name) {
+        return shouldDelete(String.format("%s named '%s'?", type, name));
+    }
+
+    public boolean shouldDelete(String name) {
 
         PreferenceDetail pref = Application.getInstance().getPreferenceDomain().getDetail(GeneralPreferences.DELETE_PROMPT_PREFERENCE, true);
 
         // See if the user has opted not to showDialog the delete dialog.
         if ((pref == null) || (false == pref.getBooleanProperty(GeneralPreferences.DELETE_PROMPT_PREFERENCE))) {
-           showDialog(type, name);
+           showDialog(name);
         }
 
         return shouldDelete;

@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.List;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
@@ -64,6 +65,7 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
@@ -196,40 +198,50 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
     /**
      * Selects a specified relationship in the relationships table.
      */
-    public void selectRelationship(ObjRelationship rel) {
-        if (rel == null) {
-            Application
-                    .getInstance()
-                    .getAction(RemoveRelationshipAction.getActionName())
-                    .setEnabled(false);
+    public void selectRelationships(ObjRelationship[] rels) {
+        CayenneAction removeAction = Application
+            .getInstance()
+            .getAction(RemoveRelationshipAction.getActionName());
+        
+        if (rels.length == 0) {
+            removeAction.setEnabled(false);
             return;
         }
         // enable the remove button
-        Application
-                .getInstance()
-                .getAction(RemoveRelationshipAction.getActionName())
-                .setEnabled(true);
+        removeAction.setEnabled(true);
+        removeAction.setName(RemoveRelationshipAction.getActionName(rels.length > 1));
 
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
-        java.util.List rels = model.getObjectList();
-        int relPos = rels.indexOf(rel);
-        if (relPos >= 0) {
-            table.select(relPos);
+
+        List listAttrs = model.getObjectList();
+        int[] newSel = new int[rels.length];
+        
+        for (int i = 0; i < rels.length; i++) {
+            newSel[i] = listAttrs.indexOf(rels[i]);
         }
+        
+        table.select(newSel);
     }
 
     public void processExistingSelection(EventObject e) {
         if (e instanceof ChangeEvent) {
             table.clearSelection();
         }
-        ObjRelationship rel = null;
+        ObjRelationship[] rels = new ObjRelationship[0];
         if (table.getSelectedRow() >= 0) {
             ObjRelationshipTableModel model = (ObjRelationshipTableModel) table
                     .getModel();
-            rel = model.getRelationship(table.getSelectedRow());
-            if (rel.getTargetEntity() != null
-                    && ((ObjEntity) rel.getSourceEntity()).getDbEntity() != null
-                    && ((ObjEntity) rel.getTargetEntity()).getDbEntity() != null) {
+            
+            int[] sel = table.getSelectedRows();
+            rels = new ObjRelationship[sel.length];
+            
+            for (int i = 0; i < sel.length; i++) {
+                rels[i] = model.getRelationship(sel[i]);
+            }
+            
+            if (rels.length == 0 && rels[0].getTargetEntity() != null
+                    && ((ObjEntity) rels[0].getSourceEntity()).getDbEntity() != null
+                    && ((ObjEntity) rels[0].getTargetEntity()).getDbEntity() != null) {
                 resolve.setEnabled(true);
             }
             else
@@ -243,7 +255,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         
         resolveMenu.setEnabled(resolve.isEnabled());
 
-        RelationshipDisplayEvent ev = new RelationshipDisplayEvent(this, rel, mediator
+        RelationshipDisplayEvent ev = new RelationshipDisplayEvent(this, rels, mediator
                 .getCurrentObjEntity(), mediator.getCurrentDataMap(), mediator
                 .getCurrentDataDomain());
 

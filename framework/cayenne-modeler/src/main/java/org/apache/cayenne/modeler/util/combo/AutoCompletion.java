@@ -181,6 +181,11 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
                 }
                 return;
                 
+            case KeyEvent.VK_CONTROL:
+            case KeyEvent.VK_ALT:
+            case KeyEvent.VK_SHIFT:
+                return;
+                
             default:
                 //invoke in end of AWT thread so that information in textEditor would update
                 SwingUtilities.invokeLater(this);

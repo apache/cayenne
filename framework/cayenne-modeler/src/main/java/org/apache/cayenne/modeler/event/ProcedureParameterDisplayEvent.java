@@ -29,7 +29,7 @@ import org.apache.cayenne.map.ProcedureParameter;
  */
 public class ProcedureParameterDisplayEvent extends ProcedureDisplayEvent {
 
-    protected ProcedureParameter procedureParameter;
+    protected ProcedureParameter[] procedureParameters;
 
     public ProcedureParameterDisplayEvent(
         Object src,
@@ -39,14 +39,25 @@ public class ProcedureParameterDisplayEvent extends ProcedureDisplayEvent {
         DataDomain domain) {
         	
         super(src, procedure, map, domain);
-        this.procedureParameter = procedureParameter;
+        this.procedureParameters = new ProcedureParameter[] { procedureParameter };
+    }
+    
+    public ProcedureParameterDisplayEvent(
+            Object src,
+            ProcedureParameter[] procedureParameters,
+            Procedure procedure,
+            DataMap map,
+            DataDomain domain) {
+                
+            super(src, procedure, map, domain);
+            this.procedureParameters = procedureParameters;
     }
 
-    public ProcedureParameter getProcedureParameter() {
-        return procedureParameter;
+    public ProcedureParameter[] getProcedureParameters() {
+        return procedureParameters;
     }
 
-    public void setProcedureParameter(ProcedureParameter parameter) {
-        procedureParameter = parameter;
+    public void setProcedureParameters(ProcedureParameter[] parameters) {
+        procedureParameters = parameters;
     }
 }

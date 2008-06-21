@@ -46,12 +46,12 @@ public class CreateAttributeAction extends CayenneAction {
 
     /**
      * Constructor for CreateAttributeAction.
-     * @param name
      */
     public CreateAttributeAction(Application application) {
         super(getActionName(), application);
     }
 
+    @Override
     public String getIconName() {
         return "icon-attribute.gif";
     }
@@ -59,6 +59,7 @@ public class CreateAttributeAction extends CayenneAction {
     /**
      * Creates ObjAttribute, DbAttribute depending on context.
      */
+    @Override
     public void performAction(ActionEvent e) {
         if (getProjectController().getCurrentObjEntity() != null) {
             createObjAttribute();
@@ -120,6 +121,7 @@ public class CreateAttributeAction extends CayenneAction {
     /**
      * Returns <code>true</code> if path contains an Entity object.
      */
+    @Override
     public boolean enableForPath(ProjectPath path) {
         if (path == null) {
             return false;

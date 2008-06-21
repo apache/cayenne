@@ -16,39 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.event;
 
-package org.apache.cayenne.map.event;
+import java.util.EventListener;
 
-import org.apache.cayenne.access.DataDomain;
-
-/** 
- * Represents events resulted from DataDomain changes 
- * in CayenneModeler.
- * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
+/**
+ * Listener for multiple objects selections 
  */
-public class DomainEvent extends MapEvent {
-	/** Creates a domain change event. */
-	public DomainEvent(Object src, DataDomain domain) {
-		super(src);
-		setDomain(domain);
-	}
-
-	/** Creates a domain event of a specified type. */
-	public DomainEvent(Object src, DataDomain domain, int id) {
-		this(src, domain);
-		setId(id);
-	}
-
-	/** Creates a domain name change event.*/
-	public DomainEvent(Object src, DataDomain domain, String oldName) {
-		this(src, domain);	
-		setOldName(oldName);
-	}
-
-	@Override
-    public String getNewName() {
-		return (domain != null) ? domain.getName() : null;
-	}
+public interface MultipleObjectsDisplayListener extends EventListener {
+    /**
+     * Invoked when a new set of objects was displayed
+     */
+    public void currentObjectsChanged(MultipleObjectsDisplayEvent e);
 }

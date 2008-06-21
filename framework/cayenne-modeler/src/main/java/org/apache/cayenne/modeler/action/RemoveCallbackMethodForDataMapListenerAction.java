@@ -33,6 +33,11 @@ public class RemoveCallbackMethodForDataMapListenerAction extends AbstractRemove
      * unique action name
      */
     public final static String ACTION_NAME = "Remove callback method for data map entity listener";
+    
+    /**
+     * action name for multiple selection
+     */
+    private final static String ACTION_NAME_MULTIPLE = "Remove callback methods for data map entity listener";
 
     /**
      * Constructor.
@@ -46,9 +51,15 @@ public class RemoveCallbackMethodForDataMapListenerAction extends AbstractRemove
     /**
      * @return CallbackMap fom which remove callback method
      */
+    @Override
     public CallbackMap getCallbackMap() {
         String listenerClass = getProjectController().getCurrentListenerClass();
         return getProjectController().getCurrentDataMap().getDefaultEntityListener(listenerClass).getCallbackMap();
+    }
+
+    @Override
+    public String getActionName(boolean multiple) {
+        return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
     }
 }
 

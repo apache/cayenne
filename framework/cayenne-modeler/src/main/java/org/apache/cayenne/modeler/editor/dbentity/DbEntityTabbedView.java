@@ -116,19 +116,20 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
         if (e.getEntity() == null) {
             return;
         }
-
+        
         // update relationship selection
-        Relationship rel = e.getRelationship();
-        if (rel instanceof DbRelationship) {
-            
-            // reset tab to relationship
-            if (getSelectedComponent() != relationshipsPanel) {
-                setSelectedComponent(relationshipsPanel);
-                relationshipsPanel.setVisible(true);
-            }
-            
-            relationshipsPanel.selectRelationship((DbRelationship) rel);
+        Relationship[] rels = e.getRelationships();
+        DbRelationship[] dbRels = new DbRelationship[rels.length];
+        
+        System.arraycopy(rels, 0, dbRels, 0, rels.length);
+        
+        // reset tab to relationship
+        if (getSelectedComponent() != relationshipsPanel) {
+            setSelectedComponent(relationshipsPanel);
+            relationshipsPanel.setVisible(true);
         }
+        
+        relationshipsPanel.selectRelationships(dbRels);
     }
 
     public void currentDbAttributeChanged(AttributeDisplayEvent e) {
@@ -136,13 +137,16 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
             return;
 
         // update relationship selection
-        Attribute attr = e.getAttribute();
-        if (attr instanceof DbAttribute) {
-            if (getSelectedComponent() != attributesPanel){
-                setSelectedComponent(attributesPanel);
-                attributesPanel.setVisible(true);
-            }
-            attributesPanel.selectAttribute((DbAttribute) attr);
+        Attribute[] attrs = e.getAttributes();
+        DbAttribute[] dbAttrs = new DbAttribute[attrs.length];
+        
+        System.arraycopy(attrs, 0, dbAttrs, 0, attrs.length);
+        
+        if (getSelectedComponent() != attributesPanel) {
+            setSelectedComponent(attributesPanel);
+            attributesPanel.setVisible(true);
         }
+            
+        attributesPanel.selectAttributes(dbAttrs);
     }
 }

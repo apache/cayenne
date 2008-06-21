@@ -22,7 +22,9 @@ package org.apache.cayenne.modeler.util.combo;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.Serializable;
+import java.util.EventObject;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
@@ -83,5 +85,19 @@ public class ComboBoxCellEditor extends AbstractCellEditor implements ActionList
         comboBox.setSelectedItem(value);
         
         return comboBox;
+    }
+    
+    @Override
+    public boolean isCellEditable(EventObject e) {
+        if (e instanceof MouseEvent) {
+            //allow multiple selection without 
+            
+            MouseEvent me = (MouseEvent) e;
+            if (me.isControlDown() || me.isShiftDown()) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 }

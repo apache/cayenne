@@ -25,22 +25,33 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 
 public class RelationshipDisplayEvent extends EntityDisplayEvent {
-    protected Relationship relationship;
+    protected Relationship[] relationships;
     protected boolean relationshipChanged = true;
+    
+    public RelationshipDisplayEvent(
+            Object src,
+            Relationship relationship,
+            Entity entity,
+            DataMap map,
+            DataDomain domain) {
+
+            super(src, entity, map, domain);
+            this.relationships = new Relationship[] { relationship };
+    }
 
     public RelationshipDisplayEvent(
         Object src,
-        Relationship relationship,
+        Relationship[] relationships,
         Entity entity,
         DataMap map,
         DataDomain domain) {
 
         super(src, entity, map, domain);
-        this.relationship = relationship;
+        this.relationships = relationships;
     }
-
-    public Relationship getRelationship() {
-        return relationship;
+    
+    public Relationship[] getRelationships() {
+        return relationships;
     }
 
     public boolean isRelationshipChanged() {

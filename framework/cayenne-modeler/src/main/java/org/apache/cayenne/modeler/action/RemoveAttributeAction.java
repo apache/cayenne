@@ -43,9 +43,18 @@ import org.apache.cayenne.project.ProjectPath;
 public class RemoveAttributeAction extends RemoveAction {
 
     private final static String ACTION_NAME = "Remove Attribute";
+    
+    /**
+     * Name of action if multiple rels are selected
+     */
+    private final static String ACTION_NAME_MULTIPLE = "Remove Attributes";
 
     public static String getActionName() {
         return ACTION_NAME;
+    }
+    
+    public static String getActionName(boolean multiple) {
+        return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
     }
 
     public RemoveAttributeAction(Application application) {
@@ -56,6 +65,7 @@ public class RemoveAttributeAction extends RemoveAction {
      * Returns <code>true</code> if last object in the path contains a removable
      * attribute.
      */
+    @Override
     public boolean enableForPath(ProjectPath path) {
         if (path == null) {
             return false;
@@ -64,49 +74,61 @@ public class RemoveAttributeAction extends RemoveAction {
         return path.getObject() instanceof Attribute;
     }
 
+    @Override
     public void performAction(ActionEvent e) {
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog();
 
-        if (getProjectController().getCurrentObjAttribute() != null) {
-            if (dialog.shouldDelete("ObjAttribute", getProjectController()
-                    .getCurrentObjAttribute().getName())) {
-                removeObjAttribute();
+        ObjAttribute[] attrs = getProjectController().getCurrentObjAttributes();
+        if (attrs != null && attrs.length > 0) {
+            if ((attrs.length == 1 && dialog.shouldDelete("ObjAttribute", attrs[0].getName()))
+                || (attrs.length > 1 && dialog.shouldDelete("selected ObjAttributes"))) {
+                removeObjAttributes();
             }
         }
-        else if (getProjectController().getCurrentDbAttribute() != null) {
-            if (dialog.shouldDelete("DbAttribute", getProjectController()
-                    .getCurrentDbAttribute().getName())) {
-                removeDbAttribute();
-            }
+        else {
+            DbAttribute[] dbAttrs = getProjectController().getCurrentDbAttributes();
+            if (dbAttrs != null && dbAttrs.length > 0) {
+                if ((dbAttrs.length == 1 && dialog.shouldDelete("DbAttribute", dbAttrs[0].getName()))
+                    || (dbAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
+                    removeDbAttributes();
+                }
+            }            
         }
     }
 
-    protected void removeDbAttribute() {
+    protected void removeDbAttributes() {
         ProjectController mediator = getProjectController();
         DbEntity entity = mediator.getCurrentDbEntity();
-        DbAttribute attrib = mediator.getCurrentDbAttribute();
-        entity.removeAttribute(attrib.getName());
-        ProjectUtil.cleanObjMappings(mediator.getCurrentDataMap());
+        DbAttribute[] attribs = mediator.getCurrentDbAttributes();
+        
+        for (int i = 0; i < attribs.length; i++) {
+            entity.removeAttribute(attribs[i].getName());
 
-        AttributeEvent e = new AttributeEvent(
-                Application.getFrame(),
-                attrib,
-                entity,
-                MapEvent.REMOVE);
-        mediator.fireDbAttributeEvent(e);
+            AttributeEvent e = new AttributeEvent(
+                    Application.getFrame(),
+                    attribs[i],
+                    entity,
+                    MapEvent.REMOVE);
+            mediator.fireDbAttributeEvent(e);
+        }
+
+        ProjectUtil.cleanObjMappings(mediator.getCurrentDataMap());
     }
 
-    protected void removeObjAttribute() {
+    protected void removeObjAttributes() {
         ProjectController mediator = getProjectController();
         ObjEntity entity = mediator.getCurrentObjEntity();
-        ObjAttribute attrib = mediator.getCurrentObjAttribute();
-
-        entity.removeAttribute(attrib.getName());
-        AttributeEvent e = new AttributeEvent(
-                Application.getFrame(),
-                attrib,
-                entity,
-                MapEvent.REMOVE);
-        mediator.fireObjAttributeEvent(e);
+        
+        ObjAttribute[] attribs = mediator.getCurrentObjAttributes();
+        
+        for (int i = 0; i < attribs.length; i++) {
+            entity.removeAttribute(attribs[i].getName());
+            AttributeEvent e = new AttributeEvent(
+                    Application.getFrame(),
+                    attribs[i],
+                    entity,
+                    MapEvent.REMOVE);
+            mediator.fireObjAttributeEvent(e);
+        }
     }
 }

@@ -92,11 +92,10 @@ public class ProcedureTabbedView
     }
 
     public void currentProcedureParameterChanged(ProcedureParameterDisplayEvent e) {
-        if (e.getProcedureParameter() == null)
-            return;
-
-        ProcedureParameter parameter = e.getProcedureParameter();
-        procedureParameterPanel.selectParameter(parameter);
+        ProcedureParameter[] parameters = e.getProcedureParameters();
+        
+        if(parameters.length > 0) {
+            procedureParameterPanel.selectParameters(parameters);
+        }
     }
-
 }

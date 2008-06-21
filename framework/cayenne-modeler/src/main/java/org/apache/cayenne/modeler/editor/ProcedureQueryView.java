@@ -71,6 +71,7 @@ public class ProcedureQueryView extends JPanel {
         // create widgets
         name = new TextAdapter(new JTextField()) {
 
+            @Override
             protected void updateModel(String text) {
                 setQueryName(text);
             }
@@ -80,10 +81,12 @@ public class ProcedureQueryView extends JPanel {
         queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
         properties = new RawQueryPropertiesPanel(mediator) {
 
+            @Override
             protected void setEntity(ObjEntity entity) {
                 ProcedureQueryView.this.setEntity(entity);
             }
 
+            @Override
             public ObjEntity getEntity(Query query) {
                 if (query instanceof ProcedureQuery) {
                     return ProcedureQueryView.this.getEntity((ProcedureQuery) query);
@@ -199,7 +202,7 @@ public class ProcedureQueryView extends JPanel {
 
         if (map.getQuery(newName) == null) {
             // completely new name, set new name for entity
-            QueryEvent e = new QueryEvent(this, query, query.getName());
+            QueryEvent e = new QueryEvent(this, query, query.getName(), map);
             ProjectUtil.setQueryName(map, query, newName);
             mediator.fireQueryEvent(e);
         }

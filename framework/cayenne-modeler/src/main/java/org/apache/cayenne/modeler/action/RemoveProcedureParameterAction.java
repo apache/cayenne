@@ -38,6 +38,15 @@ import org.apache.cayenne.project.ProjectPath;
 public class RemoveProcedureParameterAction extends RemoveAction {
 
     private final static String ACTION_NAME = "Remove Parameter";
+    
+    /**
+     * Name of action if multiple rels are selected
+     */
+    private final static String ACTION_NAME_MULTIPLE = "Remove Parameters";
+    
+    public static String getActionName(boolean multiple) {
+        return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
+    }
 
     public static String getActionName() {
         return ACTION_NAME;
@@ -51,6 +60,7 @@ public class RemoveProcedureParameterAction extends RemoveAction {
      * Returns <code>true</code> if last object in the path contains a removable
      * parameter.
      */
+    @Override
     public boolean enableForPath(ProjectPath path) {
         if (path == null) {
             return false;
@@ -59,27 +69,32 @@ public class RemoveProcedureParameterAction extends RemoveAction {
         return path.getObject() instanceof ProcedureParameter;
     }
 
+    @Override
     public void performAction(ActionEvent e) {
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog();
 
-        if (getProjectController().getCurrentProcedureParameter() != null) {
-            if (dialog.shouldDelete("procedure parameter", getProjectController()
-                    .getCurrentProcedureParameter().getName())) {
-                removeProcedureParameter();
+        ProcedureParameter[] params = getProjectController().getCurrentProcedureParameters(); 
+        if (params.length > 0) {
+            if ((params.length == 1 && dialog.shouldDelete("procedure parameter", params[0].getName()))
+               || (params.length > 1 && dialog.shouldDelete("selected procedure parameters"))) {
+                removeProcedureParameters();
             }
         }
     }
 
-    protected void removeProcedureParameter() {
+    protected void removeProcedureParameters() {
         ProjectController mediator = getProjectController();
-        ProcedureParameter parameter = mediator.getCurrentProcedureParameter();
-        mediator.getCurrentProcedure().removeCallParameter(parameter.getName());
+        ProcedureParameter[] parameters = mediator.getCurrentProcedureParameters();
+        
+        for (int i = 0; i < parameters.length; i++) {
+            mediator.getCurrentProcedure().removeCallParameter(parameters[i].getName());
 
-        ProcedureParameterEvent e = new ProcedureParameterEvent(
+            ProcedureParameterEvent e = new ProcedureParameterEvent(
                 Application.getFrame(),
-                parameter,
+                parameters[i],
                 MapEvent.REMOVE);
 
-        mediator.fireProcedureParameterEvent(e);
+            mediator.fireProcedureParameterEvent(e);
+        }
     }
 }

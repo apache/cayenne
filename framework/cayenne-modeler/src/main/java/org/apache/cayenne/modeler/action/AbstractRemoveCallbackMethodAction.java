@@ -54,6 +54,7 @@ public abstract class AbstractRemoveCallbackMethodAction extends RemoveAction {
     /**
      * @return icon file name for button
      */
+    @Override
     public String getIconName() {
         return "icon-remove-method.gif";
     }
@@ -62,13 +63,16 @@ public abstract class AbstractRemoveCallbackMethodAction extends RemoveAction {
      * performs callback method removing
      * @param e event
      */
+    @Override
     public final void performAction(ActionEvent e) {
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog();
+        
+        String[] methods = getProjectController().getCurrentCallbackMethods();
 
-        if (getProjectController().getCurrentCallbackMethod() != null) {
-            if (dialog.shouldDelete("callback method", getProjectController()
-                    .getCurrentCallbackMethod())) {
-                removeCallbackMethod(e);
+        if (methods.length > 0) {
+            if ((methods.length == 1 && dialog.shouldDelete("callback method", methods[0]))
+                    || (methods.length > 1 && dialog.shouldDelete("selected callback methods"))) {
+                removeCallbackMethods(e);
             }
         }
     }
@@ -77,17 +81,26 @@ public abstract class AbstractRemoveCallbackMethodAction extends RemoveAction {
      * base logic for callback method removing
      * @param actionEvent event
      */
-    private void removeCallbackMethod(ActionEvent actionEvent) {
+    private void removeCallbackMethods(ActionEvent actionEvent) {
         ProjectController mediator = getProjectController();
         CallbackType callbackType = mediator.getCurrentCallbackType();
-        String callbackMethod = mediator.getCurrentCallbackMethod();
-        getCallbackMap().getCallbackDescriptor(callbackType.getType()).removeCallbackMethod(callbackMethod);
-        CallbackMethodEvent e = new CallbackMethodEvent(
+        
+        String[] callbackMethods = mediator.getCurrentCallbackMethods();
+        
+        for (int i = 0; i < callbackMethods.length; i++) {
+            getCallbackMap().getCallbackDescriptor(callbackType.getType()).removeCallbackMethod(callbackMethods[i]);
+            CallbackMethodEvent e = new CallbackMethodEvent(
                 actionEvent.getSource(),
                 null,
-                callbackMethod,
+                callbackMethods[i],
                 MapEvent.REMOVE);
-        mediator.fireCallbackMethodEvent(e);
+            mediator.fireCallbackMethodEvent(e);
+        }
     }
+    
+    /**
+     * Returns action name, depending on count of selected rows
+     */
+    public abstract String getActionName(boolean multiple);
 }
 

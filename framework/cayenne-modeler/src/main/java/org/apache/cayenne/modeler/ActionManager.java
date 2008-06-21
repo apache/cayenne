@@ -139,6 +139,12 @@ public class ActionManager {
         PROCEDURE_ACTIONS.addAll(Arrays.asList(CreateProcedureParameterAction
                 .getActionName()));
     }
+    
+    static final Collection<String> MULTIPLE_OBJECTS_ACTIONS = new HashSet<String>(
+            PROJECT_ACTIONS);
+    static {
+        MULTIPLE_OBJECTS_ACTIONS.addAll(Arrays.asList(RemoveAction.getActionName()));
+    }
 
     protected Map<String, Action> actionMap;
 
@@ -267,6 +273,14 @@ public class ActionManager {
     public void querySelected() {
         processActionsState(DATA_MAP_ACTIONS);
         getAction(RemoveAction.getActionName()).setName("Remove Query");
+    }
+    
+    /**
+     * Invoked when several objects were selected in ProjectTree at time
+     */
+    public void multipleObjectsSelected() {
+        processActionsState(MULTIPLE_OBJECTS_ACTIONS);
+        getAction(RemoveAction.getActionName()).setName("Remove Selected Objects");
     }
 
     /**

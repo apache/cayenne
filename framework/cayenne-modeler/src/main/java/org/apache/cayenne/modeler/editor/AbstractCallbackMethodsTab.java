@@ -169,6 +169,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         table.setDragEnabled(true);
         table.setTransferHandler(new StringTransferHandler() {
 
+            @Override
             protected String exportString(JComponent c) {
                 JTable table = (JTable) c;
                 int rowIndex = table.getSelectedRow();
@@ -181,6 +182,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                 return result;
             }
 
+            @Override
             protected void importString(JComponent c, String callbackMethod) {
                 JTable table = (JTable) c;
                 int rowIndex = table.getSelectedRow();
@@ -195,6 +197,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                 rebuildTable();
             }
 
+            @Override
             protected void cleanup(JComponent c, boolean remove) {
                 // System.out.println("c");
             }
@@ -256,13 +259,21 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                    mediator.setCurrentCallbackMethod(table.getSelectedRow() >= 0
-                            ? (String) table.getModel().getValueAt(
-                                    table.getSelectedRow(),
-                                    0)
-                            : null);
-                    getRemoveCallbackMethodAction().setEnabled(
-                            table.getSelectedRow() >= 0);
+                    String[] methods = new String[0];
+                    
+                    if (table.getSelectedRow() != -1) {
+                        int[] sel = table.getSelectedRows();
+                        methods = new String[sel.length];
+                        
+                        for (int i = 0; i < sel.length; i++) {
+                            methods[i] = (String) table.getValueAt(sel[i], 0);
+                        }
+                    }
+                        
+                    mediator.setCurrentCallbackMethods(methods);
+                    getRemoveCallbackMethodAction().setEnabled(methods.length > 0);
+                    getRemoveCallbackMethodAction().setName(getRemoveCallbackMethodAction().
+                            getActionName(methods.length > 1));
                 }
             }
         });
@@ -315,7 +326,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                 CallbackDescriptorTableModel.METHOD_NAME);
         methodNameColumn.setMinWidth(424);
 
-        mediator.setCurrentCallbackMethod(null);
+        mediator.setCurrentCallbackMethods(new String[0]);
     }
 
     /**
@@ -323,6 +334,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
      */
     class StringRenderer extends DefaultTableCellRenderer {
 
+        @Override
         public Component getTableCellRendererComponent(
                 JTable table,
                 Object value,

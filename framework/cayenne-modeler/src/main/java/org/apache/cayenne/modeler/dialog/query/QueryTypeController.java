@@ -56,6 +56,7 @@ public class QueryTypeController extends BasicController {
         this.domain = mediator.getCurrentDataDomain();
     }
 
+    @Override
     protected void doHandleControl(Control control) throws ControlException {
         if (control.matchesID(CANCEL_CONTROL)) {
             shutdown();
@@ -77,6 +78,7 @@ public class QueryTypeController extends BasicController {
     /**
      * Creates and runs QueryTypeDialog.
      */
+    @Override
     public void startup() {
         setModel(new QueryTypeModel(mediator.getCurrentDataMap()));
         setView(new QueryTypeDialog());
@@ -100,7 +102,7 @@ public class QueryTypeController extends BasicController {
         dataMap.addQuery(query);
 
         // notify listeners
-        mediator.fireQueryEvent(new QueryEvent(this, query, MapEvent.ADD));
+        mediator.fireQueryEvent(new QueryEvent(this, query, MapEvent.ADD, dataMap));
         mediator
                 .fireQueryDisplayEvent(new QueryDisplayEvent(this, query, dataMap, domain));
         shutdown();

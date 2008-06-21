@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.map.event;
 
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -30,6 +31,11 @@ import org.apache.cayenne.query.Query;
  */
 public class QueryEvent extends MapEvent {
     protected Query query;
+    
+    /**
+     * Data map containing the query
+     */
+    protected DataMap map;
 
     public QueryEvent(Object source, Query query) {
         super(source);
@@ -45,6 +51,30 @@ public class QueryEvent extends MapEvent {
         this(source, query);
         setId(type);
     }
+    
+    /**
+     * Creates a query event, specifying DataMap, containing the query
+     */
+    public QueryEvent(Object source, Query query, DataMap map) {
+        this(source, query);
+        setDataMap(map);
+    }
+    
+    /**
+     * Creates a query event, specifying DataMap, containing the query
+     */
+    public QueryEvent(Object source, Query query, String oldName, DataMap map) {
+        this(source, query, oldName);
+        setDataMap(map);
+    }
+    
+    /**
+     * Creates a query event, specifying DataMap, containing the query
+     */
+    public QueryEvent(Object source, Query query, int type, DataMap map) {
+        this(source, query, type);
+        setDataMap(map);
+    }
 
     @Override
     public String getNewName() {
@@ -57,5 +87,19 @@ public class QueryEvent extends MapEvent {
 
     public void setQuery(Query query) {
         this.query = query;
+    }
+    
+    /**
+     * @return DataMap, containing the query
+     */
+    public DataMap getDataMap() {
+        return map;
+    }
+    
+    /**
+     * Sets DataMap, containing the query
+     */
+    public void setDataMap(DataMap map) {
+        this.map = map;
     }
 }

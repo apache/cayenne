@@ -41,6 +41,8 @@ import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.MultipleObjectsDisplayEvent;
+import org.apache.cayenne.modeler.event.MultipleObjectsDisplayListener;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
@@ -59,7 +61,8 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class EditorView extends JPanel implements ObjEntityDisplayListener,
         DbEntityDisplayListener, DomainDisplayListener, DataMapDisplayListener,
-        DataNodeDisplayListener, ProcedureDisplayListener, QueryDisplayListener {
+        DataNodeDisplayListener, ProcedureDisplayListener, QueryDisplayListener,
+        MultipleObjectsDisplayListener {
 
     private static final String EMPTY_VIEW = "Empty";
     private static final String DOMAIN_VIEW = "Domain";
@@ -161,6 +164,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         eventController.addDbEntityDisplayListener(this);
         eventController.addProcedureDisplayListener(this);
         eventController.addQueryDisplayListener(this);
+        eventController.addMultipleObjectsDisplayListener(this);
 
         Domain domain = eventController.getApplicationPreferenceDomain().getSubdomain(
                 this.getClass());
@@ -229,5 +233,9 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         else {
             detailLayout.show(detailPanel, EMPTY_VIEW);
         }
+    }
+
+    public void currentObjectsChanged(MultipleObjectsDisplayEvent e) {
+        detailLayout.show(detailPanel, EMPTY_VIEW);
     }
 }

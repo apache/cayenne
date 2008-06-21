@@ -1,4 +1,3 @@
-package org.apache.cayenne.modeler.event;
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -17,42 +16,27 @@ package org.apache.cayenne.modeler.event;
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.event;
 
+import java.util.EventObject;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.project.ProjectPath;
 
-/** 
-  * @author Michael Misha Shengaout
-  */
-public class AttributeDisplayEvent extends EntityDisplayEvent {
-    protected Attribute[] attributes;
+/**
+ * Display event for several selected objects
+ */
+public class MultipleObjectsDisplayEvent extends EventObject {
+    private ProjectPath[] paths;
     
-    public AttributeDisplayEvent(
-            Object src,
-            Attribute attribute,
-            Entity entity,
-            DataMap dataMap,
-            DataDomain domain) {
-        
-            super(src, entity, dataMap, domain);
-            attributes = new Attribute[] { attribute };
-    }
-
-    public AttributeDisplayEvent(
-        Object src,
-        Attribute[] attributes,
-        Entity entity,
-        DataMap dataMap,
-        DataDomain domain) {
-
-        super(src, entity, dataMap, domain);
-        this.attributes = attributes;
+    public MultipleObjectsDisplayEvent(Object src, ProjectPath[] paths) {
+        super(src);
+        this.paths = paths;
     }
     
-    public Attribute[] getAttributes() {
-        return attributes;
+    /**
+     * @return all paths of this event
+     */
+    public ProjectPath[] getPaths() {
+        return paths;
     }
 }

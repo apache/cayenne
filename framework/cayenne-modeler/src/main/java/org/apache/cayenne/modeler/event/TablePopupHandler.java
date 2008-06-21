@@ -67,8 +67,9 @@ public class TablePopupHandler extends MouseAdapter {
             table.cancelEditing();
 
             int row = table.rowAtPoint(e.getPoint());
-            if (row != -1)
+            if (row != -1 && !table.getSelectionModel().isSelectedIndex(row)) {
                 table.setRowSelectionInterval(row, row);
+            }
 
             popup.show(table, e.getX(), e.getY());
         }

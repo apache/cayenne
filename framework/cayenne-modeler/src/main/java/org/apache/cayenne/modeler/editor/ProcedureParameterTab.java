@@ -24,8 +24,8 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventObject;
+import java.util.List;
 
-import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -55,6 +55,8 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.util.CayenneCellEditor;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -165,7 +167,7 @@ public class ProcedureParameterTab
             table.clearSelection();
         }
 
-        ProcedureParameter parameter = null;
+        ProcedureParameter[] parameters = new ProcedureParameter[0];
         boolean enableUp = false;
         boolean enableDown = false;
         boolean enableRemoveButton = false;
@@ -175,15 +177,27 @@ public class ProcedureParameterTab
             enableRemoveButton = true;
             ProcedureParameterTableModel model =
                 (ProcedureParameterTableModel) table.getModel();
-            parameter = model.getParameter(table.getSelectedRow());
+            
+            int[] sel = table.getSelectedRows();
+            parameters = new ProcedureParameter[sel.length];
+            
+            for (int i = 0; i < sel.length; i++) {
+                parameters[i] = model.getParameter(sel[i]);
+            }
 
-            // scroll table
-            UIUtil.scrollToSelectedRow(table);
+            if (sel.length == 1) {
+                // scroll table
+                UIUtil.scrollToSelectedRow(table);
 
-            int rowCount = table.getRowCount();
-            if (rowCount > 1){
-                if (selectedRow >0) enableUp = true;
-                if (selectedRow < (rowCount - 1)) enableDown = true;
+                int rowCount = table.getRowCount();
+                if (rowCount > 1) {
+                    if (selectedRow >0) {
+                        enableUp = true;
+                    }
+                    if (selectedRow < (rowCount - 1)) {
+                        enableDown = true;
+                    }
+                }
             }
         }
 
@@ -196,7 +210,7 @@ public class ProcedureParameterTab
         ProcedureParameterDisplayEvent ppde =
             new ProcedureParameterDisplayEvent(
                 this,
-                parameter,
+                parameters,
                 eventController.getCurrentProcedure(),
                 eventController.getCurrentDataMap(),
                 eventController.getCurrentDataDomain());
@@ -214,20 +228,29 @@ public class ProcedureParameterTab
     }
 
     /**
-     * Selects a specified parameter.
+     * Selects a specified parameters.
      */
-    public void selectParameter(ProcedureParameter parameter) {
-        if (parameter == null) {
+    public void selectParameters(ProcedureParameter[] parameters) {
+        if (parameters.length == 0) {
             return;
         }
+        
+        CayenneAction removeAction = Application
+            .getInstance()
+            .getAction(RemoveProcedureParameterAction.getActionName());
+        removeAction.setName(RemoveProcedureParameterAction.getActionName(parameters.length > 1));
 
         ProcedureParameterTableModel model =
             (ProcedureParameterTableModel) table.getModel();
-        java.util.List parameters = model.getObjectList();
-        int pos = parameters.indexOf(parameter);
-        if (pos >= 0) {
-            table.select(pos);
+        
+        List listAttrs = model.getObjectList();
+        int[] newSel = new int[parameters.length];
+        
+        for (int i = 0; i < parameters.length; i++) {
+            newSel[i] = listAttrs.indexOf(parameters[i]);
         }
+        
+        table.select(newSel);
     }
 
     protected void rebuildTable(Procedure procedure) {
@@ -273,7 +296,7 @@ public class ProcedureParameterTab
                 ProcedureParameterTableModel.PARAMETER_DIRECTION_NAMES,
                 false);
         directionEditor.setEditable(false);
-        directionColumn.setCellEditor(new DefaultCellEditor(directionEditor));
+        directionColumn.setCellEditor(new CayenneCellEditor(directionEditor));
 
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);

@@ -20,10 +20,7 @@
 package org.apache.cayenne.modeler;
 
 import java.awt.Component;
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.swing.event.EventListenerList;
 
@@ -82,6 +79,8 @@ import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityListenerEvent;
 import org.apache.cayenne.modeler.event.EntityListenerListener;
+import org.apache.cayenne.modeler.event.MultipleObjectsDisplayEvent;
+import org.apache.cayenne.modeler.event.MultipleObjectsDisplayListener;
 import org.apache.cayenne.modeler.event.ObjAttributeDisplayListener;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.ObjRelationshipDisplayListener;
@@ -97,7 +96,9 @@ import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CircularArray;
 import org.apache.cayenne.pref.Domain;
+import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.IDUtil;
 
@@ -125,13 +126,20 @@ public class ProjectController extends CayenneController {
         private DataMap map;
         private ObjEntity objEntity;
         private DbEntity dbEntity;
-        private ObjAttribute objAttr;
-        private DbAttribute dbAttr;
-        private ObjRelationship objRel;
-        private DbRelationship dbRel;
+        
+        private ObjAttribute[] objAttrs;
+        private DbAttribute[] dbAttrs;
+        private ObjRelationship[] objRels;
+        private DbRelationship[] dbRels;
+        
         private Procedure procedure;
-        private ProcedureParameter procedureParameter;
+        private ProcedureParameter[] procedureParameters;
         private Query query;
+        
+        /**
+         * Paths of multiple selection
+         */
+        private ProjectPath[] paths;
 
         /**
          * currently selecte entity listener class
@@ -142,9 +150,9 @@ public class ProjectController extends CayenneController {
          */
         private CallbackType callbackType;
         /**
-         * currently selected callback method
+         * currently selected callback methods
          */
-        private String callbackMethod;
+        private String[] callbackMethods;
 
         public ControllerState() {
             domain = null;
@@ -152,19 +160,24 @@ public class ProjectController extends CayenneController {
             map = null;
 
             objEntity = null;
-            objAttr = null;
-            objRel = null;
-
             dbEntity = null;
-            dbAttr = null;
-            dbRel = null;
-
+            
             procedure = null;
-            procedureParameter = null;
+            
+            //life is much easier if these guys are never null
+            dbAttrs = new DbAttribute[0];
+            dbRels = new DbRelationship[0];
+            procedureParameters = new ProcedureParameter[0];
+            objAttrs = new ObjAttribute[0];
+            objRels = new ObjRelationship[0];
+            
+            callbackMethods = new String[0];
 
             query = null;
 
             event = null;
+            paths = null;
+            
             isRefiring = false;
         }
 
@@ -233,6 +246,7 @@ public class ProjectController extends CayenneController {
         currentState = new ControllerState();
     }
 
+    @Override
     public Component getView() {
         return parent.getView();
     }
@@ -357,6 +371,7 @@ public class ProjectController extends CayenneController {
         addDbEntityDisplayListener(frame);
         addQueryDisplayListener(frame);
         addProcedureDisplayListener(frame);
+        addMultipleObjectsDisplayListener(frame);
     }
 
     public void reset() {
@@ -396,10 +411,49 @@ public class ProjectController extends CayenneController {
     }
 
     protected void refreshNamespace() {
-        DataDomain domain = getCurrentDataDomain();
+        refreshNamespace(getCurrentDataDomain());
+    }
+    
+    protected void refreshNamespace(DataDomain domain) {
         if (domain != null) {
             domain.getEntityResolver().clearCache();
         }
+    }
+    
+    /**
+     * Finds a domain containing specified DataNode.
+     */
+    public DataDomain findDomain(DataNode node) {
+        Collection<DataDomain> domains = ((ApplicationProject) getProject()).getConfiguration()
+            .getDomains();
+        
+        for (DataDomain domain : domains) {
+            if (domain.getNode(node.getName()) == node) {
+                return domain;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Finds a domain containing specified DataMap.
+     */
+    public DataDomain findDomain(DataMap map) {
+        Collection<DataDomain> domains = ((ApplicationProject) getProject()).getConfiguration()
+            .getDomains();
+        
+        if (map == null) {
+            map = getCurrentDataMap();
+        }
+    
+        for (DataDomain domain : domains) {
+            if (domain.getMap(map.getName()) == map) {
+                return domain;
+            }
+        }
+    
+        return null;
     }
 
     private void removeFromHistory(EventObject e) {
@@ -485,21 +539,33 @@ public class ProjectController extends CayenneController {
     public DbEntity getCurrentDbEntity() {
         return currentState.dbEntity;
     }
-
-    public ObjAttribute getCurrentObjAttribute() {
-        return currentState.objAttr;
+    
+    /**
+     * @return Array of selected ObjAttributes
+     */
+    public ObjAttribute[] getCurrentObjAttributes() {
+        return currentState.objAttrs;
+    }
+    
+    /**
+     * @return Array of selected DbAttributes
+     */
+    public DbAttribute[] getCurrentDbAttributes() {
+        return currentState.dbAttrs;
+    }
+    
+    /**
+     * @return Array of selected ObjRelationships
+     */
+    public ObjRelationship[] getCurrentObjRelationships() {
+        return currentState.objRels;
     }
 
-    public DbAttribute getCurrentDbAttribute() {
-        return currentState.dbAttr;
-    }
-
-    public ObjRelationship getCurrentObjRelationship() {
-        return currentState.objRel;
-    }
-
-    public DbRelationship getCurrentDbRelationship() {
-        return currentState.dbRel;
+    /**
+     * @return Array of selected DbRelationships
+     */
+    public DbRelationship[] getCurrentDbRelationships() {
+        return currentState.dbRels;
     }
 
     public Query getCurrentQuery() {
@@ -510,8 +576,12 @@ public class ProjectController extends CayenneController {
         return currentState.procedure;
     }
 
-    public ProcedureParameter getCurrentProcedureParameter() {
-        return currentState.procedureParameter;
+    public ProcedureParameter[] getCurrentProcedureParameters() {
+        return currentState.procedureParameters;
+    }
+    
+    public ProjectPath[] getCurrentPaths() {
+        return currentState.paths;
     }
 
     public void addDomainDisplayListener(DomainDisplayListener listener) {
@@ -610,6 +680,11 @@ public class ProjectController extends CayenneController {
             ProcedureParameterDisplayListener listener) {
         listenerList.add(ProcedureParameterDisplayListener.class, listener);
     }
+    
+    public void addMultipleObjectsDisplayListener(
+            MultipleObjectsDisplayListener listener) {
+        listenerList.add(MultipleObjectsDisplayListener.class, listener);
+    }
 
     public void fireDomainDisplayEvent(DomainDisplayEvent e) {
         boolean changed = e.getDomain() != currentState.domain;
@@ -657,7 +732,7 @@ public class ProjectController extends CayenneController {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace();
+            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -720,7 +795,7 @@ public class ProjectController extends CayenneController {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace();
+            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -783,7 +858,7 @@ public class ProjectController extends CayenneController {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace();
+            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -814,12 +889,12 @@ public class ProjectController extends CayenneController {
     public void fireObjEntityEvent(EntityEvent e) {
         setDirty(true);
 
-        if (currentState.map != null && e.getId() == MapEvent.CHANGE) {
-            currentState.map.objEntityChanged(e);
+        if (e.getEntity().getDataMap() != null && e.getId() == MapEvent.CHANGE) {
+            e.getEntity().getDataMap().objEntityChanged(e);
         }
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace();
+            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -850,12 +925,12 @@ public class ProjectController extends CayenneController {
     public void fireDbEntityEvent(EntityEvent e) {
         setDirty(true);
 
-        if (currentState.map != null && e.getId() == MapEvent.CHANGE) {
-            currentState.map.dbEntityChanged(e);
+        if (e.getEntity().getDataMap() != null && e.getId() == MapEvent.CHANGE) {
+            e.getEntity().getDataMap().dbEntityChanged(e);
         }
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace();
+            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -887,7 +962,7 @@ public class ProjectController extends CayenneController {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace();
+            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -919,7 +994,7 @@ public class ProjectController extends CayenneController {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            refreshNamespace();
+            refreshNamespace(e.getDomain());
             removeFromHistory(e);
         }
 
@@ -1174,7 +1249,7 @@ public class ProjectController extends CayenneController {
     }
 
     public void fireProcedureParameterDisplayEvent(ProcedureParameterDisplayEvent e) {
-        boolean changed = e.getProcedureParameter() != currentState.procedureParameter;
+        boolean changed = !Arrays.equals(e.getProcedureParameters(), currentState.procedureParameters);
 
         if (changed) {
             if (currentState.procedure != e.getProcedure()) {
@@ -1183,7 +1258,7 @@ public class ProjectController extends CayenneController {
                 currentState.map = e.getDataMap();
                 currentState.procedure = e.getProcedure();
             }
-            currentState.procedureParameter = e.getProcedureParameter();
+            currentState.procedureParameters = e.getProcedureParameters();
         }
 
         EventListener[] list = listenerList
@@ -1223,10 +1298,6 @@ public class ProjectController extends CayenneController {
     public void fireDbAttributeEvent(AttributeEvent e) {
         setDirty(true);
 
-        if (currentState.map != null && e.getId() == MapEvent.CHANGE) {
-            currentState.map.dbAttributeChanged(e);
-        }
-
         EventListener[] list = listenerList.getListeners(DbAttributeListener.class);
         for (int i = 0; i < list.length; i++) {
             DbAttributeListener temp = (DbAttributeListener) list[i];
@@ -1248,7 +1319,7 @@ public class ProjectController extends CayenneController {
     }
 
     public void fireDbAttributeDisplayEvent(AttributeDisplayEvent e) {
-        boolean changed = e.getAttribute() != currentState.dbAttr;
+        boolean changed = !Arrays.equals(e.getAttributes(), currentState.dbAttrs);
 
         if (changed) {
             if (e.getEntity() != currentState.dbEntity) {
@@ -1257,7 +1328,9 @@ public class ProjectController extends CayenneController {
                 currentState.map = e.getDataMap();
                 currentState.dbEntity = (DbEntity) e.getEntity();
             }
-            currentState.dbAttr = (DbAttribute) e.getAttribute();
+            currentState.dbAttrs = new DbAttribute[e.getAttributes().length];
+            System.arraycopy(e.getAttributes(), 0, currentState.dbAttrs, 0, 
+                    currentState.dbAttrs.length);
         }
 
         EventListener[] list = listenerList
@@ -1271,10 +1344,6 @@ public class ProjectController extends CayenneController {
     /** Notifies all listeners of the change (add, remove) and does the change. */
     public void fireObjAttributeEvent(AttributeEvent e) {
         setDirty(true);
-
-        if (currentState.map != null && e.getId() == MapEvent.CHANGE) {
-            currentState.map.objAttributeChanged(e);
-        }
 
         EventListener[] list = listenerList.getListeners(ObjAttributeListener.class);
         for (int i = 0; i < list.length; i++) {
@@ -1297,7 +1366,7 @@ public class ProjectController extends CayenneController {
     }
 
     public void fireObjAttributeDisplayEvent(AttributeDisplayEvent e) {
-        boolean changed = e.getAttribute() != currentState.objAttr;
+        boolean changed = !Arrays.equals(e.getAttributes(), currentState.objAttrs); 
 
         if (changed) {
             if (e.getEntity() != currentState.objEntity) {
@@ -1306,7 +1375,9 @@ public class ProjectController extends CayenneController {
                 currentState.map = e.getDataMap();
                 currentState.objEntity = (ObjEntity) e.getEntity();
             }
-            currentState.objAttr = (ObjAttribute) e.getAttribute();
+            currentState.objAttrs = new ObjAttribute[e.getAttributes().length];
+            System.arraycopy(e.getAttributes(), 0, currentState.objAttrs, 0, 
+                    currentState.objAttrs.length);
         }
 
         EventListener[] list = listenerList
@@ -1346,8 +1417,7 @@ public class ProjectController extends CayenneController {
     }
 
     public void fireDbRelationshipDisplayEvent(RelationshipDisplayEvent e) {
-        boolean changed = e.getRelationship() != currentState.dbRel;
-        e.setRelationshipChanged(changed);
+        boolean changed = !Arrays.equals(e.getRelationships(), currentState.dbRels);
 
         if (changed) {
             if (e.getEntity() != currentState.dbEntity) {
@@ -1356,7 +1426,9 @@ public class ProjectController extends CayenneController {
                 currentState.map = e.getDataMap();
                 currentState.dbEntity = (DbEntity) e.getEntity();
             }
-            currentState.dbRel = (DbRelationship) e.getRelationship();
+            currentState.dbRels = new DbRelationship[e.getRelationships().length];
+            System.arraycopy(e.getRelationships(), 0, currentState.dbRels, 0, 
+                    currentState.dbRels.length);
         }
 
         EventListener[] list = listenerList
@@ -1370,10 +1442,6 @@ public class ProjectController extends CayenneController {
     /** Notifies all listeners of the change(add, remove) and does the change. */
     public void fireObjRelationshipEvent(RelationshipEvent e) {
         setDirty(true);
-
-        if (currentState.map != null && e.getId() == MapEvent.CHANGE) {
-            currentState.map.objRelationshipChanged(e);
-        }
 
         EventListener[] list = listenerList.getListeners(ObjRelationshipListener.class);
         for (int i = 0; i < list.length; i++) {
@@ -1394,9 +1462,20 @@ public class ProjectController extends CayenneController {
             }
         }
     }
+    
+    public void fireMultipleObjectsDisplayEvent(MultipleObjectsDisplayEvent e) {
+        clearState();
+        currentState.paths = e.getPaths();
+        
+        EventListener[] list = listenerList.getListeners(MultipleObjectsDisplayListener.class);
+        for (int i = 0; i < list.length; i++) {
+            MultipleObjectsDisplayListener temp = (MultipleObjectsDisplayListener) list[i];
+            temp.currentObjectsChanged(e);
+        }
+    }
 
     public void fireObjRelationshipDisplayEvent(RelationshipDisplayEvent e) {
-        boolean changed = e.getRelationship() != currentState.objRel;
+        boolean changed = !Arrays.equals(e.getRelationships(), currentState.objRels);
         e.setRelationshipChanged(changed);
 
         if (changed) {
@@ -1406,7 +1485,9 @@ public class ProjectController extends CayenneController {
                 currentState.map = e.getDataMap();
                 currentState.objEntity = (ObjEntity) e.getEntity();
             }
-            currentState.objRel = (ObjRelationship) e.getRelationship();
+            currentState.objRels = new ObjRelationship[e.getRelationships().length];
+            System.arraycopy(e.getRelationships(), 0, currentState.objRels, 0, 
+                    currentState.objRels.length);
         }
 
         EventListener[] list = listenerList
@@ -1416,7 +1497,7 @@ public class ProjectController extends CayenneController {
             temp.currentObjRelationshipChanged(e);
         }
     }
-
+    
     public void addDataMap(Object src, DataMap map) {
         addDataMap(src, map, true);
     }
@@ -1470,10 +1551,10 @@ public class ProjectController extends CayenneController {
     }
 
     /**
-     * @return currently selected callback method
+     * @return currently selected callback methods
      */
-    public String getCurrentCallbackMethod() {
-        return currentState.callbackMethod;
+    public String[] getCurrentCallbackMethods() {
+        return currentState.callbackMethods;
     }
 
     /**
@@ -1491,10 +1572,10 @@ public class ProjectController extends CayenneController {
     }
 
     /**
-     * @return currently selected callback method
+     * @return currently selected callback methods
      */
-    public void setCurrentCallbackMethod(String callbackMethod) {
-        currentState.callbackMethod = callbackMethod;
+    public void setCurrentCallbackMethods(String[] callbackMethods) {
+        currentState.callbackMethods = callbackMethods;
     }
 
     /**

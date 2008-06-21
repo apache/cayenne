@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.editor.dbentity;
 
 import java.awt.BorderLayout;
 import java.util.EventObject;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -47,6 +48,7 @@ import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.PanelFactory;
@@ -110,49 +112,61 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
     }
 
     /**
-     * Selects a specified attribute.
+     * Selects specified attributes.
      */
-    public void selectAttribute(DbAttribute attr) {
-        if (attr == null) {
-            Application
-                    .getInstance()
-                    .getAction(RemoveAttributeAction.getActionName())
-                    .setEnabled(false);
+    public void selectAttributes(DbAttribute[] attrs) {
+        CayenneAction removeAction = Application
+          .getInstance()
+          .getAction(RemoveAttributeAction.getActionName());
+        
+        if (attrs == null || attrs.length == 0) {
+            removeAction.setEnabled(false);
             return;
         }
         // enable the remove button
-        Application
-                .getInstance()
-                .getAction(RemoveAttributeAction.getActionName())
-                .setEnabled(true);
+        removeAction.setEnabled(true);
+        removeAction.setName(RemoveAttributeAction.getActionName(attrs.length > 1));
 
         DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
-        java.util.List attrs = model.getObjectList();
-        int attrPos = attrs.indexOf(attr);
-        if (attrPos >= 0) {
-            table.select(attrPos);
+        
+        List listAttrs = model.getObjectList();
+        int[] newSel = new int[attrs.length];
+        
+        for (int i = 0; i < attrs.length; i++) {
+            newSel[i] = listAttrs.indexOf(attrs[i]);
         }
+        
+        table.select(newSel);
     }
 
     public void processExistingSelection(EventObject e) {
         if (e instanceof ChangeEvent) {
             table.clearSelection();
         }
-        DbAttribute att = null;
+            
+        DbAttribute[] attrs = new DbAttribute[0];
         if (table.getSelectedRow() >= 0) {
-            DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
-            att = model.getAttribute(table.getSelectedRow());
-
-            // scroll table
-            UIUtil.scrollToSelectedRow(table);
+           DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
+           
+           int[] sel = table.getSelectedRows();
+           attrs = new DbAttribute[sel.length];
+           
+           for (int i = 0; i < sel.length; i++) {
+               attrs[i] = model.getAttribute(sel[i]);
+           }
+    
+           if (sel.length == 1) {
+               // scroll table
+               UIUtil.scrollToSelectedRow(table);
+           }
         }
-
+    
         mediator.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(
-                this,
-                att,
-                mediator.getCurrentDbEntity(),
-                mediator.getCurrentDataMap(),
-                mediator.getCurrentDataDomain()));
+               this,
+               attrs,
+               mediator.getCurrentDbEntity(),
+               mediator.getCurrentDataMap(),
+               mediator.getCurrentDataDomain()));
     }
 
     public void dbAttributeChanged(AttributeEvent e) {
