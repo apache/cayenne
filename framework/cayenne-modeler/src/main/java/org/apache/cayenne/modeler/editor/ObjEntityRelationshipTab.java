@@ -239,7 +239,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                 rels[i] = model.getRelationship(sel[i]);
             }
             
-            if (rels.length == 0 && rels[0].getTargetEntity() != null
+            if (rels.length == 1 && rels[0].getTargetEntity() != null
                     && ((ObjEntity) rels[0].getSourceEntity()).getDbEntity() != null
                     && ((ObjEntity) rels[0].getTargetEntity()).getDbEntity() != null) {
                 resolve.setEnabled(true);
