@@ -20,6 +20,7 @@ CAY-911 CM Usability: JComboBox Autocompletion
 CAY-1056 Detection of the project file changes on disk.
 CAY-1055 Right-click contextual menu for entities/attributes/relationships that would include common operations, like "delete".
 CAY-1058 Add a maven plugin for starting up the modeler.
+CAY-1060 CM: Allow multiple item selections
 CAY-1061 ResourceFinder: abstract API for looking up resources, including multiple resources for a given name
 
 Bug fixes since M4:
