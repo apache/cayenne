@@ -32,7 +32,7 @@ import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
-public class RefreshQueryInContextTest extends CayenneCase {
+public class DataContextRefreshQueryTest extends CayenneCase {
 
     public void testRefreshCollection() throws Exception {
         deleteTestData();
