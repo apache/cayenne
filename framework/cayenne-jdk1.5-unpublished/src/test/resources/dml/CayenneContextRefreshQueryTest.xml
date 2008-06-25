@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	
+	<!-- ARTIST -->
+	<bean id="A1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE1 (TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) values (1, 'g1', 's1')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="P11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE2 (TABLE2_ID, TABLE1_ID, GLOBAL_ATTRIBUTE) values (1, 1, 'g1')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="P12" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		insert into MT_TABLE2 (TABLE2_ID, TABLE1_ID, GLOBAL_ATTRIBUTE) values (2, 1, 'g1')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="PU2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.cayenne.testdo.mt.MtTable1</value></constructor-arg>
+		<constructor-arg><value>
+		DELETE FROM MT_TABLE2 WHERE TABLE2_ID = 1
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="testRefreshObjectToMany" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="P11"/>
+				<ref bean="P12"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testRefreshObjectToManyUpdate" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="PU2"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

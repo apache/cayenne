@@ -24,8 +24,14 @@ import java.util.Iterator;
 
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.RefreshQuery;
+import org.apache.cayenne.reflect.AttributeProperty;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.remote.RemoteIncrementalFaultList;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.ObjectContextQueryAction;
@@ -137,8 +143,14 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
     }
 
     private void invalidateLocally(CayenneContextGraphManager graphManager, Iterator<?> it) {
+        if (!it.hasNext()) {
+            return;
+        }
+
+        EntityResolver resolver = actingContext.getEntityResolver();
+
         while (it.hasNext()) {
-            Persistent object = (Persistent) it.next();
+            final Persistent object = (Persistent) it.next();
 
             // we don't care about NEW objects,
             // but we still do care about HOLLOW, since snapshot might still be
@@ -147,11 +159,34 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
                 continue;
             }
 
-            object.setPersistenceState(PersistenceState.HOLLOW);
+            ObjectId id = object.getObjectId();
 
+            // per CAY-1082 ROP objects (unlike CayenneDataObject) require all
+            // relationship faults invalidation.
+            ClassDescriptor descriptor = resolver.getClassDescriptor(id.getEntityName());
+            PropertyVisitor arcInvalidator = new PropertyVisitor() {
+
+                public boolean visitAttribute(AttributeProperty property) {
+                    return true;
+                }
+
+                public boolean visitToMany(ToManyProperty property) {
+                    property.invalidate(object);
+                    return true;
+                }
+
+                public boolean visitToOne(ToOneProperty property) {
+                    property.invalidate(object);
+                    return true;
+                }
+            };
+
+            descriptor.visitProperties(arcInvalidator);
+            object.setPersistenceState(PersistenceState.HOLLOW);
+            
             // remove cached changes
-            graphManager.changeLog.unregisterNode(object.getObjectId());
-            graphManager.stateLog.unregisterNode(object.getObjectId());
+            graphManager.changeLog.unregisterNode(id);
+            graphManager.stateLog.unregisterNode(id);
         }
     }
 }

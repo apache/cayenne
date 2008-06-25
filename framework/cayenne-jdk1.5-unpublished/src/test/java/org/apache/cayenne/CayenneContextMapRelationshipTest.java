@@ -103,6 +103,6 @@ public class CayenneContextMapRelationshipTest extends CayenneCase {
         assertSame(newTarget, o1.getTargets().get(new Integer(newId)));
         
         assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
-        assertEquals(PersistenceState.HOLLOW, newTarget.getPersistenceState());
+        assertEquals(PersistenceState.COMMITTED, newTarget.getPersistenceState());
     }
 }
