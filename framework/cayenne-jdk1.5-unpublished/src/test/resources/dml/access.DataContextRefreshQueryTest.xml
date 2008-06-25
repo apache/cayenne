@@ -42,6 +42,13 @@
 		</value></constructor-arg>
 	</bean>
 	
+	<bean id="PU2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		DELETE FROM PAINTING WHERE PAINTING_ID = 33001
+		</value></constructor-arg>
+	</bean>
+	
 	<!-- ======================================= -->
 	<!-- Data Sets -->
 	<!-- ======================================= -->	
@@ -61,6 +68,24 @@
 		<constructor-arg>
 			<list>
 				<ref bean="PU1"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testRefreshObjectToMany" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="P11"/>
+				<ref bean="P12"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testRefreshObjectToManyUpdate" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="PU2"/>
 			</list>
 		</constructor-arg>
 	</bean>

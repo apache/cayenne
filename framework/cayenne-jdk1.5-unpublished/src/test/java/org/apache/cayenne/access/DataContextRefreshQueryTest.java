@@ -160,6 +160,23 @@ public class DataContextRefreshQueryTest extends CayenneCase {
                 .isFault());
     }
 
+    public void testRefreshObjectToMany() throws Exception {
+        deleteTestData();
+        createTestData("testRefreshObjectToMany");
+
+        DataContext context = createDataContext();
+
+        Artist a = DataObjectUtils.objectForPK(context, Artist.class, 33001l);
+        assertEquals(2, a.getPaintingArray().size());
+
+        createTestData("testRefreshObjectToManyUpdate");
+
+        RefreshQuery refresh = new RefreshQuery(a);
+        context.performQuery(refresh);
+        assertEquals(PersistenceState.HOLLOW, a.getPersistenceState());
+        assertEquals(1, a.getPaintingArray().size());
+    }
+
     public void testRefreshQueryResultsLocalCache() throws Exception {
         deleteTestData();
         createTestData("testRefreshCollection");
@@ -176,10 +193,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
-        Painting p1 = DataObjectUtils.objectForPK(
-                context,
-                Painting.class,
-                33001);
+        Painting p1 = DataObjectUtils.objectForPK(context, Painting.class, 33001);
 
         Painting p2 = (Painting) paints.get(0);
         Artist a1 = p2.getToArtist();
@@ -236,10 +250,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
-        Painting p1 = DataObjectUtils.objectForPK(
-                context,
-                Painting.class,
-                33001);
+        Painting p1 = DataObjectUtils.objectForPK(context, Painting.class, 33001);
 
         Painting p2 = (Painting) paints.get(0);
         Artist a1 = p2.getToArtist();
@@ -296,10 +307,7 @@ public class DataContextRefreshQueryTest extends CayenneCase {
         List paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
-        Painting p1 = DataObjectUtils.objectForPK(
-                context,
-                Painting.class,
-                33001);
+        Painting p1 = DataObjectUtils.objectForPK(context, Painting.class, 33001);
 
         Painting p2 = (Painting) paints.get(0);
         Artist a1 = p2.getToArtist();
