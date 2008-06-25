@@ -20,6 +20,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -27,7 +28,7 @@ import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
 
-public class CayenneContextDataObjectUtilsTest extends CayenneCase {
+public class CayenneContextSQLTemplateTest extends CayenneCase {
 
     @Override
     protected AccessStack buildAccessStack() {
@@ -43,20 +44,19 @@ public class CayenneContextDataObjectUtilsTest extends CayenneCase {
         return new CayenneContext(clientChannel);
     }
 
-    public void testObjectForPK() throws Exception {
+    public void testObjectRoot() throws Exception {
 
         deleteTestData();
 
         CayenneContext context = createClientContext();
 
+        assertNull(DataObjectUtils.objectForPK(context, ClientMtTable1.class, 1));
         context.performGenericQuery(new SQLTemplate(
                 ClientMtTable1.class,
                 "insert into MT_TABLE1 "
                         + "(TABLE1_ID, GLOBAL_ATTRIBUTE1, SERVER_ATTRIBUTE1) "
                         + "values (1, 'g1', 's1')"));
 
-        ClientMtTable1 o = DataObjectUtils.objectForPK(context, ClientMtTable1.class, 1);
-        assertNotNull(o);
-        assertEquals("g1", o.getGlobalAttribute1());
+        assertNotNull(DataObjectUtils.objectForPK(context, ClientMtTable1.class, 1));
     }
 }
