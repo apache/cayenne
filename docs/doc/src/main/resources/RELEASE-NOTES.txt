@@ -30,6 +30,7 @@ CAY-1063 Derby adapter is not able to remove NOT NULL relationship
 CAY-1072 EJBQLQuery non-serializable exception when run via ROP
 CAY-1073 Bug in Expression.toEJBQL with inExp/notInExp
 CAY-1074 Derby: Wrong SQL Generated for select items -- DESC follows column name
+CAY-1081 DataObjectUtils.objectForPk broken in ROP
 
 ----------------------------------
 Release: 3.0M4
