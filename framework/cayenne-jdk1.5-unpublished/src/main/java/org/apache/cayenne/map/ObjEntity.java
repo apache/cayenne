@@ -793,6 +793,9 @@ public class ObjEntity extends Entity implements ObjEntityListener {
     }
 
     /**
+     * Returns the names of DbAtributes that comprise the primary key of the parent
+     * DbEntity.
+     * 
      * @since 3.0
      */
     public Collection<String> getPrimaryKeyNames() {
