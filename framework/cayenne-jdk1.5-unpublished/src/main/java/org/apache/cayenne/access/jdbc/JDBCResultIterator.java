@@ -35,8 +35,6 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * A ResultIterator over the underlying JDBC ResultSet.
@@ -46,7 +44,6 @@ import org.apache.commons.logging.LogFactory;
  */
 // Replaces DefaultResultIterator
 public class JDBCResultIterator implements ResultIterator {
-    private static Log logger = LogFactory.getLog(JDBCResultIterator.class);
     
     // Connection information
     protected Connection connection;
