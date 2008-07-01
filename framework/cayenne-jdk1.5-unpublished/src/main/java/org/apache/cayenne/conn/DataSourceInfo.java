@@ -21,6 +21,7 @@ package org.apache.cayenne.conn;
 
 import java.io.Serializable;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.conf.PasswordEncoding;
 import org.apache.cayenne.conf.PlainTextPasswordEncoder;
 import org.apache.cayenne.util.Util;
@@ -37,8 +38,9 @@ import org.apache.commons.logging.LogFactory;
  * @author Andrus Adamchik
  */
 public class DataSourceInfo implements Cloneable, Serializable {
+
     private static Log logger = LogFactory.getLog(DataSourceInfo.class);
-    
+
     protected String userName;
     protected String password;
     protected String jdbcDriver;
@@ -204,22 +206,19 @@ public class DataSourceInfo implements Cloneable, Serializable {
     }
 
     public PasswordEncoding getPasswordEncoder() {
-        PasswordEncoding encoder = null;
+        String encoderClassName = getPasswordEncoderClass();
+        if (encoderClassName == null) {
+            encoderClassName = PasswordEncoding.standardEncoders[0];
+        }
 
         try {
-            encoder = (PasswordEncoding) Thread
-                    .currentThread()
-                    .getContextClassLoader()
-                    .loadClass(getPasswordEncoderClass())
+            return (PasswordEncoding) Util
+                    .getJavaClass(getPasswordEncoderClass())
                     .newInstance();
-            // encoder = (PasswordEncoding)
-            // Class.forName(getPasswordEncoderClass()).newInstance();
         }
-        catch (Exception exception) {
-            logger.warn(exception);
+        catch (Exception e) {
+            throw new CayenneRuntimeException("Error loading encoder", e);
         }
-
-        return encoder;
     }
 
     /**
