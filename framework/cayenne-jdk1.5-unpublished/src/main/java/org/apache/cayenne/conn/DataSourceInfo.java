@@ -30,10 +30,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Helper JavaBean class that holds DataSource login information.
- * <p>
- * <i>For more information see <a href="../../../../../../userguide/index.html"
- * target="_top">Cayenne User Guide.</a></i>
- * </p>
  * 
  * @author Andrus Adamchik
  */
