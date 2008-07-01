@@ -54,9 +54,7 @@ public class DriverDataSource implements DataSource {
 
         Class<?> driverClass;
         try {
-            driverClass = Class.forName(driverClassName, true, Thread
-                    .currentThread()
-                    .getContextClassLoader());
+            driverClass = Util.getJavaClass(driverClassName);
         }
         catch (Exception ex) {
             throw new SQLException("Can not load JDBC driver named '"
