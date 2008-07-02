@@ -19,21 +19,10 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 import org.scopemvc.core.IntIndexSelector;
 import org.scopemvc.core.ModelChangeEvent;
@@ -41,6 +30,8 @@ import org.scopemvc.core.ModelChangeTypes;
 import org.scopemvc.core.Selector;
 import org.scopemvc.model.basic.BasicModel;
 import org.scopemvc.model.collection.ListModel;
+
+import java.util.*;
 
 /**
  * A Scope model for mapping an ObjRelationship to one or more DbRelationships.
@@ -221,6 +212,7 @@ public class ObjRelationshipInfoModel extends BasicModel {
         this.relationshipName = relationshipName;
     }
 
+    @Override
     public void modelChanged(ModelChangeEvent event) {
 
         // if a different relationship was selected, we may need to rebuild the list
@@ -274,6 +266,8 @@ public class ObjRelationshipInfoModel extends BasicModel {
      */
     public synchronized boolean savePath() {
         boolean hasChanges = false;
+        
+        boolean oldToMany = relationship.isToMany();
 
         if (!Util.nullSafeEquals(relationship.getName(), relationshipName)) {
             hasChanges = true;
@@ -322,6 +316,14 @@ public class ObjRelationshipInfoModel extends BasicModel {
         if (!Util.nullSafeEquals(mapKey, relationship.getMapKey())) {
             hasChanges = true;
             relationship.setMapKey(mapKey);
+        }
+        
+        /**
+         * As of CAY-436 here we check if to-many property has changed during the editing,
+         * and if so, delete rule must be reset to default value
+         */
+        if (hasChanges && relationship.isToMany() != oldToMany) {
+            DeleteRuleUpdater.updateObjRelationship(relationship);
         }
 
         return hasChanges;

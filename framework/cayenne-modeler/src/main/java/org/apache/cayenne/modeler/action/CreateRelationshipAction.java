@@ -19,21 +19,18 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.util.DeleteRuleUpdater;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
+
+import java.awt.event.ActionEvent;
 
 /**
  * @author Andrus Adamchik
@@ -51,6 +48,7 @@ public class CreateRelationshipAction extends CayenneAction {
         super(getActionName(), application);
     }
 
+    @Override
     public String getIconName() {
         return "icon-relationship.gif";
     }
@@ -58,6 +56,7 @@ public class CreateRelationshipAction extends CayenneAction {
     /**
      * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
      */
+    @Override
     public void performAction(ActionEvent e) {
         ObjEntity objEnt = getProjectController().getCurrentObjEntity();
         if (objEnt != null) {
@@ -78,6 +77,8 @@ public class CreateRelationshipAction extends CayenneAction {
                 ObjRelationship.class,
                 objEnt);
         rel.setSourceEntity(objEnt);
+        DeleteRuleUpdater.updateObjRelationship(rel);
+        
         objEnt.addRelationship(rel);
 
         mediator.fireObjRelationshipEvent(
@@ -118,6 +119,7 @@ public class CreateRelationshipAction extends CayenneAction {
     /**
     * Returns <code>true</code> if path contains an Entity object.
     */
+    @Override
     public boolean enableForPath(ProjectPath path) {
         if (path == null) {
             return false;

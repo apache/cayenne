@@ -19,22 +19,14 @@
 
 package org.apache.cayenne.util;
 
+import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.map.*;
+import org.apache.cayenne.project.NamedObjectFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.project.NamedObjectFactory;
 
 /**
  * Implements methods for entity merging.
@@ -45,10 +37,16 @@ public class EntityMergeSupport {
 
     protected DataMap map;
     protected boolean removeMeaningfulFKs;
-
+    
+    /**
+     * Listeners of merge process. 
+     */
+    protected List<EntityMergeListener> listeners;
+    
     public EntityMergeSupport(DataMap map) {
         this.map = map;
         this.removeMeaningfulFKs = true;
+        this.listeners = new ArrayList<EntityMergeListener>(); 
     }
 
     /**
@@ -118,6 +116,8 @@ public class EntityMergeSupport {
                 ObjAttribute oa = new ObjAttribute(attrName, type, entity);
                 oa.setDbAttributePath(da.getName());
                 entity.addAttribute(oa);
+                
+                fireAttributeAdded(oa);
                 changed = true;
             }
 
@@ -140,6 +140,8 @@ public class EntityMergeSupport {
                     or.setSourceEntity(entity);
                     or.setTargetEntity(mappedTarget);
                     entity.addRelationship(or);
+                    
+                    fireRelationshipAdded(or);
                     changed = true;
                 }
             }
@@ -277,5 +279,44 @@ public class EntityMergeSupport {
      */
     public void setRemoveMeaningfulFKs(boolean removeMeaningfulFKs) {
         this.removeMeaningfulFKs = removeMeaningfulFKs;
+    }
+    
+    /**
+     * Registers new EntityMergeListener
+     */
+    public void addEntityMergeListener(EntityMergeListener listener) {
+        listeners.add(listener);
+    }
+    
+    /**
+     * Unregisters an EntityMergeListener
+     */
+    public void removeEntityMergeListener(EntityMergeListener listener) {
+        listeners.remove(listener);
+    }
+    
+    /**
+     * Returns registered listeners
+     */
+    public EntityMergeListener[] getEntityMergeListeners() {
+        return listeners.toArray(new EntityMergeListener[0]);
+    }
+    
+    /**
+     * Notifies all listeners that an ObjAttribute was added
+     */
+    protected void fireAttributeAdded(ObjAttribute attr) {
+        for (int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).objAttributeAdded(attr);
+        }
+    }
+    
+    /**
+     * Notifies all listeners that an ObjRelationship was added
+     */
+    protected void fireRelationshipAdded(ObjRelationship rel) {
+        for (int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).objRelationshipAdded(rel);
+        }
     }
 }

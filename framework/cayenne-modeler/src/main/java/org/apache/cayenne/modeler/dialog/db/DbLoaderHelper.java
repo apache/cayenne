@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
@@ -43,11 +33,20 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.util.DeleteRuleUpdater;
 import org.apache.cayenne.modeler.util.LongRunningTask;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Stateful helper class that encapsulates access to DbLoader.
@@ -82,6 +81,11 @@ public class DbLoaderHelper {
     protected List schemas;
 
     protected String loadStatusNote;
+    
+    /**
+     * Obj Entities which were added to project during reverse engineering 
+     */
+    protected List<ObjEntity> addedObjEntities;
 
     static synchronized DbLoaderMergeDialog getMergeDialogInstance() {
         if (mergeDialog == null) {
@@ -168,6 +172,7 @@ public class DbLoaderHelper {
         this.tableNamePattern = dialog.getTableNamePattern();
         this.loadProcedures = dialog.isLoadingProcedures();
         this.procedureNamePattern = dialog.getProcedureNamePattern();
+        this.addedObjEntities = new ArrayList<ObjEntity>();
 
         // load DataMap...
         LongRunningTask loadDataMapTask = new LoadDataMapTask(Application
@@ -239,6 +244,7 @@ public class DbLoaderHelper {
             checkCanceled();
 
             loadStatusNote = "Creating ObjEntity '" + entity.getName() + "'...";
+            addedObjEntities.add(entity);
 
             if (existingMap) {
                 mediator.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.ADD));
@@ -280,22 +286,27 @@ public class DbLoaderHelper {
             setMaxValue(10);
         }
 
+        @Override
         protected String getCurrentNote() {
             return loadStatusNote;
         }
 
+        @Override
         protected int getCurrentValue() {
             return getMinValue();
         }
 
+        @Override
         protected boolean isIndeterminate() {
             return true;
         }
 
+        @Override
         public boolean isCanceled() {
             return isStoppingReverseEngineering();
         }
 
+        @Override
         public void setCanceled(boolean b) {
             if (b) {
                 loadStatusNote = "Canceling..";
@@ -311,6 +322,7 @@ public class DbLoaderHelper {
             super(frame, title);
         }
 
+        @Override
         protected void execute() {
             loadStatusNote = "Loading available schemas...";
 
@@ -329,6 +341,7 @@ public class DbLoaderHelper {
             super(frame, title);
         }
 
+        @Override
         protected void execute() {
 
             loadStatusNote = "Preparing...";
@@ -351,6 +364,13 @@ public class DbLoaderHelper {
 
             try {
                 loader.loadDataMapFromDB(schemaName, tableNamePattern, dataMap);
+                
+                /**
+                 * Update default rules for relationships 
+                 */
+                for (int i = 0; i < addedObjEntities.size(); i++) {
+                    DeleteRuleUpdater.updateObjEntity(addedObjEntities.get(i));
+                }
             }
             catch (Throwable th) {
                 if (!isCanceled()) {

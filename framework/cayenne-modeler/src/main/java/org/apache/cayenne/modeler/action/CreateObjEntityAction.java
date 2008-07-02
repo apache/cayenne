@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -30,10 +28,13 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.util.DeleteRuleUpdater;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.EntityMergeSupport;
 import org.apache.cayenne.util.NameConverter;
+
+import java.awt.event.ActionEvent;
 
 /**
  * @author Andrus Adamchik
@@ -51,6 +52,7 @@ public class CreateObjEntityAction extends CayenneAction {
         super(getActionName(), application);
     }
 
+    @Override
     public String getIconName() {
         return "icon-new_objentity.gif";
     }
@@ -58,6 +60,7 @@ public class CreateObjEntityAction extends CayenneAction {
     /**
      * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
      */
+    @Override
     public void performAction(ActionEvent e) {
         createObjEntity();
     }
@@ -109,6 +112,7 @@ public class CreateObjEntityAction extends CayenneAction {
 
         // perform the merge
         EntityMergeSupport merger = new EntityMergeSupport(dataMap);
+        merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
         merger.synchronizeWithDbEntity(entity);
 
         mediator.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.ADD));
@@ -125,6 +129,7 @@ public class CreateObjEntityAction extends CayenneAction {
     /**
      * Returns <code>true</code> if path contains a DataMap object.
      */
+    @Override
     public boolean enableForPath(ProjectPath path) {
         if (path == null) {
             return false;

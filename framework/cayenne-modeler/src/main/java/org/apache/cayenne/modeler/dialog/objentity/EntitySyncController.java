@@ -19,17 +19,18 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.Component;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.DeleteRuleUpdater;
+import org.apache.cayenne.util.EntityMergeSupport;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.util.EntityMergeSupport;
 
 public class EntitySyncController extends CayenneController {
 
@@ -60,6 +61,7 @@ public class EntitySyncController extends CayenneController {
         }
 
         final EntityMergeSupport merger = new EntityMergeSupport(dbEntity.getDataMap());
+        merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
 
         // see if we need to remove meaningful attributes...
         boolean showDialog = false;
@@ -110,6 +112,7 @@ public class EntitySyncController extends CayenneController {
         return cancel[0] ? null : merger;
     }
 
+    @Override
     public Component getView() {
         return view;
     }
