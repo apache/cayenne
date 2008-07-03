@@ -30,7 +30,7 @@ import org.apache.cayenne.util.Util;
  * @since 3.0
  * @author Andrus Adamchik
  */
-final class JoinTreeNode {
+public final class JoinTreeNode {
 
     private String targetTableAlias;
     private String sourceTableAlias;
@@ -64,7 +64,7 @@ final class JoinTreeNode {
         return i;
     }
 
-    Collection<JoinTreeNode> getChildren() {
+    public Collection<JoinTreeNode> getChildren() {
         return children != null ? children : Collections.<JoinTreeNode> emptyList();
     }
 
@@ -102,7 +102,7 @@ final class JoinTreeNode {
                 && Util.nullSafeEquals(this.alias, alias);
     }
 
-    String getTargetTableAlias() {
+    public String getTargetTableAlias() {
         return targetTableAlias;
     }
 
@@ -110,7 +110,7 @@ final class JoinTreeNode {
         this.targetTableAlias = targetTableAlias;
     }
 
-    String getSourceTableAlias() {
+    public String getSourceTableAlias() {
         return sourceTableAlias;
     }
 
@@ -118,7 +118,7 @@ final class JoinTreeNode {
         this.sourceTableAlias = sourceTableAlias;
     }
 
-    DbRelationship getRelationship() {
+    public DbRelationship getRelationship() {
         return relationship;
     }
 
@@ -126,7 +126,7 @@ final class JoinTreeNode {
         return alias;
     }
 
-    JoinType getJoinType() {
+    public JoinType getJoinType() {
         return joinType;
     }
 }

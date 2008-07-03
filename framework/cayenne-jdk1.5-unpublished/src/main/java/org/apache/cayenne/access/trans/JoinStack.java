@@ -34,14 +34,14 @@ import org.apache.cayenne.map.JoinType;
  * @since 3.0
  * @author Andrus Adamchik
  */
-class JoinStack {
+public class JoinStack {
 
-    private JoinTreeNode rootNode;
-    private JoinTreeNode topNode;
+    protected JoinTreeNode rootNode;
+    protected JoinTreeNode topNode;
 
     private int aliasCounter;
-
-    JoinStack() {
+    
+    protected JoinStack() {
         this.rootNode = new JoinTreeNode(this);
         this.rootNode.setTargetTableAlias(newAlias());
         resetStack();
@@ -54,7 +54,7 @@ class JoinStack {
     /**
      * Returns the number of configured joins.
      */
-    int size() {
+    protected int size() {
         // do not count root as a join
         return rootNode.size() - 1;
     }
@@ -67,7 +67,7 @@ class JoinStack {
     /**
      * Appends all configured joins to the provided output object.
      */
-    void appendJoins(Appendable out) throws IOException {
+    protected void appendJoins(Appendable out) throws IOException {
 
         // skip root, recursively append its children
         for (JoinTreeNode child : rootNode.getChildren()) {
@@ -75,7 +75,7 @@ class JoinStack {
         }
     }
 
-    private void appendJoinSubtree(Appendable out, JoinTreeNode node) throws IOException {
+    protected void appendJoinSubtree(Appendable out, JoinTreeNode node) throws IOException {
 
         DbRelationship relationship = node.getRelationship();
 
@@ -122,6 +122,14 @@ class JoinStack {
         for (JoinTreeNode child : node.getChildren()) {
             appendJoinSubtree(out, child);
         }
+    }
+    
+    /**
+     * Append join information to the qualifier - the part after "WHERE".
+     */
+    protected void appendQualifier(Appendable out, boolean firstQualifyerElement)
+            throws IOException {
+        // nothing as standard join is performed before "WHERE"
     }
 
     /**

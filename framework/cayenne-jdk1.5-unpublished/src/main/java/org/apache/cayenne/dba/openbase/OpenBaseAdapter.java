@@ -38,6 +38,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -46,11 +47,11 @@ import org.apache.cayenne.query.SQLAction;
  * Sample connection settings to use with OpenBase are shown below:
  * 
 <pre>
-test-openbase.cayenne.adapter = org.apache.cayenne.dba.openbase.OpenBaseAdapter
-test-openbase.jdbc.username = test
-test-openbase.jdbc.password = secret
-test-openbase.jdbc.url = jdbc:openbase://serverhostname/cayenne
-test-openbase.jdbc.driver = com.openbase.jdbc.ObDriver
+openbase.cayenne.adapter = org.apache.cayenne.dba.openbase.OpenBaseAdapter
+openbase.jdbc.username = test
+openbase.jdbc.password = secret
+openbase.jdbc.url = jdbc:openbase://serverhostname/cayenne
+openbase.jdbc.driver = com.openbase.jdbc.ObDriver
 </pre>
  * 
  * @author <a href="mailto:mkienenb@alaska.net">Mike Kienenberger</a>
@@ -311,4 +312,10 @@ public class OpenBaseAdapter extends JdbcAdapter {
             }
         }
     }
+    
+    @Override
+    public MergerFactory mergerFactory() {
+        return new OpenBaseMergerFactory();
+    }
+
 }

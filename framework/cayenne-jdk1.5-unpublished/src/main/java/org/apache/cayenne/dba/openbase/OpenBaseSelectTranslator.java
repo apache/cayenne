@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.openbase;
 
+import org.apache.cayenne.access.trans.JoinStack;
 import org.apache.cayenne.access.trans.SelectTranslator;
 
 /**
@@ -27,6 +28,11 @@ import org.apache.cayenne.access.trans.SelectTranslator;
  */
 class OpenBaseSelectTranslator extends SelectTranslator {
 
+    @Override
+    protected JoinStack createJoinStack() {
+        return new OpenBaseJoinStack();
+    }
+    
     @Override
     public String createSqlString() throws Exception {
         String sql = super.createSqlString();

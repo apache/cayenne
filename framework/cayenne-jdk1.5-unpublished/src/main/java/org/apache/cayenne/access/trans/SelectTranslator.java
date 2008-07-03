@@ -76,10 +76,10 @@ public class SelectTranslator extends QueryAssembler {
         return false;
     }
 
-    JoinStack joinStack = new JoinStack();
+    JoinStack joinStack = createJoinStack();
 
     List<ColumnDescriptor> resultColumns;
-    Map attributeOverrides;
+    Map<ObjAttribute, ColumnDescriptor> attributeOverrides;
     Map<ColumnDescriptor, ObjAttribute> defaultAttributesByColumn;
 
     boolean suppressingDistinct;
@@ -90,7 +90,11 @@ public class SelectTranslator extends QueryAssembler {
      * created using "to-many" relationships.
      */
     boolean forcingDistinct;
-
+    
+    protected JoinStack createJoinStack() {
+        return new JoinStack();
+    }
+    
     /**
      * Returns query translated to SQL. This is a main work method of the
      * SelectTranslator.
@@ -166,6 +170,7 @@ public class SelectTranslator extends QueryAssembler {
         // append tables and joins
         joinStack.appendRoot(queryBuf, getRootDbEntity());
         joinStack.appendJoins(queryBuf);
+        joinStack.appendQualifier(qualifierBuffer, qualifierBuffer.length() == 0);
 
         // append qualifier
         if (qualifierBuffer.length() > 0) {
@@ -206,8 +211,13 @@ public class SelectTranslator extends QueryAssembler {
      * 
      * @since 1.2
      */
-    public Map getAttributeOverrides() {
-        return attributeOverrides != null ? attributeOverrides : Collections.EMPTY_MAP;
+    public Map<ObjAttribute, ColumnDescriptor> getAttributeOverrides() {
+        if (attributeOverrides != null) {
+            return attributeOverrides;
+        }
+        else {
+            return Collections.emptyMap();
+        }
     }
 
     /**
@@ -559,7 +569,7 @@ public class SelectTranslator extends QueryAssembler {
 
                     if (original != null) {
                         if (attributeOverrides == null) {
-                            attributeOverrides = new HashMap();
+                            attributeOverrides = new HashMap<ObjAttribute, ColumnDescriptor>();
                         }
 
                         attributeOverrides.put(original, column);
