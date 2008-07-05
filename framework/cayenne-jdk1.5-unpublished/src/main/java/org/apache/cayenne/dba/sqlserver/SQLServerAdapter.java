@@ -115,7 +115,7 @@ public class SQLServerAdapter extends SybaseAdapter {
      * @since 1.2
      */
     @Override
-    protected void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         super.createTableAppendColumn(sqlBuffer, column);
         
         if(column.isGenerated()) {

@@ -18,12 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlserver;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.AddColumnToDb;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
+import org.apache.cayenne.merge.SetAllowNullToDb;
 import org.apache.cayenne.merge.SetColumnTypeToDb;
+import org.apache.cayenne.merge.SetNotNullToDb;
 
 public class SQLServerMergerFactory extends MergerFactory {
 
@@ -60,6 +66,51 @@ public class SQLServerMergerFactory extends MergerFactory {
                 sqlBuffer.append(column.getName());
                 sqlBuffer.append(" ");
             }
+        };
+    }
+    
+    @Override
+    public MergerToken createSetAllowNullToDb(DbEntity entity, final DbAttribute column) {
+        return new SetAllowNullToDb(entity, column) {
+
+            @Override
+            public List<String> createSql(DbAdapter adapter) {
+                StringBuffer sqlBuffer = new StringBuffer();
+
+
+                sqlBuffer.append("ALTER TABLE ");
+                sqlBuffer.append(getEntity().getFullyQualifiedName());
+                sqlBuffer.append(" ALTER COLUMN ");
+
+                SQLServerAdapter sqladapter = (SQLServerAdapter) adapter;
+                sqladapter.createTableAppendColumn(sqlBuffer, column);
+
+                return Collections.singletonList(sqlBuffer.toString());
+            }
+
+        };
+    }
+    
+    @Override
+    public MergerToken createSetNotNullToDb(DbEntity entity, final DbAttribute column) {
+        
+        return new SetNotNullToDb(entity, column) {
+            
+            @Override
+            public List<String> createSql(DbAdapter adapter) {
+                StringBuffer sqlBuffer = new StringBuffer();
+
+
+                sqlBuffer.append("ALTER TABLE ");
+                sqlBuffer.append(getEntity().getFullyQualifiedName());
+                sqlBuffer.append(" ALTER COLUMN ");
+
+                SQLServerAdapter sqladapter = (SQLServerAdapter) adapter;
+                sqladapter.createTableAppendColumn(sqlBuffer, column);
+
+                return Collections.singletonList(sqlBuffer.toString());
+            }
+
         };
     }
 
