@@ -21,8 +21,6 @@ package org.apache.cayenne.dba.oracle;
 
 import java.io.OutputStream;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -91,9 +89,9 @@ class OracleLOBBatchAction implements SQLAction {
         // may be different depending on whether LOBs are NULL or not..
 
         LOBBatchQueryWrapper selectQuery = new LOBBatchQueryWrapper(query);
-        List<DbAttribute> qualifierAttributes = selectQuery.getDbAttributesForLOBSelectQualifier();
+        List<DbAttribute> qualifierAttributes = selectQuery
+                .getDbAttributesForLOBSelectQualifier();
 
-     
         boolean isLoggable = QueryLogger.isLoggable();
 
         query.reset();
@@ -108,7 +106,11 @@ class OracleLOBBatchAction implements SQLAction {
 
                 if (isLoggable) {
                     List bindings = queryBuilder.getValuesForLOBUpdateParameters(query);
-                    QueryLogger.logQueryParameters("bind", null, bindings, query instanceof InsertBatchQuery);
+                    QueryLogger.logQueryParameters(
+                            "bind",
+                            null,
+                            bindings,
+                            query instanceof InsertBatchQuery);
                 }
 
                 queryBuilder.bindParameters(statement, query);
@@ -137,7 +139,8 @@ class OracleLOBBatchAction implements SQLAction {
             LOBBatchQueryWrapper selectQuery,
             List<DbAttribute> qualifierAttributes) throws SQLException, Exception {
 
-        List<DbAttribute> lobAttributes = selectQuery.getDbAttributesForUpdatedLOBColumns();
+        List<DbAttribute> lobAttributes = selectQuery
+                .getDbAttributesForUpdatedLOBColumns();
         if (lobAttributes.size() == 0) {
             return;
         }
@@ -245,9 +248,8 @@ class OracleLOBBatchAction implements SQLAction {
      */
     private void writeBlob(Blob blob, byte[] value) {
 
-        Method getBinaryStreamMethod = OracleAdapter.getOutputStreamFromBlobMethod();
         try {
-            OutputStream out = (OutputStream) getBinaryStreamMethod.invoke(blob);
+            OutputStream out = blob.setBinaryStream(0);
             try {
                 out.write(value);
                 out.flush();
@@ -255,10 +257,6 @@ class OracleLOBBatchAction implements SQLAction {
             finally {
                 out.close();
             }
-        }
-        catch (InvocationTargetException e) {
-            throw new CayenneRuntimeException("Error processing BLOB.", Util
-                    .unwindException(e));
         }
         catch (Exception e) {
             throw new CayenneRuntimeException("Error processing BLOB.", Util
@@ -271,11 +269,9 @@ class OracleLOBBatchAction implements SQLAction {
      * driver utilities.
      */
     private void writeClob(Clob clob, char[] value) {
-        // obtain Writer and write CLOB
-        Method getWriterMethod = OracleAdapter.getWriterFromClobMethod();
         try {
 
-            Writer out = (Writer) getWriterMethod.invoke(clob);
+            Writer out = clob.setCharacterStream(0);
             try {
                 out.write(value);
                 out.flush();
@@ -285,12 +281,8 @@ class OracleLOBBatchAction implements SQLAction {
             }
 
         }
-        catch (InvocationTargetException e) {
-            throw new CayenneRuntimeException("Error processing BLOB.", Util
-                    .unwindException(e));
-        }
         catch (Exception e) {
-            throw new CayenneRuntimeException("Error processing BLOB.", Util
+            throw new CayenneRuntimeException("Error processing CLOB.", Util
                     .unwindException(e));
         }
     }
@@ -300,11 +292,9 @@ class OracleLOBBatchAction implements SQLAction {
      * driver utilities.
      */
     private void writeClob(Clob clob, String value) {
-        // obtain Writer and write CLOB
-        Method getWriterMethod = OracleAdapter.getWriterFromClobMethod();
         try {
 
-            Writer out = (Writer) getWriterMethod.invoke(clob);
+            Writer out = clob.setCharacterStream(0);
             try {
                 out.write(value);
                 out.flush();
@@ -312,14 +302,9 @@ class OracleLOBBatchAction implements SQLAction {
             finally {
                 out.close();
             }
-
-        }
-        catch (InvocationTargetException e) {
-            throw new CayenneRuntimeException("Error processing BLOB.", Util
-                    .unwindException(e));
         }
         catch (Exception e) {
-            throw new CayenneRuntimeException("Error processing BLOB.", Util
+            throw new CayenneRuntimeException("Error processing CLOB.", Util
                     .unwindException(e));
         }
     }

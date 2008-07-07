@@ -113,6 +113,9 @@ public class OracleAdapter extends JdbcAdapter {
         }
     }
 
+    /**
+     * @deprecated since 3.0, as a generic BLOB method is used to write BLOBs.
+     */
     public static Method getOutputStreamFromBlobMethod() {
         return outputStreamFromBlobMethod;
     }
@@ -150,6 +153,9 @@ public class OracleAdapter extends JdbcAdapter {
         return false;
     }
 
+    /**
+     * @deprecated since 3.0, as a generic CLOB method is used to write CLOBs.
+     */
     public static Method getWriterFromClobMethod() {
         return writerFromClobMethod;
     }
