@@ -20,23 +20,30 @@
 package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * @since 1.2
  * @author Andrus Adamchik
  */
-class PostgresSelectTranslator extends SelectTranslator {
+public class PostgresSelectTranslator extends SelectTranslator {
 
     @Override
     public String createSqlString() throws Exception {
         String sql = super.createSqlString();
-
-        // limit results
-        int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
-        if (limit > 0) {
-            return sql + " LIMIT " + limit;
+        QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
+        
+     // limit results
+        int offset = metadata.getFetchStartIndex();
+        int limit = metadata.getFetchLimit();
+        
+        if (offset > 0 || limit > 0) {
+            sql += " LIMIT ";
+            if (limit == 0) {
+                limit = Integer.MAX_VALUE;
+            }
+            sql += limit + " OFFSET " +  offset; 
         }
-
         return sql;
     }
 }

@@ -44,7 +44,7 @@ import org.apache.cayenne.util.Util;
  */
 // Replaces DefaultResultIterator
 public class JDBCResultIterator implements ResultIterator {
-    
+
     // Connection information
     protected Connection connection;
     protected Statement statement;
@@ -66,9 +66,49 @@ public class JDBCResultIterator implements ResultIterator {
     protected boolean nextRow;
     protected int fetchedSoFar;
     protected int fetchLimit;
+    protected int fetchOffset;
 
     private String[] labels;
     private int[] types;
+
+    /**
+     * Creates new JDBCResultIterator that reads from provided ResultSet.
+     */
+    public JDBCResultIterator(Connection connection, Statement statement,
+            ResultSet resultSet, RowDescriptor descriptor, int fetchLimit, int fetchOffset)
+            throws CayenneException {
+        
+        this.fetchOffset = fetchOffset;
+        this.connection = connection;
+        this.statement = statement;
+        this.resultSet = resultSet;
+        this.rowDescriptor = descriptor;
+        this.fetchLimit = fetchLimit;
+        this.mapCapacity = (int) Math.ceil((descriptor.getWidth()) / 0.75);
+        
+        try {
+            int i = 0;
+            while (i++ < fetchOffset && resultSet.next());
+        }
+        catch (SQLException e) {
+            throw new CayenneException("Error rewinding ResultSet", e);
+        }
+        
+        checkNextRow();
+
+        if (nextRow) {
+            // extract column parameters to speed up processing...
+            ColumnDescriptor[] columns = descriptor.getColumns();
+            int width = columns.length;
+            labels = new String[width];
+            types = new int[width];
+
+            for (int i = 0; i < width; i++) {
+                labels[i] = columns[i].getLabel();
+                types[i] = columns[i].getJdbcType();
+            }
+        }
+    }
 
     /**
      * Creates new JDBCResultIterator that reads from provided ResultSet.
@@ -249,7 +289,8 @@ public class JDBCResultIterator implements ResultIterator {
             }
 
             if (errors.length() > 0) {
-                throw new CayenneException("Error closing ResultIterator: " + errors.toString());
+                throw new CayenneException("Error closing ResultIterator: "
+                        + errors.toString());
             }
 
             closed = true;

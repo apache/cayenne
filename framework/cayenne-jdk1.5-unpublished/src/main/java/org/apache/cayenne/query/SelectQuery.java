@@ -593,7 +593,14 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     public void setCacheGroups(String... cacheGroups) {
         this.metaData.setCacheGroups(cacheGroups);
     }
-
+    
+    /**
+     * Returns the fetchOffset.
+     */
+    public int getFetchOffset() {
+        return metaData.getFetchStartIndex();
+    }
+    
     /**
      * Returns the fetchLimit.
      */
@@ -606,6 +613,10 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      */
     public void setFetchLimit(int fetchLimit) {
         this.metaData.setFetchLimit(fetchLimit);
+    }
+    
+    public void setFetchOffset(int fetchOffset) {
+        this.metaData.setFetchStartIndex(fetchOffset);
     }
 
     /**

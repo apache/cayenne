@@ -50,7 +50,53 @@ public class SelectQueryTest extends SelectQueryBase {
         assertNotNull(objects);
         assertEquals(7, objects.size());
     }
+
+    public void testFetchOffset() throws Exception {
+        query.setRoot(Artist.class);
+        query.setFetchOffset(5);
+        performQuery();
+        int size = opObserver.rowsForQuery(query).size();
+
+        SelectQuery sizeQ = new SelectQuery();
+        sizeQ.setRoot(Artist.class);
+        query = sizeQ;
+        performQuery();
+        int sizeAll = opObserver.rowsForQuery(query).size();
+        assertEquals(size, sizeAll - 5);
+    }
+
+    public void testFetchLimitWithOffset() throws Exception {
+        SelectQuery sizeQ = new SelectQuery();
+        sizeQ.setRoot(Artist.class);
+        query = sizeQ;
+        performQuery();
+        int sizeAll = opObserver.rowsForQuery(query).size();
+        
+        query = new SelectQuery();
+        query.setRoot(Artist.class);
+        query.setFetchOffset(sizeAll - 5);
+        query.setFetchLimit(5);
+        performQuery();
+        int size = opObserver.rowsForQuery(query).size();
+        assertEquals(size, 5);
+    }
     
+    public void testFetchOffsetWithQualifier() throws Exception {
+        query.setRoot(Artist.class);
+        query.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
+        query.setFetchOffset(5);
+        performQuery();
+        int size = opObserver.rowsForQuery(query).size();
+        
+        SelectQuery sizeQ = new SelectQuery();
+        sizeQ.setRoot(Artist.class);
+        sizeQ.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
+        query = sizeQ;
+        performQuery();
+        int sizeAll = opObserver.rowsForQuery(query).size();
+        assertEquals(size, sizeAll - 5);
+    }
+
     public void testFetchLimitWithQualifier() throws Exception {
         query.setRoot(Artist.class);
         query.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
@@ -231,7 +277,7 @@ public class SelectQueryTest extends SelectQueryBase {
         List objects = opObserver.rowsForQuery(query);
         assertEquals(0, objects.size());
     }
-    
+
     public void testSelectParameterizedEmptyNotIn() throws Exception {
         query.setRoot(Artist.class);
         Expression qual = Expression.fromString("artistName not in $list");
@@ -245,7 +291,7 @@ public class SelectQueryTest extends SelectQueryBase {
         List objects = opObserver.rowsForQuery(query);
         assertEquals(20, objects.size());
     }
-    
+
     public void testSelectEmptyIn() throws Exception {
         query.setRoot(Artist.class);
         Expression qual = ExpressionFactory.inExp("artistName");
@@ -256,7 +302,7 @@ public class SelectQueryTest extends SelectQueryBase {
         List objects = opObserver.rowsForQuery(query);
         assertEquals(0, objects.size());
     }
-    
+
     public void testSelectEmptyNotIn() throws Exception {
         query.setRoot(Artist.class);
         Expression qual = ExpressionFactory.notInExp("artistName");
@@ -267,7 +313,7 @@ public class SelectQueryTest extends SelectQueryBase {
         List objects = opObserver.rowsForQuery(query);
         assertEquals(20, objects.size());
     }
-    
+
     public void testSelectCustAttributes() throws Exception {
         query.setRoot(Artist.class);
         query.addCustomDbAttribute("ARTIST_NAME");
@@ -281,7 +327,7 @@ public class SelectQueryTest extends SelectQueryBase {
         assertNotNull(row.get("ARTIST_NAME"));
         assertEquals(1, row.size());
     }
-    
+
     public void testSelectBooleanTrue() throws Exception {
         query.setRoot(Artist.class);
         Expression qual = ExpressionFactory.expTrue();
@@ -306,7 +352,7 @@ public class SelectQueryTest extends SelectQueryBase {
         List objects = opObserver.rowsForQuery(query);
         assertEquals(1, objects.size());
     }
-    
+
     public void testSelectBooleanFalse() throws Exception {
         query.setRoot(Artist.class);
         Expression qual = ExpressionFactory.expFalse();
@@ -330,7 +376,7 @@ public class SelectQueryTest extends SelectQueryBase {
         List objects = opObserver.rowsForQuery(query);
         assertEquals(1, objects.size());
     }
-    
+
     /**
      * Tests that all queries specified in prefetch are executed in a more complex
      * prefetch scenario.

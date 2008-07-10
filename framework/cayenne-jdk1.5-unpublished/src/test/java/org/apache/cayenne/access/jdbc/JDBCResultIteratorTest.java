@@ -25,6 +25,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 
 import com.mockrunner.mock.jdbc.MockConnection;
@@ -79,6 +80,41 @@ public class JDBCResultIteratorTest extends TestCase {
         assertTrue(rs.isClosed());
         assertTrue(s.isClosed());
         assertFalse(c.isClosed());
+    }
+
+    public void testOffsetConstructorFail() throws Exception {
+        MockConnection c = new MockConnection();
+        MockStatement s = new MockStatement(c);
+        MockResultSet rs = new MockResultSet("rs");
+        rs.addColumn("a", new Object[] {
+                "1", "2", "3"
+        });
+        RowDescriptor descriptor = new RowDescriptorBuilder()
+                .setResultSet(rs)
+                .getDescriptor(new ExtendedTypeMap());
+        JDBCResultIterator it = new JDBCResultIterator(c, s, rs, descriptor, 0, 5);
+        try {
+            it.nextDataRow();
+            fail("Exception expected");
+        }
+        catch (CayenneException e) {
+            System.out.println("ok");
+        }
+    }
+    
+    public void testOffsetConstructorSuccess() throws Exception {
+        MockConnection c = new MockConnection();
+        MockStatement s = new MockStatement(c);
+        MockResultSet rs = new MockResultSet("rs");
+        rs.addColumn("a", new Object[] {
+                "1", "2", "3"
+        });
+        RowDescriptor descriptor = new RowDescriptorBuilder()
+                .setResultSet(rs)
+                .getDescriptor(new ExtendedTypeMap());
+        JDBCResultIterator it = new JDBCResultIterator(c, s, rs, descriptor, 1, 2);
+        Map<String, Object> row = it.nextDataRow();
+        assertNotNull(row);
     }
 
     JDBCResultIterator makeIterator() throws Exception {

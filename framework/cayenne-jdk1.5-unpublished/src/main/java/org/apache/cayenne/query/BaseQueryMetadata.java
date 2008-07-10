@@ -46,6 +46,8 @@ import org.apache.cayenne.util.XMLSerializable;
 class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable {
 
     int fetchLimit = QueryMetadata.FETCH_LIMIT_DEFAULT;
+    int fetchStartIndex = QueryMetadata.FETCH_START_INDEX_DEFAULT;
+    
     int pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
     boolean fetchingDataRows = QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
     boolean refreshingObjects = QueryMetadata.REFRESHING_OBJECTS_DEFAULT;
@@ -436,11 +438,9 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         return null;
     }
 
-    /**
-     * Always returns -1.
-     */
+    
     public int getFetchStartIndex() {
-        return -1;
+        return fetchStartIndex;
     }
 
     public boolean isRefreshingObjects() {
@@ -457,6 +457,10 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
     void setFetchLimit(int i) {
         fetchLimit = i;
+    }
+    
+    void setFetchStartIndex(int i) {
+        fetchStartIndex = i;
     }
 
     void setPageSize(int i) {

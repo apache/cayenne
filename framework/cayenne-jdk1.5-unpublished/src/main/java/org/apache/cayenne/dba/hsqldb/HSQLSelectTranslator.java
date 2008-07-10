@@ -20,28 +20,30 @@
 package org.apache.cayenne.dba.hsqldb;
 
 import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * @since 1.2
  * @author Andrus Adamchik
  */
-class HSQLSelectTranslator extends SelectTranslator {
-
-    static final String SELECT_PREFIX = "SELECT";
+public class HSQLSelectTranslator extends SelectTranslator {
 
     @Override
     public String createSqlString() throws Exception {
         String sql = super.createSqlString();
-
+        QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
+        
         // limit results
-        int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
-        if (limit > 0 && sql.startsWith(SELECT_PREFIX)) {
-            return SELECT_PREFIX
-                    + " TOP "
-                    + limit
-                    + sql.substring(SELECT_PREFIX.length());
+        int offset = metadata.getFetchStartIndex();
+        int limit = metadata.getFetchLimit();
+        
+        if (offset > 0 || limit > 0) {
+            sql += " LIMIT ";
+            if (limit == 0) {
+                limit = Integer.MAX_VALUE;
+            }
+            sql += limit + " OFFSET " +  offset; 
         }
-
         return sql;
     }
 }

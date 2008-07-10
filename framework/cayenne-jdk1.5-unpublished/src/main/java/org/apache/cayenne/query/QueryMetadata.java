@@ -82,6 +82,11 @@ public interface QueryMetadata {
      * should be fetched.
      */
     public static final int FETCH_LIMIT_DEFAULT = 0;
+    
+    /**
+     * Defines default query fetch start index, which is 0, meaning that matching rows selected starting from the first.
+     */
+    public static final int FETCH_START_INDEX_DEFAULT = 0;
 
     /**
      * Defines the name of the property for the query {@link #getPageSize() page size}.
