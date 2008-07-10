@@ -126,8 +126,15 @@ class DefaultQueryMetadata implements QueryMetadata {
         return QueryMetadata.PAGE_SIZE_DEFAULT;
     }
 
-    public int getFetchStartIndex() {
+    public int getFetchOffset() {
         return -1;
+    }
+    
+    /**
+     * @deprecated since 3.0
+     */
+    public int getFetchStartIndex() {
+        return getFetchOffset();
     }
 
     public int getFetchLimit() {

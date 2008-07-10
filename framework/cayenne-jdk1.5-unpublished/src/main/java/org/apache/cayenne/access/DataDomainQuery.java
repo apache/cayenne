@@ -102,8 +102,15 @@ class DataDomainQuery implements Query, QueryMetadata {
         return 0;
     }
 
-    public int getFetchStartIndex() {
+    public int getFetchOffset() {
         return 0;
+    }
+    
+    /**
+     * @deprecated since 3.0
+     */
+    public int getFetchStartIndex() {
+        return getFetchOffset();
     }
 
     public ObjEntity getObjEntity() {

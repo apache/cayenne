@@ -438,9 +438,18 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         return null;
     }
 
-    
-    public int getFetchStartIndex() {
+    /**
+     * @since 3.0
+     */
+    public int getFetchOffset() {
         return fetchStartIndex;
+    }
+    
+    /**
+     * @deprecated since 3.0
+     */
+    public int getFetchStartIndex() {
+        return getFetchOffset();
     }
 
     public boolean isRefreshingObjects() {

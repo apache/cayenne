@@ -84,7 +84,10 @@ public interface QueryMetadata {
     public static final int FETCH_LIMIT_DEFAULT = 0;
     
     /**
-     * Defines default query fetch start index, which is 0, meaning that matching rows selected starting from the first.
+     * Defines default query fetch start index, which is 0, meaning that matching rows
+     * selected starting from the first.
+     * 
+     * @since 3.0
      */
     public static final int FETCH_START_INDEX_DEFAULT = 0;
 
@@ -220,8 +223,14 @@ public interface QueryMetadata {
     int getPageSize();
 
     /**
-     * Specifies a start of a range when fetching a subset of records. The last index is
-     * determined by {@link #getFetchLimit()}.
+     * Specifies a start of a range when fetching a subset of records.
+     * 
+     * @since 3.0
+     */
+    int getFetchOffset();
+    
+    /**
+     * @deprecated since 3.0, renamed to {@link #getFetchOffset()}.
      */
     int getFetchStartIndex();
 

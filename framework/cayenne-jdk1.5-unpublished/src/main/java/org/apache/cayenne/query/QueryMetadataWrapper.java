@@ -168,8 +168,15 @@ class QueryMetadataWrapper implements QueryMetadata {
         return n != null ? n.intValue() : 0;
     }
 
+    public int getFetchOffset() {
+        return info.getFetchOffset();
+    }
+    
+    /**
+     * @deprecated since 3.0
+     */
     public int getFetchStartIndex() {
-        return info.getFetchStartIndex();
+        return getFetchOffset();
     }
 
     public int getFetchLimit() {

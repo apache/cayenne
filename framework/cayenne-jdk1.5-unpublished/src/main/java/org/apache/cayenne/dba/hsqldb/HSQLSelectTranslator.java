@@ -34,7 +34,7 @@ public class HSQLSelectTranslator extends SelectTranslator {
         QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
         
         // limit results
-        int offset = metadata.getFetchStartIndex();
+        int offset = metadata.getFetchOffset();
         int limit = metadata.getFetchLimit();
         
         if (offset > 0 || limit > 0) {

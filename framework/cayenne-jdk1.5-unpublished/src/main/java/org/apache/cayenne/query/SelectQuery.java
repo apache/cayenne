@@ -596,9 +596,11 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     
     /**
      * Returns the fetchOffset.
+     * 
+     * @since 3.0
      */
     public int getFetchOffset() {
-        return metaData.getFetchStartIndex();
+        return metaData.getFetchOffset();
     }
     
     /**
@@ -615,6 +617,9 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         this.metaData.setFetchLimit(fetchLimit);
     }
     
+    /**
+     * @since 3.0
+     */
     public void setFetchOffset(int fetchOffset) {
         this.metaData.setFetchStartIndex(fetchOffset);
     }

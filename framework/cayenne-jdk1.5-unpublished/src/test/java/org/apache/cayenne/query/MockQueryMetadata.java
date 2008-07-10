@@ -92,8 +92,15 @@ public class MockQueryMetadata implements QueryMetadata {
         return 0;
     }
     
-    public int getFetchStartIndex() {
+    public int getFetchOffset() {
         return -1;
+    }
+    
+    /**
+     * @deprecated since 3.0
+     */
+    public int getFetchStartIndex() {
+        return getFetchOffset();
     }
 
     public int getFetchLimit() {

@@ -159,6 +159,13 @@ public class NestedQueryCache implements QueryCache {
             return mdDelegate.getFetchLimit();
         }
 
+        public int getFetchOffset() {
+            return mdDelegate.getFetchOffset();
+        }
+        
+        /**
+         * @deprecated since 3.0
+         */
         public int getFetchStartIndex() {
             return mdDelegate.getFetchStartIndex();
         }

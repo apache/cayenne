@@ -106,6 +106,13 @@ class IncrementalQuery implements Query {
                 return metadata.getFetchLimit();
             }
 
+            public int getFetchOffset() {
+                return metadata.getFetchOffset();
+            }
+            
+            /**
+             * @deprecated since 3.0
+             */
             public int getFetchStartIndex() {
                 return metadata.getFetchStartIndex();
             }

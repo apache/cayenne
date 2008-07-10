@@ -46,7 +46,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 class RangeQuery implements Query {
 
     private String cacheKey;
-    private int fetchStartIndex;
+    private int fetchOffset;
     private int fetchLimit;
     private Query originatingQuery;
 
@@ -63,7 +63,7 @@ class RangeQuery implements Query {
     RangeQuery(String cacheKey, int fetchStartIndex, int fetchLimit,
             Query originatingQuery) {
         this.cacheKey = cacheKey;
-        this.fetchStartIndex = fetchStartIndex;
+        this.fetchOffset = fetchStartIndex;
         this.fetchLimit = fetchLimit;
         this.originatingQuery = originatingQuery;
     }
@@ -89,8 +89,15 @@ class RangeQuery implements Query {
                 return null;
             }
 
+            public int getFetchOffset() {
+                return fetchOffset;
+            }
+            
+            /**
+             * @deprecated since 3.0
+             */
             public int getFetchStartIndex() {
-                return fetchStartIndex;
+                return getFetchOffset();
             }
 
             public int getFetchLimit() {

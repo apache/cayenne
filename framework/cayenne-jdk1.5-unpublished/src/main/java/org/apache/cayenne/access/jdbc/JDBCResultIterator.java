@@ -73,6 +73,8 @@ public class JDBCResultIterator implements ResultIterator {
 
     /**
      * Creates new JDBCResultIterator that reads from provided ResultSet.
+     * 
+     * @since 3.0
      */
     public JDBCResultIterator(Connection connection, Statement statement,
             ResultSet resultSet, RowDescriptor descriptor, int fetchLimit, int fetchOffset)

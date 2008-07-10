@@ -76,7 +76,7 @@ class ClientServerChannelQueryAction {
     private boolean interceptSinglePageQuery() {
 
         // retrieve range from the previously cached list
-        if (serverMetadata.getFetchStartIndex() >= 0
+        if (serverMetadata.getFetchOffset() >= 0
                 && serverMetadata.getFetchLimit() > 0
                 && serverMetadata.getCacheKey() != null) {
 
@@ -101,7 +101,7 @@ class ClientServerChannelQueryAction {
                 }
             }
 
-            int startIndex = serverMetadata.getFetchStartIndex();
+            int startIndex = serverMetadata.getFetchOffset();
             int endIndex = startIndex + serverMetadata.getFetchLimit();
 
             // send back just one page... query sender will figure out where it fits in

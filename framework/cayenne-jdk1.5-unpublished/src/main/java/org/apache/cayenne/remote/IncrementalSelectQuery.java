@@ -111,6 +111,13 @@ class IncrementalSelectQuery extends SelectQuery {
                 return metadata.getFetchLimit();
             }
 
+            public int getFetchOffset() {
+                return metadata.getFetchOffset();
+            }
+            
+            /**
+             * @deprecated since 3.0
+             */
             public int getFetchStartIndex() {
                 return metadata.getFetchStartIndex();
             }
