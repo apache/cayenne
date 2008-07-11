@@ -42,7 +42,7 @@ class MySQLActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction objectSelectAction(SelectQuery query) {
-        return new SelectAction(query, adapter, entityResolver) {
+        return new MySQLSelectAction(query, adapter, entityResolver) {
 
             @Override
             protected SelectTranslator createTranslator(Connection connection) {

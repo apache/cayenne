@@ -22,7 +22,6 @@ package org.apache.cayenne.dba.hsqldb;
 import java.sql.Connection;
 
 import org.apache.cayenne.access.jdbc.ProcedureAction;
-import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
 import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.JdbcActionBuilder;
@@ -40,7 +39,7 @@ class HSQLActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction objectSelectAction(SelectQuery query) {
-        return new SelectAction(query, adapter, entityResolver) {
+        return new HSQLSelectAction(query, adapter, entityResolver) {
 
             @Override
             protected SelectTranslator createTranslator(Connection connection) {

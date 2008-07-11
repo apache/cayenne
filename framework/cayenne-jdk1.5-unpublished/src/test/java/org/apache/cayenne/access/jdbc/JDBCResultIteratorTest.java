@@ -82,41 +82,6 @@ public class JDBCResultIteratorTest extends TestCase {
         assertFalse(c.isClosed());
     }
 
-    public void testOffsetConstructorFail() throws Exception {
-        MockConnection c = new MockConnection();
-        MockStatement s = new MockStatement(c);
-        MockResultSet rs = new MockResultSet("rs");
-        rs.addColumn("a", new Object[] {
-                "1", "2", "3"
-        });
-        RowDescriptor descriptor = new RowDescriptorBuilder()
-                .setResultSet(rs)
-                .getDescriptor(new ExtendedTypeMap());
-        JDBCResultIterator it = new JDBCResultIterator(c, s, rs, descriptor, 0, 5);
-        try {
-            it.nextDataRow();
-            fail("Exception expected");
-        }
-        catch (CayenneException e) {
-            System.out.println("ok");
-        }
-    }
-    
-    public void testOffsetConstructorSuccess() throws Exception {
-        MockConnection c = new MockConnection();
-        MockStatement s = new MockStatement(c);
-        MockResultSet rs = new MockResultSet("rs");
-        rs.addColumn("a", new Object[] {
-                "1", "2", "3"
-        });
-        RowDescriptor descriptor = new RowDescriptorBuilder()
-                .setResultSet(rs)
-                .getDescriptor(new ExtendedTypeMap());
-        JDBCResultIterator it = new JDBCResultIterator(c, s, rs, descriptor, 1, 2);
-        Map<String, Object> row = it.nextDataRow();
-        assertNotNull(row);
-    }
-
     JDBCResultIterator makeIterator() throws Exception {
 
         Connection c = new MockConnection();

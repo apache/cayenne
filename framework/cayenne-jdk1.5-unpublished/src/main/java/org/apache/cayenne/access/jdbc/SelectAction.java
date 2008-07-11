@@ -25,22 +25,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.access.util.DistinctResultIterator;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.hsqldb.HSQLSelectTranslator;
-import org.apache.cayenne.dba.mysql.MySQLSelectTranslator;
-import org.apache.cayenne.dba.oracle.OracleSelectTranslator;
-import org.apache.cayenne.dba.postgres.PostgresSelectTranslator;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.DataRow;
 
 /**
  * A SQLAction that handles SelectQuery execution.
@@ -76,34 +72,20 @@ public class SelectAction extends BaseSQLAction {
         PreparedStatement prepStmt = translator.createStatement();
         ResultSet rs = prepStmt.executeQuery();
 
+        int i = getInitialCursorPosition();
+        while (i-- > 0 && rs.next())
+            ;
+
         RowDescriptor descriptor = new RowDescriptorBuilder().setColumns(
                 translator.getResultColumns()).getDescriptor(
                 getAdapter().getExtendedTypes());
 
-        JDBCResultIterator workerIterator;
-        
-        if (translator instanceof MySQLSelectTranslator
-                || translator instanceof OracleSelectTranslator
-                || translator instanceof PostgresSelectTranslator
-                || translator instanceof HSQLSelectTranslator) {
-            
-            workerIterator = new JDBCResultIterator(
-                    connection,
-                    prepStmt,
-                    rs,
-                    descriptor,
-                    query.getFetchLimit());
-            
-        }
-        else {
-            workerIterator = new JDBCResultIterator(
-                    connection,
-                    prepStmt,
-                    rs,
-                    descriptor,
-                    query.getFetchLimit(),
-                    query.getFetchOffset());
-        }
+        JDBCResultIterator workerIterator = new JDBCResultIterator(
+                connection,
+                prepStmt,
+                rs,
+                descriptor,
+                query.getFetchLimit());
 
         workerIterator.setPostProcessor(DataRowPostProcessor
                 .createPostProcessor(translator));
@@ -179,5 +161,9 @@ public class SelectAction extends BaseSQLAction {
                 throw ex;
             }
         }
+    }
+
+    protected int getInitialCursorPosition() {
+        return query.getFetchOffset();
     }
 }

@@ -21,7 +21,6 @@ package org.apache.cayenne.dba.postgres;
 
 import java.sql.Connection;
 
-import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -47,7 +46,7 @@ class PostgresActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction objectSelectAction(SelectQuery query) {
-        return new SelectAction(query, adapter, entityResolver) {
+        return new PostgresSelectAction(query, adapter, entityResolver) {
 
             @Override
             protected SelectTranslator createTranslator(Connection connection) {

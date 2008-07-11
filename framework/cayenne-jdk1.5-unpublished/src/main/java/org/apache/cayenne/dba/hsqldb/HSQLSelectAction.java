@@ -16,40 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.dba.oracle;
-
-import java.sql.Connection;
+package org.apache.cayenne.dba.hsqldb;
 
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
- * @since 1.2
- * @author Andrus Adamchik
+ * @since 3.0
  */
-class OracleSelectAction extends SelectAction {
+class HSQLSelectAction extends SelectAction {
 
-    public OracleSelectAction(SelectQuery query, DbAdapter adapter,
-            EntityResolver entityResolver) {
+    HSQLSelectAction(SelectQuery query, DbAdapter adapter, EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
-    }
-
-    @Override
-    protected SelectTranslator createTranslator(Connection connection) {
-        SelectTranslator translator = new OracleSelectTranslator();
-        translator.setQuery(query);
-        translator.setAdapter(adapter);
-        translator.setEntityResolver(getEntityResolver());
-        translator.setConnection(connection);
-        return translator;
     }
 
     @Override
     protected int getInitialCursorPosition() {
         return 0;
     }
+
 }
