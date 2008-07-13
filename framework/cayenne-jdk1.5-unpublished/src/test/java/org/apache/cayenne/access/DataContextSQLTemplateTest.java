@@ -88,7 +88,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertEquals(2, array3.length);
         Object[] array4 = (Object[]) objects.get(3);
         assertEquals(2, array3.length);
-        
+
         assertEquals(new Integer(1), array1[1]);
         assertEquals(new Integer(1), array2[1]);
         assertEquals(new Integer(0), array3[1]);
@@ -439,6 +439,39 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         List objects = context.performQuery(query);
         assertEquals(fetchLimit, objects.size());
+        assertTrue(objects.get(0) instanceof Artist);
+    }
+
+    public void testFetchOffset() throws Exception {
+        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+
+        int fetchOffset = 3;
+
+        // sanity check
+        assertTrue(fetchOffset < DataContextCase.artistCount);
+        String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
+        SQLTemplate query = getSQLTemplateBuilder().createSQLTemplate(
+                Artist.class,
+                template);
+        query.setFetchOffset(fetchOffset);
+
+        List objects = context.performQuery(query);
+        assertEquals(DataContextCase.artistCount - fetchOffset, objects.size());
+        assertTrue(objects.get(0) instanceof Artist);
+    }
+
+    public void testFetchOffsetFetchLimit() throws Exception {
+        getAccessStack().createTestData(DataContextCase.class, "testArtists", null);
+
+        String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
+        SQLTemplate query = getSQLTemplateBuilder().createSQLTemplate(
+                Artist.class,
+                template);
+        query.setFetchOffset(1);
+        query.setFetchLimit(2);
+
+        List objects = context.performQuery(query);
+        assertEquals(2, objects.size());
         assertTrue(objects.get(0) instanceof Artist);
     }
 

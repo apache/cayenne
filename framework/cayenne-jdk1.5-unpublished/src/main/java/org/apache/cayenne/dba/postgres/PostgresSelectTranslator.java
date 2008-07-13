@@ -32,17 +32,17 @@ public class PostgresSelectTranslator extends SelectTranslator {
     public String createSqlString() throws Exception {
         String sql = super.createSqlString();
         QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
-        
-     // limit results
+
+        // limit results
         int offset = metadata.getFetchOffset();
         int limit = metadata.getFetchLimit();
+
+        if (limit > 0) {
+            sql += " LIMIT " + limit;
+        }
         
-        if (offset > 0 || limit > 0) {
-            sql += " LIMIT ";
-            if (limit == 0) {
-                limit = Integer.MAX_VALUE;
-            }
-            sql += limit + " OFFSET " +  offset; 
+        if (offset > 0) {
+            sql += " OFFSET " + offset;
         }
         return sql;
     }

@@ -164,6 +164,10 @@ public class SelectAction extends BaseSQLAction {
     }
 
     /**
+     * Returns a value of the offset that will be used to rewind the ResultSet before
+     * starting reading the result rows. If the adapter supports setting offset at the SQL
+     * level, this method must be overridden to return zero for no manual offset.
+     * 
      * @since 3.0
      */
     protected int getFetchOffset() {

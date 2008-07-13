@@ -52,17 +52,13 @@ public class SelectQueryTest extends SelectQueryBase {
     }
 
     public void testFetchOffset() throws Exception {
-        query.setRoot(Artist.class);
+        SelectQuery query = new SelectQuery(Artist.class);
         query.setFetchOffset(5);
-        performQuery();
-        int size = opObserver.rowsForQuery(query).size();
+        List results = createDataContext().performQuery(query);
 
-        SelectQuery sizeQ = new SelectQuery();
-        sizeQ.setRoot(Artist.class);
-        query = sizeQ;
-        performQuery();
-        int sizeAll = opObserver.rowsForQuery(query).size();
-        assertEquals(size, sizeAll - 5);
+        SelectQuery sizeQ = new SelectQuery(Artist.class);
+        List allResults = createDataContext().performQuery(sizeQ);
+        assertEquals(allResults.size() - 5, results.size());
     }
 
     public void testFetchLimitWithOffset() throws Exception {
