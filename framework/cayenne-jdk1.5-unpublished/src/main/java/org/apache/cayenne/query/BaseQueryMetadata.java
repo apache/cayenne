@@ -46,7 +46,7 @@ import org.apache.cayenne.util.XMLSerializable;
 class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable {
 
     int fetchLimit = QueryMetadata.FETCH_LIMIT_DEFAULT;
-    int fetchStartIndex = QueryMetadata.FETCH_START_INDEX_DEFAULT;
+    int fetchOffset = QueryMetadata.FETCH_OFFSET_DEFAULT;
     
     int pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
     boolean fetchingDataRows = QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
@@ -442,7 +442,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
      * @since 3.0
      */
     public int getFetchOffset() {
-        return fetchStartIndex;
+        return fetchOffset;
     }
     
     /**
@@ -468,8 +468,8 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         fetchLimit = i;
     }
     
-    void setFetchStartIndex(int i) {
-        fetchStartIndex = i;
+    void setFetchOffset(int i) {
+        fetchOffset = i;
     }
 
     void setPageSize(int i) {

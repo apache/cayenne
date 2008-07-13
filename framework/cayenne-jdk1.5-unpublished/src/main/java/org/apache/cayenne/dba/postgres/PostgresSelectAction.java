@@ -34,7 +34,7 @@ class PostgresSelectAction extends SelectAction {
     }
 
     @Override
-    protected int getInitialCursorPosition() {
+    protected int getFetchOffset() {
         return 0;
     }
 }

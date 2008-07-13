@@ -336,6 +336,20 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     public void setFetchLimit(int fetchLimit) {
         this.metaData.setFetchLimit(fetchLimit);
     }
+    
+    /**
+     * @since 3.0
+     */
+    public int getFetchOffset() {
+        return metaData.getFetchOffset();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setFetchOffset(int fetchOffset) {
+        metaData.setFetchOffset(fetchOffset);
+    }
 
     public int getPageSize() {
         return metaData.getPageSize();

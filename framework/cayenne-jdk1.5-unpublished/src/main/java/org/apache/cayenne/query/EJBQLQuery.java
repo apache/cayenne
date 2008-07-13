@@ -161,6 +161,14 @@ public class EJBQLQuery implements Query {
      * return.
      */
     public void setFetchLimit(int fetchLimit) {
-        this.metadata.setFetchLimit(fetchLimit);
+        metadata.setFetchLimit(fetchLimit);
+    }
+
+    public int getFetchOffset() {
+        return metadata.getFetchOffset();
+    }
+
+    public void setFetchOffset(int fetchOffset) {
+        metadata.setFetchOffset(fetchOffset);
     }
 }

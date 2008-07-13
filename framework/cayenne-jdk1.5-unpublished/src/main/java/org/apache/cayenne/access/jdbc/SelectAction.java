@@ -72,7 +72,7 @@ public class SelectAction extends BaseSQLAction {
         PreparedStatement prepStmt = translator.createStatement();
         ResultSet rs = prepStmt.executeQuery();
 
-        int i = getInitialCursorPosition();
+        int i = getFetchOffset();
         while (i-- > 0 && rs.next())
             ;
 
@@ -163,7 +163,10 @@ public class SelectAction extends BaseSQLAction {
         }
     }
 
-    protected int getInitialCursorPosition() {
+    /**
+     * @since 3.0
+     */
+    protected int getFetchOffset() {
         return query.getFetchOffset();
     }
 }

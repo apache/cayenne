@@ -169,9 +169,28 @@ public abstract class JpaQuery implements Query {
             throw new IllegalArgumentException("Invalid first result value: "
                     + startPosition);
         }
-        // TODO: support in core like fetchLimit?
-        // TODO: hack a temp solution here based on sub-list?
-        throw new UnsupportedOperationException("TODO");
+
+        Object query = getQuery();
+
+        // the first two types are probably the only queries anyone would run via JPA
+        if (query instanceof EJBQLQuery) {
+            ((EJBQLQuery) query).setFetchOffset(startPosition);
+        }
+        else if (query instanceof SQLTemplate) {
+            ((SQLTemplate) query).setFetchOffset(startPosition);
+        }
+        else if (query instanceof SelectQuery) {
+            ((SelectQuery) query).setFetchOffset(startPosition);
+        }
+        else if (query instanceof ProcedureQuery) {
+            ((ProcedureQuery) query).setFetchOffset(startPosition);
+        }
+        else {
+            throw new IllegalArgumentException("query does not support maxResult: "
+                    + query);
+        }
+
+        return this;
     }
 
     /**

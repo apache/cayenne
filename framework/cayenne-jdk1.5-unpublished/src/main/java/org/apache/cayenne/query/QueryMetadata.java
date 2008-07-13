@@ -89,7 +89,7 @@ public interface QueryMetadata {
      * 
      * @since 3.0
      */
-    public static final int FETCH_START_INDEX_DEFAULT = 0;
+    public static final int FETCH_OFFSET_DEFAULT = 0;
 
     /**
      * Defines the name of the property for the query {@link #getPageSize() page size}.

@@ -217,6 +217,10 @@ public class SQLTemplateAction implements SQLAction {
 
         boolean iteratedResult = callback.isIteratedResult();
 
+        int i = getFetchOffset();
+        while (i-- > 0 && resultSet.next())
+            ;
+        
         ExtendedTypeMap types = adapter.getExtendedTypes();
         RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
 
@@ -349,5 +353,12 @@ public class SQLTemplateAction implements SQLAction {
      */
     public SQLTemplate getQuery() {
         return query;
+    }
+    
+    /**
+     * @since 3.0
+     */
+    protected int getFetchOffset() {
+        return query.getFetchOffset();
     }
 }

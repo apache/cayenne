@@ -27,6 +27,8 @@ import javax.persistence.Query;
 import org.apache.cayenne.itest.jpa.EntityManagerCase;
 import org.apache.cayenne.jpa.itest.ch3.entity.SimpleEntity;
 
+import sun.java2d.pipe.SpanShapeRenderer.Simple;
+
 public class _3_6_1_QueryAPITest extends EntityManagerCase {
 
     public void testGetResultListEntity() throws Exception {
@@ -112,5 +114,55 @@ public class _3_6_1_QueryAPITest extends EntityManagerCase {
         catch (NonUniqueResultException e) {
             // expected
         }
+    }
+
+    public void testSetMaxResults() throws Exception {
+        getTableHelper("SimpleEntity").deleteAll().setColumns("id", "property1").insert(
+                1,
+                "A").insert(2, "B").insert(3, "C").insert(4, "D");
+        
+        EntityManager em = getEntityManager();
+        Query query = em.createQuery("SELECT a FROM SimpleEntity a ORDER BY a.property1");
+        query.setMaxResults(2);
+        
+        List<?> results = query.getResultList();
+        assertEquals(2, results.size());
+        SimpleEntity e1 = (SimpleEntity) results.get(0);
+        SimpleEntity e2 = (SimpleEntity) results.get(1);
+        assertEquals("A", e1.getProperty1());
+        assertEquals("B", e2.getProperty1());
+    }
+    
+    public void testSetFirstResult() throws Exception {
+        getTableHelper("SimpleEntity").deleteAll().setColumns("id", "property1").insert(
+                1,
+                "A").insert(2, "B").insert(3, "C").insert(4, "D");
+        
+        EntityManager em = getEntityManager();
+        Query query = em.createQuery("SELECT a FROM SimpleEntity a ORDER BY a.property1");
+        query.setFirstResult(2);
+        
+        List<?> results = query.getResultList();
+        assertEquals(2, results.size());
+        SimpleEntity e1 = (SimpleEntity) results.get(0);
+        SimpleEntity e2 = (SimpleEntity) results.get(1);
+        assertEquals("C", e1.getProperty1());
+        assertEquals("D", e2.getProperty1());
+    }
+    
+    public void testSetFirstResultMaxResults() throws Exception {
+        getTableHelper("SimpleEntity").deleteAll().setColumns("id", "property1").insert(
+                1,
+                "A").insert(2, "B").insert(3, "C").insert(4, "D");
+        
+        EntityManager em = getEntityManager();
+        Query query = em.createQuery("SELECT a FROM SimpleEntity a ORDER BY a.property1");
+        query.setFirstResult(1);
+        query.setMaxResults(1);
+        
+        List<?> results = query.getResultList();
+        assertEquals(1, results.size());
+        SimpleEntity e1 = (SimpleEntity) results.get(0);
+        assertEquals("B", e1.getProperty1());
     }
 }

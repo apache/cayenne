@@ -96,6 +96,7 @@ public class EJBQLAction extends BaseSQLAction {
         // update with metadata
         QueryMetadata md = query.getMetaData(getEntityResolver());
         sqlQuery.setFetchLimit(md.getFetchLimit());
+        sqlQuery.setFetchOffset(md.getFetchOffset());
 
         actionFactory.sqlAction(sqlQuery).performAction(connection, observer);
     }
