@@ -84,6 +84,13 @@ public interface QueryMetadata {
     public static final int FETCH_LIMIT_DEFAULT = 0;
     
     /**
+     * Defines the name of the property for the query {@link #getFetchOffset() fetch offset}.
+     * 
+     * @since 3.0
+     */
+    public static final String FETCH_OFFSET_PROPERTY = "cayenne.GenericSelectQuery.fetchOffset";
+    
+    /**
      * Defines default query fetch start index, which is 0, meaning that matching rows
      * selected starting from the first.
      * 

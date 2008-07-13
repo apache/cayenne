@@ -74,6 +74,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
         cachePolicyLabels.put(QueryCacheStrategy.SHARED_CACHE, SHARED_CACHE_LABEL);
     }
 
+    protected TextAdapter fetchOffset;
     protected TextAdapter fetchLimit;
     protected TextAdapter pageSize;
     protected JComboBox cacheStrategy;
@@ -88,6 +89,13 @@ public abstract class SelectPropertiesPanel extends JPanel {
     }
 
     protected void initView() {
+        fetchOffset = new TextAdapter(new JTextField(7)) {
+
+            protected void updateModel(String text) {
+                setFetchOffset(text);
+            }
+        };
+        
         fetchLimit = new TextAdapter(new JTextField(7)) {
 
             protected void updateModel(String text) {
@@ -142,9 +150,26 @@ public abstract class SelectPropertiesPanel extends JPanel {
                 : QueryCacheStrategy.getDefaultStrategy());
         cacheStrategy.setModel(cacheModel);
 
+        fetchOffset.setText(String.valueOf(query.getMetaData(resolver).getFetchOffset()));
         fetchLimit.setText(String.valueOf(query.getMetaData(resolver).getFetchLimit()));
         pageSize.setText(String.valueOf(query.getMetaData(resolver).getPageSize()));
         refreshesResults.setSelected(query.getMetaData(resolver).isRefreshingObjects());
+    }
+    
+    void setFetchOffset(String string) {
+        string = (string == null) ? "" : string.trim();
+
+        if (string.length() == 0) {
+            setQueryProperty("fetchOffset", ZERO);
+        }
+        else {
+            try {
+                setQueryProperty("fetchOffset", new Integer(string));
+            }
+            catch (NumberFormatException nfex) {
+                throw new ValidationException("Fetch offset must be an integer: " + string);
+            }
+        }
     }
 
     void setFetchLimit(String string) {

@@ -47,7 +47,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
     int fetchLimit = QueryMetadata.FETCH_LIMIT_DEFAULT;
     int fetchOffset = QueryMetadata.FETCH_OFFSET_DEFAULT;
-    
+
     int pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
     boolean fetchingDataRows = QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
     boolean refreshingObjects = QueryMetadata.REFRESHING_OBJECTS_DEFAULT;
@@ -152,6 +152,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
             properties = Collections.EMPTY_MAP;
         }
 
+        Object fetchOffset = properties.get(QueryMetadata.FETCH_OFFSET_PROPERTY);
         Object fetchLimit = properties.get(QueryMetadata.FETCH_LIMIT_PROPERTY);
         Object pageSize = properties.get(QueryMetadata.PAGE_SIZE_PROPERTY);
         Object refreshingObjects = properties
@@ -169,6 +170,10 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         Object cacheGroups = properties.get(QueryMetadata.CACHE_GROUPS_PROPERTY);
 
         // init ivars from properties
+        this.fetchOffset = (fetchOffset != null)
+                ? Integer.parseInt(fetchOffset.toString())
+                : QueryMetadata.FETCH_OFFSET_DEFAULT;
+
         this.fetchLimit = (fetchLimit != null)
                 ? Integer.parseInt(fetchLimit.toString())
                 : QueryMetadata.FETCH_LIMIT_DEFAULT;
@@ -228,6 +233,10 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
             encoder.printProperty(
                     QueryMetadata.RESOLVING_INHERITED_PROPERTY,
                     resolvingInherited);
+        }
+
+        if (fetchOffset != QueryMetadata.FETCH_OFFSET_DEFAULT) {
+            encoder.printProperty(QueryMetadata.FETCH_OFFSET_PROPERTY, fetchOffset);
         }
 
         if (fetchLimit != QueryMetadata.FETCH_LIMIT_DEFAULT) {
@@ -444,7 +453,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     public int getFetchOffset() {
         return fetchOffset;
     }
-    
+
     /**
      * @deprecated since 3.0
      */
@@ -467,7 +476,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     void setFetchLimit(int i) {
         fetchLimit = i;
     }
-    
+
     void setFetchOffset(int i) {
         fetchOffset = i;
     }
