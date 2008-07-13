@@ -221,6 +221,45 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
+    public void testFetchLimit() throws Exception {
+        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+            return;
+        }
+
+        // create an artist with painting in the database
+        createArtist(1000.0);
+        createArtist(2000.0);
+        createArtist(3000.0);
+
+        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
+        q.addParameter("aName", "An Artist");
+        q.addParameter("paintingPrice", new Integer(3000));
+        q.setFetchLimit(2);
+        List artists = runProcedureSelect(q);
+
+        assertEquals(2, artists.size());
+    }
+    
+    public void testFetchOffset() throws Exception {
+        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+            return;
+        }
+
+        // create an artist with painting in the database
+        createArtist(1000.0);
+        createArtist(2000.0);
+        createArtist(3000.0);
+
+        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
+        q.addParameter("aName", "An Artist");
+        q.addParameter("paintingPrice", new Integer(3000));
+        q.setFetchOffset(2);
+        List artists = runProcedureSelect(q);
+
+        assertEquals(1, artists.size());
+    }
+
+
     public void testOutParams() throws Exception {
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;

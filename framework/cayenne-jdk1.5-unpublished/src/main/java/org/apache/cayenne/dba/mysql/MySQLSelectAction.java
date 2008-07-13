@@ -33,7 +33,7 @@ class MySQLSelectAction extends SelectAction {
     }
 
     @Override
-    protected int getFetchOffset() {
+    protected int getInitialCursorPosition(int queryOffset) {
         return 0;
     }
 }

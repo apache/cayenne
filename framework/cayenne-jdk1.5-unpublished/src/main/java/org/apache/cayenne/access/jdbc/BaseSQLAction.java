@@ -30,6 +30,7 @@ import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLAction;
 
 /**
@@ -66,12 +67,18 @@ public abstract class BaseSQLAction implements SQLAction {
             OperationObserver delegate) throws SQLException, Exception {
 
         long t1 = System.currentTimeMillis();
+
+        QueryMetadata metadata = query.getMetaData(getEntityResolver());
+        int i = getInitialCursorPosition(metadata.getFetchOffset());
+        while (i-- > 0 && resultSet.next())
+            ;
+
         JDBCResultIterator resultReader = new JDBCResultIterator(
                 null,
                 null,
                 resultSet,
                 descriptor,
-                query.getMetaData(getEntityResolver()).getFetchLimit());
+                metadata.getFetchLimit());
 
         if (!delegate.isIteratedResult()) {
             List<DataRow> resultRows = resultReader.dataRows(false);
@@ -97,5 +104,17 @@ public abstract class BaseSQLAction implements SQLAction {
                 throw ex;
             }
         }
+    }
+
+    /**
+     * Returns a value of the offset that will be used to rewind the ResultSet within the
+     * SQL action before reading the result rows. The default implementation returns
+     * 'queryOffset' argument. If the adapter supports setting offset at the SQL level,
+     * this method must be overridden to return zero to suppress manual offset.
+     * 
+     * @since 3.0
+     */
+    protected int getInitialCursorPosition(int queryOffset) {
+        return queryOffset;
     }
 }

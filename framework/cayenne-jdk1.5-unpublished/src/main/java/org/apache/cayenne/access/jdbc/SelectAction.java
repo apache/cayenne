@@ -72,7 +72,7 @@ public class SelectAction extends BaseSQLAction {
         PreparedStatement prepStmt = translator.createStatement();
         ResultSet rs = prepStmt.executeQuery();
 
-        int i = getFetchOffset();
+        int i = getInitialCursorPosition(query.getFetchOffset());
         while (i-- > 0 && rs.next())
             ;
 
@@ -161,16 +161,5 @@ public class SelectAction extends BaseSQLAction {
                 throw ex;
             }
         }
-    }
-
-    /**
-     * Returns a value of the offset that will be used to rewind the ResultSet before
-     * starting reading the result rows. If the adapter supports setting offset at the SQL
-     * level, this method must be overridden to return zero for no manual offset.
-     * 
-     * @since 3.0
-     */
-    protected int getFetchOffset() {
-        return query.getFetchOffset();
     }
 }
