@@ -19,25 +19,11 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.Window;
-import java.io.File;
-import java.util.Collection;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JRootPane;
-import javax.swing.SwingUtilities;
-
+import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.DomainPreference;
-import org.apache.cayenne.pref.HSQLEmbeddedPreferenceEditor;
-import org.apache.cayenne.pref.HSQLEmbeddedPreferenceService;
-import org.apache.cayenne.pref.PreferenceService;
+import org.apache.cayenne.pref.*;
 import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.swing.BindingFactory;
@@ -48,6 +34,11 @@ import org.scopemvc.controller.swing.SwingContext;
 import org.scopemvc.core.View;
 import org.scopemvc.util.UIStrings;
 import org.scopemvc.view.swing.SwingView;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.util.Collection;
 
 /**
  * A main modeler application class that provides a number of services to the Modeler
@@ -184,6 +175,12 @@ public class Application {
 
         // open up
         frameController.startupAction();
+        
+        /**
+         * After prefs have been loaded, we can now show the console if needed
+         */
+        LogConsole.getInstance().showConsoleIfNeeded();
+        getFrame().setVisible(true);
     }
 
     public BindingFactory getBindingFactory() {
@@ -297,12 +294,14 @@ public class Application {
             this.frame = frame;
         }
 
+        @Override
         protected void showViewInPrimaryWindow(SwingView view) {
         }
 
         /**
          * Creates closeable dialogs.
          */
+        @Override
         protected void showViewInDialog(SwingView inView) {
             // NOTE:
             // copied from superclass, except that JDialog is substituted for
@@ -340,6 +339,7 @@ public class Application {
          * Overrides super implementation to allow using Scope together with normal Swing
          * code that CayenneModeler already has.
          */
+        @Override
         public JRootPane findRootPaneFor(View view) {
             JRootPane pane = super.findRootPaneFor(view);
 
@@ -354,6 +354,7 @@ public class Application {
             return frame.getRootPane();
         }
 
+        @Override
         protected Window getDefaultParentWindow() {
             return frame;
         }

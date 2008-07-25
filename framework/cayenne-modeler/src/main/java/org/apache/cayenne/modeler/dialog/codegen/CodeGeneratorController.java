@@ -19,16 +19,18 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.Component;
-
-import javax.swing.JOptionPane;
-
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * A controller for the class generator dialog.
@@ -36,6 +38,10 @@ import org.apache.commons.collections.PredicateUtils;
  * @author Andrus Adamchik
  */
 public class CodeGeneratorController extends CodeGeneratorControllerBase {
+    /**
+     * Logger to print stack traces
+     */
+    private static Log logObj = LogFactory.getLog(ErrorDebugDialog.class);
 
     protected CodeGeneratorDialog view;
 
@@ -49,6 +55,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         this.generatorSelector = new GeneratorTabController(this);
     }
 
+    @Override
     public Component getView() {
         return view;
     }
@@ -124,13 +131,13 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
             try {
                 generator.execute();
                 JOptionPane.showMessageDialog(
-                        (Component) this.getView(),
+                        this.getView(),
                         "Class generation finished");
             }
             catch (Exception e) {
-                e.printStackTrace();
+                logObj.error("Error generating classes", e);
                 JOptionPane.showMessageDialog(
-                        (Component) this.getView(),
+                        this.getView(),
                         "Error generating classes - " + e.getMessage());
             }
         }

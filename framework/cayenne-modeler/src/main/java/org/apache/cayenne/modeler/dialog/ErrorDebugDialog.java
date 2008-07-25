@@ -20,29 +20,24 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.util.Util;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scopemvc.util.UIStrings;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Displays CayenneModeler exceptions and warning messages.
@@ -50,6 +45,13 @@ import org.scopemvc.util.UIStrings;
  * @author Andrus Adamchik
  */
 public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
+    private static Log logObj = LogFactory.getLog(ErrorDebugDialog.class);
+    
+    /**
+     * Sole instance of error/warning dialog to disallow showing of multiple dialogs
+     */
+    private static ErrorDebugDialog instance;
+    
     protected JButton close;
     protected JButton showHide;
     protected JTextArea exText = new JTextArea();
@@ -57,22 +59,40 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
     protected Throwable throwable;
     protected boolean detailed;
 
+    /**
+     * Shows an error dialog with stack trace
+     */
     public static void guiException(Throwable th) {
         if (th != null) {
-            th.printStackTrace();
+            logObj.error("CayenneModeler Error", th);
         }
 
         ErrorDebugDialog dialog =
-            new ErrorDebugDialog(Application.getFrame(), "CayenneModeler Error", th, true);
-        dialog.setVisible(true);
+            new ErrorDebugDialog(Application.getFrame(), "CayenneModeler Error", th, true, false);
+        showDialog(dialog);
     }
 
+    /**
+     * Shows an warning dialog with stack trace
+     */
     public static void guiWarning(Throwable th, String message) {
         if (th != null) {
-            th.printStackTrace();
+            logObj.warn("CayenneModeler Warning", th);
         }
 
-        WarningDialog dialog = new WarningDialog(Application.getFrame(), message, th, false);
+        WarningDialog dialog = new WarningDialog(Application.getFrame(), message, th, false, false);
+        showDialog(dialog);
+    }
+    
+    /**
+     * Shows an error/warning dialog, closing existing if needed
+     */
+    private static void showDialog(ErrorDebugDialog dialog) {
+        if (instance != null) {
+            instance.dispose();
+        }
+        
+        instance = dialog;
         dialog.setVisible(true);
     }
 
@@ -86,7 +106,21 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
         boolean detailed)
         throws HeadlessException {
 
-        super(owner, title, true);
+        this(owner, title, throwable, detailed, true);
+    }
+    
+    /**
+     * Constructor for ErrorDebugDialog, allowing to specify 'modal' property
+     */
+    protected ErrorDebugDialog(
+    CayenneModelerFrame owner,
+        String title,
+        Throwable throwable,
+        boolean detailed,
+        boolean modal)
+        throws HeadlessException {
+
+        super(owner, title, modal);
 
         setThrowable(Util.unwindException(throwable));
         setDetailed(detailed);
@@ -144,6 +178,13 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
         JButton[] buttons = (showHide != null) ? new JButton[] { showHide, close }
         : new JButton[] { close };
         pane.add(PanelFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
+        
+        //add a listener to clear static variables, not to produce garbage
+        addWindowListener(new WindowAdapter() {
+           public void windowClosing(WindowEvent e) {
+               instance = null;
+           }
+        });
 
         // prepare to display
         this.pack();

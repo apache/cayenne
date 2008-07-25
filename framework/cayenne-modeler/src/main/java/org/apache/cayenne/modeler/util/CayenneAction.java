@@ -20,21 +20,15 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Superclass of CayenneModeler actions that implements support for some common
@@ -173,6 +167,13 @@ public abstract class CayenneAction extends AbstractAction {
     public JMenuItem buildMenu() {
         return new JMenuItem(this);
     }
+    
+    /**
+     * Factory method that creates a checkbox menu item hooked up to this action.
+     */
+    public JCheckBoxMenuItem buildCheckBoxMenu() {
+        return new JCheckBoxMenuItem(this);
+    }
 
     /**
      * Factory method that creates a button hooked up to this action.
@@ -206,6 +207,7 @@ public abstract class CayenneAction extends AbstractAction {
     /**
      * Overrides super implementation to take into account "alwaysOn" flag.
      */
+    @Override
     public void setEnabled(boolean b) {
         if (!isAlwaysOn()) {
             super.setEnabled(b);
@@ -244,6 +246,7 @@ public abstract class CayenneAction extends AbstractAction {
         /**
          * @see javax.swing.AbstractButton#getText()
          */
+        @Override
         public String getText() {
             return (showingText) ? super.getText() : null;
         }
@@ -251,6 +254,7 @@ public abstract class CayenneAction extends AbstractAction {
         /**
          * @see javax.swing.AbstractButton#setText(String)
          */
+        @Override
         public void setText(String text) {
             if (showingText) {
                 super.setText(text);

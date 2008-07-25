@@ -16,40 +16,39 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.util;
 
-package org.apache.cayenne.modeler.dialog;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogConfigurationException;
+import org.apache.commons.logging.impl.LogFactoryImpl;
 
-import org.apache.cayenne.modeler.CayenneModelerFrame;
-
-import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Dialog for CayenneModeler warnings.
- * 
- * @author Andrus Adamchik
+ * Factory for creating ModelerLogger instances. LogFactoryImpl is 
+ * subclassed to save default behavior 
+ * @author Andrey Razumovsky
  */
-public class WarningDialog extends ErrorDebugDialog {
-
+public class ModelerLogFactory extends LogFactoryImpl {
     /**
-     * Constructor for warning dialog
+     * Local cache of modeler loggers
      */
-    public WarningDialog(CayenneModelerFrame owner, String title, Throwable throwable,
-            boolean detailed) throws HeadlessException {
-        this(owner, title, throwable, detailed, true);
+    protected Map<String, ModelerLogger> localCache;
+    
+    public ModelerLogFactory() {
+        localCache = new HashMap<String, ModelerLogger>();
     }
     
-    /**
-     * Constructor for warning dialog, allowing to specify 'modal' property
-     */
-    public WarningDialog(CayenneModelerFrame owner, String title, Throwable throwable,
-            boolean detailed, boolean modal) throws HeadlessException {
-        super(owner, title, throwable, detailed, modal);
-    }
-
     @Override
-    protected String infoHTML() {
-        return "<font face='Arial,Helvetica' size='+1' color='blue'>"
-                + getTitle()
-                + "</font>";
+    public Log getInstance(String name) throws LogConfigurationException {
+        ModelerLogger local = localCache.get(name);
+        if (local == null) {
+            Log def = super.getInstance(name);
+            
+            local = new ModelerLogger(name, def);
+            localCache.put(name, local);
+        }
+        return local;
     }
 }

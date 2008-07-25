@@ -16,40 +16,36 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.action;
 
-package org.apache.cayenne.modeler.dialog;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.dialog.LogConsole;
+import org.apache.cayenne.modeler.util.CayenneAction;
 
-import org.apache.cayenne.modeler.CayenneModelerFrame;
-
-import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
- * Dialog for CayenneModeler warnings.
- * 
- * @author Andrus Adamchik
+ * Action for opening log console window (See CAY-366)
+ * @author Andrey Razumovsky
  */
-public class WarningDialog extends ErrorDebugDialog {
-
+public class ShowLogConsoleAction extends CayenneAction {
     /**
-     * Constructor for warning dialog
+     * Readable name for this action
      */
-    public WarningDialog(CayenneModelerFrame owner, String title, Throwable throwable,
-            boolean detailed) throws HeadlessException {
-        this(owner, title, throwable, detailed, true);
+    public static final String getActionName() {
+        return "Show log console";
     }
     
     /**
-     * Constructor for warning dialog, allowing to specify 'modal' property
+     * Constructor for ShowLogConsoleAction.
      */
-    public WarningDialog(CayenneModelerFrame owner, String title, Throwable throwable,
-            boolean detailed, boolean modal) throws HeadlessException {
-        super(owner, title, throwable, detailed, modal);
+    public ShowLogConsoleAction(Application application) {
+        super(getActionName(), application);
+    }
+    
+    @Override
+    public void performAction(ActionEvent e) {
+        LogConsole.getInstance().toggle();
     }
 
-    @Override
-    protected String infoHTML() {
-        return "<font face='Arial,Helvetica' size='+1' color='blue'>"
-                + getTitle()
-                + "</font>";
-    }
 }

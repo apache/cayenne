@@ -19,11 +19,12 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerPreferences;
+import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.project.ProjectPath;
+
+import java.awt.event.ActionEvent;
 
 /**
  * @author Andrus Adamchik
@@ -52,6 +53,9 @@ public class ExitAction extends ProjectAction {
 
 		// write prefs to persistent store
 		ModelerPreferences.getPreferences().storePreferences();
+		
+		//stop logging before JVM shutdown to prevent hanging
+		LogConsole.getInstance().stopLogging();
 
 		// goodbye
         System.exit(0);

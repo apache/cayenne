@@ -15,6 +15,7 @@ Date:
 
 Changes/New Features Since M4:
 
+CAY-366 Add progress/log view
 CAY-436 In modeler, change default object relationship delete rule
 CAY-888 CM Usability: Object Select Query Improvements
 CAY-911 CM Usability: JComboBox Autocompletion

@@ -16,40 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.modeler.dialog;
 
-import org.apache.cayenne.modeler.CayenneModelerFrame;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.util.CayenneDialog;
 
-import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
- * Dialog for CayenneModeler warnings.
- * 
- * @author Andrus Adamchik
+ * LogConsoleWindow is used to show log in a separate dialog 
+ * @author Andrey Razumovsky
  */
-public class WarningDialog extends ErrorDebugDialog {
+public class LogConsoleWindow extends CayenneDialog {
 
     /**
-     * Constructor for warning dialog
+     * Constructs a new log console window
      */
-    public WarningDialog(CayenneModelerFrame owner, String title, Throwable throwable,
-            boolean detailed) throws HeadlessException {
-        this(owner, title, throwable, detailed, true);
-    }
-    
-    /**
-     * Constructor for warning dialog, allowing to specify 'modal' property
-     */
-    public WarningDialog(CayenneModelerFrame owner, String title, Throwable throwable,
-            boolean detailed, boolean modal) throws HeadlessException {
-        super(owner, title, throwable, detailed, modal);
-    }
-
-    @Override
-    protected String infoHTML() {
-        return "<font face='Arial,Helvetica' size='+1' color='blue'>"
-                + getTitle()
-                + "</font>";
+    public LogConsoleWindow(final LogConsole controller) {
+        setTitle("Cayenne Modeler Console");
+        
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                controller.setConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY, false);
+                Application.getFrame().updateLogConsoleMenu();
+            }
+        });
     }
 }

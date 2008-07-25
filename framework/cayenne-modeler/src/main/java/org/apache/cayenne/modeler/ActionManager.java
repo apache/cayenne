@@ -19,62 +19,11 @@
 
 package org.apache.cayenne.modeler;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
-import javax.swing.Action;
-
-import org.apache.cayenne.modeler.action.AboutAction;
-import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
-import org.apache.cayenne.modeler.action.CreateAttributeAction;
-import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
-import org.apache.cayenne.modeler.action.CreateCallbackMethodForDataMapListenerAction;
-import org.apache.cayenne.modeler.action.CreateCallbackMethodForListenerAction;
-import org.apache.cayenne.modeler.action.CreateDataMapAction;
-import org.apache.cayenne.modeler.action.CreateDataMapEntityListenerAction;
-import org.apache.cayenne.modeler.action.CreateDbEntityAction;
-import org.apache.cayenne.modeler.action.CreateDomainAction;
-import org.apache.cayenne.modeler.action.CreateNodeAction;
-import org.apache.cayenne.modeler.action.CreateObjEntityAction;
-import org.apache.cayenne.modeler.action.CreateObjEntityListenerAction;
-import org.apache.cayenne.modeler.action.CreateProcedureAction;
-import org.apache.cayenne.modeler.action.CreateProcedureParameterAction;
-import org.apache.cayenne.modeler.action.CreateQueryAction;
-import org.apache.cayenne.modeler.action.CreateRelationshipAction;
-import org.apache.cayenne.modeler.action.DbEntitySyncAction;
-import org.apache.cayenne.modeler.action.DocumentationAction;
-import org.apache.cayenne.modeler.action.ExitAction;
-import org.apache.cayenne.modeler.action.FindAction;
-import org.apache.cayenne.modeler.action.GenerateCodeAction;
-import org.apache.cayenne.modeler.action.GenerateDBAction;
-import org.apache.cayenne.modeler.action.ImportDBAction;
-import org.apache.cayenne.modeler.action.ImportDataMapAction;
-import org.apache.cayenne.modeler.action.ImportEOModelAction;
-import org.apache.cayenne.modeler.action.MigrateAction;
-import org.apache.cayenne.modeler.action.NavigateBackwardAction;
-import org.apache.cayenne.modeler.action.NavigateForwardAction;
-import org.apache.cayenne.modeler.action.NewProjectAction;
-import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
-import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.action.ProjectAction;
-import org.apache.cayenne.modeler.action.RemoveAction;
-import org.apache.cayenne.modeler.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
-import org.apache.cayenne.modeler.action.RemoveCallbackMethodForDataMapListenerAction;
-import org.apache.cayenne.modeler.action.RemoveCallbackMethodForListenerAction;
-import org.apache.cayenne.modeler.action.RemoveEntityListenerAction;
-import org.apache.cayenne.modeler.action.RemoveEntityListenerForDataMapAction;
-import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
-import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.action.RevertAction;
-import org.apache.cayenne.modeler.action.SaveAction;
-import org.apache.cayenne.modeler.action.SaveAsAction;
-import org.apache.cayenne.modeler.action.ValidateAction;
+import org.apache.cayenne.modeler.action.*;
 import org.apache.cayenne.modeler.util.CayenneAction;
+
+import javax.swing.*;
+import java.util.*;
 
 /**
  * An object that manages CayenneModeler actions.
@@ -201,6 +150,8 @@ public class ActionManager {
         registerAction(new NavigateForwardAction(application)).setAlwaysOn(true);
         // search action registered
         registerAction(new FindAction(application));
+        
+        registerAction(new ShowLogConsoleAction(application)).setAlwaysOn(true);;
     }
 
     private CayenneAction registerAction(CayenneAction action) {

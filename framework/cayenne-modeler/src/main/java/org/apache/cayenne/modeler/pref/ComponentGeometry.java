@@ -19,18 +19,15 @@
 
 package org.apache.cayenne.modeler.pref;
 
-import java.awt.Component;
+import org.apache.cayenne.pref.Domain;
+import org.apache.cayenne.pref.PreferenceException;
+import org.apache.cayenne.reflect.PropertyUtils;
+
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-
-import org.apache.cayenne.pref.Domain;
-import org.apache.cayenne.pref.PreferenceException;
-import org.apache.cayenne.reflect.PropertyUtils;
 
 public class ComponentGeometry extends _ComponentGeometry {
 
@@ -48,24 +45,26 @@ public class ComponentGeometry extends _ComponentGeometry {
      * allowing to specify an initial offset compared to the stored position.
      */
     public void bind(
-            final JFrame frame,
+            final Window window,
             int initialWidth,
             int initialHeight,
             int maxOffset) {
 
-        updateSize(frame, initialWidth, initialHeight);
-        updateLocation(frame, maxOffset);
+        updateSize(window, initialWidth, initialHeight);
+        updateLocation(window, maxOffset);
 
-        frame.addComponentListener(new ComponentAdapter() {
+        window.addComponentListener(new ComponentAdapter() {
 
+            @Override
             public void componentResized(ComponentEvent e) {
-                setWidth(new Integer(frame.getWidth()));
-                setHeight(new Integer(frame.getHeight()));
+                setWidth(new Integer(window.getWidth()));
+                setHeight(new Integer(window.getHeight()));
             }
 
+            @Override
             public void componentMoved(ComponentEvent e) {
-                setX(new Integer(frame.getX()));
-                setY(new Integer(frame.getY()));
+                setX(new Integer(window.getX()));
+                setY(new Integer(window.getY()));
             }
         });
     }
@@ -74,14 +73,15 @@ public class ComponentGeometry extends _ComponentGeometry {
      * Binds this preference object to synchronize its state with a given component,
      * allowing to specify an initial offset compared to the stored position.
      */
-    public void bind(final JDialog dialog, int initialWidth, int initialHeight) {
-        updateSize(dialog, initialWidth, initialHeight);
+    public void bindSize(final Window window, int initialWidth, int initialHeight) {
+        updateSize(window, initialWidth, initialHeight);
 
-        dialog.addComponentListener(new ComponentAdapter() {
+        window.addComponentListener(new ComponentAdapter() {
 
+            @Override
             public void componentResized(ComponentEvent e) {
-                setWidth(new Integer(dialog.getWidth()));
-                setHeight(new Integer(dialog.getHeight()));
+                setWidth(new Integer(window.getWidth()));
+                setHeight(new Integer(window.getHeight()));
             }
         });
     }

@@ -20,10 +20,8 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.awt.Rectangle;
-
-import javax.swing.JTable;
-import javax.swing.JViewport;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author Andrus Adamchik
@@ -79,5 +77,24 @@ public class UIUtil {
 
         // Scroll the area into view.
         viewport.scrollRectToVisible(rect);
+    }
+    
+    /**
+     * "Injects" windows's content to another window
+     */
+    public static void dock(Window window, Window dockTo) {
+        window.setVisible(false);
+        
+        ((RootPaneContainer) dockTo).getContentPane()
+            .add(((RootPaneContainer) window).getContentPane(), BorderLayout.SOUTH);
+        
+        dockTo.setVisible(true);
+    }
+    
+    /**
+     * "Injects" windows's content to parent window
+     */
+    public static void dock(Window window) {
+        dock(window, window.getOwner());
     }
 }

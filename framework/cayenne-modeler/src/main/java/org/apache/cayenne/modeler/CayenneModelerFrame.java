@@ -20,70 +20,20 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.AWTEventListener;
-import java.awt.event.KeyEvent;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-
-import org.apache.cayenne.modeler.action.AboutAction;
-import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
-import org.apache.cayenne.modeler.action.CreateDataMapAction;
-import org.apache.cayenne.modeler.action.CreateDbEntityAction;
-import org.apache.cayenne.modeler.action.CreateDomainAction;
-import org.apache.cayenne.modeler.action.CreateNodeAction;
-import org.apache.cayenne.modeler.action.CreateObjEntityAction;
-import org.apache.cayenne.modeler.action.CreateProcedureAction;
-import org.apache.cayenne.modeler.action.CreateQueryAction;
-import org.apache.cayenne.modeler.action.DocumentationAction;
-import org.apache.cayenne.modeler.action.ExitAction;
-import org.apache.cayenne.modeler.action.FindAction;
-import org.apache.cayenne.modeler.action.GenerateCodeAction;
-import org.apache.cayenne.modeler.action.GenerateDBAction;
-import org.apache.cayenne.modeler.action.ImportDBAction;
-import org.apache.cayenne.modeler.action.ImportDataMapAction;
-import org.apache.cayenne.modeler.action.ImportEOModelAction;
-import org.apache.cayenne.modeler.action.MigrateAction;
-import org.apache.cayenne.modeler.action.NavigateBackwardAction;
-import org.apache.cayenne.modeler.action.NavigateForwardAction;
-import org.apache.cayenne.modeler.action.NewProjectAction;
-import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
-import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.action.ProjectAction;
-import org.apache.cayenne.modeler.action.RemoveAction;
-import org.apache.cayenne.modeler.action.RevertAction;
-import org.apache.cayenne.modeler.action.SaveAction;
-import org.apache.cayenne.modeler.action.SaveAsAction;
-import org.apache.cayenne.modeler.action.ValidateAction;
+import org.apache.cayenne.modeler.action.*;
+import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.editor.EditorView;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.DataMapDisplayListener;
-import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
-import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
-import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.MultipleObjectsDisplayEvent;
-import org.apache.cayenne.modeler.event.MultipleObjectsDisplayListener;
-import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.QueryDisplayListener;
+import org.apache.cayenne.modeler.event.*;
+import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.OperatingSystem;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
+import org.apache.cayenne.pref.Domain;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
 
 /**
  * Main frame of CayenneModeler. Responsibilities include coordination of
@@ -97,7 +47,23 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
     protected RecentFileMenu recentFileMenu;
     protected ActionManager actionManager;
     protected JLabel status;
-
+    
+    /**
+     * Menu which shows/hides log console
+     */
+    protected JCheckBoxMenuItem logMenu;
+    
+    /**
+     * Split panel, where main project editor and external component, like log console, 
+     * are located 
+     */
+    protected JSplitPane splitPane;
+    
+    /**
+     * Component, plugged into this frame
+     */
+    protected Component dockComponent;
+    
     public CayenneModelerFrame(ActionManager actionManager) {
         super(ModelerConstants.TITLE);
         this.actionManager = actionManager;
@@ -105,6 +71,8 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         initMenus();
         initToolbar();
         initStatusBar();
+        
+        setView(null);
     }
 
     /**
@@ -172,6 +140,15 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolMenu.add(getAction(GenerateDBAction.getActionName()).buildMenu());
         toolMenu.add(getAction(MigrateAction.getActionName()).buildMenu());
         
+        /**
+         * Menu for opening Log console
+         */
+        toolMenu.addSeparator();
+        
+        logMenu = getAction(ShowLogConsoleAction.getActionName()).buildCheckBoxMenu();
+        updateLogConsoleMenu();
+        toolMenu.add(logMenu);
+        
         // Mac OS X has it's own Preferences menu item under the application menu
         if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X) {
             toolMenu.addSeparator();
@@ -192,17 +169,68 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         setJMenuBar(menuBar);
     }
+    
+    /**
+     * Selects/deselects menu item, depending on status of log console 
+     */
+    public void updateLogConsoleMenu() {
+        logMenu.setSelected(LogConsole.getInstance().getConsoleProperty(
+                LogConsole.SHOW_CONSOLE_PROPERTY));
+    }
 
     protected void initStatusBar() {
         status = new JLabel();
         status.setFont(status.getFont().deriveFont(Font.PLAIN, 10));
+        
+        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.getInsets().left = 5;
+        splitPane.getInsets().right = 5;
+        
+        splitPane.setResizeWeight(0.7);
+        
+        Domain domain = Application.getInstance().getPreferenceDomain().getSubdomain(
+                this.getClass());
+        ComponentGeometry geometry = (ComponentGeometry) domain.getDetail(
+                "splitPane.divider",
+                ComponentGeometry.class,
+                true);
+        geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 400);
 
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
         // add placeholder
         statusBar.add(Box.createVerticalStrut(16));
         statusBar.add(status);
 
+        getContentPane().add(splitPane, BorderLayout.CENTER);
         getContentPane().add(statusBar, BorderLayout.SOUTH);
+    }
+    
+    /**
+     * Plugs a component in the frame, between main area and status bar
+     */
+    public void setDockComponent(Component c) {
+        if (dockComponent == c) {
+            return;
+        }
+        
+        if (dockComponent != null) {
+            splitPane.setBottomComponent(null);
+        }
+        
+        dockComponent = c;
+        
+        if (dockComponent != null) {
+            splitPane.setBottomComponent(dockComponent);
+        }
+        
+        splitPane.validate();
+    }
+    
+    /**
+     * @return Dock component
+     */
+    public Component getDockComponent() {
+        return dockComponent;
     }
 
     /** Initializes main toolbar. */
@@ -313,22 +341,18 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
      * Adds editor view to the frame.
      */
     public void setView(EditorView view) {
-        boolean change = false;
-
-        if (this.view != null) {
-            getContentPane().remove(this.view);
-            change = true;
-        }
-
+        int oldLocation = splitPane.getDividerLocation();
+        
         this.view = view;
 
         if (view != null) {
-            getContentPane().add(view, BorderLayout.CENTER);
-            change = true;
+            splitPane.setTopComponent(view);
+        }
+        else {
+            splitPane.setTopComponent(new JPanel());
         }
 
-        if (change) {
-            validate();
-        }
+        validate();
+        splitPane.setDividerLocation(oldLocation);
     }
 }
