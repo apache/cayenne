@@ -31,6 +31,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
@@ -60,6 +61,7 @@ import org.apache.commons.collections.Predicate;
 public abstract class GeneratorController extends CayenneController {
 
     protected DataMapDefaults preferences;
+    protected String mode = ArtifactsGenerationMode.ENTITY.getLabel();
 
     public GeneratorController(CodeGeneratorControllerBase parent) {
         super(parent);
@@ -147,9 +149,11 @@ public abstract class GeneratorController extends CayenneController {
         }
 
         ClassGenerationAction generator = newGenerator();
+        generator.setArtifactsGenerationMode(mode);
         generator.setDataMap(getParentController().getDataMap());
         generator.addEntities(entities);
         generator.addEmbeddables(getParentController().getSelectedEmbeddables());
+        generator.addQueries(getParentController().getDataMap().getQueries());
 
         // configure encoding from preferences
         Domain generatorPrefs = Application

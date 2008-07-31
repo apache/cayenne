@@ -48,14 +48,17 @@ public class CustomModeController extends GeneratorController {
     // correspond to non-public constants on MapClassGenerator.
     static final String MODE_DATAMAP = "datamap";
     static final String MODE_ENTITY = "entity";
+    static final String MODE_ALL = "all";
 
-    static final String DATA_MAP_MODE_LABEL = "One run per DataMap";
-    static final String ENTITY_MODE_LABEL = "One run per each selected Entity";
+    static final String DATA_MAP_MODE_LABEL = "DataMap generation";
+    static final String ENTITY_MODE_LABEL = "Entity and Embeddable generation";
+    static final String ALL_MODE_LABEL = "Generate all";
 
     static final Map<String, String> modesByLabel = new HashMap<String, String>();
     static {
         modesByLabel.put(DATA_MAP_MODE_LABEL, MODE_DATAMAP);
         modesByLabel.put(ENTITY_MODE_LABEL, MODE_ENTITY);
+        modesByLabel.put(ALL_MODE_LABEL, MODE_ALL);
     }
 
     protected CustomModePanel view;
@@ -68,7 +71,7 @@ public class CustomModeController extends GeneratorController {
         super(parent);
 
         Object[] modeChoices = new Object[] {
-                ENTITY_MODE_LABEL, DATA_MAP_MODE_LABEL
+                ENTITY_MODE_LABEL, DATA_MAP_MODE_LABEL, ALL_MODE_LABEL
         };
         view.getGenerationMode().setModel(new DefaultComboBoxModel(modeChoices));
 
@@ -218,12 +221,11 @@ public class CustomModeController extends GeneratorController {
 
     public ClassGenerationAction createGenerator() {
 
-        ClassGenerationAction generator = super.createGenerator();
-
-        String mode = modesByLabel
+        mode = modesByLabel
                 .get(view.getGenerationMode().getSelectedItem())
                 .toString();
-        generator.setArtifactsGenerationMode(mode);
+        
+        ClassGenerationAction generator = super.createGenerator();
 
         String version = getVersion();
 

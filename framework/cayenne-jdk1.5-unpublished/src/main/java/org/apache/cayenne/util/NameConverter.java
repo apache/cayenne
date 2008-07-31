@@ -135,7 +135,7 @@ public class NameConverter {
     /**
      * Replaces special chars with human-readable and Java-id-compatible symbols.
      */
-    static String specialCharsToJava(String string) {
+    public static String specialCharsToJava(String string) {
         int len = string.length();
         if (len == 0) {
             return string;

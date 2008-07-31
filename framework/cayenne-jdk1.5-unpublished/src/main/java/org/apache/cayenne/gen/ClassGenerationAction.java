@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -54,6 +55,10 @@ public class ClassGenerationAction {
     public static final String EMBEDDABLE_SUBCLASS_TEMPLATE = "dotemplates/v1_2/embeddable-subclass.vm";
     public static final String EMBEDDABLE_SUPERCLASS_TEMPLATE = "dotemplates/v1_2/embeddable-superclass.vm";
 
+    public static final String DATAMAP_SINGLE_CLASS_TEMPLATE = "dotemplates/v1_2/datamap-singleclass.vm";
+    public static final String DATAMAP_SUBCLASS_TEMPLATE = "dotemplates/v1_2/datamap-subclass.vm";
+    public static final String DATAMAP_SUPERCLASS_TEMPLATE = "dotemplates/v1_2/datamap-superclass.vm";
+
     public static final String SUPERCLASS_PREFIX = "_";
     private static final String WILDCARD = "*";
 
@@ -74,6 +79,8 @@ public class ClassGenerationAction {
     protected String superTemplate;
     protected String embeddableTemplate;
     protected String embeddableSuperTemplate;
+    protected String queryTemplate;
+    protected String querySuperTemplate;
     protected long timestamp;
     protected String outputPattern;
     protected String encoding;
@@ -107,6 +114,12 @@ public class ClassGenerationAction {
                 return ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
             case EMBEDDABLE_SINGLE_CLASS:
                 return ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE;
+            case DATAMAP_SINGLE_CLASS:
+                return ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE;
+            case DATAMAP_SUPERCLASS:
+                return ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE;
+            case DATAMAP_SUBCLASS:
+                return ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE;
             default:
                 throw new IllegalArgumentException("Invalid template type: " + type);
         }
@@ -124,6 +137,12 @@ public class ClassGenerationAction {
                 return embeddableTemplate;
             case EMBEDDABLE_SUPERCLASS:
                 return embeddableSuperTemplate;
+            case DATAMAP_SINGLE_CLASS:
+                return queryTemplate;
+            case DATAMAP_SUPERCLASS:
+                return querySuperTemplate;
+            case DATAMAP_SUBCLASS:
+                return queryTemplate;
             default:
                 throw new IllegalArgumentException("Invalid template type: " + type);
         }
@@ -193,12 +212,6 @@ public class ClassGenerationAction {
         try {
             for (Artifact artifact : artifacts) {
                 execute(artifact);
-
-                if (artifactsGenerationMode == ArtifactsGenerationMode.SINGLE_RUN) {
-                    // TODO: andrus 12/9/2007 - should we run at least once if there are
-                    // no artifacts? Current behavior is copied from the legacy code.
-                    break;
-                }
             }
         }
         finally {
@@ -319,6 +332,14 @@ public class ClassGenerationAction {
      */
     public void setSuperTemplate(String superTemplate) {
         this.superTemplate = superTemplate;
+    }
+
+    public void setQueryTemplate(String queryTemplate) {
+        this.queryTemplate = queryTemplate;
+    }
+
+    public void setQuerySuperTemplate(String querySuperTemplate) {
+        this.querySuperTemplate = querySuperTemplate;
     }
 
     /**
@@ -498,17 +519,32 @@ public class ClassGenerationAction {
      * Adds entities to the internal entity list.
      */
     public void addEntities(Collection<ObjEntity> entities) {
-        if (entities != null) {
-            for (ObjEntity entity : entities) {
-                artifacts.add(new EntityArtifact(entity));
+        if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY || 
+                artifactsGenerationMode == ArtifactsGenerationMode.ALL ) {
+            if (entities != null) {
+                for (ObjEntity entity : entities) {
+                    artifacts.add(new EntityArtifact(entity));
+                }
             }
         }
     }
 
     public void addEmbeddables(Collection<Embeddable> embeddables) {
-        if (embeddables != null) {
-            for (Embeddable embeddable : embeddables) {
-                artifacts.add(new EmbeddableArtifact(embeddable));
+        if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY || 
+                artifactsGenerationMode == ArtifactsGenerationMode.ALL ) {
+            if (embeddables != null) {
+                for (Embeddable embeddable : embeddables) {
+                    artifacts.add(new EmbeddableArtifact(embeddable));
+                }
+            }
+        }
+    }
+
+    public void addQueries(Collection<Query> queries) {
+        if (artifactsGenerationMode == ArtifactsGenerationMode.DATAMAP || 
+                artifactsGenerationMode == ArtifactsGenerationMode.ALL ) {
+            if (queries != null) {
+                artifacts.add(new DataMapArtifact(dataMap, queries));
             }
         }
     }
@@ -538,10 +574,17 @@ public class ClassGenerationAction {
     }
 
     public void setArtifactsGenerationMode(String mode) {
-        this.artifactsGenerationMode = ArtifactsGenerationMode.RUN_PER_ARTIFACT
-                .getLabel()
-                .equalsIgnoreCase(mode)
-                ? ArtifactsGenerationMode.RUN_PER_ARTIFACT
-                : ArtifactsGenerationMode.SINGLE_RUN;
+        if (ArtifactsGenerationMode.ENTITY.getLabel()
+                .equalsIgnoreCase(mode)){
+        this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
+        } else {
+            if (ArtifactsGenerationMode.DATAMAP.getLabel()
+                .equalsIgnoreCase(mode)){
+                this.artifactsGenerationMode = ArtifactsGenerationMode.DATAMAP;
+            } else {
+                this.artifactsGenerationMode = ArtifactsGenerationMode.ALL;
+            }
+        }
+                
     }
 }

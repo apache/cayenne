@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.dialog.codegen;
 import java.awt.Component;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.swing.BindingBuilder;
 
@@ -64,5 +65,11 @@ public class StandardModeController extends GeneratorController {
     @Override
     protected ClassGenerationAction newGenerator() {
         return new ClassGenerationAction();
+    }
+    
+     @Override
+    public ClassGenerationAction createGenerator() {
+        mode = ArtifactsGenerationMode.ALL.getLabel();
+        return super.createGenerator();
     }
 }

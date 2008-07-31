@@ -36,7 +36,13 @@ public enum TemplateType {
 
     EMBEDDABLE_SUPERCLASS(true),
 
-    EMBEDDABLE_SUBCLASS(false);
+    EMBEDDABLE_SUBCLASS(false),
+
+    DATAMAP_SINGLE_CLASS(false),
+
+    DATAMAP_SUPERCLASS(true),
+
+    DATAMAP_SUBCLASS(false);
 
     private boolean superclass;
 

@@ -67,7 +67,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     public CayenneGeneratorTask() {
         this.makepairs = true;
-        this.mode = ArtifactsGenerationMode.RUN_PER_ARTIFACT.getLabel();
+        this.mode = ArtifactsGenerationMode.ENTITY.getLabel();
         this.outputPattern = "*.java";
         this.usepkgpath = true;
     }
@@ -159,6 +159,7 @@ public class CayenneGeneratorTask extends CayenneTask {
             generatorAction.setDataMap(dataMap);
             generatorAction.addEntities(filterAction.getFilteredEntities(dataMap));
             generatorAction.addEmbeddables(filterAction.getFilteredEmbeddables(dataMap));
+            generatorAction.addQueries(dataMap.getQueries());
             generatorAction.execute();
         }
         catch (Exception e) {
