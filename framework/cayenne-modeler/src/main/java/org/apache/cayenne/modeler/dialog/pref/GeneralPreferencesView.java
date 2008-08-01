@@ -43,8 +43,8 @@ public class GeneralPreferencesView extends JPanel {
         this.encodingSelector = new EncodingSelectorView();
         this.saveIntervalLabel = new JLabel("Preferences Save Interval (sec):");
         this.encodingSelectorLabel = new JLabel("File Encoding:");
-        this.autoLoadProjectBox = new JCheckBox("Automatically load last opened project.");
-        this.deletePromptBox = new JCheckBox("Always delete items without prompt.");
+        this.autoLoadProjectBox = new JCheckBox("Automatically Load Last Opened Project");
+        this.deletePromptBox = new JCheckBox("Always Delete Items Without Prompt");
 
         FormLayout layout = new FormLayout(
                 "right:pref, 3dlu, 30dlu, 3dlu, fill:70dlu",
