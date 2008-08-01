@@ -19,38 +19,24 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.TableCellEditor;
-
-import org.apache.cayenne.modeler.util.PanelFactory;
-import org.scopemvc.core.Selector;
-import org.scopemvc.view.swing.SAction;
-import org.scopemvc.view.swing.SButton;
-import org.scopemvc.view.swing.SComboBox;
-import org.scopemvc.view.swing.SLabel;
-import org.scopemvc.view.swing.SListCellRenderer;
-import org.scopemvc.view.swing.SPanel;
-import org.scopemvc.view.swing.STable;
-import org.scopemvc.view.swing.STableModel;
-import org.scopemvc.view.swing.STextField;
-import org.scopemvc.view.swing.SwingView;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.modeler.util.EntityTreeFilter;
+import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.modeler.util.PanelFactory;
+import org.scopemvc.view.swing.*;
+
+import javax.swing.*;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * A view of the dialog for mapping an ObjRelationship to one or more DbRelationships.
@@ -60,7 +46,12 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class ObjRelationshipInfoDialog extends SPanel {
 
-    protected STable pathTable;
+    static final Dimension BROWSER_CELL_DIM = new Dimension(130, 200);
+    
+    /**
+     * Browser to select path for flattened relationship 
+     */
+    protected MultiColumnBrowser pathBrowser;
 
     protected Component collectionTypeLabel;
     protected SComboBox collectionTypeCombo;
@@ -110,28 +101,16 @@ public class ObjRelationshipInfoDialog extends SPanel {
         mapKeysCombo = new SComboBox();
         mapKeysCombo.setSelector(ObjRelationshipInfoModel.MAP_KEYS_SELECTOR);
         mapKeysCombo.setSelectionSelector(ObjRelationshipInfoModel.MAP_KEY_SELECTOR);
-
-        pathTable = new ObjRelationshipPathTable();
-        STableModel pathTableModel = new STableModel(pathTable);
-        pathTableModel
-                .setSelector(ObjRelationshipInfoModel.DB_RELATIONSHIP_PATH_SELECTOR);
-        pathTableModel.setColumnNames(new String[] {
-            "DbRelationships"
-        });
-        pathTableModel.setColumnSelectors(new Selector[] {
-            EntityRelationshipsModel.RELATIONSHIP_DISPLAY_NAME_SELECTOR
-        });
-
-        pathTable.setModel(pathTableModel);
-        pathTable
-                .setSelectionSelector(ObjRelationshipInfoModel.SELECTED_PATH_COMPONENT_SELECTOR);
-        pathTable.getColumn("DbRelationships").setCellEditor(createRelationshipEditor());
-
+        
+        pathBrowser = new ObjRelationshipPathBrowser();
+        pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
+        pathBrowser.setDefaultRenderer();
+        
         // enable/disable map keys for collection type selection
         collectionTypeCombo.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent action) {
-                initFromModel();
+                updateCollectionChoosers();
             }
         });
 
@@ -143,7 +122,7 @@ public class ObjRelationshipInfoDialog extends SPanel {
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
-                        "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, fill:min(120dlu;pref)",
+                        "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, 120dlu, 3dlu, fill:min(120dlu;pref)",
                         "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
         builder.setDefaultDialogBorder();
 
@@ -160,13 +139,16 @@ public class ObjRelationshipInfoDialog extends SPanel {
         builder.add(mapKeysCombo, cc.xywh(3, 11, 1, 1));
 
         builder.addSeparator("Mapping to DbRelationships", cc.xywh(1, 13, 5, 1));
-        builder.add(new JScrollPane(pathTable), cc.xywh(1, 15, 3, 3));
+        builder.add(new JScrollPane(
+                pathBrowser,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 15, 5, 3));
 
         JPanel newRelationshipsButtons = new JPanel(new FlowLayout(FlowLayout.LEADING));
         newRelationshipsButtons.add(newToOneButton);
         newRelationshipsButtons.add(newToManyButton);
 
-        builder.add(newRelationshipsButtons, cc.xywh(5, 15, 1, 3));
+        builder.add(newRelationshipsButtons, cc.xywh(7, 15, 1, 3));
 
         add(builder.getPanel(), BorderLayout.CENTER);
         add(PanelFactory.createButtonPanel(new JButton[] {
@@ -175,112 +157,84 @@ public class ObjRelationshipInfoDialog extends SPanel {
     }
 
     /**
-     * Cancels any editing that might be going on in the path table.
+     * @return relationship path browser
      */
-    public void cancelTableEditing() {
-        int row = pathTable.getEditingRow();
-        if (row < 0) {
-            return;
-        }
-
-        int column = pathTable.getEditingColumn();
-        if (column < 0) {
-            return;
-        }
-
-        TableCellEditor editor = pathTable.getCellEditor(row, column);
-        if (editor != null) {
-            editor.cancelCellEditing();
-        }
+    public MultiColumnBrowser getPathBrowser() {
+        return pathBrowser;
     }
 
     void initFromModel() {
         // called too early in the cycle...
-        if (getController() == null || getController().getModel() == null) {
+        if (!updateCollectionChoosers()) {
             return;
         }
 
         ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getController()
-                .getModel();
+            .getModel();
+        
+        if (pathBrowser.getModel() == null) {
+            EntityTreeModel treeModel = new EntityTreeModel(model.getStartEntity());
+            treeModel.setFilter(
+                    new EntityTreeFilter() {
+                        public boolean attributeMatch(Object node, Attribute attr) {
+                            //attrs not allowed here
+                            return false;
+                        }
 
+                        public boolean relationshipMatch(Object node, Relationship rel) {
+                            if (!(node instanceof Relationship)) {
+                                return true;
+                            }
+                            
+                            /**
+                             * We do not allow A->B->A chains, where relationships are to-one
+                             */
+                            Relationship prev = (Relationship) node;
+                            
+                            return !(!prev.isToMany() && !rel.isToMany() &&
+                                    rel.getTargetEntity() != null &&
+                                    prev.getSourceEntity() == rel.getTargetEntity() &&
+                                    prev.getSourceEntity() != prev.getTargetEntity());
+                        }
+                        
+                    });
+        
+            pathBrowser.setModel(treeModel);
+        
+            List<DbRelationship> rels = model.getDbRelationships();
+            if (rels.size() > 0) {
+                Object[] path = new Object[rels.size() + 1];
+                path[0] = model.getStartEntity();
+            
+                System.arraycopy(rels.toArray(), 0, path, 1, rels.size());
+            
+                pathBrowser.setSelectionPath(new TreePath(path));
+            }
+        }
+    }
+    
+    /**
+     * Updates 'collection type' and 'map keys' comboboxes 
+     */
+    boolean updateCollectionChoosers() {
+        if (getController() == null || getController().getModel() == null) {
+            return false;
+        }
+        
+        ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getController()
+                .getModel();
+        
         boolean collectionTypeEnabled = model.isToMany();
         collectionTypeCombo.setEnabled(collectionTypeEnabled);
         collectionTypeLabel.setEnabled(collectionTypeEnabled);
-
+        
         boolean mapKeysEnabled = collectionTypeEnabled
                 && ObjRelationshipInfoModel.COLLECTION_TYPE_MAP
                         .equals(collectionTypeCombo.getSelectedItem());
         mapKeysCombo.setEnabled(mapKeysEnabled);
         mapKeysLabel.setEnabled(mapKeysEnabled);
+        
+        return true;
     }
 
-    TableCellEditor createRelationshipEditor() {
-        JComboBox relationshipCombo = new JComboBox();
-        relationshipCombo.setEditable(false);
-
-        // enable disable collections when relationship semntics changes
-        relationshipCombo.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent event) {
-                initFromModel();
-            }
-        });
-
-        return new RelationshipPicker(this, relationshipCombo);
-    }
-
-    class ObjRelationshipPathTable extends STable {
-
-        final Dimension preferredSize = new Dimension(203, 100);
-
-        ObjRelationshipPathTable() {
-            setRowHeight(25);
-            setRowMargin(3);
-        }
-
-        public Dimension getPreferredScrollableViewportSize() {
-            return preferredSize;
-        }
-    }
-
-    final class RelationshipPicker extends DefaultCellEditor {
-
-        JComboBox comboBox;
-        SwingView view;
-
-        RelationshipPicker(SwingView view, JComboBox comboBox) {
-            super(comboBox);
-            this.comboBox = comboBox;
-            this.view = view;
-        }
-
-        public Component getTableCellEditorComponent(
-                JTable table,
-                Object value,
-                boolean isSelected,
-                int row,
-                int column) {
-
-            // initialize combo box
-            ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) view
-                    .getBoundModel();
-
-            EntityRelationshipsModel relationshipWrapper = (EntityRelationshipsModel) model
-                    .getDbRelationshipPath()
-                    .get(row);
-
-            DefaultComboBoxModel comboModel = new DefaultComboBoxModel(
-                    relationshipWrapper.getRelationshipNames());
-            comboModel.setSelectedItem(value);
-            comboBox.setModel(comboModel);
-
-            // call super
-            return super.getTableCellEditorComponent(
-                    table,
-                    value,
-                    isSelected,
-                    row,
-                    column);
-        }
-    }
 }

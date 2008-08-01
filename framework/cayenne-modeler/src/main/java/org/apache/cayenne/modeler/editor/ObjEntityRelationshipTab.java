@@ -19,34 +19,6 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Collection;
-import java.util.EventObject;
-import java.util.List;
-
-import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
@@ -65,16 +37,21 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
-import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
-import org.apache.cayenne.modeler.util.CellRenderers;
-import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.PanelFactory;
-import org.apache.cayenne.modeler.util.UIUtil;
+import org.apache.cayenne.modeler.util.*;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.EventObject;
+import java.util.List;
 
 /**
  * Displays ObjRelationships for the edited ObjEntity.
@@ -176,6 +153,11 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                         .getModel();
                 new ObjRelationshipInfoController(mediator, model.getRelationship(row))
                         .startup();
+                
+                /**
+                 * This is required for a table to be updated properly
+                 */
+                table.cancelEditing();
 
                 // need to refresh selected row... do this by unselecting/selecting the
                 // row
@@ -239,9 +221,10 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                 rels[i] = model.getRelationship(sel[i]);
             }
             
-            if (rels.length == 1 && rels[0].getTargetEntity() != null
-                    && ((ObjEntity) rels[0].getSourceEntity()).getDbEntity() != null
-                    && ((ObjEntity) rels[0].getTargetEntity()).getDbEntity() != null) {
+            /**
+             * As of CAY-1077, relationship inspector can be opened even if no target entity was set.
+             */
+            if (rels.length == 1 && ((ObjEntity) rels[0].getSourceEntity()).getDbEntity() != null) {
                 resolve.setEnabled(true);
             }
             else

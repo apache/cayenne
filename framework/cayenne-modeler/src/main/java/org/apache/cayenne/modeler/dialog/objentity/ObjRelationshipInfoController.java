@@ -19,25 +19,32 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.util.Collection;
-
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialog;
+import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.util.MultiColumnBrowser;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.scopemvc.controller.basic.BasicController;
 import org.scopemvc.core.Control;
 import org.scopemvc.core.ControlException;
 
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
+
 /**
  * @since 1.1
  * @author Andrus Adamchik
  */
-public class ObjRelationshipInfoController extends BasicController {
+public class ObjRelationshipInfoController extends BasicController implements TreeSelectionListener {
 
     public static final String SAVE_CONTROL = "cayenne.modeler.mapObjRelationship.save.button";
     public static final String CANCEL_CONTROL = "cayenne.modeler.mapObjRelationship.cancel.button";
@@ -50,23 +57,41 @@ public class ObjRelationshipInfoController extends BasicController {
             ObjRelationship relationship) {
 
         this.mediator = mediator;
-        Collection objEntities = mediator.getCurrentDataMap().getNamespace().getObjEntities();
+        Collection<ObjEntity> objEntities = mediator.getCurrentDataMap().getNamespace().getObjEntities();
         ObjRelationshipInfoModel model = new ObjRelationshipInfoModel(
                 relationship,
                 objEntities);
         setModel(model);
     }
-
+    
     /**
      * Creates and runs the classpath dialog.
      */
+    @Override
     public void startup() {
+        /**
+         * Some workaround: need to save target first, because even if it is null,
+         * first item will be displayed in combobox. Also we do not want to have empty item
+         * in the combobox.
+         */
+        ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getModel();
+        ObjEntity target = model.getObjectTarget();
+        
         ObjRelationshipInfoDialog view = new ObjRelationshipInfoDialog();
         setView(view);
+        
+        model.setObjectTarget(target);
+        
+        /**
+         * Register auto-selection of the target
+         */
+        view.getPathBrowser().addTreeSelectionListener(this);
+        
         view.initFromModel();
         super.startup();
     }
 
+    @Override
     protected void doHandleControl(Control control) throws ControlException {
         if (control.matchesID(CANCEL_CONTROL)) {
             shutdown();
@@ -100,15 +125,19 @@ public class ObjRelationshipInfoController extends BasicController {
      * name, and create joins.
      */
     protected void createRelationship(boolean toMany) {
-        cancelEditing();
-
         ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getModel();
         DbEntity source = model.getStartEntity();
         DbEntity target = model.getEndEntity();
 
-        EntityRelationshipsModel selectedPathComponent = model.getSelectedPathComponent();
-        if (selectedPathComponent != null) {
-            source = (DbEntity) selectedPathComponent.getSourceEntity();
+        DbRelationship dbRel = model.getLastRelationship();
+        if (dbRel != null) {
+            source = (DbEntity) dbRel.getSourceEntity();
+        }
+        
+        if (target == null) {
+            JOptionPane.showMessageDialog((Component) getView(), "Please select target entity first.",
+                    "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
         }
 
         DbRelationship dbRelationship = (DbRelationship) NamedObjectFactory
@@ -129,20 +158,54 @@ public class ObjRelationshipInfoController extends BasicController {
             source.removeRelationship(dbRelationship.getName());
         }
         else {
-            if (selectedPathComponent == null) {
-                selectedPathComponent = (EntityRelationshipsModel) model
-                        .getDbRelationshipPath()
-                        .get(0);
-                model.setSelectedPathComponent(selectedPathComponent);
-            }
-
-            selectedPathComponent.setRelationshipName(dbRelationship.getName());
+            MultiColumnBrowser pathBrowser = ((ObjRelationshipInfoDialog) getView()).getPathBrowser();
+            Object[] oldPath = pathBrowser.getSelectionPath() == null ?
+                    new Object[0] : pathBrowser.getSelectionPath().getPath();
+            
+            /**
+             * Update the view
+             */
+            EntityTreeModel treeModel = (EntityTreeModel) pathBrowser.getModel();
+            treeModel.invalidateChildren(source);
+            treeModel.invalidateChildren(target);
+            
+            Object[] path = new Object[Math.max(oldPath.length, 2)];
+            System.arraycopy(oldPath, 0, path, 0, path.length - 1);
+            
+            path[path.length - 1] = dbRelationship;
+            pathBrowser.setSelectionPath(new TreePath(path));
         }
 
         dialog.dispose();
     }
-
-    protected void cancelEditing() {
-        ((ObjRelationshipInfoDialog) getView()).cancelTableEditing();
+    
+    public void valueChanged(TreeSelectionEvent e) {
+        TreePath selectedPath = e.getPath();
+        
+        // first item in the path is Entity, so we must have
+        // at least two elements to constitute a valid ordering path
+        if (selectedPath == null || selectedPath.getPathCount() < 2) {
+            return;
+        }
+        
+        Relationship rel = (Relationship) selectedPath.getLastPathComponent();
+        DbEntity target = (DbEntity) rel.getTargetEntity();
+        
+        ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getModel(); 
+        
+        /**
+         * Initialize root with one of mapped ObjEntities.
+         */
+        Collection<ObjEntity> objEntities = target.getDataMap().getMappedEntities(target);
+        model.setObjectTarget(objEntities.size() == 0 ? null : objEntities.iterator().next());
+        
+        List<DbRelationship> relPath = new Vector<DbRelationship>(selectedPath.getPathCount() - 1);
+        for (int i = 1; i < selectedPath.getPathCount(); i++) {
+            relPath.add((DbRelationship) selectedPath.getPathComponent(i));
+        }
+        model.setDbRelationships(relPath);
+        
+        ((ObjRelationshipInfoDialog) getView()).updateCollectionChoosers();
     }
+
 }

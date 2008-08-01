@@ -19,21 +19,16 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.DeleteRule;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.util.Util;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Table model to display ObjRelationships.
@@ -61,6 +56,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         Collections.sort(objectList, new RelationshipComparator());
     }
 
+    @Override
     protected void orderList() {
         // NOOP
     }
@@ -72,6 +68,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
     /**
      * Returns ObjRelationship class.
      */
+    @Override
     public Class getElementsClass() {
         return ObjRelationship.class;
     }
@@ -80,6 +77,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         return 5;
     }
 
+    @Override
     public String getColumnName(int column) {
         switch (column) {
             case REL_NAME:
@@ -98,6 +96,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         }
     }
 
+    @Override
     public Class getColumnClass(int col) {
         switch (col) {
             case REL_TARGET:
@@ -155,6 +154,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         }
     }
 
+    @Override
     public void setUpdatedValueAt(Object value, int row, int column) {
         ObjRelationship relationship = getRelationship(row);
         RelationshipEvent event = new RelationshipEvent(eventSource, relationship, entity);
@@ -168,7 +168,12 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         else if (column == REL_TARGET) {
             ObjEntity target = (ObjEntity) value;
             relationship.setTargetEntity(target);
-
+            
+            /**
+             * Clear existing relationships, otherwise addDbRelationship() might fail
+             */
+            relationship.clearDbRelationships();
+            
             // now try to connect DbEntities if we can do it in one step
             if (target != null) {
                 DbEntity srcDB = ((ObjEntity) relationship.getSourceEntity())
@@ -214,6 +219,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         return (relationship != null) ? relationship.getSourceEntity() != entity : false;
     }
 
+    @Override
     public boolean isCellEditable(int row, int col) {
         return !isInherited(row) && col != REL_SEMANTICS;
     }

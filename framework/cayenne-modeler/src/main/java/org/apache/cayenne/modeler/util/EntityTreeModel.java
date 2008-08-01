@@ -19,20 +19,14 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.Relationship;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-
-import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.Relationship;
+import java.util.*;
 
 /**
  * Swing TreeModel for Entity attributes and relationships
@@ -42,27 +36,20 @@ import org.apache.cayenne.map.Relationship;
  */
 public class EntityTreeModel implements TreeModel {
     protected Entity root;
-    protected Map<String, Object[]> sortedChildren;
+    protected Map<Object, Object[]> sortedChildren;
 
-    // TODO: in the future replace with a more generic filter 
-    // to allow arbitrary tree customization
-    protected boolean hideAttributes;
-
+    /**
+     * Filter for checking attributes and relationships
+     */
+    protected EntityTreeFilter filter;
+    
     public EntityTreeModel(Entity root) {
         this.root = root;
-        sortedChildren = Collections.synchronizedMap(new HashMap<String, Object[]>());
+        sortedChildren = Collections.synchronizedMap(new HashMap<Object, Object[]>());
     }
 
     public Object getRoot() {
         return root;
-    }
-
-    public boolean isHideAttributes() {
-        return hideAttributes;
-    }
-
-    public void setHideAttributes(boolean hideAttributes) {
-        this.hideAttributes = hideAttributes;
     }
 
     public Object getChild(Object node, int index) {
@@ -111,35 +98,50 @@ public class EntityTreeModel implements TreeModel {
         }
 
         synchronized (sortedChildren) {
-            String key = entity.getName();
-            Object[] sortedForNode = (Object[]) sortedChildren.get(key);
+            Object key = node;
+            Object[] sortedForNode = sortedChildren.get(key);
 
             if (sortedForNode == null) {
                 Collection<? extends Attribute> attributes = entity.getAttributes();
                 Collection<? extends Relationship> relationships = entity.getRelationships();
 
+                List<Object> nodes = new Vector<Object>();
+                                
                 // combine two collections in an array
-                int alen = (hideAttributes) ? 0 : attributes.size();
-                int rlen = relationships.size();
-                sortedForNode = new Object[alen + rlen];
-
-                if (!hideAttributes) {
-                    Iterator<? extends Attribute> ait = attributes.iterator();
-                    for (int i = 0; i < alen; i++) {
-                        sortedForNode[i] = ait.next();
+                Iterator<? extends Attribute> ait = attributes.iterator();
+                while (ait.hasNext()) {
+                    Attribute attr = ait.next(); 
+                    
+                    if (filter == null || filter.attributeMatch(node, attr)) {
+                        nodes.add(attr);
                     }
                 }
 
                 Iterator<? extends Relationship> rit = relationships.iterator();
-                for (int i = 0; i < rlen; i++) {
-                    sortedForNode[alen + i] = rit.next();
+                while (rit.hasNext()) {
+                    Relationship rel = rit.next();
+                    
+                    if (filter == null || filter.relationshipMatch(node, rel)) {
+                        nodes.add(rel);
+                    }
                 }
 
+                sortedForNode = nodes.toArray();
+                
                 Arrays.sort(sortedForNode, Comparators.getEntityChildrenComparator());
                 sortedChildren.put(key, sortedForNode);
             }
 
             return sortedForNode;
+        }
+    }
+    
+    /**
+     * Removes children cache for specified entity.
+     */
+    public void invalidateChildren(Entity entity) {
+        synchronized (sortedChildren) {
+            sortedChildren.remove(entity.getName());
         }
     }
 
@@ -153,5 +155,19 @@ public class EntityTreeModel implements TreeModel {
 
         String className = (node != null) ? node.getClass().getName() : "null";
         throw new IllegalArgumentException("Unexpected non-leaf node: " + className);
+    }
+    
+    /**
+     * Sets filter for attrs and rels
+     */
+    public void setFilter(EntityTreeFilter filter) {
+        this.filter = filter;
+    }
+    
+    /**
+     * Returns filter for attrs and rels
+     */
+    public EntityTreeFilter getFilter() {
+        return filter;
     }
 }

@@ -19,26 +19,7 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.AbstractListModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -46,6 +27,11 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -71,7 +57,7 @@ import javax.swing.tree.TreePath;
  */
 public class MultiColumnBrowser extends JPanel {
 
-    private static final ImageIcon rightArrow =
+    protected static final ImageIcon rightArrow =
         ModelerUtil.buildIcon("scroll_right.gif");
 
     public static final int DEFAULT_MIN_COLUMNS_COUNT = 3;
@@ -82,9 +68,14 @@ public class MultiColumnBrowser extends JPanel {
     protected Object[] selectionPath;
     protected Dimension preferredColumnSize;
 
-    private List<BrowserPanel> columns;
-    private ListSelectionListener browserSelector;
-    private List<TreeSelectionListener> treeSelectionListeners;
+    protected List<BrowserPanel> columns;
+    protected ListSelectionListener browserSelector;
+    protected List<TreeSelectionListener> treeSelectionListeners;
+    
+    /**
+     * Whether firing of TreeSelectionListeners is disabled now
+     */
+    private boolean fireDisabled;
 
     public MultiColumnBrowser() {
         this(DEFAULT_MIN_COLUMNS_COUNT);
@@ -123,16 +114,15 @@ public class MultiColumnBrowser extends JPanel {
      * Notifies listeners of a tree selection change.
      */
     protected void fireTreeSelectionEvent(Object[] selectionPath) {
+        if (fireDisabled) {
+            return;
+        }
+        
         TreeSelectionEvent e =
             new TreeSelectionEvent(this, new TreePath(selectionPath), false, null, null);
         synchronized (treeSelectionListeners) {
             for (TreeSelectionListener listener : treeSelectionListeners)
                 listener.valueChanged(e);
-//            Iterator<TreeSelectionListener> it = treeSelectionListeners.iterator();
-//            while (it.hasNext()) {
-//                TreeSelectionListener listener = (TreeSelectionListener) it.next();
-//                listener.valueChanged(e);
-//            }
         }
     }
 
@@ -141,6 +131,34 @@ public class MultiColumnBrowser extends JPanel {
      */
     public TreePath getSelectionPath() {
         return new TreePath(selectionPath);
+    }
+    
+    /**
+     * Sets new selection path and fires an event
+     */
+    public void setSelectionPath(TreePath path) {
+        try {
+            fireDisabled = true;
+            
+            for (int i = 0; i < path.getPathCount(); i++) {
+                selectRow(path.getPathComponent(i), i, path);
+            }
+        }
+        finally {
+            fireDisabled = false;
+        }
+    }
+    
+    /**
+     * Selects one path component
+     */
+    protected void selectRow(Object row, int index, TreePath path) {
+        if (index > 0 && columns.get(index - 1).getSelectedValue() != row) {
+            columns.get(index - 1).setSelectedValue(row, true);
+        }
+        else { //update
+            updateFromModel(row, index - 1);
+        }
     }
 
     /**
@@ -198,11 +216,6 @@ public class MultiColumnBrowser extends JPanel {
             if (columns != null && columns.size() > 0) {
                 for (JList column : columns)
                     column.setCellRenderer(renderer);
-//                Iterator it = columns.iterator();
-//                while (it.hasNext()) {
-//                    JList column = (JList) it.next();
-//                    column.setCellRenderer(renderer);
-//                }
             }
         }
     }
@@ -273,8 +286,7 @@ public class MultiColumnBrowser extends JPanel {
 
     private BrowserPanel appendColumn() {
         BrowserPanel panel = new BrowserPanel();
-        panel.addListSelectionListener(browserSelector);
-        panel.setCellRenderer(renderer);
+        installColumn(panel);
 
         columns.add(panel);
         JScrollPane scroller =
@@ -292,6 +304,14 @@ public class MultiColumnBrowser extends JPanel {
         add(scroller);
         return panel;
     }
+    
+    /**
+     * Installs all needed columns and renderers to a new column
+     */
+    protected void installColumn(BrowserPanel panel) {
+        panel.addListSelectionListener(browserSelector);
+        panel.setCellRenderer(renderer);
+    }
 
     private BrowserPanel removeLastColumn() {
         if (columns.size() == 0) {
@@ -300,12 +320,19 @@ public class MultiColumnBrowser extends JPanel {
 
         int index = columns.size() - 1;
 
-        BrowserPanel panel = (BrowserPanel) columns.remove(index);
-        panel.removeListSelectionListener(browserSelector);
+        BrowserPanel panel = columns.remove(index);
+        uninstallColumn(panel);
 
         // remove ansestor of the column (JScrollPane)
         remove(index);
         return panel;
+    }
+    
+    /**
+     * Removes all local listeners from the column
+     */
+    protected void uninstallColumn(BrowserPanel panel) {
+        panel.removeListSelectionListener(browserSelector);
     }
 
     /**
@@ -346,11 +373,19 @@ public class MultiColumnBrowser extends JPanel {
             viewport.scrollRectToVisible(rectangle);
         }
     }
-
+    
     /**
      * Rebuilds view for the new object selection.
      */
-    private synchronized void updateFromModel(Object selectedNode, int panelIndex) {
+    protected synchronized void updateFromModel(Object selectedNode, int panelIndex) {
+        updateFromModel(selectedNode, panelIndex, true);
+    }
+
+    /**
+     * Rebuilds view for the new object selection.
+     * @param load Whether children are loaded automatically
+     */
+    protected synchronized void updateFromModel(Object selectedNode, int panelIndex, boolean load) {
         if(selectionPath == null) {
             selectionPath = new Object[0];
         }
@@ -362,7 +397,7 @@ public class MultiColumnBrowser extends JPanel {
         for (int i = panelIndex + 1;
             i <= lastIndex && i >= 0 && i < columns.size();
             i++) {
-            BrowserPanel column = (BrowserPanel) columns.get(i);
+            BrowserPanel column = columns.get(i);
             column.getSelectionModel().clearSelection();
             column.setRootNode(null);
         }
@@ -370,18 +405,22 @@ public class MultiColumnBrowser extends JPanel {
         // build path to selected node
         this.selectionPath = rebuildPath(selectionPath, selectedNode, panelIndex);
 
-        // a selectedNode is contained in "panelIndex" column, 
-        // but its children are in the next column.
-        panelIndex++;
-
+        if (load) {
+            // a selectedNode is contained in "panelIndex" column, 
+            // but its children are in the next column.
+            panelIndex++;
+        }
+        
         // expand/contract columns as needed
         adjustViewColumns(panelIndex + 1 - columns.size());
 
-        // selectedNode becomes the root of columns[panelIndex]
-        if (!model.isLeaf(selectedNode)) {
-            BrowserPanel lastPanel = (BrowserPanel) columns.get(panelIndex);
-            lastPanel.setRootNode(selectedNode);
-            scrollToColumn(panelIndex);
+        if (load) {
+            // selectedNode becomes the root of columns[panelIndex]
+            if (!model.isLeaf(selectedNode)) {
+                BrowserPanel lastPanel = columns.get(panelIndex);
+                lastPanel.setRootNode(selectedNode);
+                scrollToColumn(panelIndex);
+            }
         }
 
         fireTreeSelectionEvent(selectionPath);
@@ -436,7 +475,7 @@ public class MultiColumnBrowser extends JPanel {
     // ====================================================
     // Represents a single browser column
     // ====================================================
-    final class BrowserPanel extends JList {
+    protected final class BrowserPanel extends JList {
         BrowserPanel() {
             BrowserPanel.this.setModel(new ColumnListModel());
             BrowserPanel.this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -487,6 +526,7 @@ public class MultiColumnBrowser extends JPanel {
             leafRenderer = CellRenderers.listRenderer();
 
             nonLeafTextRenderer = new DefaultListCellRenderer() {
+                @Override
                 public Border getBorder() {
                     return null;
                 }

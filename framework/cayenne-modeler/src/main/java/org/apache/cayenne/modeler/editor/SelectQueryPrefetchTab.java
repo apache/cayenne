@@ -19,27 +19,26 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JToolBar;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.tree.TreeModel;
-
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.query.PrefetchTreeNode;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.tree.TreeModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Subclass of the SelectQueryOrderingTab configured to work with prefetches.
@@ -82,7 +81,16 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
     protected TreeModel createBrowserModel(Entity entity) {
         EntityTreeModel treeModel = new EntityTreeModel(entity);
-        treeModel.setHideAttributes(true);
+        treeModel.setFilter(
+                new EntityTreeFilter() {
+                    public boolean attributeMatch(Object node, Attribute attr) {
+                        return false;
+                    }
+
+                    public boolean relationshipMatch(Object node, Relationship rel) {
+                        return true;
+                    }
+                });
         return treeModel;
     }
 
