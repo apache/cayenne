@@ -36,6 +36,7 @@ CAY-1073 Bug in Expression.toEJBQL with inExp/notInExp
 CAY-1074 Derby: Wrong SQL Generated for select items -- DESC follows column name
 CAY-1081 DataObjectUtils.objectForPk broken in ROP
 CAY-1082 ROP: RefreshQuery fails to refresh to-many relationships
+CAY-1083 General Preferences Panel - items misaligned
 
 ----------------------------------
 Release: 3.0M4
