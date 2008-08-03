@@ -25,6 +25,7 @@ CAY-1058 Add a maven plugin for starting up the modeler.
 CAY-1060 CM: Allow multiple item selections
 CAY-1061 ResourceFinder: abstract API for looking up resources, including multiple resources for a given name
 CAY-1068 Add support for start index/offset of queries
+CAY-1070 Generating SelectQuery Access Code
 CAY-1085 Use standard JDBC API for writing Oracle LOBs
 
 Bug fixes since M4:

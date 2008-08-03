@@ -31,6 +31,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.NameConverter;
+import org.apache.commons.collections.set.ListOrderedSet;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Collections;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -59,7 +61,7 @@ public class DataMapUtils {
      * @return Method name that perform query.
      */
     public String getQueryMethodName(Query query) {
-        return NameConverter.specialCharsToJava(query.getName());
+        return NameConverter.underscoredToJava(query.getName(), true);
     }
 
     /**
@@ -68,7 +70,7 @@ public class DataMapUtils {
      * @param query
      * @return Parameter names.
      */
-    public Collection<String> getParameterNames(QualifiedQuery query) {
+    public Collection getParameterNames(QualifiedQuery query) {
         Map<String, String> queryParameters = queriesMap.get(query.getName());
 
         if ( queryParameters == null) {
@@ -85,13 +87,13 @@ public class DataMapUtils {
      * @param qualifierString to be parsed
      * @return List of parameter names.
      */
-    private List<String> parseQualifier(String qualifierString) {
-        List<String> result = new LinkedList<String>();
+    private Set parseQualifier(String qualifierString) {
+        Set result = new ListOrderedSet();
         Pattern pattern = Pattern.compile("\\$[\\w]+");
         Matcher matcher = pattern.matcher(qualifierString);
         while(matcher.find()) {
             String name = matcher.group();
-            result.add(name.substring(1));
+            result.add(NameConverter.underscoredToJava(name.substring(1), false));
         }
         
         return result;
@@ -163,7 +165,7 @@ public class DataMapUtils {
             }
 
             for (String name : names) {
-                types.put(name, typeName);
+                types.put(NameConverter.underscoredToJava(name, false), typeName);
             }
 
             return types;
