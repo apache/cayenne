@@ -533,7 +533,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<argLine>
-						-Dcayenne.test.connection=${cayenne.test.connection}
+						-Dcayenne.test.connection=${cayenne.test.connection} -Djava.net.preferIPv4Stack=true
 					</argLine>
 				</configuration>
 			</plugin>
