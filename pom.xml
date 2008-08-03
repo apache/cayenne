@@ -513,7 +513,7 @@
 		<pluginRepository>
 			<id>mergere</id>
 			<name>Mergere Repository</name>
-			<url>http://repo.mergere.com/maven2</url>
+			<url>http://repo1.maven.com/maven2</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>true</enabled>
