@@ -48,6 +48,10 @@
 			<artifactId>velocity</artifactId>
 			<version>1.4</version>
 		</dependency>
+		<dependency>
+			<groupId>com.caucho</groupId>
+			<artifactId>resin-hessian</artifactId>
+		</dependency>
 
 		<!-- 
 			declare non-standard dependencies coming from ObjectStyle repo here to seed the repo and avoid using
@@ -73,10 +77,6 @@
 			<artifactId>vpp</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.caucho</groupId>
-			<artifactId>hessian</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>jgoodies</groupId>
 			<artifactId>forms</artifactId>
 		</dependency>
@@ -93,6 +93,18 @@
 			<id>objectstyle</id>
 			<name>Objectstyle Repository</name>
 			<url>http://objectstyle.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>caucho</id>
+			<name>Caucho Repository</name>
+			<url>http://caucho.com/m2</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>false</enabled>

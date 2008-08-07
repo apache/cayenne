@@ -82,7 +82,7 @@
 
       <groupId>com.caucho</groupId>
 
-      <artifactId>hessian</artifactId>
+      <artifactId>resin-hessian</artifactId>
 
       <version>3.0.20</version>
 

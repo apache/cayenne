@@ -83,7 +83,7 @@
 
 		<dependency>
 			<groupId>com.caucho</groupId>
-			<artifactId>hessian</artifactId>
+			<artifactId>resin-hessian</artifactId>
 		</dependency>
 
 		<dependency>
