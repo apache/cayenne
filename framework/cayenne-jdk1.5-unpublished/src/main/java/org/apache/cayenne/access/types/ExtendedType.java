@@ -63,7 +63,7 @@ public interface ExtendedType {
             Object value,
             int pos,
             int type,
-            int precision) throws Exception;
+            int scale) throws Exception;
 
     /**
      * Reads an object from JDBC ResultSet column, converting it to class returned by
