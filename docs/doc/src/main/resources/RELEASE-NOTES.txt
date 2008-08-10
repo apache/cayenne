@@ -18,6 +18,7 @@ Changes/New Features Since M4:
 CAY-366 Add progress/log view
 CAY-436 In modeler, change default object relationship delete rule
 CAY-888 CM Usability: Object Select Query Improvements
+CAY-894 CM Usability: Welcome screen
 CAY-911 CM Usability: JComboBox Autocompletion
 CAY-1056 Detection of the project file changes on disk.
 CAY-1055 Right-click contextual menu for entities/attributes/relationships that would include common operations, like "delete".
