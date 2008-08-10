@@ -20,20 +20,80 @@
 
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.modeler.action.*;
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+
+import org.apache.cayenne.modeler.action.AboutAction;
+import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
+import org.apache.cayenne.modeler.action.CreateDataMapAction;
+import org.apache.cayenne.modeler.action.CreateDbEntityAction;
+import org.apache.cayenne.modeler.action.CreateDomainAction;
+import org.apache.cayenne.modeler.action.CreateNodeAction;
+import org.apache.cayenne.modeler.action.CreateObjEntityAction;
+import org.apache.cayenne.modeler.action.CreateProcedureAction;
+import org.apache.cayenne.modeler.action.CreateQueryAction;
+import org.apache.cayenne.modeler.action.DocumentationAction;
+import org.apache.cayenne.modeler.action.ExitAction;
+import org.apache.cayenne.modeler.action.FindAction;
+import org.apache.cayenne.modeler.action.GenerateCodeAction;
+import org.apache.cayenne.modeler.action.GenerateDBAction;
+import org.apache.cayenne.modeler.action.ImportDBAction;
+import org.apache.cayenne.modeler.action.ImportDataMapAction;
+import org.apache.cayenne.modeler.action.ImportEOModelAction;
+import org.apache.cayenne.modeler.action.MigrateAction;
+import org.apache.cayenne.modeler.action.NavigateBackwardAction;
+import org.apache.cayenne.modeler.action.NavigateForwardAction;
+import org.apache.cayenne.modeler.action.NewProjectAction;
+import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
+import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.action.ProjectAction;
+import org.apache.cayenne.modeler.action.RemoveAction;
+import org.apache.cayenne.modeler.action.RevertAction;
+import org.apache.cayenne.modeler.action.SaveAction;
+import org.apache.cayenne.modeler.action.SaveAsAction;
+import org.apache.cayenne.modeler.action.ShowLogConsoleAction;
+import org.apache.cayenne.modeler.action.ValidateAction;
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.editor.EditorView;
-import org.apache.cayenne.modeler.event.*;
+import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.DataMapDisplayListener;
+import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
+import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
+import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.MultipleObjectsDisplayEvent;
+import org.apache.cayenne.modeler.event.MultipleObjectsDisplayListener;
+import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
+import org.apache.cayenne.modeler.event.QueryDisplayEvent;
+import org.apache.cayenne.modeler.event.QueryDisplayListener;
+import org.apache.cayenne.modeler.event.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.OperatingSystem;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
 import org.apache.cayenne.pref.Domain;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.AWTEventListener;
-import java.awt.event.KeyEvent;
 
 /**
  * Main frame of CayenneModeler. Responsibilities include coordination of
@@ -64,13 +124,28 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
      */
     protected Component dockComponent;
     
+    /**
+     * Listeners for changes in recent file menu
+     */
+    protected List<RecentFileListListener> recentFileListeners;
+    
+    /**
+     * Welcome screen, shown when no project is open
+     */
+    protected WelcomeScreen welcomeScreen;
+    
     public CayenneModelerFrame(ActionManager actionManager) {
         super(ModelerConstants.TITLE);
         this.actionManager = actionManager;
+        
+        recentFileListeners = new Vector<RecentFileListListener>();
 
         initMenus();
         initToolbar();
         initStatusBar();
+        initWelcome();
+        
+        fireRecentFileListChanged(); //start filling list in welcome screen and in menu
         
         setView(null);
     }
@@ -108,8 +183,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         fileMenu.addSeparator();
 
         recentFileMenu = new RecentFileMenu("Recent Projects");
-        recentFileMenu.rebuildFromPreferences();
-        recentFileMenu.setEnabled(recentFileMenu.getMenuComponentCount() > 0);
+        addRecentFileListListener(recentFileMenu);
         fileMenu.add(recentFileMenu);
 
         // Mac OS X doesn't use File->Exit, it uses CayenneModeler->Quit (command-Q)
@@ -203,6 +277,14 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         getContentPane().add(splitPane, BorderLayout.CENTER);
         getContentPane().add(statusBar, BorderLayout.SOUTH);
+    }
+    
+    /**
+     * Initializes welcome screen
+     */
+    protected void initWelcome() {
+        welcomeScreen = new WelcomeScreen();
+        addRecentFileListListener(welcomeScreen);
     }
     
     /**
@@ -349,10 +431,26 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
             splitPane.setTopComponent(view);
         }
         else {
-            splitPane.setTopComponent(new JPanel());
+            splitPane.setTopComponent(welcomeScreen);
         }
 
         validate();
         splitPane.setDividerLocation(oldLocation);
+    }
+    
+    /**
+     * Adds listener for recent menu changes
+     */
+    public void addRecentFileListListener(RecentFileListListener listener) {
+        recentFileListeners.add(listener);
+    }
+    
+    /**
+     * Notifies all listeners that recent file list has changed
+     */
+    public void fireRecentFileListChanged() {
+        for (int i = 0; i < recentFileListeners.size(); i++) {
+            recentFileListeners.get(i).recentFileListChanged();
+        }
     }
 }

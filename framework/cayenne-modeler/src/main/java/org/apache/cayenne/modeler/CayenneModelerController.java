@@ -43,7 +43,6 @@ import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.RecentFileMenu;
 import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.validator.Validator;
@@ -220,9 +219,7 @@ public class CayenneModelerController extends CayenneController {
         // update preferences
         if (!project.isLocationUndefined()) {
             getLastDirectory().setDirectory(project.getProjectDirectory());
-            RecentFileMenu recentFileMenu = frame.getRecentFileMenu();
-            recentFileMenu.rebuildFromPreferences();
-            recentFileMenu.setEnabled(recentFileMenu.getMenuComponentCount() > 0);
+            frame.fireRecentFileListChanged();
         }
 
         // --- check for load errors

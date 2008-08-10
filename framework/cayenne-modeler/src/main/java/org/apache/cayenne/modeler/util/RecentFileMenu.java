@@ -29,6 +29,7 @@ import javax.swing.JMenuItem;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.event.RecentFileListListener;
 import org.apache.cayenne.swing.control.FileMenuItem;
 
 /**
@@ -37,7 +38,7 @@ import org.apache.cayenne.swing.control.FileMenuItem;
  * 
  * @author Andrus Adamchik
  */
-public class RecentFileMenu extends JMenu {
+public class RecentFileMenu extends JMenu implements RecentFileListListener {
     /**
      * Constructor for RecentFileMenu.
      */
@@ -92,5 +93,10 @@ public class RecentFileMenu extends JMenu {
 
     protected Action findAction() {
         return Application.getInstance().getAction(OpenProjectAction.getActionName());
+    }
+
+    public void recentFileListChanged() {
+        rebuildFromPreferences();
+        setEnabled(getMenuComponentCount() > 0);
     }
 }
