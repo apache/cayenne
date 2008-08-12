@@ -162,6 +162,23 @@ public class EntityUtils {
     public MappingNamespace getEntityResolver() {
         return primaryDataMap.getNamespace();
     }
+    
+    /**
+     * Returns true if current ObjEntity is defined as abstract.
+     */
+    public boolean isAbstract() {
+        return isAbstract(objEntity);
+    }
+    
+    /**
+     * Returns true if current ObjEntity is defined as abstract.
+     */
+    public boolean isAbstract(ObjEntity anObjEntity) {
+        if (anObjEntity == null) 
+            return false;
+        
+        return objEntity.getIsAbstract();
+    }
 
     /**
      * Returns true if current ObjEntity contains at least one toMany relationship.
@@ -169,6 +186,7 @@ public class EntityUtils {
     public boolean hasToManyRelationships() {
         return hasToManyRelationships(objEntity);
     }
+    
 
     /**
      * Returns true if an ObjEntity contains at least one toMany relationship.

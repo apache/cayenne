@@ -20,6 +20,7 @@
 package org.apache.cayenne.project.validator;
 
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
@@ -70,7 +71,9 @@ public class ObjAttributeValidator extends TreeNodeValidator {
             validator.registerWarning("ObjAttribute has no type.", path);
         }
 
-        if (attribute.getDbAttribute() == null) {
+        if (attribute.getEntity() instanceof ObjEntity && ((ObjEntity)attribute.getEntity()).getIsAbstract()) {
+            //nothing, abstract entity does not have to define a dbAttribute
+        } else if (attribute.getDbAttribute() == null) {
             validator.registerWarning("ObjAttribute has no DbAttribute mapping.", path);
         }
         // can't support generated meaningful attributes for now; besides they don't make

@@ -40,6 +40,6 @@ ${importUtils.addType("${superPackageName}.${superClassName}")}##
 ${importUtils.generate()}
 
 
-public class ${subClassName} extends ${superClassName} {
+public#if("true" == "${object.getIsAbstract()}") abstract#end class ${subClassName} extends ${superClassName} {
 
 }

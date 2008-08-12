@@ -47,7 +47,7 @@ $importUtils.addType(${rel.CollectionType})##
 #end
 ${importUtils.generate()}
 
-public class ${subClassName} extends ${baseClassName} {
+public#if("true" == "${object.getIsAbstract()}") abstract#end class ${subClassName} extends ${baseClassName} {
 
 ## Create property names
 #foreach( $attr in ${object.DeclaredAttributes} )

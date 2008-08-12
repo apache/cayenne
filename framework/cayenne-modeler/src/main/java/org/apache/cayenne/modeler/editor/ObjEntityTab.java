@@ -103,11 +103,13 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
     protected JCheckBox excludeDefaultListeners;
 
     protected JComponent clientSeparator;
+    protected JLabel isAbstractLabel;
     protected JLabel serverOnlyLabel;
     protected JLabel clientClassNameLabel;
     protected JLabel clientSuperClassNameLabel;
 
     protected JCheckBox serverOnly;
+    protected JCheckBox isAbstract;
     protected TextAdapter clientClassName;
     protected TextAdapter clientSuperClassName;
 
@@ -176,6 +178,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         syncWithDbEntityButton.setIcon(ModelerUtil.buildIcon("icon-sync.gif"));
         syncWithDbEntityButton.setToolTipText("Sync this ObjEntity with its DBEntity");
 
+        isAbstract = new JCheckBox();
         serverOnly = new JCheckBox();
         clientClassName = new TextAdapter(new JTextField()) {
 
@@ -203,6 +206,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         builder.append("ObjEntity Name:", name.getComponent(), 3);
         builder.append("Inheritance:", superEntityCombo, 3);
         builder.append(tableLabel, dbEntityCombo, syncWithDbEntityButton);
+        isAbstractLabel = builder.append("Abstract class:", isAbstract, 3);
 
         builder.appendSeparator();
 
@@ -360,6 +364,17 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                 }
             }
         });
+        
+        isAbstract.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                ObjEntity entity = mediator.getCurrentObjEntity();
+                if (entity != null) {
+                    entity.setIsAbstract(isAbstract.isSelected());
+                    mediator.fireObjEntityEvent(new EntityEvent(this, entity));
+                }
+            }
+        });
     }
 
     /**
@@ -376,7 +391,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         superClassName.setText(entity.getSuperClassName());
         className.setText(entity.getClassName());
         readOnly.setSelected(entity.isReadOnly());
-
+        
+        isAbstract.setSelected(entity.getIsAbstract());
         serverOnly.setSelected(entity.isServerOnly());
         clientClassName.setText(entity.getClientClassName());
         clientSuperClassName.setText(entity.getClientSuperClassName());

@@ -32,6 +32,6 @@ ${importUtils.addReservedType("${entityUtils.subPackageName}.${entityUtils.subCl
 ${importUtils.addType("${entityUtils.superPackageName}.${entityUtils.superClassName}")}##
 ${importUtils.generate()}
 
-public class ${entityUtils.subClassName} extends ${entityUtils.superClassName} {
+public#if("true" == "${object.getIsAbstract()}") abstract#end class ${entityUtils.subClassName} extends ${entityUtils.superClassName} {
 
 }

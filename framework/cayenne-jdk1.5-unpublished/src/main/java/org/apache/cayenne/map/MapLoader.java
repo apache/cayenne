@@ -869,6 +869,9 @@ public class MapLoader extends DefaultHandler {
         objEntity.setClassName(atts.getValue("", "className"));
         objEntity.setClientClassName(atts.getValue("", "clientClassName"));
 
+        String isAbstract = atts.getValue("", "abstract");
+        objEntity.setIsAbstract(TRUE.equalsIgnoreCase(isAbstract));
+        
         String readOnly = atts.getValue("", "readOnly");
         objEntity.setReadOnly(TRUE.equalsIgnoreCase(readOnly));
 

@@ -42,6 +42,6 @@ ${importUtils.generate()}
 /**
  * A persistent class mapped as "${object.name}" Cayenne entity.
  */
-public class ${subClassName} extends ${superClassName} {
+public#if("true" == "${object.getIsAbstract()}") abstract#end class ${subClassName} extends ${superClassName} {
 
 }
