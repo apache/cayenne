@@ -116,14 +116,18 @@ public class IncrementalFaultList<E> implements List<E> {
     public IncrementalFaultList(DataContext dataContext, Query query) {
         QueryMetadata metadata = query.getMetaData(dataContext.getEntityResolver());
         if (metadata.getPageSize() <= 0) {
-            throw new CayenneRuntimeException(
-                    "IncrementalFaultList does not support unpaged queries. Query page size is "
-                            + metadata.getPageSize());
+            throw new CayenneRuntimeException("Not a paginated query; page size: "
+                    + metadata.getPageSize());
         }
 
         this.dataContext = dataContext;
         this.pageSize = metadata.getPageSize();
         this.rootEntity = metadata.getObjEntity();
+
+        if (rootEntity == null) {
+            throw new CayenneRuntimeException(
+                    "Pagination is not supported for queries not rooted in an ObjEntity");
+        }
 
         // create an internal query, it is a partial replica of
         // the original query and will serve as a value holder for
