@@ -30,7 +30,7 @@ import javax.swing.JOptionPane;
 public class UnsavedChangesDialog {
 
     private static final String SAVE_AND_CLOSE = "Save Changes";
-    private static final String CLOSE_WITHOUT_SAVE = "Ignore Changes";
+    private static final String CLOSE_WITHOUT_SAVE = "Discard Changes";
     private static final String CANCEL = "Cancel";
 
     private static final String[] OPTIONS = new String[] {
