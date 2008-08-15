@@ -18,22 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.reflect.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A common base superclass for Cayenne ObjectContext implementors.
@@ -42,6 +37,42 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * @author Andrus Adamchik
  */
 public abstract class BaseContext implements ObjectContext {
+
+    /**
+     * A holder of a ObjectContext bound to the current thread.
+     *
+     * @since 3.0
+     */
+    protected static final ThreadLocal<ObjectContext> threadObjectContext = new ThreadLocal<ObjectContext>();
+
+    /**
+     * Returns the ObjectContext bound to the current thread.
+     *
+     * @since 3.0
+     * @return the ObjectContext associated with caller thread.
+     * @throws IllegalStateException if there is no ObjectContext bound to the current
+     *             thread.
+     * @see org.apache.cayenne.conf.WebApplicationContextFilter
+     */
+    public static ObjectContext getThreadObjectContext() throws IllegalStateException {
+        ObjectContext context = threadObjectContext.get();
+        if (context == null) {
+            throw new IllegalStateException("Current thread has no bound DataContext.");
+        }
+
+        return context;
+    }
+
+    /**
+     * Binds a ObjectContext to the current thread. ObjectContext can later be retrieved by
+     * users in the same thread by calling {@link BaseContext#getThreadObjectContext}.
+     * Using null parameter will unbind currently bound ObjectContext.
+     *
+     * @since 3.0
+     */
+    public static void bindThreadObjectContext(ObjectContext context) {
+        threadObjectContext.set(context);
+    }
 
     // if we are to pass the context around, channel should be left alone and
     // reinjected later if needed
