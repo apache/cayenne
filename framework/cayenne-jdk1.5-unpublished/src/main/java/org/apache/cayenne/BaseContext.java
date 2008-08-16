@@ -18,17 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.reflect.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.apache.cayenne.reflect.AttributeProperty;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * A common base superclass for Cayenne ObjectContext implementors.
@@ -57,7 +62,7 @@ public abstract class BaseContext implements ObjectContext {
     public static ObjectContext getThreadObjectContext() throws IllegalStateException {
         ObjectContext context = threadObjectContext.get();
         if (context == null) {
-            throw new IllegalStateException("Current thread has no bound DataContext.");
+            throw new IllegalStateException("Current thread has no bound ObjectContext.");
         }
 
         return context;

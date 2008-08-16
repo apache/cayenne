@@ -19,7 +19,31 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.cayenne.BaseContext;
+import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.DataObject;
+import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DeleteDenyException;
+import org.apache.cayenne.Fault;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheFactory;
@@ -29,18 +53,27 @@ import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.graph.GraphManager;
-import org.apache.cayenne.map.*;
-import org.apache.cayenne.query.*;
-import org.apache.cayenne.reflect.*;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.LifecycleEvent;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.NamedQuery;
+import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.RefreshQuery;
+import org.apache.cayenne.reflect.AttributeProperty;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ObjectContextGraphAction;
 import org.apache.cayenne.util.Util;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.*;
 
 /**
  * The most common implementation of {@link ObjectContext}. DataContext is an isolated
@@ -93,12 +126,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * @deprecated since 3.0, replaced by BaseContex#getThreadObjectContext().
      */
     public static DataContext getThreadDataContext() throws IllegalStateException {
-        try {
-            return (DataContext) BaseContext.getThreadObjectContext();
-        }
-        catch(final IllegalStateException ex) {
-            throw new IllegalStateException("Current thread has no bound DataContext.");
-        }
+        return (DataContext) BaseContext.getThreadObjectContext();
     }
 
     /**
