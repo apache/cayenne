@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.File;
-
-import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationAction1_1;
 import org.apache.cayenne.gen.ClassGenerator;
@@ -32,6 +29,8 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+
+import java.io.File;
 
 /**
  * Maven mojo to perform class generation from data map. This class is an Maven
@@ -220,8 +219,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		// Create the destination directory if necessary.
-		// TODO: (KJM 11/2/06) The destDir really should be added as a
-		// compilation resource for maven.
+		// TODO: (KJM 11/2/06) The destDir really should be added as a compilation resource for maven.
 		if (!destDir.exists()) {
 			destDir.mkdirs();
 		}

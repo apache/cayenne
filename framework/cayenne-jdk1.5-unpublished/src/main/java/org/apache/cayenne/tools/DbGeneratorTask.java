@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.File;
-import java.sql.Driver;
-
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
@@ -32,6 +29,9 @@ import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.xml.sax.InputSource;
+
+import java.io.File;
+import java.sql.Driver;
 
 /**
  * An Ant Task that is a frontend to Cayenne DbGenerator allowing schema generation from
@@ -66,25 +66,10 @@ public class DbGeneratorTask extends CayenneTask {
             adapter = new JdbcAdapter();
         }
 
-        log("connection settings - [driver: "
-                + driver
-                + ", url: "
-                + url
-                + ", username: "
-                + userName
-                + "]", Project.MSG_VERBOSE);
+        log(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, userName), Project.MSG_VERBOSE);
 
-        log("generator options - [dropTables: "
-                + dropTables
-                + ", dropPK: "
-                + dropPK
-                + ", createTables: "
-                + createTables
-                + ", createPK: "
-                + createPK
-                + ", createFK: "
-                + createFK
-                + "]", Project.MSG_VERBOSE);
+        log(String.format("generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
+                dropTables, dropPK, createTables, createPK, createFK), Project.MSG_VERBOSE);
 
         validateAttributes();
 
