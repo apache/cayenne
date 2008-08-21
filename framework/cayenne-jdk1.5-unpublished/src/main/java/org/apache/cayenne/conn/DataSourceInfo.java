@@ -202,10 +202,8 @@ public class DataSourceInfo implements Cloneable, Serializable {
 
     public PasswordEncoding getPasswordEncoder() {
         try {
-            return (PasswordEncoding) Thread.currentThread()
-                                            .getContextClassLoader()
-                                            .loadClass(getPasswordEncoderClass())
-                                            .newInstance();
+            return (PasswordEncoding)
+                Util.getJavaClass(getPasswordEncoderClass()).newInstance();
         }
         catch (InstantiationException e) {
             ; // Swallow it -- no need to throw/etc.
