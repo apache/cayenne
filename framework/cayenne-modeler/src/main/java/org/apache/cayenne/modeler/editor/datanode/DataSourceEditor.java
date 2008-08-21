@@ -43,6 +43,8 @@ public abstract class DataSourceEditor extends CayenneController {
         initBindings();
     }
 
+   
+
     public DataNode getNode() {
         return node;
     }

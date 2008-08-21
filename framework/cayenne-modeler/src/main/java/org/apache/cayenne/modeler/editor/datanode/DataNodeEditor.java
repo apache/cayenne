@@ -23,6 +23,7 @@ import java.awt.Component;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.text.StyledEditorKit.BoldAction;
 
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -36,13 +37,18 @@ public class DataNodeEditor extends CayenneController {
 
     public DataNodeEditor(ProjectController parent) {
         super(parent);
-
+        
         this.view = new JTabbedPane();
-        view.addTab("Main", new JScrollPane(new MainDataNodeEditor(parent).getView()));
+        view.addTab("Main", new JScrollPane(new MainDataNodeEditor(parent,this).getView()));
         view.addTab("Adapter", new AdapterEditor(parent).getView());
+        view.addTab("Password Encoder", new PasswordEncoderEditor(parent).getView()) ;
     }
 
     public Component getView() {
+        return view;
+    }
+    
+    public JTabbedPane getTabComponent() {
         return view;
     }
 }

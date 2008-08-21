@@ -28,6 +28,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
@@ -38,6 +40,7 @@ import org.apache.cayenne.conf.JNDIDataSourceFactory;
 import org.apache.cayenne.map.event.DataNodeEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
+import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -64,7 +67,7 @@ public class MainDataNodeEditor extends CayenneController {
                      DBCPDataSourceFactory.class.getName() };
 
     protected MainDataNodeView view;
-
+    protected DataNodeEditor tabbedPaneController;
     protected DataNode node;
     protected Map datasourceEditors;
     protected Map localDataSources;
@@ -74,14 +77,16 @@ public class MainDataNodeEditor extends CayenneController {
     protected BindingDelegate nodeChangeProcessor;
     protected ObjectBinding[] bindings;
     protected ObjectBinding localDataSourceBinding;
+    
 
-    public MainDataNodeEditor(ProjectController parent) {
+    public MainDataNodeEditor(ProjectController parent,DataNodeEditor tabController) {
+        
         super(parent);
-
+        this.tabbedPaneController = tabController;
         this.view = new MainDataNodeView();
         this.datasourceEditors = new HashMap();
         this.localDataSources = new HashMap();
-
+        
         this.nodeChangeProcessor = new BindingDelegate() {
 
             public void modelUpdated(
@@ -174,7 +179,6 @@ public class MainDataNodeEditor extends CayenneController {
     protected void initController() {
         view.getDataSourceDetail().add(defaultSubeditor.getView(), "default");
         view.getFactories().setEditable(true);
-
         // init combo box choices
         view.getFactories().setModel(
                 new DefaultComboBoxModel(standardDataSourceFactories));
@@ -208,7 +212,7 @@ public class MainDataNodeEditor extends CayenneController {
         // use delegate for the rest of them
 
         builder.setDelegate(nodeChangeProcessor);
-
+        
         bindings = new ObjectBinding[2];
         bindings[0] = builder.bindToTextField(view.getDataNodeName(), "nodeName");
         bindings[1] = builder.bindToComboSelection(view.getFactories(), "factoryName");
@@ -273,7 +277,7 @@ public class MainDataNodeEditor extends CayenneController {
      */
     protected void showDataSourceSubview(String factoryName) {
         DataSourceEditor c = (DataSourceEditor) datasourceEditors.get(factoryName);
-
+        
         // create subview dynamically...
         if (c == null) {
 
@@ -307,11 +311,26 @@ public class MainDataNodeEditor extends CayenneController {
             // this is needed to display freshly added panel...
             view.getDataSourceDetail().getParent().validate();
         }
-
+        
         // this will refresh subview...
         c.setNode(node);
-
+        disabledTab(factoryName);
         // display the right subview...
         view.getDataSourceDetailLayout().show(view.getDataSourceDetail(), factoryName);
+        
+    }
+    
+    protected void disabledTab(String name){
+        
+        if(name.equals(standardDataSourceFactories[0])){
+            tabbedPaneController.getTabComponent().setEnabledAt(2, true);
+        }
+        else if(name.equals(standardDataSourceFactories[1])){
+            tabbedPaneController.getTabComponent().setEnabledAt(2, false);
+        }
+        if(name.equals(standardDataSourceFactories[2])){
+            tabbedPaneController.getTabComponent().setEnabledAt(2, false);
+        }
+        
     }
 }

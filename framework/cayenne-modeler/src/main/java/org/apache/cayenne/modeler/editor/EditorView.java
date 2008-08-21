@@ -28,6 +28,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeView;
@@ -78,10 +79,10 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     protected ProjectController eventController;
     protected JSplitPane splitPane;
     protected Container detailPanel;
-
     protected CardLayout detailLayout;
-
     private ProjectTreeView treePanel;
+    
+    
     public ProjectTreeView getProjectTreeView() {
         return treePanel;
     }
@@ -126,7 +127,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         detailPanel.add(new JScrollPane(domainView), DOMAIN_VIEW);
 
         DataNodeEditor nodeController = new DataNodeEditor(eventController);
-        detailPanel.add(nodeController.getView(), NODE_VIEW);
+        detailPanel.add(nodeController.getView(), NODE_VIEW); 
 
         Component dataMapView = new DataMapTabbedView(eventController);
         detailPanel.add(dataMapView, DATA_MAP_VIEW);
