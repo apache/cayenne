@@ -21,7 +21,6 @@ package org.apache.cayenne.conn;
 
 import java.io.Serializable;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.conf.PasswordEncoding;
 import org.apache.cayenne.conf.PlainTextPasswordEncoder;
 import org.apache.cayenne.util.Util;
@@ -202,19 +201,26 @@ public class DataSourceInfo implements Cloneable, Serializable {
     }
 
     public PasswordEncoding getPasswordEncoder() {
-        String encoderClassName = getPasswordEncoderClass();
-        if (encoderClassName == null) {
-            encoderClassName = PasswordEncoding.standardEncoders[0];
+        try {
+            return (PasswordEncoding) Thread.currentThread()
+                                            .getContextClassLoader()
+                                            .loadClass(getPasswordEncoderClass())
+                                            .newInstance();
+        }
+        catch (InstantiationException e) {
+            ; // Swallow it -- no need to throw/etc.
+        }
+        catch (IllegalAccessException e) {
+            ; // Swallow it -- no need to throw/etc.
+        }
+        catch (ClassNotFoundException e) {
+            ; // Swallow it -- no need to throw/etc.
         }
 
-        try {
-            return (PasswordEncoding) Util
-                    .getJavaClass(getPasswordEncoderClass())
-                    .newInstance();
-        }
-        catch (Exception e) {
-            throw new CayenneRuntimeException("Error loading encoder", e);
-        }
+        logger.error("Failed to obtain specified Password Encoder '" +
+                     getPasswordEncoderClass() + "' -- please check CLASSPATH");
+
+        return null;
     }
 
     /**
