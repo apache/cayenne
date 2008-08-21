@@ -313,6 +313,10 @@ public class DriverDataSourceFactory implements DataSourceFactory {
             String password = atts.getValue("password");
             String passwordLocation = atts.getValue("passwordLocation");
             String passwordSource = atts.getValue("passwordSource");
+            if(passwordSource == null) {
+                passwordSource = DataSourceInfo.PASSWORD_LOCATION_MODEL;
+            }
+            
             String username = atts.getValue("userName");
 
             driverInfo.setPasswordEncoderClass(encoderClass);
@@ -329,11 +333,10 @@ public class DriverDataSourceFactory implements DataSourceFactory {
 
             PasswordEncoding passwordEncoder = driverInfo.getPasswordEncoder();
 
-            if (passwordLocation != null) // New style model (v1.2), process extra
-            // locations
-            {
+            if (passwordLocation != null) {
                 if (passwordLocation.equals(DataSourceInfo.PASSWORD_LOCATION_CLASSPATH)) {
-                    URL url = parentConfiguration.getResourceFinder().getResource(passwordLocation);
+                    URL url = parentConfiguration.getResourceFinder().getResource(
+                            passwordLocation);
 
                     if (url != null)
                         password = passwordFromURL(url);
