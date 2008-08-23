@@ -21,6 +21,7 @@
 package org.apache.cayenne.dba.hsqldb;
 
 import java.sql.PreparedStatement;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -193,15 +194,29 @@ public class HSQLDBAdapter extends JdbcAdapter {
     @Override
     public String createTable(DbEntity ent) {
         // SET SCHEMA <schemaname>
-
         String sql = super.createTable(ent);
-
         if (sql != null && sql.toUpperCase().startsWith("CREATE TABLE ")) {
             sql = "CREATE CACHED TABLE " + sql.substring("CREATE TABLE ".length());
         }
 
         return sql;
     }
+
+    @Override
+    protected void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+        //CAY-1095: if the column is type double, temporarily set the max length to 0 to 
+        //avoid adding precision information.
+        if (column.getType() == Types.DOUBLE && column.getMaxLength() > 0) {
+            int len = column.getMaxLength();
+            column.setMaxLength(0);
+            super.createTableAppendColumn(sqlBuffer,column);
+            column.setMaxLength(len);
+        } else {
+            super.createTableAppendColumn(sqlBuffer,column);
+        }
+    }
+
+
     
     @Override
     public MergerFactory mergerFactory() {
