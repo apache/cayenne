@@ -26,12 +26,14 @@ import javax.swing.JOptionPane;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.map.event.DataNodeEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project.ProjectDataSource;
 import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.swing.ObjectBinding;
 
 
@@ -40,12 +42,26 @@ public class PasswordEncoderEditor extends CayenneController  {
     protected DataNode node;
     protected ObjectBinding[] bindings;
     protected PasswordEncoderView view;
+    protected BindingDelegate nodeChangeProcessor;
     
     public PasswordEncoderEditor(CayenneController parent){
 
         super(parent);
         
         this.view = new PasswordEncoderView();
+        
+        this.nodeChangeProcessor = new BindingDelegate() {
+
+            public void modelUpdated(
+                    ObjectBinding binding,
+                    Object oldValue,
+                    Object newValue) {
+
+                DataNodeEvent e = new DataNodeEvent(PasswordEncoderEditor.this, node);
+                ((ProjectController) getParent()).fireDataNodeEvent(e);
+            }
+        };
+                
         initController();
     }
     
@@ -53,7 +69,9 @@ public class PasswordEncoderEditor extends CayenneController  {
         BindingBuilder builder = new BindingBuilder(
                 getApplication().getBindingFactory(),
                 this);
-
+        
+        builder.setDelegate(nodeChangeProcessor);
+        
         bindings = new ObjectBinding[4];
         
         bindings[0] =
@@ -80,6 +98,8 @@ public class PasswordEncoderEditor extends CayenneController  {
                           .getCurrentDataNode());
               }
           });
+          
+          
       
         builder.bindToAction(view.getPasswordEncoder(),  "validatePasswordEncoderAction()");
         builder.bindToAction(view.getPasswordLocation(), "passwordLocationChangedAction()");
@@ -97,6 +117,8 @@ public class PasswordEncoderEditor extends CayenneController  {
         for (int i = 0; i < bindings.length; i++) {
             bindings[i].updateView();
         }
+
+        
         
     }
     
@@ -128,6 +150,8 @@ public class PasswordEncoderEditor extends CayenneController  {
         view.getPasswordSource().setEnabled(isPasswordLocationEnabled);
         view.getPasswordSourceLabel().setText(passwordLocationLabel);
         view.getPasswordSource().setText(passwordLocationText);
+        
+
     }
     
     public void passwordLocationChangedAction()

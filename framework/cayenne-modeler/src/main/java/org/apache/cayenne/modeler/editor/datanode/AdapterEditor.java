@@ -61,7 +61,7 @@ public class AdapterEditor extends CayenneController {
                 view.getCustomAdapter(),
                 "adapterName");
 
-        // init listeners
+        // init listenersК
         ((ProjectController) getParent())
                 .addDataNodeDisplayListener(new DataNodeDisplayListener() {
 

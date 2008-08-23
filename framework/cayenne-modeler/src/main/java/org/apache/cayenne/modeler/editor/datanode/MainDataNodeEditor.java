@@ -299,6 +299,7 @@ public class MainDataNodeEditor extends CayenneController {
             else {
                 // special case - no detail view, just show it and bail..
                 defaultSubeditor.setNode(node);
+                disabledTab("default");
                 view.getDataSourceDetailLayout().show(
                         view.getDataSourceDetail(),
                         "default");
@@ -325,10 +326,7 @@ public class MainDataNodeEditor extends CayenneController {
         if(name.equals(standardDataSourceFactories[0])){
             tabbedPaneController.getTabComponent().setEnabledAt(2, true);
         }
-        else if(name.equals(standardDataSourceFactories[1])){
-            tabbedPaneController.getTabComponent().setEnabledAt(2, false);
-        }
-        if(name.equals(standardDataSourceFactories[2])){
+        else{
             tabbedPaneController.getTabComponent().setEnabledAt(2, false);
         }
         
