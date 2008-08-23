@@ -195,7 +195,7 @@ public class ConfigSaver {
 
         if (info.getPasswordLocation().equals(DataSourceInfo.PASSWORD_LOCATION_MODEL)) {
             PasswordEncoding encoder = info.getPasswordEncoder();
-            if (encoder != null) {
+            if (encoder != null && info.getPassword() != null) {
                 pw.print(attribute("password", encoder.encodePassword(
                         info.getPassword(),
                         info.getPasswordEncoderKey())));
