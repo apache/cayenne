@@ -30,6 +30,7 @@ CAY-1068 Add support for start index/offset of queries
 CAY-1070 Generating SelectQuery Access Code
 CAY-1085 Use standard JDBC API for writing Oracle LOBs
 CAY-1091 Upgrade to Hessian 3.1.6
+CAY-1094 CM DataNode panel reorg - pull the password encoding options into a tab
 CAY-1096 CayenneContext should support ThreadLocal operations
 
 Bug fixes since M4:
