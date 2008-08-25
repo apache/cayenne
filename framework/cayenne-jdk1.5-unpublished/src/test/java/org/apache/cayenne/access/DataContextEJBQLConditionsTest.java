@@ -19,16 +19,19 @@
 package org.apache.cayenne.access;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class DataContextEJBQLConditionsTest extends CayenneCase {
@@ -36,6 +39,28 @@ public class DataContextEJBQLConditionsTest extends CayenneCase {
     @Override
     protected void setUp() throws Exception {
         deleteTestData();
+    }
+
+    public void testDateParameter() throws Exception {
+        createTestData("prepareCollection");
+
+        ObjectContext context = createDataContext();
+
+        SelectQuery q = new SelectQuery(Artist.class);
+        List<Artist> allArtists = context.performQuery(q);
+
+        Date dob = new Date();
+        allArtists.get(0).setDateOfBirth(dob);
+        context.commitChanges();
+
+        String ejbql = "SELECT a FROM Artist a WHERE a.dateOfBirth = :x";
+
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter("x", dob);
+        List<?> objects = context.performQuery(query);
+        assertEquals(1, objects.size());
+
+        assertSame(allArtists.get(0), objects.get(0));
     }
 
     public void testArithmetics() throws Exception {
