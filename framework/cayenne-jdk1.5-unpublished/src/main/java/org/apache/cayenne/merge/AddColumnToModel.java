@@ -36,7 +36,7 @@ public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createDropColumToDb(getEntity(), getColumn());
+        return factory.createDropColumnToDb(getEntity(), getColumn());
     }
 
     public void execute(MergerContext mergerContext) {

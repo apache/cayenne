@@ -170,7 +170,7 @@ public class DbMerger {
         // columns to drop
         for (DbAttribute detected : detectedEntity.getAttributes()) {
             if (findDbAttribute(dbEntity, detected.getName()) == null) {
-                tokens.add(factory.createDropColumToDb(dbEntity, detected));
+                tokens.add(factory.createDropColumnToDb(dbEntity, detected));
             }
         }
 

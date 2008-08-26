@@ -98,7 +98,7 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createDropColumToModel(getEntity(), getColumn());
+        return factory.createDropColumnToModel(getEntity(), getColumn());
     }
 
 }

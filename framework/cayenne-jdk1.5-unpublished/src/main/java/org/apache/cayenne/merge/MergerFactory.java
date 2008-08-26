@@ -56,11 +56,11 @@ public class MergerFactory {
         return new AddColumnToDb(entity, column);
     }
 
-    public MergerToken createDropColumToModel(DbEntity entity, DbAttribute column) {
+    public MergerToken createDropColumnToModel(DbEntity entity, DbAttribute column) {
         return new DropColumnToModel(entity, column);
     }
 
-    public MergerToken createDropColumToDb(DbEntity entity, DbAttribute column) {
+    public MergerToken createDropColumnToDb(DbEntity entity, DbAttribute column) {
         return new DropColumnToDb(entity, column);
     }
 
