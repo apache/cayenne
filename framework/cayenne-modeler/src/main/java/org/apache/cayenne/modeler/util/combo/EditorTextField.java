@@ -18,8 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.util.combo;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
@@ -74,7 +76,16 @@ public class EditorTextField extends JTextField implements FocusListener {
             ListCellRenderer renderer = combo.getRenderer();
             Component c = renderer.getListCellRendererComponent(list, combo
                     .getSelectedItem(), -1, false, false);
-            rendererPane.paintComponent(g, c, combo, 0, 0, getWidth(), getHeight());
+            
+            //fill background first
+            Color oldColor = g.getColor();
+            g.setColor(getBackground());
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(oldColor);
+            
+            Insets insets = getInsets();
+            rendererPane.paintComponent(g, c, combo, insets.left, insets.top, 
+                    getWidth() - insets.right - insets.left, getHeight() - insets.bottom - insets.top);
         }
     }
 

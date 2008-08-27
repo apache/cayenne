@@ -166,11 +166,14 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
             case KeyEvent.VK_ENTER:
                 if (suggest) {
                     Object value = suggestionList.getSelectedValue();
-                    if(!allowsUserValues && value == null && suggestionList.getItemCount() > 0) {
+                    if (!allowsUserValues && value == null && suggestionList.getItemCount() > 0) {
                         value = suggestionList.getItemAt(0);
                     }
                     
-                    comboBox.setSelectedItem(value);
+                    //reset the item (value == null) only if user values are not supported
+                    if (value != null || !allowsUserValues) {
+                        comboBox.setSelectedItem(value);
+                    }
                     suggestionList.hide();
                 }
                 return;
