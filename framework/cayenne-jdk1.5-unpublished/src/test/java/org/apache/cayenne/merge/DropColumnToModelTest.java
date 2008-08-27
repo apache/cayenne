@@ -63,7 +63,7 @@ public class DropColumnToModelTest extends MergeCase {
         map.addObjEntity(objEntity);
 
         // force drop name column in db
-        MergerToken token = mergerFactory().createDropColumToDb(dbEntity, column2);
+        MergerToken token = mergerFactory().createDropColumnToDb(dbEntity, column2);
         execute(token);
 
         List<MergerToken> tokens = createMergeTokens();
@@ -128,7 +128,7 @@ public class DropColumnToModelTest extends MergeCase {
         assertTokensAndExecute(node, map, 0, 0);
         
         // force drop fk column in db
-        execute(mergerFactory().createDropColumToDb(dbEntity2, e2col2));
+        execute(mergerFactory().createDropColumnToDb(dbEntity2, e2col2));
 
         // create db relationships, but do not sync them to db
         DbRelationship rel1To2 = new DbRelationship("rel1To2");
