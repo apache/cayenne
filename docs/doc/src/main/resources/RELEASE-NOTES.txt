@@ -33,6 +33,7 @@ CAY-1085 Use standard JDBC API for writing Oracle LOBs
 CAY-1091 Upgrade to Hessian 3.1.6
 CAY-1094 CM DataNode panel reorg - pull the password encoding options into a tab
 CAY-1096 CayenneContext should support ThreadLocal operations
+CAY-1100 merge: public access to columnOriginal and so on
 
 Bug fixes since M4:
 

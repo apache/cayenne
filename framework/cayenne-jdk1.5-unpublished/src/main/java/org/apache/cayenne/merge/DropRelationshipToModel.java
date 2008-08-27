@@ -50,5 +50,9 @@ public class DropRelationshipToModel extends AbstractToModelToken.Entity {
         s.append(rel.getTargetEntityName());
         return s.toString();
     }
+    
+    public DbRelationship getRelationship() {
+        return rel;
+    }
 
 }

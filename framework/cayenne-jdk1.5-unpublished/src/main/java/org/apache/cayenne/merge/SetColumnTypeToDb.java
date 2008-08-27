@@ -144,5 +144,12 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
         return factory.createSetColumnTypeToModel(getEntity(), columnNew, columnOriginal);
     }
 
+    public DbAttribute getColumnOriginal() {
+        return columnOriginal;
+    }
+
+    public DbAttribute getColumnNew() {
+        return columnNew;
+    }
 
 }

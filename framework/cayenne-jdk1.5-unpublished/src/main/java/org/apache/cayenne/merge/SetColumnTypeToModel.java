@@ -93,5 +93,13 @@ public class SetColumnTypeToModel extends AbstractToModelToken.Entity {
 
         return sb.toString();
     }
+    
+    public DbAttribute getColumnOriginal() {
+        return columnOriginal;
+    }
 
+    public DbAttribute getColumnNew() {
+        return columnNew;
+    }
+    
 }
