@@ -33,9 +33,9 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
@@ -44,10 +44,15 @@ import javax.swing.text.Document;
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
+import org.syntax.jedit.JEditTextArea;
+import org.syntax.jedit.KeywordMap;
+import org.syntax.jedit.tokenmarker.PLSQLTokenMarker;
+import org.syntax.jedit.tokenmarker.SQLTokenMarker;
+import org.syntax.jedit.tokenmarker.Token;
+import org.syntax.jedit.tokenmarker.TokenMarker;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -58,14 +63,51 @@ import com.jgoodies.forms.layout.FormLayout;
  * 
  * @author Andrus Adamchik
  */
-public class SQLTemplateScriptsTab extends JPanel {
+public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
 
     private static final String DEFAULT_LABEL = "Default";
+    
+    /**
+     * JEdit marker for SQL Template
+     */
+    private static final TokenMarker SQL_TEMPLATE_MARKER;
+    static {
+        KeywordMap map = PLSQLTokenMarker.getKeywordMap();
+        
+        //adding more keywords
+        map.add("FIRST", Token.KEYWORD1);
+        map.add("LIMIT", Token.KEYWORD1);
+        map.add("OFFSET", Token.KEYWORD1);
+        map.add("TOP", Token.KEYWORD1);
+        
+        //adding velocity template highlighing
+        map.add("#bind", Token.KEYWORD2);
+        map.add("#bindEqual", Token.KEYWORD2);
+        map.add("#bindNotEqual", Token.KEYWORD2);
+        map.add("#bindObjectEqual", Token.KEYWORD2);
+        map.add("#bindObjectNotEqual", Token.KEYWORD2);
+        map.add("#chain", Token.KEYWORD2);
+        map.add("#chunk", Token.KEYWORD2);
+        map.add("#end", Token.KEYWORD2);
+        map.add("#result", Token.KEYWORD2);
+        
+        SQL_TEMPLATE_MARKER = new SQLTokenMarker(map);
+    }
 
     protected ProjectController mediator;
 
     protected JList scripts;
-    protected TextAdapter script;
+    
+    /**
+     * JEdit text component for highlighing SQL syntax (see CAY-892)
+     */
+    protected JEditTextArea scriptArea;
+    
+    /**
+     * Indication that no update should be fired
+     */
+    private boolean updateDisabled;
+    
     protected ListSelectionListener scriptRefreshHandler;
 
     public SQLTemplateScriptsTab(ProjectController mediator) {
@@ -96,14 +138,11 @@ public class SQLTemplateScriptsTab extends JPanel {
         Collections.sort(keys);
         keys.add(0, DEFAULT_LABEL);
         scripts.setModel(new DefaultComboBoxModel(keys.toArray()));
-
-        script = new TextAdapter(new JTextArea(15, 30)) {
-
-            protected void updateModel(String text) {
-                setSQL(text);
-            }
-        };
-
+        
+        scriptArea = new JEditTextArea();
+        scriptArea.setTokenMarker(SQL_TEMPLATE_MARKER);
+        scriptArea.getDocument().addDocumentListener(this);
+        
         // assemble
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
@@ -115,7 +154,7 @@ public class SQLTemplateScriptsTab extends JPanel {
                 scripts,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1, 2));
-        builder.add(new JScrollPane(script.getComponent()), cc.xy(3, 2));
+        builder.add(new JScrollPane(scriptArea), cc.xy(3, 2));
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
@@ -135,7 +174,7 @@ public class SQLTemplateScriptsTab extends JPanel {
         displayScript();
         scripts.addListSelectionListener(scriptRefreshHandler);
 
-        script.getComponent().setEnabled(true);
+        scriptArea.setEnabled(true);
         setVisible(true);
     }
 
@@ -183,20 +222,22 @@ public class SQLTemplateScriptsTab extends JPanel {
         String text = (key.equals(DEFAULT_LABEL)) ? query.getDefaultTemplate() : query
                 .getCustomTemplate(key);
 
-        script.setText(text);
+        updateDisabled = true;
+        scriptArea.setText(text);
+        updateDisabled = false;
     }
 
     void disableEditor() {
-        script.setText(null);
-        script.getComponent().setEnabled(false);
-        script.getComponent().setEditable(false);
-        script.getComponent().setBackground(getBackground());
+        scriptArea.setText(null);
+        scriptArea.setEnabled(false);
+        scriptArea.setEditable(false);
+        scriptArea.setBackground(getBackground());
     }
 
     void enableEditor() {
-        script.getComponent().setEnabled(true);
-        script.getComponent().setEditable(true);
-        script.getComponent().setBackground(Color.WHITE);
+        scriptArea.setEnabled(true);
+        scriptArea.setEditable(true);
+        scriptArea.setBackground(Color.WHITE);
     }
 
     void setSQL(DocumentEvent e) {
@@ -245,6 +286,20 @@ public class SQLTemplateScriptsTab extends JPanel {
                 query.setTemplate(key, text);
                 mediator.fireQueryEvent(new QueryEvent(this, query));
             }
+        }
+    }
+    
+    public void insertUpdate(DocumentEvent e) {
+        changedUpdate(e);
+    }
+
+    public void removeUpdate(DocumentEvent e) {
+        changedUpdate(e);
+    }
+    
+    public void changedUpdate(DocumentEvent e) {
+        if (!updateDisabled) {
+            setSQL(e);
         }
     }
 
