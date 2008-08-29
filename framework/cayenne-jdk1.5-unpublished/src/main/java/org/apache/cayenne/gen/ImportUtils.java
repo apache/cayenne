@@ -40,13 +40,13 @@ public class ImportUtils {
     };
 
     static final String primitives[] = new String[] {
-            "long", "double", "byte", "boolean", "float", "short", "int"
+            "long", "double", "byte", "boolean", "float", "short", "int", "char"
     };
 
     static final String primitiveClasses[] = new String[] {
             Long.class.getName(), Double.class.getName(), Byte.class.getName(),
             Boolean.class.getName(), Float.class.getName(), Short.class.getName(),
-            Integer.class.getName()
+            Integer.class.getName(), Character.class.getName()
     };
 
     static Map<String, String> classesForPrimitives = Util.toMap(

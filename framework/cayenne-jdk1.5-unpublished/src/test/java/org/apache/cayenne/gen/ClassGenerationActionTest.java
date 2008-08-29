@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.unit.BasicCase;
@@ -112,6 +114,47 @@ public class ClassGenerationActionTest extends BasicCase {
         String superclass = generated.get(0);
         assertTrue(superclass, superclass.contains("import java.util.Map;"));
     }
+    
+    
+    public void testExecuteArtifactPairsAttribute() throws Exception {
+
+        ObjEntity testEntity1 = new ObjEntity("TE1");
+        testEntity1.setClassName("org.example.TestClass1");
+        
+        ObjAttribute attr = new ObjAttribute();
+        attr.setName("ID");
+        attr.setType("int");
+
+        ObjAttribute attr1 = new ObjAttribute();
+        attr1.setName("name");
+        attr1.setType("char");
+        
+        testEntity1.addAttribute(attr);
+        testEntity1.addAttribute(attr1);
+
+        action.setMakePairs(true);
+
+        List<String> generated = execute(new EntityArtifact(testEntity1));
+        assertNotNull(generated);
+        assertEquals(2, generated.size());
+        String superclass = generated.get(0);
+        
+        assertTrue(superclass, superclass.contains("public void setID(int ID)"));
+        assertTrue(superclass, superclass.contains("writeProperty(\"ID\", ID);"));
+        
+        assertTrue(superclass, superclass.contains("public int getID()"));
+        assertTrue(superclass, superclass.contains("Object value = readProperty(\"ID\");"));
+        assertTrue(superclass, superclass.contains("return (value != null) ? (Integer) value : 0;"));
+        
+        assertTrue(superclass, superclass.contains("public void setName(char name)"));
+        assertTrue(superclass, superclass.contains("writeProperty(\"name\", name);"));
+        
+        assertTrue(superclass, superclass.contains("public char getName()"));
+        assertTrue(superclass, superclass.contains("Object value = readProperty(\"name\");"));
+        assertTrue(superclass, superclass.contains("return (value != null) ? (Character) value : 0;"));
+
+    }
+    
 
     protected List<String> execute(Artifact artifact) throws Exception {
 

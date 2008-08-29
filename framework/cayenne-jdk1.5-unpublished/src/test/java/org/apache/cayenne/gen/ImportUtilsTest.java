@@ -191,6 +191,9 @@ public class ImportUtilsTest extends TestCase {
         assertEquals("int", importUtils.formatJavaType("int", true));
         assertEquals("Integer", importUtils.formatJavaType("int", false));
         
+        assertEquals("char", importUtils.formatJavaType("char", true));
+        assertEquals("Character", importUtils.formatJavaType("java.lang.Character", false));
+        
         assertEquals("double", importUtils.formatJavaType("java.lang.Double", true));
         assertEquals("Double", importUtils.formatJavaType("java.lang.Double", false));
         

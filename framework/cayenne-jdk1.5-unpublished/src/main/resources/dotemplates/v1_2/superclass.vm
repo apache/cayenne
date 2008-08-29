@@ -81,7 +81,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
         return (value != null) ? value.booleanValue() : false;
     }
 #elseif ( $importUtils.isNonBooleanPrimitive(${attr.Type}) )
-    public $classGen.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
+    public ${importUtils.formatJavaType($attr.Type)} get${stringUtils.capitalized($attr.Name)}() {
         Object value = readProperty("${attr.Name}");
         return (value != null) ? ($importUtils.formatJavaTypeAsNonBooleanPrimitive(${attr.Type})) value : 0;
     }
