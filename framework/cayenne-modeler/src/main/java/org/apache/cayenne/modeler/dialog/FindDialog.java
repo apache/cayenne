@@ -131,7 +131,7 @@ public class FindDialog extends CayenneController {
             if(path[path.length - 1] instanceof Entity) {
 
                 /** Make selection in a project tree, open correspondent entity tab */
-                editor.getProjectTreeView().getSelectionModel().addSelectionPath(buildTreePath(path));
+                editor.getProjectTreeView().getSelectionModel().setSelectionPath(buildTreePath(path));
                 EntityDisplayEvent event = new EntityDisplayEvent(
                         editor.getProjectTreeView(),
                         (Entity) path[path.length - 1],
@@ -151,7 +151,7 @@ public class FindDialog extends CayenneController {
                 Object[] o = new Object[path.length - 1];
                 for(int i = 0; i < path.length - 1; i++)
                     o[i] = path[i];
-                editor.getProjectTreeView().getSelectionModel().addSelectionPath(buildTreePath(o));
+                editor.getProjectTreeView().getSelectionModel().setSelectionPath(buildTreePath(o));
 
 
                 if (path[path.length - 1] instanceof DbAttribute) {

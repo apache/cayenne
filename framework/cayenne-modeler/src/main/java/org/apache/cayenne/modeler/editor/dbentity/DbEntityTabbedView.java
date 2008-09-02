@@ -124,7 +124,7 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
         System.arraycopy(rels, 0, dbRels, 0, rels.length);
         
         // reset tab to relationship
-        if (getSelectedComponent() != relationshipsPanel) {
+        if (getSelectedComponent() != relationshipsPanel && dbRels.length > 0) {
             setSelectedComponent(relationshipsPanel);
             relationshipsPanel.setVisible(true);
         }
@@ -142,7 +142,7 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
         
         System.arraycopy(attrs, 0, dbAttrs, 0, attrs.length);
         
-        if (getSelectedComponent() != attributesPanel) {
+        if (getSelectedComponent() != attributesPanel && dbAttrs.length > 0) {
             setSelectedComponent(attributesPanel);
             attributesPanel.setVisible(true);
         }

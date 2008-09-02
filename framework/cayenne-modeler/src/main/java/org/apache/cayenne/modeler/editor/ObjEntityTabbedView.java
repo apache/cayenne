@@ -151,7 +151,7 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         
         System.arraycopy(rels, 0, objRels, 0, rels.length);
         
-        if (getSelectedComponent() != relationshipsPanel) {
+        if (getSelectedComponent() != relationshipsPanel && objRels.length > 0) {
             setSelectedComponent(relationshipsPanel);
             relationshipsPanel.setVisible(true);
         }
@@ -169,7 +169,7 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         
         System.arraycopy(attrs, 0, objAttrs, 0, attrs.length);
         
-        if (getSelectedComponent() != attributesPanel) {
+        if (getSelectedComponent() != attributesPanel && objAttrs.length > 0) {
             setSelectedComponent(attributesPanel);
             attributesPanel.setVisible(true);
         }
