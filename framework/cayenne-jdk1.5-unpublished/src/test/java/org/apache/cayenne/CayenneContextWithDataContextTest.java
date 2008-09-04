@@ -294,6 +294,28 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
             callbackRegistry.clear();
         }
     }
+    
+    public void testRollbackChanges() throws Exception {
+        ClientConnection connection = new LocalConnection(new ClientServerChannel(
+                getDomain()));
+        ClientChannel channel = new ClientChannel(connection);
+
+        CayenneContext context = new CayenneContext(channel);
+        
+        ClientMtTable1 o = context.newObject(ClientMtTable1.class);
+        o.setGlobalAttribute1("1");
+        context.commitChanges();
+        
+        assertEquals("1", o.getGlobalAttribute1());
+        o.setGlobalAttribute1("2");
+        assertEquals("2", o.getGlobalAttribute1());
+        context.rollbackChanges();
+        
+        // CAY-1103 - uncommenting this assertion demonstrates the problem
+        // assertEquals("1", o.getGlobalAttribute1());
+        
+        assertTrue(context.modifiedObjects().isEmpty());
+    }
 
     public void testCreateFault() throws Exception {
         createTestData("prepare");
