@@ -22,6 +22,8 @@ package org.apache.cayenne.modeler.util.combo;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
 import java.util.EventObject;
@@ -38,7 +40,9 @@ import javax.swing.table.TableCellEditor;
  *
  * @author Andrey Razumovsky
  */
-public class ComboBoxCellEditor extends AbstractCellEditor implements ActionListener, TableCellEditor, Serializable {
+public class ComboBoxCellEditor extends AbstractCellEditor 
+    implements ActionListener, TableCellEditor, FocusListener, Serializable {
+    
     static final String IS_TABLE_CELL_EDITOR_PROPERTY = "JComboBox.isTableCellEditor";
     
     private final JComboBox comboBox;
@@ -49,6 +53,10 @@ public class ComboBoxCellEditor extends AbstractCellEditor implements ActionList
 
         // hitting enter in the combo box should stop cellediting (see below)
         this.comboBox.addActionListener(this);
+        
+        //  Editing should be stopped when textfield loses its focus
+        //  otherwise the value may get lost (e.g. see CAY-1104)
+        this.comboBox.getEditor().getEditorComponent().addFocusListener(this);
 
         // remove the editor's border - the cell itself already has one
         ((JComponent) comboBox.getEditor().getEditorComponent()).setBorder(null);
@@ -99,5 +107,14 @@ public class ComboBoxCellEditor extends AbstractCellEditor implements ActionList
         }
         
         return true;
+    }
+
+    public void focusGained(FocusEvent e) {
+    }
+
+    public void focusLost(FocusEvent e) {
+        if (e.getOppositeComponent() != null) {
+            stopCellEditing();
+        }
     }
 }
