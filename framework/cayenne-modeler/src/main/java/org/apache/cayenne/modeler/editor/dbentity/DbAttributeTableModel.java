@@ -167,7 +167,8 @@ public class DbAttributeTableModel extends CayenneTableModel {
             case DB_ATTRIBUTE_NAME:
                 e.setOldName(attr.getName());
                 attr.setName((String) newVal);
-                // setAttributeName((String) newVal, attr);
+                ((DbEntity) attr.getEntity()).dbAttributeChanged(e);
+                
                 fireTableCellUpdated(row, col);
                 break;
             case DB_ATTRIBUTE_TYPE:
@@ -233,11 +234,6 @@ public class DbAttributeTableModel extends CayenneTableModel {
                 return;
             }
         }
-    }
-
-    public void setAttributeName(String newVal, DbAttribute attr) {
-        String newName = newVal.trim();
-        ProjectUtil.setAttributeName(attr, newName);
     }
 
     public void setAttributeType(String newVal, DbAttribute attr) {
