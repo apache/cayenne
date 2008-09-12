@@ -20,8 +20,15 @@
 package org.apache.cayenne.remote.hessian;
 
 import org.apache.cayenne.remote.hessian.HessianConnection;
+import org.apache.cayenne.remote.RemoteService;
+import org.apache.cayenne.remote.RemoteSession;
+import org.apache.cayenne.remote.ClientMessage;
+import org.apache.cayenne.remote.service.MissingSessionException;
+import org.apache.cayenne.CayenneRuntimeException;
 
 import junit.framework.TestCase;
+
+import java.rmi.RemoteException;
 
 public class HessianConnectionTest extends TestCase {
 
@@ -38,5 +45,32 @@ public class HessianConnectionTest extends TestCase {
         assertEquals("b", c.getUserName());
         assertEquals("c", c.getPassword());
         assertEquals("d", c.getSharedSessionName());
+    }
+
+    public void testMissingSessionException() {
+        // Set up the test objects.  We want to mock out RemoteService.
+        HessianConnection c = new HessianConnection("a");
+        c.service = new RemoteService() {
+            public RemoteSession establishSession() throws RemoteException {
+                return null;
+            }
+
+            public RemoteSession establishSharedSession(String name) throws RemoteException {
+                return null;
+            }
+
+            public Object processMessage(ClientMessage message) throws RemoteException, Throwable {
+                throw new MissingSessionException();
+            }
+        };
+
+
+        try {
+            c.doSendMessage(null);
+        }
+        catch (CayenneRuntimeException e) {
+            // Verify that CayenneRuntimeExceptions are not wrapped in another CayenneRuntimeException.
+            assertTrue(e instanceof MissingSessionException);
+        }
     }
 }

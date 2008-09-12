@@ -145,6 +145,9 @@ public class HessianConnection extends BaseConnection {
         try {
             return service.processMessage(message);
         }
+        //catch (CayenneRuntimeException e) {
+        //    throw e;
+        //}
         catch (Throwable th) {
             th = unwindThrowable(th);
             String errorMessage = buildExceptionMessage("Remote error", th);
