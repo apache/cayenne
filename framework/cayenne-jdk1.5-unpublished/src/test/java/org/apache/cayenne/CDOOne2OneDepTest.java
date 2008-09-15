@@ -26,6 +26,24 @@ import org.apache.art.Painting;
 import org.apache.art.PaintingInfo;
 
 public class CDOOne2OneDepTest extends CayenneDOTestBase {
+    
+    public void testRollbackDependent() {
+        Artist a1 = newArtist();
+        Painting p1 = newPainting();
+
+        // needed to save without errors
+        p1.setToArtist(a1);
+        ctxt.commitChanges();
+        
+        PaintingInfo info = ctxt.newObject(PaintingInfo.class);
+        info.setTextReview("XXX");
+        p1.setToPaintingInfo(info);
+        
+        assertSame(info, p1.getToPaintingInfo());
+        
+        ctxt.rollbackChanges();
+        assertNull(p1.getToPaintingInfo());
+    }
 
     public void test2Null() throws Exception {
         Artist a1 = newArtist();
