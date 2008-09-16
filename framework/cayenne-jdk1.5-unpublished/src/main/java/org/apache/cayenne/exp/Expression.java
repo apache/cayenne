@@ -26,6 +26,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -119,21 +120,36 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
     protected int type;
 
+    private static Map<String, Expression> expressionCache =
+        Collections.synchronizedMap(new HashMap<String, Expression>(32));
+
     /**
      * Parses string, converting it to Expression. If string does not represent a
      * semantically correct expression, an ExpressionException is thrown.
      * 
      * @since 1.1
      */
-    // TODO: cache expression strings, since this operation is pretty slow
     public static Expression fromString(String expressionString) {
         if (expressionString == null) {
             throw new NullPointerException("Null expression string.");
         }
 
-        Reader reader = new StringReader(expressionString);
+        // Retrieve, if possible, the expression from the cache.
+        Expression expression = expressionCache.get(expressionString);
+
+        // If the expression was cached, return it immediately without parsing.
+        if (expression != null)
+            return expression;
+
+        // Couldn't find expression, parse, cache, and return it.
         try {
-            return new ExpressionParser(reader).expression();
+            Reader reader = new StringReader(expressionString);
+
+            expression = new ExpressionParser(reader).expression();
+
+            expressionCache.put(expressionString, expression);
+
+            return expression;
         }
         catch (ParseException ex) {
             throw new ExpressionException(ex.getMessage(), ex);
