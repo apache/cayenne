@@ -203,7 +203,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         //CAY-1095: if the column is type double, temporarily set the max length to 0 to 
         //avoid adding precision information.
         if (column.getType() == Types.DOUBLE && column.getMaxLength() > 0) {

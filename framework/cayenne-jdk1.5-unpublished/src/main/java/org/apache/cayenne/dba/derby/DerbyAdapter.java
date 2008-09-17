@@ -95,7 +95,7 @@ public class DerbyAdapter extends JdbcAdapter {
      * @since 1.2
      */
     @Override
-    protected void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
 
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {

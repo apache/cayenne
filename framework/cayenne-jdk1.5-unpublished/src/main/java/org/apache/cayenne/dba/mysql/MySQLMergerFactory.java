@@ -29,8 +29,35 @@ import org.apache.cayenne.merge.DropRelationshipToDb;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.merge.SetColumnTypeToDb;
+import org.apache.cayenne.merge.SetNotNullToDb;
 
 public class MySQLMergerFactory extends MergerFactory {
+
+    @Override
+    public MergerToken createSetNotNullToDb(
+            final DbEntity entity,
+            final DbAttribute column) {
+        return new SetNotNullToDb(entity, column) {
+
+            @Override
+            public List<String> createSql(DbAdapter adapter) {
+                StringBuffer sqlBuffer = new StringBuffer();
+
+                sqlBuffer.append("ALTER TABLE ");
+                sqlBuffer.append(getEntity().getFullyQualifiedName());
+                sqlBuffer.append(" CHANGE ");
+                sqlBuffer.append(getColumn().getName());
+                sqlBuffer.append(" ");
+                sqlBuffer.append(getColumn().getName());
+                sqlBuffer.append(" ");
+
+                adapter.createTableAppendColumn(sqlBuffer, column);
+
+                return Collections.singletonList(sqlBuffer.toString());
+            }
+
+        };
+    }
 
     @Override
     public MergerToken createSetColumnTypeToDb(
@@ -54,8 +81,10 @@ public class MySQLMergerFactory extends MergerFactory {
     }
 
     @Override
-    public MergerToken createDropRelationshipToDb(final DbEntity entity, DbRelationship rel) {
-        
+    public MergerToken createDropRelationshipToDb(
+            final DbEntity entity,
+            DbRelationship rel) {
+
         return new DropRelationshipToDb(entity, rel) {
 
             @Override

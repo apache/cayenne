@@ -192,4 +192,14 @@ public interface DbAdapter {
      * @since 3.0
      */
     MergerFactory mergerFactory();
+    
+    /**
+     * Append the column type part of a "create table" to the given {@link StringBuffer}
+     * 
+     * @param sqlBuffer the {@link StringBuffer} to append the column type to
+     * @param column the {@link DbAttribute} defining the column to append type for
+     * @since 3.0
+     */
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column);
+    
 }

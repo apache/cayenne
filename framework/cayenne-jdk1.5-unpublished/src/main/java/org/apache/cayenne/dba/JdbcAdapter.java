@@ -50,7 +50,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -319,7 +318,7 @@ public class JdbcAdapter implements DbAdapter {
      * 
      * @since 1.2
      */
-    protected void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
             String entityName = column.getEntity() != null ? ((DbEntity) column

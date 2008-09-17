@@ -313,4 +313,9 @@ public class AutoAdapter implements DbAdapter {
     public MergerFactory mergerFactory() {
         return getAdapter().mergerFactory();
     }
+    
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+        getAdapter().createTableAppendColumn(sqlBuffer, column);
+    }
+
 }

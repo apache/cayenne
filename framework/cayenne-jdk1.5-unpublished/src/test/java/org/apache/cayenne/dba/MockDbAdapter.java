@@ -151,4 +151,7 @@ public class MockDbAdapter implements DbAdapter {
         return null;
     }
 
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    }
+
 }

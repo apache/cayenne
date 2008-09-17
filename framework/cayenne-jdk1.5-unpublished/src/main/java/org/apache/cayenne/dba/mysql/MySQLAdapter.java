@@ -289,7 +289,7 @@ public class MySQLAdapter extends JdbcAdapter {
      * Appends AUTO_INCREMENT clause to the column definition for generated columns.
      */
     @Override
-    protected void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         super.createTableAppendColumn(sqlBuffer, column);
 
         if (column.isGenerated()) {
