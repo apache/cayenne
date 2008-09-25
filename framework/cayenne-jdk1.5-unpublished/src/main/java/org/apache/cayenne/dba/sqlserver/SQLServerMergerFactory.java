@@ -82,8 +82,7 @@ public class SQLServerMergerFactory extends MergerFactory {
                 sqlBuffer.append(getEntity().getFullyQualifiedName());
                 sqlBuffer.append(" ALTER COLUMN ");
 
-                SQLServerAdapter sqladapter = (SQLServerAdapter) adapter;
-                sqladapter.createTableAppendColumn(sqlBuffer, column);
+                adapter.createTableAppendColumn(sqlBuffer, column);
 
                 return Collections.singletonList(sqlBuffer.toString());
             }
