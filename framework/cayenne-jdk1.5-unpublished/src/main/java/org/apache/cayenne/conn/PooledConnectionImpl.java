@@ -17,14 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.conn;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.sql.ConnectionEvent;
@@ -52,7 +50,8 @@ public class PooledConnectionImpl implements PooledConnection {
         // TODO: maybe remove synchronization and use
         // FastArrayList from commons-collections? After
         // all the only listener is usually pool manager.
-        this.connectionEventListeners = Collections.synchronizedList(new ArrayList<ConnectionEventListener>(10));
+        this.connectionEventListeners = Collections
+                .synchronizedList(new ArrayList<ConnectionEventListener>(10));
     }
 
     /** Creates new PooledConnection */

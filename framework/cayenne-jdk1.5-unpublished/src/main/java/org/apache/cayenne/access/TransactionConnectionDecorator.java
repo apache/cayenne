@@ -19,7 +19,10 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -27,7 +30,9 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * A wrapper of a JDBC connection that is attached to a transaction. The behavior of this
@@ -219,8 +224,52 @@ class TransactionConnectionDecorator implements Connection {
         connection.setTransactionIsolation(level);
     }
 
-    public void setTypeMap(Map arg0) throws SQLException {
-        connection.setTypeMap(arg0);
+    public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
+        connection.setTypeMap(map);
+    }
+
+    public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+        return null;
+    }
+
+    public Blob createBlob() throws SQLException {
+        return null;
+    }
+
+    public Clob createClob() throws SQLException {
+        return null;
+    }
+
+    public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+        return null;
+    }
+
+    public Properties getClientInfo() throws SQLException {
+        return null;
+    }
+
+    public String getClientInfo(String name) throws SQLException {
+        return null;
+    }
+
+    public boolean isValid(int timeout) throws SQLException {
+        return false;
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        throw new UnsupportedOperationException();
     }
 
 }

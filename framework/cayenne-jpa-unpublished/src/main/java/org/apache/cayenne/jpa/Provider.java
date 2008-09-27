@@ -552,6 +552,22 @@ public class Provider implements PersistenceProvider {
         public int getLoginTimeout() throws SQLException {
             return getDataSource().getLoginTimeout();
         }
+        
+        /**
+         * @since 3.0
+         */
+        // JDBC 4 compatibility under Java 1.5
+        public boolean isWrapperFor(Class<?> iface) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * @since 3.0
+         */
+        // JDBC 4 compatibility under Java 1.5
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
     }
 
     class LazyConfiguration extends Configuration {

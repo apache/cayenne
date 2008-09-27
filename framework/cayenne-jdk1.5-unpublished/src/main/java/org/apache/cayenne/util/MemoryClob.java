@@ -21,6 +21,7 @@ package org.apache.cayenne.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.StringReader;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -318,5 +319,20 @@ public class MemoryClob implements Clob {
         public int available() throws IOException {
             return available / 2;
         }
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public void free() throws SQLException {
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public Reader getCharacterStream(long pos, long length) throws SQLException {
+        throw new UnsupportedOperationException();
     }
 }

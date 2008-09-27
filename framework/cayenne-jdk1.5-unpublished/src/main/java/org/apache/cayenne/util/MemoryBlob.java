@@ -82,14 +82,13 @@ public class MemoryBlob implements Blob {
      * retrieve the octets from pos to this.length(). Another would be to throw an
      * exception. This implementation observes the later policy.
      * 
-     * @param pos the ordinal position of the first byte in the <code>BLOB</code> value
-     *            to be extracted; the first byte is at position 1
+     * @param pos the ordinal position of the first byte in the <code>BLOB</code> value to
+     *            be extracted; the first byte is at position 1
      * @param length the number of consecutive bytes to be copied
      * @return a byte array containing up to <code>length</code> consecutive bytes from
-     *         the <code>BLOB</code> value designated by this <code>Blob</code>
-     *         object, starting with the byte at position <code>pos</code>
-     * @exception SQLException if there is an error accessing the <code>BLOB</code>
-     *                value
+     *         the <code>BLOB</code> value designated by this <code>Blob</code> object,
+     *         starting with the byte at position <code>pos</code>
+     * @exception SQLException if there is an error accessing the <code>BLOB</code> value
      */
     public byte[] getBytes(long pos, final int length) throws SQLException {
 
@@ -112,12 +111,11 @@ public class MemoryBlob implements Blob {
     }
 
     /**
-     * Retrieves the <code>BLOB</code> value designated by this <code>Blob</code>
-     * instance as a stream.
+     * Retrieves the <code>BLOB</code> value designated by this <code>Blob</code> instance
+     * as a stream.
      * 
      * @return a stream containing the <code>BLOB</code> data
-     * @exception SQLException if there is an error accessing the <code>BLOB</code>
-     *                value
+     * @exception SQLException if there is an error accessing the <code>BLOB</code> value
      */
     public InputStream getBinaryStream() throws SQLException {
         return new ByteArrayInputStream(data);
@@ -182,16 +180,15 @@ public class MemoryBlob implements Blob {
 
     /**
      * Retrieves the byte position in the <code>BLOB</code> value designated by this
-     * <code>Blob</code> object at which <code>pattern</code> begins. The search
-     * begins at position <code>start</code>.
+     * <code>Blob</code> object at which <code>pattern</code> begins. The search begins at
+     * position <code>start</code>.
      * 
-     * @param pattern the <code>Blob</code> object designating the <code>BLOB</code>
-     *            value for which to search
+     * @param pattern the <code>Blob</code> object designating the <code>BLOB</code> value
+     *            for which to search
      * @param start the position in the <code>BLOB</code> value at which to begin
      *            searching; the first position is 1
      * @return the position at which the pattern begins, else -1
-     * @exception SQLException if there is an error accessing the <code>BLOB</code>
-     *                value
+     * @exception SQLException if there is an error accessing the <code>BLOB</code> value
      */
     public long position(final Blob pattern, long start) throws SQLException {
 
@@ -271,13 +268,12 @@ public class MemoryBlob implements Blob {
     }
 
     /**
-     * Truncates the <code>BLOB</code> value that this <code>Blob</code> object
-     * represents to be <code>len</code> bytes in length.
+     * Truncates the <code>BLOB</code> value that this <code>Blob</code> object represents
+     * to be <code>len</code> bytes in length.
      * 
      * @param len the length, in bytes, to which the <code>BLOB</code> value that this
      *            <code>Blob</code> object represents should be truncated
-     * @exception SQLException if there is an error accessing the <code>BLOB</code>
-     *                value
+     * @exception SQLException if there is an error accessing the <code>BLOB</code> value
      */
     public void truncate(final long len) throws SQLException {
 
@@ -294,5 +290,20 @@ public class MemoryBlob implements Blob {
         byte[] newData = new byte[(int) len];
         System.arraycopy(ldata, 0, newData, 0, (int) len);
         data = newData;
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public void free() throws SQLException {
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public InputStream getBinaryStream(long arg0, long arg1) throws SQLException {
+        return null;
     }
 }

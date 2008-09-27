@@ -19,7 +19,10 @@
 
 package org.apache.cayenne.conn;
 
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -27,7 +30,9 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * ConnectionWrapper is a <code>java.sql.Connection</code> implementation that wraps
@@ -363,7 +368,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
-    public void setTypeMap(Map map) throws SQLException {
+    public void setTypeMap(Map<String,Class<?>> map) throws SQLException {
         try {
             connection.setTypeMap(map);
         }
@@ -484,4 +489,75 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public Array createArrayOf(String arg0, Object[] arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public Blob createBlob() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public Clob createClob() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public Struct createStruct(String arg0, Object[] arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public Properties getClientInfo() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public String getClientInfo(String arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public boolean isValid(int arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
 }

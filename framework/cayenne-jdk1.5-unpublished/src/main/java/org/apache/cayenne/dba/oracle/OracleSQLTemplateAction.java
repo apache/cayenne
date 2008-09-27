@@ -325,16 +325,18 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
             return delegate.getLong(columnName);
         }
 
-        public Object getObject(int i, Map map) throws SQLException {
-            return delegate.getObject(i, map);
+        public Object getObject(int columnIndex, Map<String, Class<?>> map)
+                throws SQLException {
+            return delegate.getObject(columnIndex, map);
         }
 
         public Object getObject(int columnIndex) throws SQLException {
             return delegate.getObject(columnIndex);
         }
 
-        public Object getObject(String colName, Map map) throws SQLException {
-            return delegate.getObject(colName, map);
+        public Object getObject(String columnLabel, Map<String, Class<?>> map)
+                throws SQLException {
+            return delegate.getObject(columnLabel, map);
         }
 
         public Object getObject(String columnName) throws SQLException {
@@ -703,6 +705,167 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         public boolean wasNull() throws SQLException {
             return delegate.wasNull();
         }
+
+        public int getHoldability() throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Reader getNCharacterStream(int arg0) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Reader getNCharacterStream(String arg0) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public String getNString(int arg0) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public String getNString(String arg0) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean isClosed() throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateAsciiStream(int arg0, InputStream arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateAsciiStream(String arg0, InputStream arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateAsciiStream(int arg0, InputStream arg1, long arg2)
+                throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateAsciiStream(String arg0, InputStream arg1, long arg2)
+                throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateBinaryStream(int arg0, InputStream arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateBinaryStream(String arg0, InputStream arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateBinaryStream(int arg0, InputStream arg1, long arg2)
+                throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateBinaryStream(String arg0, InputStream arg1, long arg2)
+                throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateBlob(int arg0, InputStream arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateBlob(String arg0, InputStream arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateBlob(int arg0, InputStream arg1, long arg2) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateBlob(String arg0, InputStream arg1, long arg2)
+                throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateCharacterStream(int arg0, Reader arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateCharacterStream(String arg0, Reader arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateCharacterStream(int arg0, Reader arg1, long arg2)
+                throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateCharacterStream(String arg0, Reader arg1, long arg2)
+                throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateClob(int arg0, Reader arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateClob(String arg0, Reader arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateClob(int arg0, Reader arg1, long arg2) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateClob(String arg0, Reader arg1, long arg2) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateNCharacterStream(int arg0, Reader arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateNCharacterStream(String arg0, Reader arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateNCharacterStream(int arg0, Reader arg1, long arg2)
+                throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateNCharacterStream(String arg0, Reader arg1, long arg2)
+                throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateNClob(int arg0, Reader arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateNClob(String arg0, Reader arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateNClob(int arg0, Reader arg1, long arg2) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateNClob(String arg0, Reader arg1, long arg2) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateNString(int arg0, String arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void updateNString(String arg0, String arg1) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean isWrapperFor(Class<?> iface) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
     }
 
     final class OracleResultSetMetadata implements ResultSetMetaData {
@@ -813,6 +976,22 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 
         public boolean isWritable(int column) throws SQLException {
             return delegate.isWritable(column);
+        }
+
+        /**
+         * @since 3.0
+         */
+        // JDBC 4 compatibility under Java 1.5
+        public boolean isWrapperFor(Class<?> iface) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * @since 3.0
+         */
+        // JDBC 4 compatibility under Java 1.5
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            throw new UnsupportedOperationException();
         }
     }
 }
