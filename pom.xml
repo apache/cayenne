@@ -158,6 +158,15 @@
 			</roles>
 			<timezone>+10</timezone>
 		</developer>
+		<developer>
+			<id>andrey</id>
+			<name>Andrey Razumovsky</name>
+			<email>andrey@apache.org</email>
+			<roles>
+				<role>Committer</role>
+			</roles>
+			<timezone>+3</timezone>
+		</developer>
 	</developers>
 
 	<licenses>
