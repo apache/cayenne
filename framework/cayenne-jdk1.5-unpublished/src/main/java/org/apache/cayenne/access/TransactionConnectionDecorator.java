@@ -228,32 +228,60 @@ class TransactionConnectionDecorator implements Connection {
         connection.setTypeMap(map);
     }
 
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
     public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
     public Blob createBlob() throws SQLException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
     public Clob createClob() throws SQLException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
     public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
     public Properties getClientInfo() throws SQLException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
     public String getClientInfo(String name) throws SQLException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
     public boolean isValid(int timeout) throws SQLException {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     /**
