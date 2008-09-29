@@ -46,6 +46,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Misha Shengaout
  * @author Andrus Adamchik
  * @author Andriy Shapochka
+ * @author Dzmitry Rusak
  */
 public class MapLoader extends DefaultHandler {
 
@@ -82,6 +83,7 @@ public class MapLoader extends DefaultHandler {
     public static final String OBJ_ENTITY_TAG = "obj-entity";
     public static final String DB_ATTRIBUTE_TAG = "db-attribute";
     public static final String OBJ_ATTRIBUTE_TAG = "obj-attribute";
+    public static final String OBJ_ATTRIBUTE_OVERRIDE_TAG = "attribute-override";
     public static final String OBJ_RELATIONSHIP_TAG = "obj-relationship";
     public static final String DB_RELATIONSHIP_TAG = "db-relationship";
     public static final String DB_RELATIONSHIP_REF_TAG = "db-relationship-ref";
@@ -196,6 +198,14 @@ public class MapLoader extends DefaultHandler {
             @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartObjAttribute(attributes);
+            }
+        });
+
+        startTagOpMap.put(OBJ_ATTRIBUTE_OVERRIDE_TAG, new StartClosure() {
+
+            @Override
+            void execute(Attributes attributes) throws SAXException {
+                processStartAttributeOverride(attributes);
             }
         });
 
@@ -898,10 +908,11 @@ public class MapLoader extends DefaultHandler {
             objEntity.setSuperEntityName(superEntityName);
         }
         else {
-            objEntity.setDbEntityName(atts.getValue("", "dbEntityName"));
             objEntity.setSuperClassName(atts.getValue("", "superClassName"));
             objEntity.setClientSuperClassName(atts.getValue("", "clientSuperClassName"));
         }
+
+        objEntity.setDbEntityName(atts.getValue("", "dbEntityName"));
 
         dataMap.addObjEntity(objEntity);
     }
@@ -921,6 +932,13 @@ public class MapLoader extends DefaultHandler {
             dbPath = atts.getValue("", "db-attribute-name");
         }
         oa.setDbAttributePath(dbPath);
+    }
+
+    private void processStartAttributeOverride(Attributes atts) {
+        String name = atts.getValue("", "name");
+        String dbPath = atts.getValue("", "db-attribute-path");
+        
+        objEntity.addAttributeOverride(name, dbPath);
     }
 
     private void processStartDbRelationship(Attributes atts) throws SAXException {

@@ -41,6 +41,7 @@ import org.apache.cayenne.util.Util;
  * 
  * @author Michael Misha Shengaout.
  * @author Andrus Adamchik
+ * @author Dzmitry Rusak
  */
 public class ObjAttributeTableModel extends CayenneTableModel {
 
@@ -208,18 +209,17 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         mediator.fireObjAttributeEvent(event);
     }
 
-    private boolean isInherited(int row) {
-        ObjAttribute attribute = getAttribute(row);
-        return (attribute != null) ? attribute.getEntity() != entity : false;
-    }
-
     public boolean isCellEditable(int row, int col) {
-        if (isInherited(row)) {
-            return false;
-        }
 
         if (dbEntity == null) {
             return col != DB_ATTRIBUTE_TYPE && col != DB_ATTRIBUTE;
+        }
+
+        if (getAttribute(row).isInherited()) {
+            if (col == DB_ATTRIBUTE) {
+                return true;
+            }
+            return false;
         }
 
         return col != DB_ATTRIBUTE_TYPE;

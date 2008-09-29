@@ -137,7 +137,6 @@ public class ObjEntityInheritanceTest extends BasicCase {
 
         assertSame(attribute1, entity1.getAttributeForDbAttribute(dbAttribute1));
         assertNotNull(entity1.getAttributeForDbAttribute(dbAttribute2));
-        assertSame(attribute2, entity1.getAttributeForDbAttribute(dbAttribute2));
     }
 
     public void testRelationshipForDbRelationship() throws Exception {

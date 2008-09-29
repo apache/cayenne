@@ -32,6 +32,7 @@ import org.apache.commons.collections.IteratorUtils;
  * 
  * @author Misha Shengaout
  * @author Andrus Adamchik
+ * @author Dzmitry Rusak
  */
 public class ObjAttribute extends Attribute {
 
@@ -50,6 +51,15 @@ public class ObjAttribute extends Attribute {
         setName(name);
         setType(type);
         setEntity(entity);
+    }
+
+    /** @since 3.0 */
+    public ObjAttribute(ObjAttribute attribute) {
+        setName(attribute.getName());
+        setType(attribute.getType());
+        setEntity(attribute.getEntity());
+        setDbAttributePath(attribute.getDbAttributePath());
+        setUsedForLocking(attribute.isUsedForLocking());
     }
 
     /**
@@ -151,25 +161,69 @@ public class ObjAttribute extends Attribute {
      * Returns a DbAttribute mapped by this ObjAttribute.
      */
     public DbAttribute getDbAttribute() {
-        Iterator<CayenneMapEntry> pathIterator = getDbPathIterator();
+        Iterator<CayenneMapEntry> pathIterator = getDbPathIterator((ObjEntity) getEntity());
         CayenneMapEntry o = null;
         while (pathIterator.hasNext()) {
             o = pathIterator.next();
         }
+        if (o == null) {
+            return getParentDbAttribute((ObjEntity) getEntity());
+        }
         return (DbAttribute) o;
     }
 
+    private DbAttribute getParentDbAttribute(ObjEntity entity) {
+        if (entity != null) {
+            ObjEntity parent = entity.getSuperEntity();
+            if (parent != null) {
+                Iterator<CayenneMapEntry> pathIterator = getDbPathIterator(parent);
+                CayenneMapEntry o = null;
+                while (pathIterator.hasNext()) {
+                    o = pathIterator.next();
+                }
+                if (o == null) {
+                    return getParentDbAttribute(parent);
+                }
+                return (DbAttribute) o;
+            }
+        }
+
+        return null;
+    }
+    
+    /**
+     * Return <code>true</code> if attribute inhertit from parent {@link ObjEntity}.
+     *  
+     * @since 3.0 
+     */
+    public boolean isInherited() {
+        if (getEntity() == null) {
+            return false;
+        }
+        
+        ObjEntity parent = ((ObjEntity) getEntity()).getSuperEntity();
+
+        if (parent == null) {
+            return false;
+        }
+
+        return parent.getAttribute(getName()) != null;
+    }
+
     public Iterator<CayenneMapEntry> getDbPathIterator() {
+        return getDbPathIterator((ObjEntity) getEntity());
+    }
+
+    public Iterator<CayenneMapEntry> getDbPathIterator(ObjEntity entity) {
         if (dbAttributePath == null) {
             return IteratorUtils.EMPTY_ITERATOR;
         }
-
-        ObjEntity ent = (ObjEntity) getEntity();
-        if (ent == null) {
+       
+        if (entity == null) {
             return IteratorUtils.EMPTY_ITERATOR;
         }
 
-        DbEntity dbEnt = ent.getDbEntity();
+        DbEntity dbEnt = entity.getDbEntity();
         if (dbEnt == null) {
             return IteratorUtils.EMPTY_ITERATOR;
         }
@@ -230,6 +284,10 @@ public class ObjAttribute extends Attribute {
 
     public void setDbAttributePath(String dbAttributePath) {
         this.dbAttributePath = dbAttributePath;
+        
+        if (isInherited()) {
+            ((ObjEntity)entity).addAttributeOverride(getName(), dbAttributePath);
+        }
     }
 
     /**

@@ -242,6 +242,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                 // Change DbEntity for current ObjEntity
                 ObjEntity entity = mediator.getCurrentObjEntity();
                 DbEntity dbEntity = (DbEntity) dbEntityCombo.getSelectedItem();
+                syncWithDbEntityButton.setEnabled(dbEntity != null);
 
                 if (dbEntity != entity.getDbEntity()) {
                     entity.setDbEntity(dbEntity);
@@ -594,9 +595,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         superClassName.getComponent().setEnabled(directTableMapping);
         superclassLabel.setEnabled(directTableMapping);
 
-        dbEntityCombo.setEnabled(directTableMapping);
-        syncWithDbEntityButton.setEnabled(directTableMapping);
-        tableLabel.setEnabled(directTableMapping);
+        syncWithDbEntityButton.setEnabled(dbEntityCombo.getSelectedItem() != null);
 
         clientSuperClassName.getComponent().setEnabled(
                 directTableMapping && clientFieldsEnabled);
