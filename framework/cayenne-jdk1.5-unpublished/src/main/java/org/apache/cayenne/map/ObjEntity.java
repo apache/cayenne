@@ -741,6 +741,9 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         }
     }
     
+    /**
+     * @since 3.0
+     */
     public void addAttributeOverride(String attributeName, String dbPath) {
         overridedAttributes.put(attributeName, dbPath);
     }
