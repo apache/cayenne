@@ -17,29 +17,24 @@
 	specific language governing permissions and limitations
 	under the License.   
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
 		<version>3.0-SNAPSHOT</version>
 	</parent>
-
 	<groupId>org.apache.cayenne.parents</groupId>
 	<artifactId>cayenne-framework-parent</artifactId>
 	<name>Cayenne Framework Aggregator Project</name>
 	<packaging>pom</packaging>
-
-        <profiles>
-                <profile>
-                        <id>generic</id>
-                        <activation>
-                                <activeByDefault>true</activeByDefault>
-                        </activation>
+	<profiles>
+		<profile>
+			<id>generic</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<modules>
 				<module>cayenne-legal-unpublished</module>
 				<module>cayenne-jdk1.5-unpublished</module>
@@ -50,22 +45,29 @@
 				<module>cayenne-modeler</module>
 				<module>maven-cayenne-plugin</module>
 			</modules>
-                </profile>
-                <profile>
-                        <id>java6</id>
-                        <activation>
+		</profile>
+		<profile>
+			<id>java6</id>
+			<activation>
 				<jdk>1.6</jdk>
-                        </activation>
-                        <modules>
+			</activation>
+			<modules>
+				<module>cayenne-legal-unpublished</module>
+				<module>cayenne-jdk1.5-unpublished</module>
 				<module>cayenne-jdk1.6-unpublished</module>
-                        </modules>
-                </profile>
-                <profile>
-                        <id>windows</id>
-                        <modules>
-                                <module>cayenne-modeler-win</module>
-                        </modules>
-                </profile>
-        </profiles>
-
+				<module>cayenne-jpa-unpublished</module>
+				<module>cayenne-agent</module>
+				<module>cayenne-server</module>
+				<module>cayenne-client</module>
+				<module>cayenne-modeler</module>
+				<module>maven-cayenne-plugin</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>windows</id>
+			<modules>
+				<module>cayenne-modeler-win</module>
+			</modules>
+		</profile>
+	</profiles>
 </project>
