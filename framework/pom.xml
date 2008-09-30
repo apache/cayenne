@@ -34,14 +34,38 @@
 	<name>Cayenne Framework Aggregator Project</name>
 	<packaging>pom</packaging>
 
-	<modules>
-		<module>cayenne-legal-unpublished</module>
-		<module>cayenne-jdk1.5-unpublished</module>
-		<module>cayenne-jpa-unpublished</module>
-		<module>cayenne-agent</module>
-		<module>cayenne-server</module>
-		<module>cayenne-client</module>
-		<module>cayenne-modeler</module>
-		<module>maven-cayenne-plugin</module>
-	</modules>
+        <profiles>
+                <profile>
+                        <id>generic</id>
+                        <activation>
+                                <activeByDefault>true</activeByDefault>
+                        </activation>
+			<modules>
+				<module>cayenne-legal-unpublished</module>
+				<module>cayenne-jdk1.5-unpublished</module>
+				<module>cayenne-jpa-unpublished</module>
+				<module>cayenne-agent</module>
+				<module>cayenne-server</module>
+				<module>cayenne-client</module>
+				<module>cayenne-modeler</module>
+				<module>maven-cayenne-plugin</module>
+			</modules>
+                </profile>
+                <profile>
+                        <id>java6</id>
+                        <activation>
+				<jdk>1.6</jdk>
+                        </activation>
+                        <modules>
+				<module>cayenne-jdk1.6-unpublished</module>
+                        </modules>
+                </profile>
+                <profile>
+                        <id>windows</id>
+                        <modules>
+                                <module>cayenne-modeler-win</module>
+                        </modules>
+                </profile>
+        </profiles>
+
 </project>
