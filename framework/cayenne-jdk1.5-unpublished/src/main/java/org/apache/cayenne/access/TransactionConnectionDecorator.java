@@ -25,9 +25,12 @@ import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
@@ -103,7 +106,7 @@ class TransactionConnectionDecorator implements Connection {
         return connection.getTransactionIsolation();
     }
 
-    public Map getTypeMap() throws SQLException {
+    public Map<String,Class<?>> getTypeMap() throws SQLException {
         return connection.getTypeMap();
     }
 
@@ -280,6 +283,22 @@ class TransactionConnectionDecorator implements Connection {
      * @since 3.0
      */
     // JDBC 4 compatibility under Java 1.5
+    public void setClientInfo(Properties properties) throws SQLClientInfoException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public void setClientInfo(String name, String value) throws SQLClientInfoException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
     public boolean isValid(int timeout) throws SQLException {
         throw new UnsupportedOperationException();
     }
@@ -300,4 +319,19 @@ class TransactionConnectionDecorator implements Connection {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public NClob createNClob() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public SQLXML createSQLXML() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
 }

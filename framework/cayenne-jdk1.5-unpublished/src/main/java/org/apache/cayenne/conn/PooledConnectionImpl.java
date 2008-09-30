@@ -29,6 +29,7 @@ import javax.sql.ConnectionEvent;
 import javax.sql.ConnectionEventListener;
 import javax.sql.DataSource;
 import javax.sql.PooledConnection;
+import javax.sql.StatementEventListener;
 
 /**
  * PooledConnectionImpl is an implementation of a pooling wrapper for the database
@@ -181,5 +182,21 @@ public class PooledConnectionImpl implements PooledConnection {
                 nextListener.connectionClosed(closedEvent);
             }
         }
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public void addStatementEventListener(StatementEventListener listener) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.0
+     */
+    // JDBC 4 compatibility under Java 1.5
+    public void removeStatementEventListener(StatementEventListener listener) {
+        throw new UnsupportedOperationException();
     }
 }

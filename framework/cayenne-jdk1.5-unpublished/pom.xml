@@ -1,156 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-	Licensed to the Apache Software Foundation (ASF) under one
-	or more contributor license agreements.  See the NOTICE file
-	distributed with this work for additional information
-	regarding copyright ownership.  The ASF licenses this file
-	to you under the Apache License, Version 2.0 (the
-	"License"); you may not use this file except in compliance
-	with the License.  You may obtain a copy of the License at
-	
-	http://www.apache.org/licenses/LICENSE-2.0
-	
-	Unless required by applicable law or agreed to in writing,
-	software distributed under the License is distributed on an
-	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-	KIND, either express or implied.  See the License for the
-	specific language governing permissions and limitations
-	under the License.   
--->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
 		<version>3.0-SNAPSHOT</version>
 	</parent>
-
 	<groupId>org.apache.cayenne.unpublished</groupId>
 	<artifactId>cayenne-jdk1.5-unpublished</artifactId>
 	<name>Cayenne Java 1.5 Unpublished</name>
 	<description>Cayenne Java 1.5 Unpublished</description>
 	<packaging>jar</packaging>
-
 	<dependencies>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-
 		<dependency>
-                        <groupId>asm</groupId>
-                        <artifactId>asm</artifactId>
-                </dependency>
-
-                <dependency>
-                        <groupId>asm</groupId>
-                        <artifactId>asm-commons</artifactId>
-                </dependency>
-
+			<groupId>asm</groupId>
+			<artifactId>asm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>asm</groupId>
+			<artifactId>asm-commons</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.objectstyle</groupId>
+			<artifactId>jdbc4-compat</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>com.caucho</groupId>
 			<artifactId>resin-hessian</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>jgroups</groupId>
 			<artifactId>jgroups-all</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>ant</groupId>
 			<artifactId>ant</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>velocity</groupId>
 			<artifactId>velocity</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.objectstyle.ashwood</groupId>
 			<artifactId>ashwood</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jms_1.1_spec</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>jivesoftware</groupId>
 			<artifactId>smack</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>jivesoftware</groupId>
 			<artifactId>smackx</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>foundrylogic.vpp</groupId>
 			<artifactId>vpp</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>opensymphony</groupId>
 			<artifactId>oscache</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>mockrunner</groupId>
 			<artifactId>mockrunner</artifactId>
 		</dependency>
-
 	</dependencies>
-
 	<build>
 		<resources>
 			<!-- don't filter dotemplates -->
@@ -168,7 +138,6 @@
 				</includes>
 			</resource>
 		</resources>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -188,10 +157,10 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<sourceDirectory>
-								${basedir}/src/main/jjtree/org/apache/cayenne/ejbql
+								${basedir}/src/main/jjtree/org/apache/cayenne/ejbql 
 							</sourceDirectory>
 							<outputDirectory>
-								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql
+								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql 
 							</outputDirectory>
 							<buildNodeFiles>false</buildNodeFiles>
 						</configuration>
@@ -199,80 +168,62 @@
 							<goal>jjtree</goal>
 						</goals>
 					</execution>
-
 					<execution>
 						<id>javacc-ejbql</id>
 						<phase>generate-sources</phase>
 						<configuration>
 							<sourceDirectory>
-								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql
+								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql 
 							</sourceDirectory>
 							<outputDirectory>
-								${project.build.directory}/generated-sources/javacc/org/apache/cayenne/ejbql
+								${project.build.directory}/generated-sources/javacc/org/apache/cayenne/ejbql 
 							</outputDirectory>
 						</configuration>
 						<goals>
 							<goal>javacc</goal>
 						</goals>
 					</execution>
-					
-					<!-- Commented out expression executions, as exp/parser package is not properly setup - 
-					it stores generated parser in SVN in src/main/java. So the executions below are used
-					for manual generation -->
-					<!-- 
-					<execution>
-						<id>jjtree-exp</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<sourceDirectory>
-								${basedir}/src/main/jjtree/org/apache/cayenne/exp/parser
-							</sourceDirectory>
-							<outputDirectory>
-								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/exp/parser
-							</outputDirectory>
-							<buildNodeFiles>false</buildNodeFiles>
-						</configuration>
-						<goals>
-							<goal>jjtree</goal>
-						</goals>
-					</execution>
-					
-					<execution>
-						<id>javacc-exp</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<sourceDirectory>
-								${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/exp/parser
-							</sourceDirectory>
-							<outputDirectory>
-								${project.build.directory}/generated-sources/javacc/org/apache/cayenne/exp/parser
-							</outputDirectory>
-						</configuration>
-						<goals>
-							<goal>javacc</goal>
-						</goals>
-					</execution>
-					
-					 -->
+					<!--
+						Commented out expression executions, as exp/parser package is not
+						properly setup - it stores generated parser in SVN in
+						src/main/java. So the executions below are used for manual
+						generation
+					-->
+					<!--
+						<execution> <id>jjtree-exp</id> <phase>generate-sources</phase>
+						<configuration> <sourceDirectory>
+						${basedir}/src/main/jjtree/org/apache/cayenne/exp/parser
+						</sourceDirectory> <outputDirectory>
+						${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/exp/parser
+						</outputDirectory> <buildNodeFiles>false</buildNodeFiles>
+						</configuration> <goals> <goal>jjtree</goal> </goals> </execution>
+						<execution> <id>javacc-exp</id> <phase>generate-sources</phase>
+						<configuration> <sourceDirectory>
+						${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/exp/parser
+						</sourceDirectory> <outputDirectory>
+						${project.build.directory}/generated-sources/javacc/org/apache/cayenne/exp/parser
+						</outputDirectory> </configuration> <goals> <goal>javacc</goal>
+						</goals> </execution>
+					-->
 				</executions>
 			</plugin>
 			<plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>process-sources</phase>
-                        <configuration>
-                            <tasks>
-                                <delete
-                                    file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/Node.java"/>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>process-sources</phase>
+						<configuration>
+							<tasks>
+								<delete
+									file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/Node.java" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -286,7 +237,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.cayenne.build-tools</groupId>
 				<artifactId>maven-cayenne-build-plugin</artifactId>
@@ -301,5 +251,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
