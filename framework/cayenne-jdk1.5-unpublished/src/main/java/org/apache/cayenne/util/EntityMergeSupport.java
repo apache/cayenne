@@ -19,14 +19,24 @@
 
 package org.apache.cayenne.util;
 
-import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.*;
-import org.apache.cayenne.project.NamedObjectFactory;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.cayenne.access.reveng.BasicNamingStrategy;
+import org.apache.cayenne.access.reveng.NamingStrategy;
+import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.project.NamedObjectFactory;
 
 /**
  * Implements methods for entity merging.
@@ -39,14 +49,25 @@ public class EntityMergeSupport {
     protected boolean removeMeaningfulFKs;
     
     /**
+     * Strategy for choosing names for entities, attributes and relationships
+     */
+    protected NamingStrategy namingStrategy;
+    
+    /**
      * Listeners of merge process. 
      */
     protected List<EntityMergeListener> listeners;
     
     public EntityMergeSupport(DataMap map) {
+        this(map, new BasicNamingStrategy()); 
+    }
+    
+    public EntityMergeSupport(DataMap map, NamingStrategy namingStrategy) {
         this.map = map;
         this.removeMeaningfulFKs = true;
         this.listeners = new ArrayList<EntityMergeListener>(); 
+        
+        this.namingStrategy = namingStrategy;
     }
 
     /**
@@ -103,7 +124,7 @@ public class EntityMergeSupport {
 
             // add missing attributes
             for (DbAttribute da : getAttributesToAdd(entity)) {
-                String attrName = NameConverter.underscoredToJava(da.getName(), false);
+                String attrName = namingStrategy.createObjAttributeName(da);
 
                 // avoid duplicate names
                 attrName = NamedObjectFactory.createName(
@@ -128,8 +149,7 @@ public class EntityMergeSupport {
                 for (Entity mappedTarget : map.getMappedEntities(dbEntity)) {
 
                     // avoid duplicate names
-                    String relationshipName = NameConverter.underscoredToJava(dr
-                            .getName(), false);
+                    String relationshipName = namingStrategy.createObjRelationshipName(dr);
                     relationshipName = NamedObjectFactory.createName(
                             ObjRelationship.class,
                             entity,
@@ -318,5 +338,19 @@ public class EntityMergeSupport {
         for (int i = 0; i < listeners.size(); i++) {
             listeners.get(i).objRelationshipAdded(rel);
         }
+    }
+    
+    /**
+     * Sets new naming strategy for reverse engineering
+     */
+    public void setNamingStrategy(NamingStrategy strategy) {
+        this.namingStrategy = strategy;
+    }
+    
+    /**
+     * @return naming strategy for reverse engineering
+     */
+    public NamingStrategy getNamingStrategy() {
+        return namingStrategy;
     }
 }

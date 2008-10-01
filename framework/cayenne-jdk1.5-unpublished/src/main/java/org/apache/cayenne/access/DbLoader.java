@@ -35,6 +35,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.access.reveng.BasicNamingStrategy;
+import org.apache.cayenne.access.reveng.ExportedKey;
+import org.apache.cayenne.access.reveng.NamingStrategy;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DataMap;
@@ -48,7 +51,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.util.EntityMergeSupport;
-import org.apache.cayenne.util.NameConverter;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,20 +86,13 @@ public class DbLoader {
      */
     private Set<DbEntity> skippedEntities = new HashSet<DbEntity>();
 
-    /** Creates default name for loaded relationship */
-    private static String defaultRelName(String dstName, boolean toMany) {
-        String uglyName = (toMany) ? dstName + "_ARRAY" : "to_" + dstName;
-        return NameConverter.underscoredToJava(uglyName, false);
-    }
-
     /** Creates a unique name for loaded relationship on the given entity. */
-    private static String uniqueRelName(Entity entity, String dstName, boolean toMany) {
+    private static String uniqueRelName(Entity entity, String preferredName) {
         int currentSuffix = 1;
-        String baseRelName = defaultRelName(dstName, toMany);
-        String relName = baseRelName;
+        String relName = preferredName;
 
-        while (entity.getRelationship(relName) != null) {
-            relName = baseRelName + currentSuffix;
+        while (entity.getRelationship(relName) != null || entity.getAttribute(relName) != null) {
+            relName = preferredName + currentSuffix;
             currentSuffix++;
         }
         return relName;
@@ -108,12 +103,24 @@ public class DbLoader {
     protected DatabaseMetaData metaData;
     protected DbLoaderDelegate delegate;
     protected String genericClassName;
+    
+    /**
+     * Strategy for choosing names for entities, attributes and relationships
+     */
+    protected NamingStrategy namingStrategy;
 
     /** Creates new DbLoader. */
     public DbLoader(Connection con, DbAdapter adapter, DbLoaderDelegate delegate) {
+        this(con, adapter, delegate, new BasicNamingStrategy());
+    }
+    
+    /** Creates new DbLoader with specified naming strategy. */
+    public DbLoader(Connection con, DbAdapter adapter, DbLoaderDelegate delegate, NamingStrategy strategy) {
         this.adapter = adapter;
         this.con = con;
         this.delegate = delegate;
+        
+        setNamingStrategy(strategy);
     }
 
     /**
@@ -492,9 +499,7 @@ public class DbLoader {
                 continue;
             }
 
-            String objEntityName = NameConverter.underscoredToJava(
-                    dbEntity.getName(),
-                    true);
+            String objEntityName = namingStrategy.createObjEntityName(dbEntity);
             // this loop will terminate even if no valid name is found
             // to prevent loader from looping forever (though such case is very unlikely)
             String baseName = objEntityName;
@@ -518,7 +523,7 @@ public class DbLoader {
         }
 
         // update ObjEntity attributes and relationships
-        new EntityMergeSupport(map).synchronizeWithDbEntities(loadedEntities);
+        new EntityMergeSupport(map, namingStrategy).synchronizeWithDbEntities(loadedEntities);
     }
 
     /** Loads database relationships into a DataMap. */
@@ -559,19 +564,23 @@ public class DbLoader {
             DbRelationship forwardRelationship = null;
             DbRelationshipDetected reverseRelationship = null;
             DbEntity fkEntity = null;
+            ExportedKey key = null;
 
             do {
+                //extract data from resultset
+                key = ExportedKey.extractData(rs);
+                
                 short keySeq = rs.getShort("KEY_SEQ");
                 if (keySeq == 1) {
 
                     if (forwardRelationship != null) {
-                        postprocessMasterDbRelationship(forwardRelationship);
+                        postprocessMasterDbRelationship(forwardRelationship, key);
                         forwardRelationship = null;
                     }
 
                     // start new entity
-                    String fkEntityName = rs.getString("FKTABLE_NAME");
-                    String fkName = rs.getString("FK_NAME");
+                    String fkEntityName = key.getFKTableName();
+                    String fkName = key.getFKName();
                     
                     if (!includeTableName(fkEntityName)) {
                         continue;
@@ -589,19 +598,19 @@ public class DbLoader {
                         continue;
                     }
                     else {
-
                         // init relationship
-                        forwardRelationship = new DbRelationship(DbLoader
-                                .uniqueRelName(pkEntity, fkEntityName, true));
+                        String forwardPreferredName = namingStrategy.createDbRelationshipName(key, true);
+                        forwardRelationship = new DbRelationship(
+                                uniqueRelName(pkEntity, forwardPreferredName));
 
                         forwardRelationship.setSourceEntity(pkEntity);
                         forwardRelationship.setTargetEntity(fkEntity);
                         pkEntity.addRelationship(forwardRelationship);
 
+                        String reversePreferredName = namingStrategy.createDbRelationshipName(key, false);
                         reverseRelationship = new DbRelationshipDetected(uniqueRelName(
                                 fkEntity,
-                                pkEntName,
-                                false));
+                                reversePreferredName));
                         reverseRelationship.setFkName(fkName);
                         reverseRelationship.setToMany(false);
                         reverseRelationship.setSourceEntity(fkEntity);
@@ -612,8 +621,8 @@ public class DbLoader {
 
                 if (fkEntity != null) {
                     // Create and append joins
-                    String pkName = rs.getString("PKCOLUMN_NAME");
-                    String fkName = rs.getString("FKCOLUMN_NAME");
+                    String pkName = key.getPKColumnName();
+                    String fkName = key.getFKColumnName();
 
                     // skip invalid joins...
                     DbAttribute pkAtt = (DbAttribute) pkEntity.getAttribute(pkName);
@@ -642,7 +651,7 @@ public class DbLoader {
             } while (rs.next());
 
             if (forwardRelationship != null) {
-                postprocessMasterDbRelationship(forwardRelationship);
+                postprocessMasterDbRelationship(forwardRelationship, key);
                 forwardRelationship = null;
             }
 
@@ -655,7 +664,7 @@ public class DbLoader {
      * Detects correct relationship multiplicity and "to dep pk" flag. Only called on
      * relationships from PK to FK, not the reverse ones.
      */
-    protected void postprocessMasterDbRelationship(DbRelationship relationship) {
+    protected void postprocessMasterDbRelationship(DbRelationship relationship, ExportedKey key) {
         boolean toPK = true;
         List<DbJoin> joins = relationship.getJoins();
 
@@ -682,8 +691,8 @@ public class DbLoader {
         if (!toMany) {
             Entity source = relationship.getSourceEntity();
             source.removeRelationship(relationship.getName());
-            relationship.setName(DbLoader.uniqueRelName(source, relationship
-                    .getTargetEntityName(), false));
+            relationship.setName(DbLoader.uniqueRelName(source, 
+                    namingStrategy.createDbRelationshipName(key, false)));
             source.addRelationship(relationship);
         }
 
@@ -911,5 +920,24 @@ public class DbLoader {
             // overwrite existing procedures...
             dataMap.addProcedure(procedure);
         }
+    }
+    
+    /**
+     * Sets new naming strategy for reverse engineering
+     */
+    public void setNamingStrategy(NamingStrategy strategy) {
+        //null values are not allowed
+        if (strategy == null) {
+            throw new NullPointerException("Null strategy not allowed");
+        }
+        
+        this.namingStrategy = strategy;
+    }
+    
+    /**
+     * @return naming strategy for reverse engineering
+     */
+    public NamingStrategy getNamingStrategy() {
+        return namingStrategy;
     }
 }
