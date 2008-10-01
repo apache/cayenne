@@ -47,6 +47,8 @@ public class DBConnectionInfoEditorView extends JPanel {
     protected JPasswordField password;
 
     protected Collection labels;
+    
+    protected DefaultFormBuilder builder;
 
     public DBConnectionInfoEditorView() {
         adapters = new JComboBox();
@@ -60,7 +62,7 @@ public class DBConnectionInfoEditorView extends JPanel {
 
         // assemble
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:160dlu:grow", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
+        builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
         labels.add(builder.append("JDBC Driver:", driver));
@@ -91,6 +93,13 @@ public class DBConnectionInfoEditorView extends JPanel {
 
     public JTextField getUserName() {
         return userName;
+    }
+    
+    /**
+     * @return Builder of the view (to allow dynamic extending of the component)
+     */
+    public DefaultFormBuilder getBuilder() {
+        return builder;
     }
 
     public void setEnabled(boolean enabled) {

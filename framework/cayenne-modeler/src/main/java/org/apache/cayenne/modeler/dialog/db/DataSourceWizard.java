@@ -63,13 +63,20 @@ public class DataSourceWizard extends CayenneController {
             String altDataSourceKey, DBConnectionInfo altDataSource) {
         super(parent);
 
-        this.view = new DataSourceWizardView(this);
+        this.view = createView();
         this.view.setTitle(title);
         this.altDataSource = altDataSource;
         this.altDataSourceKey = altDataSourceKey;
         this.connectionInfo = new DBConnectionInfo();
 
         initBindings();
+    }
+    
+    /**
+     * Creates swing dialog for this wizard 
+     */
+    protected DataSourceWizardView createView() {
+        return new DataSourceWizardView(this); 
     }
 
     protected void initBindings() {

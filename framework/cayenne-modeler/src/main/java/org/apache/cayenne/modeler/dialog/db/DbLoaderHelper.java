@@ -19,10 +19,23 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
+import org.apache.cayenne.access.reveng.BasicNamingStrategy;
+import org.apache.cayenne.access.reveng.NamingStrategy;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -39,14 +52,6 @@ import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import javax.swing.*;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Stateful helper class that encapsulates access to DbLoader.
@@ -94,12 +99,17 @@ public class DbLoaderHelper {
 
         return mergeDialog;
     }
-
+    
     public DbLoaderHelper(ProjectController mediator, Connection connection,
             DbAdapter adapter, String dbUserName) {
+        this(mediator, connection, adapter, dbUserName, new BasicNamingStrategy());
+    }
+
+    public DbLoaderHelper(ProjectController mediator, Connection connection,
+            DbAdapter adapter, String dbUserName, NamingStrategy strategy) {
         this.dbUserName = dbUserName;
         this.mediator = mediator;
-        this.loader = new DbLoader(connection, adapter, new LoaderDelegate());
+        this.loader = new DbLoader(connection, adapter, new LoaderDelegate(), strategy);
     }
 
     public void setOverwritingEntities(boolean overwritePreference) {

@@ -117,6 +117,12 @@
       		<artifactId>jedit-syntax</artifactId>
       		<version>2.2.2</version>
     	</dependency>
+    	
+    	<dependency>
+  			<groupId>net.java.dev.inflector</groupId>
+			  <artifactId>inflector</artifactId>
+			  <version>0.7.0</version>
+		</dependency>
   </dependencies>
 
 	<build>

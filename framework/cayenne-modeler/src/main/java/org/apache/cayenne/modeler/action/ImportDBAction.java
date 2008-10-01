@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.sql.Connection;
 
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.reveng.NamingStrategy;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.ConnectionWizard;
@@ -68,6 +69,8 @@ public class ImportDBAction extends DBWizardAction {
         Connection connection = connectWizard.getConnection();
         DbAdapter adapter = connectWizard.getAdapter();
         DBConnectionInfo dataSourceInfo = connectWizard.getConnectionInfo();
+        
+        NamingStrategy strategy = connectWizard.getNamingStrategy();
 
         // from here pass control to DbLoaderHelper, running it from a thread separate
         // from EventDispatch
@@ -76,7 +79,8 @@ public class ImportDBAction extends DBWizardAction {
                 getProjectController(),
                 connection,
                 adapter,
-                dataSourceInfo.getUserName());
+                dataSourceInfo.getUserName(),
+                strategy);
         Thread th = new Thread(new Runnable() {
 
             public void run() {

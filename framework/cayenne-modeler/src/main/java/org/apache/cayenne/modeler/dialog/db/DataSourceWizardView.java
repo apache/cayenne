@@ -56,7 +56,7 @@ public class DataSourceWizardView extends JDialog {
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "20dlu:grow, pref, 3dlu, fill:max(50dlu;pref), 3dlu, fill:20dlu",
+                "20dlu:grow, pref, 3dlu, fill:max(150dlu;pref), 3dlu, fill:20dlu",
                 "p"));
         builder.setDefaultDialogBorder();
 
