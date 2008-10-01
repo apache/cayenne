@@ -28,8 +28,10 @@ import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
 
 /**
  * Handles appending joins to the content buffer at a marked position.
@@ -102,9 +104,16 @@ public class EJBQLJoinAppender {
 
         // TODO: andrus, 1/6/2008 - move reusable join check here...
 
-        String sourceAlias = context.getTableAlias(lhsId.getEntityId(), incomingDB
-                .getSourceEntity()
-                .getName());
+        Entity sourceEntity = incomingDB.getSourceEntity();
+        String tableName;
+
+        if (sourceEntity instanceof DbEntity) {
+           tableName = ((DbEntity) sourceEntity).getFullyQualifiedName();
+        } else {
+           tableName = sourceEntity.getName();
+        }
+
+        String sourceAlias = context.getTableAlias(lhsId.getEntityId(), tableName);
 
         if (marker != null) {
             context.pushMarker(marker, false);

@@ -114,7 +114,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
         if (oldPath != null) {
             this.idPath = oldPath;
-            this.lastAlias = context.getTableAlias(oldPath, currentEntity.getName());
+            this.lastAlias = context.getTableAlias(oldPath, currentEntity.getFullyQualifiedName());
         }
         else {
 
@@ -124,7 +124,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
                         joinMarker,
                         new EJBQLTableId(idPath),
                         new EJBQLTableId(fullPath));
-                this.lastAlias = context.getTableAlias(fullPath, currentEntity.getName());
+                this.lastAlias = context.getTableAlias(fullPath, currentEntity.getFullyQualifiedName());
             }
             else {
                 joinAppender.appendOuterJoin(
@@ -136,7 +136,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
                         .getRelationship(lastPathComponent);
                 DbEntity targetEntity = (DbEntity) lastRelationship.getTargetEntity();
 
-                this.lastAlias = context.getTableAlias(fullPath, targetEntity.getName());
+                this.lastAlias = context.getTableAlias(fullPath, targetEntity.getFullyQualifiedName());
             }
 
             this.idPath = newPath;
