@@ -324,11 +324,6 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
                     Font font = getFont();
                     Font newFont = font.deriveFont(Font.ITALIC);
                     setFont(newFont);
-                } 
-                else {
-                    setBackground(isSelected && !hasFocus
-                            ? table.getSelectionBackground()
-                            : table.getBackground());
                 }
                 setIcon(null);
             } else {
@@ -338,6 +333,9 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
                 }
                 setText("");
             }
+            setBackground(isSelected && !hasFocus
+                    ? table.getSelectionBackground()
+                    : table.getBackground());
 
             return this;
         }
