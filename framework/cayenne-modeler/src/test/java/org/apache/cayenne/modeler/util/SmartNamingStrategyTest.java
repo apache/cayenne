@@ -40,7 +40,7 @@ public class SmartNamingStrategyTest extends TestCase {
         assertEquals(strategy.createDbRelationshipName(key, true), "people");
         
         key = new ExportedKey("PERSON", "PERSON_ID", null,
-                "ADDRESS", "SHIPPING_ADDRESS", null);
+                "ADDRESS", "SHIPPING_ADDRESS_ID", null);
         assertEquals(strategy.createDbRelationshipName(key, false), "shippingAddress"); 
         assertEquals(strategy.createDbRelationshipName(key, true), "addresses");
         
