@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
