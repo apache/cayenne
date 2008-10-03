@@ -25,6 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.EventObject;
+import java.util.List;
+import java.util.LinkedList;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -41,6 +43,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -48,6 +51,7 @@ import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.dialog.objentity.ClassNameUpdater;
+import org.apache.cayenne.modeler.dialog.validator.DuplicatedAttributesDialog;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
@@ -263,6 +267,17 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                 ObjEntity entity = mediator.getCurrentObjEntity();
 
                 if (!Util.nullSafeEquals(name, entity.getSuperEntityName())) {
+                    List<ObjAttribute> duplicateAttributes = getDuplicatedAttributes((ObjEntity) superEntity);
+
+                    if (duplicateAttributes.size() > 0) {
+                        DuplicatedAttributesDialog.showDialog(Application.getFrame(), duplicateAttributes, (ObjEntity) superEntity, entity);
+                        if (DuplicatedAttributesDialog.getResult().equals(DuplicatedAttributesDialog.CANCEL_RESULT)) {
+                            superEntityCombo.setSelectedItem(entity.getSuperEntity());
+                            superClassName.setText(entity.getSuperClassName());
+                            return;
+                        }
+                        
+                    }
                     entity.setSuperEntityName(name);
 
                     // if a super-entity selected, disable table selection
@@ -621,6 +636,20 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
         initFromModel(entity);
         name.getComponent().requestFocusInWindow();
+    }
+    
+    private List<ObjAttribute> getDuplicatedAttributes(ObjEntity superEntity) {
+        List<ObjAttribute> result = new LinkedList<ObjAttribute>();
+
+        ObjEntity entity = mediator.getCurrentObjEntity();
+
+        for (ObjAttribute attribute : entity.getAttributes()) {
+            if(superEntity.getAttribute(attribute.getName()) != null) {
+                result.add(attribute);
+            }
+        }
+        
+        return result;
     }
 
 }

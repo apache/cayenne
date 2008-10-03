@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.editor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.util.EventObject;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.ImageIcon;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -218,6 +220,11 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     }
 
     protected void setUpTableStructure(ObjAttributeTableModel model) {
+        TableColumn inheritanceColumn = table.getColumnModel().getColumn(
+                ObjAttributeTableModel.INHERITED);
+        inheritanceColumn.setMinWidth(20);
+        inheritanceColumn.setMaxWidth(20);
+        
         TableColumn nameColumn = table.getColumnModel().getColumn(
                 ObjAttributeTableModel.OBJ_ATTRIBUTE);
         nameColumn.setMinWidth(150);
@@ -302,14 +309,34 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
             ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
             ObjAttribute attribute = model.getAttribute(row);
+            if (column != ObjAttributeTableModel.INHERITED) {
 
-            if (attribute != null && attribute.getEntity() != model.getEntity()) {
-                setForeground(Color.GRAY);
-            }
-            else {
-                setForeground(isSelected && !hasFocus
-                        ? table.getSelectionForeground()
-                        : table.getForeground());
+                if (!model.isCellEditable(row, column)) {
+                    setForeground(Color.GRAY);
+                }
+                else {
+                    setForeground(isSelected && !hasFocus
+                            ? table.getSelectionForeground()
+                            : table.getForeground());
+                }
+
+                if (attribute.isInherited()) {
+                    Font font = getFont();
+                    Font newFont = font.deriveFont(Font.ITALIC);
+                    setFont(newFont);
+                } 
+                else {
+                    setBackground(isSelected && !hasFocus
+                            ? table.getSelectionBackground()
+                            : table.getBackground());
+                }
+                setIcon(null);
+            } else {
+                if (attribute.isInherited()) {
+                    ImageIcon objEntityIcon = ModelerUtil.buildIcon("icon-override.gif");
+                    setIcon(objEntityIcon);
+                }
+                setText("");
             }
 
             return this;

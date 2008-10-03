@@ -46,11 +46,12 @@ import org.apache.cayenne.util.Util;
 public class ObjAttributeTableModel extends CayenneTableModel {
 
     // Columns
-    static final int OBJ_ATTRIBUTE = 0;
-    static final int OBJ_ATTRIBUTE_TYPE = 1;
-    static final int DB_ATTRIBUTE = 2;
-    static final int DB_ATTRIBUTE_TYPE = 3;
-    static final int LOCKING = 4;
+    static final int INHERITED = 0;
+    static final int OBJ_ATTRIBUTE = 1;
+    static final int OBJ_ATTRIBUTE_TYPE = 2;
+    static final int DB_ATTRIBUTE = 3;
+    static final int DB_ATTRIBUTE_TYPE = 4;
+    static final int LOCKING = 5;
 
     protected ObjEntity entity;
     protected DbEntity dbEntity;
@@ -119,11 +120,13 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     }
 
     public int getColumnCount() {
-        return 5;
+        return 6;
     }
 
     public String getColumnName(int column) {
         switch (column) {
+            case INHERITED:
+                return "In";
             case OBJ_ATTRIBUTE:
                 return "ObjAttribute";
             case OBJ_ATTRIBUTE_TYPE:
@@ -142,7 +145,10 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     public Object getValueAt(int row, int column) {
         ObjAttribute attribute = getAttribute(row);
 
-        if (column == OBJ_ATTRIBUTE) {
+
+        if (column == INHERITED) {
+            return attribute.isInherited();
+        } else if (column == OBJ_ATTRIBUTE) {
             return attribute.getName();
         }
         else if (column == OBJ_ATTRIBUTE_TYPE) {
@@ -153,13 +159,24 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         }
         else {
             DbAttribute dbAttribute = attribute.getDbAttribute();
-            if (dbAttribute == null) {
-                return null;
-            }
-            else if (column == DB_ATTRIBUTE)
-                return dbAttribute.getName();
-            else if (column == DB_ATTRIBUTE_TYPE) {
-                return TypesMapping.getSqlNameByType(dbAttribute.getType());
+            if (column == DB_ATTRIBUTE) {
+                if (dbAttribute == null) {
+                    if (!attribute.isInherited() && ((ObjEntity)attribute.getEntity()).getIsAbstract()) {
+                        return attribute.getDbAttributePath();
+                    } else {
+                        return null;
+                    }
+                }
+                return dbAttribute.getName(); }
+            else 
+            if (column == DB_ATTRIBUTE_TYPE) {
+                int type;
+                if (dbAttribute == null) {
+                    type = TypesMapping.getSqlTypeByJava(getAttribute(row).getJavaClass());
+                } else {
+                    type = dbAttribute.getType();
+                }
+                return TypesMapping.getSqlNameByType(type);
             }
             else {
                 return null;
@@ -192,9 +209,12 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             if (column == DB_ATTRIBUTE) {
                 // If db attrib exist, associate it with obj attribute
                 if (value != null) {
-                    DbAttribute dbAttribute = (DbAttribute) dbEntity.getAttribute(value
-                            .toString());
-                    String path = dbAttribute != null ? dbAttribute.getName() : null;
+                    String path = value.toString();
+                    if (dbEntity != null) {
+                        DbAttribute dbAttribute = (DbAttribute) dbEntity.getAttribute(value
+                                .toString());
+                        path = dbAttribute != null ? dbAttribute.getName() : null;
+                    }
                     attribute.setDbAttributePath(path);
                 }
                 // If name is erased, remove db attribute from obj attribute.
@@ -211,10 +231,6 @@ public class ObjAttributeTableModel extends CayenneTableModel {
 
     public boolean isCellEditable(int row, int col) {
 
-        if (dbEntity == null) {
-            return col != DB_ATTRIBUTE_TYPE && col != DB_ATTRIBUTE;
-        }
-
         if (getAttribute(row).isInherited()) {
             if (col == DB_ATTRIBUTE) {
                 return true;
@@ -222,7 +238,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             return false;
         }
 
-        return col != DB_ATTRIBUTE_TYPE;
+        return col != DB_ATTRIBUTE_TYPE && col != INHERITED;
     }
 
     public ObjEntity getEntity() {
