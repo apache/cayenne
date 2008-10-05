@@ -58,6 +58,7 @@ import org.apache.cayenne.map.event.ProcedureEvent;
 import org.apache.cayenne.map.event.ProcedureListener;
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.map.event.QueryListener;
+import org.apache.cayenne.modeler.action.CopyAction;
 import org.apache.cayenne.modeler.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.action.CreateDbEntityAction;
 import org.apache.cayenne.modeler.action.CreateDomainAction;
@@ -65,7 +66,9 @@ import org.apache.cayenne.modeler.action.CreateNodeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
+import org.apache.cayenne.modeler.action.CutAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
+import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.DataMapDisplayListener;
@@ -178,8 +181,11 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         mediator.addProcedureDisplayListener(this);
         mediator.addQueryListener(this);
         mediator.addQueryDisplayListener(this);
+        
+        mediator.getApplication().getActionManager().setupCCP(this, 
+                CutAction.getActionName(), CopyAction.getActionName());
     }
-
+    
     private void initFromModel(Project project) {
         // build model
         ProjectTreeModel model = new ProjectTreeModel(project);
@@ -898,6 +904,10 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         popup.add(buildMenu(ObjEntitySyncAction.getActionName()));
         popup.addSeparator();
         popup.add(buildMenu(RemoveAction.getActionName()));
+        popup.addSeparator();
+        popup.add(buildMenu(CutAction.getActionName()));
+        popup.add(buildMenu(CopyAction.getActionName()));
+        popup.add(buildMenu(PasteAction.getActionName()));
         
         return popup;
     }

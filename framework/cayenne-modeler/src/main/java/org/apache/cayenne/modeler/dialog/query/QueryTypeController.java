@@ -102,9 +102,17 @@ public class QueryTypeController extends BasicController {
         dataMap.addQuery(query);
 
         // notify listeners
-        mediator.fireQueryEvent(new QueryEvent(this, query, MapEvent.ADD, dataMap));
-        mediator
-                .fireQueryDisplayEvent(new QueryDisplayEvent(this, query, dataMap, domain));
+        fireQueryEvent(this, mediator, domain, dataMap, query);
         shutdown();
+    }
+    
+    /**
+     * Fires events when a query was added
+     */
+    public static void fireQueryEvent(Object src, ProjectController mediator, DataDomain domain,
+            DataMap dataMap, Query query) {
+        mediator.fireQueryEvent(new QueryEvent(src, query, MapEvent.ADD, dataMap));
+        mediator
+                .fireQueryDisplayEvent(new QueryDisplayEvent(src, query, dataMap, domain));
     }
 }

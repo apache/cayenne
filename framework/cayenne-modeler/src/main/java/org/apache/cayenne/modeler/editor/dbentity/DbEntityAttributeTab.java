@@ -39,18 +39,21 @@ import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbAttributeListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.CopyAttributeAction;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
+import org.apache.cayenne.modeler.action.CutAttributeAction;
 import org.apache.cayenne.modeler.action.DbEntitySyncAction;
+import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
@@ -90,6 +93,11 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
 
         toolBar.addSeparator();
         toolBar.add(app.getAction(RemoveAttributeAction.getActionName()).buildButton());
+        
+        toolBar.addSeparator();
+        toolBar.add(app.getAction(CutAttributeAction.getActionName()).buildButton());
+        toolBar.add(app.getAction(CopyAttributeAction.getActionName()).buildButton());
+        toolBar.add(app.getAction(PasteAction.getActionName()).buildButton());
 
         add(toolBar, BorderLayout.NORTH);
         
@@ -102,9 +110,17 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
         JPopupMenu popup = new JPopupMenu();
         popup.add(app.getAction(RemoveAttributeAction.getActionName()).buildMenu());
         
+        popup.addSeparator();
+        popup.add(app.getAction(CutAttributeAction.getActionName()).buildMenu());
+        popup.add(app.getAction(CopyAttributeAction.getActionName()).buildMenu());
+        popup.add(app.getAction(PasteAction.getActionName()).buildMenu());
+        
         TablePopupHandler.install(table, popup);
         
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        
+        mediator.getApplication().getActionManager().setupCCP(table, 
+                CutAttributeAction.getActionName(), CopyAttributeAction.getActionName());
     }
 
     public void valueChanged(ListSelectionEvent e) {
@@ -115,17 +131,10 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
      * Selects specified attributes.
      */
     public void selectAttributes(DbAttribute[] attrs) {
-        CayenneAction removeAction = Application
-          .getInstance()
-          .getAction(RemoveAttributeAction.getActionName());
-        
-        if (attrs == null || attrs.length == 0) {
-            removeAction.setEnabled(false);
-            return;
-        }
-        // enable the remove button
-        removeAction.setEnabled(true);
-        removeAction.setName(RemoveAttributeAction.getActionName(attrs.length > 1));
+        ModelerUtil.updateActions(attrs.length,  
+                RemoveAttributeAction.getActionName(),
+                CutAttributeAction.getActionName(),
+                CopyAttributeAction.getActionName());
 
         DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
         

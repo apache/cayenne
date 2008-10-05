@@ -64,8 +64,8 @@ public abstract class AbstractRemoveCallbackMethodAction extends RemoveAction {
      * @param e event
      */
     @Override
-    public final void performAction(ActionEvent e) {
-        ConfirmRemoveDialog dialog = getConfirmDeleteDialog();
+    public final void performAction(ActionEvent e, boolean allowAsking) {
+        ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
         
         String[] methods = getProjectController().getCurrentCallbackMethods();
 

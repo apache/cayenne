@@ -70,8 +70,16 @@ public class CreateNodeAction extends CayenneAction {
         // use domain name as DataNode base, as node names must be unique across the
         // project...
         DataNode node = buildDataNode();
-        mediator.fireDataNodeEvent(new DataNodeEvent(this, node, MapEvent.ADD));
-        mediator.fireDataNodeDisplayEvent(new DataNodeDisplayEvent(this, domain, node));
+        fireDataNodeEvent(this, mediator, domain, node);
+    }
+    
+    /**
+     * Fires events when a obj entity was added
+     */
+    static void fireDataNodeEvent(Object src, ProjectController mediator, DataDomain domain,
+            DataNode node) {
+        mediator.fireDataNodeEvent(new DataNodeEvent(src, node, MapEvent.ADD));
+        mediator.fireDataNodeDisplayEvent(new DataNodeDisplayEvent(src, domain, node));
     }
 
     /**

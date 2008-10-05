@@ -19,6 +19,34 @@
 
 package org.apache.cayenne.modeler.editor;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.EventObject;
+import java.util.List;
+
+import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
@@ -29,29 +57,26 @@ import org.apache.cayenne.map.event.ObjRelationshipListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.CopyRelationshipAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
+import org.apache.cayenne.modeler.action.CutRelationshipAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
+import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
 import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfoController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
-import org.apache.cayenne.modeler.util.*;
+import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.util.PanelFactory;
+import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Collection;
-import java.util.EventObject;
-import java.util.List;
 
 /**
  * Displays ObjRelationships for the edited ObjEntity.
@@ -112,10 +137,13 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
 
         toolBar.addSeparator();
 
-        toolBar
-                .add(app
-                        .getAction(RemoveRelationshipAction.getActionName())
-                        .buildButton());
+        toolBar.add(app.getAction(RemoveRelationshipAction.getActionName()).buildButton());
+        
+        toolBar.addSeparator();
+        toolBar.add(app.getAction(CutRelationshipAction.getActionName()).buildButton());
+        toolBar.add(app.getAction(CopyRelationshipAction.getActionName()).buildButton());
+        toolBar.add(app.getAction(PasteAction.getActionName()).buildButton());
+        
         add(toolBar, BorderLayout.NORTH);
 
         table = new CayenneTable();
@@ -130,6 +158,11 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
         JPopupMenu popup = new JPopupMenu();
         popup.add(resolveMenu);
         popup.add(app.getAction(RemoveRelationshipAction.getActionName()).buildMenu());
+        
+        popup.addSeparator();
+        popup.add(app.getAction(CutRelationshipAction.getActionName()).buildMenu());
+        popup.add(app.getAction(CopyRelationshipAction.getActionName()).buildMenu());
+        popup.add(app.getAction(PasteAction.getActionName()).buildMenu());
         
         TablePopupHandler.install(table, popup);
 
@@ -175,23 +208,19 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                 processExistingSelection(e);
             }
         });
+        
+        mediator.getApplication().getActionManager().setupCCP(table, 
+                CutRelationshipAction.getActionName(), CopyRelationshipAction.getActionName());
     }
 
     /**
      * Selects a specified relationship in the relationships table.
      */
     public void selectRelationships(ObjRelationship[] rels) {
-        CayenneAction removeAction = Application
-            .getInstance()
-            .getAction(RemoveRelationshipAction.getActionName());
-        
-        if (rels.length == 0) {
-            removeAction.setEnabled(false);
-            return;
-        }
-        // enable the remove button
-        removeAction.setEnabled(true);
-        removeAction.setName(RemoveRelationshipAction.getActionName(rels.length > 1));
+        ModelerUtil.updateActions(rels.length,  
+                RemoveRelationshipAction.getActionName(),
+                CutRelationshipAction.getActionName(),
+                CopyRelationshipAction.getActionName());
 
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
 

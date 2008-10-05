@@ -65,8 +65,8 @@ public class RemoveEntityListenerForDataMapAction extends RemoveAction {
      * base entity listener removing logic
      * @param e event
      */
-    public void performAction(ActionEvent e) {
-        ConfirmRemoveDialog dialog = getConfirmDeleteDialog();
+    public void performAction(ActionEvent e, boolean allowAsking) {
+        ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
 
         if (getProjectController().getCurrentListenerClass() != null) {
             if (dialog.shouldDelete("entity listener", getProjectController()

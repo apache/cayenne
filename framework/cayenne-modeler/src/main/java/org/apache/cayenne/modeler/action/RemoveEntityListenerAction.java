@@ -66,8 +66,8 @@ public class RemoveEntityListenerAction extends RemoveAction {
      * base entity listener removing logic
      * @param e event
      */
-    public void performAction(ActionEvent e) {
-        ConfirmRemoveDialog dialog = getConfirmDeleteDialog();
+    public void performAction(ActionEvent e, boolean allowAsking) {
+        ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
 
         if ((getProjectController().getCurrentObjEntity() != null) &&
             (getProjectController().getCurrentListenerClass() != null)) {

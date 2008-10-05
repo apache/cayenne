@@ -16,48 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.action;
 
-
-package org.apache.cayenne.exp;
-
-import org.apache.cayenne.util.Util;
-
-import java.io.Serializable;
+import javax.swing.Action;
 
 /**
- * Named parameter for paramterized expressions.
- * 
- * @author Andrus Adamchik
+ * MultipleObjectsAction is an action, which can be applied to multiple objects at once.
+ * Therefore the name of the action might change
+ * @author Andrey Razumovsky
  */
-public class ExpressionParameter implements Serializable {
-	protected String name;
-
+public interface MultipleObjectsAction extends Action {
     /**
-     * Constructor for ExpressionParam.
+     * @return The name for the action, either if one or multiple objects are selected 
      */
-    public ExpressionParameter(String name) {
-        this.name = name;
-    }
-    
-    /**
-     * Returns the name of the expression parameter.
-     */
-    public String getName() {
-        return name;
-    }
-    
-    @Override
-    public String toString() {
-    	return '$' + name;
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if(!(o instanceof ExpressionParameter)) {
-            return false;
-        }
-        
-        ExpressionParameter parameter = (ExpressionParameter)o;
-        return Util.nullSafeEquals(name, parameter.name);
-    }
+    public String getActionName(boolean multiple);
 }

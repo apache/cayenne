@@ -46,14 +46,16 @@ import org.apache.cayenne.map.event.ObjAttributeListener;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.CopyAttributeAction;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
+import org.apache.cayenne.modeler.action.CutAttributeAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
+import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -89,6 +91,12 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         toolBar.add(app.getAction(ObjEntitySyncAction.getActionName()).buildButton());
         toolBar.addSeparator();
         toolBar.add(app.getAction(RemoveAttributeAction.getActionName()).buildButton());
+        
+        toolBar.addSeparator();
+        toolBar.add(app.getAction(CutAttributeAction.getActionName()).buildButton());
+        toolBar.add(app.getAction(CopyAttributeAction.getActionName()).buildButton());
+        toolBar.add(app.getAction(PasteAction.getActionName()).buildButton());
+        
         add(toolBar, BorderLayout.NORTH);
 
         table = new CayenneTable();
@@ -99,6 +107,11 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
          */
         JPopupMenu popup = new JPopupMenu();
         popup.add(app.getAction(RemoveAttributeAction.getActionName()).buildMenu());
+        
+        popup.addSeparator();
+        popup.add(app.getAction(CutAttributeAction.getActionName()).buildMenu());
+        popup.add(app.getAction(CopyAttributeAction.getActionName()).buildMenu());
+        popup.add(app.getAction(PasteAction.getActionName()).buildMenu());
         
         TablePopupHandler.install(table, popup);
 
@@ -116,24 +129,20 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
                 processExistingSelection(e);
             }
         });
+        
+        mediator.getApplication().getActionManager().setupCCP(table, 
+                CutAttributeAction.getActionName(), CopyAttributeAction.getActionName());
     }
 
     /**
      * Selects a specified attribute.
      */
     public void selectAttributes(ObjAttribute[] attrs) {
-        CayenneAction removeAction = Application
-            .getInstance()
-            .getAction(RemoveAttributeAction.getActionName());
+        ModelerUtil.updateActions(attrs.length,  
+                RemoveAttributeAction.getActionName(),
+                CutAttributeAction.getActionName(),
+                CopyAttributeAction.getActionName());
         
-        if (attrs.length == 0) {
-            removeAction.setEnabled(false);
-            return;
-        }
-        // enable the remove button
-        removeAction.setEnabled(true);
-        removeAction.setName(RemoveAttributeAction.getActionName(attrs.length > 1));
-
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
         
         List listAttrs = model.getObjectList();

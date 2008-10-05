@@ -45,6 +45,7 @@ import javax.swing.JToolBar;
 
 import org.apache.cayenne.modeler.action.AboutAction;
 import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
+import org.apache.cayenne.modeler.action.CopyAction;
 import org.apache.cayenne.modeler.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.action.CreateDbEntityAction;
 import org.apache.cayenne.modeler.action.CreateDomainAction;
@@ -52,6 +53,7 @@ import org.apache.cayenne.modeler.action.CreateNodeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
+import org.apache.cayenne.modeler.action.CutAction;
 import org.apache.cayenne.modeler.action.DocumentationAction;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.FindAction;
@@ -66,6 +68,7 @@ import org.apache.cayenne.modeler.action.NavigateForwardAction;
 import org.apache.cayenne.modeler.action.NewProjectAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.ProjectAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
 import org.apache.cayenne.modeler.action.RevertAction;
@@ -161,12 +164,14 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         getContentPane().setLayout(new BorderLayout());
 
         JMenu fileMenu = new JMenu("File");
+        JMenu editMenu = new JMenu("Edit");
         JMenu projectMenu = new JMenu("Project");
         JMenu toolMenu = new JMenu("Tools");
         JMenu helpMenu = new JMenu("Help");
 
         if (OperatingSystem.getOS() != OperatingSystem.MAC_OS_X) {
             fileMenu.setMnemonic(KeyEvent.VK_F);
+            editMenu.setMnemonic(KeyEvent.VK_E);
             projectMenu.setMnemonic(KeyEvent.VK_P);
             toolMenu.setMnemonic(KeyEvent.VK_T);
             helpMenu.setMnemonic(KeyEvent.VK_H);
@@ -181,6 +186,10 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         fileMenu.add(getAction(SaveAsAction.getActionName()).buildMenu());
         fileMenu.add(getAction(RevertAction.getActionName()).buildMenu());
         fileMenu.addSeparator();
+        
+        editMenu.add(getAction(CutAction.getActionName()).buildMenu());
+        editMenu.add(getAction(CopyAction.getActionName()).buildMenu());
+        editMenu.add(getAction(PasteAction.getActionName()).buildMenu());
 
         recentFileMenu = new RecentFileMenu("Recent Projects");
         addRecentFileListListener(recentFileMenu);
@@ -237,6 +246,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         JMenuBar menuBar = new JMenuBar();
 
         menuBar.add(fileMenu);
+        menuBar.add(editMenu);
         menuBar.add(projectMenu);
         menuBar.add(toolMenu);
         menuBar.add(helpMenu);
@@ -323,6 +333,12 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolBar.add(getAction(OpenProjectAction.getActionName()).buildButton());
         toolBar.add(getAction(SaveAction.getActionName()).buildButton());
         toolBar.add(getAction(RemoveAction.getActionName()).buildButton());
+        
+        toolBar.addSeparator();
+        
+        toolBar.add(getAction(CutAction.getActionName()).buildButton());
+        toolBar.add(getAction(CopyAction.getActionName()).buildButton());
+        toolBar.add(getAction(PasteAction.getActionName()).buildButton());
 
         toolBar.addSeparator();
 
@@ -394,7 +410,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
     }
     
     public void currentObjectsChanged(MultipleObjectsDisplayEvent e) {
-        actionManager.multipleObjectsSelected();
+        actionManager.multipleObjectsSelected(e.getPaths());
     }
 
     /**

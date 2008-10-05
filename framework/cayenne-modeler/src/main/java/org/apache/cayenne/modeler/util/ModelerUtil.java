@@ -37,8 +37,10 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerConstants;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.MultipleObjectsAction;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -158,5 +160,20 @@ public final class ModelerUtil {
 //        }
 
         return null;
+    }
+    
+    /**
+     * Updates MultipleObjectActions' state, depending on number of selected objects
+     * (attributes, rel etc.)
+     */
+    public static void updateActions(int numSelected, String... actionNames) {
+        for (int i = 0; i < actionNames.length; i++) {
+            CayenneAction action = Application.getInstance().getAction(actionNames[i]);
+            
+            if (action instanceof MultipleObjectsAction) {
+                action.setEnabled(numSelected > 0);
+                action.setName(((MultipleObjectsAction) action).getActionName(numSelected > 1));
+            }
+        }
     }
 }

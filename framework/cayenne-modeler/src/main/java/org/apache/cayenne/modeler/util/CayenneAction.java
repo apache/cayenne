@@ -20,15 +20,22 @@
 
 package org.apache.cayenne.modeler.util;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
+
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
 
 /**
  * Superclass of CayenneModeler actions that implements support for some common

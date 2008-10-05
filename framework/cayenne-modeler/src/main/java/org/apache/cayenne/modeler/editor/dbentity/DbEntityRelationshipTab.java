@@ -50,9 +50,12 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.CopyRelationshipAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
+import org.apache.cayenne.modeler.action.CutRelationshipAction;
 import org.apache.cayenne.modeler.action.DbEntitySyncAction;
+import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
 import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialog;
 import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
@@ -60,7 +63,6 @@ import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.CellRenderers;
@@ -139,10 +141,13 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
 
         toolBar.addSeparator();
 
-        toolBar
-                .add(app
-                        .getAction(RemoveRelationshipAction.getActionName())
-                        .buildButton());
+        toolBar.add(app.getAction(RemoveRelationshipAction.getActionName()).buildButton());
+        
+        toolBar.addSeparator();
+        toolBar.add(app.getAction(CutRelationshipAction.getActionName()).buildButton());
+        toolBar.add(app.getAction(CopyRelationshipAction.getActionName()).buildButton());
+        toolBar.add(app.getAction(PasteAction.getActionName()).buildButton());
+        
         add(toolBar, BorderLayout.NORTH);
 
         table = new CayenneTable();
@@ -157,9 +162,17 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
         popup.add(resolveMenu);
         popup.add(app.getAction(RemoveRelationshipAction.getActionName()).buildMenu());
         
+        popup.addSeparator();
+        popup.add(app.getAction(CutRelationshipAction.getActionName()).buildMenu());
+        popup.add(app.getAction(CopyRelationshipAction.getActionName()).buildMenu());
+        popup.add(app.getAction(PasteAction.getActionName()).buildMenu());
+        
         TablePopupHandler.install(table, popup);
 
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        
+        mediator.getApplication().getActionManager().setupCCP(table, 
+                CutRelationshipAction.getActionName(), CopyRelationshipAction.getActionName());
     }
 
     public void valueChanged(ListSelectionEvent e) {
@@ -180,17 +193,10 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
      * Selects a specified relationship in the relationships table.
      */
     public void selectRelationships(DbRelationship[] rels) {
-        CayenneAction removeAction = Application
-            .getInstance()
-            .getAction(RemoveRelationshipAction.getActionName());
-        
-        if (rels.length == 0) {
-            removeAction.setEnabled(false);
-            return;
-        }
-        // enable the remove button
-        removeAction.setEnabled(true);
-        removeAction.setName(RemoveRelationshipAction.getActionName(rels.length > 1));
+        ModelerUtil.updateActions(rels.length,  
+                RemoveRelationshipAction.getActionName(),
+                CutRelationshipAction.getActionName(),
+                CopyRelationshipAction.getActionName());
 
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
         

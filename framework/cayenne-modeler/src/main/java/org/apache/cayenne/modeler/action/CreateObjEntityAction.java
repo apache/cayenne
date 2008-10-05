@@ -115,9 +115,17 @@ public class CreateObjEntityAction extends CayenneAction {
         merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
         merger.synchronizeWithDbEntity(entity);
 
-        mediator.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.ADD));
+        fireObjEntityEvent(this, mediator, dataMap, entity);
+    }
+    
+    /**
+     * Fires events when a obj entity was added
+     */
+    static void fireObjEntityEvent(Object src, ProjectController mediator, DataMap dataMap,
+            ObjEntity entity) {
+        mediator.fireObjEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
         EntityDisplayEvent displayEvent = new EntityDisplayEvent(
-                this,
+                src,
                 entity,
                 dataMap,
                 mediator.getCurrentDataNode(),

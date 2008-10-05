@@ -78,14 +78,22 @@ public class CreateAttributeAction extends CayenneAction {
                 objEntity);
         objEntity.addAttribute(attr);
 
+        fireObjAttributeEvent(this, mediator, objEntity, attr);
+    }
+    
+    /**
+     * Fires events when an obj attribute was added
+     */
+    static void fireObjAttributeEvent(Object src, ProjectController mediator, ObjEntity objEntity, 
+            ObjAttribute attr) {
         mediator.fireObjAttributeEvent(new AttributeEvent(
-                this,
+                src,
                 attr,
                 objEntity,
                 MapEvent.ADD));
 
         AttributeDisplayEvent ade = new AttributeDisplayEvent(
-                this,
+                src,
                 attr,
                 objEntity,
                 mediator.getCurrentDataMap(),
@@ -102,14 +110,22 @@ public class CreateAttributeAction extends CayenneAction {
         dbEntity.addAttribute(attr);
 
         ProjectController mediator = getProjectController();
+        fireDbAttributeEvent(this, mediator, dbEntity, attr);
+    }
+    
+    /**
+     * Fires events when a db attribute was added
+     */
+    static void fireDbAttributeEvent(Object src, ProjectController mediator, DbEntity dbEntity, 
+            DbAttribute attr) {
         mediator.fireDbAttributeEvent(new AttributeEvent(
-                this,
+                src,
                 attr,
                 dbEntity,
                 MapEvent.ADD));
 
         AttributeDisplayEvent ade = new AttributeDisplayEvent(
-                this,
+                src,
                 attr,
                 dbEntity,
                 mediator.getCurrentDataMap(),

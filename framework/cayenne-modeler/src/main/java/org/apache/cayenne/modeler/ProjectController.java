@@ -20,7 +20,15 @@
 package org.apache.cayenne.modeler;
 
 import java.awt.Component;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EventListener;
+import java.util.EventObject;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.event.EventListenerList;
 
@@ -95,6 +103,7 @@ import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CircularArray;
+import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.pref.Domain;
 import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.Project;
@@ -1658,4 +1667,56 @@ public class ProjectController extends CayenneController {
     public ProjectWatchdog getProjectWatcher() {
         return watchdog;
     }
+    
+    /**
+     * Returns currently selected object, null if there are none, List if there are several
+     */
+    public Object getCurrentObject() {
+        if (getCurrentObjEntity() != null) {
+            return getCurrentObjEntity();
+        }
+        else if (getCurrentDbEntity() != null) {
+            return getCurrentDbEntity();
+        }
+        else if (getCurrentQuery() != null) {
+            return getCurrentQuery();
+        }
+        else if (getCurrentProcedure() != null) {
+            return getCurrentProcedure();
+        }
+        else if (getCurrentDataMap() != null) {
+            return getCurrentDataMap();
+        }
+        else if (getCurrentDataNode() != null) {
+            return getCurrentDataNode();
+        }
+        else if (getCurrentDataDomain() != null) {
+            return getCurrentDataDomain();
+        }
+        else if (getCurrentPaths() != null) { //multiple objects
+            ProjectPath[] paths = getCurrentPaths();
+            List<Object> result = new Vector<Object>();
+            
+            Object parent = paths[0].getObjectParent();
+            
+            for (int i = 0; i < paths.length; i++) {
+                Object lastObject = paths[i].getObject();
+                result.add(lastObject);
+            }
+            
+            /**
+             * Here we sort the list of objects to minimize the risk that objects will be
+             * pasted incorrectly. For instance, ObjEntity should go before Query, to increase
+             * chances that Query's root would be set. 
+             */
+            Collections.sort(result, parent instanceof DataMap ? 
+                    Comparators.getDataMapChildrenComparator() :
+                    Comparators.getDataDomainChildrenComparator());
+            
+            return result;
+        }
+        
+        return null;
+    }
+
 }

@@ -62,8 +62,15 @@ public class CreateDbEntityAction extends CayenneAction {
         ProjectController mediator = getProjectController();
         DbEntity entity = createEntity(mediator.getCurrentDataMap());
 
-        mediator.fireDbEntityEvent(new EntityEvent(this, entity, MapEvent.ADD));
-        EntityDisplayEvent displayEvent = new EntityDisplayEvent(this, entity, mediator
+        fireDbEntityEvent(this, mediator, entity);
+    }
+    
+    /**
+     * Fires events when a db entity was added
+     */
+    static void fireDbEntityEvent(Object src, ProjectController mediator, DbEntity entity) {
+        mediator.fireDbEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
+        EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, mediator
                 .getCurrentDataMap(), mediator.getCurrentDataNode(), mediator
                 .getCurrentDataDomain());
         displayEvent.setMainTabFocus(true);

@@ -49,13 +49,15 @@ import org.apache.cayenne.map.event.ProcedureParameterEvent;
 import org.apache.cayenne.map.event.ProcedureParameterListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.CopyProcedureParameterAction;
 import org.apache.cayenne.modeler.action.CreateProcedureParameterAction;
+import org.apache.cayenne.modeler.action.CutProcedureParameterAction;
+import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneCellEditor;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
@@ -136,6 +138,11 @@ public class ProcedureParameterTab
         moveDown.setToolTipText("Move Parameter Down");
         toolBar.add(moveDown);
         
+        toolBar.addSeparator();
+        toolBar.add(app.getAction(CutProcedureParameterAction.getActionName()).buildButton());
+        toolBar.add(app.getAction(CopyProcedureParameterAction.getActionName()).buildButton());
+        toolBar.add(app.getAction(PasteAction.getActionName()).buildButton());
+        
         add(toolBar, BorderLayout.NORTH);
 
         // Create table with two columns and no rows.
@@ -157,9 +164,20 @@ public class ProcedureParameterTab
         popup.add(moveUpMenu);
         popup.add(moveDownMenu);
         
+        popup.addSeparator();
+        popup.add(app.getAction(CutProcedureParameterAction.getActionName()).buildMenu());
+        popup.add(app.getAction(CopyProcedureParameterAction.getActionName()).buildMenu());
+        popup.add(app.getAction(PasteAction.getActionName()).buildMenu());
+        
         TablePopupHandler.install(table, popup);
         
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        
+        eventController.getApplication().getActionManager().setupCCP(table, 
+                CutProcedureParameterAction.getActionName(), 
+                CopyProcedureParameterAction
+                
+                .getActionName());
     }
     
     public void processExistingSelection(EventObject e) {
@@ -231,14 +249,10 @@ public class ProcedureParameterTab
      * Selects a specified parameters.
      */
     public void selectParameters(ProcedureParameter[] parameters) {
-        if (parameters.length == 0) {
-            return;
-        }
-        
-        CayenneAction removeAction = Application
-            .getInstance()
-            .getAction(RemoveProcedureParameterAction.getActionName());
-        removeAction.setName(RemoveProcedureParameterAction.getActionName(parameters.length > 1));
+        ModelerUtil.updateActions(parameters.length,  
+                RemoveProcedureParameterAction.getActionName(),
+                CutProcedureParameterAction.getActionName(),
+                CopyProcedureParameterAction.getActionName());
 
         ProcedureParameterTableModel model =
             (ProcedureParameterTableModel) table.getModel();

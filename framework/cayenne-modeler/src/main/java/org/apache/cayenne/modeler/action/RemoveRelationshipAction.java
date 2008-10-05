@@ -40,7 +40,7 @@ import org.apache.cayenne.project.ProjectPath;
  * 
  * @author Garry Watkins
  */
-public class RemoveRelationshipAction extends RemoveAction {
+public class RemoveRelationshipAction extends RemoveAction implements MultipleObjectsAction {
 
     private final static String ACTION_NAME = "Remove Relationship";
     
@@ -53,7 +53,7 @@ public class RemoveRelationshipAction extends RemoveAction {
         return ACTION_NAME;
     }
     
-    public static String getActionName(boolean multiple) {
+    public String getActionName(boolean multiple) {
         return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
     }
 
@@ -75,8 +75,8 @@ public class RemoveRelationshipAction extends RemoveAction {
     }
 
     @Override
-    public void performAction(ActionEvent e) {
-        ConfirmRemoveDialog dialog = getConfirmDeleteDialog();
+    public void performAction(ActionEvent e, boolean allowAsking) {
+        ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
 
         ObjRelationship[] rels = getProjectController().getCurrentObjRelationships();
         if (rels != null && rels.length > 0) {

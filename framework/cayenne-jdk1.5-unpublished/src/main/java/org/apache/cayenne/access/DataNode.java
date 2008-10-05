@@ -118,6 +118,13 @@ public class DataNode implements QueryEngine {
     public Collection<DataMap> getDataMaps() {
         return Collections.unmodifiableCollection(dataMaps.values());
     }
+    
+    /**
+     * Returns datamap with specified name, null if none present
+     */
+    public DataMap getDataMap(String name) {
+        return dataMaps.get(name);
+    }
 
     public void setDataMaps(Collection<DataMap> dataMaps) {
         for (DataMap map : dataMaps) {

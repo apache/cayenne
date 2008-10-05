@@ -70,8 +70,8 @@ public class RemoveProcedureParameterAction extends RemoveAction {
     }
 
     @Override
-    public void performAction(ActionEvent e) {
-        ConfirmRemoveDialog dialog = getConfirmDeleteDialog();
+    public void performAction(ActionEvent e, boolean allowAsking) {
+        ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
 
         ProcedureParameter[] params = getProjectController().getCurrentProcedureParameters(); 
         if (params.length > 0) {

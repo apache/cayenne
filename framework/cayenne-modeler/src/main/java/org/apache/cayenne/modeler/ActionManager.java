@@ -19,11 +19,76 @@
 
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.modeler.action.*;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
-import javax.swing.*;
-import java.util.*;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.JComponent;
+import javax.swing.TransferHandler;
+
+import org.apache.cayenne.modeler.action.AboutAction;
+import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
+import org.apache.cayenne.modeler.action.CopyAction;
+import org.apache.cayenne.modeler.action.CopyAttributeAction;
+import org.apache.cayenne.modeler.action.CopyProcedureParameterAction;
+import org.apache.cayenne.modeler.action.CopyRelationshipAction;
+import org.apache.cayenne.modeler.action.CreateAttributeAction;
+import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
+import org.apache.cayenne.modeler.action.CreateCallbackMethodForDataMapListenerAction;
+import org.apache.cayenne.modeler.action.CreateCallbackMethodForListenerAction;
+import org.apache.cayenne.modeler.action.CreateDataMapAction;
+import org.apache.cayenne.modeler.action.CreateDataMapEntityListenerAction;
+import org.apache.cayenne.modeler.action.CreateDbEntityAction;
+import org.apache.cayenne.modeler.action.CreateDomainAction;
+import org.apache.cayenne.modeler.action.CreateNodeAction;
+import org.apache.cayenne.modeler.action.CreateObjEntityAction;
+import org.apache.cayenne.modeler.action.CreateObjEntityListenerAction;
+import org.apache.cayenne.modeler.action.CreateProcedureAction;
+import org.apache.cayenne.modeler.action.CreateProcedureParameterAction;
+import org.apache.cayenne.modeler.action.CreateQueryAction;
+import org.apache.cayenne.modeler.action.CreateRelationshipAction;
+import org.apache.cayenne.modeler.action.CutAction;
+import org.apache.cayenne.modeler.action.CutAttributeAction;
+import org.apache.cayenne.modeler.action.CutProcedureParameterAction;
+import org.apache.cayenne.modeler.action.CutRelationshipAction;
+import org.apache.cayenne.modeler.action.DbEntitySyncAction;
+import org.apache.cayenne.modeler.action.DocumentationAction;
+import org.apache.cayenne.modeler.action.ExitAction;
+import org.apache.cayenne.modeler.action.FindAction;
+import org.apache.cayenne.modeler.action.GenerateCodeAction;
+import org.apache.cayenne.modeler.action.GenerateDBAction;
+import org.apache.cayenne.modeler.action.ImportDBAction;
+import org.apache.cayenne.modeler.action.ImportDataMapAction;
+import org.apache.cayenne.modeler.action.ImportEOModelAction;
+import org.apache.cayenne.modeler.action.MigrateAction;
+import org.apache.cayenne.modeler.action.NavigateBackwardAction;
+import org.apache.cayenne.modeler.action.NavigateForwardAction;
+import org.apache.cayenne.modeler.action.NewProjectAction;
+import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
+import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.action.PasteAction;
+import org.apache.cayenne.modeler.action.ProjectAction;
+import org.apache.cayenne.modeler.action.RemoveAction;
+import org.apache.cayenne.modeler.action.RemoveAttributeAction;
+import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.action.RemoveCallbackMethodForDataMapListenerAction;
+import org.apache.cayenne.modeler.action.RemoveCallbackMethodForListenerAction;
+import org.apache.cayenne.modeler.action.RemoveEntityListenerAction;
+import org.apache.cayenne.modeler.action.RemoveEntityListenerForDataMapAction;
+import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
+import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
+import org.apache.cayenne.modeler.action.RevertAction;
+import org.apache.cayenne.modeler.action.SaveAction;
+import org.apache.cayenne.modeler.action.SaveAsAction;
+import org.apache.cayenne.modeler.action.ShowLogConsoleAction;
+import org.apache.cayenne.modeler.action.ValidateAction;
+import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.project.ProjectPath;
 
 /**
  * An object that manages CayenneModeler actions.
@@ -49,9 +114,11 @@ public class ActionManager {
                 RemoveAction.getActionName(),
                 CreateNodeAction.getActionName(),
                 ImportDBAction.getActionName(),
-                ImportEOModelAction.getActionName()));
+                ImportEOModelAction.getActionName(),
+                
+                PasteAction.getActionName()));
     }
-
+    
     static final Collection<String> DATA_MAP_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
     static {
         DATA_MAP_ACTIONS.addAll(Arrays.asList(
@@ -61,7 +128,10 @@ public class ActionManager {
                 CreateQueryAction.getActionName(),
                 CreateProcedureAction.getActionName(),
                 GenerateDBAction.getActionName(),
-                MigrateAction.getActionName()));
+                MigrateAction.getActionName(),
+                
+                CutAction.getActionName(),
+                CopyAction.getActionName()));
     }
 
     static final Collection<String> OBJ_ENTITY_ACTIONS = new HashSet<String>(
@@ -92,7 +162,11 @@ public class ActionManager {
     static final Collection<String> MULTIPLE_OBJECTS_ACTIONS = new HashSet<String>(
             PROJECT_ACTIONS);
     static {
-        MULTIPLE_OBJECTS_ACTIONS.addAll(Arrays.asList(RemoveAction.getActionName()));
+        MULTIPLE_OBJECTS_ACTIONS.addAll(Arrays.asList(
+                RemoveAction.getActionName(),
+                CutAction.getActionName(),
+                CopyAction.getActionName(),
+                PasteAction.getActionName()));
     }
 
     protected Map<String, Action> actionMap;
@@ -151,7 +225,17 @@ public class ActionManager {
         // search action registered
         registerAction(new FindAction(application));
         
-        registerAction(new ShowLogConsoleAction(application)).setAlwaysOn(true);;
+        registerAction(new ShowLogConsoleAction(application)).setAlwaysOn(true);
+        
+        registerAction(new CutAction(application));
+        registerAction(new CutAttributeAction(application));
+        registerAction(new CutRelationshipAction(application));
+        registerAction(new CutProcedureParameterAction(application));
+        registerAction(new CopyAction(application));
+        registerAction(new CopyAttributeAction(application));
+        registerAction(new CopyRelationshipAction(application));
+        registerAction(new CopyProcedureParameterAction(application));
+        registerAction(new PasteAction(application));
     }
 
     private CayenneAction registerAction(CayenneAction action) {
@@ -174,12 +258,12 @@ public class ActionManager {
      */
     public void projectOpened() {
         processActionsState(PROJECT_ACTIONS);
-        getAction(RemoveAction.getActionName()).setName("Remove");
+        updateActions("");
     }
 
     public void projectClosed() {
         processActionsState(Collections.EMPTY_SET);
-        getAction(RemoveAction.getActionName()).setName("Remove");
+        updateActions("");
     }
 
     /**
@@ -187,51 +271,88 @@ public class ActionManager {
      */
     public void domainSelected() {
         processActionsState(DOMAIN_ACTIONS);
+        updateActions("DataDomain");
     }
 
     public void dataNodeSelected() {
         processActionsState(DOMAIN_ACTIONS);
-        getAction(RemoveAction.getActionName()).setName("Remove DataNode");
+        updateActions("DataNode");
     }
 
     public void dataMapSelected() {
         processActionsState(DATA_MAP_ACTIONS);
-        getAction(RemoveAction.getActionName()).setName("Remove DataMap");
+        updateActions("DataMap");
         // reset
         // getAction(CreateAttributeAction.getActionName()).setName("Create Attribute");
     }
 
     public void objEntitySelected() {
         processActionsState(OBJ_ENTITY_ACTIONS);
-        getAction(RemoveAction.getActionName()).setName("Remove ObjEntity");
+        updateActions("ObjEntity");
     }
 
     public void dbEntitySelected() {
         processActionsState(DB_ENTITY_ACTIONS);
-        getAction(RemoveAction.getActionName()).setName("Remove DbEntity");
+        updateActions("DbEntity");
     }
 
     public void derivedDbEntitySelected() {
         processActionsState(DB_ENTITY_ACTIONS);
-        getAction(RemoveAction.getActionName()).setName("Remove Derived DbEntity");
+        updateActions("Derived DbEntity");
     }
 
     public void procedureSelected() {
         processActionsState(PROCEDURE_ACTIONS);
-        getAction(RemoveAction.getActionName()).setName("Remove Procedure");
+        updateActions("Procedure");
     }
 
     public void querySelected() {
         processActionsState(DATA_MAP_ACTIONS);
-        getAction(RemoveAction.getActionName()).setName("Remove Query");
+        updateActions("Query");
     }
     
     /**
      * Invoked when several objects were selected in ProjectTree at time
      */
-    public void multipleObjectsSelected() {
+    public void multipleObjectsSelected(ProjectPath[] paths) {
         processActionsState(MULTIPLE_OBJECTS_ACTIONS);
-        getAction(RemoveAction.getActionName()).setName("Remove Selected Objects");
+        
+        updateActions("Selected Objects");
+        
+        CayenneAction cutAction = getAction(CutAction.getActionName());
+        boolean canCopy = true; // cut/copy can be performed if selected objects are on the same level
+        
+        if (!cutAction.enableForPath(paths[0])) {
+            canCopy = false;
+        }
+        else {
+            Object parent = paths[0].getObjectParent();
+            
+            for (int i = 1; i < paths.length; i++) {
+                if (paths[i].getObjectParent() != parent || !cutAction.enableForPath(paths[i])) {
+                    canCopy = false;
+                    break;
+                }
+            }
+        }
+        
+        cutAction.setEnabled(canCopy);
+        getAction(CopyAction.getActionName()).setEnabled(canCopy);
+    }
+    
+    /**
+     * Updates Remove, Cut and Copy actions' names
+     */
+    private void updateActions(String postfix) {
+        if (postfix.length() > 0) {
+            postfix = " " + postfix;
+        }
+        
+        getAction(RemoveAction.getActionName()).setName("Remove" + postfix);
+        getAction(CutAction.getActionName()).setName("Cut" + postfix);
+        getAction(CopyAction.getActionName()).setName("Copy" + postfix);
+        
+        ((PasteAction) getAction(PasteAction.getActionName())).updateState();
     }
 
     /**
@@ -247,5 +368,20 @@ public class ActionManager {
                 entry.getValue().setEnabled(namesOfEnabled.contains(entry.getKey()));
             }
         }
+    }
+    
+    /**
+     * Replaces standard Cut, Copy and Paste action maps, so that accelerators like 
+     * Ctrl+X, Ctrl+C, Ctrl+V would work 
+     */
+    public void setupCCP(JComponent comp, String cutName, String copyName) {
+        ActionMap map = comp.getActionMap();
+        
+        map.put(TransferHandler.getCutAction().getValue(Action.NAME), 
+                getAction(cutName));
+        map.put(TransferHandler.getCopyAction().getValue(Action.NAME),
+                getAction(copyName));
+        map.put(TransferHandler.getPasteAction().getValue(Action.NAME),
+                getAction(PasteAction.getActionName()));
     }
 }

@@ -74,16 +74,24 @@ public class CreateProcedureParameterAction extends CayenneAction {
         procedure.addCallParameter(parameter);
 
         ProjectController mediator = getProjectController();
+        fireProcedureParameterEvent(this, mediator, procedure, parameter);
+    }
+    
+    /**
+     * Fires events when an proc parameter was added
+     */
+    static void fireProcedureParameterEvent(Object src, ProjectController mediator, Procedure procedure, 
+            ProcedureParameter parameter) {
         mediator.fireProcedureParameterEvent(
-            new ProcedureParameterEvent(this, parameter, MapEvent.ADD));
+                new ProcedureParameterEvent(src, parameter, MapEvent.ADD));
 
-        mediator.fireProcedureParameterDisplayEvent(
-            new ProcedureParameterDisplayEvent(
-                this,
-                parameter,
-                procedure,
-                mediator.getCurrentDataMap(),
-                mediator.getCurrentDataDomain()));
+            mediator.fireProcedureParameterDisplayEvent(
+                new ProcedureParameterDisplayEvent(
+                    src,
+                    parameter,
+                    procedure,
+                    mediator.getCurrentDataMap(),
+                    mediator.getCurrentDataDomain()));
     }
 
     /**

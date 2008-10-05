@@ -82,16 +82,28 @@ public class RemoveAction extends CayenneAction {
         return KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
     }
 
-    public ConfirmRemoveDialog getConfirmDeleteDialog() {
-        return new ConfirmRemoveDialog();
+    /**
+     * Creates and returns dialog for delete prompt
+     * @param allowAsking If false, no question will be asked no matter what settings are 
+     */
+    public ConfirmRemoveDialog getConfirmDeleteDialog(boolean allowAsking) {
+        return new ConfirmRemoveDialog(allowAsking);
     }
-
+    
     @Override
     public void performAction(ActionEvent e) {
+        performAction(e, true);
+    }
+
+    /**
+     * Performs delete action
+     * @param allowAsking If false, no question will be asked no matter what settings are 
+     */
+    public void performAction(ActionEvent e, boolean allowAsking) {
 
         ProjectController mediator = getProjectController();
 
-        ConfirmRemoveDialog dialog = getConfirmDeleteDialog();
+        ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
 
         if (mediator.getCurrentObjEntity() != null) {
             if (dialog.shouldDelete("ObjEntity", mediator.getCurrentObjEntity().getName())) {

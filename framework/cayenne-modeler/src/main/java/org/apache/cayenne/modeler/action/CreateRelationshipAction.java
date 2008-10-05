@@ -19,7 +19,13 @@
 
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.map.*;
+import java.awt.event.ActionEvent;
+
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
@@ -29,8 +35,6 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.DeleteRuleUpdater;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
-
-import java.awt.event.ActionEvent;
 
 /**
  * @author Andrus Adamchik
@@ -69,47 +73,62 @@ public class CreateRelationshipAction extends CayenneAction {
         }
     }
 
-    public void createObjRelationship(ObjEntity objEnt) {
+    public void createObjRelationship(ObjEntity objEntity) {
         ProjectController mediator = getProjectController();
 
         ObjRelationship rel =
             (ObjRelationship) NamedObjectFactory.createObject(
                 ObjRelationship.class,
-                objEnt);
-        rel.setSourceEntity(objEnt);
+                objEntity);
+        rel.setSourceEntity(objEntity);
         DeleteRuleUpdater.updateObjRelationship(rel);
         
-        objEnt.addRelationship(rel);
-
+        objEntity.addRelationship(rel);
+        fireObjRelationshipEvent(this, mediator, objEntity, rel);
+    }
+    
+    /**
+     * Fires events when a obj rel was added
+     */
+    static void fireObjRelationshipEvent(Object src, ProjectController mediator, ObjEntity objEntity, 
+            ObjRelationship rel) {
         mediator.fireObjRelationshipEvent(
-            new RelationshipEvent(this, rel, objEnt, MapEvent.ADD));
-        
+            new RelationshipEvent(src, rel, objEntity, MapEvent.ADD));
+            
         RelationshipDisplayEvent rde = new RelationshipDisplayEvent(
-                this,
+                src,
                 rel,
-                objEnt,
+                objEntity,
                 mediator.getCurrentDataMap(),
                 mediator.getCurrentDataDomain());
         
         mediator.fireObjRelationshipDisplayEvent(rde);
     }
 
-    public void createDbRelationship(DbEntity dbEnt) {
+    public void createDbRelationship(DbEntity dbEntity) {
         ProjectController mediator = getProjectController();
 
         DbRelationship rel =
-            (DbRelationship) NamedObjectFactory.createObject(DbRelationship.class, dbEnt);
+            (DbRelationship) NamedObjectFactory.createObject(DbRelationship.class, dbEntity);
 
-        rel.setSourceEntity(dbEnt);
-        dbEnt.addRelationship(rel);
+        rel.setSourceEntity(dbEntity);
+        dbEntity.addRelationship(rel);
 
+        fireDbRelationshipEvent(this, mediator, dbEntity, rel);
+    }
+    
+    /**
+     * Fires events when a db rel was added
+     */
+    static void fireDbRelationshipEvent(Object src, ProjectController mediator, DbEntity dbEntity, 
+            DbRelationship rel) {
         mediator.fireDbRelationshipEvent(
-            new RelationshipEvent(this, rel, dbEnt, MapEvent.ADD));
+            new RelationshipEvent(src, rel, dbEntity, MapEvent.ADD));
 
         RelationshipDisplayEvent rde = new RelationshipDisplayEvent(
-                this,
+                src,
                 rel,
-                dbEnt,
+                dbEntity,
                 mediator.getCurrentDataMap(),
                 mediator.getCurrentDataDomain());
         
