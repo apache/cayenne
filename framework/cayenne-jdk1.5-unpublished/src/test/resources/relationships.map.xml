@@ -344,8 +344,8 @@
 	<obj-relationship name="test1Array" source="DeleteRuleTest2" target="DeleteRuleTest1" deleteRule="Nullify" db-relationship-path="test1Array"/>
 	<obj-relationship name="toDeleteRuleTest2" source="DeleteRuleTest3" target="DeleteRuleTest2" db-relationship-path="toDeleteRuleTest2"/>
 	<obj-relationship name="relationshipHelper" source="FkOfDifferentType" target="RelationshipHelper" db-relationship-path="relationshipHelper"/>
-	<obj-relationship name="side2s" source="FlattenedCircular" target="FlattenedCircular" db-relationship-path="side2s.side2"/>
 	<obj-relationship name="side1s" source="FlattenedCircular" target="FlattenedCircular" db-relationship-path="side1s.side1"/>
+	<obj-relationship name="side2s" source="FlattenedCircular" target="FlattenedCircular" db-relationship-path="side2s.side2"/>
 	<obj-relationship name="ft2Array" source="FlattenedTest1" target="FlattenedTest2" db-relationship-path="ft2Array"/>
 	<obj-relationship name="ft3Array" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="ft2Array.ft3Array"/>
 	<obj-relationship name="ft3OverComplex" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="complexJoins.toFT3"/>
