@@ -88,6 +88,7 @@ public class SaveAsAction extends CayenneAction {
 
         getApplication().getFrameController().addToLastProjListAction(
                 p.getMainFile().getAbsolutePath());
+        Application.getFrame().fireRecentFileListChanged();
 
         /**
          * Reset the watcher now
@@ -147,7 +148,7 @@ public class SaveAsAction extends CayenneAction {
             return false;
         }
 
-        Project project = (Project) path.firstInstanceOf(Project.class);
+        Project project = path.firstInstanceOf(Project.class);
         return project != null && project.isModified();
     }
 }

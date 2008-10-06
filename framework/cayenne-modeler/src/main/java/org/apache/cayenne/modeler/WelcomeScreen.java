@@ -188,7 +188,7 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener {
     
     public void recentFileListChanged() {
         ModelerPreferences pref = ModelerPreferences.getPreferences();
-        final Vector<?> arr = pref.getVector(ModelerPreferences.LAST_PROJ_FILES);
+        final Vector<?> arr = (Vector<?>) pref.getVector(ModelerPreferences.LAST_PROJ_FILES).clone();
         
         recentsList.setModel(
             new AbstractListModel() {
