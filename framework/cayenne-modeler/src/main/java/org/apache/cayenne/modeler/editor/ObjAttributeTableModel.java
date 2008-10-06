@@ -29,6 +29,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
@@ -172,7 +173,11 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             if (column == DB_ATTRIBUTE_TYPE) {
                 int type;
                 if (dbAttribute == null) {
-                    type = TypesMapping.getSqlTypeByJava(getAttribute(row).getJavaClass());
+                    if (!(attribute instanceof EmbeddedAttribute)) {
+                        type = TypesMapping.getSqlTypeByJava(getAttribute(row).getJavaClass());
+                    } else {
+                        return null;
+                    }
                 } else {
                     type = dbAttribute.getType();
                 }
