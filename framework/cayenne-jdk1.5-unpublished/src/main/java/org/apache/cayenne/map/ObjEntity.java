@@ -85,7 +85,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
     protected boolean excludingDefaultListeners;
     protected boolean excludingSuperclassListeners;
 
-    protected Map<String, String> overridedAttributes;
+    protected Map<String, String> overriddenAttributes;
 
     public ObjEntity() {
         this(null);
@@ -96,7 +96,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         this.lockType = LOCK_TYPE_NONE;
         this.callbacks = new CallbackMap();
         this.entityListeners = new ArrayList<EntityListener>(2);
-        this.overridedAttributes = new TreeMap<String, String>();
+        this.overriddenAttributes = new TreeMap<String, String>();
     }
 
     /**
@@ -175,7 +175,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         // store attributes
         encoder.print(getDeclaredAttributes());
 
-        for (Map.Entry<String, String> override : overridedAttributes.entrySet()) {
+        for (Map.Entry<String, String> override : overriddenAttributes.entrySet()) {
             encoder.print("<attribute-override name=\"" + override.getKey() + '\"');
             encoder.print(" db-attribute-path=\"");
             encoder.print(Util.encodeXmlAttribute(override.getValue()));
@@ -685,13 +685,13 @@ public class ObjEntity extends Entity implements ObjEntityListener {
             Attribute attr = superEntity.getAttribute(name);
             ObjAttribute result = null;
             if (attr instanceof ObjAttribute) {
-                String overridedDbPath = overridedAttributes.get(name);
-                if (overridedDbPath != null) {
-                    result = new ObjAttribute((ObjAttribute) attr);
-                    result.setEntity(this);
-                    result.setDbAttributePath(overridedDbPath);
-                    return result;
+                String overriddedDbPath = overriddenAttributes.get(name);
+                result = new ObjAttribute((ObjAttribute) attr);
+                result.setEntity(this);
+                if (overriddedDbPath != null) {
+                    result.setDbAttributePath(overriddedDbPath);
                 }
+                return result;
             }
 
             return attr;
@@ -729,7 +729,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
             superEntity.appendAttributes(attributeMap);
             for (String attributeName : attributeMap.keySet()) {
 
-                String overridedDbPath = overridedAttributes.get(attributeName);
+                String overridedDbPath = overriddenAttributes.get(attributeName);
 
                 ObjAttribute attribute = new ObjAttribute(attributeMap.get(attributeName));
                 attribute.setEntity(this);
@@ -745,7 +745,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
      * @since 3.0
      */
     public void addAttributeOverride(String attributeName, String dbPath) {
-        overridedAttributes.put(attributeName, dbPath);
+        overriddenAttributes.put(attributeName, dbPath);
     }
 
     /**
