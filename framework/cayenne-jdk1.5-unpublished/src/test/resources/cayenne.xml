@@ -11,5 +11,6 @@
 	<map name="qualified" location="qualified.map.xml"/>
 	<map name="relationships" location="relationships.map.xml"/>
 	<map name="testmap" location="testmap.map.xml"/>
+    <map name="inheritance" location="inheritance.map.xml"/>
 </domain>
 </domains>

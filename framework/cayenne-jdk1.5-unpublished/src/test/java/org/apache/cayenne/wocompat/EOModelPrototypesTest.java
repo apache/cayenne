@@ -92,7 +92,7 @@ public class EOModelPrototypesTest extends BasicCase {
         ObjEntity documentOE = map.getObjEntity("Document");
         ObjEntity estimateOE = map.getObjEntity("Estimate");
 
-        assertSame(documentOE, estimateOE.getAttribute("created").getEntity());
+        assertSame(estimateOE, estimateOE.getAttribute("created").getEntity());
         assertSame(estimateOE, estimateOE.getAttribute("estimateNumber").getEntity());
     }
 }
