@@ -35,6 +35,8 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
+import org.apache.cayenne.modeler.Application;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -53,6 +55,8 @@ public class MergerOptionsView extends JDialog {
     protected JTabbedPane tabs;
 
     public MergerOptionsView(Component tables) {
+        super(Application.getFrame());
+        
         // create widgets
         this.generateButton = new JButton("Migrate");
         this.cancelButton = new JButton("Close");

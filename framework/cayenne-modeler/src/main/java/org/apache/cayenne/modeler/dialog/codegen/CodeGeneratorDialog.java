@@ -32,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
+import org.apache.cayenne.modeler.Application;
+
 /**
  * @author Andrus Adamchik
  */
@@ -44,6 +46,8 @@ public class CodeGeneratorDialog extends JDialog {
     protected JLabel entityCount;
 
     public CodeGeneratorDialog(Component generatorPanel, Component entitySelectorPanel) {
+        super(Application.getFrame());
+        
         this.tabs = new JTabbedPane(SwingConstants.TOP);
         this.generateButton = new JButton("Generate");
         this.cancelButton = new JButton("Cancel");

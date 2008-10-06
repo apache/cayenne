@@ -27,6 +27,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.pref.DBConnectionInfoEditor;
 import org.apache.cayenne.modeler.util.CayenneController;
 
@@ -46,6 +47,8 @@ public class DataSourceWizardView extends JDialog {
     protected DBConnectionInfoEditor connectionInfo;
 
     public DataSourceWizardView(CayenneController controller) {
+        super(Application.getFrame());
+        
         this.dataSources = new JComboBox();
 
         this.configButton = new JButton("...");

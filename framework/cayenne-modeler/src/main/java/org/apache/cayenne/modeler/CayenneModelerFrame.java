@@ -94,6 +94,7 @@ import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.event.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.OperatingSystem;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
 import org.apache.cayenne.pref.Domain;
@@ -143,6 +144,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         
         recentFileListeners = new Vector<RecentFileListListener>();
 
+        setIconImage(ModelerUtil.buildIcon("CayenneModeler.jpg").getImage());
         initMenus();
         initToolbar();
         initStatusBar();

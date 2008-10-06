@@ -60,9 +60,8 @@ public class PreferenceDialog extends CayenneController {
     public PreferenceDialog(CayenneController parent) {
         super(parent);
 
-        Window parentView = (Window) SwingUtilities.getAncestorOfClass(
-                Window.class,
-                parent.getView());
+        Window parentView = parent.getView() instanceof Window ? (Window) parent.getView() : 
+            SwingUtilities.getWindowAncestor(parent.getView());
         this.view = (parentView instanceof Dialog) ? new PreferenceDialogView(
                 (Dialog) parentView) : new PreferenceDialogView((Frame) parentView);
         this.detailControllers = new HashMap();
