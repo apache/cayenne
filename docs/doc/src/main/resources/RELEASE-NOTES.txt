@@ -20,6 +20,7 @@ CAY-436 In modeler, change default object relationship delete rule
 CAY-671 custom exception class for ROP missing session
 CAY-794 Abstract object entities
 CAY-888 CM Usability: Object Select Query Improvements
+CAY-890 CM Cosmetics: Use the Cayenne Icon.
 CAY-892 CM Usability: JEdit Syntax to all TextAreas
 CAY-894 CM Usability: Welcome screen
 CAY-911 CM Usability: JComboBox Autocompletion
