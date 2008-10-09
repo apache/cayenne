@@ -51,6 +51,7 @@ CAY-1083 General Preferences Panel - items misaligned
 CAY-1095 Cayenne attempts to append precision information to DOUBLE types when creating tables in hsqldb which results in a sql exception.
 CAY-1097 Attribute types are not generated for primitive ints
 CAY-1098 EJBQLQuery can't process java.util.Date parameters
+CAY-1103 rollbackChanges is broken in ROP CayenneContext
 CAY-1108 MySQL/DbMerger compatibility
 CAY-1114 EJBQLQuery fails on joins outside of public schema
 
