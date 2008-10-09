@@ -234,7 +234,7 @@ final class CayenneContextGraphManager extends GraphMap {
     void graphReverted() {
         GraphDiff diff = changeLog.getDiffs();
 
-        diff.undo(new NullChangeHandler());
+        diff.undo(new RollbackChangeHandler());
         stateLog.graphReverted();
         reset();
 
@@ -338,28 +338,40 @@ final class CayenneContextGraphManager extends GraphMap {
         return deadIds;
     }
 
-    class NullChangeHandler implements GraphChangeHandler {
-
+    /**
+     * This change handler is used to perform rollback actions for Cayenne context
+     */
+    class RollbackChangeHandler implements GraphChangeHandler {
         public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+            CayenneContextGraphManager.this.arcCreated(nodeId, targetNodeId, arcId);
         }
 
         public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+            CayenneContextGraphManager.this.arcDeleted(nodeId, targetNodeId, arcId);
         }
 
         public void nodeCreated(Object nodeId) {
+            CayenneContextGraphManager.this.nodeCreated(nodeId);
         }
 
         public void nodeIdChanged(Object nodeId, Object newId) {
+            CayenneContextGraphManager.this.nodeIdChanged(nodeId, newId);
         }
 
+        /**
+         * Need to write property directly to this context 
+         */
         public void nodePropertyChanged(
                 Object nodeId,
                 String property,
                 Object oldValue,
                 Object newValue) {
+            context.mergeHandler.nodePropertyChanged(nodeId, property, oldValue, newValue);
+            CayenneContextGraphManager.this.nodePropertyChanged(nodeId, property, oldValue, newValue);
         }
 
         public void nodeRemoved(Object nodeId) {
+            CayenneContextGraphManager.this.nodeRemoved(nodeId);
         }
     }
 }
