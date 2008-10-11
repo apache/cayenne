@@ -22,7 +22,6 @@ package org.apache.cayenne.access.trans;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +58,7 @@ public class ProcedureTranslator extends QueryTranslator {
     private static NotInParam OUT_PARAM = new NotInParam("[OUT]");
 
     protected List<ProcedureParameter> callParams;
-    protected List<NotInParam> values;
+    protected List<Object> values;
 
     /**
      * Creates an SQL String for the stored procedure call.
@@ -102,7 +101,7 @@ public class ProcedureTranslator extends QueryTranslator {
         long t1 = System.currentTimeMillis();
 
         this.callParams = getProcedure().getCallParameters();
-        this.values = new ArrayList<NotInParam>(callParams.size());
+        this.values = new ArrayList<Object>(callParams.size());
 
         initValues();
         String sqlStr = createSqlString();
@@ -111,10 +110,8 @@ public class ProcedureTranslator extends QueryTranslator {
             // need to convert OUT/VOID parameters to loggable strings
             long time = System.currentTimeMillis() - t1;
 
-            List loggableParameters = new ArrayList(values.size());
-            Iterator<NotInParam> it = values.iterator();
-            while (it.hasNext()) {
-                Object val = it.next();
+            List<Object> loggableParameters = new ArrayList<Object>(values.size());
+            for (Object val : values) {
                 if (val instanceof NotInParam) {
                     val = val.toString();
                 }
@@ -162,7 +159,7 @@ public class ProcedureTranslator extends QueryTranslator {
     }
 
     protected void initValues() {
-        Map<String, NotInParam> queryValues = (Map<String, NotInParam>) getProcedureQuery().getParameters();
+        Map<String, ?> queryValues = getProcedureQuery().getParameters();
 
         // match values with parameters in the correct order.
         // make an assumption that a missing value is NULL
