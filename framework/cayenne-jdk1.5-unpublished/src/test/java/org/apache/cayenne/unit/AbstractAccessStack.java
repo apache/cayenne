@@ -198,7 +198,7 @@ public abstract class AbstractAccessStack {
             ListIterator it = list.listIterator(list.size());
             while (it.hasPrevious()) {
                 DbEntity ent = (DbEntity) it.previous();
-                if (!allTables.contains(ent.getName())) {
+                if (!allTables.contains(ent.getName().toUpperCase())) {
                     continue;
                 }
 

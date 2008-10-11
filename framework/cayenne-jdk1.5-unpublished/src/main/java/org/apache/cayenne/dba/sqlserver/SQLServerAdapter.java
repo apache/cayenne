@@ -22,7 +22,6 @@ package org.apache.cayenne.dba.sqlserver;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
-import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.merge.MergerFactory;
@@ -103,7 +102,7 @@ public class SQLServerAdapter extends SybaseAdapter {
      */
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new TrimmingQualifierTranslator(
+        return new SQLServerTrimmingQualifierTranslator(
                 queryAssembler,
                 SQLServerAdapter.TRIM_FUNCTION);
     }
