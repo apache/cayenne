@@ -32,17 +32,18 @@ public class HSQLSelectTranslator extends SelectTranslator {
     public String createSqlString() throws Exception {
         String sql = super.createSqlString();
         QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
-        
-        // limit results
-        int offset = metadata.getFetchOffset();
-        int limit = metadata.getFetchLimit();
-        
-        if (offset > 0 || limit > 0) {
-            sql += " LIMIT ";
-            if (limit == 0) {
-                limit = Integer.MAX_VALUE;
+        if(!isSuppressingDistinct()){
+            // limit results
+            int offset = metadata.getFetchOffset();
+            int limit = metadata.getFetchLimit();
+            
+            if (offset > 0 || limit > 0) {
+                sql += " LIMIT ";
+                if (limit == 0) {
+                    limit = Integer.MAX_VALUE;
+                }
+                sql += limit + " OFFSET " +  offset; 
             }
-            sql += limit + " OFFSET " +  offset; 
         }
         return sql;
     }

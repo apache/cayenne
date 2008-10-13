@@ -298,8 +298,7 @@ public class BatchAction extends BaseSQLAction {
                 null,
                 null,
                 keysRS,
-                keyRowDescriptor,
-                0);
+                keyRowDescriptor);
 
         observer.nextGeneratedDataRows(query, iterator);
     }

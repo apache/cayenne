@@ -27,6 +27,7 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
+import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
@@ -77,11 +78,12 @@ public abstract class BaseSQLAction implements SQLAction {
                 null,
                 null,
                 resultSet,
-                descriptor,
-                metadata.getFetchLimit());
+                descriptor);
+        
+        LimitResultIterator it = new LimitResultIterator(resultReader,metadata.getFetchLimit());
 
         if (!delegate.isIteratedResult()) {
-            List<DataRow> resultRows = resultReader.dataRows(false);
+            List<DataRow> resultRows = it.dataRows(false);
             QueryLogger
                     .logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 
@@ -90,12 +92,12 @@ public abstract class BaseSQLAction implements SQLAction {
         else {
             try {
                 resultReader.setClosingConnection(true);
-                delegate.nextDataRows(query, resultReader);
+                delegate.nextDataRows(query, it);
             }
             catch (Exception ex) {
 
                 try {
-                    resultReader.close();
+                    it.close();
                 }
                 catch (CayenneException cex) {
                     // ignore...

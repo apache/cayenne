@@ -228,11 +228,12 @@ public class SQLTemplateAction implements SQLAction {
                 connection,
                 statement,
                 resultSet,
-                builder.getDescriptor(types),
-                query.getFetchLimit());
-
+                builder.getDescriptor(types));
+        
+        LimitResultIterator it = new LimitResultIterator(result,query.getFetchLimit());
+        
         if (!iteratedResult) {
-            List<DataRow> resultRows = result.dataRows(false);
+            List<DataRow> resultRows = it.dataRows(false);
             QueryLogger.logSelectCount(resultRows.size(), System.currentTimeMillis()
                     - startTime);
 
@@ -241,10 +242,10 @@ public class SQLTemplateAction implements SQLAction {
         else {
             try {
                 result.setClosingConnection(true);
-                callback.nextDataRows(query, result);
+                callback.nextDataRows(query, it);
             }
             catch (Exception ex) {
-                result.close();
+                it.close();
                 throw ex;
             }
         }

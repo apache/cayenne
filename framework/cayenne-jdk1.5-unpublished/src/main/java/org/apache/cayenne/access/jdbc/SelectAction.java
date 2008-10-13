@@ -84,8 +84,7 @@ public class SelectAction extends BaseSQLAction {
                 connection,
                 prepStmt,
                 rs,
-                descriptor,
-                query.getFetchLimit());
+                descriptor);
 
         workerIterator.setPostProcessor(DataRowPostProcessor
                 .createPostProcessor(translator));
@@ -137,7 +136,12 @@ public class SelectAction extends BaseSQLAction {
                     workerIterator,
                     translator.getRootDbEntity(),
                     compareFullRows[0]);
+            
+            
+            it = new LimitResultIterator(it,query.getFetchLimit());
         }
+        
+        
 
         // TODO: Should do something about closing ResultSet and PreparedStatement in this
         // method, instead of relying on DefaultResultIterator to do that later

@@ -68,7 +68,7 @@ public class JDBCResultIteratorTest extends TestCase {
                 .setResultSet(rs)
                 .getDescriptor(new ExtendedTypeMap());
 
-        JDBCResultIterator it = new JDBCResultIterator(c, s, rs, descriptor, 0);
+        JDBCResultIterator it = new JDBCResultIterator(c, s, rs, descriptor);
 
         assertFalse(rs.isClosed());
         assertFalse(s.isClosed());
@@ -94,7 +94,7 @@ public class JDBCResultIteratorTest extends TestCase {
         RowDescriptor descriptor = new RowDescriptorBuilder()
                 .setResultSet(rs)
                 .getDescriptor(new ExtendedTypeMap());
-        return new JDBCResultIterator(c, s, rs, descriptor, 0);
+        return new JDBCResultIterator(c, s, rs, descriptor);
     }
 
 }

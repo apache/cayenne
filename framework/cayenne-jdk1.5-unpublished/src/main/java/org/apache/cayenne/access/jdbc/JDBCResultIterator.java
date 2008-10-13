@@ -64,8 +64,6 @@ public class JDBCResultIterator implements ResultIterator {
     protected boolean closed;
 
     protected boolean nextRow;
-    protected int fetchedSoFar;
-    protected int fetchLimit;
 
     private String[] labels;
     private int[] types;
@@ -74,14 +72,13 @@ public class JDBCResultIterator implements ResultIterator {
      * Creates new JDBCResultIterator that reads from provided ResultSet.
      */
     public JDBCResultIterator(Connection connection, Statement statement,
-            ResultSet resultSet, RowDescriptor descriptor, int fetchLimit)
+            ResultSet resultSet, RowDescriptor descriptor)
             throws CayenneException {
 
         this.connection = connection;
         this.statement = statement;
         this.resultSet = resultSet;
         this.rowDescriptor = descriptor;
-        this.fetchLimit = fetchLimit;
 
         this.mapCapacity = (int) Math.ceil((descriptor.getWidth()) / 0.75);
 
@@ -143,7 +140,6 @@ public class JDBCResultIterator implements ResultIterator {
 
         // rewind
         checkNextRow();
-
         return row;
     }
 
@@ -193,7 +189,6 @@ public class JDBCResultIterator implements ResultIterator {
 
         // rewind
         checkNextRow();
-
         return id;
     }
 
@@ -270,9 +265,8 @@ public class JDBCResultIterator implements ResultIterator {
     protected void checkNextRow() throws CayenneException {
         nextRow = false;
         try {
-            if ((fetchLimit <= 0 || fetchedSoFar < fetchLimit) && resultSet.next()) {
+            if (resultSet.next()) {
                 nextRow = true;
-                fetchedSoFar++;
             }
         }
         catch (SQLException e) {

@@ -48,7 +48,7 @@ public class SelectActionTest extends CayenneCase {
         List<DataRow> resultRows = context.performQuery(select);
 
         assertNotNull(resultRows);
-        // assertEquals(25, resultRows.size());
+        assertEquals(25, resultRows.size());
     }
 
     protected void insertClobDb() {
