@@ -343,10 +343,12 @@ final class CayenneContextGraphManager extends GraphMap {
      */
     class RollbackChangeHandler implements GraphChangeHandler {
         public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+            context.mergeHandler.arcCreated(nodeId, targetNodeId, arcId);
             CayenneContextGraphManager.this.arcCreated(nodeId, targetNodeId, arcId);
         }
 
         public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+            context.mergeHandler.arcDeleted(nodeId, targetNodeId, arcId);
             CayenneContextGraphManager.this.arcDeleted(nodeId, targetNodeId, arcId);
         }
 

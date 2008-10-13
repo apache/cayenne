@@ -18,40 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.remote;
 
-import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.access.ClientServerChannel;
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
-import org.apache.cayenne.unit.AccessStack;
-import org.apache.cayenne.unit.CayenneCase;
-import org.apache.cayenne.unit.CayenneResources;
-import org.apache.cayenne.unit.UnitLocalConnection;
 
 /**
  * This is a test primarily for CAY-1103
  */
-public class RemoteRollbackTest extends CayenneCase {
-    CayenneContext context;
-    
-    @Override
-    public void setUp() throws Exception {
-        DataContext dataContext = createDataContext();
-        ClientServerChannel clientServerChannel = new ClientServerChannel(dataContext);
-        UnitLocalConnection connection = new UnitLocalConnection(
-                clientServerChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
-        ClientChannel channel = new ClientChannel(connection);
-        context = new CayenneContext(channel, true, true);
-    }
-    
-    @Override
-    protected AccessStack buildAccessStack() {
-        return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
-    }
-       
+public class RemoteRollbackTest extends RemoteCayenneCase {
     public void testRollbackNew() {
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("a");
@@ -117,31 +91,26 @@ public class RemoteRollbackTest extends CayenneCase {
         assertEquals(PersistenceState.TRANSIENT, o1.getPersistenceState());
     }
 
-// TODO: Recheck once CAY-1118 is fixed    
-//    public void testRollbackRelationshipModification() {
-//        String o1Name = "relationshipModClientMtTable1";
-//        String o2Title = "relationshipTestClientMtTable2";
-//        ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
-//        o1.setGlobalAttribute1(o1Name);
-//        ClientMtTable2 o2 = context.newObject(ClientMtTable2.class);
-//        o2.setGlobalAttribute(o2Title);
-//        o2.setTable1(o1);
-//        
-//        assertEquals(1, o1.getTable2Array().size());
-//        context.commitChanges();
-//
-//        assertEquals(1, o1.getTable2Array().size());
-//        o2.setTable1(null);
-//        assertEquals(0, o1.getTable2Array().size());
-//        context.rollbackChanges();
-//
-//        assertTrue(((ValueHolder) o1.getTable2Array()).isFault());
-//        assertEquals(1, o1.getTable2Array().size());
-//        assertEquals(o1, o2.getTable1());
-//
-//        // Check that the reverse relationship was handled
-//        assertEquals(1, o1.getTable2Array().size());
-//    }
+    public void testRollbackRelationshipModification() {
+        String o1Name = "relationshipModClientMtTable1";
+        String o2Title = "relationshipTestClientMtTable2";
+        ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
+        o1.setGlobalAttribute1(o1Name);
+        ClientMtTable2 o2 = context.newObject(ClientMtTable2.class);
+        o2.setGlobalAttribute(o2Title);
+        o2.setTable1(o1);
+        
+        assertEquals(1, o1.getTable2Array().size());
+        context.commitChanges();
+
+        assertEquals(1, o1.getTable2Array().size());
+        o2.setTable1(null);
+        assertEquals(0, o1.getTable2Array().size());
+        context.rollbackChanges();
+
+        assertEquals(1, o1.getTable2Array().size());
+        assertEquals(o1, o2.getTable1());
+    }
 
     public void testRollbackDeletedObject() {
         String o1Name = "deleteTestClientMtTable1";

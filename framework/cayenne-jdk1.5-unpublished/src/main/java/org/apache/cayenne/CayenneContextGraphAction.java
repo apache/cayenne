@@ -140,12 +140,28 @@ class CayenneContextGraphAction extends ObjectContextGraphAction {
 
     private void unsetReverse(
             ArcProperty property,
-            Persistent sourceObject,
-            Persistent targetObject) {
+            final Persistent sourceObject,
+            final Persistent targetObject) {
 
         ArcProperty reverseArc = property.getComplimentaryReverseArc();
         if (reverseArc != null) {
-            reverseArc.writePropertyDirectly(targetObject, sourceObject, null);
+            reverseArc.visit(new PropertyVisitor() {
+
+                public boolean visitToMany(ToManyProperty property) {
+                    property.removeTarget(targetObject, sourceObject, false);
+                    return false;
+                }
+
+                public boolean visitToOne(ToOneProperty property) {
+                    property.setTarget(targetObject, null, false);
+                    return false;
+                }
+
+                public boolean visitAttribute(AttributeProperty property) {
+                    return false;
+                }
+
+            });
 
             context.getGraphManager().arcDeleted(
                     targetObject.getObjectId(),
