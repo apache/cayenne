@@ -54,6 +54,7 @@ CAY-1097 Attribute types are not generated for primitive ints
 CAY-1098 EJBQLQuery can't process java.util.Date parameters
 CAY-1103 rollbackChanges is broken in ROP CayenneContext
 CAY-1108 MySQL/DbMerger compatibility
+CAY-1110 fetchLimit + DistinctResultIterator = fewer rows in the result
 CAY-1114 EJBQLQuery fails on joins outside of public schema
 CAY-1118 ROP: setToXXX(null) does not update reverse rel
 CAY-1121 EJBQL collection binding
