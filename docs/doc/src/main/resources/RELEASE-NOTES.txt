@@ -16,6 +16,7 @@ Date:
 Changes/New Features Since M4:
 
 CAY-366 Add progress/log view
+CAY-402 Entity/Attribute/Relationship naming improvements on rverse-engineering
 CAY-436 In modeler, change default object relationship delete rule
 CAY-671 custom exception class for ROP missing session
 CAY-794 Abstract object entities
