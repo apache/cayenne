@@ -159,5 +159,7 @@ public class MapLoaderLoadTest extends TestCase {
         SQLTemplate nonSelectingQuery = (SQLTemplate) map.getQuery("NonSelectingQuery");
         assertNotNull(nonSelectingQuery);
         assertEquals("NonSelectingQuery", nonSelectingQuery.getName());
+        
+        assertEquals(SQLTemplate.UPPERCASE_COLUMN_NAMES, nonSelectingQuery.getColumnNamesCapitalization());
     }
 }
