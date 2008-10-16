@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.QueryMetadata;
@@ -125,6 +126,27 @@ public class DataContextNamedQueryCachingTest extends CayenneCase {
                 false);
         assertSame(fetchedCached1, fetchedCached2);
     }
+    
+    public void testColumnNameCapitalization() throws Exception{
+        deleteTestData();
+        createTestData("prepare");
+        DataContext context = createDataContext();
+        
+        NamedQuery q1 = new NamedQuery("SelectTestLower");
+        List<DataRow> result1 = context.performQuery(q1);
+
+        NamedQuery q2 = new NamedQuery("SelectTestUpper");
+        List<DataRow> result2 = context.performQuery(q2);
+        
+        assertTrue(result1.get(0).containsKey("date_of_birth"));
+        assertFalse(result1.get(0).containsKey("DATE_OF_BIRTH"));
+        
+        assertFalse(result2.get(0).containsKey("date_of_birth"));
+        assertTrue(result2.get(0).containsKey("DATE_OF_BIRTH"));
+        
+    }
+
+    
 
     public void testSharedCache() throws Exception {
         deleteTestData();

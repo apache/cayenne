@@ -615,6 +615,16 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 	<query name="QueryWithSharedCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
 	</query>
+	<query name="SelectTestLower" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="lower"/>
+		<sql><![CDATA[select * from ARTIST]]></sql>
+	</query>
+	<query name="SelectTestUpper" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="upper"/>
+		<sql><![CDATA[select * from ARTIST]]></sql>
+	</query>
 	<entity-listener class="org.apache.art.EntityListenerDataMap">
 		<pre-persist method-name="prePersistDataMap1"/>
 		<pre-persist method-name="prePersistDataMap2"/>

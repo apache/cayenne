@@ -314,6 +314,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 
         query.metaData.copyFromInfo(this.metaData);
         query.setParameters(parameters);
+        query.setColumnNamesCapitalization(this.getColumnNamesCapitalization());
 
         // The following algorithm is for building the new query name based
         // on the original query name and a hashcode of the map of parameters.
