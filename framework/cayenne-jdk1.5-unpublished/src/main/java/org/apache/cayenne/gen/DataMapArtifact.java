@@ -38,7 +38,7 @@ import java.util.LinkedList;
  */
 public class DataMapArtifact implements Artifact {
 
-    public static String DATAMAP_UTILS_KEY = "dataMapUtils";
+    public static final String DATAMAP_UTILS_KEY = "dataMapUtils";
 
     protected DataMap dataMap;
     protected Collection<SelectQuery> selectQueries;
