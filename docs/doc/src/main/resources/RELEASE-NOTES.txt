@@ -59,6 +59,7 @@ CAY-1110 fetchLimit + DistinctResultIterator = fewer rows in the result
 CAY-1114 EJBQLQuery fails on joins outside of public schema
 CAY-1118 ROP: setToXXX(null) does not update reverse rel
 CAY-1121 EJBQL collection binding
+CAY-1122 columnNamesCapitalization property is ignored for the queries mapped via Modeler
 
 ----------------------------------
 Release: 3.0M4
