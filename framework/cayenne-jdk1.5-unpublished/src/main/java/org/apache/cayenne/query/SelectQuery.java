@@ -305,21 +305,6 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         query.metaData.copyFromInfo(this.metaData);
         query.setRoot(root);
 
-        // The following algorithm is for building the new query name based
-        // on the original query name and a hashcode of the map of parameters.
-        // This way the query clone can take advantage of caching. Fixes
-        // problem reported in CAY-360.
-
-        if (!Util.isEmptyString(name)) {
-            StringBuilder buffer = new StringBuilder(name);
-
-            if (parameters != null && !parameters.isEmpty()) {
-                buffer.append(parameters.hashCode());
-            }
-
-            query.setName(buffer.toString());
-        }
-
         if (orderings != null) {
             query.addOrderings(orderings);
         }

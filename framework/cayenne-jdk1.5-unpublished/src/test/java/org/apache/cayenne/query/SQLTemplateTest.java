@@ -51,12 +51,12 @@ public class SQLTemplateTest extends TestCase {
         assertNotSame(q1, q2);
         assertTrue(q2 instanceof SQLTemplate);
 
-        assertEquals(q1.getName(), q2.getName());
+        assertNull(q2.getName());
 
         Query q3 = q1.queryWithParameters(Collections.singletonMap("a", "b"));
         assertNotNull(q3);
         assertNotSame(q1, q3);
-        assertNotNull(q3.getName());
+        assertNull(q3.getName());
         assertFalse(q1.getName().equals(q3.getName()));
 
         Query q4 = q1.queryWithParameters(Collections.singletonMap("a", "b"));

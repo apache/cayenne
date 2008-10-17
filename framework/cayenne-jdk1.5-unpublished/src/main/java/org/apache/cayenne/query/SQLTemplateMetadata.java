@@ -51,9 +51,6 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
             if (QueryCacheStrategy.NO_CACHE == getCacheStrategy()) {
 
             }
-            else if (query.getName() != null) {
-                this.cacheKey = query.getName();
-            }
             else {
 
                 // create a unique key based on entity, SQL, and parameters

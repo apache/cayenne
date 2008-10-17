@@ -316,25 +316,6 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         query.setParameters(parameters);
         query.setColumnNamesCapitalization(this.getColumnNamesCapitalization());
 
-        // The following algorithm is for building the new query name based
-        // on the original query name and a hashcode of the map of parameters.
-        // This way the query clone can take advantage of caching. Fixes
-        // problem reported in CAY-360.
-
-        if (!Util.isEmptyString(name)) {
-            StringBuilder buffer = new StringBuilder(name);
-
-            if (parameters != null) {
-                for (Map<String, ?> parameter : parameters) {
-                    if (!parameter.isEmpty()) {
-                        buffer.append(parameter.hashCode());
-                    }
-                }
-            }
-
-            query.setName(buffer.toString());
-        }
-
         return query;
     }
 

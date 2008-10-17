@@ -169,7 +169,6 @@ public class SelectQueryBasicsTest extends TestCase {
 
         SelectQuery q1 = q.queryWithParameters(Collections.EMPTY_MAP);
         assertEquals("name", q.getName());
-        assertNotNull(q1.getName());
-        assertEquals(q.getName(), q1.getName());
+        assertNull(q1.getName());
     }
 }

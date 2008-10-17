@@ -77,7 +77,7 @@ public class SQLTemplateCacheKeyTest extends CayenneCase {
 
         QueryMetadata md1 = query.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
-        assertEquals("XYZ", md1.getCacheKey());
+        assertFalse("XYZ".equals(md1.getCacheKey()));
     }
 
 }
