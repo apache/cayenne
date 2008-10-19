@@ -227,6 +227,10 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="TINYINT_COL" type="TINYINT"/>
 	</db-entity>
+	<db-entity name="UUID_TEST">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="UUID" type="VARCHAR" length="100"/>
+	</db-entity>
 	<obj-entity name="ArraysEntity" className="org.apache.art.ArraysEntity" dbEntityName="ARRAYS_ENTITY">
 		<obj-attribute name="byteArray" type="byte[]" db-attribute-path="BYTE_ARRAY"/>
 		<obj-attribute name="byteWrapperArray" type="java.lang.Byte[]" db-attribute-path="BYTE_WRAPPER_ARRAY"/>
@@ -427,6 +431,9 @@
 	</obj-entity>
 	<obj-entity name="TinyintTestEntity" className="org.apache.art.TinyintTestEntity" dbEntityName="TINYINT_TEST">
 		<obj-attribute name="tinyintCol" type="java.lang.Byte" db-attribute-path="TINYINT_COL"/>
+	</obj-entity>
+	<obj-entity name="UuidTestEntity" className="org.apache.art.UuidTestEntity" dbEntityName="UUID_TEST">
+		<obj-attribute name="uuid" type="java.util.UUID" db-attribute-path="UUID"/>
 	</obj-entity>
 	<db-relationship name="artistGroupArray" source="ARTGROUP" target="ARTIST_GROUP" toMany="true">
 		<db-attribute-pair source="GROUP_ID" target="GROUP_ID"/>
