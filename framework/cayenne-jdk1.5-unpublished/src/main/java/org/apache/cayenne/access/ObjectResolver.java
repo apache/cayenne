@@ -319,13 +319,10 @@ class ObjectResolver {
                     .getName();
 
             Object val = dataRow.get(key);
+            
+            // this is possible when processing left outer joint prefetches
             if (val == null) {
-                throw new CayenneRuntimeException("Null value for '"
-                        + key
-                        + "'. Snapshot: "
-                        + dataRow
-                        + ". Prefix: "
-                        + namePrefix);
+                return null;
             }
 
             // PUT without a prefix
