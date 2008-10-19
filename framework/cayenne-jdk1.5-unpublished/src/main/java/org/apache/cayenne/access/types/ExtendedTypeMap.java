@@ -86,6 +86,8 @@ public class ExtendedTypeMap {
         while (it.hasNext()) {
             registerType(new DefaultType(it.next()));
         }
+        
+        registerType(new UUIDType());
     }
 
     /**
