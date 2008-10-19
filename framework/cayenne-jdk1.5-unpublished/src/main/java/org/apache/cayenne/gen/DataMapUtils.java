@@ -71,6 +71,11 @@ public class DataMapUtils {
      * @return Parameter names.
      */
     public Collection getParameterNames(QualifiedQuery query) {
+        
+        if(query.getQualifier() == null) {
+            return Collections.EMPTY_SET;
+        }
+        
         Map<String, String> queryParameters = queriesMap.get(query.getName());
 
         if ( queryParameters == null) {
