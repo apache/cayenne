@@ -40,6 +40,7 @@ CAY-1094 CM DataNode panel reorg - pull the password encoding options into a tab
 CAY-1096 CayenneContext should support ThreadLocal operations
 CAY-1100 merge: public access to columnOriginal and so on
 CAY-1127 Stop using query NAME as a cache key
+CAY-1128 Switch JOINT prefetches to generate OUTER Joins.
 
 Bug fixes since M4:
 
