@@ -350,6 +350,15 @@ class ObjectTreeResolver {
                                 snapshot,
                                 sourceObjEntity,
                                 relatedIdPrefix);
+                        
+                        if (id == null) {
+                            throw new CayenneRuntimeException("Can't build ObjectId from row: "
+                                    + snapshot
+                                    + ", entity: "
+                                    + sourceObjEntity.getName()
+                                    + ", prefix: "
+                                    + relatedIdPrefix);
+                        }
 
                         sourceObject = (Persistent) objectStore.getNode(id);
                     }
@@ -417,6 +426,11 @@ class ObjectTreeResolver {
 
                 DataRow row = processorNode.rowFromFlatRow(currentFlatRow);
                 object = processorNode.getResolver().objectFromDataRow(row);
+                
+                // LEFT OUTER JOIN produced no matches...
+                if(object == null) {
+                    return false;
+                }
 
                 processorNode.putResolved(id, object);
                 processorNode.addObject(object, row);

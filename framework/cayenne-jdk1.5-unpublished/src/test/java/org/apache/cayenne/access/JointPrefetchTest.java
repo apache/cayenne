@@ -259,8 +259,7 @@ public class JointPrefetchTest extends CayenneCase {
 
         blockQueries();
         try {
-            // without OUTER join we will get fewer objects...
-            assertEquals(2, objects.size());
+            assertEquals(3, objects.size());
 
             Iterator it = objects.iterator();
             while (it.hasNext()) {
@@ -269,7 +268,6 @@ public class JointPrefetchTest extends CayenneCase {
 
                 assertNotNull(list);
                 assertFalse(((ValueHolder) list).isFault());
-                assertTrue(list.size() > 0);
 
                 Iterator children = list.iterator();
                 while (children.hasNext()) {
@@ -355,8 +353,7 @@ public class JointPrefetchTest extends CayenneCase {
         blockQueries();
         try {
 
-            // without OUTER join we will get fewer objects...
-            assertEquals(2, objects.size());
+            assertEquals(3, objects.size());
 
             Iterator it = objects.iterator();
             while (it.hasNext()) {

@@ -363,7 +363,7 @@ public class SelectTranslatorTest extends CayenneCase {
                 transl.createSqlString();
 
                 // assert we only have one join
-                assertEquals(1, transl.joinStack.size());
+                assertEquals(2, transl.joinStack.size());
             }
         };
 

@@ -118,7 +118,14 @@ class ObjectResolver {
         Iterator it = rows.iterator();
 
         while (it.hasNext()) {
-            results.add(objectFromDataRow((DataRow) it.next()));
+            DataRow row = (DataRow) it.next();
+            Persistent object = objectFromDataRow(row);
+            
+            if (object == null) {
+                throw new CayenneRuntimeException("Can't build Object from row: " + row);
+            }
+            
+            results.add(object);
         }
 
         // now deal with snapshots
@@ -159,6 +166,9 @@ class ObjectResolver {
 
             DataRow row = (DataRow) it.next();
             Persistent object = objectFromDataRow(row);
+            if (object == null) {
+                throw new CayenneRuntimeException("Can't build Object from row: " + row);
+            }
             results.add(object);
 
             // link with parent
@@ -166,6 +176,14 @@ class ObjectResolver {
             // The algorithm below of building an ID doesn't take inheritance into
             // account, so there maybe a miss...
             ObjectId id = createObjectId(row, sourceObjEntity, relatedIdPrefix);
+            if (id == null) {
+                throw new CayenneRuntimeException("Can't build ObjectId from row: "
+                        + row
+                        + ", entity: "
+                        + sourceObjEntity.getName()
+                        + ", prefix: "
+                        + relatedIdPrefix);
+            }
             Persistent parentObject = (Persistent) context.getObjectStore().getNode(id);
 
             // don't attach to hollow objects
@@ -205,6 +223,11 @@ class ObjectResolver {
         // not using DataRow.createObjectId for performance reasons - ObjectResolver has
         // all needed metadata already cached.
         ObjectId anId = createObjectId(row, classDescriptor.getEntity(), null);
+
+        // this condition is valid - see comments on 'createObjectId' for details
+        if (anId == null) {
+            return null;
+        }
 
         // this will create a HOLLOW object if it is not registered yet
         Persistent object = context.localObject(anId, null);
@@ -277,13 +300,10 @@ class ObjectResolver {
                     .getName();
 
             Object val = dataRow.get(key);
+
+            // this is possible when processing left outer joint prefetches
             if (val == null) {
-                throw new CayenneRuntimeException("Null value for '"
-                        + key
-                        + "'. Snapshot: "
-                        + dataRow
-                        + ". Prefix: "
-                        + namePrefix);
+                return null;
             }
 
             // PUT without a prefix
