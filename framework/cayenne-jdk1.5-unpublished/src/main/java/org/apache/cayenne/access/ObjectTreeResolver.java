@@ -238,8 +238,7 @@ class ObjectTreeResolver {
         }
 
         PrefetchProcessorNode getParent() {
-            return (nodeStack.isEmpty()) ? null : nodeStack
-                    .getLast();
+            return (nodeStack.isEmpty()) ? null : nodeStack.getLast();
         }
     }
 
@@ -350,14 +349,15 @@ class ObjectTreeResolver {
                                 snapshot,
                                 sourceObjEntity,
                                 relatedIdPrefix);
-                        
+
                         if (id == null) {
-                            throw new CayenneRuntimeException("Can't build ObjectId from row: "
-                                    + snapshot
-                                    + ", entity: "
-                                    + sourceObjEntity.getName()
-                                    + ", prefix: "
-                                    + relatedIdPrefix);
+                            throw new CayenneRuntimeException(
+                                    "Can't build ObjectId from row: "
+                                            + snapshot
+                                            + ", entity: "
+                                            + sourceObjEntity.getName()
+                                            + ", prefix: "
+                                            + relatedIdPrefix);
                         }
 
                         sourceObject = (Persistent) objectStore.getNode(id);
@@ -426,9 +426,9 @@ class ObjectTreeResolver {
 
                 DataRow row = processorNode.rowFromFlatRow(currentFlatRow);
                 object = processorNode.getResolver().objectFromDataRow(row);
-                
+
                 // LEFT OUTER JOIN produced no matches...
-                if(object == null) {
+                if (object == null) {
                     return false;
                 }
 
@@ -482,9 +482,11 @@ class ObjectTreeResolver {
                         processorNode.getObjects(),
                         processorNode.getResolvedRows(),
                         queryMetadata.isRefreshingObjects());
-                processorNode.connectToParents();
             }
 
+            // run 'connectToParents' even if the object list is empty. This is needed to
+            // refresh stale relationships e.g. when some related objects got deleted.
+            processorNode.connectToParents();
             return true;
         }
 
