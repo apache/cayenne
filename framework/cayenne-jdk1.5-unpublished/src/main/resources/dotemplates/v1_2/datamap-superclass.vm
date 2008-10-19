@@ -35,8 +35,6 @@ ${importUtils.setPackage($superPackageName)}##
 ${importUtils.addReservedType("${superPackageName}.${superClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
 ${importUtils.addType('java.util.List')}##
-${importUtils.addType('java.util.Map')}##
-${importUtils.addType('java.util.HashMap')}##
 ${importUtils.addType('org.apache.cayenne.ObjectContext')}##
 ${importUtils.addType('org.apache.cayenne.query.NamedQuery')}##
 #foreach( $selectQuery in ${object.SelectQueries})
@@ -54,26 +52,24 @@ ${importUtils.generate()}
  * If you need to make any customizations, please use subclass.
  */
 public class ${superClassName} {
-
 #foreach( $selectQuery in ${object.SelectQueries})
-    public List<${stringUtils.stripPackageName($selectQuery.Root.ClassName)}> perform${dataMapUtils.getQueryMethodName(${selectQuery})}(ObjectContext context #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})}), ${stringUtils.stripPackageName(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})} ${parameter} #end) {
-    #if(${dataMapUtils.hasParameters($selectQuery)})
-      String[] parameters = new String[] {
-      #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
-      "${parameter}",
-      #end
-      };
 
-      Object[] values = new Object[] {
-      #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
-      ${parameter},
-      #end
-      };
-    #end
+    public List<${stringUtils.stripPackageName($selectQuery.Root.ClassName)}> perform${dataMapUtils.getQueryMethodName(${selectQuery})}(ObjectContext context #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})}), ${stringUtils.stripPackageName(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})} ${parameter}#end) {
+#if(${dataMapUtils.hasParameters($selectQuery)})
+        String[] parameters = {
+#foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
+            "${parameter}",
+#end
+        };
 
-      NamedQuery query = new NamedQuery("${selectQuery.Name}"#if(${dataMapUtils.hasParameters($selectQuery)}), parameters, values#end);
-      return context.performQuery(query);
+        Object[] values = {
+#foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
+            ${parameter},
+#end
+        };
+
+#end
+        return context.performQuery(new NamedQuery("${selectQuery.Name}"#if(${dataMapUtils.hasParameters($selectQuery)}), parameters, values#end));
     }
-    
 #end
 }

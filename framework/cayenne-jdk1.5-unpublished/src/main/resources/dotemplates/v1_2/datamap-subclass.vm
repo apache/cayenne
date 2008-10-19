@@ -33,16 +33,15 @@ ${importUtils.generate()}
 
 public class ${subClassName} extends ${superClassName} {
 
-  private static ${subClassName} instance;
+    private static ${subClassName} instance;
 
-  private ${subClassName}() {}
+    private ${subClassName}() {}
 
-  public static ${subClassName} getInstance() {
-    if( instance == null) {
-      instance = new ${subClassName}();
+    public static ${subClassName} getInstance() {
+        if(instance == null) {
+            instance = new ${subClassName}();
+        }
+
+        return instance;
     }
-
-    return instance;
-  }
-
 }
