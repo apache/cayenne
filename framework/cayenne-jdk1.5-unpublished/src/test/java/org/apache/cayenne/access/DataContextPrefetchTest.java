@@ -40,6 +40,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
 
@@ -129,14 +130,53 @@ public class DataContextPrefetchTest extends DataContextCase {
      * Test that a to-many relationship is initialized when a target entity has a compound
      * PK only partially involved in relationship.
      */
-    public void testPrefetchToManyOnJoinTable() throws Exception {
+    public void testPrefetchToManyOnJoinTableDisjoinedPrefetch() throws Exception {
         // setup data
         createTestData("testGalleries");
         populateExhibits();
         createTestData("testArtistExhibits");
 
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addPrefetch("artistExhibitArray");
+        q.addPrefetch("artistExhibitArray").setSemantics(
+                PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
+        q.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
+
+        List artists = context.performQuery(q);
+
+        blockQueries();
+        try {
+
+            assertEquals(artistCount, artists.size());
+
+            Artist a1 = (Artist) artists.get(0);
+            assertEquals("artist1", a1.getArtistName());
+            List toMany = (List) a1.readPropertyDirectly("artistExhibitArray");
+            assertNotNull(toMany);
+            assertFalse(((ValueHolder) toMany).isFault());
+            assertEquals(2, toMany.size());
+
+            ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
+            assertEquals(PersistenceState.COMMITTED, artistExhibit.getPersistenceState());
+            assertSame(a1, artistExhibit.getToArtist());
+        }
+        finally {
+            unblockQueries();
+        }
+    }
+
+    /**
+     * Test that a to-many relationship is initialized when a target entity has a compound
+     * PK only partially involved in relationship.
+     */
+    public void testPrefetchToManyOnJoinTableJoinedPrefetch() throws Exception {
+        // setup data
+        createTestData("testGalleries");
+        populateExhibits();
+        createTestData("testArtistExhibits");
+
+        SelectQuery q = new SelectQuery(Artist.class);
+        q.addPrefetch("artistExhibitArray").setSemantics(
+                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
         q.addOrdering(Artist.ARTIST_NAME_PROPERTY, Ordering.ASC);
 
         List artists = context.performQuery(q);
@@ -483,7 +523,7 @@ public class DataContextPrefetchTest extends DataContextCase {
         try {
             // per CAY-499 second run of a cached query with prefetches (i.e. when the
             // result is served from cache) used to throw an exception...
-            
+
             List cachedResult = context.performQuery(q);
 
             assertFalse(cachedResult.isEmpty());
@@ -497,7 +537,7 @@ public class DataContextPrefetchTest extends DataContextCase {
 
             DataObject a1 = (DataObject) toOnePrefetch;
             assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
-            
+
             // and just in case - run one more time...
             context.performQuery(q);
         }
@@ -505,7 +545,7 @@ public class DataContextPrefetchTest extends DataContextCase {
             unblockQueries();
         }
     }
-    
+
     public void testPrefetchToOneLocalCache() throws Exception {
         createTestData("testPaintings");
 
@@ -520,7 +560,7 @@ public class DataContextPrefetchTest extends DataContextCase {
         try {
             // per CAY-499 second run of a cached query with prefetches (i.e. when the
             // result is served from cache) used to throw an exception...
-            
+
             List cachedResult = context.performQuery(q);
 
             assertFalse(cachedResult.isEmpty());
@@ -534,7 +574,7 @@ public class DataContextPrefetchTest extends DataContextCase {
 
             DataObject a1 = (DataObject) toOnePrefetch;
             assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
-            
+
             // and just in case - run one more time...
             context.performQuery(q);
         }
