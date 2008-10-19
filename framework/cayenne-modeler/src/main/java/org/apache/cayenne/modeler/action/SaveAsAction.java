@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -78,9 +79,16 @@ public class SaveAsAction extends CayenneAction {
         if (!chooseDestination(p)) {
             return false;
         }
-
+        
+        if (p.getMainFile().exists() && !p.getMainFile().canWrite()) {
+            JOptionPane.showMessageDialog(Application.getFrame(),
+                    "Can't save project - unable to write to file \"" + p.getMainFile().getPath() + "\"",
+                    "Can't Save Project", JOptionPane.OK_OPTION);
+            return false;
+        }
+        
         getProjectController().getProjectWatcher().pauseWatching();
-
+        
         p.save();
 
         // update preferences domain key

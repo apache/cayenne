@@ -108,6 +108,13 @@ public class OpenProjectAction extends ProjectAction {
     public void openProject(File file) {
 
         try {
+            if (!file.exists()) {
+                JOptionPane.showMessageDialog(Application.getFrame(),
+                        "Can't open project - file \"" + file.getPath() + "\" does not exist",
+                        "Can't Open Project", JOptionPane.OK_OPTION);
+                return;
+            }
+            
             getApplication().getFrameController().addToLastProjListAction(
                     file.getAbsolutePath());
 
