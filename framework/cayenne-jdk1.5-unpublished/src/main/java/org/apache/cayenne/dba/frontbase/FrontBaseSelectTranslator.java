@@ -33,13 +33,15 @@ class FrontBaseSelectTranslator extends SelectTranslator {
     public String createSqlString() throws Exception {
         String sql = super.createSqlString();
 
-        // limit results
-        int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
-        if (limit > 0 && sql.startsWith(SELECT_PREFIX)) {
-            return SELECT_PREFIX
-                    + " TOP "
-                    + limit
-                    + sql.substring(SELECT_PREFIX.length());
+        if (!isSuppressingDistinct()) {
+            // limit results
+            int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
+            if (limit > 0 && sql.startsWith(SELECT_PREFIX)) {
+                return SELECT_PREFIX
+                        + " TOP "
+                        + limit
+                        + sql.substring(SELECT_PREFIX.length());
+            }
         }
 
         return sql;

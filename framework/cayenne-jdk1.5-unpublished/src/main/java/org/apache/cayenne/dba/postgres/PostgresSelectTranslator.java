@@ -31,18 +31,21 @@ public class PostgresSelectTranslator extends SelectTranslator {
     @Override
     public String createSqlString() throws Exception {
         String sql = super.createSqlString();
-        QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
 
-        // limit results
-        int offset = metadata.getFetchOffset();
-        int limit = metadata.getFetchLimit();
+        if (!isSuppressingDistinct()) {
+            QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
 
-        if (limit > 0) {
-            sql += " LIMIT " + limit;
-        }
-        
-        if (offset > 0) {
-            sql += " OFFSET " + offset;
+            // limit results
+            int offset = metadata.getFetchOffset();
+            int limit = metadata.getFetchLimit();
+
+            if (limit > 0) {
+                sql += " LIMIT " + limit;
+            }
+
+            if (offset > 0) {
+                sql += " OFFSET " + offset;
+            }
         }
         return sql;
     }

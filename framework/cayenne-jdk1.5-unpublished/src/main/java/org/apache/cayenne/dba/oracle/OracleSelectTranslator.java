@@ -37,15 +37,23 @@ public class OracleSelectTranslator extends SelectTranslator {
 
         String sqlString = super.createSqlString();
 
-        QueryMetadata info = getQuery().getMetaData(getEntityResolver());
-        if (info.getFetchLimit() > 0 || info.getFetchOffset() > 0) {
-            int max = (info.getFetchLimit() == 0)? Integer.MAX_VALUE : (info.getFetchLimit() + info.getFetchOffset());
-            
-            sqlString = "select * " + 
-            "from ( select " +
-                    "tid.*, ROWNUM rnum " + 
-                        "from (" + sqlString +  ") tid " + 
-                        "where ROWNUM <=" + max + ") where rnum  > " + info.getFetchOffset(); 
+        if (!isSuppressingDistinct()) {
+            QueryMetadata info = getQuery().getMetaData(getEntityResolver());
+            if (info.getFetchLimit() > 0 || info.getFetchOffset() > 0) {
+                int max = (info.getFetchLimit() == 0) ? Integer.MAX_VALUE : (info
+                        .getFetchLimit() + info.getFetchOffset());
+
+                sqlString = "select * "
+                        + "from ( select "
+                        + "tid.*, ROWNUM rnum "
+                        + "from ("
+                        + sqlString
+                        + ") tid "
+                        + "where ROWNUM <="
+                        + max
+                        + ") where rnum  > "
+                        + info.getFetchOffset();
+            }
         }
 
         return sqlString;

@@ -32,15 +32,17 @@ class OpenBaseSelectTranslator extends SelectTranslator {
     protected JoinStack createJoinStack() {
         return new OpenBaseJoinStack();
     }
-    
+
     @Override
     public String createSqlString() throws Exception {
         String sql = super.createSqlString();
 
-        // limit results
-        int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
-        if (limit > 0) {
-            return sql + " RETURN RESULTS " + limit;
+        if (!isSuppressingDistinct()) {
+            // limit results
+            int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
+            if (limit > 0) {
+                return sql + " RETURN RESULTS " + limit;
+            }
         }
 
         return sql;
