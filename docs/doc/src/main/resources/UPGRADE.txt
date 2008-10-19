@@ -1,6 +1,14 @@
 Apache Cayenne Upgrade Information
 ==================================
 
+UPGRADING FROM 3.0M4
+
+* Per CAY-1127, query "name" property is no longer used as an internal cache key. This change should be transparent
+  to most users, as Cayenne generates a correct cache key internally when needed, however if a user code explicitly
+  depended on the value of the cache key, it should be updated to use something like this:
+    
+  String cacheKey = query.getQueryMetadata(entityResolver).getCacheKey();
+
 UPGRADING FROM 3.0M3
 
 * Per CAY-1049 API of the internal classes that participate in SelectQuery translation has changed in a way that
