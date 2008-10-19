@@ -69,6 +69,8 @@ public class MySQLStackAdapter extends AccessStackAdapter {
             executeDDL(con, "mysql", "create-update-sp.sql");
             executeDDL(con, "mysql", "create-update-sp2.sql");
             executeDDL(con, "mysql", "create-out-sp.sql");
+            
+            executeDDL(con, "mysql", "create-smallint-unsigned.sql");
         }
     }
 
