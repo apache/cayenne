@@ -429,7 +429,7 @@ public class SelectTranslator extends QueryAssembler {
                 for (PathComponent<DbAttribute, DbRelationship> component : table
                         .resolvePath(dbPrefetch, getPathAliases())) {
                     r = component.getRelationship();
-                    dbRelationshipAdded(r, JoinType.INNER, null);
+                    dbRelationshipAdded(r, JoinType.LEFT_OUTER, null);
                 }
 
                 if (r == null) {
