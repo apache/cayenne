@@ -34,6 +34,7 @@
 ${importUtils.setPackage($superPackageName)}##
 ${importUtils.addReservedType("${superPackageName}.${superClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
+#if( ${object.hasQueries()} ) 
 ${importUtils.addType('java.util.List')}##
 ${importUtils.addType('org.apache.cayenne.ObjectContext')}##
 ${importUtils.addType('org.apache.cayenne.query.NamedQuery')}##
@@ -42,6 +43,7 @@ ${importUtils.addType(${selectQuery.Root.ClassName})}##
 #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
 ${importUtils.addType(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})}##
 #end    
+#end
 #end
 ${importUtils.generate()}
 

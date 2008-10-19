@@ -19,20 +19,20 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.velocity.VelocityContext;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.util.NameConverter;
-
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.query.ProcedureQuery;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.util.NameConverter;
+import org.apache.velocity.VelocityContext;
+
 /**
  * {@link Artifact} facade for a DataMap.
- *
+ * 
  * @author Dzmitry Rusak
  * @since 3.0
  */
@@ -58,9 +58,17 @@ public class DataMapArtifact implements Artifact {
     }
 
     public String getQualifiedClassName() {
-        return dataMap.getDefaultPackage() + '.' + 
-                NameConverter.underscoredToJava(
-                  NameConverter.specialCharsToJava(dataMap.getName()), true);
+        String pkg = dataMap.getDefaultPackage();
+        if (pkg == null) {
+            pkg = "";
+        }
+        else {
+            pkg = pkg + '.';
+        }
+
+        return pkg
+                + NameConverter.underscoredToJava(NameConverter
+                        .specialCharsToJava(dataMap.getName()), true);
     }
 
     public Object getObject() {
@@ -75,11 +83,11 @@ public class DataMapArtifact implements Artifact {
     public TemplateType[] getTemplateTypes(ArtifactGenerationMode mode) {
         switch (mode) {
             case SINGLE_CLASS:
-                return new TemplateType[]{
-                        TemplateType.DATAMAP_SINGLE_CLASS
+                return new TemplateType[] {
+                    TemplateType.DATAMAP_SINGLE_CLASS
                 };
             case GENERATION_GAP:
-                return new TemplateType[]{
+                return new TemplateType[] {
                         TemplateType.DATAMAP_SUPERCLASS, TemplateType.DATAMAP_SUBCLASS
                 };
             default:
@@ -105,4 +113,7 @@ public class DataMapArtifact implements Artifact {
         return selectQueries;
     }
 
+    public boolean hasQueries() {
+        return selectQueries.size() > 0;
+    }
 }
