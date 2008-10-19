@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <domains project-version="3.0">
 <domain name="default">
+
 	<map name="embeddable" location="embeddable.map.xml"/>
 	<map name="generic" location="generic.map.xml"/>
 	<map name="inheritance" location="inheritance.map.xml"/>

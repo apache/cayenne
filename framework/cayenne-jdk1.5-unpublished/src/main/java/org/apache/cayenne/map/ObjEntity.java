@@ -140,7 +140,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
             encoder.print("\" lock-type=\"optimistic");
         }
 
-        if (getDbEntity() != null) {
+        if (getDbEntityName() != null && getDbEntity() != null) {
             encoder.print("\" dbEntityName=\"");
             encoder.print(Util.encodeXmlAttribute(getDbEntityName()));
         }

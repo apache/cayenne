@@ -61,6 +61,8 @@
 	<obj-entity name="Employee" superEntityName="AbstractPerson" className="org.apache.cayenne.testdo.inherit.Employee">
 		<qualifier><![CDATA[personType = "EE"]]></qualifier>
 		<obj-attribute name="salary" type="java.lang.Float" db-attribute-path="SALARY"/>
+		<attribute-override name="name" db-attribute-path="NAME"/>
+		<attribute-override name="personType" db-attribute-path="PERSON_TYPE"/>
 	</obj-entity>
 	<obj-entity name="Manager" superEntityName="Employee" className="org.apache.cayenne.testdo.inherit.Manager">
 		<qualifier><![CDATA[personType = "EM"]]></qualifier>
