@@ -33,50 +33,71 @@ import org.apache.cayenne.unit.MySQLStackAdapter;
 
 public class CAY_1125Test extends CayenneCase {
 
+    private boolean isMySQL() {
+        return getAccessStackAdapter() instanceof MySQLStackAdapter;
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        deleteTestData();
-        DbEntity artistDB = getDbEntity("ARTIST");
-        artistDB.addAttribute(new DbAttribute(
-                "SMALLINT_UNSIGNED",
-                Types.SMALLINT,
-                artistDB));
+        if (isMySQL()) {
+            deleteTestData();
 
-        ObjEntity artistObj = getObjEntity("Artist");
-        artistObj.addAttribute(new ObjAttribute(
-                "smallintUnsigned",
-                "java.lang.Integer",
-                artistObj));
-        getDomain().getEntityResolver().clearCache();
+            createDataContext()
+                    .performGenericQuery(
+                            new SQLTemplate(
+                                    Artist.class,
+                                    "alter table ARTIST ADD COLUMN SMALLINT_UNSIGNED SMALLINT UNSIGNED NULL"));
+
+            DbEntity artistDB = getDbEntity("ARTIST");
+            artistDB.addAttribute(new DbAttribute(
+                    "SMALLINT_UNSIGNED",
+                    Types.SMALLINT,
+                    artistDB));
+
+            ObjEntity artistObj = getObjEntity("Artist");
+            ObjAttribute artistObjAttr = new ObjAttribute(
+                    "smallintUnsigned",
+                    "java.lang.Integer",
+                    artistObj);
+            artistObjAttr.setDbAttributePath("SMALLINT_UNSIGNED");
+            artistObj.addAttribute(artistObjAttr);
+            getDomain().getEntityResolver().clearCache();
+            getDomain().getEntityResolver().getClassDescriptorMap().clearDescriptors();
+        }
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        getObjEntity("Artist").removeAttribute("smallintUnsigned");
-        getDbEntity("ARTIST").removeAttribute("SMALLINT_UNSIGNED");
+        if (isMySQL()) {
+
+            getObjEntity("Artist").removeAttribute("smallintUnsigned");
+            getDbEntity("ARTIST").removeAttribute("SMALLINT_UNSIGNED");
+
+            getDomain().getEntityResolver().clearCache();
+            getDomain().getEntityResolver().getClassDescriptorMap().clearDescriptors();
+        }
     }
 
     public void testSQLTemplate() {
-        if (getAccessStackAdapter() instanceof MySQLStackAdapter) {
+        if (isMySQL()) {
 
             SQLTemplate insert = new SQLTemplate(
                     Artist.class,
-                    "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, SMALLINT_UNSIGNED) VALUES (1, 'A', 32768)");
+                    "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, SMALLINT_UNSIGNED) VALUES (1, 'A', 33000)");
 
             ObjectContext context = createDataContext();
             context.performGenericQuery(insert);
-            
+
             SQLTemplate select = new SQLTemplate(Artist.class, "SELECT * FROM ARTIST");
             select.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
-            
-            
+
             List<Artist> results = context.performQuery(select);
             assertEquals(1, results.size());
-            assertEquals(32768, results.get(0).readProperty("smallintUnsigned"));
+            assertEquals(33000, results.get(0).readProperty("smallintUnsigned"));
         }
     }
 }

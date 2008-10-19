@@ -64,13 +64,12 @@ public class MySQLStackAdapter extends AccessStackAdapter {
 
     @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
+
         if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
             executeDDL(con, "mysql", "create-select-sp.sql");
             executeDDL(con, "mysql", "create-update-sp.sql");
             executeDDL(con, "mysql", "create-update-sp2.sql");
             executeDDL(con, "mysql", "create-out-sp.sql");
-            
-            executeDDL(con, "mysql", "create-smallint-unsigned.sql");
         }
     }
 
