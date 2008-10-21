@@ -34,7 +34,7 @@ public interface QueryCache {
      * Returns a cached query result for the given QueryMetadata or null if the result is
      * not cached or is expired.
      */
-    List get(QueryMetadata metadata);
+    List<?> get(QueryMetadata metadata);
 
     /**
      * Returns a cached query result for the given QueryMetadata. If the result is not
@@ -45,9 +45,9 @@ public interface QueryCache {
      * from running the same query when a missing entry is requested by multiple threads
      * simultaneously.
      */
-    List get(QueryMetadata metadata, QueryCacheEntryFactory factory);
+    List<?> get(QueryMetadata metadata, QueryCacheEntryFactory factory);
 
-    void put(QueryMetadata metadata, List results);
+    void put(QueryMetadata metadata, List<?> results);
 
     /**
      * Removes a single entry from cache.

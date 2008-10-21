@@ -48,7 +48,7 @@ public class MapQueryCache implements QueryCache, Serializable {
         this.map = new LRUMap(maxSize);
     }
 
-    public List get(QueryMetadata metadata) {
+    public List<?> get(QueryMetadata metadata) {
         String key = metadata.getCacheKey();
         if (key == null) {
             return null;
@@ -68,8 +68,8 @@ public class MapQueryCache implements QueryCache, Serializable {
      * a result there is a potential of multiple threads to be updating cache in parallel -
      * this wouldn't lead to corruption of the cache, but can be suboptimal.
      */
-    public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
-        List result = get(metadata);
+    public List<?> get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
+        List<?> result = get(metadata);
         if (result == null) {
             Object newObject = factory.createObject();
 
@@ -85,14 +85,14 @@ public class MapQueryCache implements QueryCache, Serializable {
                 }
             }
 
-            result = (List) newObject;
+            result = (List<?>) newObject;
             put(metadata, result);
         }
 
         return result;
     }
 
-    public void put(QueryMetadata metadata, List results) {
+    public void put(QueryMetadata metadata, List<?> results) {
         String key = metadata.getCacheKey();
         if (key != null) {
 
@@ -144,8 +144,7 @@ public class MapQueryCache implements QueryCache, Serializable {
         return map.size();
     }
 
-    final class CacheEntry implements Serializable {
-
+    final static class CacheEntry implements Serializable {
         List<?> list;
         String[] cacheGroups;
     }

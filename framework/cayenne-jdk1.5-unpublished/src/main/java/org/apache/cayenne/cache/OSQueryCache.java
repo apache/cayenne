@@ -21,7 +21,6 @@ package org.apache.cayenne.cache;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -89,7 +88,7 @@ public class OSQueryCache implements QueryCache {
     protected GeneralCacheAdministrator osCache;
 
     RefreshSpecification defaultRefreshSpecification;
-    Map refreshSpecifications;
+    Map<String, RefreshSpecification> refreshSpecifications;
     Properties properties;
 
     public OSQueryCache() {
@@ -105,7 +104,7 @@ public class OSQueryCache implements QueryCache {
      * Returns a collection of group names that have been configured explicitly via
      * properties.
      */
-    public Collection getGroupNames() {
+    public Collection<?> getGroupNames() {
         return refreshSpecifications != null
                 ? Collections.unmodifiableCollection(refreshSpecifications.keySet())
                 : Collections.EMPTY_SET;
@@ -116,7 +115,7 @@ public class OSQueryCache implements QueryCache {
         RefreshSpecification spec = null;
 
         if (refreshSpecifications != null) {
-            spec = (RefreshSpecification) refreshSpecifications.get(groupName);
+            spec = refreshSpecifications.get(groupName);
         }
 
         if (spec == null) {
@@ -131,7 +130,7 @@ public class OSQueryCache implements QueryCache {
         RefreshSpecification spec = null;
 
         if (refreshSpecifications != null) {
-            spec = (RefreshSpecification) refreshSpecifications.get(groupName);
+            spec = refreshSpecifications.get(groupName);
         }
 
         if (spec == null) {
@@ -222,11 +221,10 @@ public class OSQueryCache implements QueryCache {
 
     private RefreshSpecification nonNullSpec(String name) {
         if (refreshSpecifications == null) {
-            refreshSpecifications = new HashMap();
+            refreshSpecifications = new HashMap<String, RefreshSpecification>();
         }
 
-        RefreshSpecification spec = (RefreshSpecification) refreshSpecifications
-                .get(name);
+        RefreshSpecification spec = refreshSpecifications.get(name);
         if (spec == null) {
             spec = new RefreshSpecification();
             spec.cronExpression = defaultRefreshSpecification.cronExpression;
@@ -237,7 +235,7 @@ public class OSQueryCache implements QueryCache {
         return spec;
     }
 
-    public List get(QueryMetadata metadata) {
+    public List<?> get(QueryMetadata metadata) {
         String key = metadata.getCacheKey();
         if (key == null) {
             return null;
@@ -246,7 +244,7 @@ public class OSQueryCache implements QueryCache {
         RefreshSpecification refresh = getRefreshSpecification(metadata);
 
         try {
-            return (List) osCache.getFromCache(
+            return (List<?>) osCache.getFromCache(
                     key,
                     refresh.refreshPeriod,
                     refresh.cronExpression);
@@ -263,7 +261,7 @@ public class OSQueryCache implements QueryCache {
      * will block on the entry update or not is controlled by "cache.blocking"
      * configuration property and is "false" by default.
      */
-    public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
+    public List<?> get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
         String key = metadata.getCacheKey();
         if (key == null) {
             return null;
@@ -272,7 +270,7 @@ public class OSQueryCache implements QueryCache {
         RefreshSpecification refresh = getRefreshSpecification(metadata);
 
         try {
-            return (List) osCache.getFromCache(
+            return (List<?>) osCache.getFromCache(
                     key,
                     refresh.refreshPeriod,
                     refresh.cronExpression);
@@ -294,7 +292,7 @@ public class OSQueryCache implements QueryCache {
                     }
                 }
 
-                List list = (List) result;
+                List<?> list = (List<?>) result;
 
                 put(metadata, list);
                 updated = true;
@@ -320,14 +318,14 @@ public class OSQueryCache implements QueryCache {
         if (refreshSpecifications != null) {
             String[] groups = metadata.getCacheGroups();
             if (groups != null && groups.length > 0) {
-                refresh = (RefreshSpecification) refreshSpecifications.get(groups[0]);
+                refresh = refreshSpecifications.get(groups[0]);
             }
         }
 
         return refresh != null ? refresh : defaultRefreshSpecification;
     }
 
-    public void put(QueryMetadata metadata, List results) {
+    public void put(QueryMetadata metadata, List<?> results) {
         String key = metadata.getCacheKey();
         if (key != null) {
             osCache.putInCache(key, results, metadata.getCacheGroups());
@@ -382,8 +380,7 @@ public class OSQueryCache implements QueryCache {
         }
     }
 
-    final class OSCacheAdministrator extends GeneralCacheAdministrator {
-
+    final static class OSCacheAdministrator extends GeneralCacheAdministrator {
         OSCacheAdministrator() {
         }
 
