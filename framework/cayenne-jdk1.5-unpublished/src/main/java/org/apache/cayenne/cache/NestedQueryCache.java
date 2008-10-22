@@ -75,15 +75,18 @@ public class NestedQueryCache implements QueryCache {
         delegate.clear();
     }
 
-    public List<?> get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
+    @SuppressWarnings("unchecked")
+    public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
         return delegate.get(qualifiedMetadata(metadata), factory);
     }
 
-    public List<?> get(QueryMetadata metadata) {
+    @SuppressWarnings("unchecked")
+    public List get(QueryMetadata metadata) {
         return delegate.get(qualifiedMetadata(metadata));
     }
 
-    public void put(QueryMetadata metadata, List<?> results) {
+    @SuppressWarnings("unchecked")
+    public void put(QueryMetadata metadata, List results) {
         delegate.put(qualifiedMetadata(metadata), results);
     }
 

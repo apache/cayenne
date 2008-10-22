@@ -104,7 +104,8 @@ public class OSQueryCache implements QueryCache {
      * Returns a collection of group names that have been configured explicitly via
      * properties.
      */
-    public Collection<?> getGroupNames() {
+    @SuppressWarnings("unchecked")
+    public Collection getGroupNames() {
         return refreshSpecifications != null
                 ? Collections.unmodifiableCollection(refreshSpecifications.keySet())
                 : Collections.EMPTY_SET;
@@ -235,7 +236,8 @@ public class OSQueryCache implements QueryCache {
         return spec;
     }
 
-    public List<?> get(QueryMetadata metadata) {
+    @SuppressWarnings("unchecked")
+    public List get(QueryMetadata metadata) {
         String key = metadata.getCacheKey();
         if (key == null) {
             return null;
@@ -244,7 +246,7 @@ public class OSQueryCache implements QueryCache {
         RefreshSpecification refresh = getRefreshSpecification(metadata);
 
         try {
-            return (List<?>) osCache.getFromCache(
+            return (List) osCache.getFromCache(
                     key,
                     refresh.refreshPeriod,
                     refresh.cronExpression);
@@ -261,7 +263,8 @@ public class OSQueryCache implements QueryCache {
      * will block on the entry update or not is controlled by "cache.blocking"
      * configuration property and is "false" by default.
      */
-    public List<?> get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
+    @SuppressWarnings("unchecked")
+    public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
         String key = metadata.getCacheKey();
         if (key == null) {
             return null;
@@ -270,7 +273,7 @@ public class OSQueryCache implements QueryCache {
         RefreshSpecification refresh = getRefreshSpecification(metadata);
 
         try {
-            return (List<?>) osCache.getFromCache(
+            return (List) osCache.getFromCache(
                     key,
                     refresh.refreshPeriod,
                     refresh.cronExpression);
@@ -292,7 +295,7 @@ public class OSQueryCache implements QueryCache {
                     }
                 }
 
-                List<?> list = (List<?>) result;
+                List list = (List) result;
 
                 put(metadata, list);
                 updated = true;
@@ -325,7 +328,8 @@ public class OSQueryCache implements QueryCache {
         return refresh != null ? refresh : defaultRefreshSpecification;
     }
 
-    public void put(QueryMetadata metadata, List<?> results) {
+    @SuppressWarnings("unchecked")
+    public void put(QueryMetadata metadata, List results) {
         String key = metadata.getCacheKey();
         if (key != null) {
             osCache.putInCache(key, results, metadata.getCacheGroups());
