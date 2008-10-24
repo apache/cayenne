@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphManager;
@@ -52,6 +54,11 @@ class ObjectContextStateLog implements GraphChangeHandler {
      * Updates dirty objects state and clears dirty ids map.
      */
     void graphCommitted() {
+        /**
+         * Array for deleted ids, to avoid concurrent modification
+         */
+        List deletedIds = new Vector();
+        
         for (Object id : dirtyIds) {
             Object node = graphManager.getNode(id);
             if (node instanceof Persistent) {
@@ -62,10 +69,18 @@ class ObjectContextStateLog implements GraphChangeHandler {
                         persistentNode.setPersistenceState(PersistenceState.COMMITTED);
                         break;
                     case PersistenceState.DELETED:
+                        deletedIds.add(id);
                         persistentNode.setPersistenceState(PersistenceState.TRANSIENT);
                         break;
                 }
             }
+        }
+        
+        /**
+         * Now unregister all deleted objects
+         */
+        for (Object id : deletedIds) {
+            graphManager.unregisterNode(id);
         }
 
         clear();
