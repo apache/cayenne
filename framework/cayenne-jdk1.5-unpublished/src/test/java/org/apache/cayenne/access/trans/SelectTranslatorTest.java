@@ -333,11 +333,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
                 int i2 = sql.indexOf("FROM");
                 assertTrue(sql, i2 > 0);
-
-                // make sure FK column is skipped
-                int i3 = sql.indexOf("ARTIST_ID", i1 + 1);
-                assertTrue(sql, i3 < 0 || i3 > i2);
-
+                
                 assertTrue(sql, sql.indexOf("PAINTING_ID") > 0);
 
                 // assert we have one join
@@ -390,10 +386,6 @@ public class SelectTranslatorTest extends CayenneCase {
 
                 int i2 = sql.indexOf("FROM");
                 assertTrue(sql, i2 > 0);
-
-                // make sure FK column is skipped
-                int i3 = sql.indexOf("ARTIST_ID", i1 + 1);
-                assertTrue(sql, i3 < 0 || i3 > i2);
 
                 assertTrue(sql, sql.indexOf("PAINTING_ID") > 0);
 
