@@ -179,24 +179,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
                     .getDbRelationships()
                     .get(0);
             for (final DbJoin join : r.getJoins()) {
-
-                PrefetchProcessorNode parent = (PrefetchProcessorNode) getParent();
-                String source;
-                if (parent instanceof PrefetchProcessorJointNode) {
-                    source = ((PrefetchProcessorJointNode) parent).sourceForTarget(join
-                            .getSourceName());
-                }
-                else {
-                    source = join.getSourceName();
-                }
-
-                if (source == null) {
-                    throw new CayenneRuntimeException(
-                            "Propagated column value is not configured for parent node. Join: "
-                                    + join);
-                }
-
-                appendColumn(targetSource, join.getTargetName(), prefix + source);
+                appendColumn(targetSource, join.getTargetName(), prefix
+                        + join.getTargetName());
             }
         }
 
@@ -210,7 +194,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         // add relationships
         for (ObjRelationship rel : getResolver().getEntity().getRelationships()) {
             DbRelationship dbRel = rel.getDbRelationships().get(0);
-            for (DbAttribute attribute : dbRel.getSourceAttributes() ){
+            for (DbAttribute attribute : dbRel.getSourceAttributes()) {
                 String target = attribute.getName();
 
                 appendColumn(targetSource, target, prefix + target);
@@ -228,7 +212,10 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         targetSource.values().toArray(columns);
     }
 
-    private ColumnDescriptor appendColumn(Map<String, ColumnDescriptor> map, String name, String label) {
+    private ColumnDescriptor appendColumn(
+            Map<String, ColumnDescriptor> map,
+            String name,
+            String label) {
         ColumnDescriptor column = map.get(name);
 
         if (column == null) {
@@ -273,20 +260,4 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
             }
         }
     }
-
-    /**
-     * Returns a source label for a given target label.
-     */
-    private String sourceForTarget(String targetColumn) {
-        if (targetColumn != null && columns != null) {
-            for (ColumnDescriptor column : columns) {
-                if (targetColumn.equals(column.getName())) {
-                    return column.getLabel();
-                }
-            }
-        }
-
-        return null;
-    }
-
 }
