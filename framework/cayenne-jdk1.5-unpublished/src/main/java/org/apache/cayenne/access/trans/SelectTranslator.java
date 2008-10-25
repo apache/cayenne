@@ -21,7 +21,6 @@ package org.apache.cayenne.access.trans;
 
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,11 +89,11 @@ public class SelectTranslator extends QueryAssembler {
      * created using "to-many" relationships.
      */
     boolean forcingDistinct;
-    
+
     protected JoinStack createJoinStack() {
         return new JoinStack();
     }
-    
+
     /**
      * Returns query translated to SQL. This is a main work method of the
      * SelectTranslator.
@@ -439,18 +438,9 @@ public class SelectTranslator extends QueryAssembler {
                             + oe.getName());
                 }
 
-                // add columns from the target entity, skipping those that are an FK to
-                // source entity
-
-                Collection<DbAttribute> skipColumns = Collections.EMPTY_LIST;
-                if (r.getSourceEntity() == table) {
-                    skipColumns = new ArrayList<DbAttribute>(2);
-                    for (final DbJoin join : r.getJoins()) {
-                        if (attributes.contains(join.getSource())) {
-                            skipColumns.add(join.getTarget());
-                        }
-                    }
-                }
+                // add columns from the target entity, including those that are matched
+                // against the FK of the source entity. This is needed to determine
+                // whether optional relationships are null
 
                 // go via target OE to make sure that Java types are mapped correctly...
                 ObjRelationship targetRel = (ObjRelationship) prefetchExp.evaluate(oe);
@@ -478,14 +468,9 @@ public class SelectTranslator extends QueryAssembler {
                         else if (pathPart instanceof DbAttribute) {
                             DbAttribute attribute = (DbAttribute) pathPart;
 
-                            if (!skipColumns.contains(attribute)) {
-                                appendColumn(
-                                        columns,
-                                        oa,
-                                        attribute,
-                                        attributes,
-                                        labelPrefix + '.' + attribute.getName());
-                            }
+                            appendColumn(columns, oa, attribute, attributes, labelPrefix
+                                    + '.'
+                                    + attribute.getName());
                         }
                     }
                 }
@@ -497,11 +482,9 @@ public class SelectTranslator extends QueryAssembler {
                         .iterator();
                 while (targetAttributes.hasNext()) {
                     DbAttribute attribute = targetAttributes.next();
-                    if (!skipColumns.contains(attribute)) {
-                        appendColumn(columns, null, attribute, attributes, labelPrefix
-                                + '.'
-                                + attribute.getName());
-                    }
+                    appendColumn(columns, null, attribute, attributes, labelPrefix
+                            + '.'
+                            + attribute.getName());
                 }
             }
         }
