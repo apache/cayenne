@@ -78,12 +78,11 @@ public class JointPrefetchTest extends CayenneCase {
             // row should contain columns from both entities minus those duplicated in a
             // join...
             int rowWidth = getDbEntity("ARTIST").getAttributes().size()
-                    + getDbEntity("PAINTING").getAttributes().size()
-                    - 1;
+                    + getDbEntity("PAINTING").getAttributes().size();
             Iterator it = rows.iterator();
             while (it.hasNext()) {
                 DataRow row = (DataRow) it.next();
-                assertEquals(rowWidth, row.size());
+                assertEquals("" + row, rowWidth, row.size());
 
                 // assert columns presence
                 assertTrue(row + "", row.containsKey("PAINTING_ID"));

@@ -196,7 +196,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
                                     + join);
                 }
 
-                appendColumn(targetSource, join.getTargetName(), source);
+                appendColumn(targetSource, join.getTargetName(), prefix + source);
             }
         }
 
