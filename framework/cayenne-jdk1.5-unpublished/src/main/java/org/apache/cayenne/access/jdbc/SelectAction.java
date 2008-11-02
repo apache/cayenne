@@ -72,10 +72,6 @@ public class SelectAction extends BaseSQLAction {
         PreparedStatement prepStmt = translator.createStatement();
         ResultSet rs = prepStmt.executeQuery();
 
-        int i = getInitialCursorPosition(query.getFetchOffset());
-        while (i-- > 0 && rs.next())
-            ;
-
         RowDescriptor descriptor = new RowDescriptorBuilder().setColumns(
                 translator.getResultColumns()).getDescriptor(
                 getAdapter().getExtendedTypes());
@@ -143,11 +139,10 @@ public class SelectAction extends BaseSQLAction {
         // result count does not directly correspind to the number of objects returned
         // from Cayenne.
 
-        // TODO: andrus, 11/2/2008 - shoudn't we apply the same rules to OFFSET
-        // processing?
         int fetchLimit = query.getFetchLimit();
-        if (fetchLimit > 0) {
-            it = new LimitResultIterator(it, fetchLimit);
+        int offset = getInMemoryOffset(query.getFetchOffset());
+        if (fetchLimit > 0 || offset > 0) {
+            it = new LimitResultIterator(it, offset, fetchLimit);
         }
 
         // TODO: Should do something about closing ResultSet and PreparedStatement in this

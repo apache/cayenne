@@ -39,20 +39,30 @@ public class LimitResultIterator implements ResultIterator {
     protected Map<String, Object> nextDataObjectIds;
     
     protected int fetchLimit;
+    protected int offset;
     protected int fetchedSoFar  ;
 
     protected boolean nextRow;
     
-    public LimitResultIterator (ResultIterator wrappedIterator,int fetchLimit)
+    public LimitResultIterator (ResultIterator wrappedIterator, int offset, int fetchLimit)
         throws CayenneException{
         
         if (wrappedIterator == null) {
             throw new CayenneException("Null wrapped iterator.");
         }
         this.wrappedIterator = wrappedIterator;
+        this.offset = offset;
         this.fetchLimit = fetchLimit;
+        
+        checkOffset();
         checkNextRow();
         
+    }
+    
+    private void checkOffset() throws CayenneException {
+        for (int i = 0; i < offset && wrappedIterator.hasNextRow(); i++) {
+            wrappedIterator.nextDataRow();
+        }
     }
 
     private void checkNextRow() throws CayenneException {

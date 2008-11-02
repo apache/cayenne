@@ -27,7 +27,6 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
-import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
@@ -70,9 +69,7 @@ public abstract class BaseSQLAction implements SQLAction {
         long t1 = System.currentTimeMillis();
 
         QueryMetadata metadata = query.getMetaData(getEntityResolver());
-        int i = getInitialCursorPosition(metadata.getFetchOffset());
-        while (i-- > 0 && resultSet.next())
-            ;
+       
 
         JDBCResultIterator resultReader = new JDBCResultIterator(
                 null,
@@ -80,7 +77,7 @@ public abstract class BaseSQLAction implements SQLAction {
                 resultSet,
                 descriptor);
         
-        LimitResultIterator it = new LimitResultIterator(resultReader,metadata.getFetchLimit());
+        LimitResultIterator it = new LimitResultIterator(resultReader, getInMemoryOffset(metadata.getFetchOffset()), metadata.getFetchLimit());
 
         if (!delegate.isIteratedResult()) {
             List<DataRow> resultRows = it.dataRows(false);
@@ -116,7 +113,7 @@ public abstract class BaseSQLAction implements SQLAction {
      * 
      * @since 3.0
      */
-    protected int getInitialCursorPosition(int queryOffset) {
+    protected int getInMemoryOffset(int queryOffset) {
         return queryOffset;
     }
 }

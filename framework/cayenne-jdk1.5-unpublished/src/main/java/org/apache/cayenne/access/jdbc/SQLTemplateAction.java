@@ -216,10 +216,6 @@ public class SQLTemplateAction implements SQLAction {
             long startTime) throws Exception {
 
         boolean iteratedResult = callback.isIteratedResult();
-
-        int i = getFetchOffset();
-        while (i-- > 0 && resultSet.next())
-            ;
         
         ExtendedTypeMap types = adapter.getExtendedTypes();
         RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
@@ -230,7 +226,7 @@ public class SQLTemplateAction implements SQLAction {
                 resultSet,
                 builder.getDescriptor(types));
         
-        LimitResultIterator it = new LimitResultIterator(result,query.getFetchLimit());
+        LimitResultIterator it = new LimitResultIterator(result, getFetchOffset(), query.getFetchLimit());
         
         if (!iteratedResult) {
             List<DataRow> resultRows = it.dataRows(false);
