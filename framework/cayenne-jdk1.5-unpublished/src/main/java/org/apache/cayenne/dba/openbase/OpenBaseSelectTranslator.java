@@ -34,17 +34,11 @@ class OpenBaseSelectTranslator extends SelectTranslator {
     }
 
     @Override
-    public String createSqlString() throws Exception {
-        String sql = super.createSqlString();
-
-        if (!isSuppressingDistinct()) {
-            // limit results
-            int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
-            if (limit > 0) {
-                return sql + " RETURN RESULTS " + limit;
-            }
+    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+        int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
+        if (limit > 0) {
+            buffer.append(" RETURN RESULTS ").append(limit);
         }
-
-        return sql;
     }
+
 }
