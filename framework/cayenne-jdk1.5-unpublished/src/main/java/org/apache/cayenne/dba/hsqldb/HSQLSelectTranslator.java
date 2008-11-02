@@ -37,7 +37,8 @@ class HSQLSelectTranslator extends SelectTranslator {
         if (offset > 0 || limit > 0) {
             buffer.append(" LIMIT ");
 
-            // OFFSET can't be speciafied without LIMIT
+            // both OFFSET and LIMIT must be present, so come up with defaults if one of
+            // them is not set by the user
             if (limit == 0) {
                 limit = Integer.MAX_VALUE;
             }

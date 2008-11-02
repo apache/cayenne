@@ -26,26 +26,24 @@ import org.apache.cayenne.query.QueryMetadata;
  * @since 1.2
  * @author Andrus Adamchik
  */
-public class MySQLSelectTranslator extends SelectTranslator {
+class MySQLSelectTranslator extends SelectTranslator {
 
     @Override
-    public String createSqlString() throws Exception {
-        String sql = super.createSqlString();
+    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+        QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
+        int offset = metadata.getFetchOffset();
+        int limit = metadata.getFetchLimit();
 
-        if (!isSuppressingDistinct()) {
-            // limit results
-            QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
-            int offset = metadata.getFetchOffset();
-            int limit = metadata.getFetchLimit();
+        if (offset > 0 || limit > 0) {
+            buffer.append(" LIMIT ");
 
-            if (offset > 0 || limit > 0) {
-                sql += " LIMIT ";
-                if (limit == 0) {
-                    limit = Integer.MAX_VALUE;
-                }
-                sql += limit + " OFFSET " + offset;
+            // both OFFSET and LIMIT must be present, so come up with defaults if one of
+            // them is not set by the user
+            if (limit == 0) {
+                limit = Integer.MAX_VALUE;
             }
+
+            buffer.append(limit).append(" OFFSET ").append(offset);
         }
-        return sql;
     }
 }

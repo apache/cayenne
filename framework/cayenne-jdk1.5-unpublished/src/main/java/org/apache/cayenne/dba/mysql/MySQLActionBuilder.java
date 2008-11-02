@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.dba.mysql;
 
-import java.sql.Connection;
-
-import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -42,18 +38,7 @@ class MySQLActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction objectSelectAction(SelectQuery query) {
-        return new MySQLSelectAction(query, adapter, entityResolver) {
-
-            @Override
-            protected SelectTranslator createTranslator(Connection connection) {
-                SelectTranslator translator = new MySQLSelectTranslator();
-                translator.setQuery(query);
-                translator.setAdapter(adapter);
-                translator.setEntityResolver(getEntityResolver());
-                translator.setConnection(connection);
-                return translator;
-            }
-        };
+        return new MySQLSelectAction(query, adapter, entityResolver);
     }
 
     @Override

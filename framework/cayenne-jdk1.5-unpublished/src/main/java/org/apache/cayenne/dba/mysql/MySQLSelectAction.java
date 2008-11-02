@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.dba.mysql;
 
+import java.sql.Connection;
+
 import org.apache.cayenne.access.jdbc.SelectAction;
+import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
@@ -35,5 +38,15 @@ class MySQLSelectAction extends SelectAction {
     @Override
     protected int getInitialCursorPosition(int queryOffset) {
         return 0;
+    }
+
+    @Override
+    protected SelectTranslator createTranslator(Connection connection) {
+        SelectTranslator translator = new MySQLSelectTranslator();
+        translator.setQuery(query);
+        translator.setAdapter(adapter);
+        translator.setEntityResolver(getEntityResolver());
+        translator.setConnection(connection);
+        return translator;
     }
 }
