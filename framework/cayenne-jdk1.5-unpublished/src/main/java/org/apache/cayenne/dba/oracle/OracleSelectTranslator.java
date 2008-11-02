@@ -30,33 +30,24 @@ import org.apache.cayenne.query.QueryMetadata;
  * 
  * @author Andrus Adamchik
  */
-public class OracleSelectTranslator extends SelectTranslator {
+class OracleSelectTranslator extends SelectTranslator {
 
     @Override
-    public String createSqlString() throws Exception {
+    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+        QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
+        int offset = metadata.getFetchOffset();
+        int limit = metadata.getFetchLimit();
 
-        String sqlString = super.createSqlString();
+        if (limit > 0 || offset > 0) {
+            int max = (limit <= 0) ? Integer.MAX_VALUE : limit + offset;
 
-        if (!isSuppressingDistinct()) {
-            QueryMetadata info = getQuery().getMetaData(getEntityResolver());
-            if (info.getFetchLimit() > 0 || info.getFetchOffset() > 0) {
-                int max = (info.getFetchLimit() == 0) ? Integer.MAX_VALUE : (info
-                        .getFetchLimit() + info.getFetchOffset());
-
-                sqlString = "select * "
-                        + "from ( select "
-                        + "tid.*, ROWNUM rnum "
-                        + "from ("
-                        + sqlString
-                        + ") tid "
-                        + "where ROWNUM <="
-                        + max
-                        + ") where rnum  > "
-                        + info.getFetchOffset();
-            }
+            buffer.insert(0, "select * from ( select tid.*, ROWNUM rnum from (");
+            buffer
+                    .append(") tid where ROWNUM <=")
+                    .append(max)
+                    .append(") where rnum  > ")
+                    .append(offset);
         }
-
-        return sqlString;
     }
 
     /**
