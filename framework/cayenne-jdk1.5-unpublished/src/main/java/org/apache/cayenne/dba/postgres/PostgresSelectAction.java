@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.dba.postgres;
 
+import java.sql.Connection;
+
 import org.apache.cayenne.access.jdbc.SelectAction;
+import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
@@ -36,5 +39,15 @@ class PostgresSelectAction extends SelectAction {
     @Override
     protected int getInitialCursorPosition(int queryOffset) {
         return 0;
+    }
+
+    @Override
+    protected SelectTranslator createTranslator(Connection connection) {
+        SelectTranslator translator = new PostgresSelectTranslator();
+        translator.setQuery(query);
+        translator.setAdapter(adapter);
+        translator.setEntityResolver(getEntityResolver());
+        translator.setConnection(connection);
+        return translator;
     }
 }

@@ -26,27 +26,23 @@ import org.apache.cayenne.query.QueryMetadata;
  * @since 1.2
  * @author Andrus Adamchik
  */
-public class PostgresSelectTranslator extends SelectTranslator {
+class PostgresSelectTranslator extends SelectTranslator {
 
     @Override
-    public String createSqlString() throws Exception {
-        String sql = super.createSqlString();
+    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+        QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
 
-        if (!isSuppressingDistinct()) {
-            QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
+        // limit results
+        int offset = metadata.getFetchOffset();
+        int limit = metadata.getFetchLimit();
 
-            // limit results
-            int offset = metadata.getFetchOffset();
-            int limit = metadata.getFetchLimit();
-
-            if (limit > 0) {
-                sql += " LIMIT " + limit;
-            }
-
-            if (offset > 0) {
-                sql += " OFFSET " + offset;
-            }
+        if (limit > 0) {
+            buffer.append(" LIMIT ").append(limit);
         }
-        return sql;
+
+        if (offset > 0) {
+            buffer.append(" OFFSET ").append(offset);
+        }
     }
+
 }
