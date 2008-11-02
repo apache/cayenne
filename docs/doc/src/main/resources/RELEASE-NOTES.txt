@@ -41,6 +41,7 @@ CAY-1096 CayenneContext should support ThreadLocal operations
 CAY-1100 merge: public access to columnOriginal and so on
 CAY-1127 Stop using query NAME as a cache key
 CAY-1128 Switch JOINT prefetches to generate OUTER Joins.
+CAY-1131 Add LIMIT / OFFSET clause generation method to SelectTranslator lifecycle
 
 Bug fixes since M4:
 
