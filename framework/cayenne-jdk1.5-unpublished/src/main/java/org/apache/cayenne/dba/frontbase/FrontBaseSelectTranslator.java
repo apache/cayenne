@@ -30,20 +30,14 @@ class FrontBaseSelectTranslator extends SelectTranslator {
     static final String SELECT_PREFIX = "SELECT";
 
     @Override
-    public String createSqlString() throws Exception {
-        String sql = super.createSqlString();
+    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
 
-        if (!isSuppressingDistinct()) {
-            // limit results
-            int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
-            if (limit > 0 && sql.startsWith(SELECT_PREFIX)) {
-                return SELECT_PREFIX
-                        + " TOP "
-                        + limit
-                        + sql.substring(SELECT_PREFIX.length());
+        int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
+        if (limit > 0 && buffer.length() > SELECT_PREFIX.length()) {
+
+            if (SELECT_PREFIX.equals(buffer.substring(0, SELECT_PREFIX.length()))) {
+                buffer.insert(SELECT_PREFIX.length(), " TOP " + limit);
             }
         }
-
-        return sql;
     }
 }
