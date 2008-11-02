@@ -30,6 +30,7 @@ import org.apache.art.ArtistExhibit;
 import org.apache.art.Exhibit;
 import org.apache.art.Gallery;
 import org.apache.art.Painting;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
@@ -52,38 +53,41 @@ public class SelectQueryTest extends SelectQueryBase {
     }
 
     public void testFetchOffset() throws Exception {
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.setFetchOffset(5);
-        List results = createDataContext().performQuery(query);
+        ObjectContext context = createDataContext();
 
-        SelectQuery sizeQ = new SelectQuery(Artist.class);
-        List allResults = createDataContext().performQuery(sizeQ);
-        assertEquals(allResults.size() - 5, results.size());
+        int totalRows = context.performQuery(new SelectQuery(Artist.class)).size();
+
+        SelectQuery query = new SelectQuery(Artist.class);
+        query.addOrdering("db:" + Artist.ARTIST_ID_PK_COLUMN, true);
+        query.setFetchOffset(5);
+        List<Artist> results = context.performQuery(query);
+
+        assertEquals(totalRows - 5, results.size());
+        assertEquals("artist6", results.get(0).getArtistName());
     }
 
     public void testFetchLimitWithOffset() throws Exception {
-        SelectQuery sizeQ = new SelectQuery();
-        sizeQ.setRoot(Artist.class);
-        query = sizeQ;
-        performQuery();
-        int sizeAll = opObserver.rowsForQuery(query).size();
-        
-        query = new SelectQuery();
-        query.setRoot(Artist.class);
-        query.setFetchOffset(sizeAll - 5);
+        ObjectContext context = createDataContext();
+
+        int totalRows = context.performQuery(new SelectQuery(Artist.class)).size();
+
+        SelectQuery query = new SelectQuery(Artist.class);
+        query.addOrdering("db:" + Artist.ARTIST_ID_PK_COLUMN, true);
+        query.setFetchOffset(totalRows - 5);
         query.setFetchLimit(5);
-        performQuery();
-        int size = opObserver.rowsForQuery(query).size();
-        assertEquals(size, 5);
+        List<Artist> results = context.performQuery(query);
+
+        assertEquals(5, results.size());
+        assertEquals("artist16", results.get(0).getArtistName());
     }
-    
+
     public void testFetchOffsetWithQualifier() throws Exception {
         query.setRoot(Artist.class);
         query.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
         query.setFetchOffset(5);
         performQuery();
         int size = opObserver.rowsForQuery(query).size();
-        
+
         SelectQuery sizeQ = new SelectQuery();
         sizeQ.setRoot(Artist.class);
         sizeQ.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
