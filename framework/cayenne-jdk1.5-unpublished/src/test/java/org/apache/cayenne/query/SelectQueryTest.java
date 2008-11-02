@@ -69,15 +69,13 @@ public class SelectQueryTest extends SelectQueryBase {
     public void testFetchLimitWithOffset() throws Exception {
         ObjectContext context = createDataContext();
 
-        int totalRows = context.performQuery(new SelectQuery(Artist.class)).size();
-
         SelectQuery query = new SelectQuery(Artist.class);
         query.addOrdering("db:" + Artist.ARTIST_ID_PK_COLUMN, true);
-        query.setFetchOffset(totalRows - 5);
-        query.setFetchLimit(5);
+        query.setFetchOffset(15);
+        query.setFetchLimit(4);
         List<Artist> results = context.performQuery(query);
 
-        assertEquals(5, results.size());
+        assertEquals(4, results.size());
         assertEquals("artist16", results.get(0).getArtistName());
     }
 

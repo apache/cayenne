@@ -136,12 +136,19 @@ public class SelectAction extends BaseSQLAction {
                     workerIterator,
                     translator.getRootDbEntity(),
                     compareFullRows[0]);
-            
-            
-            it = new LimitResultIterator(it,query.getFetchLimit());
         }
-        
-        
+
+        // wrap iterator in a fetch limit checker ... there are a few cases when in-memory
+        // fetch limit is a noop, however in a geberal case this is needed, as teh SQL
+        // result count does not directly correspind to the number of objects returned
+        // from Cayenne.
+
+        // TODO: andrus, 11/2/2008 - shoudn't we apply the same rules to OFFSET
+        // processing?
+        int fetchLimit = query.getFetchLimit();
+        if (fetchLimit > 0) {
+            it = new LimitResultIterator(it, fetchLimit);
+        }
 
         // TODO: Should do something about closing ResultSet and PreparedStatement in this
         // method, instead of relying on DefaultResultIterator to do that later
