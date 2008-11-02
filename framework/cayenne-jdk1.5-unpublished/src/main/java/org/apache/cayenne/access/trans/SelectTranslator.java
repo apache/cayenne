@@ -182,7 +182,21 @@ public class SelectTranslator extends QueryAssembler {
             queryBuf.append(" ORDER BY ").append(orderingBuffer);
         }
 
+        if (!isSuppressingDistinct()) {
+            appendLimitAndOffsetClauses(queryBuf);
+        }
+
         return queryBuf.toString();
+    }
+
+    /**
+     * Handles appending optional limit and offset clauses. This implementation does
+     * nothing, deferring to subclasses to define the LIMIT/OFFSET clause syntax.
+     * 
+     * @since 3.0
+     */
+    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+
     }
 
     @Override

@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.dba.hsqldb;
 
+import java.sql.Connection;
+
 import org.apache.cayenne.access.jdbc.SelectAction;
+import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
@@ -37,4 +40,13 @@ class HSQLSelectAction extends SelectAction {
         return 0;
     }
 
+    @Override
+    protected SelectTranslator createTranslator(Connection connection) {
+        SelectTranslator translator = new HSQLSelectTranslator();
+        translator.setQuery(query);
+        translator.setAdapter(adapter);
+        translator.setEntityResolver(getEntityResolver());
+        translator.setConnection(connection);
+        return translator;
+    }
 }

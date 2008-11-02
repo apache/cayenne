@@ -23,7 +23,6 @@ import java.sql.Connection;
 
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
-import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -39,20 +38,9 @@ class HSQLActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction objectSelectAction(SelectQuery query) {
-        return new HSQLSelectAction(query, adapter, entityResolver) {
-
-            @Override
-            protected SelectTranslator createTranslator(Connection connection) {
-                SelectTranslator translator = new HSQLSelectTranslator();
-                translator.setQuery(query);
-                translator.setAdapter(adapter);
-                translator.setEntityResolver(getEntityResolver());
-                translator.setConnection(connection);
-                return translator;
-            }
-        };
+        return new HSQLSelectAction(query, adapter, entityResolver);
     }
-    
+
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
         return new ProcedureAction(query, adapter, entityResolver) {
