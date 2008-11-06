@@ -88,11 +88,6 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>ant</groupId>
-			<artifactId>ant</artifactId>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
