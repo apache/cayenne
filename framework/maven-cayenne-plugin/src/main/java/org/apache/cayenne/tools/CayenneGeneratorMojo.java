@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.tools;
 
+import java.io.File;
+
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationAction1_1;
 import org.apache.cayenne.gen.ClassGenerator;
@@ -29,8 +31,6 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-
-import java.io.File;
 
 /**
  * Maven mojo to perform class generation from data map. This class is an Maven

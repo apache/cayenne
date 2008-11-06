@@ -30,8 +30,8 @@ import org.apache.maven.plugin.MojoFailureException;
  * @author Kevin Menard
  * @since 3.0
  * 
- * @prefix cayenne
- * @goal modeler
+ * @prefix cayenne-modeler
+ * @goal run
  */
 public class CayenneModelerMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
