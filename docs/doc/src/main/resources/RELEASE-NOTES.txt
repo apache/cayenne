@@ -42,6 +42,7 @@ CAY-1100 merge: public access to columnOriginal and so on
 CAY-1127 Stop using query NAME as a cache key
 CAY-1128 Switch JOINT prefetches to generate OUTER Joins.
 CAY-1131 Add LIMIT / OFFSET clause generation method to SelectTranslator lifecycle
+CAY-1133  Split Maven cayenne:modeler goal into a separate plugin from cgen and others
 
 Bug fixes since M4:
 
