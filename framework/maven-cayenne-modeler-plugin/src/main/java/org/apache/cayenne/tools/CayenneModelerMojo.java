@@ -19,34 +19,31 @@
 
 package org.apache.cayenne.tools;
 
+import org.apache.cayenne.modeler.Main;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.cayenne.modeler.Main;
-
-import java.io.IOException;
 
 /**
  * Maven mojo to start up the Cayenne modeler from the command-line.
  * 
  * @author Kevin Menard
  * @since 3.0
- *
+ * 
  * @prefix cayenne
  * @goal modeler
  */
 public class CayenneModelerMojo extends AbstractMojo {
-    public void execute() throws MojoExecutionException, MojoFailureException {
+	public void execute() throws MojoExecutionException, MojoFailureException {
 
-        // Start up the modeler.
-        Main.main(new String[]{});
+		// Start up the modeler.
+		Main.main(new String[] {});
 
-        // Block until the modeler finishes executing.
-        try {
-            Thread.currentThread().join();
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+		// Block until the modeler finishes executing.
+		try {
+			Thread.currentThread().join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }

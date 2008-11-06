@@ -31,9 +31,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.apache.cayenne.plugins</groupId>
-	<artifactId>maven-cayenne-plugin</artifactId>
+	<artifactId>maven-cayenne-modeler-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<name>Cayenne Maven Plugin</name>
+	<name>Cayenne Modeler Maven Plugin</name>
 
 	<dependencies>
 		<dependency>
@@ -72,27 +72,16 @@
 
         <dependency>
 			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-modeler</artifactId>
+			<version>${version}</version>
+		</dependency>
+
+        <dependency>
+			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-server</artifactId>
 			<version>${version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>foundrylogic.vpp</groupId>
-			<artifactId>vpp</artifactId>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>ant</groupId>
-			<artifactId>ant</artifactId>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
