@@ -18,47 +18,45 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
-
 import java.util.ArrayList;
-
 
 import java.util.List;
 import java.util.Map;
-
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.ResultIterator;
 
 import org.apache.cayenne.map.DbEntity;
 
-
-
+/**
+ * @since 3.0
+ */
 public class LimitResultIterator implements ResultIterator {
-    
-    protected ResultIterator wrappedIterator; 
+
+    protected ResultIterator wrappedIterator;
     protected Map<String, Object> nextDataObjectIds;
-    
+
     protected int fetchLimit;
     protected int offset;
-    protected int fetchedSoFar  ;
+    protected int fetchedSoFar;
 
     protected boolean nextRow;
-    
-    public LimitResultIterator (ResultIterator wrappedIterator, int offset, int fetchLimit)
-        throws CayenneException{
-        
+
+    public LimitResultIterator(ResultIterator wrappedIterator, int offset, int fetchLimit)
+            throws CayenneException {
+
         if (wrappedIterator == null) {
             throw new CayenneException("Null wrapped iterator.");
         }
         this.wrappedIterator = wrappedIterator;
         this.offset = offset;
         this.fetchLimit = fetchLimit;
-        
+
         checkOffset();
         checkNextRow();
-        
+
     }
-    
+
     private void checkOffset() throws CayenneException {
         for (int i = 0; i < offset && wrappedIterator.hasNextRow(); i++) {
             wrappedIterator.nextDataRow();
@@ -68,16 +66,17 @@ public class LimitResultIterator implements ResultIterator {
     private void checkNextRow() throws CayenneException {
         nextRow = false;
 
-        if ((fetchLimit <= 0 || fetchedSoFar < fetchLimit) && this.wrappedIterator.hasNextRow()) {
+        if ((fetchLimit <= 0 || fetchedSoFar < fetchLimit)
+                && this.wrappedIterator.hasNextRow()) {
             nextRow = true;
             fetchedSoFar++;
         }
 
     }
-    
+
     protected Map readDataRow() throws CayenneException {
-            Map<String, Object> next = wrappedIterator.nextDataRow();
-            return next;
+        Map<String, Object> next = wrappedIterator.nextDataRow();
+        return next;
     }
 
     public void close() throws CayenneException {
@@ -124,15 +123,15 @@ public class LimitResultIterator implements ResultIterator {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
         }
-        
-        Object id = readId(entity);       
+
+        Object id = readId(entity);
         checkNextId(entity);
         return id;
-        
+
     }
 
     public Map<String, Object> nextObjectId(DbEntity entity) throws CayenneException {
-        
+
         if (!hasNextRow()) {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
@@ -145,7 +144,7 @@ public class LimitResultIterator implements ResultIterator {
     public void skipDataRow() throws CayenneException {
         wrappedIterator.skipDataRow();
     }
-    
+
     void checkNextId(DbEntity entity) throws CayenneException {
         if (entity == null) {
             throw new CayenneException("Null DbEntity, can't create id.");
@@ -155,18 +154,18 @@ public class LimitResultIterator implements ResultIterator {
             nextRow = true;
         }
     }
-    
-    public Object readId(DbEntity entity) throws CayenneException{
-        
+
+    public Object readId(DbEntity entity) throws CayenneException {
+
         Object next = wrappedIterator.nextId(entity);
         return next;
     }
-    
+
     void checkNextObjectId(DbEntity entity) throws CayenneException {
         if (entity == null) {
             throw new CayenneException("Null DbEntity, can't create id.");
         }
-        
+
         nextRow = false;
         nextDataObjectIds = null;
         if (wrappedIterator.hasNextRow()) {
