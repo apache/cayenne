@@ -79,8 +79,8 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
 
         assertEquals(0, context.getQueryCache().size());
     }
-    
-    public void testSelect(){
+
+    public void testSelectPrimitives() {
         insertValue();
         DataContext context = createDataContext();
         ClientServerChannel clientServerChannel = new ClientServerChannel(context);
@@ -89,64 +89,64 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
                 LocalConnection.HESSIAN_SERIALIZATION);
         ClientChannel channel = new ClientChannel(connection);
         CayenneContext clientContext = new CayenneContext(channel);
-    
+
         SelectQuery query = new SelectQuery(ClientMtTableBool.class);
- 
+        query.addOrdering("db:" + MtTableBool.ID_PK_COLUMN, true);
+
         List<ClientMtTableBool> results = clientContext.performQuery(query);
         assertTrue(results.get(1).isBlablacheck());
         assertFalse(results.get(4).isBlablacheck());
-        
+
         assertEquals(1, results.get(1).getNumber());
         assertEquals(5, results.get(5).getNumber());
-
     }
-    
-    public void testCommitChangesPrimitives(){
-        
+
+    public void testCommitChangesPrimitives() {
+
         DataContext dataContext = createDataContext();
-        
+
         ClientConnection connection = new LocalConnection(new ClientServerChannel(
                 getDomain()));
         ClientChannel channel = new ClientChannel(connection);
         CayenneContext context = new CayenneContext(channel);
-        ClientMtTableBool obj  = context.newObject(ClientMtTableBool.class);
-        
+        ClientMtTableBool obj = context.newObject(ClientMtTableBool.class);
+
         obj.setBlablacheck(true);
         obj.setNumber(3);
-        
+
         context.commitChanges();
-        
+
         SelectQuery query = new SelectQuery(MtTableBool.class);
         List<MtTableBool> results = dataContext.performQuery(query);
-        
+
         assertTrue(results.get(0).isBlablacheck());
         assertEquals(3, results.get(0).getNumber());
-        
+
         obj.setBlablacheck(false);
         obj.setNumber(8);
         context.commitChanges();
-        
+
         query = new SelectQuery(MtTableBool.class);
         results = dataContext.performQuery(query);
-        
+
         assertFalse(results.get(0).isBlablacheck());
         assertEquals(8, results.get(0).getNumber());
-        
+
     }
-    
-    public void insertValue(){
+
+    public void insertValue() {
         DataContext context = createDataContext();
-        
-        MtTableBool obj ;
-        
-        for(int i=0;i<6;i++){
-            if(i<3){
+
+        MtTableBool obj;
+
+        for (int i = 0; i < 6; i++) {
+            if (i < 3) {
                 obj = context.newObject(MtTableBool.class);
                 obj.setBlablacheck(true);
                 obj.setNumber(i);
                 context.commitChanges();
             }
-            else{
+            else {
                 obj = context.newObject(MtTableBool.class);
                 obj.setBlablacheck(false);
                 obj.setNumber(i);
@@ -371,26 +371,26 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
             callbackRegistry.clear();
         }
     }
-    
+
     public void testRollbackChanges() throws Exception {
         ClientConnection connection = new LocalConnection(new ClientServerChannel(
                 getDomain()));
         ClientChannel channel = new ClientChannel(connection);
 
         CayenneContext context = new CayenneContext(channel);
-        
+
         ClientMtTable1 o = context.newObject(ClientMtTable1.class);
         o.setGlobalAttribute1("1");
         context.commitChanges();
-        
+
         assertEquals("1", o.getGlobalAttribute1());
         o.setGlobalAttribute1("2");
         assertEquals("2", o.getGlobalAttribute1());
         context.rollbackChanges();
-        
+
         // CAY-1103 - uncommenting this assertion demonstrates the problem
         // assertEquals("1", o.getGlobalAttribute1());
-        
+
         assertTrue(context.modifiedObjects().isEmpty());
     }
 
@@ -451,13 +451,13 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
             // expected
         }
     }
-    
+
     public void testMeaningfulPK() throws Exception {
         createTestData("testMeaningfulPK");
-        
+
         SelectQuery query = new SelectQuery(ClientMtMeaningfulPk.class);
         query.addOrdering(ClientMtMeaningfulPk.PK_PROPERTY, Ordering.DESC);
-        
+
         UnitLocalConnection connection = new UnitLocalConnection(new ClientServerChannel(
                 getDomain()), LocalConnection.HESSIAN_SERIALIZATION);
         ClientChannel channel = new ClientChannel(connection);
