@@ -30,6 +30,12 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
 
     public static final String SUBCLASS_TEMPLATE = "dotemplates/v1_2/client-subclass.vm";
     public static final String SUPERCLASS_TEMPLATE = "dotemplates/v1_2/client-superclass.vm";
+    
+    public static final String DMAP_SINGLE_CLASS_TEMPLATE = "dotemplates/v1_2/datamap-singleclass.vm";
+    public static final String DMAP_SUBCLASS_TEMPLATE = "dotemplates/v1_2/datamap-subclass.vm";
+    public static final String DMAP_SUPERCLASS_TEMPLATE = "dotemplates/v1_2/datamap-superclass.vm";
+    
+    public static final String CLIENT_SUPERCLASS_PREFIX = "_Client";
 
     @Override
     protected String defaultTemplateName(TemplateType type) {
@@ -42,6 +48,11 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
                 return ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE;
             case EMBEDDABLE_SUPERCLASS:
                 return ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
+            
+            case DATAMAP_SUPERCLASS:
+                return ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE;
+            case DATAMAP_SUBCLASS:
+                return ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE;
             default:
                 throw new IllegalArgumentException("Unsupported template type: " + type);
         }

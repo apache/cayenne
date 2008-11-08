@@ -39,8 +39,10 @@ import org.apache.cayenne.testdo.mt.ClientMtMeaningfulPk;
 import org.apache.cayenne.testdo.mt.ClientMtReflexive;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
+import org.apache.cayenne.testdo.mt.ClientMtTableBool;
 import org.apache.cayenne.testdo.mt.MtReflexive;
 import org.apache.cayenne.testdo.mt.MtTable1;
+import org.apache.cayenne.testdo.mt.MtTableBool;
 import org.apache.cayenne.unit.AccessStack;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.CayenneResources;
@@ -76,6 +78,81 @@ public class CayenneContextWithDataContextTest extends CayenneCase {
                 query.getMetaData(clientContext.getEntityResolver())));
 
         assertEquals(0, context.getQueryCache().size());
+    }
+    
+    public void testSelect(){
+        insertValue();
+        DataContext context = createDataContext();
+        ClientServerChannel clientServerChannel = new ClientServerChannel(context);
+        UnitLocalConnection connection = new UnitLocalConnection(
+                clientServerChannel,
+                LocalConnection.HESSIAN_SERIALIZATION);
+        ClientChannel channel = new ClientChannel(connection);
+        CayenneContext clientContext = new CayenneContext(channel);
+    
+        SelectQuery query = new SelectQuery(ClientMtTableBool.class);
+ 
+        List<ClientMtTableBool> results = clientContext.performQuery(query);
+        assertTrue(results.get(1).isBlablacheck());
+        assertFalse(results.get(4).isBlablacheck());
+        
+        assertEquals(1, results.get(1).getNumber());
+        assertEquals(5, results.get(5).getNumber());
+
+    }
+    
+    public void testCommitChangesPrimitives(){
+        
+        DataContext dataContext = createDataContext();
+        
+        ClientConnection connection = new LocalConnection(new ClientServerChannel(
+                getDomain()));
+        ClientChannel channel = new ClientChannel(connection);
+        CayenneContext context = new CayenneContext(channel);
+        ClientMtTableBool obj  = context.newObject(ClientMtTableBool.class);
+        
+        obj.setBlablacheck(true);
+        obj.setNumber(3);
+        
+        context.commitChanges();
+        
+        SelectQuery query = new SelectQuery(MtTableBool.class);
+        List<MtTableBool> results = dataContext.performQuery(query);
+        
+        assertTrue(results.get(0).isBlablacheck());
+        assertEquals(3, results.get(0).getNumber());
+        
+        obj.setBlablacheck(false);
+        obj.setNumber(8);
+        context.commitChanges();
+        
+        query = new SelectQuery(MtTableBool.class);
+        results = dataContext.performQuery(query);
+        
+        assertFalse(results.get(0).isBlablacheck());
+        assertEquals(8, results.get(0).getNumber());
+        
+    }
+    
+    public void insertValue(){
+        DataContext context = createDataContext();
+        
+        MtTableBool obj ;
+        
+        for(int i=0;i<6;i++){
+            if(i<3){
+                obj = context.newObject(MtTableBool.class);
+                obj.setBlablacheck(true);
+                obj.setNumber(i);
+                context.commitChanges();
+            }
+            else{
+                obj = context.newObject(MtTableBool.class);
+                obj.setBlablacheck(false);
+                obj.setNumber(i);
+                context.commitChanges();
+            }
+        }
     }
 
     public void testPrePersistCallback() throws Exception {
