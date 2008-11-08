@@ -15,9 +15,8 @@ public abstract class _ClientMtTableBool extends PersistentObject {
     protected boolean blablacheck;
     protected int number;
 
-
-	public boolean isBlablacheck() {
-		if(objectContext != null) {
+    public boolean isBlablacheck() {
+        if(objectContext != null) {
             objectContext.prepareForAccess(this, "blablacheck", false);
         }
 
@@ -37,11 +36,7 @@ public abstract class _ClientMtTableBool extends PersistentObject {
         }
     }
 
-
-
-
-
-public int getNumber() {
+    public int getNumber() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "number", false);
         }
@@ -61,8 +56,5 @@ public int getNumber() {
             objectContext.propertyChanged(this, "number", oldValue, number);
         }
     }
-
-
-
 
 }

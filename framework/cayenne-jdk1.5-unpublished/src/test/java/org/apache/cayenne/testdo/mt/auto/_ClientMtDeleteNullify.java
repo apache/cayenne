@@ -38,7 +38,6 @@ public abstract class _ClientMtDeleteNullify extends PersistentObject {
         }
     }
 
-
     public ClientMtDeleteRule getNullify() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "nullify", true);

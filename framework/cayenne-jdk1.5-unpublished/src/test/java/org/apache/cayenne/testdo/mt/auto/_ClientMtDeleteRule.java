@@ -45,7 +45,6 @@ public abstract class _ClientMtDeleteRule extends PersistentObject {
         }
     }
 
-
     public List<ClientMtDeleteCascade> getFromCascade() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "fromCascade", true);

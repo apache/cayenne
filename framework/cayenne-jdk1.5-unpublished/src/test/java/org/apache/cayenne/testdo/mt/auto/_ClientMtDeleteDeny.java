@@ -38,7 +38,6 @@ public abstract class _ClientMtDeleteDeny extends PersistentObject {
         }
     }
 
-
     public ClientMtDeleteRule getDeny() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "deny", true);

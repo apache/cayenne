@@ -38,7 +38,6 @@ public abstract class _ClientMtTable3 extends PersistentObject {
         }
     }
 
-
     public String getCharColumn() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "charColumn", false);
@@ -60,7 +59,6 @@ public abstract class _ClientMtTable3 extends PersistentObject {
         }
     }
 
-
     public Integer getIntColumn() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "intColumn", false);
@@ -81,6 +79,5 @@ public abstract class _ClientMtTable3 extends PersistentObject {
             objectContext.propertyChanged(this, "intColumn", oldValue, intColumn);
         }
     }
-
 
 }

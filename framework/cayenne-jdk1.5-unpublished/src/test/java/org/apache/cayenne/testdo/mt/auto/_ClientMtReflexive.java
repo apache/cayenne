@@ -42,7 +42,6 @@ public abstract class _ClientMtReflexive extends PersistentObject {
         }
     }
 
-
     public List<ClientMtReflexive> getChildren() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "children", true);

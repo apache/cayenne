@@ -34,5 +34,4 @@ public abstract class _ClientMtMeaningfulPk extends PersistentObject {
         }
     }
 
-
 }

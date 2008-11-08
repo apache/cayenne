@@ -38,7 +38,6 @@ public abstract class _ClientMtTable2 extends PersistentObject {
         }
     }
 
-
     public ClientMtTable1 getTable1() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table1", true);

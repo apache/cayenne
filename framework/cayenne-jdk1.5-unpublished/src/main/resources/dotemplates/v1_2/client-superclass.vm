@@ -83,17 +83,16 @@ public abstract class ${superClassName} extends ${baseClassName} {
 
 ## Create attribute set/get methods
 #foreach( $attr in ${object.DeclaredAttributes} )
-
 #if ( $importUtils.isBoolean(${attr.Type}) )
-	public boolean is${stringUtils.capitalized($attr.Name)}() {
-		if(objectContext != null) {
+    public boolean is${stringUtils.capitalized($attr.Name)}() {
+        if(objectContext != null) {
             objectContext.prepareForAccess(this, "${attr.Name}", false);
         }
 
         return ${attr.Name};
     }
 #else 
-public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
+    public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${attr.Name}", false);
         }

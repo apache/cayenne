@@ -41,7 +41,6 @@ public abstract class _ClientMtTable1 extends PersistentObject {
         }
     }
 
-
     public String getServerAttribute1() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "serverAttribute1", false);
@@ -62,7 +61,6 @@ public abstract class _ClientMtTable1 extends PersistentObject {
             objectContext.propertyChanged(this, "serverAttribute1", oldValue, serverAttribute1);
         }
     }
-
 
     public List<ClientMtTable2> getTable2Array() {
         if(objectContext != null) {
