@@ -49,6 +49,12 @@ import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.unit.UnitLocalConnection;
 
 public class CayenneContextWithDataContextTest extends CayenneCase {
+    
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        deleteTestData();
+    }
 
     @Override
     protected AccessStack buildAccessStack() {
