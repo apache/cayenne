@@ -49,7 +49,6 @@ import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.util.EqualsBuilder;
 
 /**
- * @author Andrus Adamchik
  */
 public class ClientServerChannelTest extends CayenneCase {
 

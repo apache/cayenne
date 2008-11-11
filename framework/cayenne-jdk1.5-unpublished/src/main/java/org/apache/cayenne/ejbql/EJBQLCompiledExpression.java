@@ -27,7 +27,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 /**
  * Represents an EJB QL expression "compiled" in the context of a certain mapping.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 public interface EJBQLCompiledExpression {

@@ -46,7 +46,6 @@ import org.apache.cayenne.remote.RemoteService;
  * parameters.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class HessianServlet extends com.caucho.hessian.server.HessianServlet {
 

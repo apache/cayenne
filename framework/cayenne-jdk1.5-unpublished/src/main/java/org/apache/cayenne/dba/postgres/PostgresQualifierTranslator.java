@@ -29,7 +29,6 @@ import org.apache.cayenne.exp.Expression;
 /**
  * Uses Postgres extensions to optimize various translations.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {

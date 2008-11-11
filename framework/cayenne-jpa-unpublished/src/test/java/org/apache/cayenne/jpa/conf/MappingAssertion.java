@@ -67,7 +67,6 @@ import org.apache.cayenne.jpa.map.JpaVersion;
 /**
  * A helper test class that checks loaded entity map for processed annotations.
  * 
- * @author Andrus Adamchik
  */
 public class MappingAssertion extends Assert {
 

@@ -24,7 +24,6 @@ package org.apache.cayenne.reflect;
  * operations that should be performed differently on different properties.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface PropertyVisitor {
 

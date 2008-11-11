@@ -31,7 +31,6 @@ import org.apache.cayenne.remote.ClientMessage;
  * A noop CayenneConnector used for unit testing. Accumulates commands sent via this
  * connector without doing anything with them.
  * 
- * @author Andrus Adamchik
  */
 public class MockClientConnection implements ClientConnection {
 

@@ -43,7 +43,6 @@ import org.apache.cayenne.util.Util;
  * tree, before returning the first element from the iterator.</i>
  * </p>
  * 
- * @author Andrus Adamchik
  */
 public class ProjectTraversal {
 

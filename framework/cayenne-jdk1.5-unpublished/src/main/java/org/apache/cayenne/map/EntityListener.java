@@ -28,7 +28,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * methods to be notified of the entity events.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EntityListener implements Serializable, XMLSerializable {
 

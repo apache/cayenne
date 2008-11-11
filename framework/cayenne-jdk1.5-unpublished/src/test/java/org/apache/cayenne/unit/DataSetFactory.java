@@ -26,7 +26,6 @@ import org.apache.cayenne.query.Query;
 /**
  * A class that manages sets of queries for Cayenne test cases.
  * 
- * @author Andrus Adamchik
  */
 public interface DataSetFactory {
 

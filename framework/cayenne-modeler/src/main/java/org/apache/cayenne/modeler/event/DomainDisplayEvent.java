@@ -23,8 +23,6 @@ import org.apache.cayenne.access.DataDomain;
 /**
  * Represents a display event of a DataDomain.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DomainDisplayEvent extends DisplayEvent {
 	protected DataDomain domain;

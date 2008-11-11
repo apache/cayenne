@@ -25,7 +25,6 @@ import org.apache.cayenne.CayenneDataObject;
  * This class exists solely to enable testing of arbitrary superclasses for ObjEntities.  
  * It has no functionality at this stage (nor is any likely)
  * 
- * @author cmiskell
  */
 public class ArtDataObject extends CayenneDataObject {
 

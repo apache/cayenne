@@ -50,7 +50,6 @@ import org.apache.cayenne.query.SelectQuery;
  * uses this factory as a failover loading mechanism, instantiating it via reflection.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class PreferencesDataSourceFactory implements DataSourceFactory {
 

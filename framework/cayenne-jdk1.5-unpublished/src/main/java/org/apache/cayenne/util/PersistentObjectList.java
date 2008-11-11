@@ -34,7 +34,6 @@ import org.apache.cayenne.ValueHolder;
  * A list of persistent objects lazily resolved on the first access.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class PersistentObjectList extends RelationshipFault implements List, ValueHolder {
 

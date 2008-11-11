@@ -25,7 +25,6 @@ import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ApplicationProjectFileTest extends CayenneCase {
     protected ApplicationProjectFile rpf;

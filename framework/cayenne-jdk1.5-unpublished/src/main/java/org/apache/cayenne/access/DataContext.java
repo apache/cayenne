@@ -81,7 +81,6 @@ import org.apache.cayenne.util.Util;
  * objects that are registered with the context, are not visible to the users of other
  * contexts.
  * 
- * @author Andrus Adamchik
  */
 public class DataContext extends BaseContext implements DataChannel {
 

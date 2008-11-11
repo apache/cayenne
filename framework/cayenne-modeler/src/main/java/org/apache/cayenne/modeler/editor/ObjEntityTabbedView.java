@@ -48,8 +48,6 @@ import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 /**
  * Tabbed ObjEntity editor panel.
  * 
- * @author Michael Misha Shengaout
- * @author Andrus Adamchik
  */
 public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplayListener,
         ObjRelationshipDisplayListener, ObjAttributeDisplayListener {

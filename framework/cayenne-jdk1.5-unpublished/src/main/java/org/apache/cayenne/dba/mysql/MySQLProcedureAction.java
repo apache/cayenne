@@ -34,7 +34,6 @@ import org.apache.cayenne.query.ProcedureQuery;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class MySQLProcedureAction extends ProcedureAction {
 

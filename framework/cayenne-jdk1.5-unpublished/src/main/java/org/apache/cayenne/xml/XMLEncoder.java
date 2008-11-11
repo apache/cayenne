@@ -42,7 +42,6 @@ import org.w3c.dom.Node;
  * A helper class to encode objects to XML.
  * 
  * @since 1.2
- * @author Kevin J. Menard, Jr., Andrus Adamchik
  */
 public class XMLEncoder {
 

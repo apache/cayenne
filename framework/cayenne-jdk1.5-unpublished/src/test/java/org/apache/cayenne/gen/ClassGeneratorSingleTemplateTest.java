@@ -24,7 +24,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 
 /**
- * @author Andrus Adamchik
  * @deprecated since 3.0
  */
 public class ClassGeneratorSingleTemplateTest extends ClassGeneratorTestBase {

@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DbRelationship;
  * during reverse engineering.
  * 
  * @since 3.0
- * @author Andrey Razumovsky
  */
 public interface NamingStrategy {
     /**

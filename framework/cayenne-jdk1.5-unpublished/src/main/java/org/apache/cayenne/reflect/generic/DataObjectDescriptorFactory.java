@@ -36,7 +36,6 @@ import org.apache.cayenne.reflect.PropertyException;
  * {@link DataObject}.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
 

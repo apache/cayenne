@@ -36,7 +36,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * </p>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class MemoryClob implements Clob {
 

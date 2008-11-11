@@ -24,7 +24,6 @@ import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class OraclePkGeneratorTest extends CayenneCase {
     protected OraclePkGenerator pkGenerator;

@@ -26,7 +26,6 @@ import org.apache.cayenne.access.types.ByteArrayType;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class FrontBaseByteArrayType extends ByteArrayType {
 

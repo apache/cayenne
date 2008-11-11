@@ -25,7 +25,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 /**
  * A goal to build aggregated jar artifacts from multiple other artifacts.
  * 
- * @author Andrus Adamchik
  * @goal aggregate-bin
  * @phase package
  * @requiresProject

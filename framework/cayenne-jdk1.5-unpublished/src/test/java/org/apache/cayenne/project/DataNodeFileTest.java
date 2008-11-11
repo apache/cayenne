@@ -26,7 +26,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.access.DataNode;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataNodeFileTest extends TestCase {
 

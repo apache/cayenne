@@ -29,7 +29,6 @@ import org.apache.cayenne.util.ResourceLocator;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
 /**
- * @author Andrus Adamchik
  */
 public class DBCPDataSourcePropertiesTest extends TestCase {
 

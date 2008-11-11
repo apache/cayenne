@@ -27,7 +27,6 @@ import org.apache.cayenne.itest.ItestTableUtils;
  * Abstract test case that bootstraps default JPA unit called "itest" and a schema script
  * called "schema-hsqldb.sql".
  * 
- * @author Andrus Adamchik
  */
 public abstract class JpaTestCase extends TestCase {
 

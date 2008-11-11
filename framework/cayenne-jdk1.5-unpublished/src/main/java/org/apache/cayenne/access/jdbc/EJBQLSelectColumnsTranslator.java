@@ -28,7 +28,6 @@ import org.apache.cayenne.map.ObjAttribute;
 /**
  * Translator of the EJBQL select clause.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {

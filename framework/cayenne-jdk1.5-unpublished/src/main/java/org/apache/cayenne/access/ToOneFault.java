@@ -29,7 +29,6 @@ import org.apache.cayenne.query.RelationshipQuery;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class ToOneFault extends Fault {
 

@@ -29,7 +29,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Negate" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTNegate extends SimpleNode {
 

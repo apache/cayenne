@@ -47,7 +47,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Defines a set of algorithms useful for a generic AccessStack.
  * 
- * @author Andrus Adamchik
  */
 public abstract class AbstractAccessStack {
 

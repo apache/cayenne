@@ -43,7 +43,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * prefetch tree.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ObjectTreeResolver {
 

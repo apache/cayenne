@@ -36,7 +36,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * A generic panel for entering DataSource information.
  * 
- * @author Andrus Adamchik
  */
 public class DBConnectionInfoEditorView extends JPanel {
 

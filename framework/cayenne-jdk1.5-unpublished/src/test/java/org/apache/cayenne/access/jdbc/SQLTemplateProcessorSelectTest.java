@@ -24,7 +24,6 @@ import java.util.Collections;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class SQLTemplateProcessorSelectTest extends BasicCase {
 

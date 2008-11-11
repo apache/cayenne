@@ -40,7 +40,6 @@ import org.apache.cayenne.util.Util;
  * A ResultIterator over the underlying JDBC ResultSet.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 // Replaces DefaultResultIterator
 public class JDBCResultIterator implements ResultIterator {

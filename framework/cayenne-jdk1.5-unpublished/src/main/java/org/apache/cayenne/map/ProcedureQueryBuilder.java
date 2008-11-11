@@ -26,7 +26,6 @@ import org.apache.cayenne.query.Query;
  * A QueryBuilder for stored procedure-based queries.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 class ProcedureQueryBuilder extends QueryLoader {
 

@@ -26,7 +26,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * A descriptor of a persistent class whose instances are stored as an intrinsic part of
  * an owning entity and share the identity of that entity.
  * 
- * @author Andrus Adamchik
  */
 public class JpaEmbeddable extends JpaManagedClass implements XMLSerializable {
 

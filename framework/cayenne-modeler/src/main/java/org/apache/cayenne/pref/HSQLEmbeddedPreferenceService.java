@@ -40,7 +40,6 @@ import org.apache.cayenne.util.Util;
  * An implementation of preference service that stores the data using embedded HSQL DB
  * database with Cayenne.
  * 
- * @author Andrus Adamchik
  */
 public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
 

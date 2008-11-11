@@ -54,8 +54,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * Detail view of the DbEntity properties.
  * 
- * @author Michael Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         DbEntityDisplayListener {

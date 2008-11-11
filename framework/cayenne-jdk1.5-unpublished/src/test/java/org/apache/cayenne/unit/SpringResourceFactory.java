@@ -29,7 +29,6 @@ import org.springframework.core.io.InputStreamResource;
 /**
  * A bean that loads other Spring beans from the specified location.
  * 
- * @author Andrus Adamchik
  */
 public class SpringResourceFactory implements FactoryBean {
 

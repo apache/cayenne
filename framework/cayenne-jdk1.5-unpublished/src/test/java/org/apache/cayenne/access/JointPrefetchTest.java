@@ -46,7 +46,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Tests joint prefetch handling by Cayenne access stack.
  * 
- * @author Andrus Adamchik
  */
 public class JointPrefetchTest extends CayenneCase {
 

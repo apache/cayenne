@@ -27,7 +27,6 @@ import org.apache.cayenne.util.EntityMergeSupport;
  * A {@link MergerToken} to add a {@link DbAttribute} to a {@link DbEntity}. The
  * {@link EntityMergeSupport} will be used to update the mapped {@link ObjEntity}
  * 
- * @author halset
  */
 public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
 

@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class SQLTemplateProcessorChainTest extends BasicCase {
 

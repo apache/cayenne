@@ -31,7 +31,6 @@ package org.apache.cayenne.conf;
  * for more information on this topic.
  * 
  * @since 3.0
- * @author Michael Gentry
  */
 public class Rot13PasswordEncoder implements PasswordEncoding
 {

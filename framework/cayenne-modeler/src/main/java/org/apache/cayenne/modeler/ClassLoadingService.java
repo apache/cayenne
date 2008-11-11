@@ -23,7 +23,6 @@ package org.apache.cayenne.modeler;
 /**
  * An interface defining a service for locating external Java resources.
  * 
- * @author Andrus Adamchik
  */
 public interface ClassLoadingService {
 

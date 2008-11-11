@@ -24,7 +24,6 @@ import junit.framework.TestCase;
 import com.mockrunner.mock.web.MockServletContext;
 
 /**
- * @author Andrus Adamchik
  */
 public class WebApplicationResourceLocatorTest extends TestCase {
 

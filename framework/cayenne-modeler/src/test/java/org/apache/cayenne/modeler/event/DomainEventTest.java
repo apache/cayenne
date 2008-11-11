@@ -25,7 +25,6 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.event.DomainEvent;
 
 /**
- * @author Andrus Adamchik
  */
 public class DomainEventTest extends TestCase {
 

@@ -42,7 +42,6 @@ import org.apache.cayenne.util.Util;
  * DataRowUtils contains a number of static methods to work with DataRows. This is a
  * helper class for DataContext and ObjectStore.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 class DataRowUtils {

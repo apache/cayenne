@@ -44,7 +44,6 @@ import org.apache.cayenne.unit.CayenneResources;
 import org.apache.cayenne.util.GenericResponse;
 
 /**
- * @author Andrus Adamchik
  */
 public class CayenneContextTest extends CayenneCase {
 

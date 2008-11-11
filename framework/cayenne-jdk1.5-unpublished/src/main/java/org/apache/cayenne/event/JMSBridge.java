@@ -45,7 +45,6 @@ import org.apache.cayenne.util.IDUtil;
  * Service). JMSBridge uses "publish/subscribe" model for communication with external
  * agents.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class JMSBridge extends EventBridge implements MessageListener {

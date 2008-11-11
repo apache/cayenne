@@ -37,7 +37,6 @@ import org.apache.cayenne.query.QueryRouter;
  * the results.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  * @deprecated since 3.0 - this class should not be public
  */
 // TODO: andrus, 7/19/2006 - why is this public? should probably be deprecated and/or

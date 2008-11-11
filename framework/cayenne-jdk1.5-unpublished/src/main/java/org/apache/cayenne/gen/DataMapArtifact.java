@@ -33,7 +33,6 @@ import org.apache.velocity.VelocityContext;
 /**
  * {@link Artifact} facade for a DataMap.
  * 
- * @author Dzmitry Rusak
  * @since 3.0
  */
 public class DataMapArtifact implements Artifact {

@@ -20,7 +20,6 @@ package org.apache.cayenne.map;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class RelationshipPathComponent<T extends Attribute, U extends Relationship> implements
         PathComponent<T, U> {

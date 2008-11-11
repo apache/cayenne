@@ -30,7 +30,6 @@ import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.project.validator.ValidationInfo;
 
 /**
- * @author Andrus Adamchik
  */
 public class ProcedureErrorMsg extends ValidationDisplayHandler {
     public ProcedureErrorMsg(ValidationInfo validationInfo) {

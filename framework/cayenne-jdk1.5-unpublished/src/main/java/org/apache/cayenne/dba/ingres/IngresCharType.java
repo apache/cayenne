@@ -26,7 +26,6 @@ import org.apache.cayenne.access.types.CharType;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class IngresCharType extends CharType {
 

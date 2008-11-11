@@ -26,7 +26,6 @@ import org.apache.maven.plugin.MojoFailureException;
 /**
  * A goal to build an aggregated source artifact from multiple source artifacts.
  * 
- * @author Andrus Adamchik
  * @goal aggregate-sources
  */
 public class SourcesAggregatorMojo extends AbstractAggregatorMojo {

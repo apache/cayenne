@@ -55,7 +55,6 @@ import org.apache.cayenne.validation.ValidationException;
 /**
  * A controller for the main tab of the DataNode editor panel.
  * 
- * @author Andrus Adamchik
  */
 public class MainDataNodeEditor extends CayenneController {
 

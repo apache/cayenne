@@ -35,7 +35,6 @@ import org.apache.cayenne.reflect.ToManyMapProperty;
  * </p>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public abstract class PersistentObject implements Persistent {
 

@@ -40,7 +40,6 @@ import org.apache.cayenne.swing.ObjectBinding;
  * A subclass of ConnectionWizard that tests configured DataSource, but does not keep an
  * open connection.
  * 
- * @author Andrus Adamchik
  */
 public class DataSourceWizard extends CayenneController {
 

@@ -31,7 +31,6 @@ import org.apache.cayenne.ValueHolder;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class PersistentObjectSet extends RelationshipFault implements Set, ValueHolder {
 

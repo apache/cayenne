@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Andrus Adamchik
  */
 public class TstProjectTraversalHelper implements ProjectTraversalHandler {
     protected List nodes = new ArrayList();

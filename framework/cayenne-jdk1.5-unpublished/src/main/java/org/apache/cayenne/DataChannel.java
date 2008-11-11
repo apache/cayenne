@@ -30,7 +30,6 @@ import org.apache.cayenne.query.Query;
  * access a persistent store. There is rarely a need to use it directly.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface DataChannel {
 

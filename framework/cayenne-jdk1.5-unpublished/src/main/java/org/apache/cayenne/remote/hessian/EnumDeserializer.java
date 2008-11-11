@@ -26,7 +26,6 @@ import com.caucho.hessian.io.AbstractHessianInput;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class EnumDeserializer extends AbstractDeserializer {
 

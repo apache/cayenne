@@ -61,7 +61,6 @@ import org.apache.cayenne.util.Util;
  * all numeric types, primitives, String, SQL dates, BigDecimal and BigInteger.
  * </p>
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class ResultDirective extends Directive {

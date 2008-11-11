@@ -25,7 +25,6 @@ import org.apache.cayenne.util.LocalizedStringsHandler;
  * A generic checked exception that may be thrown by Cayenne framework. All checked
  * exceptions in Cayenne inherit from this class.
  * 
- * @author Andrus Adamchik
  */
 public class CayenneException extends Exception {
 

@@ -30,7 +30,6 @@ import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action for cutting entities, queries etc.
- * @author Andrey Razumovsky
  */
 public class CutAction extends CayenneAction {
     public static String getActionName() {

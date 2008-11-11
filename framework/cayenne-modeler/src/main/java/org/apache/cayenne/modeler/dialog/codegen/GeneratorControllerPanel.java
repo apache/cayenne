@@ -26,7 +26,6 @@ import javax.swing.JTextField;
 /**
  * A generic panel that is a superclass of generator panels, defining common fields.
  * 
- * @author Andrus Adamchik
  */
 public class GeneratorControllerPanel extends JPanel {
 

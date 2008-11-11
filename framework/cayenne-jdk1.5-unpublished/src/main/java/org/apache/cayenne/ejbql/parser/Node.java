@@ -24,7 +24,6 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
  * A JJTree-compliant tree node interface.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface Node extends EJBQLExpression {
 	/**

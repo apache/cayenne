@@ -24,7 +24,6 @@ import java.lang.instrument.Instrumentation;
  * Instrumentation utilities.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class InstrumentUtil {
 

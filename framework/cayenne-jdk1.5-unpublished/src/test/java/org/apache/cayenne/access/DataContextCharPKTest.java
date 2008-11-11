@@ -27,7 +27,6 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataContextCharPKTest extends CayenneCase {
 

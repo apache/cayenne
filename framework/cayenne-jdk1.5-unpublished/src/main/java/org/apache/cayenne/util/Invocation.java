@@ -31,8 +31,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * target is kept with a WeakReference and can therefore be reclaimed by the Garbage
  * Collector.
  * 
- * @author Holger Hoffstaette
- * @author Dirk Olmes
  */
 public class Invocation {
 

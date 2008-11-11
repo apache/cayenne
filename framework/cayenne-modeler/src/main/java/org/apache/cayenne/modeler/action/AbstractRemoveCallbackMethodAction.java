@@ -31,7 +31,6 @@ import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 /**
  * Base class for removing callback methofs
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
 public abstract class AbstractRemoveCallbackMethodAction extends RemoveAction {

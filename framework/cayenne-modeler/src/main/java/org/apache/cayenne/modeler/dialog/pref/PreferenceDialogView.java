@@ -34,7 +34,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 /**
- * @author Andrus Adamchik
  */
 public class PreferenceDialogView extends JDialog {
 

@@ -36,7 +36,6 @@ import javax.sql.StatementEventListener;
  * connection as per JDBC3 spec. Most of the modern JDBC drivers should have its own
  * implementation that may be used instead of this class.
  * 
- * @author Andrus Adamchik
  */
 public class PooledConnectionImpl implements PooledConnection {
 

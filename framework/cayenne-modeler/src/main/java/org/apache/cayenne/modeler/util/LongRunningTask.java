@@ -41,7 +41,6 @@ import org.apache.commons.logging.LogFactory;
  * dialog. </i>
  * </p>
  * 
- * @author Andrus Adamchik
  */
 public abstract class LongRunningTask {
 

@@ -40,7 +40,6 @@ import com.jgoodies.forms.layout.FormLayout;
  * change event when a current directory is changed, either explictly or during a file
  * selection by the user.
  * 
- * @author Andrus Adamchik
  */
 public class FileChooser extends JPanel {
 

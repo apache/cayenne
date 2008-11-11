@@ -93,7 +93,6 @@ import org.apache.cayenne.project.ProjectPath;
 /**
  * An object that manages CayenneModeler actions.
  * 
- * @author Andrus Adamchik
  */
 public class ActionManager {
 

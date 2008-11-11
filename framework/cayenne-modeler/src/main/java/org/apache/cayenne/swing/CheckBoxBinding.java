@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 /**
  * A generic adapter that binds a check box to a bean property.
  *
- * @author Kevin Menard
  */
 public class CheckBoxBinding extends BindingBase {
 

@@ -24,7 +24,6 @@ import java.util.EventListener;
 /**
  * Listener for callback type selection
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
 public interface CallbackTypeSelectionListener extends EventListener {

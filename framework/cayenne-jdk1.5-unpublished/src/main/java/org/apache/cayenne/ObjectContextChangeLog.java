@@ -40,7 +40,6 @@ import org.apache.cayenne.graph.NodeDiff;
  * named markers.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ObjectContextChangeLog {
 

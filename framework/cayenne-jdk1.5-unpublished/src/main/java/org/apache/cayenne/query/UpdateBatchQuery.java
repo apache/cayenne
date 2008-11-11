@@ -32,7 +32,6 @@ import org.apache.cayenne.map.DbEntity;
 /**
  * Batched UPDATE query.
  * 
- * @author Andriy Shapochka
  */
 public class UpdateBatchQuery extends BatchQuery {
 

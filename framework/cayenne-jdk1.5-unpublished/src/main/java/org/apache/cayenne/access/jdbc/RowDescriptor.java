@@ -32,7 +32,6 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
  * A descriptor of a result row obtained from a database.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class RowDescriptor {
 

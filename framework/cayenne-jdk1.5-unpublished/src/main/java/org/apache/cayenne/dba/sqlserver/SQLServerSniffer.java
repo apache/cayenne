@@ -29,7 +29,6 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * Detects SQLServer database from JDBC metadata.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class SQLServerSniffer implements DbAdapterFactory {
 

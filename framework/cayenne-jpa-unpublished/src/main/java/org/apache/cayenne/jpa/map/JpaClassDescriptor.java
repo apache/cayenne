@@ -40,7 +40,6 @@ import org.apache.cayenne.enhancer.EnhancementHelper;
  * Provides information about a class relevant to JPA, such potential persistence fields,
  * etc.
  * 
- * @author Andrus Adamchik
  */
 public class JpaClassDescriptor {
 

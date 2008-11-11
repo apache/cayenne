@@ -40,8 +40,6 @@ import org.apache.cayenne.util.WebApplicationResourceLocator;
  * <code>cayenne.configuration.path</code> context parameters in <code>web.xml</code>.
  * </p>
  * 
- * @author Andrus Adamchik
- * @author Scott Finnerty
  * @since 1.2
  */
 public class ServletUtil {

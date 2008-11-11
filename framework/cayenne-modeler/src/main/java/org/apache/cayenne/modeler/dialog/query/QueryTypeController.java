@@ -35,7 +35,6 @@ import org.scopemvc.core.ControlException;
 /**
  * A Scope controller for QueryTypeDialog.
  * 
- * @author Andrus Adamchik
  */
 public class QueryTypeController extends BasicController {
 

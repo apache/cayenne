@@ -52,7 +52,6 @@ import org.apache.commons.collections.Transformer;
  * DataContext sends a query to the DataDomain, it is transparently routed to an
  * appropriate DataNode.
  * 
- * @author Andrus Adamchik
  */
 public class DataDomain implements QueryEngine, DataChannel {
 

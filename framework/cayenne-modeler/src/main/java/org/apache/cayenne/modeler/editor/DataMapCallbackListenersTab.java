@@ -37,7 +37,6 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 /**
  * Tab for editing default entity listeners of a DataMap
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
 public class DataMapCallbackListenersTab extends AbstractCallbackListenersTab {

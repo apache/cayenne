@@ -24,7 +24,6 @@ import java.util.EventListener;
 
 /**
  * @since 1.1
- * @author Andrus Adamchik
  */
 public interface QueryDisplayListener extends EventListener {
     public void currentQueryChanged(QueryDisplayEvent e);

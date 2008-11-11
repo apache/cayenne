@@ -41,7 +41,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * {@link org.apache.cayenne.DataChannel}.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class CayenneContext extends BaseContext {
 

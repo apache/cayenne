@@ -23,7 +23,6 @@ package org.apache.cayenne.pref;
  * Defines an API of a preferences editor used for editing preferences without affecting
  * the rest of the application until the editing is finished.
  * 
- * @author Andrus Adamchik
  */
 public interface PreferenceEditor {
 

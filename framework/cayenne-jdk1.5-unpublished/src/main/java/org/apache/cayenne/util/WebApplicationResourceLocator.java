@@ -33,7 +33,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A ResourceLocator that can find resources relative to web application context.
  * 
- * @author Andrus Adamchik
  */
 public class WebApplicationResourceLocator extends ResourceLocator {
 

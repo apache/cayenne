@@ -38,7 +38,6 @@ import org.apache.commons.collections.Transformer;
  * Builds update qualifier snapshots, including optimistic locking.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DataNodeSyncQualifierDescriptor {
 

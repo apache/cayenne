@@ -27,7 +27,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 
 /**
- * @author Andrus Adamchik
  */
 public class DB2StackAdapter extends AccessStackAdapter {
 

@@ -42,7 +42,6 @@ import org.apache.cayenne.util.Util;
  * and primitives are available.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class PropertyUtils {
 

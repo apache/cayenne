@@ -29,7 +29,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 /**
  * helper class to generate pseudo-GUID sequences.
  * 
- * @author Andrus Adamchik
  */
 public class IDUtil {
 

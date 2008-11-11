@@ -26,7 +26,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * RuntimeException subclass thrown in cases of errors during 
  * expressions creation/parsing.
  * 
- * @author Andrus Adamchik
  */
 public class ExpressionException extends CayenneRuntimeException {
     protected String expressionString;

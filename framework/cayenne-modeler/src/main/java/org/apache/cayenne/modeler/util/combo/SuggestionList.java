@@ -35,7 +35,6 @@ import org.apache.cayenne.modeler.util.CellRenderers;
  * SuggestionList is a combo-popup displaying all items matching for
  * autocompletion.
  * 
- * @author Andrey Razumovsky
  */
 public class SuggestionList extends BasicComboPopup {
     /**

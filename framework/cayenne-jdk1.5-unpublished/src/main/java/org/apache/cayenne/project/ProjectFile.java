@@ -31,7 +31,6 @@ import org.apache.cayenne.util.Util;
  * ProjectFile is an adapter from an object in Cayenne project
  * to its representation in the file system.
  * 
- * @author Andrus Adamchik
  */
 public abstract class ProjectFile {
 

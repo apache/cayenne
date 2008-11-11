@@ -33,7 +33,6 @@ import org.apache.cayenne.conn.PoolManager;
 /**
  * A helper class that manages test DataSource.
  * 
- * @author Andrus Adamchik
  */
 class ItestDataSourceManager {
 

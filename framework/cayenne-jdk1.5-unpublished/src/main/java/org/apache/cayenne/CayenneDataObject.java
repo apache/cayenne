@@ -55,7 +55,6 @@ import org.apache.cayenne.xml.XMLSerializable;
  * A default implementation of DataObject interface. It is normally used as a superclass
  * of Cayenne persistent objects.
  * 
- * @author Andrus Adamchik
  */
 public class CayenneDataObject implements DataObject, Validating, XMLSerializable {
 

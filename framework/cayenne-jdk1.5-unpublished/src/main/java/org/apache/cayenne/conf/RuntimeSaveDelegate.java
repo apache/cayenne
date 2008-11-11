@@ -38,7 +38,6 @@ import org.apache.cayenne.util.Util;
 /**
  * Save delegate used for saving Cayenne access stack.
  * 
- * @author Andrus Adamchik
  */
 public class RuntimeSaveDelegate implements ConfigSaverDelegate {
 

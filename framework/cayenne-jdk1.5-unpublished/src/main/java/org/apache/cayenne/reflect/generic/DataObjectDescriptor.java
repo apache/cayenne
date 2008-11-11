@@ -27,7 +27,6 @@ import org.apache.cayenne.reflect.PropertyException;
  * interface.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 // non-public as the only difference with the superclass is version handling on merge -
 // this is something we need to solved in a more generic fashion (e.g. as via enhancer)

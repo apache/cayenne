@@ -48,7 +48,6 @@ import org.apache.cayenne.query.SelectQuery;
  * </p>
  * 
  * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples package.
- * @author Andrus Adamchik
  */
 public class DataPort {
 

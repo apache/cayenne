@@ -42,7 +42,6 @@ import org.apache.cayenne.query.Query;
  * An abstraction of a single physical data storage. This is usually a database server,
  * but can potentially be some other storage type like an LDAP server, etc.
  * 
- * @author Andrus Adamchik
  */
 public class DataNode implements QueryEngine {
 

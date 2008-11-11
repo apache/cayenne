@@ -30,7 +30,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.unit.CayenneResources;
 
 /**
- * @author Kevin J. Menard, Jr.
  */
 public class XMLEncoderTest extends TestCase {
 

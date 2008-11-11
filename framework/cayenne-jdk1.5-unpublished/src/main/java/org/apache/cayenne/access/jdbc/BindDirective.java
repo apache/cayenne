@@ -64,7 +64,6 @@ import org.apache.velocity.runtime.parser.node.Node;
  * </p>
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class BindDirective extends Directive {
 

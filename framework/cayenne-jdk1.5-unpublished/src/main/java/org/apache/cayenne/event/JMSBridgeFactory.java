@@ -26,7 +26,6 @@ import java.util.Map;
  * Factory to create JMSBridge instances.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class JMSBridgeFactory implements EventBridgeFactory {
 

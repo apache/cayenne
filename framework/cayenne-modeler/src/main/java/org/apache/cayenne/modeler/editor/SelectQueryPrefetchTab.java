@@ -43,7 +43,6 @@ import java.util.Iterator;
 /**
  * Subclass of the SelectQueryOrderingTab configured to work with prefetches.
  * 
- * @author Andrus Adamchik
  */
 public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 

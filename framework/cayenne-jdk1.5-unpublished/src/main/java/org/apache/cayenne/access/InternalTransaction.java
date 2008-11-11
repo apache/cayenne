@@ -29,7 +29,6 @@ import org.apache.cayenne.CayenneException;
  * Represents a Cayenne-managed local Transaction.
  * 
  * @since 1.2 moved to a top-level class.
- * @author Andrus Adamchik
  */
 class InternalTransaction extends ExternalTransaction {
 

@@ -26,7 +26,6 @@ import org.apache.cayenne.jpa.conf.JpaDataSourceFactory;
 /**
  * A factory that integrates the test environment with Cayenne JPA provider.
  * 
- * @author Andrus Adamchik
  */
 public class ItestJpaDataSourceFactory implements JpaDataSourceFactory {
 

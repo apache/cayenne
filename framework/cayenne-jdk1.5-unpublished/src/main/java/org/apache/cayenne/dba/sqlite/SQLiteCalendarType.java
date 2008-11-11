@@ -32,7 +32,6 @@ import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class SQLiteCalendarType implements ExtendedType {
 

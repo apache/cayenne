@@ -28,7 +28,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 
 /**
- * @author Andrus Adamchik
  */
 public class ProcedureQueryTest extends TestCase {
 

@@ -29,7 +29,6 @@ import org.apache.cayenne.exp.ExpressionException;
  * A collection of static conversion utility methods.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public final class ConversionUtil {
 

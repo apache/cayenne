@@ -25,7 +25,6 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
- * @author Andrus Adamchik
  */
 public class ObjAttributeValidatorTest extends ValidatorTestBase {
 

@@ -27,7 +27,6 @@ import org.apache.cayenne.map.EntityResolver;
  * routing phase. Provides caching of a replacement query.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public abstract class IndirectQuery implements Query {
 

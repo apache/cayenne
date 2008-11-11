@@ -40,7 +40,6 @@ import org.apache.velocity.runtime.parser.node.SimpleNode;
  * 
  * @see org.apache.cayenne.query.SQLTemplate
  * @since 1.1
- * @author Andrus Adamchik
  */
 class SQLTemplateProcessor {
 

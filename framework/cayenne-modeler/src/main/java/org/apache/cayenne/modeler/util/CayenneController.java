@@ -46,7 +46,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A superclass of CayenneModeler controllers.
  * 
- * @author Andrus Adamchik
  */
 public abstract class CayenneController implements BoundComponent {
 

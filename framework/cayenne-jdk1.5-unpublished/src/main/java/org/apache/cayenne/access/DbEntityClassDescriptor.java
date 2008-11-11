@@ -34,7 +34,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * commit.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class DbEntityClassDescriptor {
 

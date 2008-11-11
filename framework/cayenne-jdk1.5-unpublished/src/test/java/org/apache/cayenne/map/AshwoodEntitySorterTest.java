@@ -27,7 +27,6 @@ import org.apache.cayenne.testdo.relationship.ReflexiveAndToOne;
 import org.apache.cayenne.unit.RelationshipCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class AshwoodEntitySorterTest extends RelationshipCase {
 

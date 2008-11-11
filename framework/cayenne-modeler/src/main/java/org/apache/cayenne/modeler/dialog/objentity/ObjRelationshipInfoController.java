@@ -42,7 +42,6 @@ import java.util.Vector;
 
 /**
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ObjRelationshipInfoController extends BasicController implements TreeSelectionListener {
 

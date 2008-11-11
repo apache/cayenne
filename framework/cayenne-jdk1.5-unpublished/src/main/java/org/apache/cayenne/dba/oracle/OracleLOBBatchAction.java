@@ -49,7 +49,6 @@ import org.apache.cayenne.util.Util;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class OracleLOBBatchAction implements SQLAction {
 

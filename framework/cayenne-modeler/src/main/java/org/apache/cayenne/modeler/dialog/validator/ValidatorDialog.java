@@ -55,8 +55,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * Dialog for displaying validation errors.
  * 
- * @author Michael Misha Shengaout
- * @author Andrus Adamchik
  */
 public class ValidatorDialog extends CayenneDialog {
 

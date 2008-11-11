@@ -40,8 +40,6 @@ import org.apache.commons.collections.ComparatorUtils;
  * that in case of in-memory sorting, Ordering can be used with any JavaBeans, not just
  * DataObjects.
  * 
- * @author Andrus Adamchik
- * @author Craig Miskell
  */
 public class Ordering implements Comparator<Object>, Serializable, XMLSerializable {
 

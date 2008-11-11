@@ -23,7 +23,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class QueryLoaderTest extends BasicCase {
 

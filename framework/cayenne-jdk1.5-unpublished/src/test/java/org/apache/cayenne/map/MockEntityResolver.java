@@ -23,7 +23,6 @@ import org.apache.cayenne.DataObject;
 import org.apache.cayenne.query.Query;
 
 /**
- * @author Andrus Adamchik
  */
 public class MockEntityResolver extends EntityResolver {
 

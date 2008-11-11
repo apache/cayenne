@@ -29,7 +29,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataContextRollbackTest extends DataContextCase {
 

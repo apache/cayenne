@@ -36,7 +36,6 @@ import org.apache.cayenne.query.InsertBatchQuery;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class SQLServerBatchAction extends BatchAction {
 

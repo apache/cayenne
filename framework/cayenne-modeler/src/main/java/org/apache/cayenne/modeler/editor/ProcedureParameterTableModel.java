@@ -32,7 +32,6 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 
 /**
- * @author Andrus Adamchik
  */
 public class ProcedureParameterTableModel extends CayenneTableModel {
     public static final int PARAMETER_NUMBER = 0;

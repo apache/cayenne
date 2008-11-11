@@ -31,7 +31,6 @@ import org.apache.cayenne.query.DeleteBatchQuery;
 /**
  * Translator for delete BatchQueries. Creates parametrized DELETE SQL statements.
  * 
- * @author Andriy Shapochka, Andrus Adamchik, Mike Kienenberger
  */
 
 public class DeleteBatchQueryBuilder extends BatchQueryBuilder {

@@ -33,7 +33,6 @@ import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.util.TestBean;
 
 /**
- * @author Andrus Adamchik
  */
 public class ExpressionEvaluateInMemoryTest extends CayenneCase {
 

@@ -31,7 +31,6 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 /**
  * Action class for renaming entity listener class for ObjEntity
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 30, 2007
  */
 public class ChangeObjEntityListenerClassAction extends CayenneAction {

@@ -36,7 +36,6 @@ import javax.persistence.UniqueConstraint;
 /**
  * Annotations shared by the entore map.
  * 
- * @author Andrus Adamchik
  */
 @SequenceGenerator(name = "sg-name", sequenceName = "seq-name", initialValue = 5, allocationSize = 10)
 @NamedQueries( {

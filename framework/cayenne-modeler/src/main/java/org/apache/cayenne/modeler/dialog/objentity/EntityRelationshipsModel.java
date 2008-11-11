@@ -37,7 +37,6 @@ import org.scopemvc.model.basic.BasicModel;
  * Relationship.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class EntityRelationshipsModel extends BasicModel {
 

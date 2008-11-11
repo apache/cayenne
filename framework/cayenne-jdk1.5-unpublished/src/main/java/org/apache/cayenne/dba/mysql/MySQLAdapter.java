@@ -62,7 +62,6 @@ import org.apache.cayenne.query.SQLAction;
  * <li>Driver Class: com.mysql.jdbc.Driver</li>
  * </ul>
  * 
- * @author Andrus Adamchik
  */
 public class MySQLAdapter extends JdbcAdapter {
     

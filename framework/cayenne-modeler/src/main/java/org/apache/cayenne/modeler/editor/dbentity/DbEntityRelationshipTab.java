@@ -74,8 +74,6 @@ import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 /**
  * Displays DbRelationships for the current DbEntity.
  * 
- * @author Michael Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayListener,
         DbEntityListener, DbRelationshipListener, ExistingSelectionProcessor,

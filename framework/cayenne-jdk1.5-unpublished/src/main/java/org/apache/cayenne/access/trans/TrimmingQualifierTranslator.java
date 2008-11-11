@@ -28,7 +28,6 @@ import org.apache.cayenne.map.DbAttribute;
  * QualifierTranslator that allows translation of qualifiers that perform comparison with
  * CHAR columns. Some databases require trimming the values for this to work.
  * 
- * @author Andrus Adamchik
  */
 public class TrimmingQualifierTranslator extends QualifierTranslator {
 

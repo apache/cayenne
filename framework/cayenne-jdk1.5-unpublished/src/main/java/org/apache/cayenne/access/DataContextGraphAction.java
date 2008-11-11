@@ -29,7 +29,6 @@ import org.apache.cayenne.util.ObjectContextGraphAction;
  * objects themselves.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class DataContextGraphAction extends ObjectContextGraphAction {
 

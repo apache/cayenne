@@ -28,7 +28,6 @@ import org.apache.cayenne.conn.PoolManager;
  * A DataSourceFactory that loads connection info from connection properties, the same way
  * unit tests do.
  * 
- * @author Andrus Adamchik
  */
 public class TestDataSourceFactory implements DataSourceFactory {
 

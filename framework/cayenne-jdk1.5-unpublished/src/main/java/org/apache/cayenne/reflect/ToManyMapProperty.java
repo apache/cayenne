@@ -22,7 +22,6 @@ package org.apache.cayenne.reflect;
  * A property representing a map of objects keyed by one of the object properties.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface ToManyMapProperty extends ToManyProperty {
 

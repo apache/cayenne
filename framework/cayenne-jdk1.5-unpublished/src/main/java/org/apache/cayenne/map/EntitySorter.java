@@ -26,7 +26,6 @@ import java.util.List;
  * Defines API for sorting of Cayenne entities based on their mutual dependencies.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public interface EntitySorter {
 

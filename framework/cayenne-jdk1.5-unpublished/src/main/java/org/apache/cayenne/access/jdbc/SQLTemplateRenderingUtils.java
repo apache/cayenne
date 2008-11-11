@@ -26,7 +26,6 @@ import org.apache.cayenne.exp.Expression;
  * when rendering SQLTemplates.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class SQLTemplateRenderingUtils {
     /**

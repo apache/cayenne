@@ -24,7 +24,6 @@ import org.apache.cayenne.modeler.Application;
 /**
  * Action class for creating callback methods on ObjEntity
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 30, 2007
  */
 public class CreateCallbackMethodAction extends AbstractCreateCallbackMethodAction {

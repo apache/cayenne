@@ -41,7 +41,6 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * guarantees the right ordering based on index property.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class IndexPropertyList extends AbstractList implements ValueHolder {
 

@@ -30,7 +30,6 @@ import org.apache.cayenne.Persistent;
  * An EntityManager decorator that checks that only properly enhanced entities are passwed
  * to the underlying EntityManager.
  * 
- * @author Andrus Adamchik
  */
 // TODO: andrus, 2/18/2007 - in the future this wrapper can also enhance entities on the
 // fly, for now it simply does the type checks before passing entities to the underlying

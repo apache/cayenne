@@ -24,7 +24,6 @@ import java.util.StringTokenizer;
 /**
  * Helper class to deal with version strings.
  * 
- * @author Andrus Adamchik
  */
 public class Version implements Comparable<Object> {
 

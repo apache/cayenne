@@ -39,7 +39,6 @@ import org.apache.cayenne.util.Util;
  * pseudo-unique binary key; permanent id stores a map of values from an external
  * persistent store (aka "primary key").
  * 
- * @author Andrus Adamchik
  */
 public class ObjectId implements Serializable {
 

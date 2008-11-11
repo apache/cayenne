@@ -28,7 +28,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Not" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTNot extends AggregateConditionNode {
 

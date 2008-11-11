@@ -24,7 +24,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * An exception that are thrown by the ROP server if the client are missing a session.
  * 
  * @since 3.0
- * @author Tore Halset
  */
 public class MissingSessionException extends CayenneRuntimeException {
 

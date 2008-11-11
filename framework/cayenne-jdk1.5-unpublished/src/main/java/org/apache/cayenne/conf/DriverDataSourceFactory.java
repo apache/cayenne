@@ -47,7 +47,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * Creates DataSource objects from XML configuration files that describe a JDBC driver.
  * Wraps JDBC driver in a generic DataSource implementation.
  * 
- * @author Andrus Adamchik
  */
 // TODO: factory shouldn't contain any state specific to location ("driverInfo" ivar
 // should go, and probably "parser" too)... Otherwise the API doesn't make sense -

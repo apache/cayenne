@@ -26,7 +26,6 @@ package org.apache.cayenne.map;
  * interfaces, not just classes).
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface EntityListenerFactory {
 

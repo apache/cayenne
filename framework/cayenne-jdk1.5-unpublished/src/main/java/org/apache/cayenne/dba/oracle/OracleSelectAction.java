@@ -29,7 +29,6 @@ import org.apache.cayenne.query.SelectQuery;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class OracleSelectAction extends SelectAction {
 

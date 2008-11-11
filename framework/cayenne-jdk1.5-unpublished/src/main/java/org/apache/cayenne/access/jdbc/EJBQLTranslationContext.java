@@ -38,7 +38,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * A context used for translating of EJBQL to SQL.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EJBQLTranslationContext {
 

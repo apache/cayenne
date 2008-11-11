@@ -36,7 +36,6 @@ import org.apache.cayenne.query.BatchQuery;
  * Helper class to extract the information from BatchQueries, essential for LOB columns
  * processing.
  * 
- * @author Andrus Adamchik
  */
 public class LOBBatchQueryWrapper {
 

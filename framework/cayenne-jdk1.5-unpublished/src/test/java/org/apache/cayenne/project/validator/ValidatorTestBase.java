@@ -34,7 +34,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.project.ApplicationProject;
 
 /**
- * @author Andrus Adamchik
  */
 public abstract class ValidatorTestBase extends TestCase {
 

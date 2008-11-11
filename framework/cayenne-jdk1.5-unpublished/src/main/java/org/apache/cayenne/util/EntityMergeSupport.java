@@ -41,7 +41,6 @@ import org.apache.cayenne.project.NamedObjectFactory;
 /**
  * Implements methods for entity merging.
  * 
- * @author Andrus Adamchik
  */
 public class EntityMergeSupport {
 

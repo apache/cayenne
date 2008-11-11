@@ -23,7 +23,6 @@ package org.apache.cayenne.exp;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ExpressionParameterTest extends CayenneCase {
 

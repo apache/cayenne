@@ -25,7 +25,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.MockObjRelationship;
 
 /**
- * @author Andrus Adamchik
  */
 public class FlattenedArcKeyTest extends TestCase {
 

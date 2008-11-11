@@ -23,7 +23,6 @@ package org.apache.cayenne.graph;
  * An abstract superclass of operations on individual nodes and arcs in a digraph.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public abstract class NodeDiff implements GraphDiff, Comparable<NodeDiff> {
 

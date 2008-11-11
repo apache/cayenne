@@ -33,7 +33,6 @@ import org.apache.cayenne.util.Util;
 /**
  * A test case checking Cayenne handling of 1.5 Enums.
  * 
- * @author Andrus Adamchik
  */
 public class EnumTest extends TestCase {
 

@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
  * A component in a path chain.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface PathComponent<T extends Attribute, U extends Relationship> {
 

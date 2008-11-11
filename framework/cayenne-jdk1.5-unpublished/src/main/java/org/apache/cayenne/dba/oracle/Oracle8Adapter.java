@@ -29,7 +29,6 @@ import org.apache.cayenne.query.SQLAction;
  * A flavor of OracleAdapter that implements workarounds for some old driver limitations.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class Oracle8Adapter extends OracleAdapter {
 

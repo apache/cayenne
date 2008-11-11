@@ -24,7 +24,6 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 
 /**
- * @author Andrus Adamchik
  */
 public class MockQualifiedQuery extends QualifiedQuery {
 

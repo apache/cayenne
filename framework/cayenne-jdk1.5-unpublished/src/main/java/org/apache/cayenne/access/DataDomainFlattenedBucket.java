@@ -34,7 +34,6 @@ import org.apache.cayenne.query.Query;
  * A sync bucket that holds flattened queries.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DataDomainFlattenedBucket {
 

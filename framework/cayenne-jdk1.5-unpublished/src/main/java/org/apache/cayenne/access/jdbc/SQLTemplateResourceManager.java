@@ -37,7 +37,6 @@ import org.apache.velocity.runtime.resource.loader.ResourceLoader;
  * An implementation of the Velocity ResourceManager and ResourceLoader that
  * creates templates from in-memory Strings.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 // class must be public since it is instantiated by Velocity via reflection.

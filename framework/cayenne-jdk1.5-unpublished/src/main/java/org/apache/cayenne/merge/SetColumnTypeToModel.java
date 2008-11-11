@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DbEntity;
  * new {@link DbAttribute}s type, maxLength and precision. The name and mandatory fields
  * are not modified by this token.
  * 
- * @author halset
  */
 public class SetColumnTypeToModel extends AbstractToModelToken.Entity {
 

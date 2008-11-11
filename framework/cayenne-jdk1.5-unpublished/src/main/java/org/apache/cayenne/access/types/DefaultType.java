@@ -33,7 +33,6 @@ import org.apache.cayenne.dba.TypesMapping;
  * An ExtendedType that can work with any Java class, providing JDBC-to-Java mapping
  * exactly per JDBC specification.
  * 
- * @author Andrus Adamchik
  */
 public class DefaultType extends AbstractType {
 

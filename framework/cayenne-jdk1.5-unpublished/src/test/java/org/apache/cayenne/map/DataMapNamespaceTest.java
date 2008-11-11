@@ -28,7 +28,6 @@ import org.apache.cayenne.query.Query;
  * Test case for recursive lookup of DataMap resources via a parent
  * namespace.
  * 
- * @author Andrus Adamchik
  */
 public class DataMapNamespaceTest extends TestCase {
     protected DataMap map;

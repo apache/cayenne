@@ -26,7 +26,6 @@ import org.apache.cayenne.jpa.itest.ch9.entity.BasicEntity;
  * good way to test optionality, as it is only a hint to the schema generator that is used
  * outside the JPA spec. It should be tested at the provider level.
  * 
- * @author Andrus Adamchik
  */
 public class _9_1_18_BasicAnnotationTest extends EntityManagerCase {
 

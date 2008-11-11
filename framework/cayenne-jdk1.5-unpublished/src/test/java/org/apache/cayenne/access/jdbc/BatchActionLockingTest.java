@@ -41,7 +41,6 @@ import com.mockrunner.jdbc.PreparedStatementResultSetHandler;
 import com.mockrunner.mock.jdbc.MockConnection;
 
 /**
- * @author Mike Kienenberger
  */
 public class BatchActionLockingTest extends LockingCase {
 

@@ -30,7 +30,6 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 /**
  * Base class for creating callback methods
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
 public abstract class AbstractCreateCallbackMethodAction extends CayenneAction {

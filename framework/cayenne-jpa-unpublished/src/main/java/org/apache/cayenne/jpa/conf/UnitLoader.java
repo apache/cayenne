@@ -29,7 +29,6 @@ import org.xml.sax.InputSource;
 /**
  * A class that locates persistent units in the environment and loads their definitions.
  * 
- * @author Andrus Adamchik
  */
 public class UnitLoader {
 

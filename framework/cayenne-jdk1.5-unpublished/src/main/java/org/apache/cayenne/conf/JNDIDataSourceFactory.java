@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Looks up DataSource objects via JNDI.
  * 
- * @author Andrus Adamchik
  */
 public class JNDIDataSourceFactory implements DataSourceFactory {
 

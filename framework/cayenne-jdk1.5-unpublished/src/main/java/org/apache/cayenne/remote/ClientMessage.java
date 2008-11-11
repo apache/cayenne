@@ -25,7 +25,6 @@ import java.io.Serializable;
  * A tag interface representing a message sent by a remote client to Cayenne service.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface ClientMessage extends Serializable {
 

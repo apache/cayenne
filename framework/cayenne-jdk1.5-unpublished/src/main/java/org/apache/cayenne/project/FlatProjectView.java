@@ -28,7 +28,6 @@ import org.apache.cayenne.access.DataNode;
  * FlatProjectView converts a project tree into a list of nodes,
  * thus flattening the tree. Normally used as a singleton.
  * 
- * @author Andrus Adamchik
  */
 public class FlatProjectView {
 

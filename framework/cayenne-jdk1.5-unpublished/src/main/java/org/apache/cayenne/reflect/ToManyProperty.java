@@ -24,7 +24,6 @@ package org.apache.cayenne.reflect;
  * A property representing a collection of objects.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface ToManyProperty extends ArcProperty {
 

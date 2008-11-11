@@ -43,7 +43,6 @@ import org.scopemvc.view.swing.SPanel;
  * subviews organized using CardLayout. Each subview as well as the main dialog have their
  * own independent models.
  * 
- * @author Andrus Adamchik
  */
 public class CacheSyncConfigController extends BasicController implements
         ModelChangeListener {

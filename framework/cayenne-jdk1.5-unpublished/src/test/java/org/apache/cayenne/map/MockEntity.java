@@ -27,7 +27,6 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
- * @author Andrus Adamchik
  */
 public class MockEntity extends Entity {
 

@@ -23,7 +23,6 @@ import org.apache.cayenne.Persistent;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class ToManyListFault extends Fault {
 

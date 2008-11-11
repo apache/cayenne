@@ -33,7 +33,6 @@ import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
  * some databases require a checkpoint command to be run for the schema changes to be
  * flushed to disk.
  * 
- * @author Andrus Adamchik
  */
 class DbGeneratorPostprocessor {
 

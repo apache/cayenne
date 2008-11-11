@@ -31,7 +31,6 @@ import org.apache.cayenne.reflect.ToManyProperty;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyProperty {
 

@@ -36,7 +36,6 @@ import org.apache.cayenne.util.Util;
  * cache, thus cache handling is significantly different from all other of the queries.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class ObjectIdQuery extends IndirectQuery {
 

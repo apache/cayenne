@@ -37,7 +37,6 @@ import org.apache.cayenne.reflect.Property;
  * faulting via {@link ValueHolder}.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
 

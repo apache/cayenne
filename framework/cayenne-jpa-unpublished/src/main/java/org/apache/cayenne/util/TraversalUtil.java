@@ -32,7 +32,6 @@ import org.apache.cayenne.project.ProjectPath;
  * Defines tree traversal utility methods. Object tree sematics is determined using
  * {@link org.apache.cayenne.util.TreeNodeChild} property getter annotation.
  * 
- * @author Andrus Adamchik
  */
 public class TraversalUtil {
 

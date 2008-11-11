@@ -27,7 +27,6 @@ import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.Util;
 
 /**
- * @author Andrus Adamchik
  */
 public class RelationshipQueryTest extends TestCase {
 

@@ -40,7 +40,6 @@ import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DataDomainInsertBucket extends DataDomainSyncBucket {
 

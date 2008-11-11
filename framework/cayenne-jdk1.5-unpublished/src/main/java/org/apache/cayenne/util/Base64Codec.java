@@ -27,7 +27,6 @@ package org.apache.cayenne.util;
  * </p>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class Base64Codec {
 

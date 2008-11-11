@@ -27,7 +27,6 @@ import java.beans.PropertyChangeListener;
  * A binding for connecting to children that implement BoundComponent.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class PropertyBinding extends BindingBase {
 

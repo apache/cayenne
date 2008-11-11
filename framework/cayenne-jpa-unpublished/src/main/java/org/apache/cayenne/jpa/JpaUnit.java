@@ -37,7 +37,6 @@ import org.apache.cayenne.jpa.conf.JpaDataSourceFactory;
  * A <code>javax.persistence.spi.PersistenceUnitInfo</code> implementor used by Cayenne
  * JPA provider.
  * 
- * @author Andrus Adamchik
  */
 public abstract class JpaUnit implements PersistenceUnitInfo {
 

@@ -30,7 +30,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 
 /**
- * @author Andrus Adamchik
  */
 public class BatchQueryBuilderTest extends TestCase {
 

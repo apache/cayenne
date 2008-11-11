@@ -29,7 +29,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * "And" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTAnd extends AggregateConditionNode {
     /**

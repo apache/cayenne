@@ -26,7 +26,6 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
  * Customizes EJBQL conditions translation for MySQL.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class MySQLEJBQLConditionTranslator extends EJBQLConditionTranslator {
 

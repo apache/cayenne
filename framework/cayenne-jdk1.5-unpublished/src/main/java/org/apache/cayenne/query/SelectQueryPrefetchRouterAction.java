@@ -32,7 +32,6 @@ import org.apache.cayenne.map.ObjRelationship;
  * Preprocessor and router of SelectQuery prefetches.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
 

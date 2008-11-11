@@ -26,8 +26,6 @@ import org.apache.cayenne.map.DataMap;
 /**
  * Represents a display event of a DataMap.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DataMapDisplayEvent extends DataNodeDisplayEvent {
 	protected DataMap dataMap;

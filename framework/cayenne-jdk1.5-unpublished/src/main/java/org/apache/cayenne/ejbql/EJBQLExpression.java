@@ -22,7 +22,6 @@ package org.apache.cayenne.ejbql;
  * An abstract EJBQL expression interface.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface EJBQLExpression {
 

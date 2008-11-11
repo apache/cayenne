@@ -22,7 +22,6 @@ package org.apache.cayenne.pref;
 import java.io.File;
 
 /**
- * @author Andrus Adamchik
  */
 public class HSQLEmbeddedPreferenceEditor extends CayennePreferenceEditor {
 

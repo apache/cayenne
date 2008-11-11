@@ -36,7 +36,6 @@ import org.apache.cayenne.validation.ValidationResult;
 /**
  * A DbAdapter wrapper used in CayenneModeler.
  * 
- * @author Andrus Adamchik
  */
 public class ModelerDbAdapter extends AutoAdapter {
 

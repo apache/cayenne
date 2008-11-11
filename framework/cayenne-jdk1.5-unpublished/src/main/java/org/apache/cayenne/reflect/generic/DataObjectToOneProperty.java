@@ -31,7 +31,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * An ArcProperty for accessing to-one relationships.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class DataObjectToOneProperty extends DataObjectBaseProperty implements ToOneProperty {
 

@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
- * @author Andrus Adamchik
  */
 public class ConfigurePreferencesAction extends CayenneAction {
 

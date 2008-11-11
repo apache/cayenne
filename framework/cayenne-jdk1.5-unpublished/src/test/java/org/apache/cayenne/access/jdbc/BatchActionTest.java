@@ -28,7 +28,6 @@ import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class BatchActionTest extends CayenneCase {
 

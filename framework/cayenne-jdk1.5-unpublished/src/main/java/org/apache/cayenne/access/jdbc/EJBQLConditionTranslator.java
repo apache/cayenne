@@ -48,7 +48,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 

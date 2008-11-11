@@ -24,7 +24,6 @@ import java.util.EventListener;
 /**
  * Listener for callback methods selection
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 24, 2007
  */
 

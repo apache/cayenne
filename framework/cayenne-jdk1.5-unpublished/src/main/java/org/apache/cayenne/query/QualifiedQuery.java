@@ -24,7 +24,6 @@ import org.apache.cayenne.exp.Expression;
 /**
  * An abstract superclass of queries with Expression qualifiers.
  * 
- * @author Andrus Adamchik
  */
 public abstract class QualifiedQuery extends AbstractQuery {
 

@@ -40,7 +40,6 @@ import com.caucho.hessian.io.HessianProtocolException;
  * HessianConnection supports logging of message traffic via Jakarta commons-logging API.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class HessianConnection extends BaseConnection {
 

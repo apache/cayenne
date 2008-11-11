@@ -29,7 +29,6 @@ import org.apache.cayenne.conf.DriverDataSourceFactory;
  * DataNodeFile is a ProjectFile abstraction of the 
  * DataNode file in a Cayenne project. 
  * 
- * @author Andrus Adamchik
  */
 public class DataNodeFile extends ProjectFile {
     public static final String LOCATION_SUFFIX = ".driver.xml";

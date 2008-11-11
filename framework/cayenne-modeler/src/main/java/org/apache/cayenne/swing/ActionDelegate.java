@@ -25,7 +25,6 @@ import java.util.Collections;
  * An implementation of BindingDelegate that invokes a no-argument context action on every
  * model update.
  * 
- * @author Andrus Adamchik
  */
 public class ActionDelegate implements BindingDelegate {
 

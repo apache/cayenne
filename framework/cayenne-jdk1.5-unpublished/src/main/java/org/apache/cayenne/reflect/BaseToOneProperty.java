@@ -23,7 +23,6 @@ package org.apache.cayenne.reflect;
  * A convenience base superclass for {@link ToOneProperty} implementors.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public abstract class BaseToOneProperty extends BaseArcProperty implements ToOneProperty {
 

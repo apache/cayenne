@@ -47,7 +47,6 @@ import org.apache.cayenne.util.ToStringBuilder;
  * via a ClientConnection.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class ClientChannel implements DataChannel {
 

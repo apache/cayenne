@@ -25,7 +25,6 @@ import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ObjectStoreDiffRetainingTest extends CayenneCase {
 

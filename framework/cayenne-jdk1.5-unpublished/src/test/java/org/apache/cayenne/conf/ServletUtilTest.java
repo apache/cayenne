@@ -28,7 +28,6 @@ import com.mockrunner.mock.web.MockServletContext;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ServletUtilTest extends TestCase {
 

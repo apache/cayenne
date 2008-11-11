@@ -28,7 +28,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
 /**
  * Generic path expression.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public abstract class ASTPath extends SimpleNode {

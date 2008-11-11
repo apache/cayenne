@@ -65,7 +65,6 @@ import org.apache.cayenne.query.SelectQuery;
  * This is a helper class used mostly by GUI and database 
  * reengineering classes.
  * 
- * @author Andrus Adamchik
  */
 public abstract class NamedObjectFactory {
     private static final Map<Class, NamedObjectFactory> factories = new HashMap<Class, NamedObjectFactory>();

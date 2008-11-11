@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ProcedureTest extends TestCase {
     protected Procedure procedure;

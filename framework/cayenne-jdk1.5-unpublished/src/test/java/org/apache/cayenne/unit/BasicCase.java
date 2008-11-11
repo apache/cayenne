@@ -28,7 +28,6 @@ import junit.framework.TestCase;
  * A test case that requires no DB access.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public abstract class BasicCase extends TestCase {
 

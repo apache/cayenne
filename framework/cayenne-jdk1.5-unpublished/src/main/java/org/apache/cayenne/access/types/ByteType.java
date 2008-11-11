@@ -29,7 +29,6 @@ import java.sql.ResultSet;
  * workaround for bugs in certain drivers. Drivers that are proven to have issues with
  * byte values are Sybase and Oracle (Mac OS X only).
  * 
- * @author Andrus Adamchik
  * @since 1.0.3
  */
 public class ByteType extends AbstractType {

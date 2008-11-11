@@ -40,7 +40,6 @@ import org.apache.cayenne.pref.PreferenceEditor;
 /**
  * A controller for editing Modeler preferences.
  * 
- * @author Andrus Adamchik
  */
 public class PreferenceDialog extends CayenneController {
 

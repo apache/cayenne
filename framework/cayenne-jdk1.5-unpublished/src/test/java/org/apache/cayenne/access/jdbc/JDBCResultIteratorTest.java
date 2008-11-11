@@ -33,7 +33,6 @@ import com.mockrunner.mock.jdbc.MockResultSet;
 import com.mockrunner.mock.jdbc.MockStatement;
 
 /**
- * @author Andrus Adamchik
  */
 public class JDBCResultIteratorTest extends TestCase {
 

@@ -31,7 +31,6 @@ import org.scopemvc.core.ControlException;
 import org.scopemvc.view.swing.SPanel;
 
 /**
- * @author Andrus Adamchik
  */
 public class PackageUpdateController extends DefaultsPreferencesController {
 

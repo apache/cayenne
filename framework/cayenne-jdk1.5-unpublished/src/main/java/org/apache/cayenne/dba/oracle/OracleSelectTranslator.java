@@ -28,7 +28,6 @@ import org.apache.cayenne.query.QueryMetadata;
 /**
  * Select translator that implements Oracle-specific optimizations.
  * 
- * @author Andrus Adamchik
  */
 class OracleSelectTranslator extends SelectTranslator {
 

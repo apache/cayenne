@@ -23,7 +23,6 @@ import java.io.Serializable;
 /**
  * A serializable pojo without "serialVersionId" defined.
  * 
- * @author Andrus Adamchik
  */
 public class MockSerializablePojo2 implements Serializable {
 

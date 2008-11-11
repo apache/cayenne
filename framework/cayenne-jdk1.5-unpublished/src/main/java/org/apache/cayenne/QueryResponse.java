@@ -55,7 +55,6 @@ import java.util.List;
  * </pre>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface QueryResponse {
 

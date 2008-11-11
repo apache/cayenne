@@ -30,7 +30,6 @@ import org.apache.cayenne.util.Util;
  * look up the class hierarchy.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class CallbackOnListener extends AbstractCallback {
 

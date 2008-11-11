@@ -32,7 +32,6 @@ import org.apache.cayenne.map.DbEntity;
  * DbEntity in a single query. InsertBatchQuery normally is not used directly. Rather
  * DataContext creates one internally when committing DataObjects.
  * 
- * @author Andriy Shapochka
  */
 public class InsertBatchQuery extends BatchQuery {
 

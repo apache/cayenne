@@ -34,7 +34,6 @@ import org.apache.cayenne.unit.CayenneResources;
 /**
  * Tests peer context synchronization via ClientChannel events.
  * 
- * @author Andrus Adamchik
  */
 public class CayenneContextClientChannelEventsTest extends CayenneCase {
 

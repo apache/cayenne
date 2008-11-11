@@ -36,7 +36,6 @@ import org.apache.commons.collections.FastTreeMap;
  * within another class. Enclosing instance would set itself as a parent of this map.
  * </p>
  * 
- * @author Andrus Adamchik
  * @deprecated since 3.0 this map is not used by Cayenne internally.
  */
 // WARNING: CayenneMap is not serializable via Hessian serialization mechanism used by

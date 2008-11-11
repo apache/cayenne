@@ -39,7 +39,6 @@ import org.apache.cayenne.project.ProjectDataSource;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
- * @author Andrus Adamchik
  */
 public class CreateNodeAction extends CayenneAction {
 

@@ -32,7 +32,6 @@ import java.util.Arrays;
  * ObjEntity, <code>getRoot</code>- Project.
  * </p>
  * 
- * @author Andrus Adamchik
  */
 public class ProjectPath {
     public static final Object[] EMPTY_PATH = new Object[0];

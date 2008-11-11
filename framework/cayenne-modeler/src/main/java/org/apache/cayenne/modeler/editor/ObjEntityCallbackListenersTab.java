@@ -36,7 +36,6 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 /**
  * Tab for editing entity listeners of an ObjEntity
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
 public class ObjEntityCallbackListenersTab extends AbstractCallbackListenersTab {

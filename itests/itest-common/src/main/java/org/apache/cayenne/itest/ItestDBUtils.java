@@ -31,7 +31,6 @@ import javax.sql.DataSource;
 /**
  * JDBC utilities for integration testing that bypass Cayenne for DB access.
  * 
- * @author Andrus Adamchik
  */
 public class ItestDBUtils {
 

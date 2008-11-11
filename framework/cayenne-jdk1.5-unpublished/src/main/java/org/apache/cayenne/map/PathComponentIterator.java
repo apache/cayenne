@@ -29,7 +29,6 @@ import org.apache.cayenne.exp.ExpressionException;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class PathComponentIterator implements Iterator<PathComponent<Attribute, Relationship>> {
 

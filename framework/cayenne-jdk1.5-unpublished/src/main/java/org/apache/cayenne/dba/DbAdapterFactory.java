@@ -28,7 +28,6 @@ import java.sql.SQLException;
  * database based on version information and other metadata.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface DbAdapterFactory {
 

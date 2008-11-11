@@ -29,7 +29,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Tests DataObjects with no reverse relationships.
  * 
- * @author Andrus Adamchik
  */
 public class CDOMany2OneNoRevTest extends CayenneCase {
 

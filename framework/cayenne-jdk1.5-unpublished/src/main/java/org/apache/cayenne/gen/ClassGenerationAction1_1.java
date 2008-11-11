@@ -37,7 +37,6 @@ import org.apache.velocity.VelocityContext;
  * {@link DefaultClassGenerator}.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  * @deprecated since 3.0
  */
 public class ClassGenerationAction1_1 extends ClassGenerationAction {

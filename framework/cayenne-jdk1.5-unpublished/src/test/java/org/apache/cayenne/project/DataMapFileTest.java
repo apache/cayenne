@@ -25,7 +25,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataMapFileTest extends CayenneCase {
     protected DataMapFile dmf;

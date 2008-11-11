@@ -37,7 +37,6 @@ import org.apache.cayenne.query.SQLTemplate;
  * Parses an EJBQL statement, converting it to SQL. Executes the resulting SQL.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EJBQLAction extends BaseSQLAction {
 

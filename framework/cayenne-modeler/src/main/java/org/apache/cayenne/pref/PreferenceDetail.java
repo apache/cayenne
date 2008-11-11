@@ -40,7 +40,6 @@ import org.apache.cayenne.util.Util;
  * relationship from concrete preference entity to the preference framework entities, so
  * this class handles all needed wiring...
  * 
- * @author Andrus Adamchik
  */
 public class PreferenceDetail extends CayenneDataObject {
 

@@ -29,7 +29,6 @@ import org.apache.cayenne.exp.parser.ASTList;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ParametrizedExpressionTest extends CayenneCase {
 

@@ -35,8 +35,6 @@ import org.apache.cayenne.project.validator.ValidationInfo;
 /**
  * Relationship validation message.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class RelationshipErrorMsg extends ValidationDisplayHandler {
 

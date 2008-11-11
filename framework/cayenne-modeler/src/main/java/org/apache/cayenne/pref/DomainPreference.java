@@ -29,7 +29,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.util.Util;
 
 /**
- * @author Andrus Adamchik
  */
 public class DomainPreference extends _DomainPreference {
 

@@ -26,7 +26,6 @@ import org.apache.cayenne.query.Query;
  * QueryResponse.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class QueryMessage implements ClientMessage {
 

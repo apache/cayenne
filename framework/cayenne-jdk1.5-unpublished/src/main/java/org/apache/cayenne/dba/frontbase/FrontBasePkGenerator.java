@@ -34,7 +34,6 @@ import org.apache.cayenne.query.SQLTemplate;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class FrontBasePkGenerator extends JdbcPkGenerator {
 

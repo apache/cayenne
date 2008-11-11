@@ -30,7 +30,6 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 /**
  * A helper class providing access to DBCP properties.
  * 
- * @author Andrus Adamchik
  * @since 2.0
  */
 class DBCPDataSourceProperties {

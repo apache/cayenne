@@ -24,7 +24,6 @@ import org.apache.cayenne.modeler.util.MapModel;
 import org.scopemvc.core.Selector;
 
 /**
- * @author Andrus Adamchik
  */
 public class CacheSyncConfigModel extends MapModel {
 

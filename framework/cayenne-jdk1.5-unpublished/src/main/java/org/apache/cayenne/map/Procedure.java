@@ -32,7 +32,6 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * A mapping descriptor for a database stored procedure.
  * 
- * @author Andrus Adamchik
  */
 public class Procedure implements CayenneMapEntry, XMLSerializable, Serializable {
 

@@ -22,7 +22,6 @@ package org.apache.cayenne.unit.jira;
 import org.apache.cayenne.testdo.inherit.Manager;
 
 /**
- * @author Andrus Adamchik
  */
 public class CAY_207Manager2 extends Manager {
 

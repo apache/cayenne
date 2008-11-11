@@ -30,7 +30,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Divide" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTDivide extends SimpleNode {
     ASTDivide(int id) {

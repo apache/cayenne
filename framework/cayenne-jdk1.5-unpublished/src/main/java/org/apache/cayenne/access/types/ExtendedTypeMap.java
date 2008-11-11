@@ -34,7 +34,6 @@ import org.apache.cayenne.util.Util;
  * Java class. See {@link #getRegisteredType(String)} documentation for lookup algorithm
  * details.
  * 
- * @author Andrus Adamchik
  */
 // TODO: andrus 10/30/2007 - implement efficient synchronization. This class is 99% read
 // and 1% write, so probably should use ConcurrentHashMap once we switch to Java 5.

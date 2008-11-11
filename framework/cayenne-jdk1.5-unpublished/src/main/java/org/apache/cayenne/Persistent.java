@@ -25,7 +25,6 @@ import java.io.Serializable;
  * Defines minimal API of an object that can be persisted via Cayenne.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 // TODO: with field-based access there is no need to declare setters...
 public interface Persistent extends Serializable {

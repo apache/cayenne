@@ -35,7 +35,6 @@ import org.apache.cayenne.project.ProjectPath;
 /**
  * Action class to create a new stored procedure mapping.
  * 
- * @author Andrus Adamchik
  */
 public class CreateProcedureAction extends CayenneAction {
 

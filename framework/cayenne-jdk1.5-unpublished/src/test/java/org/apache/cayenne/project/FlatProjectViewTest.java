@@ -26,7 +26,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class FlatProjectViewTest extends CayenneCase {
 

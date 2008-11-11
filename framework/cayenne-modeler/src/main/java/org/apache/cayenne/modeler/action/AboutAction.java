@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.dialog.AboutDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
- * @author Andrus Adamchik
  */
 public class AboutAction extends CayenneAction {
 

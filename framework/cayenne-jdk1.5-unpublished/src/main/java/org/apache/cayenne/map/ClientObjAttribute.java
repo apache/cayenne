@@ -23,7 +23,6 @@ package org.apache.cayenne.map;
  * client may want.
  * 
  * @since 3.0
- * @author Tore Halset
  */
 class ClientObjAttribute extends ObjAttribute {
 

@@ -40,8 +40,6 @@ import org.apache.commons.logging.LogFactory;
 /** 
  * Superclass of CayenneModeler validation messages.
  * 
- * @author Michael Misha Shengaout 
- * @author Andrus Adamchik
  */
 public abstract class ValidationDisplayHandler {
     private static Log logObj = LogFactory.getLog(ValidationDisplayHandler.class);

@@ -25,7 +25,6 @@ import org.apache.velocity.VelocityContext;
  * for a given single generation template run.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface Artifact {
 

@@ -29,7 +29,6 @@ import org.apache.cayenne.unit.CayenneCase;
  * This test case ensures that PK pre-generated for the entity manually before commit is
  * used during commit as well.
  * 
- * @author Andrus Adamchik
  */
 // TODO: 1/16/2006 - the algorithm used to generate the PK may be included in
 // DataObjectUtils to pull the PK on demand. A caveat - we need to analyze DataObject in

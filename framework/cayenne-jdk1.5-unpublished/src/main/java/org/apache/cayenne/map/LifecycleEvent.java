@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
  * Defines possible object lifecycle events for which callbacks are supported.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public enum LifecycleEvent {
     PRE_PERSIST, PRE_REMOVE, PRE_UPDATE, POST_PERSIST, POST_REMOVE, POST_UPDATE, POST_LOAD;

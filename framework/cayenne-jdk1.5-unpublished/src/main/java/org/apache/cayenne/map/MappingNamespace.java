@@ -29,7 +29,6 @@ import org.apache.cayenne.query.SQLResultSetMapping;
  * mapping objects.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public interface MappingNamespace {
 

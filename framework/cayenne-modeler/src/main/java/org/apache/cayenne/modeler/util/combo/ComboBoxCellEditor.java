@@ -38,7 +38,6 @@ import javax.swing.table.TableCellEditor;
  * AutoCompletion behavior. Using DefaultCellEditor will cause combo popup to close
  * out of time.
  *
- * @author Andrey Razumovsky
  */
 public class ComboBoxCellEditor extends AbstractCellEditor 
     implements ActionListener, TableCellEditor, FocusListener, Serializable {

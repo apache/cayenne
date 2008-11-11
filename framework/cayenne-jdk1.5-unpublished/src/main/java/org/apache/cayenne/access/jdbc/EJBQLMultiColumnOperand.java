@@ -26,7 +26,6 @@ import org.apache.cayenne.ejbql.EJBQLException;
 /**
  * A holder of multi-column match condition operand.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 public abstract class EJBQLMultiColumnOperand {

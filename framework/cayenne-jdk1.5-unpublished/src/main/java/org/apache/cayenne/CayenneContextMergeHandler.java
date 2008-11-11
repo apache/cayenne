@@ -34,7 +34,6 @@ import org.apache.cayenne.util.Util;
  * broadcasting of GraphManager events.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListener {
 

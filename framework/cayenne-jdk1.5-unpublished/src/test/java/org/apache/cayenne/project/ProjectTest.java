@@ -28,7 +28,6 @@ import org.apache.cayenne.project.validator.Validator;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ProjectTest extends CayenneCase {
 

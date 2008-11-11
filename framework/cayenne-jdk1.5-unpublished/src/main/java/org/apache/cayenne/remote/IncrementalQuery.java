@@ -42,7 +42,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * time.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class IncrementalQuery implements Query {
 

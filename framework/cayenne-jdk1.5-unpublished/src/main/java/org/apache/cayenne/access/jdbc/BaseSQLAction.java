@@ -37,7 +37,6 @@ import org.apache.cayenne.query.SQLAction;
  * A convenience superclass for SQLAction implementations.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public abstract class BaseSQLAction implements SQLAction {
 

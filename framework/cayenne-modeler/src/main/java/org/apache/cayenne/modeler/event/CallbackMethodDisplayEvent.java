@@ -24,7 +24,6 @@ import org.apache.cayenne.event.CayenneEvent;
 /**
  * Display event for callback method
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 24, 2007
  */
 

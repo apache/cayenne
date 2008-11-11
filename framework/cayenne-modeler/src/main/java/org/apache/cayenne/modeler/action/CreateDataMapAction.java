@@ -32,8 +32,6 @@ import org.apache.cayenne.project.ProjectPath;
 /**
  * Action that creates new DataMap in the project.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class CreateDataMapAction extends CayenneAction {
 

@@ -35,7 +35,6 @@ import org.apache.cayenne.util.Util;
  * Used as an observer for DataContext commit operations.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DataDomainFlushObserver implements OperationObserver {
 

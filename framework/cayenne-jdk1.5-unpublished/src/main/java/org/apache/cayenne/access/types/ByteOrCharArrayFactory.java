@@ -23,7 +23,6 @@ package org.apache.cayenne.access.types;
  * char[] based on adapter configured types for String and byte[].
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class ByteOrCharArrayFactory implements ExtendedTypeFactory {
 

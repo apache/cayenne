@@ -24,7 +24,6 @@ import java.sql.Connection;
 /**
  * Defines callback methods for tracking and customizing Transactions execution.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public interface TransactionDelegate {

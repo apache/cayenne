@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
  * instance in a JPA ClassTransformer. UnitClassTranformer would only do transformation of
  * the mapped classes.
  * 
- * @author Andrus Adamchik
  */
 public class UnitClassTransformer implements ClassTransformer {
 

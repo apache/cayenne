@@ -47,7 +47,6 @@ import org.apache.cayenne.query.Query;
  * </p>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class SQLServerProcedureAction extends ProcedureAction {
 

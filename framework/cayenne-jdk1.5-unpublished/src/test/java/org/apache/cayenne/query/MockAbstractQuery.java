@@ -21,7 +21,6 @@ package org.apache.cayenne.query;
 
 
 /**
- * @author Andrus Adamchik
  */
 public class MockAbstractQuery extends AbstractQuery {
 

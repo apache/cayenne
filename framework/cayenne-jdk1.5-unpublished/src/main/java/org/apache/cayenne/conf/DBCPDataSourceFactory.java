@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
  * list of supported properties.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class DBCPDataSourceFactory implements DataSourceFactory {
 

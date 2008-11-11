@@ -29,7 +29,6 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * Detects OpenBase DB from JDBC metadata.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class OpenBaseSniffer implements DbAdapterFactory {
 

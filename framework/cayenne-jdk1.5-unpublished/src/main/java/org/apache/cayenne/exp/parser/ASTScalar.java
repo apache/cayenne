@@ -27,7 +27,6 @@ import org.apache.cayenne.exp.Expression;
  * A scalar value wrapper expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTScalar extends SimpleNode {
     protected Object value;

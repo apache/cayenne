@@ -24,7 +24,6 @@ import org.apache.cayenne.map.DbRelationship;
  * Extends DbRelationship to store mapped-by attribute.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class JpaDbRelationship extends DbRelationship {
 

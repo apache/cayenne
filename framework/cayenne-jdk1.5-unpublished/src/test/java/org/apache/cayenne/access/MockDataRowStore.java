@@ -29,7 +29,6 @@ import org.apache.cayenne.event.EventManager;
 /**
  * A "lightweight" DataRowStore.
  * 
- * @author Andrus Adamchik
  */
 public class MockDataRowStore extends DataRowStore {
 

@@ -34,7 +34,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * Maps <code>java.util.Date</code> to any of the three database date/time types: TIME,
  * DATE, TIMESTAMP.
  * 
- * @author Andrus Adamchik
  */
 public class UtilDateType extends AbstractType {
 

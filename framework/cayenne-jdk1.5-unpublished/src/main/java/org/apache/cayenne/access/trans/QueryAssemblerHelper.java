@@ -44,7 +44,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
 /**
  * Translates parts of the query to SQL. Always works in the context of parent Translator.
  * 
- * @author Andrus Adamchik
  */
 public abstract class QueryAssemblerHelper {
 

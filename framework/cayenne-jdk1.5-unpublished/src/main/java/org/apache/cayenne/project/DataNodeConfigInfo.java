@@ -28,7 +28,6 @@ import org.apache.cayenne.conf.Configuration;
 /**
  * Stores information necessary to reconfigure nodes of existing projects.
  *  
- * @author Andrus Adamchik
  */
 public class DataNodeConfigInfo {
     protected String name;

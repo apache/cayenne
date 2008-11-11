@@ -26,7 +26,6 @@ import org.apache.velocity.runtime.parser.ParseException;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
 
 /**
- * @author Andrus Adamchik
  */
 class MockupRuntimeServices extends RuntimeInstance {
 

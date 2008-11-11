@@ -66,7 +66,6 @@ import org.apache.cayenne.validation.ValidationResult;
  *          test-oracle.jdbc.driver = oracle.jdbc.driver.OracleDriver   
  * </pre>
  * 
- * @author Andrus Adamchik
  */
 public class OracleAdapter extends JdbcAdapter {
 

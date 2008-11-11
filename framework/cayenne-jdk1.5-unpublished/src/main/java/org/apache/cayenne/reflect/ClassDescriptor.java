@@ -29,7 +29,6 @@ import org.apache.cayenne.map.ObjEntity;
  * A runtime descriptor of an persistent class.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface ClassDescriptor {
 

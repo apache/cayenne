@@ -24,7 +24,6 @@ import java.util.List;
 /**
  * Provides access to protected fields of WebApplicationResourceLocator.
  * 
- * @author Andrus Adamchik
  */
 public class WebApplicationResourceLocatorAccess {
 

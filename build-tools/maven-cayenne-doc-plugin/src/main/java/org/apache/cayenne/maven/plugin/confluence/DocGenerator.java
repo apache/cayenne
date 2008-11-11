@@ -34,7 +34,6 @@ import com.atlassian.confluence.rpc.soap.beans.RemotePageSummary;
 /**
  * Generates standalone documentation for Cayenne based on Confluence content.
  * 
- * @author Cris Daniluk
  */
 public class DocGenerator {
 	private static final String DEFAULT_TEMPLATE = "doctemplates/default.vm";

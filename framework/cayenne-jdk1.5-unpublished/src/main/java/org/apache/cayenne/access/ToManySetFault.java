@@ -24,7 +24,6 @@ import org.apache.cayenne.util.PersistentObjectSet;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class ToManySetFault extends Fault {
 

@@ -33,7 +33,6 @@ import org.apache.cayenne.modeler.util.CellRenderers;
  * incorrectly (in fact, only classes with valueOf(String) methods
  * are supported).
  * 
- * @author Andrey Razumovsky
  */
 public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
     /**

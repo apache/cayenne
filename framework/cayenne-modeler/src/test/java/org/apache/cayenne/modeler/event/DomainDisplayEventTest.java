@@ -24,7 +24,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.access.DataDomain;
 
 /**
- * @author Andrus Adamchik
  */
 public class DomainDisplayEventTest extends TestCase {
 

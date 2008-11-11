@@ -30,7 +30,6 @@ import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
- * @author Andrus Adamchik
  */
 public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
 

@@ -29,7 +29,6 @@ import java.util.Collection;
 
 /**
  * DeleteRuleUpdater is responsible for auto-setting delete rules for object relationships
- * @author Andrey Razumovsky
  */
 public class DeleteRuleUpdater implements EntityMergeListener {
     /**

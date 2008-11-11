@@ -29,7 +29,6 @@ import org.apache.cayenne.query.Query;
 /**
  * A noop ObjectContext used for unit testing.
  * 
- * @author Andrus Adamchik
  */
 public class MockObjectContext implements ObjectContext {
 

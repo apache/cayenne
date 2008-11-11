@@ -26,7 +26,6 @@ import org.apache.cayenne.access.DataNode;
 /**
  * Superclass of test cases that require multiple DataNodes.
  * 
- * @author Andrus Adamchik
  */
 public abstract class MultiNodeCase extends CayenneCase {
 

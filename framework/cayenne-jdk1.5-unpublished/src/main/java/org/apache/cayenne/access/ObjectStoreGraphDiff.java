@@ -40,7 +40,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * A GraphDiff facade for the ObjectStore changes. Provides a way for the lower layers of
  * the access stack to speed up processing of presorted ObjectStore diffs.
  * 
- * @author Andrus Adamchik
  * @since 1.2
  */
 class ObjectStoreGraphDiff implements GraphDiff {

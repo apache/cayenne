@@ -31,7 +31,6 @@ import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.query.SQLTemplate;
 
 /**
- * @author Andrus Adamchik
  */
 public class SQLTemplateTabbedView extends JTabbedPane {
 

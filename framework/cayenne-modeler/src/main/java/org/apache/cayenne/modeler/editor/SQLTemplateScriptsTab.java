@@ -61,7 +61,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * A panel for configuring SQL scripts of a SQL template.
  * 
- * @author Andrus Adamchik
  */
 public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
 

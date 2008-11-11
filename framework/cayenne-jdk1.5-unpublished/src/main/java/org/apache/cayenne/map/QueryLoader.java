@@ -35,7 +35,6 @@ import org.apache.cayenne.query.Query;
  * DTD, allowing subclasses to define their own Query creation logic.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 abstract class QueryLoader {
 

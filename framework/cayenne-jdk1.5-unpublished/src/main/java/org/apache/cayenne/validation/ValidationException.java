@@ -24,7 +24,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 /**
  * An exception thrown on unsuccessful validation.
  * 
- * @author Fabricio Voznika
  * @since 1.1
  */
 public class ValidationException extends CayenneRuntimeException {

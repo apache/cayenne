@@ -30,7 +30,6 @@ import java.awt.event.MouseListener;
 
 /**
  * Multi-column browser for obj relationships
- * @author Andrey Razumovsky
  */
 public class ObjRelationshipPathBrowser extends MultiColumnBrowser {
     /**

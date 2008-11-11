@@ -25,7 +25,6 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * "Like" expression.
  * 
- * @author Andrus Adamchik
  */
 public class ASTLike extends PatternMatchNode {
     ASTLike(int id) {

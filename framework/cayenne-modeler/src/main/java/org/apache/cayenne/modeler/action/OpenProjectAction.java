@@ -38,7 +38,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * @author Andrus Adamchik
  */
 public class OpenProjectAction extends ProjectAction {
 

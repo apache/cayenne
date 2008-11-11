@@ -28,7 +28,6 @@ import org.apache.cayenne.util.Util;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public final class JoinTreeNode {
 

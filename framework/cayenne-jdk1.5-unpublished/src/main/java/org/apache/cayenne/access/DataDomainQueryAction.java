@@ -63,7 +63,6 @@ import org.apache.commons.collections.Transformer;
  * the OperationObserver, remapping results to the original pre-routed queries.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DataDomainQueryAction implements QueryRouter, OperationObserver {
 

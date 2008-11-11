@@ -32,7 +32,6 @@ import org.apache.cayenne.query.Query;
 /**
  * Defines API for translation Cayenne queries to JDBC PreparedStatements.
  * 
- * @author Andrus Adamchik
  */
 public abstract class QueryTranslator {
 

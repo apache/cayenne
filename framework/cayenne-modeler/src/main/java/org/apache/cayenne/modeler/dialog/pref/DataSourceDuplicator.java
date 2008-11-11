@@ -31,7 +31,6 @@ import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataSourceDuplicator extends CayenneController {
 

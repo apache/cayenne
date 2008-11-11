@@ -28,7 +28,6 @@ import org.apache.cayenne.util.Util;
  * the second operand being a pattern.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public abstract class PatternMatchNode extends ConditionNode {
 

@@ -28,7 +28,6 @@ import org.apache.cayenne.map.ObjEntity;
  * database reverse-engineering. Delegate is also notified of the progress of
  * reverse-engineering.
  * 
- * @author Andrus Adamchik
  */
 public interface DbLoaderDelegate {
 

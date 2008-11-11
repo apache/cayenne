@@ -36,7 +36,6 @@ import org.apache.cayenne.swing.control.FileMenuItem;
  * Menu that contains a list of previously used files. It is built from CayenneModeler
  * preferences by calling <code>rebuildFromPreferences</code>.
  * 
- * @author Andrus Adamchik
  */
 public class RecentFileMenu extends JMenu implements RecentFileListListener {
     /**

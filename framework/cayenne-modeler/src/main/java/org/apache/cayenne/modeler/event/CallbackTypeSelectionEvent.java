@@ -25,7 +25,6 @@ import org.apache.cayenne.modeler.editor.CallbackType;
 /**
  * Event for callback type selection change
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
 

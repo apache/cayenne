@@ -25,7 +25,6 @@ import org.apache.cayenne.modeler.Application;
 /**
  * Action class for removing callback methods from DataMap's entity listener
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 30, 2007
  */
 public class RemoveCallbackMethodForDataMapListenerAction extends AbstractRemoveCallbackMethodAction {

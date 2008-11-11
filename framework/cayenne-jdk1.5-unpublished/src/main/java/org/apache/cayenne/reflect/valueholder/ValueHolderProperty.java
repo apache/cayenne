@@ -33,7 +33,6 @@ import org.apache.cayenne.util.PersistentObjectHolder;
  * from 'readPropertyDirectly', returning held value instead.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class ValueHolderProperty extends BaseToOneProperty {
 

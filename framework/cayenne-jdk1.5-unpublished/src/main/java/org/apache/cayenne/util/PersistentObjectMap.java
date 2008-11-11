@@ -32,7 +32,6 @@ import org.apache.cayenne.reflect.Accessor;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class PersistentObjectMap extends RelationshipFault implements Map, ValueHolder {
 

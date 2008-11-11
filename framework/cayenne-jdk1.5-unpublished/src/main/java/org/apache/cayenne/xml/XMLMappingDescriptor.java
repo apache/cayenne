@@ -40,7 +40,6 @@ import org.w3c.dom.NamedNodeMap;
  * A convenience class for dealing with the mapping file. This can encode and decode
  * objects based upon the schema given by the map file.
  * 
- * @author Kevin J. Menard, Jr.
  * @since 1.2
  */
 final class XMLMappingDescriptor {

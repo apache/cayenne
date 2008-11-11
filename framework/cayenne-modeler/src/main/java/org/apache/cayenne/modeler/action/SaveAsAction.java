@@ -40,7 +40,6 @@ import org.apache.cayenne.project.validator.Validator;
 /**
  * A "Save As" action that allows user to pick save location.
  * 
- * @author Andrus Adamchik
  */
 public class SaveAsAction extends CayenneAction {
 

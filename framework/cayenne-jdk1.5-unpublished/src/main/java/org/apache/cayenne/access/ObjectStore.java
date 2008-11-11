@@ -70,7 +70,6 @@ import org.apache.commons.collections.map.ReferenceMap;
  * operations.
  * 
  * @since 1.0
- * @author Andrus Adamchik
  */
 // Synchronization Note: There is often a need to do double synchronize on an ObjectStore
 // and an underlying DataRowCache. To avoid deadlocks, Cayenne consistently follows the

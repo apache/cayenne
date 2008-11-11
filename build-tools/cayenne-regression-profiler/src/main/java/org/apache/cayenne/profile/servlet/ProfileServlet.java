@@ -29,7 +29,6 @@ import org.apache.cayenne.profile.AbstractCase;
  * A main servlet of the profiler web app. Accepts URLs like
  * "/servlet-path/nosession/CaseClass" and "/servlet-path/session/CaseClass".
  * 
- * @author Andrus Adamchik
  */
 public class ProfileServlet extends HttpServlet {
 

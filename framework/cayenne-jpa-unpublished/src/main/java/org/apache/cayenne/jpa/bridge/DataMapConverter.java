@@ -88,7 +88,6 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
  * A converter between {@link org.apache.cayenne.jpa.map.JpaEntityMap} and Cayenne
  * {@link org.apache.cayenne.map.DataMap}.
  * 
- * @author Andrus Adamchik
  */
 public class DataMapConverter {
 

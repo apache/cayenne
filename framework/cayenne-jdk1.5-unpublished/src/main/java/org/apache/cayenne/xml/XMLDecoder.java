@@ -47,7 +47,6 @@ import org.xml.sax.InputSource;
 /**
  * XMLDecoder is used to decode XML into objects.
  * 
- * @author Kevin J. Menard, Jr.
  * @since 1.2
  */
 public class XMLDecoder {

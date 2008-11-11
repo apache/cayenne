@@ -26,7 +26,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Less Then" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTLess extends ConditionNode {
     /**

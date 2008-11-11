@@ -27,7 +27,6 @@ import org.apache.cayenne.util.PersistentObjectList;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class ValueHolderListProperty extends ValueHolderToManyProperty {
 

@@ -33,7 +33,6 @@ import org.apache.cayenne.util.Util;
 /**
  * A non-pooling DataSource implementation wrapping a JDBC driver.
  * 
- * @author Andrus Adamchik
  */
 public class DriverDataSource implements DataSource {
 

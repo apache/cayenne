@@ -23,7 +23,6 @@ package org.apache.cayenne.map;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DbKeyGeneratorTest extends TestCase {
     public void testName() throws Exception {

@@ -35,7 +35,6 @@ import org.apache.cayenne.map.DbEntity;
  * the lookup table.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class DerbyPkGenerator extends JdbcPkGenerator {
 

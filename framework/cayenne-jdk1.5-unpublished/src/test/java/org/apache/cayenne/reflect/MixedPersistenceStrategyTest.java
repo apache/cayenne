@@ -29,7 +29,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Tests conflicts between field and map-based persistence.
  * 
- * @author Andrus Adamchik
  */
 public class MixedPersistenceStrategyTest extends CayenneCase {
 

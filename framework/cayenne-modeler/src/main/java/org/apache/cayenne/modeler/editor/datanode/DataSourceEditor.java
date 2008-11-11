@@ -28,7 +28,6 @@ import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.util.Util;
 
 /**
- * @author Andrus Adamchik
  */
 public abstract class DataSourceEditor extends CayenneController {
 

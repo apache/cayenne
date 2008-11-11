@@ -53,7 +53,6 @@ import org.apache.commons.logging.LogFactory;
  * Utility class that generates database schema based on Cayenne mapping. It is a logical
  * counterpart of DbLoader class.
  * 
- * @author Andrus Adamchik
  */
 public class DbGenerator {
 

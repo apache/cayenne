@@ -40,7 +40,6 @@ import foundrylogic.vpp.VPPConfig;
  * Instance of ClassGenerationInfo is available inside Velocity template under the key
  * "classGen".
  * 
- * @author Andrus Adamchik
  * @deprecated since 3.0 template logic is merged into the code generation action.
  */
 public class ClassGenerator {

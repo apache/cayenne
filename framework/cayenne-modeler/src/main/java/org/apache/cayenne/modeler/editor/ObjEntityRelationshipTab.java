@@ -81,8 +81,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Displays ObjRelationships for the edited ObjEntity.
  * 
- * @author Michael Misha Shengaout
- * @author Andrus Adamchik
  */
 public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplayListener,
         ObjEntityListener, ObjRelationshipListener, ExistingSelectionProcessor {

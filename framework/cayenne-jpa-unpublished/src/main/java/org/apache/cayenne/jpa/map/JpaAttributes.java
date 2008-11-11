@@ -30,7 +30,6 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * An attribute container.
  * 
- * @author Andrus Adamchik
  */
 public class JpaAttributes implements XMLSerializable {
 

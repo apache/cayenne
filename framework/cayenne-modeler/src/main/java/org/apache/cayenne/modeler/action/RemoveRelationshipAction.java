@@ -38,7 +38,6 @@ import org.apache.cayenne.project.ProjectPath;
 /**
  * Removes currently selected relationship from either the DbEntity or ObjEntity.
  * 
- * @author Garry Watkins
  */
 public class RemoveRelationshipAction extends RemoveAction implements MultipleObjectsAction {
 

@@ -24,7 +24,6 @@ import org.apache.cayenne.access.DataContext;
 /**
  * Defines basic methods for a persistent object in Cayenne.
  * 
- * @author Andrus Adamchik
  */
 public interface DataObject extends Persistent {
 

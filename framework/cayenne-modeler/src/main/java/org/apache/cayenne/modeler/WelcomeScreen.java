@@ -52,7 +52,6 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 /**
  * Welcome screen (CAY-894) is a panel shown when no project is open.
  * User can quickly create new project or open an existing one.
- * @author Andrey Razumovsky
  */
 public class WelcomeScreen extends JPanel implements RecentFileListListener {
 

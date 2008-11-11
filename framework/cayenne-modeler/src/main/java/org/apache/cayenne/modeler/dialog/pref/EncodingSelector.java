@@ -38,7 +38,6 @@ import org.apache.cayenne.util.Util;
 /**
  * A controller for stream encoding picker component.
  * 
- * @author Andrus Adamchik
  */
 public class EncodingSelector extends CayenneController {
 

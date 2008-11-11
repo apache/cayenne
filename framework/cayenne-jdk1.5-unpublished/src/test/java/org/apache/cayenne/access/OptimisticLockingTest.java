@@ -30,7 +30,6 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.LockingCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class OptimisticLockingTest extends LockingCase {
 

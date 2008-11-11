@@ -42,7 +42,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * DataRows-to-objects converter for a specific ObjEntity.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ObjectResolver {
 

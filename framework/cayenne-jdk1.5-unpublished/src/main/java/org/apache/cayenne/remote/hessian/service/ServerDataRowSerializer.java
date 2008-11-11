@@ -31,7 +31,6 @@ import com.caucho.hessian.io.AbstractSerializer;
 /**
  * A server-side DataRow Hessian serializer.
  * 
- * @author Andrus Adamchik
  */
 class ServerDataRowSerializer extends AbstractSerializer {
 

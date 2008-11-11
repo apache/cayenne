@@ -27,7 +27,6 @@ import org.apache.cayenne.query.Query;
 /**
  * Defines methods used to run Cayenne queries.
  * 
- * @author Andrus Adamchik
  */
 public interface QueryEngine {
 

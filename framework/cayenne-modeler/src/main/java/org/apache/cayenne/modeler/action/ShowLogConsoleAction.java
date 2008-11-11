@@ -26,7 +26,6 @@ import java.awt.event.ActionEvent;
 
 /**
  * Action for opening log console window (See CAY-366)
- * @author Andrey Razumovsky
  */
 public class ShowLogConsoleAction extends CayenneAction {
     /**

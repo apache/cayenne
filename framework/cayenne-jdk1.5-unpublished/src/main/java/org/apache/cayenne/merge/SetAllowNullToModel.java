@@ -24,7 +24,6 @@ import org.apache.cayenne.map.DbEntity;
 /**
  * A {@link MergerToken} to set the mandatory field of a {@link DbAttribute} to false
  * 
- * @author halset
  */
 public class SetAllowNullToModel extends AbstractToModelToken.EntityAndColumn {
 

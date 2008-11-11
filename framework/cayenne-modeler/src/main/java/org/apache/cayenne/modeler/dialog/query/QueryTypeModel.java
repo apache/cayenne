@@ -28,7 +28,6 @@ import org.apache.cayenne.query.SelectQuery;
 import org.scopemvc.core.Selector;
 
 /**
- * @author Andrus Adamchik
  */
 public class QueryTypeModel {
 

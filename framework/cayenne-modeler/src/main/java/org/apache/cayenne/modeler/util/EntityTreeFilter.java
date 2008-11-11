@@ -24,7 +24,6 @@ import org.apache.cayenne.map.Relationship;
 /**
  * EntityTreeFilter is an interface for deciding which attributes or
  * relationships should appear in the tree
- * @author Andrey Razumovsky
  */
 public interface EntityTreeFilter {
     /**

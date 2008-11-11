@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
  * server context information in HTTP sessions.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public abstract class HttpRemoteService extends BaseRemoteService {
 

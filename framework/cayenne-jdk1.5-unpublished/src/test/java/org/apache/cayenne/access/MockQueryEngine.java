@@ -34,7 +34,6 @@ import org.apache.cayenne.query.Query;
  * A query engine used for unit testing. Returns canned results instead of doing the
  * actual query.
  * 
- * @author Andrus Adamchik
  */
 public class MockQueryEngine implements QueryEngine {
 

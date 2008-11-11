@@ -40,7 +40,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * Handles <code>java.lang.String</code>, mapping it as either of JDBC types - CLOB or
  * (VAR)CHAR. Can be configured to trim trailing spaces.
  * 
- * @author Andrus Adamchik
  */
 public class CharType extends AbstractType {
 

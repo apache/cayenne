@@ -36,7 +36,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * Extracts a list of JPA unit names available in the environment.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 // some code duplication with JPA UnitLoader and UnitDescriptorParser, but here we only
 // care about persistence unit names, and not the full contents.

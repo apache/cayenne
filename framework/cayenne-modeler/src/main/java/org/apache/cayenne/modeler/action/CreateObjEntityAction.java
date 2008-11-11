@@ -37,7 +37,6 @@ import org.apache.cayenne.util.NameConverter;
 import java.awt.event.ActionEvent;
 
 /**
- * @author Andrus Adamchik
  */
 public class CreateObjEntityAction extends CayenneAction {
 

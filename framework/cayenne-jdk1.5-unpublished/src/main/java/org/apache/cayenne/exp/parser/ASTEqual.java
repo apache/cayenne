@@ -27,7 +27,6 @@ import org.apache.cayenne.exp.Expression;
  * "Equal To" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTEqual extends ConditionNode {
     /**

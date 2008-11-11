@@ -28,7 +28,6 @@ import javax.swing.JTable;
 /**
  * A builder for a JTable binding.
  * 
- * @author Andrus Adamchik
  */
 public class TableBindingBuilder {
 

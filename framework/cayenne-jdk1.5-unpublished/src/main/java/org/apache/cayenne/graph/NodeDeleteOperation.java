@@ -21,7 +21,6 @@ package org.apache.cayenne.graph;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class NodeDeleteOperation extends NodeDiff {
 

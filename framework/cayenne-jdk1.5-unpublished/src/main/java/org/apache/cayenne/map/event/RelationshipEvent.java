@@ -28,8 +28,6 @@ import org.apache.cayenne.map.Relationship;
  * and DbRelationships.
  * 
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class RelationshipEvent extends EntityEvent {
 	protected Relationship relationship;

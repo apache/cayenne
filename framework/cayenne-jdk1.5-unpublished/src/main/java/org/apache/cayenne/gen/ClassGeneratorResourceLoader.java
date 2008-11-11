@@ -33,7 +33,6 @@ import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
  * templates from the thread ClassLoader and from relative and absolute paths.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 // must be public top-level class as it is
 // instantiated via reflection by Velocity

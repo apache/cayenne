@@ -29,7 +29,6 @@ import org.apache.cayenne.event.CayenneEvent;
  * Event sent on modification of the DataRowStore.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class SnapshotEvent extends CayenneEvent {
 

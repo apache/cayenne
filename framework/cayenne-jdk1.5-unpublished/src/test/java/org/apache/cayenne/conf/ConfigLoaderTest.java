@@ -26,7 +26,6 @@ import java.util.List;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ConfigLoaderTest extends TestCase {
 

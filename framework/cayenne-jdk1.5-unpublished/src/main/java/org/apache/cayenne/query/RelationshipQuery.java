@@ -36,7 +36,6 @@ import org.apache.cayenne.util.Util;
  * executed by the application directly, although this of course is possible too.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class RelationshipQuery extends IndirectQuery {
 

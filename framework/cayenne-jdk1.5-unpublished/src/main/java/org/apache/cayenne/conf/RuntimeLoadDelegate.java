@@ -39,7 +39,6 @@ import org.xml.sax.InputSource;
 /**
  * Implementation of ConfigLoaderDelegate that creates Cayenne access objects stack.
  * 
- * @author Andrus Adamchik
  */
 public class RuntimeLoadDelegate implements ConfigLoaderDelegate {
 

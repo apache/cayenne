@@ -36,7 +36,6 @@ import org.apache.cayenne.util.Util;
  * actual query is resolved during execution.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class NamedQuery extends IndirectQuery {
 

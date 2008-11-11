@@ -29,7 +29,6 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * Detects Ingres database from JDBC metadata.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class IngresSniffer implements DbAdapterFactory {
 

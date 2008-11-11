@@ -33,7 +33,6 @@ import com.caucho.hessian.io.SerializerFactory;
  * A utility class that configures Hessian serialization properties using reflection.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class HessianConfig {
 

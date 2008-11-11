@@ -24,7 +24,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.exp.Expression;
 
 /**
- * @author Andrus Adamchik
  */
 public class CAY_10062004_ExpTest extends TestCase {
 

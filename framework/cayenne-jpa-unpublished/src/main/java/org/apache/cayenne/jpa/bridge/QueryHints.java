@@ -21,7 +21,6 @@ package org.apache.cayenne.jpa.bridge;
 /**
  * Defines QueryHints recognized by Cayenne provider.
  * 
- * @author Andrus Adamchik
  */
 public interface QueryHints {
 

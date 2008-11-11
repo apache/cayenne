@@ -31,7 +31,6 @@ import org.apache.cayenne.project.ProjectPath;
 /** 
  * Validator is used to validate Cayenne projects.
  * 
- * @author Andrus Adamchik
  */
 public class Validator {
     protected Project project;

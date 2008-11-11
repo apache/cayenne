@@ -28,7 +28,6 @@ import java.io.Serializable;
  * corresponding static method.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public abstract class Fault implements Serializable {
 

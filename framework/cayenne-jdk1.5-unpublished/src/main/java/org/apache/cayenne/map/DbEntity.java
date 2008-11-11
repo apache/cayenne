@@ -48,8 +48,6 @@ import org.apache.commons.collections.Transformer;
 /**
  * A DbEntity is a mapping descriptor that defines a structure of a database table.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DbEntity extends Entity implements DbEntityListener, DbAttributeListener,
         DbRelationshipListener {

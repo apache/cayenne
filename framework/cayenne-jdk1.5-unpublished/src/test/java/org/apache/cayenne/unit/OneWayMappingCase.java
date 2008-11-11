@@ -23,7 +23,6 @@ package org.apache.cayenne.unit;
  * Super class of test cases that use DataMap with 
  * one-way relationships.
  * 
- * @author Andrus Adamchik
  */
 public abstract class OneWayMappingCase extends CayenneCase {
     public static final String ONEWAY_ACCESS_STACK = "OneWayStack";

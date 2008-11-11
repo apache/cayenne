@@ -47,7 +47,6 @@ import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
- * @author Andrus Adamchik
  */
 public class DBGeneratorOptions extends CayenneController {
 

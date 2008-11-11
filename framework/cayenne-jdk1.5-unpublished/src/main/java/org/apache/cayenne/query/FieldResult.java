@@ -25,7 +25,6 @@ import org.apache.cayenne.util.ToStringBuilder;
  * by {@link EntityResult}.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class FieldResult {
 

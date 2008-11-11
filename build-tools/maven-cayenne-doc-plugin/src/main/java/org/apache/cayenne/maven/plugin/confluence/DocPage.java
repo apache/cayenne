@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
  * Represents a TOC entry. This has a lot of tree-like search functions, but I did not
  * find a tree implementation that I thought was worth using for this.
  * 
- * @author Cris Daniluk
  */
 public class DocPage {
 

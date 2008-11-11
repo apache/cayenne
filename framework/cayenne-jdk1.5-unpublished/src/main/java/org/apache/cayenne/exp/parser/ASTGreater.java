@@ -25,7 +25,6 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * "Greate Than" expression.
  * 
- * @author Andrus Adamchik
  */
 public class ASTGreater extends ConditionNode {
 

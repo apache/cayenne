@@ -27,7 +27,6 @@ import org.objectweb.asm.Type;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class SetterVisitor extends MethodAdapter {
 

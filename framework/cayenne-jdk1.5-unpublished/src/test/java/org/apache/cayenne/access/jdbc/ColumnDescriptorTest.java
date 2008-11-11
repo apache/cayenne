@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
 /**
- * @author Andrus Adamchik
  */
 public class ColumnDescriptorTest extends TestCase {
 

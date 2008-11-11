@@ -28,7 +28,6 @@ import javax.swing.JMenuItem;
 /**
  * A menu item that points to a file.
  * 
- * @author Andrus Adamchik
  */
 public class FileMenuItem extends JMenuItem {
 

@@ -29,7 +29,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.unit.CayenneResources;
 
 /**
- * @author Andrus Adamchik
  */
 public class XMLDecoderTest extends TestCase {
 

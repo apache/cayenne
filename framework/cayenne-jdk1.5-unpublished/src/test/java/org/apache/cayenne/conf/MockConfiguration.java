@@ -20,7 +20,6 @@
 package org.apache.cayenne.conf;
 
 /**
- * @author Andrus Adamchik
  */
 public class MockConfiguration extends Configuration {
 

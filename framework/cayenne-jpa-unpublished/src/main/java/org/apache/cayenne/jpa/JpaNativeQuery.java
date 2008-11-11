@@ -32,7 +32,6 @@ import org.apache.cayenne.query.SQLTemplate;
  * A JPA wrapper for Cayenne {@link SQLTemplate}.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class JpaNativeQuery extends JpaQuery {
 

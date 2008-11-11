@@ -41,7 +41,6 @@ import org.apache.cayenne.util.Util;
  * the exceptions immediately, and may cause the database to hang.</i>
  * </p>
  * 
- * @author Andrus Adamchik
  */
 public class DefaultOperationObserver implements OperationObserver {
 

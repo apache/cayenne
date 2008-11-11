@@ -40,8 +40,6 @@ import org.apache.cayenne.modeler.util.ProjectUtil;
  * Model for DbEntity attributes. Allows adding/removing attributes, modifying types and
  * names.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DbAttributeTableModel extends CayenneTableModel {
 

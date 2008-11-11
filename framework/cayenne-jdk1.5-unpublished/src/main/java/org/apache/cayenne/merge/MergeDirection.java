@@ -22,7 +22,6 @@ package org.apache.cayenne.merge;
  * Represent a merge direction that can be one of two. Either from the model to the db or
  * from the db to the model.
  * 
- * @author halset
  */
 public class MergeDirection {
 

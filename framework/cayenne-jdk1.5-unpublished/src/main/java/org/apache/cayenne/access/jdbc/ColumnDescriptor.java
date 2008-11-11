@@ -35,7 +35,6 @@ import org.apache.cayenne.util.ToStringBuilder;
  * A descriptor of a ResultSet column.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ColumnDescriptor implements Serializable {
 

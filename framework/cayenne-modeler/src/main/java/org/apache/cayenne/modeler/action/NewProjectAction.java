@@ -35,7 +35,6 @@ import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.Project;
 
 /**
- * @author Andrus Adamchik
  */
 public class NewProjectAction extends ProjectAction {
 

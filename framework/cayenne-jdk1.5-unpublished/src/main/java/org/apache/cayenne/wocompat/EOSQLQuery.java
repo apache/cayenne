@@ -29,7 +29,6 @@ import org.apache.cayenne.query.SQLTemplate;
  * Cayenne SQLTemplate to provide access to the extra information of WebObjects
  * EOFetchSpecification.
  * 
- * @author Travis Cripps
  * @since 1.2
  */
 public class EOSQLQuery extends SQLTemplate {

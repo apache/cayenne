@@ -31,7 +31,6 @@ import org.apache.cayenne.event.CayenneEvent;
  * </pre>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class GraphEvent extends CayenneEvent {
 

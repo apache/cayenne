@@ -24,7 +24,6 @@ import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class PostgresSelectTranslator extends SelectTranslator {
 

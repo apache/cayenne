@@ -33,7 +33,6 @@ import org.apache.cayenne.query.QueryMetadata;
  * column. It is much more memory-efficient compared to the superclass.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
 

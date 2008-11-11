@@ -35,7 +35,6 @@ import com.caucho.hessian.io.Serializer;
  * An object that manages all custom (de)serializers used on the client.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ClientSerializerFactory extends AbstractSerializerFactory {
 

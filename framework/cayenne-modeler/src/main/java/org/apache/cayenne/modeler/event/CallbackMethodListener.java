@@ -24,7 +24,6 @@ import java.util.EventListener;
 /**
  * Listener for manipulation on a callback method
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 25, 2007
  */
 public interface CallbackMethodListener extends EventListener {

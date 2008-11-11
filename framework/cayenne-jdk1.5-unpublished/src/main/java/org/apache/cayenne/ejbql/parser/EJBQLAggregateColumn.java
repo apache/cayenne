@@ -22,7 +22,6 @@ package org.apache.cayenne.ejbql.parser;
  * An aggregate column expression.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public abstract class EJBQLAggregateColumn extends SimpleNode {
 

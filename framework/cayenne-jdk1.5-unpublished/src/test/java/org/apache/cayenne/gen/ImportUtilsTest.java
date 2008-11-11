@@ -22,7 +22,6 @@ package org.apache.cayenne.gen;
 import junit.framework.TestCase;
 
 /**
- * @author Mike Kienenberger
  */
 public class ImportUtilsTest extends TestCase {
 

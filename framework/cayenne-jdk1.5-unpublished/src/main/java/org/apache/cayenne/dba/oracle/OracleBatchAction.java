@@ -28,7 +28,6 @@ import org.apache.cayenne.query.BatchQuery;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class OracleBatchAction extends BatchAction {
 

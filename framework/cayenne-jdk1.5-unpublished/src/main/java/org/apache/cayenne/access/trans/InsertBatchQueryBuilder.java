@@ -32,8 +32,6 @@ import org.apache.cayenne.query.BatchQuery;
 /**
  * Translator of InsertBatchQueries.
  * 
- * @author Andriy Shapochka
- * @author Andrus Adamchik
  */
 public class InsertBatchQueryBuilder extends BatchQueryBuilder {
 

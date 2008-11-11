@@ -30,7 +30,6 @@ import org.apache.cayenne.map.EntityResolver;
  * (eager refresh) or invalidate (lazy refresh).
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class RefreshQuery implements Query {
 

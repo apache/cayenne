@@ -27,7 +27,6 @@ import junit.framework.TestCase;
 import com.mockrunner.mock.jdbc.MockResultSet;
 
 /**
- * @author Andrus Adamchik
  */
 public class BooleanTypeTest extends TestCase {
 

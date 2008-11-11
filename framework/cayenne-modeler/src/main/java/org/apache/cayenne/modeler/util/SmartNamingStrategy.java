@@ -36,7 +36,6 @@ import org.jvnet.inflector.Noun;
  *   instead-of 'addressArray')
  * 
  * @since 3.0
- * @author Andrey Razumovsky
  */
 public class SmartNamingStrategy extends BasicNamingStrategy {
     @Override

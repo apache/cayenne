@@ -42,7 +42,6 @@ import org.apache.velocity.runtime.parser.node.Node;
  * prefixed with chain join.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ChunkDirective extends Directive {
 

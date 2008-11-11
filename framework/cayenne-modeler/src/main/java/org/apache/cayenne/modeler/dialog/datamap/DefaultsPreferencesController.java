@@ -28,7 +28,6 @@ import org.scopemvc.core.ControlException;
 /**
  * An abstract controller for the DataMap defaults updates.
  * 
- * @author Andrus Adamchik
  */
 public abstract class DefaultsPreferencesController extends BasicController {
 

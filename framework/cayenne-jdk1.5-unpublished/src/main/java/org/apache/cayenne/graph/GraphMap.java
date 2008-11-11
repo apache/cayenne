@@ -34,7 +34,6 @@ import java.util.Map;
  * </p>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class GraphMap implements GraphManager {
 

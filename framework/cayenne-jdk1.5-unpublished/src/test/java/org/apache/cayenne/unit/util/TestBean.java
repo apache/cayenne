@@ -30,7 +30,6 @@ import java.util.Date;
  * introspection.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class TestBean {
 

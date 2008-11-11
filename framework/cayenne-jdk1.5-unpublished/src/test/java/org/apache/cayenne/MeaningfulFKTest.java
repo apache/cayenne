@@ -25,7 +25,6 @@ import org.apache.cayenne.unit.RelationshipCase;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
- * @author Andrus Adamchik
  */
 public class MeaningfulFKTest extends RelationshipCase {
 

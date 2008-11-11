@@ -34,7 +34,6 @@ import org.apache.cayenne.graph.GraphEvent;
  * </pre>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface DataChannelListener {
 

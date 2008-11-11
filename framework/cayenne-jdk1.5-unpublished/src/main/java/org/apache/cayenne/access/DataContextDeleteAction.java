@@ -43,7 +43,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * Helper class that implements DataObject deletion strategy.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DataContextDeleteAction {
 

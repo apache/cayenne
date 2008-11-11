@@ -30,7 +30,6 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * A descriptor for the Procedure parameter.
  * 
- * @author Andrus Adamchik
  */
 public class ProcedureParameter implements CayenneMapEntry, XMLSerializable, Serializable {
 

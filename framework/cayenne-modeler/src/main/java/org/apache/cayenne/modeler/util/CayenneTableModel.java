@@ -41,7 +41,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Superclass of CayenneModeler table model classes.
  * 
- * @author Andrus Adamchik
  */
 public abstract class CayenneTableModel extends AbstractTableModel {
 

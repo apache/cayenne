@@ -23,7 +23,6 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
- * @author Andrus Adamchik
  */
 public class DomainValidatorTest extends ValidatorTestBase {
 

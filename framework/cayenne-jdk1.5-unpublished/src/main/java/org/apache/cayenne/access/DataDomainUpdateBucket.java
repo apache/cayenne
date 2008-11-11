@@ -39,7 +39,6 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DataDomainUpdateBucket extends DataDomainSyncBucket {
 

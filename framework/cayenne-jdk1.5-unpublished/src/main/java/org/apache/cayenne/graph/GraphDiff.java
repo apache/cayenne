@@ -26,7 +26,6 @@ import java.io.Serializable;
  * property update) or a composite change that consists of a number of smaller changes.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface GraphDiff extends Serializable {
 

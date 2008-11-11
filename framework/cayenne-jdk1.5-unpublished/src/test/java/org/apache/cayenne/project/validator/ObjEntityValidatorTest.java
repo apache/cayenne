@@ -26,8 +26,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
- * @author Andrus Adamchik
- * @author Craig Miskell
  */
 public class ObjEntityValidatorTest extends ValidatorTestBase {
 

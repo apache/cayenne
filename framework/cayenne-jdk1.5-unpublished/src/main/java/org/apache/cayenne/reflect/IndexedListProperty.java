@@ -28,7 +28,6 @@ import org.apache.cayenne.util.IndexPropertyList;
  * A CollectionProperty that uses IndexPropertyList.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  * @deprecated since 3.0 (no substitute exists in Cayenne)
  */
 public class IndexedListProperty extends ListProperty {

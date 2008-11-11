@@ -41,7 +41,6 @@ import org.apache.cayenne.query.Query;
  * </p>
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public final class DataObjectUtils {
     

@@ -27,7 +27,6 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
  * {@link LifecycleCallbackRegistry} for details on how to register callbacks.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface LifecycleListener {
 

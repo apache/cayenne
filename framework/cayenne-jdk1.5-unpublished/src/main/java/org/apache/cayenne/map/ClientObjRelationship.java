@@ -24,7 +24,6 @@ package org.apache.cayenne.map;
  * dynamically calculated in a superclass.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ClientObjRelationship extends ObjRelationship {
 

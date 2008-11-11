@@ -33,7 +33,6 @@ import com.caucho.hessian.io.JavaDeserializer;
  * Deserializer that overrides query roots with server classes on deserialization.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ServerAbstractQueryDeserializer extends JavaDeserializer {
 

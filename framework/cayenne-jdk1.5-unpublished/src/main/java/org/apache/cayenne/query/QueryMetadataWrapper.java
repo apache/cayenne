@@ -33,7 +33,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * properties.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class QueryMetadataWrapper implements QueryMetadata {
 

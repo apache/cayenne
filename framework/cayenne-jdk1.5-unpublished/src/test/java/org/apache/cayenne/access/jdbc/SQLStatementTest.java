@@ -22,7 +22,6 @@ package org.apache.cayenne.access.jdbc;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class SQLStatementTest extends BasicCase {
     public void testConstructor() throws Exception {

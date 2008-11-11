@@ -48,7 +48,6 @@ import org.apache.cayenne.map.ObjEntity;
  * {@link MergerToken}s to alter the {@link DataNode} datastore to match the
  * {@link DataMap}.
  * 
- * @author halset
  */
 public class DbMerger {
 

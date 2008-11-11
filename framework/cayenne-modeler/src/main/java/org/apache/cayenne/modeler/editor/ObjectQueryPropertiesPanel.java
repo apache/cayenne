@@ -35,7 +35,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * A panel that supports editing the properties of a query based on ObjEntity.
  * 
- * @author Andrus Adamchik
  */
 public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
 

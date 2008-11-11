@@ -26,7 +26,6 @@ import java.net.URL;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ZipUtilTest extends BasicCase {
 

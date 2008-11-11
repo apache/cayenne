@@ -24,7 +24,6 @@ import org.apache.cayenne.exp.ExpressionException;
  * An exception thrown on errors during parsing EJBQL statements.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EJBQLException extends ExpressionException {
 

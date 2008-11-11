@@ -56,7 +56,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Stateful helper class that encapsulates access to DbLoader.
  * 
- * @author Andrus Adamchik
  */
 public class DbLoaderHelper {
 

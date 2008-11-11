@@ -32,7 +32,6 @@ import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataContextSharedCacheEmpiricTest extends CayenneCase {
 

@@ -29,7 +29,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class EOModelPrototypesTest extends BasicCase {
 

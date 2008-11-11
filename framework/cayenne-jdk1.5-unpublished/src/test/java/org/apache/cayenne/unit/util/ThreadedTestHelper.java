@@ -29,7 +29,6 @@ package org.apache.cayenne.unit.util;
  * <p>Note that result sampling is done every 300 ms., so if the test succeeds earlier,
  * test case wouldn't have to wait for the whole time period specified by timeout.</p>
  * 
- * @author Andrus Adamchik
  */
 public abstract class ThreadedTestHelper {
 

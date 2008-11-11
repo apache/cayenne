@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.unit.PeopleCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class EntityResolverInheritanceTest extends PeopleCase {
     protected EntityResolver resolver;

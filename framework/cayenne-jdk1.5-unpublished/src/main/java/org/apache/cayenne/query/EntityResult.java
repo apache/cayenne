@@ -34,7 +34,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * Used by {@link SQLResultSetMapping}.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EntityResult {
 

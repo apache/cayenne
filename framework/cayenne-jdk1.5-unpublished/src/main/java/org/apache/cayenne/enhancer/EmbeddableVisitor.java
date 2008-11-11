@@ -31,7 +31,6 @@ import org.objectweb.asm.FieldVisitor;
  * by Cayenne.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EmbeddableVisitor extends ClassAdapter {
 

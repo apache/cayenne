@@ -24,7 +24,6 @@ import org.objectweb.asm.ClassVisitor;
  * A factory for the ASM ClassVisitors used during class enhancement.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface EnhancerVisitorFactory {
 

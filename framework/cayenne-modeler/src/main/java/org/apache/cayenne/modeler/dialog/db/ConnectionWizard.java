@@ -37,7 +37,6 @@ import org.apache.cayenne.modeler.util.CayenneController;
  * in preferences, and one extra set of connection settings. This object will create and
  * keep open a JDBC connection. It is caller responsibility to dispose of it properly.
  * 
- * @author Andrus Adamchik
  */
 // TODO: after refactoring DbLoader to accept a DataSource instead of connection this
 // dialog should be merged with superclass - DataSourceWizard.

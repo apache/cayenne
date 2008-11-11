@@ -26,7 +26,6 @@ import org.apache.cayenne.map.ObjEntity;
  * A metadata object for the {@link EJBQLQuery}.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class EJBQLQueryMetadata extends BaseQueryMetadata {
 

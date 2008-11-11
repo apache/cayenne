@@ -28,7 +28,6 @@ import java.util.Collections;
  * some pieces of information
  * 
  * @since 3.0
- * @author Kevin Menard
  */
 class ClientObjEntity extends ObjEntity {
 

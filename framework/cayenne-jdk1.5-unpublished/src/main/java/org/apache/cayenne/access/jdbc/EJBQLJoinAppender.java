@@ -37,7 +37,6 @@ import org.apache.cayenne.map.Entity;
  * Handles appending joins to the content buffer at a marked position.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EJBQLJoinAppender {
 

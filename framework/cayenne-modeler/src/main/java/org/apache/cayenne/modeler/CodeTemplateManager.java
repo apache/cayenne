@@ -34,7 +34,6 @@ import org.apache.cayenne.pref.Domain;
 /**
  * Manages code generation templates.
  * 
- * @author Andrus Adamchik
  */
 public class CodeTemplateManager {
 

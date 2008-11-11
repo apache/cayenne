@@ -37,8 +37,6 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
 /**
  * Table model for DbRelationship table.
  * 
- * @author Michael Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DbRelationshipTableModel extends CayenneTableModel {
 

@@ -25,7 +25,6 @@ import org.apache.cayenne.jpa.map.JpaEntityMap;
 /**
  * Implements an algorithm for merging two JpaEntityMaps.
  * 
- * @author Andrus Adamchik
  */
 public class EntityMapMergeProcessor {
 

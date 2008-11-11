@@ -31,7 +31,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Testing relationships with compound keys.
  * 
- * @author Andrus Adamchik
  */
 public class DataContextCompoundRelTest extends CayenneCase {
 

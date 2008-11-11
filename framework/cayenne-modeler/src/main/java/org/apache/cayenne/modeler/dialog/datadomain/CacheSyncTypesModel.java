@@ -25,7 +25,6 @@ import org.scopemvc.core.Selector;
 import org.scopemvc.model.basic.BasicModel;
 
 /**
- * @author Andrus Adamchik
  */
 public class CacheSyncTypesModel extends BasicModel {
     public static final String JGROUPS_FACTORY_LABEL = "JavaGroups Multicast (Default)";

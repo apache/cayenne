@@ -28,7 +28,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
- * @author Andrus Adamchik
  */
 public class CAY_207StringType2 extends AbstractType {
 

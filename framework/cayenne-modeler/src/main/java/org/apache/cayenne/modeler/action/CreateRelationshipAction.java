@@ -37,7 +37,6 @@ import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
- * @author Andrus Adamchik
  */
 public class CreateRelationshipAction extends CayenneAction {
 

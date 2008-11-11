@@ -32,7 +32,6 @@ import org.apache.cayenne.query.BatchQuery;
 /**
  * Superclass of batch query translators.
  * 
- * @author Andriy Shapochka, Andrus Adamchik
  */
 
 public abstract class BatchQueryBuilder {

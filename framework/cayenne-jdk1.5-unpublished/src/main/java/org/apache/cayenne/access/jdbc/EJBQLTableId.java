@@ -32,7 +32,6 @@ import org.apache.cayenne.util.Util;
  * attributes and relationships. EJBQLTableId is intended to represent both types of
  * tables.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 class EJBQLTableId {

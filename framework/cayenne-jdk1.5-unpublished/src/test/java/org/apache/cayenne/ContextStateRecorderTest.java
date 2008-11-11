@@ -25,7 +25,6 @@ import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.graph.MockGraphManager;
 
 /**
- * @author Andrus Adamchik
  */
 public class ContextStateRecorderTest extends TestCase {
 

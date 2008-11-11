@@ -34,7 +34,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Tests IncrementalFaultList behavior when fetching data rows.
  * 
- * @author Andrus Adamchik
  */
 public class SimpleIdIncrementalFaultListDataRowsTest extends CayenneCase {
 

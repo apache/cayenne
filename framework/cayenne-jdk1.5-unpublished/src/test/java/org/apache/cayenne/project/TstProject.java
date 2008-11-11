@@ -29,7 +29,6 @@ import org.apache.cayenne.conf.ConfigStatus;
 /**
  * Concrete subclass of Project used for testing purposes.
  * 
- * @author Andrus Adamchik
  */
 public class TstProject extends Project {
 

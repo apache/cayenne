@@ -25,7 +25,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * A runtime exception thrown when <code>PropertyUtils.getProperty()</code> finds that
  * there is a null value in middle of the resolved path.
  * 
- * @author Marcin Skladaniec
  */
 public class UnresolvablePathException extends CayenneRuntimeException {
 

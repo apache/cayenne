@@ -26,7 +26,6 @@ import java.util.Map;
  * Defines a factory to dynamically create EventBridge instances.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public interface EventBridgeFactory {
 

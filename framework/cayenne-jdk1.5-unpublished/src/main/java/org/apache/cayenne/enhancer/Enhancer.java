@@ -33,7 +33,6 @@ import org.objectweb.asm.ClassWriter;
  * provided by the {@link EnhancerVisitorFactory}.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class Enhancer implements ClassFileTransformer {
 

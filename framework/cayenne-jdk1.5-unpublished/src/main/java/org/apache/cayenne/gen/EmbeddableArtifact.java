@@ -25,7 +25,6 @@ import org.apache.velocity.VelocityContext;
  * {@link Artifact} facade for an {@link Embeddable}.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EmbeddableArtifact implements Artifact {
 

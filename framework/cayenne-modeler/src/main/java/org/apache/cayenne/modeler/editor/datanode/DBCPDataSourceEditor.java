@@ -27,7 +27,6 @@ import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.swing.ObjectBinding;
 
 /**
- * @author Andrus Adamchik
  */
 public class DBCPDataSourceEditor extends DataSourceEditor {
 

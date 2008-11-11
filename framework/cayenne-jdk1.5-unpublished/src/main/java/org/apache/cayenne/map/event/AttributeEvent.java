@@ -27,8 +27,6 @@ import org.apache.cayenne.map.Entity;
  * in CayenneModeler. This event is used for both ObjAttributes
  * and DbAttributes.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class AttributeEvent extends EntityEvent {
     protected Attribute attribute;

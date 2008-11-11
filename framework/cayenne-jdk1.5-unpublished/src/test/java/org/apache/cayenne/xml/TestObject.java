@@ -27,7 +27,6 @@ import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 
 /**
- * @author Andrus Adamchik
  */
 public class TestObject extends CayenneDataObject {
 

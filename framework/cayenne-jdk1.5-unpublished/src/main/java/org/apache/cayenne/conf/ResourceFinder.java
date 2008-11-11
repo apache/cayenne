@@ -25,7 +25,6 @@ import java.util.Collection;
  * An object that defines a strategy for locating stream resources.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface ResourceFinder {
 

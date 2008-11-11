@@ -43,7 +43,6 @@ import org.apache.commons.logging.LogFactory;
  * different remoting mechanisms, such as Hessian or JAXRPC.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public abstract class BaseRemoteService implements RemoteService {
 

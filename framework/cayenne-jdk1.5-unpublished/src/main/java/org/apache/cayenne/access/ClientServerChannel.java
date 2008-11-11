@@ -33,7 +33,6 @@ import org.apache.cayenne.query.Query;
  * objects in a Remote Object Persistence stack.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class ClientServerChannel implements DataChannel {
 

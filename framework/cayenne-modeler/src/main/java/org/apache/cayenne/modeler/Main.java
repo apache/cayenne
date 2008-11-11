@@ -44,7 +44,6 @@ import com.jgoodies.looks.plastic.PlasticTheme;
 /**
  * Main class responsible for starting CayenneModeler.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class Main {

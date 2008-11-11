@@ -22,7 +22,6 @@ package org.apache.cayenne.query;
  * Defines query result caching policy.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public enum QueryCacheStrategy {
 

@@ -26,7 +26,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.event.AttributeEvent;
 
 /**
- * @author Andrus Adamchik
  */
 public class AttributeEventTest extends TestCase {
 

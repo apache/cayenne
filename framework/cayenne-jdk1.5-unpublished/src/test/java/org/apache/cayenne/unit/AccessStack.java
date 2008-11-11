@@ -27,7 +27,6 @@ import org.apache.cayenne.access.UnitTestDomain;
 /**
  * DataDomain wrapper used for testing a specific Cayenne stack configuration.
  * 
- * @author Andrus Adamchik
  */
 public interface AccessStack {
 

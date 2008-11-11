@@ -26,7 +26,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Less than or equal to" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTLessOrEqual extends ConditionNode {
 

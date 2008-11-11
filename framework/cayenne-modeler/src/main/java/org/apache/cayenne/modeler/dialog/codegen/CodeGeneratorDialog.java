@@ -35,7 +35,6 @@ import javax.swing.SwingConstants;
 import org.apache.cayenne.modeler.Application;
 
 /**
- * @author Andrus Adamchik
  */
 public class CodeGeneratorDialog extends JDialog {
 

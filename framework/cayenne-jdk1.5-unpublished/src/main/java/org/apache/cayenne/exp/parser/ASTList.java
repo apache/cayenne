@@ -31,7 +31,6 @@ import org.apache.cayenne.exp.Expression;
  * A leaf expression representing an immutable collection of values.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTList extends SimpleNode {
     protected Object[] values;

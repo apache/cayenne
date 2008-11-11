@@ -22,7 +22,6 @@ import org.apache.cayenne.map.Embeddable;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface EmbeddableDescriptor {
 

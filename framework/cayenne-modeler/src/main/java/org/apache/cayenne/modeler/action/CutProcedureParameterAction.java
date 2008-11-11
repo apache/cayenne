@@ -26,7 +26,6 @@ import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action for cutting procedure parameter(s)
- * @author Andrey Razumovsky
  */
 public class CutProcedureParameterAction extends CutAction implements MultipleObjectsAction {
     private final static String ACTION_NAME = "Cut Procedure Parameter";

@@ -23,7 +23,6 @@ import javax.swing.Action;
 /**
  * MultipleObjectsAction is an action, which can be applied to multiple objects at once.
  * Therefore the name of the action might change
- * @author Andrey Razumovsky
  */
 public interface MultipleObjectsAction extends Action {
     /**

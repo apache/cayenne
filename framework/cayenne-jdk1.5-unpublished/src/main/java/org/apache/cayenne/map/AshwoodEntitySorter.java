@@ -52,7 +52,6 @@ import org.objectstyle.ashwood.graph.StrongConnection;
  * The class uses topological sorting from the <a
  * href="http://objectstyle.org/ashwood/">Ashwood library</a>.
  * 
- * @author Andriy Shapochka, Andrus Adamchik
  * @since 1.1
  */
 public class AshwoodEntitySorter implements EntitySorter {

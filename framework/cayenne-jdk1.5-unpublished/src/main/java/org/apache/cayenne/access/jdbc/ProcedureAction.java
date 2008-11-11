@@ -43,7 +43,6 @@ import org.apache.cayenne.query.ProcedureQuery;
  * and is not thread-safe.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class ProcedureAction extends BaseSQLAction {
 

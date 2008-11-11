@@ -28,7 +28,6 @@ import org.apache.cayenne.util.Util;
  * A PropertyAccessor that performs direct Field access.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class FieldAccessor implements Accessor {
 

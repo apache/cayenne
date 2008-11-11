@@ -42,7 +42,6 @@ import java.io.StringWriter;
 /**
  * Displays CayenneModeler exceptions and warning messages.
  * 
- * @author Andrus Adamchik
  */
 public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
     private static Log logObj = LogFactory.getLog(ErrorDebugDialog.class);

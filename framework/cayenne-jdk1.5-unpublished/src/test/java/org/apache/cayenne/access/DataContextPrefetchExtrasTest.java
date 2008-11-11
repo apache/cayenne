@@ -38,7 +38,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Test prefetching of various obscure cases.
  * 
- * @author Andrus Adamchik
  */
 public class DataContextPrefetchExtrasTest extends CayenneCase {
 

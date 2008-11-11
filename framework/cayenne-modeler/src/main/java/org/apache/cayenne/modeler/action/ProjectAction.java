@@ -32,7 +32,6 @@ import org.apache.cayenne.project.ProjectConfiguration;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
- * @author Andrus Adamchik
  */
 public class ProjectAction extends CayenneAction {
 

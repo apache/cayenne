@@ -22,7 +22,6 @@ import org.apache.cayenne.Fault;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface FaultFactory {
 

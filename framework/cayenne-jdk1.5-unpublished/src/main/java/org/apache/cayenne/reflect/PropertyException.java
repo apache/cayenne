@@ -26,7 +26,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * Accessor or a Property.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class PropertyException extends CayenneRuntimeException {
 

@@ -29,7 +29,6 @@ import org.apache.cayenne.profile.AbstractCase;
  * Performs initial database setup before running other tests. Essentially drops and
  * recreates the database.
  * 
- * @author Andrus Adamchik
  */
 public class SetupCase extends AbstractCase {
 

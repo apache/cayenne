@@ -25,7 +25,6 @@ import java.util.Collections;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class JGroupsBridgeFactoryTest extends TestCase {
 

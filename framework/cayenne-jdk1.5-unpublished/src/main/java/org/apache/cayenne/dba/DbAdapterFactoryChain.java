@@ -30,7 +30,6 @@ import java.util.List;
  * adapters known to Cayenne or can work with custom factories.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 // TODO, Andrus 11/01/2005, how can custom adapters be auto-detected? I.e. is there a way
 // to plug a custom factory into configuration loading process? Of course users can simply

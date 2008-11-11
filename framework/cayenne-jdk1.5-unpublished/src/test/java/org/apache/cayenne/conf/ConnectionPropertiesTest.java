@@ -27,7 +27,6 @@ import org.apache.commons.collections.ExtendedProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
 
 /**
- * @author Andrus Adamchik
  */
 public class ConnectionPropertiesTest extends TestCase {
 

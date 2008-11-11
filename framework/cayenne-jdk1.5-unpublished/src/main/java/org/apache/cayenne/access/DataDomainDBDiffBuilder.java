@@ -38,7 +38,6 @@ import org.apache.cayenne.map.ObjRelationship;
  * Processes object diffs, generating DB diffs. Can be used for both UPDATE and INSERT.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DataDomainDBDiffBuilder implements GraphChangeHandler {
 

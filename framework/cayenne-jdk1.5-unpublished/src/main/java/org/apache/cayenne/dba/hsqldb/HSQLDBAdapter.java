@@ -50,7 +50,6 @@ import org.apache.cayenne.query.SQLAction;
  *        test-hsqldb.jdbc.driver = org.hsqldb.jdbcDriver
  * </pre>
  * 
- * @author Holger Hoffstaette
  */
 public class HSQLDBAdapter extends JdbcAdapter {
 

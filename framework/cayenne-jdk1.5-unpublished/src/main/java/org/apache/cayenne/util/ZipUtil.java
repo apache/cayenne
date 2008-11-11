@@ -35,7 +35,6 @@ import java.util.zip.ZipOutputStream;
 /**
  * Utility class to perform zip/unzip operations on files and directories.
  *  
- * @author Andrus Adamchik
  */
 public class ZipUtil {
 

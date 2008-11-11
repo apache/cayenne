@@ -26,7 +26,6 @@ import org.apache.tools.ant.Task;
 /**
  * Ant-specific extension of DefaultClassGenerator that provides logging functions.
  * 
- * @author Andrus Adamchik
  * @deprecated since 3.0 this class is no longer relevant.
  */
 public class AntClassGenerator extends DefaultClassGenerator {

@@ -40,7 +40,6 @@ import org.apache.commons.collections.map.SingletonMap;
 /**
  * A binding for a JTable.
  * 
- * @author Andrus Adamchik
  */
 public class TableBinding extends BindingBase {
 

@@ -25,7 +25,6 @@ import org.apache.cayenne.reflect.FieldAccessor;
  * Handles property fault resolving.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class EnhancedPojoPropertyFaultHandler {
 

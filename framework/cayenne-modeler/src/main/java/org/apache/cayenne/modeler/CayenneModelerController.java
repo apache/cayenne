@@ -50,7 +50,6 @@ import org.apache.cayenne.project.validator.Validator;
 /**
  * Controller of the main application frame.
  * 
- * @author Andrus Adamchik
  */
 public class CayenneModelerController extends CayenneController {
 

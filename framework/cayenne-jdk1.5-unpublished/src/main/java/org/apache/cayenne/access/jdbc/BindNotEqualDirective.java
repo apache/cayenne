@@ -30,7 +30,6 @@ import org.apache.velocity.context.InternalContextAdapter;
  * Velocity template is "WHERE SOME_COLUMN #bindNotEqual($xyz)".
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class BindNotEqualDirective extends BindDirective {
 

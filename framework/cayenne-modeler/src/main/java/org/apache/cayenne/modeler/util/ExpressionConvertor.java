@@ -28,7 +28,6 @@ import org.apache.cayenne.util.Util;
  * A Scope convertor that allows to display expressions in text fields.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ExpressionConvertor {
 

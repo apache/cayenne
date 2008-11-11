@@ -20,7 +20,6 @@
 package org.apache.cayenne.pref;
 
 /**
- * @author Andrus Adamchik
  */
 public interface PreferenceService {
 

@@ -29,7 +29,6 @@ import org.apache.cayenne.pref.PreferenceDetail;
 /**
  * Specialized preferences editor for CayenneModeler.
  * 
- * @author Andrus Adamchik
  */
 public class CayenneModelerPreferenceEditor extends HSQLEmbeddedPreferenceEditor {
 

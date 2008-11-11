@@ -27,7 +27,6 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
 /**
- * @author Andrus Adamchik
  */
 // TODO: extend BindingExpression, unless we decide to make it a composition...
 public abstract class BindingBase implements ObjectBinding {

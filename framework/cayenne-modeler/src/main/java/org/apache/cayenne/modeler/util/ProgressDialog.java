@@ -41,7 +41,6 @@ import com.jgoodies.forms.layout.FormLayout;
  * A dialog rendering a progress bar. It is normally controlled by a subclass of
  * LongRunningTask.
  * 
- * @author Andrus Adamchik
  */
 public class ProgressDialog extends JDialog {
 

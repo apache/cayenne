@@ -31,7 +31,6 @@ import org.apache.cayenne.exp.Expression;
  * subentities.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class EntityInheritanceTree {
 

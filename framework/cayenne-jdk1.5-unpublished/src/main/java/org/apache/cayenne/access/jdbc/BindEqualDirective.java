@@ -30,7 +30,6 @@ import org.apache.velocity.context.InternalContextAdapter;
  * Usage in Velocity template is "WHERE SOME_COLUMN #bindEqual($xyz)".
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class BindEqualDirective extends BindDirective {
 

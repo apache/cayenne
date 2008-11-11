@@ -32,7 +32,6 @@ import org.apache.tools.ant.BuildException;
  * A "cdeploy" Ant task providing an Ant frontend to
  * org.apache.cayenne.project.ProjectConfigurator.
  * 
- * @author Andrus Adamchik
  */
 public class DeploymentConfigurator extends CayenneTask {
 

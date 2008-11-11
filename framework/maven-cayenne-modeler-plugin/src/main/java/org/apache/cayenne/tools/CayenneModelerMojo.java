@@ -27,7 +27,6 @@ import org.apache.maven.plugin.MojoFailureException;
 /**
  * Maven mojo to start up the Cayenne modeler from the command-line.
  * 
- * @author Kevin Menard
  * @since 3.0
  * 
  * @prefix cayenne-modeler

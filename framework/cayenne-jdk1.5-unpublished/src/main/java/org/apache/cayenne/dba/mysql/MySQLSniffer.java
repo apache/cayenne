@@ -31,7 +31,6 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * Detects MySQL database from JDBC metadata.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class MySQLSniffer implements DbAdapterFactory {
 

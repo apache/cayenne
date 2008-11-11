@@ -43,7 +43,6 @@ import org.apache.cayenne.query.SelectQuery;
  * A holder of flattened relationship modification data.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 final class FlattenedArcKey {
 

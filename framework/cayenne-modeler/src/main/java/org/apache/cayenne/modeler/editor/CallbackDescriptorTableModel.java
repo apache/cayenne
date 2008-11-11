@@ -31,7 +31,6 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
 /**
  * Table model for displaying methods list for a particular CallbackDescriptor
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 23, 2007
  */
 public class CallbackDescriptorTableModel extends CayenneTableModel {

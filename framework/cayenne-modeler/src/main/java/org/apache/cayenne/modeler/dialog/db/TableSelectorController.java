@@ -42,7 +42,6 @@ import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
 
 /**
- * @author Andrus Adamchik
  */
 public class TableSelectorController extends CayenneController {
 

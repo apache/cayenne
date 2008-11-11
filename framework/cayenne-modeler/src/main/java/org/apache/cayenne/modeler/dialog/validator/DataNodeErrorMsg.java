@@ -31,8 +31,6 @@ import org.apache.cayenne.project.validator.ValidationInfo;
 /**
  * DataNode validation message.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DataNodeErrorMsg extends ValidationDisplayHandler {
 	protected DataNode node;

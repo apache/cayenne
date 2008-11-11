@@ -24,7 +24,6 @@ import org.apache.cayenne.map.event.MapEvent;
 /**
  * Event for creating/removing/modifying callback methods
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 25, 2007
  */
 

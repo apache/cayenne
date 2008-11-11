@@ -24,7 +24,6 @@ import java.sql.SQLException;
 /**
  * A JDBC template for reading a single row from the database.
  * 
- * @author Andrus Adamchik
  */
 abstract class RowTemplate extends ResultSetTemplate {
 

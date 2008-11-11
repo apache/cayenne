@@ -29,7 +29,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataNodeEditor extends CayenneController {
 

@@ -40,7 +40,6 @@ import org.apache.cayenne.query.ProcedureQuery;
  * Oracle-specific ProcedureAction that supports ResultSet OUT parameters.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class OracleProcedureAction extends ProcedureAction {
 

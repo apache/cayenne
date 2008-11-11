@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.util.CayenneDialog;
 
 /**
  * LogConsoleWindow is used to show log in a separate dialog 
- * @author Andrey Razumovsky
  */
 public class LogConsoleWindow extends CayenneDialog {
 

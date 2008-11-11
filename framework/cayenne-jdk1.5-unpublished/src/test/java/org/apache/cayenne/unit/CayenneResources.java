@@ -46,7 +46,6 @@ import org.springframework.core.io.InputStreamResource;
 /**
  * Initializes connections for Cayenne unit tests.
  * 
- * @author Andrus Adamchik
  */
 // TODO: switch to Spring
 public class CayenneResources implements BeanFactoryAware {

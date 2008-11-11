@@ -31,7 +31,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Multiply" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTMultiply extends SimpleNode {
     ASTMultiply(int id) {

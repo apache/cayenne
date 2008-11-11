@@ -30,7 +30,6 @@ import org.objectweb.asm.Type;
  * An enhancer that adds interceptor code to the getters and setters.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public abstract class AccessorVisitor extends ClassAdapter {
 

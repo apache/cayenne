@@ -22,7 +22,6 @@ package org.apache.cayenne.gen;
  * Code generator execution mode for a collection of artifacts.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public enum ArtifactsGenerationMode {
 

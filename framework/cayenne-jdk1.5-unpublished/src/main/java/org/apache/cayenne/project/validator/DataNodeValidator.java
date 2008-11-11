@@ -28,7 +28,6 @@ import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataNodeValidator extends TreeNodeValidator {
 

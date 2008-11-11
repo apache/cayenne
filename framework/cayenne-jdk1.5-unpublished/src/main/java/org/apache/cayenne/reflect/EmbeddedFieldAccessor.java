@@ -23,7 +23,6 @@ package org.apache.cayenne.reflect;
  * fields with appropriate embeddable objects when needed during get and set calls.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EmbeddedFieldAccessor implements Accessor {
 

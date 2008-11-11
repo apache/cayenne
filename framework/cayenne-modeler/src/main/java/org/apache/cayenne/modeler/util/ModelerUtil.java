@@ -47,7 +47,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
 /**
  * Various unorganized utility methods used by CayenneModeler.
  * 
- * @author Andrus Adamchik
  */
 public final class ModelerUtil {
 

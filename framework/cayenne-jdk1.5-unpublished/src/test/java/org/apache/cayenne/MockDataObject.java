@@ -25,7 +25,6 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
- * @author Andrus Adamchik
  */
 public class MockDataObject implements DataObject {
 

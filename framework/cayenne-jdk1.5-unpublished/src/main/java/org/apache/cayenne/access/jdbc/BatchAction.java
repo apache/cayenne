@@ -48,7 +48,6 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class BatchAction extends BaseSQLAction {
 

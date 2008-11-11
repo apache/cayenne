@@ -28,7 +28,6 @@ import java.util.Map;
  * A factory of property type converters.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ConverterFactory {
 

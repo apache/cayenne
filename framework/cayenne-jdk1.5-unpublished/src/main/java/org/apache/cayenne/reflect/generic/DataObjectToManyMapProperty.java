@@ -27,7 +27,6 @@ import org.apache.cayenne.reflect.ToManyMapProperty;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class DataObjectToManyMapProperty extends DataObjectToManyProperty implements
         ToManyMapProperty {

@@ -41,7 +41,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * A translator that walks the relationship/attribute path, appending joins to the query.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 

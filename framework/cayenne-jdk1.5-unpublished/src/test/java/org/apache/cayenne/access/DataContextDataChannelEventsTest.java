@@ -29,7 +29,6 @@ import org.apache.cayenne.util.EventUtil;
 /**
  * Tests that DataContext sends DataChannel events.
  * 
- * @author Andrus Adamchik
  */
 public class DataContextDataChannelEventsTest extends CayenneCase {
 

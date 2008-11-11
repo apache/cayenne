@@ -26,7 +26,6 @@ import org.apache.cayenne.map.ObjEntity;
  * A {@link MergerToken} to remove a {@link DbEntity} from a {@link DataMap}. Any
  * {@link ObjEntity} mapped to the {@link DbEntity} will also be removed.
  * 
- * @author halset
  */
 public class DropTableToModel extends AbstractToModelToken.Entity {
 

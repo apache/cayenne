@@ -28,7 +28,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Test cases for the Validator class.
  * 
- * @author Andrus Adamchik
  */
 public class ValidatorTest extends CayenneCase {
     

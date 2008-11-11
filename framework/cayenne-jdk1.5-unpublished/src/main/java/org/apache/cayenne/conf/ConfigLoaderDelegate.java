@@ -29,7 +29,6 @@ import org.apache.cayenne.map.DataMap;
  * configuration. Main responsibility of ConfigLoaderDelegate is to create
  * objects, while ConfigLoader is mainly concerned with XML parsing. 
  * 
- * @author Andrus Adamchik
  */
 public interface ConfigLoaderDelegate {
     /**

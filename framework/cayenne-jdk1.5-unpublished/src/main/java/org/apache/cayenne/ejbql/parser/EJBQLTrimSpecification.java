@@ -20,7 +20,6 @@ package org.apache.cayenne.ejbql.parser;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EJBQLTrimSpecification extends SimpleNode {
 

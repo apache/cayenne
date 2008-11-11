@@ -45,7 +45,6 @@ import org.apache.cayenne.modeler.util.combo.ComboBoxCellEditor;
  * Utility class to create standard Swing widgets following default look-and-feel of
  * CayenneModeler.
  * 
- * @author Andrus Adamchik
  */
 
 // TODO: (Andrus) investigate performance impact of substituting

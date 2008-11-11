@@ -24,7 +24,6 @@ package org.apache.cayenne.swing;
  * view to the model. The value of delegate is that it allows to track changes to the
  * model properties that themselves do not fire property change events.
  * 
- * @author Andrus Adamchik
  */
 public interface BindingDelegate {
 

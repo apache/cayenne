@@ -71,7 +71,6 @@ import org.apache.cayenne.query.SQLAction;
  *  
  * </pre>
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class SQLServerAdapter extends SybaseAdapter {

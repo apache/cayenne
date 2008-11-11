@@ -30,7 +30,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * Defines methods to read Java objects from JDBC ResultSets and write as parameters of
  * PreparedStatements.
  * 
- * @author Andrus Adamchik
  */
 public interface ExtendedType {
 

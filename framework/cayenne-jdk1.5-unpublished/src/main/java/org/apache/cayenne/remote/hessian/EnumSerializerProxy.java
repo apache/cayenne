@@ -31,7 +31,6 @@ import com.caucho.hessian.io.Serializer;
  * does nothing.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class EnumSerializerProxy extends AbstractSerializerFactory {
 

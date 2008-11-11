@@ -33,7 +33,6 @@ import org.apache.cayenne.reflect.Property;
  * processing on behalf of an ObjectContext.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public abstract class ObjectContextGraphAction implements Serializable {
 

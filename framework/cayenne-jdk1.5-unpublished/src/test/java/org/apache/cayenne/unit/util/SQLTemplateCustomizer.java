@@ -27,7 +27,6 @@ import org.apache.cayenne.query.SQLTemplate;
 /**
  * Helper class to customize SQLTemplate queries used in test cases per adapter.
  * 
- * @author Andrus Adamchik
  */
 public class SQLTemplateCustomizer {
 

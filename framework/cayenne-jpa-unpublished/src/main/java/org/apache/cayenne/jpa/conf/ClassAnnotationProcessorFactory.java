@@ -66,7 +66,6 @@ import org.apache.cayenne.util.Util;
 /**
  * A factory of class annotation processors.
  * 
- * @author Andrus Adamchik
  */
 class ClassAnnotationProcessorFactory extends AnnotationProcessorFactory {
 

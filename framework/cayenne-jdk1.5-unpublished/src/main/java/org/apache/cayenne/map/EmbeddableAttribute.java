@@ -28,7 +28,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * A persistent attribute of an embeddable object.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EmbeddableAttribute implements XMLSerializable, Serializable {
 

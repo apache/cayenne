@@ -32,7 +32,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Test case for objects with flattened relationships.
  * 
- * @author Andrus Adamchik
  */
 // TODO: redefine all test cases in terms of entities in "relationships" map
 // and merge this test case with FlattenedRelationshipsTst that inherits

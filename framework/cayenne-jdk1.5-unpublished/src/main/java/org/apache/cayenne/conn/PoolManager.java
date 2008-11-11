@@ -36,7 +36,6 @@ import javax.sql.PooledConnection;
  * PoolManager is a pooling DataSource impementation. Internally to obtain connections
  * PoolManager uses either a JDBC driver or another pooling datasource.
  * 
- * @author Andrus Adamchik
  */
 public class PoolManager implements DataSource, ConnectionEventListener {
 

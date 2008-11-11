@@ -25,7 +25,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.DataMapEvent;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataMapEventTest extends TestCase {
 

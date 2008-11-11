@@ -58,7 +58,6 @@ import org.xml.sax.XMLReader;
 /**
  * Contains various unorganized static utility methods used across Cayenne.
  * 
- * @author Andrus Adamchik
  */
 public class Util {
 

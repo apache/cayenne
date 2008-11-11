@@ -37,7 +37,6 @@ import org.apache.cayenne.query.SQLTemplate;
  * A SQLTemplateAction that addresses Oracle 8 driver limitations.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class Oracle8SQLTemplateAction extends SQLTemplateAction {
 

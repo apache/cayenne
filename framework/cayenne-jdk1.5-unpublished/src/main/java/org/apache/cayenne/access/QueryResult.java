@@ -37,7 +37,6 @@ import org.apache.cayenne.util.Util;
  * QueryEngine. QueryResult supports queries with multiple mixed selects and updates, such
  * as ProcedureQueries.
  * 
- * @author Andrus Adamchik
  */
 public class QueryResult extends DefaultOperationObserver {
 

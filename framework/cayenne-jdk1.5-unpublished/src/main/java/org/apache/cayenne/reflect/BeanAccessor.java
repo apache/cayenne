@@ -27,7 +27,6 @@ import java.lang.reflect.Method;
  * A property accessor that uses set/get methods following JavaBean naming conventions.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class BeanAccessor implements Accessor {
 

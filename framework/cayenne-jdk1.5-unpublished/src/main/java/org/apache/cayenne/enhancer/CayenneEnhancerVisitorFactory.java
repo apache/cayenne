@@ -31,7 +31,6 @@ import org.objectweb.asm.commons.SerialVersionUIDAdder;
  * EnhancerVisitorFactory implementation based on Cayenne mapping.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class CayenneEnhancerVisitorFactory implements EnhancerVisitorFactory {
 

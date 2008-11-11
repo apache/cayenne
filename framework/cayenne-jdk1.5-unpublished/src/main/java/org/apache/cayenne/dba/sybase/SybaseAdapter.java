@@ -34,7 +34,6 @@ import org.apache.cayenne.dba.PkGenerator;
 /** 
  * DbAdapter implementation for <a href="http://www.sybase.com">Sybase RDBMS</a>.
  *
- * @author Andrus Adamchik
  */
 public class SybaseAdapter extends JdbcAdapter {
 

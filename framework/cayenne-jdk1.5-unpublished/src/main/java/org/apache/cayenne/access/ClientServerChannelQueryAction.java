@@ -41,7 +41,6 @@ import org.apache.cayenne.util.ObjectDetachOperation;
  * A query handler used by ClientServerChannel.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ClientServerChannelQueryAction {
 

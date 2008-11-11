@@ -27,7 +27,6 @@ import org.apache.cayenne.reflect.PropertyException;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 abstract class ValueHolderToManyProperty extends BaseToManyProperty {
 

@@ -30,7 +30,6 @@ import org.apache.cayenne.util.ZipUtil;
 /**
  * Performs on the fly reconfiguration of Cayenne projects.
  *  
- * @author Andrus Adamchik
  */
 public class ProjectConfigurator {
     protected ProjectConfigInfo info;

@@ -37,7 +37,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * </p>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class EnumType<T extends Enum<T>> implements ExtendedType {
 

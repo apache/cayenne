@@ -25,8 +25,6 @@ import org.apache.cayenne.access.DataDomain;
  * Represents events resulted from DataDomain changes 
  * in CayenneModeler.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DomainEvent extends MapEvent {
 	/** Creates a domain change event. */

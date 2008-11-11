@@ -32,7 +32,6 @@ import org.apache.commons.collections.map.LRUMap;
  * non-expiring LRUMap.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class MapQueryCache implements QueryCache, Serializable {
 

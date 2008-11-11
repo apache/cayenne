@@ -25,7 +25,6 @@ import org.apache.cayenne.map.Procedure;
  * An event generated when a Procedure object is added to a DataMap, 
  * removed from a DataMap, or changed within a DataMap.
  * 
- * @author Andrus Adamchik
  */
 public class ProcedureEvent extends MapEvent {
     protected Procedure procedure;

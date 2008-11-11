@@ -30,7 +30,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * Defines a join between two attributes of a given relationship.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class DbJoin implements XMLSerializable, Serializable {
 

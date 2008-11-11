@@ -54,8 +54,6 @@ openbase.jdbc.url = jdbc:openbase://serverhostname/cayenne
 openbase.jdbc.driver = com.openbase.jdbc.ObDriver
 </pre>
  * 
- * @author <a href="mailto:mkienenb@alaska.net">Mike Kienenberger</a>
- * @author Andrus Adamchik
  * 
  * @since 1.1
  */

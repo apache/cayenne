@@ -29,7 +29,6 @@ import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.Util;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataContextSerializationTest extends CayenneCase {
 

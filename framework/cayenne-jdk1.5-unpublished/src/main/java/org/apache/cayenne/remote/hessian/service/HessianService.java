@@ -43,7 +43,6 @@ import com.caucho.services.server.ServiceContext;
  * @see org.apache.cayenne.remote.hessian.service.HessianServlet
  * @see org.apache.cayenne.remote.RemoteService
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class HessianService extends HttpRemoteService implements Service {
 

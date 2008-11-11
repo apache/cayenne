@@ -29,7 +29,6 @@ import java.sql.ResultSet;
  * a workaround for bugs in certain drivers. Drivers that are proven to have issues with
  * short values are Sybase and Oracle (Mac OS X only).
  * 
- * @author Andrus Adamchik
  * @since 1.0.2
  */
 public class ShortType extends AbstractType {

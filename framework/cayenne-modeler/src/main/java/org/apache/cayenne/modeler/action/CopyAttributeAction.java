@@ -27,7 +27,6 @@ import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action for copying attribute(s)
- * @author Andrey Razumovsky
  */
 public class CopyAttributeAction extends CopyAction implements MultipleObjectsAction {
     private final static String ACTION_NAME = "Copy Attribute";

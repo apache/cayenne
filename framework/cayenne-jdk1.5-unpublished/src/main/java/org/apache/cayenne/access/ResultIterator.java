@@ -32,7 +32,6 @@ import org.apache.cayenne.map.DbEntity;
  * therefore most of the methods would throw checked exceptions. ResultIterators must be
  * explicitly closed when the user is done working with them.
  * 
- * @author Andrus Adamchik
  */
 public interface ResultIterator {
 

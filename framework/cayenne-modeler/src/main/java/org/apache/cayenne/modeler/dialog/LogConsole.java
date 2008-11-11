@@ -37,7 +37,6 @@ import java.util.Date;
 
 /**
  * Implementation for modeler log console functionality
- * @author Andrey Razumovsky
  */
 public class LogConsole extends CayenneController {
     /**

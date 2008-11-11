@@ -30,7 +30,6 @@ import org.apache.cayenne.graph.GraphDiff;
  * reverting of all uncommitted changes.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class SyncMessage implements ClientMessage {
 

@@ -32,7 +32,6 @@ import org.apache.cayenne.query.SelectQuery;
 /**
  * A tabbed view for configuring a select query.
  * 
- * @author Andrus Adamchik
  */
 public class SelectQueryTabbedView extends JTabbedPane {
 

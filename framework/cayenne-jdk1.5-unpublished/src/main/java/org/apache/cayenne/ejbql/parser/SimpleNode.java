@@ -29,7 +29,6 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * A base node for the EJBQL concrete nodes that satisfies JJTree requirements.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public abstract class SimpleNode implements Node, Serializable, EJBQLExpression {
 

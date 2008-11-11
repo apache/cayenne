@@ -24,7 +24,6 @@ import java.util.EventListener;
 /**
  * Listener for manipulations on entity listeners
  *
- * @author tarasevichv
  * @version 1.0 Oct 28, 2007
  */
 

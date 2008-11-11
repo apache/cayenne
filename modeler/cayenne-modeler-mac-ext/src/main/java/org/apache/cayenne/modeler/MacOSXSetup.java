@@ -33,7 +33,6 @@ import com.apple.eawt.ApplicationEvent;
  * other platforms.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 class MacOSXSetup {
 

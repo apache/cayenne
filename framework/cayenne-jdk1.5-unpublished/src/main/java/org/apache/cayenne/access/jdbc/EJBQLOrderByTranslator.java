@@ -25,7 +25,6 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class EJBQLOrderByTranslator extends EJBQLBaseVisitor {
 

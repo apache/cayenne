@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
  * A collection of utility methods related to regular expressions processing.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class RegexUtil {
 

@@ -28,7 +28,6 @@ import org.apache.cayenne.query.SQLTemplate;
  * An action builder for Oracle8Adapter.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class Oracle8ActionBuilder extends OracleActionBuilder {
 

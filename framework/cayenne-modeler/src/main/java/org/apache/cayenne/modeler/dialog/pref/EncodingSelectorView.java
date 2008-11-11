@@ -33,7 +33,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * A panel for file encoding selection.
  * 
- * @author Andrus Adamchik
  */
 public class EncodingSelectorView extends JPanel {
 

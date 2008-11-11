@@ -39,7 +39,6 @@ import org.apache.cayenne.dba.sybase.SybaseAdapter;
 /**
  * Contains mappings for guessing defaults for various adapter and JDBC settings.
  * 
- * @author Andrus Adamchik
  */
 public class AdapterMapping {
 

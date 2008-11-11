@@ -43,7 +43,6 @@ import org.apache.cayenne.unit.util.ThreadedTestHelper;
  * Test suite for testing behavior of multiple DataContexts that share the same underlying
  * DataDomain.
  * 
- * @author Andrus Adamchik
  */
 public class DataContextSharedCacheTest extends MultiContextCase {
 

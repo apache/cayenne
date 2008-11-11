@@ -53,7 +53,6 @@ import org.apache.commons.logging.LogFactory;
  * </p>
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class EntityResolver implements MappingNamespace, Serializable {
 

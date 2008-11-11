@@ -40,7 +40,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * Handles <code>byte[]</code>, mapping it as either of JDBC types - BLOB or
  * (VAR)BINARY. Can be configured to trim trailing zero bytes.
  * 
- * @author Andrus Adamchik
  */
 public class ByteArrayType extends AbstractType {
 

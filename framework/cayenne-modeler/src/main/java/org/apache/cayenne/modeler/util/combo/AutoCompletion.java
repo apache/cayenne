@@ -31,7 +31,6 @@ import javax.swing.text.JTextComponent;
 /**
  * AutoCompletion class handles user input and suggests matching variants (see CAY-911)
  *
- * @author Andrey Razumovsky
  */
 public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     /**

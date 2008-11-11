@@ -28,7 +28,6 @@ import org.apache.cayenne.query.SQLTemplate;
  * QueryBuilder for the SQLTemplates.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 class SQLTemplateBuilder extends QueryLoader {
 

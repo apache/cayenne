@@ -25,7 +25,6 @@ import java.util.List;
 /**
  * A suite of binary expression tests.
  * 
- * @author Andrus Adamchik
  */
 public class TstBinaryExpSuite extends TstExpressionSuite {
 

@@ -29,7 +29,6 @@ import org.apache.cayenne.query.SQLAction;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class SQLServerActionBuilder extends JdbcActionBuilder {
 

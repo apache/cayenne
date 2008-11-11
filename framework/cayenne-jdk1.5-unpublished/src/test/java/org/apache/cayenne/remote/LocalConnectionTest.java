@@ -26,7 +26,6 @@ import org.apache.cayenne.remote.service.LocalConnection;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class LocalConnectionTest extends TestCase {
 

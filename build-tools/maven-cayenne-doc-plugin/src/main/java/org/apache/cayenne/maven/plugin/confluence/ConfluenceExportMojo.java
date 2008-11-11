@@ -28,7 +28,6 @@ import org.apache.maven.plugin.MojoFailureException;
 /**
  * A goal to export Confluence documentation.
  * 
- * @author <a href="mailto:bdudney@apache.org">Bill Dudney</a>
  * 
  * @goal confluence-export
  */

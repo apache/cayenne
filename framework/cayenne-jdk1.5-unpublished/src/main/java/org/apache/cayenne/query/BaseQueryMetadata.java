@@ -40,7 +40,6 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * Default mutable implementation of {@link QueryMetadata}.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable {

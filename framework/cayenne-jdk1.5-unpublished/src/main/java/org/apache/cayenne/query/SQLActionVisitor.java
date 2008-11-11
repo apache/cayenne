@@ -29,7 +29,6 @@ package org.apache.cayenne.query;
  * 
  * @see org.apache.cayenne.query.Query#createSQLAction(SQLActionVisitor)
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface SQLActionVisitor {
 

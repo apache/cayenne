@@ -26,7 +26,6 @@ import org.apache.cayenne.access.types.AbstractType;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class SQLiteByteArrayType extends AbstractType {
 

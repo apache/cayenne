@@ -42,7 +42,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 

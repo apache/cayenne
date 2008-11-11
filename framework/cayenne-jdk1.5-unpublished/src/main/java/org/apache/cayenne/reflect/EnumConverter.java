@@ -21,7 +21,6 @@ package org.apache.cayenne.reflect;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class EnumConverter extends Converter {
 

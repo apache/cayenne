@@ -24,7 +24,6 @@ import org.apache.cayenne.access.DataContext;
 /**
  * An editor for modifying CayennePreferenceService.
  * 
- * @author Andrus Adamchik
  */
 public abstract class CayennePreferenceEditor implements PreferenceEditor {
 

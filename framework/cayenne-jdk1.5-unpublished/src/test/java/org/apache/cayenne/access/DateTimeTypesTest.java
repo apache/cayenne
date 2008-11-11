@@ -30,7 +30,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Tests Date handling in Cayenne.
  * 
- * @author Andrus Adamchik
  */
 public class DateTimeTypesTest extends CayenneCase {
 

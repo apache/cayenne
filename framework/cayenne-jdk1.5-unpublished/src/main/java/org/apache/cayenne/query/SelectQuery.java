@@ -41,7 +41,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * Supports expression qualifier, multiple orderings and a number of other parameters that
  * serve as runtime hints to Cayenne on how to optimize the fetch and result processing.
  * 
- * @author Andrus Adamchik
  */
 public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         XMLSerializable {

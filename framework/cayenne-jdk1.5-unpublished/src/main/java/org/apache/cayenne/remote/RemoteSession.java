@@ -39,7 +39,6 @@ import org.apache.cayenne.util.ToStringBuilder;
  * listen for the server events.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class RemoteSession implements Serializable {
 

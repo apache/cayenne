@@ -28,7 +28,6 @@ import java.util.Iterator;
 /**
  * Interface defines API to check the status of Cayenne configuration.
  * 
- * @author Andrus Adamchik
  */
 public class ConfigStatus {
 

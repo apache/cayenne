@@ -30,7 +30,6 @@ import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 /**
  * Tab for editing callback methods on an ObjEntity
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
 public class ObjEntityCallbackMethodsTab extends AbstractCallbackMethodsTab  {

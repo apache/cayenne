@@ -22,7 +22,6 @@ import java.util.Map;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class MapQueryCacheFactory implements QueryCacheFactory {
     

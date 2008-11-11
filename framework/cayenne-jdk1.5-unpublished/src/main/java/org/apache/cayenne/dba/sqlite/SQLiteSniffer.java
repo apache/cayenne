@@ -28,7 +28,6 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * Detects SQLite database from JDBC metadata.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class SQLiteSniffer implements DbAdapterFactory {
 

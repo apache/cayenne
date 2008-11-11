@@ -30,7 +30,6 @@ import org.apache.cayenne.map.DbEntity;
  * Decorates ResultIterator to close active transaction when the iterator is closed.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 final class TransactionResultIteratorDecorator implements ResultIterator {
 

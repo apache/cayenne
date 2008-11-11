@@ -34,7 +34,6 @@ import org.apache.cayenne.query.Query;
  * OperationObserver that is used to track the execution
  * of SelectQueries with results returned as ResultIterator.
  *  
- * @author Andrus Adamchik
  */
 public class IteratedSelectObserver extends DefaultOperationObserver {
 	protected ResultIterator resultIterator;

@@ -36,7 +36,6 @@ import org.springframework.core.io.InputStreamResource;
 /**
  * DataSetFactory that loads DataSets from XML using Spring.
  * 
- * @author Andrus Adamchik
  */
 public class XMLDataSetFactory implements DataSetFactory {
 

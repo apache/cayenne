@@ -29,7 +29,6 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * Creates a DerbyAdapter if Apache Derby database is detected.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class DerbySniffer implements DbAdapterFactory {
 

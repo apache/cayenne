@@ -25,7 +25,6 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * "Case insensitive like" expression.
  * 
- * @author Andrus Adamchik
  */
 public class ASTLikeIgnoreCase extends PatternMatchNode {
     ASTLikeIgnoreCase(int id) {

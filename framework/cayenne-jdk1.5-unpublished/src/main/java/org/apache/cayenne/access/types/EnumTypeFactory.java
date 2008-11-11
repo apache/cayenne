@@ -25,7 +25,6 @@ import org.apache.cayenne.ExtendedEnumeration;
  * ExtendedTypeFactory for handling JDK 1.5 Enums.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class EnumTypeFactory implements ExtendedTypeFactory {
 

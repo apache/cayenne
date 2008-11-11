@@ -32,7 +32,6 @@ import org.apache.cayenne.query.SelectQuery;
 /**
  * Does a random insert/delete/update based on the current object count.
  * 
- * @author Andrus Adamchik
  */
 public class RandomOperationCase extends AbstractCase {
 

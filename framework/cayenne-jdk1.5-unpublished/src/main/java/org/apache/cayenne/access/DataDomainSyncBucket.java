@@ -49,7 +49,6 @@ import org.apache.commons.collections.Factory;
  * A superclass of batch query wrappers.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 abstract class DataDomainSyncBucket {
 

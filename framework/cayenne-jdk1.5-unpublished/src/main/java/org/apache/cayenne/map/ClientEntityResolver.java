@@ -27,7 +27,6 @@ import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
  * that handles ValueHolder to-one relationships.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class ClientEntityResolver extends EntityResolver {
 

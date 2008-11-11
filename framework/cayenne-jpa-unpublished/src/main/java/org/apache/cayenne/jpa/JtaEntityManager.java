@@ -29,7 +29,6 @@ import org.apache.cayenne.ObjectContext;
 /**
  * An EntityManager that can participate in JTA transactions.
  * 
- * @author Andrus Adamchik
  */
 public class JtaEntityManager extends ResourceLocalEntityManager {
 

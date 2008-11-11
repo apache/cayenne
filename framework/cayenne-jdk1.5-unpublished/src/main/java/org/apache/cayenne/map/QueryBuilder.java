@@ -34,7 +34,6 @@ import org.apache.cayenne.query.Query;
  * DTD, allowing subclasses to define their own Query creation logic.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  * @deprecated since 3.0 replaced by a non-public class.
  */
 public abstract class QueryBuilder {

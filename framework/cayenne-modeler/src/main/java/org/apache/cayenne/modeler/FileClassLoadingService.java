@@ -33,7 +33,6 @@ import java.util.List;
  * A default implementation of ClassLoadingService used in CayenneModeler.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class FileClassLoadingService implements ClassLoadingService {
 

@@ -31,7 +31,6 @@ import org.apache.cayenne.unit.RelationshipCase;
 /**
  * Testing qualifier translator correctness on reflexive relationships.
  * 
- * @author Andrus Adamchik
  */
 // TODO: this is really a qualifier translator general test... need to
 // find an approprtaite place in unit tests..

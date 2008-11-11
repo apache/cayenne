@@ -28,7 +28,6 @@ import org.apache.cayenne.map.DbEntity;
  * Common abstract superclass for all {@link MergerToken}s going from the model to the
  * database.
  * 
- * @author halset
  */
 public abstract class AbstractToDbToken implements MergerToken {
     

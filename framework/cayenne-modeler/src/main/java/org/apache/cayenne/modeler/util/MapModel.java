@@ -29,7 +29,6 @@ import org.scopemvc.model.basic.BasicModel;
  * Scope active model that has an internal map of properties, 
  * firing change events when a value in the map changes.
  * 
- * @author Andrus Adamchik
  */
 public abstract class MapModel extends BasicModel {
     

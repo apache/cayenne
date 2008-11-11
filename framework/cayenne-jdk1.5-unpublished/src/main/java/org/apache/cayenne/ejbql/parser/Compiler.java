@@ -52,7 +52,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * Produces an {@link EJBQLCompiledExpression} out of an EJBQL expression tree.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class Compiler {
 

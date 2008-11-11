@@ -27,7 +27,6 @@ import org.apache.cayenne.query.Query;
  * A noop DataContextDelegate.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 final class NoopDelegate implements DataContextDelegate {
 

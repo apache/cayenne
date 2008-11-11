@@ -23,7 +23,6 @@ package org.apache.cayenne.access.jdbc;
  * Describes PreparedStatement parameter binding.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ParameterBinding {
     protected int jdbcType;

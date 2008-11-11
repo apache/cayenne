@@ -30,7 +30,6 @@ import org.w3c.dom.Element;
  * A flyweight wrapper for serializing with XML mapping. This object is NOT thread-safe.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class SerializableEntity implements XMLSerializable {
 

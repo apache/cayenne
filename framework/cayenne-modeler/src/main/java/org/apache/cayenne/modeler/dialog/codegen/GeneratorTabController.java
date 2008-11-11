@@ -30,7 +30,6 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
 
 /**
- * @author Andrus Adamchik
  */
 public class GeneratorTabController extends CayenneController {
 

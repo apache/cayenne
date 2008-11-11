@@ -35,7 +35,6 @@ import org.apache.cayenne.query.Query;
  * DataPortDelegate implementation that works in the context of Ant DataPortTask task
  * execution, performing entity filtering and logging functions.
  * 
- * @author Andrus Adamchik
  * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples package.
  */
 class AntDataPortDelegate implements DataPortDelegate {

@@ -23,7 +23,6 @@ package org.apache.cayenne.xml;
  * Interface for Cayenne objects that can be saved to XML.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface XMLSerializable {
     /**

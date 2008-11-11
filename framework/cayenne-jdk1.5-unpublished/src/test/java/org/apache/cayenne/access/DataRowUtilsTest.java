@@ -32,7 +32,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataRowUtilsTest extends CayenneCase {
 

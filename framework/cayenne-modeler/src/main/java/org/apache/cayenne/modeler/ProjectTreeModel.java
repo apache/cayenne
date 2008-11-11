@@ -40,7 +40,6 @@ import org.apache.cayenne.project.ProjectTraversalHandler;
 /**
  * ProjectTreeModel is a model of Cayenne project tree.
  * 
- * @author Andrus Adamchik
  */
 public class ProjectTreeModel extends DefaultTreeModel {
 

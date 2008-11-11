@@ -53,7 +53,6 @@ import com.jgoodies.forms.layout.RowSpec;
 /**
  * A main panel for editing a SQLTemplate.
  * 
- * @author Andrus Adamchik
  */
 public class SQLTemplateMainTab extends JPanel {
 

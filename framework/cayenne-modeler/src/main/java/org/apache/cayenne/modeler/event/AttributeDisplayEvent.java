@@ -25,7 +25,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 
 /** 
-  * @author Michael Misha Shengaout
   */
 public class AttributeDisplayEvent extends EntityDisplayEvent {
     protected Attribute[] attributes;

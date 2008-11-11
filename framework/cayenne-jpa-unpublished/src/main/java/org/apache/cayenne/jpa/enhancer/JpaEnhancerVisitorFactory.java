@@ -30,7 +30,6 @@ import org.objectweb.asm.commons.SerialVersionUIDAdder;
 /**
  * EnhancerVisitorFactory implementation based on JPA mapping.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 public class JpaEnhancerVisitorFactory implements EnhancerVisitorFactory {

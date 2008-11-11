@@ -38,7 +38,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * a possibility of key conflicts, yet refresh the cache groups in a coordinated fashion.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class NestedQueryCache implements QueryCache {
 

@@ -36,7 +36,6 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- * @author Andrus Adamchik
  */
 public class CacheSyncConfigDialog extends SPanel {
     public static final String EMPTY_CARD_KEY = "Empty";

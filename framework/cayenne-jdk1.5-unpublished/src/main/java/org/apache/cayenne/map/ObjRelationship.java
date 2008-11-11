@@ -38,7 +38,6 @@ import org.apache.cayenne.util.XMLEncoder;
  * Describes an association between two Java classes mapped as source and target
  * ObjEntity. Maps to a path of DbRelationships.
  * 
- * @author Andrus Adamchik
  */
 public class ObjRelationship extends Relationship {
 

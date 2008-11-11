@@ -36,8 +36,6 @@ import org.apache.commons.collections.map.ReferenceMap;
  * setting.
  * </ul>
  * 
- * @author Dirk Olmes
- * @author Holger Hoffstaette
  */
 public class EventSubject implements Serializable {
 

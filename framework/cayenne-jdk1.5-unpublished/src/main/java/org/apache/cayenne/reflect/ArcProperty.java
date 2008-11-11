@@ -26,7 +26,6 @@ import org.apache.cayenne.map.ObjRelationship;
  * graph.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface ArcProperty extends Property {
 

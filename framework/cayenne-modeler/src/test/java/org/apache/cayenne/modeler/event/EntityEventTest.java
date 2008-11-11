@@ -26,7 +26,6 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.EntityEvent;
 
 /**
- * @author Andrus Adamchik
  */
 public class EntityEventTest extends TestCase {
 

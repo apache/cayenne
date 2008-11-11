@@ -31,7 +31,6 @@ import org.apache.cayenne.util.Util;
 /**
  * A class for expression evaluation using a designated scripting language (now - OGNL).
  * 
- * @author Andrus Adamchik
  */
 public class BindingExpression {
 

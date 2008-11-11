@@ -43,7 +43,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * descriptors, thus allowing server-to-client conversion to happen in the process.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class ObjectDetachOperation {
 

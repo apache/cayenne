@@ -37,7 +37,6 @@ import java.sql.Driver;
  * An Ant Task that is a frontend to Cayenne DbGenerator allowing schema generation from
  * DataMap using Ant.
  * 
- * @author Kevin Menard, Andrus Adamchik
  * @since 1.2
  */
 // TODO: support classpath attribute for loading the driver

@@ -32,7 +32,6 @@ import org.apache.cayenne.map.EntityResolver;
  * convert the results to objects.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class QueryChain implements Query {
 

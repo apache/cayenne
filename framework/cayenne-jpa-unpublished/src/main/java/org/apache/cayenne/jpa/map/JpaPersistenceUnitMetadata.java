@@ -23,7 +23,6 @@ import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
 /**
- * @author Andrus Adamchik
  */
 public class JpaPersistenceUnitMetadata implements XMLSerializable {
 

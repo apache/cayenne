@@ -11,7 +11,6 @@ import org.apache.cayenne.pref.PreferenceDetail;
 /**
  * Used to confirm deleting items in the model.
  *
- * @author Kevin Menard
  */
 public class ConfirmRemoveDialog {
     private boolean shouldDelete = true;

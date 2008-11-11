@@ -36,7 +36,6 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
 /**
- * @author Andrus Adamchik
  */
 public class AdapterEditor extends CayenneController {
 

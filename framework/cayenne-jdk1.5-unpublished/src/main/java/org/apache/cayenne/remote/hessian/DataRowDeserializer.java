@@ -31,7 +31,6 @@ import com.caucho.hessian.io.AbstractMapDeserializer;
 /**
  * Client side deserilaizer of DataRows.
  * 
- * @author Andrus Adamchik
  * @since 1.2
  */
 class DataRowDeserializer extends AbstractMapDeserializer {

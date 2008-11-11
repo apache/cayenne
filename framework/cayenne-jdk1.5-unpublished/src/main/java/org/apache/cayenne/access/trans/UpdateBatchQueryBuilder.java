@@ -33,7 +33,6 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 /**
  * A translator for UpdateBatchQueries that produces parameterized SQL.
  * 
- * @author Andriy Shapochka, Andrus Adamchik, Mike Kienenberger
  */
 
 public class UpdateBatchQueryBuilder extends BatchQueryBuilder {

@@ -72,7 +72,6 @@ import org.apache.cayenne.jpa.map.JpaEntityMap;
  * or property.
  * </p>
  * 
- * @author Andrus Adamchik
  */
 public class EntityMapLoader {
 

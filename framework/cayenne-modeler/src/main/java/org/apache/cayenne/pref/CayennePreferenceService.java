@@ -36,7 +36,6 @@ import org.apache.cayenne.map.DataMap;
 /**
  * A Cayenne-based PreferenceService.
  * 
- * @author Andrus Adamchik
  */
 public abstract class CayennePreferenceService implements PreferenceService {
 

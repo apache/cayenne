@@ -39,7 +39,6 @@ import org.apache.cayenne.query.SelectQuery;
 /**
  * Testing chained prefetches...
  * 
- * @author Andrus Adamchik
  */
 public class DataContextPrefetchMultistepTest extends DataContextCase {
 

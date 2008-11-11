@@ -30,9 +30,6 @@ import org.apache.commons.collections.IteratorUtils;
 /**
  * An ObjAttribute is a mapping descriptor of a Java class property.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
- * @author Dzmitry Rusak
  */
 public class ObjAttribute extends Attribute {
 

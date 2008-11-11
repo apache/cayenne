@@ -22,7 +22,6 @@ package org.apache.cayenne.gen;
  * Code generator execution mode for a single artifact.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public enum ArtifactGenerationMode {
     SINGLE_CLASS, GENERATION_GAP

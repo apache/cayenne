@@ -27,7 +27,6 @@ import org.apache.cayenne.modeler.ProjectController;
 /**
  * Data map editing tabs container
  *
- * @author Vasil Tarasevich
  */
 public class DataMapTabbedView extends JTabbedPane {
     ProjectController mediator;

@@ -30,7 +30,6 @@ import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
  * all methods. Intended for subclassing.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
 

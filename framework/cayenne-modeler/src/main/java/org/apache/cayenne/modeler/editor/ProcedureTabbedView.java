@@ -39,7 +39,6 @@ import org.apache.cayenne.modeler.event.ProcedureParameterDisplayListener;
 /**
  * Tabbed panel for stored procedure editing.
  * 
- * @author Andrus Adamchik
  */
 public class ProcedureTabbedView
     extends JTabbedPane

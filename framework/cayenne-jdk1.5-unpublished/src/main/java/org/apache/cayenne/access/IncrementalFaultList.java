@@ -57,7 +57,6 @@ import org.apache.cayenne.util.Util;
  * list fetch.
  * </p>
  * 
- * @author Andrus Adamchik
  */
 public class IncrementalFaultList<E> implements List<E> {
 

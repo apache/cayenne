@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.util.BrowserControl;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
- * @author Aristedes Maniatis
  */
 public class DocumentationAction extends CayenneAction {
 

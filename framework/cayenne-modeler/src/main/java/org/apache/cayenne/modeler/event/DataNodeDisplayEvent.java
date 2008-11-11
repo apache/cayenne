@@ -25,8 +25,6 @@ import org.apache.cayenne.access.DataNode;
 /**
  * Represents a display event of a DataNode.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DataNodeDisplayEvent extends DomainDisplayEvent {
 

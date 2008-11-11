@@ -31,7 +31,6 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * A JPA-compliant entity.
  * 
- * @author Andrus Adamchik
  */
 public class JpaEntity extends JpaAbstractEntity implements XMLSerializable {
 

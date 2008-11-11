@@ -39,7 +39,6 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
 
 /**
- * @author Andrus Adamchik
  */
 public class WebApplicationContextFilterTest extends TestCase {
 

@@ -50,7 +50,6 @@ import org.apache.cayenne.access.DataContext;
  *   &lt;/filter-mapping&gt;
  * </pre>
  * 
- * @author Andrus Adamchik
  * @since 1.2
  */
 public class WebApplicationContextFilter implements Filter {

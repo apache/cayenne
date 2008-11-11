@@ -57,7 +57,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
  * SelectQuery to parameterized SQL string and wraps it in a PreparedStatement.
  * SelectTranslator is stateful and thread-unsafe.
  * 
- * @author Andrus Adamchik
  */
 public class SelectTranslator extends QueryAssembler {
 

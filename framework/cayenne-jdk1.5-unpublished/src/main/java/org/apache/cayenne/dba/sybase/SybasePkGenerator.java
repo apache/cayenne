@@ -36,7 +36,6 @@ import org.apache.cayenne.map.DbEntity;
  * "AUTO_PK_SUPPORT" and a stored procedure "auto_pk_for_table" to search and increment
  * primary keys for tables.
  * 
- * @author Andrus Adamchik
  */
 public class SybasePkGenerator extends JdbcPkGenerator {
     

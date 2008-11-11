@@ -30,7 +30,6 @@ import java.util.Set;
  * A mapping descriptor of a single callback event.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class CallbackDescriptor implements Serializable {
 

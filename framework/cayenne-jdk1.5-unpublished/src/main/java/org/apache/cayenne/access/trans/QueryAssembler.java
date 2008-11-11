@@ -33,7 +33,6 @@ import org.apache.cayenne.map.JoinType;
 /**
  * Abstract superclass of Query translators.
  * 
- * @author Andrus Adamchik
  */
 public abstract class QueryAssembler extends QueryTranslator {
 

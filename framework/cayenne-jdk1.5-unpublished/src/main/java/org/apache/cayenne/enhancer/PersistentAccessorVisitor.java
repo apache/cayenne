@@ -24,7 +24,6 @@ import org.objectweb.asm.ClassVisitor;
 /**
  * Accessor enhancer that enhances getters and setters mapped in a given {@link ObjEntity}.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 public class PersistentAccessorVisitor extends AccessorVisitor {

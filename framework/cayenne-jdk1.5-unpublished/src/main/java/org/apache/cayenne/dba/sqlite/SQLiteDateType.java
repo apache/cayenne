@@ -33,7 +33,6 @@ import org.apache.cayenne.access.types.UtilDateType;
  * Implements special date handling for SQLite. As SQLite has no native date type and the
  * JDBC driver does not standardize it either.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 // see http://www.zentus.com/sqlitejdbc/usage.html for some examples of the SQLite date

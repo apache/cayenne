@@ -29,7 +29,6 @@ import org.apache.cayenne.QueryResponse;
  * A simple serializable implementation of QueryResponse.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class GenericResponse implements QueryResponse, Serializable {
 

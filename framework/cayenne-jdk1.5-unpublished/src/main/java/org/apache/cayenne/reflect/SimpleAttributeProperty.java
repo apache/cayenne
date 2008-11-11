@@ -26,7 +26,6 @@ import org.apache.cayenne.map.ObjAttribute;
  * A descriptor of an "attribute" persistent property.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class SimpleAttributeProperty extends BaseProperty implements AttributeProperty {
 

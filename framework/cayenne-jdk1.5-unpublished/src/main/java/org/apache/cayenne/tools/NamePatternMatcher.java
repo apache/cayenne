@@ -32,7 +32,6 @@ import org.apache.commons.logging.Log;
 /**
  * Provides name pattern matching functionality.
  * 
- * @author Andrus Adamchik, Mike Kienenberger
  * @since 1.2
  */
 public class NamePatternMatcher {

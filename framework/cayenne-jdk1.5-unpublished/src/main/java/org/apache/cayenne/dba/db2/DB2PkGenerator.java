@@ -36,7 +36,6 @@ import org.apache.cayenne.map.DbEntity;
 /**
  * A sequence-based PK generator used by {@link DB2Adapter}.
  * 
- * @author Andrus Adamchik
  */
 public class DB2PkGenerator extends JdbcPkGenerator {
 

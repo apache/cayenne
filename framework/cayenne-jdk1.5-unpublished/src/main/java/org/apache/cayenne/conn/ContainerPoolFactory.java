@@ -85,7 +85,6 @@ import javax.naming.spi.ObjectFactory;
 &lt;/resource-ref>
 </pre></code> 
  *
- * @author Andrus Adamchik
  */
 public class ContainerPoolFactory implements ObjectFactory {
 

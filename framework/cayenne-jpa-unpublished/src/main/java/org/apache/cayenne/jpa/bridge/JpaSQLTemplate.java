@@ -32,7 +32,6 @@ import org.apache.cayenne.query.SQLTemplate;
  * An indirect query that resolves to Cayenne SQLTemplate using information from JPA query
  * hints.
  * 
- * @author Andrus Adamchik
  */
 public class JpaSQLTemplate extends JpaIndirectQuery {
 

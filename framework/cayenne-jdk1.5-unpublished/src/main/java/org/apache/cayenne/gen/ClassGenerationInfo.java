@@ -30,7 +30,6 @@ import org.apache.cayenne.util.NameConverter;
  * Instance of ClassGenerationInfo is available inside Velocity template under the key
  * "classGen".
  * 
- * @author Andrus Adamchik
  * @since 1.2
  * @deprecated since 3.0, as class generator version 1.1 is deprecated.
  */

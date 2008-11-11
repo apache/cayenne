@@ -22,7 +22,6 @@ package org.apache.cayenne.project;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ApplicationUpgradeHandlerTest extends CayenneCase {
 

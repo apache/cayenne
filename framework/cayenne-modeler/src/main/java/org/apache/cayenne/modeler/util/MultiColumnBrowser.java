@@ -53,7 +53,6 @@ import java.util.List;
  * </p>
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class MultiColumnBrowser extends JPanel {
 

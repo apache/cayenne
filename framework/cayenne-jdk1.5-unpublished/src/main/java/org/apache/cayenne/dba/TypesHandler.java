@@ -40,7 +40,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * TypesHandler provides JDBC-RDBMS types mapping. Loads types info from 
  * an XML file.
  * 
- * @author Andrus Adamchik
  */
 public class TypesHandler {
 

@@ -35,7 +35,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ObjectStoreTest extends CayenneCase {
 

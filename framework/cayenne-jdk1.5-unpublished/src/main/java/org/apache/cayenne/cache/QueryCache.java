@@ -25,7 +25,6 @@ import org.apache.cayenne.query.QueryMetadata;
 /**
  * An interface that defines generic QueryCache.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 public interface QueryCache {

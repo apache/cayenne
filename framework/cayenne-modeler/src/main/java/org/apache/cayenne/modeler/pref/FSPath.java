@@ -26,7 +26,6 @@ import javax.swing.JFileChooser;
 /**
  * Represents a preferred directory or file.
  * 
- * @author Andrus Adamchik
  */
 public class FSPath extends _FSPath {
 

@@ -29,7 +29,6 @@ import java.util.Map;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class PropertyListParserTest extends CayenneCase {
 

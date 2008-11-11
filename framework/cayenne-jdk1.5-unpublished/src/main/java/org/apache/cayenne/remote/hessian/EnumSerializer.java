@@ -28,7 +28,6 @@ import com.caucho.hessian.io.AbstractSerializer;
  * A Hessian serializer that enables serialization of JDK 1.5 Enums.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class EnumSerializer extends AbstractSerializer {
 

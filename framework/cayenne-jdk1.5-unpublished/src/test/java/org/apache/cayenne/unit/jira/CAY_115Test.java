@@ -28,7 +28,6 @@ import org.apache.cayenne.testdo.relationship.ClobMaster;
 import org.apache.cayenne.unit.RelationshipCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class CAY_115Test extends RelationshipCase {
 

@@ -35,7 +35,6 @@ import org.apache.cayenne.reflect.Property;
  * An abstract superclass of lazily faulted to-one and to-many relationships.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public abstract class RelationshipFault {
 

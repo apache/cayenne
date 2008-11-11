@@ -30,7 +30,6 @@ import java.util.Map;
  * A java.util.List wrapper that stores objects prefetched together with the main list.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 // TODO, andrus, 4/11/2006 - this object doesn't have to be a list. It is just a question
 // of changing DataRowStore result caching API. Since we are doing it when already in 1.2

@@ -35,7 +35,6 @@ import javax.sql.PooledConnection;
  * datasource.
  * </p>
  * 
- * @author Andrus Adamchik
  */
 public class PoolDataSource implements ConnectionPoolDataSource {
 	private DataSource nonPooledDatasource;

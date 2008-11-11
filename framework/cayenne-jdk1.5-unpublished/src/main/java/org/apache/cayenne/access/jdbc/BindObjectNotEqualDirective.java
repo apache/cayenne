@@ -30,7 +30,6 @@ import org.apache.velocity.context.InternalContextAdapter;
  * $idValues)".
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class BindObjectNotEqualDirective extends BindObjectEqualDirective {
 

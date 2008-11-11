@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ProjectFileTest extends CayenneCase {
     protected ProjectFile pf;

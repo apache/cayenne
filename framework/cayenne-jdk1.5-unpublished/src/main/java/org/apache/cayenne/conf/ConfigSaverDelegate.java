@@ -25,7 +25,6 @@ import java.util.Iterator;
  * Defines a set of callback methods that provide information
  * to ConfigSaver when Cayenne project is saved.
  * 
- * @author Andrus Adamchik
  */
 public interface ConfigSaverDelegate {
     /**

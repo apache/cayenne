@@ -25,7 +25,6 @@ import org.apache.cayenne.query.SQLTemplate;
  * A SQLTemplate simplified for Spring configuration.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class UpdatingSQLTemplate extends SQLTemplate {
 

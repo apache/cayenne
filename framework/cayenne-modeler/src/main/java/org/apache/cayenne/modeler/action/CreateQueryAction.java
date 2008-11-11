@@ -27,7 +27,6 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class CreateQueryAction extends CayenneAction {
 

@@ -33,7 +33,6 @@ import org.apache.cayenne.query.Query;
 /**
  * Default implementation of the AccessStack that has a single DataNode per DataMap.
  * 
- * @author Andrus Adamchik
  */
 public class SimpleAccessStack extends AbstractAccessStack implements AccessStack {
 

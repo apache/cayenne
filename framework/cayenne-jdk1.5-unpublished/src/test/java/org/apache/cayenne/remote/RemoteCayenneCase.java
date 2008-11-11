@@ -29,7 +29,6 @@ import org.apache.cayenne.unit.UnitLocalConnection;
 
 /**
  * JUnit case to test ROP functionality
- * @author Andrey Razumovsky
  */
 public abstract class RemoteCayenneCase extends CayenneCase {
     protected CayenneContext context;

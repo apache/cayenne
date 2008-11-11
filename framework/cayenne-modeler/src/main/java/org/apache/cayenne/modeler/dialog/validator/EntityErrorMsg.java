@@ -34,8 +34,6 @@ import org.apache.cayenne.project.validator.ValidationInfo;
 /**
  * DataDomain validation message.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class EntityErrorMsg extends ValidationDisplayHandler {
     protected DataMap map;

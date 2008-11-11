@@ -48,7 +48,6 @@ import org.apache.cayenne.jpa.map.JpaLifecycleCallback;
  * not be static or final.
  * </p>
  * 
- * @author Andrus Adamchik
  */
 public class EntityListenerAnnotationLoader {
 

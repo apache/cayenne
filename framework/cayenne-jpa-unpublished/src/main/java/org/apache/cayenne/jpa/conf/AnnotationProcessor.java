@@ -25,7 +25,6 @@ import java.lang.reflect.AnnotatedElement;
 /**
  * An abstract JPA annotation processor.
  * 
- * @author Andrus Adamchik
  */
 public interface AnnotationProcessor {
 

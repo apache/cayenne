@@ -26,7 +26,6 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
 
 /**
- * @author Andrus Adamchik
  */
 public class RelationshipEventTest extends TestCase {
 

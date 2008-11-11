@@ -39,8 +39,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /** 
  * Implements a set of utility methods for laying out components on the panels.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 
 // TODO: get rid of PanelFactory in favor of JGoodies Forms

@@ -46,7 +46,6 @@ import com.jgoodies.forms.layout.FormLayout;
  * A panel that supports editing the properties a query not based on ObjEntity, but still
  * supporting DataObjects retrieval.
  * 
- * @author Andrus Adamchik
  */
 public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 

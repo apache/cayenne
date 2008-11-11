@@ -25,7 +25,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * down by the user.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class DomainStoppedException extends CayenneRuntimeException {
 

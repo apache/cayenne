@@ -25,7 +25,6 @@ import org.scopemvc.core.Selector;
  * A model that describes entity update preferences when pushing DataMap defaults to the
  * entities. Used by multiple views.
  * 
- * @author Andrus Adamchik
  */
 public class DefaultsPreferencesModel {
 

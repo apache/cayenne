@@ -40,7 +40,6 @@ import foundrylogic.vpp.VPPConfig;
  * to store generated files by implementing {@link #openWriter(ObjEntity, String, String)}
  * and {@link #closeWriter(Writer)} methods.
  * 
- * @author Andrus Adamchik
  * @deprecated since 3.0 use {@link ClassGenerationAction} and subclasses.
  */
 public abstract class MapClassGenerator {

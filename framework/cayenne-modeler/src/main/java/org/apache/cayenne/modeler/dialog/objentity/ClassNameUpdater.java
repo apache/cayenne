@@ -28,7 +28,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.util.CayenneController;
 
 /**
- * @author Andrus Adamchik
  */
 public class ClassNameUpdater extends CayenneController {
 

@@ -26,7 +26,6 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * "Not Between" expression.
  * 
- * @author Andrus Adamchik
  */
 public class ASTNotBetween extends ConditionNode {
     ASTNotBetween(int id) {

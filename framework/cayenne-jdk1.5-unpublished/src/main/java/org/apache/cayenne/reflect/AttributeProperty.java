@@ -24,7 +24,6 @@ import org.apache.cayenne.map.ObjAttribute;
  * Represents a simple object property.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface AttributeProperty extends Property {
 

@@ -23,7 +23,6 @@ package org.apache.cayenne.dba;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class PkRangeTest extends TestCase {
 

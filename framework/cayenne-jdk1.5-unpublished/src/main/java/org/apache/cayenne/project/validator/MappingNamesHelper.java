@@ -26,7 +26,6 @@ import java.util.StringTokenizer;
 /**
  * Defines a set of rules for validating java and db mapping identifiers.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class MappingNamesHelper {

@@ -25,7 +25,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class EOModelProcessorInheritanceTest extends BasicCase {
     protected EOModelProcessor processor;

@@ -30,7 +30,6 @@ import org.apache.cayenne.remote.SyncMessage;
  * A helper class to match message types with DataChannel methods.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DispatchHelper {
 

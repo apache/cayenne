@@ -30,7 +30,6 @@ import org.apache.cayenne.unit.RelationshipCase;
  * Tests the behavior of one-to-one relationship where to-one is pointing to an FK.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class CDOOneToOneFKTest extends RelationshipCase {
 

@@ -33,7 +33,6 @@ import org.apache.cayenne.map.ObjEntity;
  * class generation.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class CayenneGeneratorEntityFilterAction {
 

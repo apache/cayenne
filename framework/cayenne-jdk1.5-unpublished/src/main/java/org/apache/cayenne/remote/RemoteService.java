@@ -27,7 +27,6 @@ import java.rmi.RemoteException;
  * 
  * @since 1.2
  * @see org.apache.cayenne.remote.hessian.service.HessianServlet
- * @author Andrus Adamchik
  */
 public interface RemoteService extends Remote {
 

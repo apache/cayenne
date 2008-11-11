@@ -38,7 +38,6 @@ import org.w3c.dom.NodeList;
  * Static utility methods to work with DOM trees.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class XMLUtil {
     

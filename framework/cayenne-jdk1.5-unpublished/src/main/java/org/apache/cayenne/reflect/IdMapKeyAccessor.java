@@ -29,7 +29,6 @@ import org.apache.cayenne.Persistent;
  * Integer). For multi-column ID's it returns the ObjectId.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class IdMapKeyAccessor implements Accessor {
 

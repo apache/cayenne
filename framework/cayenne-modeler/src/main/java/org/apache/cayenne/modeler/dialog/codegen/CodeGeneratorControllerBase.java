@@ -39,7 +39,6 @@ import org.apache.commons.collections.Predicate;
  * A base superclass of a top controller for the code generator. Defines all common model
  * parts used in class generation.
  * 
- * @author Andrus Adamchik
  */
 public abstract class CodeGeneratorControllerBase extends CayenneController {
 

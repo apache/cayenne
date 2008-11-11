@@ -26,7 +26,6 @@ import org.apache.cayenne.exp.ExpressionException;
  * Superclass of conditional expressions.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public abstract class ConditionNode extends SimpleNode {
 

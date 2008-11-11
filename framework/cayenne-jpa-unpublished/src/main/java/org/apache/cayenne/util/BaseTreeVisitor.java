@@ -28,7 +28,6 @@ import org.apache.cayenne.project.ProjectPath;
  * A common superclass for specialized tree visitors. Can also be used as a noop
  * pass-through visitor for nodes that need no processing by themselves.
  * 
- * @author Andrus Adamchik
  */
 // TODO, andrus, 4/24/2006 - move to Cayenne core in 2.0
 public class BaseTreeVisitor implements HierarchicalTreeVisitor {

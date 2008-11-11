@@ -38,7 +38,6 @@ import org.apache.cayenne.map.DataMap;
 /**
  * Represents Cayenne application project.
  * 
- * @author Andrus Adamchik
  */
 public class ApplicationProject extends Project {
 

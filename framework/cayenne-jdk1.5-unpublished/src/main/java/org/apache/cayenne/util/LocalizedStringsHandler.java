@@ -32,7 +32,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * Provides access to various modeler resources (mainly strings) obtained via a
  * ResourceBundle.
  * 
- * @author Andrus Adamchik
  */
 public class LocalizedStringsHandler {
 

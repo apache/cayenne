@@ -26,7 +26,6 @@ import org.apache.cayenne.util.Util;
 /**
  * Methods for mangling strings.
  * 
- * @author Mike Kienenberger
  */
 public class StringUtils {
 

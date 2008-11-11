@@ -24,7 +24,6 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class UIUtil {

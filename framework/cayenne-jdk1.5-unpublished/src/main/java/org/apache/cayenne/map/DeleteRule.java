@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 /**
  * Defines constants for the possible values of ObjRelationship delete rules.
  * 
- * @author Craig Miskell
  */
 public class DeleteRule {
     public static final int NO_ACTION = 0;

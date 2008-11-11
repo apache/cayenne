@@ -30,7 +30,6 @@ import org.apache.cayenne.util.ToStringBuilder;
 /**
  * A common superclass of Cayenne queries.
  * 
- * @author Andrus Adamchik
  */
 public abstract class AbstractQuery implements Query {
 

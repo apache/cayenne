@@ -26,7 +26,6 @@ import java.util.Date;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class OracleUtilDateTypeTest extends CayenneCase {
 

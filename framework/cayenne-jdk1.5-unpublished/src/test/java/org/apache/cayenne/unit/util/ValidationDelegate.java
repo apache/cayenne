@@ -23,7 +23,6 @@ import org.apache.cayenne.validation.ValidationResult;
 /**
  * A callback interface used by unit tests to implement custom validation logic.
  * 
- * @author Andrus Adamchik
  */
 public interface ValidationDelegate {
 

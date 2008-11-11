@@ -33,7 +33,6 @@ import org.apache.cayenne.query.SelectQuery;
  * An indirect query that resolves to Cayenne SelectQuery using information from JPA query
  * hints.
  * 
- * @author Andrus Adamchik
  */
 public class JpaSelectQuery extends JpaIndirectQuery {
 

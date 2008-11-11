@@ -36,7 +36,6 @@ import org.apache.cayenne.tools.NamePatternMatcher;
  * should go. Adds "execute" method that performs class generation based on the internal
  * state of this object.
  * 
- * @author Andrus Adamchik
  * @deprecated since 3.0 use {@link ClassGenerationAction} and subclasses.
  */
 public class DefaultClassGenerator extends MapClassGenerator {

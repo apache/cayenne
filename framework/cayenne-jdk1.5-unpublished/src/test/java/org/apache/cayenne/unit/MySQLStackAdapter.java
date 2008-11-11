@@ -29,7 +29,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 
 /**
- * @author Andrus Adamchik
  */
 public class MySQLStackAdapter extends AccessStackAdapter {
 

@@ -49,7 +49,6 @@ import org.apache.cayenne.util.IDUtil;
  * Default primary key generator implementation. Uses a lookup table named
  * "AUTO_PK_SUPPORT" to search and increment primary keys for tables.
  * 
- * @author Andrus Adamchik
  */
 public class JdbcPkGenerator implements PkGenerator {
 

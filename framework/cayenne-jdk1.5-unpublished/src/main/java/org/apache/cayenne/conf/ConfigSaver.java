@@ -34,7 +34,6 @@ import org.apache.cayenne.util.Util;
 /**
  * Class that does saving of Cayenne configuration.
  * 
- * @author Andrus Adamchik
  */
 public class ConfigSaver {
 

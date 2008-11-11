@@ -52,7 +52,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
  * Utility class that serves as a factory for various project renderers.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public final class CellRenderers {
 

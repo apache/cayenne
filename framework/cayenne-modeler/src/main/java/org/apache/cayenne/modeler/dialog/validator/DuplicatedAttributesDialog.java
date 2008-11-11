@@ -33,7 +33,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 /**
  * Dialog for resolving name collision.
  * 
- * @author Dzmitry Rusak
  */
 public class DuplicatedAttributesDialog extends CayenneDialog {
     

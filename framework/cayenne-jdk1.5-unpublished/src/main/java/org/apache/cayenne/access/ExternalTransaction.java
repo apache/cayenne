@@ -29,7 +29,6 @@ import org.apache.cayenne.CayenneException;
  * Represents a container-managed transaction.
  * 
  * @since 1.2 moved to a top-level class.
- * @author Andrus Adamchik
  */
 class ExternalTransaction extends Transaction {
 

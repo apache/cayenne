@@ -45,7 +45,6 @@ import org.apache.cayenne.query.PrefetchTreeNode;
  * A specialized PrefetchTreeNode used for joint prefetch resolving.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 

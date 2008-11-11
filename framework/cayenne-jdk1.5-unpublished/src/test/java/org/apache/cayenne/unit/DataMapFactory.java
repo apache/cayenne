@@ -26,7 +26,6 @@ import org.springframework.beans.factory.FactoryBean;
 /**
  * A Spring-compatible factory to load DataMaps.
  * 
- * @author Andrus Adamchik
  */
 public class DataMapFactory implements FactoryBean {
     protected DataMap map;

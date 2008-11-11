@@ -39,7 +39,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * A query that allows DataContext to retrieve parent DataDomain through a chain of
  * decorator DataChannels.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 class DataDomainQuery implements Query, QueryMetadata {

@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Subclass of Configuration that uses the System CLASSPATH to locate resources.
  * 
- * @author Andrus Adamchik
  */
 public class DefaultConfiguration extends Configuration {
 

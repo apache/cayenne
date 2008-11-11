@@ -26,7 +26,6 @@ import org.apache.cayenne.unit.BasicCase;
 /**
  * ClassGenerationInfo tests that are not template-specific.
  * 
- * @author Andrus Adamchik
  */
 public class ClassGeneratorTest extends BasicCase {
 

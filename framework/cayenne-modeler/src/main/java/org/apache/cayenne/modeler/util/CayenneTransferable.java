@@ -33,7 +33,6 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * CayenneTransferable is a data holder of Cayenne object(s), like
  * Entities, Attributes, Relationships etc.
- * @author Andrey Razumovsky
  */
 public class CayenneTransferable implements Transferable {
     /**

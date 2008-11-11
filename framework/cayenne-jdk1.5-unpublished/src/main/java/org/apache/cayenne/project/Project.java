@@ -38,7 +38,6 @@ import org.apache.cayenne.project.validator.Validator;
  * relative to the project directory.
  * </p>
  * 
- * @author Andrus Adamchik
  */
 public abstract class Project {
 

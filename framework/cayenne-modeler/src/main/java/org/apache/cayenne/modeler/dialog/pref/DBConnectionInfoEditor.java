@@ -32,7 +32,6 @@ import org.apache.cayenne.swing.ObjectBinding;
 /**
  * A reusable editor for DBConnectionInfo object.
  * 
- * @author Andrus Adamchik
  */
 public class DBConnectionInfoEditor extends CayenneController {
 

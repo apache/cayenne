@@ -29,7 +29,6 @@ import org.apache.cayenne.dba.DbAdapterFactory;
  * Detects HSQLDB database from JDBC metadata.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class HSQLDBSniffer implements DbAdapterFactory {
 

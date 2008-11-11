@@ -38,7 +38,6 @@ import org.objectstyle.confluence.rpc.soap_axis.confluenceservice_v1.ConfluenceS
  * Extracts embedded links from Confluence documentation and converts them to local fs
  * references
  * 
- * @author Cris Daniluk
  */
 public class DocPageRenderer {
 

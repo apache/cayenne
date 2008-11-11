@@ -25,7 +25,6 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataNodeValidatorTest extends ValidatorTestBase {
 

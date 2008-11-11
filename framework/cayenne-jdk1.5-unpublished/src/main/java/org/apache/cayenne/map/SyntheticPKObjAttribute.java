@@ -23,7 +23,6 @@ package org.apache.cayenne.map;
  * A "synthetic" server-side ObjAttribute used to describe unmapped PK>.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class SyntheticPKObjAttribute extends ObjAttribute {
 

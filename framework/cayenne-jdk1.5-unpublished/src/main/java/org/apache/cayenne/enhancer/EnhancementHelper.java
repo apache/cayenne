@@ -30,7 +30,6 @@ import org.objectweb.asm.Type;
  * operations.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EnhancementHelper {
 

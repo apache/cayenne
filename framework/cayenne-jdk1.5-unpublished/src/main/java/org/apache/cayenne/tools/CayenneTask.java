@@ -26,7 +26,6 @@ import org.apache.tools.ant.types.Reference;
 /**
  * Base task for all Cayenne ant tasks, providing support for common configuration items.
  *
- * @author Kevin Menard
  * @since 1.2
  */
 public class CayenneTask extends Task

@@ -29,7 +29,6 @@ import org.apache.cayenne.access.ToOneFault;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class SingletonFaultFactory implements FaultFactory {
 

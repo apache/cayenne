@@ -50,7 +50,6 @@ import org.apache.cayenne.map.DbKeyGenerator;
  * dataNode.getAdapter().getPkGenerator().setPkCacheSize(1);
  * </pre>
  * 
- * @author Andrus Adamchik
  */
 public class OraclePkGenerator extends JdbcPkGenerator {
 

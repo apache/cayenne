@@ -56,7 +56,6 @@ import org.apache.cayenne.util.Util;
  * A generic DbAdapter implementation. Can be used as a default adapter or as a superclass
  * of a concrete adapter implementation.
  * 
- * @author Andrus Adamchik
  */
 public class JdbcAdapter implements DbAdapter {
 

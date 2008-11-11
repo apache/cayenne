@@ -29,7 +29,6 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * "Add" Expression.
  * 
- * @author Andrus Adamchik
  */
 public class ASTAdd extends SimpleNode {
     ASTAdd(int id) {

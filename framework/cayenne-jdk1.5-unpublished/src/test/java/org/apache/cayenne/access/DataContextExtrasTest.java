@@ -46,7 +46,6 @@ import org.apache.cayenne.unit.CayenneCase;
  * "Lightweight" test cases for DataContext. These tests do not require any additional
  * database setup.
  * 
- * @author Andrus Adamchik
  */
 public class DataContextExtrasTest extends CayenneCase {
 

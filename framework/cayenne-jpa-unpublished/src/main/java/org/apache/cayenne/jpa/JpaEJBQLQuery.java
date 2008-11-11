@@ -27,7 +27,6 @@ import org.apache.cayenne.query.EJBQLQuery;
  * A JPA wrapper for {@link EJBQLQuery}.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class JpaEJBQLQuery extends JpaQuery {
 

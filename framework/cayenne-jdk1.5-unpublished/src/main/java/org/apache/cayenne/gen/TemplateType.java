@@ -22,7 +22,6 @@ package org.apache.cayenne.gen;
  * Defines class generation template types.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public enum TemplateType {
 

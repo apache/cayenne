@@ -26,7 +26,6 @@ import java.util.List;
 /**
  * Stores project information necessary to reconfigure existing projects. 
  *  
- * @author Andrus Adamchik
  */
 public class ProjectConfigInfo {
 	protected File sourceJar;

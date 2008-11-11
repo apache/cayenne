@@ -32,7 +32,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * A QueryMetadata implementation that returns all the defaults.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DefaultQueryMetadata implements QueryMetadata {
 

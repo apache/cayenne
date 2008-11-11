@@ -29,7 +29,6 @@ import java.util.ListIterator;
  * A GraphDiff that is a list of other GraphDiffs.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class CompoundDiff implements GraphDiff {
 

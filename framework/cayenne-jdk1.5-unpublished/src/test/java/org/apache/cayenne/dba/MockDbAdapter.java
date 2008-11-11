@@ -41,7 +41,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * @author Andrus Adamchik
  */
 public class MockDbAdapter implements DbAdapter {
 

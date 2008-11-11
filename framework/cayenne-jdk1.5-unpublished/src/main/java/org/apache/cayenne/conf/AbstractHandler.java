@@ -34,7 +34,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * </p>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class AbstractHandler extends DefaultHandler {
 

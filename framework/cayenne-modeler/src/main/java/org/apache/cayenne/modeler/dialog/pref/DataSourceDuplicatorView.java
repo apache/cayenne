@@ -31,7 +31,6 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataSourceDuplicatorView extends JDialog {
 

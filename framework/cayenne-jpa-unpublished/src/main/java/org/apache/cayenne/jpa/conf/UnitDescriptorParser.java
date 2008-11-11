@@ -46,7 +46,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * A parser of persistence descriptor files. Can be used in serial processing of multiple
  * documents.
  * 
- * @author Andrus Adamchik
  */
 public class UnitDescriptorParser {
 

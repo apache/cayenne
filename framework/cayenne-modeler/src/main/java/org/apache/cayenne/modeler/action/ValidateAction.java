@@ -37,7 +37,6 @@ import org.apache.cayenne.project.validator.Validator;
 /**
  * UI action that performs full project validation.
  * 
- * @author Craig Miskell
  */
 public class ValidateAction extends CayenneAction {
 

@@ -47,7 +47,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * dependencies (including multi-reflexive entities), generates primary keys, creates
  * batches for massive data modifications, assigns operations to data nodes.
  * 
- * @author Andrus Adamchik
  * @since 1.2
  */
 class DataDomainFlushAction {

@@ -28,8 +28,6 @@ import java.util.Map;
  * Common superclass for events passed from the EventManager to Listeners; encapsulates
  * optional event information.
  * 
- * @author Dirk Olmes
- * @author Holger Hoffstaette
  */
 public class CayenneEvent extends EventObject {
 

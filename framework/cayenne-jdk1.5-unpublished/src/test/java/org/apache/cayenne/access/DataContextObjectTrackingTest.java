@@ -36,7 +36,6 @@ import org.apache.cayenne.unit.CayenneCase;
  * Tests objects registration in DataContext, transferring objects between contexts and
  * such.
  * 
- * @author Andrus Adamchik
  */
 public class DataContextObjectTrackingTest extends CayenneCase {
 

@@ -25,7 +25,6 @@ import org.apache.cayenne.util.XMLEncoder;
 /**
  * A generic descriptor of a set of standard lifecycle callbacks.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 public class CallbackMap implements Serializable {

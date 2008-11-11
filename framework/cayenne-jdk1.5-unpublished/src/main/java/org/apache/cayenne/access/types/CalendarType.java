@@ -35,7 +35,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * ExtendedType that handles {@link java.util.Calendar} fields.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class CalendarType<T extends Calendar> implements ExtendedType {
 

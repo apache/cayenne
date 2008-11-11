@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DataMap;
  * DataMapFile is a ProjectFile abstraction of the 
  * DataMap file in a Cayenne project. 
  * 
- * @author Andrus Adamchik
  */
 public class DataMapFile extends ProjectFile {
     public static final String LOCATION_SUFFIX = ".map.xml";

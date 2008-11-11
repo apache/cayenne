@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.map.ObjRelationship;
 
 /**
- * @author Andrus Adamchik
  */
 public class MockObjRelationship extends ObjRelationship {
 

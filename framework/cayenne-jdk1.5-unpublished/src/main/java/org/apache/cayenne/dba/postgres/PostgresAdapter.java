@@ -53,9 +53,6 @@ import org.apache.cayenne.query.SQLAction;
  *     
  * </pre>
  * 
- * @author Dirk Olmes
- * @author Holger Hoffstaette
- * @author Andrus Adamchik
  */
 public class PostgresAdapter extends JdbcAdapter {
 

@@ -28,7 +28,6 @@ import org.apache.cayenne.event.EventBridge;
  * listening for server events.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface ClientConnection {
 

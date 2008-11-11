@@ -33,7 +33,6 @@ import com.caucho.hessian.io.Serializer;
  * </p>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class EnumSerializerFactory extends AbstractSerializerFactory {
 

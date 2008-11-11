@@ -28,7 +28,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.conf.Configuration;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataMapFileFilterTest extends TestCase {
     protected FileFilter filter;

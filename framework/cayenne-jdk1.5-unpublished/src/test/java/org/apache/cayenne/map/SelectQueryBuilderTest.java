@@ -27,7 +27,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
- * @author Andrus Adamchik
  */
 public class SelectQueryBuilderTest extends TestCase {
 

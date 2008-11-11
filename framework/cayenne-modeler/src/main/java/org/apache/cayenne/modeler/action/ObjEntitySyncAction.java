@@ -40,7 +40,6 @@ import org.apache.cayenne.util.EntityMergeSupport;
  * Action that synchronizes a given ObjEntity with the current state of the underlying
  * DbEntity.
  * 
- * @author Andrus Adamchik
  */
 public class ObjEntitySyncAction extends CayenneAction {
 

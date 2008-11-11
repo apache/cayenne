@@ -30,7 +30,6 @@ import javax.persistence.spi.ClassTransformer;
 /**
  * A noop ClassTransformer that logs all classes that were passed through it.
  * 
- * @author Andrus Adamchik
  */
 public class MockClassTransformer implements ClassTransformer {
 

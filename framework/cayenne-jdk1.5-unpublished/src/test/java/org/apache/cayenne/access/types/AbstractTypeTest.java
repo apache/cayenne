@@ -30,7 +30,6 @@ import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockPreparedStatement;
 
 /**
- * @author Andrus Adamchik
  */
 public class AbstractTypeTest extends TestCase {
 

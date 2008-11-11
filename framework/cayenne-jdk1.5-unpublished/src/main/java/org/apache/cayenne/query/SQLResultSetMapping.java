@@ -29,7 +29,6 @@ import java.util.List;
  * object) can be a scalar or a Persistent object.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class SQLResultSetMapping {
 

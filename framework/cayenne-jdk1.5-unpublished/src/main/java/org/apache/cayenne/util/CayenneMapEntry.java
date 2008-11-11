@@ -22,7 +22,6 @@ package org.apache.cayenne.util;
 /**
  * Defining a double-linked named entry in CayenneMap. 
  * 
- * @author Andrus Adamchik
  */
 public interface CayenneMapEntry {
 

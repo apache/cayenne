@@ -39,7 +39,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * A common base superclass for Cayenne ObjectContext implementors.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public abstract class BaseContext implements ObjectContext {
 

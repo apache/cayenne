@@ -34,8 +34,6 @@ import javax.swing.text.JTextComponent;
  * Common superclass of tables used in Cayenne. Contains some common configuration
  * settings and utility methods.
  * 
- * @author Michael Misha Shengaout
- * @author Andrus Adamchik
  */
 public class CayenneTable extends JTable {
 

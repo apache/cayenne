@@ -61,8 +61,6 @@ import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 /**
  * Detail view of the DbEntity attributes.
  * 
- * @author Michael Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListener,
         ListSelectionListener, DbAttributeListener, ExistingSelectionProcessor {

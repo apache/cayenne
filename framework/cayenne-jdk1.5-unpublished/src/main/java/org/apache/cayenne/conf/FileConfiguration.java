@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
  * FileConfiguration loads a Cayenne configuraton file from a given location in the file
  * system.
  * 
- * @author Holger Hoffstaette
  */
 public class FileConfiguration extends DefaultConfiguration {
 

@@ -25,7 +25,6 @@ import java.sql.SQLException;
  * ExportedKey is an representation of relationship between two tables 
  * in database. It can be used for creating names for relationships
  * 
- * @author Andrey Razumovsky
  */
 public class ExportedKey {
     /**

@@ -35,8 +35,6 @@ import org.apache.commons.logging.LogFactory;
  * 
  * Original code taken from Log4J project
  * 
- * @author Ceki G&uuml;lc&uuml;
- * @author Andrey Razumovsky
  */
 public abstract class FileWatchdog extends Thread {
 

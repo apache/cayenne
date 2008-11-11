@@ -35,7 +35,6 @@ import org.apache.openejb.client.LocalInitialContextFactory;
  * A test OpenEJB container object that provides JNDI and JTA environment to the
  * integration tests.
  * 
- * @author Andrus Adamchik
  */
 public class OpenEJBContainer {
 

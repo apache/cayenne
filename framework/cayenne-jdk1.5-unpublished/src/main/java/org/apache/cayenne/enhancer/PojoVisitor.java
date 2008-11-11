@@ -32,7 +32,6 @@ import org.objectweb.asm.Type;
  * implements {@link Persistent} interface as well as supports lazy faulting.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public abstract class PojoVisitor extends ClassAdapter {
 

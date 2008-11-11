@@ -49,7 +49,6 @@ import org.apache.cayenne.util.XMLEncoder;
  * optimizations.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class IncrementalSelectQuery extends SelectQuery {
 

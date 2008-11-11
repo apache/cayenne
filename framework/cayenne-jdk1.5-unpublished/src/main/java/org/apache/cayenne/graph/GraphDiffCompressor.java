@@ -30,7 +30,6 @@ import java.util.Set;
  * A utility class that removes redundant and mutually exclusive graph changes from the
  * graph diff.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 public class GraphDiffCompressor {

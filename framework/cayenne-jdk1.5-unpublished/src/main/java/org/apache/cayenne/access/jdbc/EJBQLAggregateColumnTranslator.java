@@ -28,7 +28,6 @@ import org.apache.cayenne.map.ObjAttribute;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
 

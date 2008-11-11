@@ -21,7 +21,6 @@ package org.apache.cayenne.reflect;
 /**
  * Defines a callback operation.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 abstract class AbstractCallback {

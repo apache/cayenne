@@ -41,7 +41,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * list. This query is client-only and can't be executed on the server.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class RangeQuery implements Query {
 

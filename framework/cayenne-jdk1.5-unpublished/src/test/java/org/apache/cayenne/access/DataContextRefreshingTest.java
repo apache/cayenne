@@ -36,7 +36,6 @@ import org.apache.cayenne.query.UpdateQuery;
  * refreshing relationships and attributes changed outside of Cayenne with and witout
  * prefetching.
  * 
- * @author Andrus Adamchik
  */
 public class DataContextRefreshingTest extends DataContextCase {
 

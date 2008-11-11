@@ -36,7 +36,6 @@ import org.apache.cayenne.unit.RelationshipCase;
 /**
  * Test case for objects with flattened relationships.
  * 
- * @author Andrus Adamchik
  */
 public class FlattenedRelationshipsTest extends RelationshipCase {
 

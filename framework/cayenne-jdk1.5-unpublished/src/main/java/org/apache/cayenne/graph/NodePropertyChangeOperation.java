@@ -23,7 +23,6 @@ import org.apache.cayenne.util.Util;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class NodePropertyChangeOperation extends NodeDiff {
 

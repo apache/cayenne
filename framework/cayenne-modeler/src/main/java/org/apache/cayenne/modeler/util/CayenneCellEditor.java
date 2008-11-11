@@ -30,7 +30,6 @@ import javax.swing.JTextField;
  * Overrides CellEditor to allow multiple selection in table
  * without bothering the editor.
  * 
- * @author Andrey Razumovsky
  */
 public class CayenneCellEditor extends DefaultCellEditor {
     public CayenneCellEditor(final JTextField textField) {

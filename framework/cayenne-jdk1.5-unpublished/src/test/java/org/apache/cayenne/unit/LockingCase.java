@@ -22,7 +22,6 @@ package org.apache.cayenne.unit;
 /**
  * A superclass of test cases using "locking" DataMap for its access stack.
  * 
- * @author Andrus Adamchik
  */
 public abstract class LockingCase extends CayenneCase {
     public static final String LOCKING_ACCESS_STACK = "LockingStack";

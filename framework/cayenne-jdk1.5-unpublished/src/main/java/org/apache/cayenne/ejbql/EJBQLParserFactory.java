@@ -22,7 +22,6 @@ package org.apache.cayenne.ejbql;
  * Creates {@link EJBQLParser} based on the system settings.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EJBQLParserFactory {
 

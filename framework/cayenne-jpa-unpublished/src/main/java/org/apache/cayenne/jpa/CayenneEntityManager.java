@@ -28,7 +28,6 @@ import org.apache.cayenne.DataChannel;
  * "CayenneEntityManager". Note that a regular JPA application shouldn't normally attempt
  * to do that. Otherwise it will not be portable across JPA providers.
  * 
- * @author Andrus Adamchik
  */
 public interface CayenneEntityManager extends EntityManager {
 

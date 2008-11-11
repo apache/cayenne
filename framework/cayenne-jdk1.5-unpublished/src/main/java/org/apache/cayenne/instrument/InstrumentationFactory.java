@@ -25,7 +25,6 @@ import java.lang.instrument.Instrumentation;
  * 
  * @see InstrumentUtil#INSTRUMENTATION_FACTORY_PROPERTY
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface InstrumentationFactory {
 

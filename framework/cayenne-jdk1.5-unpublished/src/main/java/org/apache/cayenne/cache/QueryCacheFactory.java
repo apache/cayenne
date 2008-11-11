@@ -23,7 +23,6 @@ import java.util.Map;
 /**
  * Creates QueryCache.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 public interface QueryCacheFactory {

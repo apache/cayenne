@@ -33,7 +33,6 @@ import org.apache.cayenne.project.ProjectPath;
 /**
  * Removes currently selected parameter from the current procedure.
  * 
- * @author Garry Watkins
  */
 public class RemoveProcedureParameterAction extends RemoveAction {
 

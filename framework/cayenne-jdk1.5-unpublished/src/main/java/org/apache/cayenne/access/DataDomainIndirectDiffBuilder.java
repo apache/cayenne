@@ -37,7 +37,6 @@ import java.util.Iterator;
  * to-many relationships.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
 

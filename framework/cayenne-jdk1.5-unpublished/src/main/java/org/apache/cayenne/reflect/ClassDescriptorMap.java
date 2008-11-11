@@ -34,7 +34,6 @@ import org.apache.cayenne.map.EntityResolver;
  * initialization via calling 'getDescriptor' for all mapped entities.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class ClassDescriptorMap {
 

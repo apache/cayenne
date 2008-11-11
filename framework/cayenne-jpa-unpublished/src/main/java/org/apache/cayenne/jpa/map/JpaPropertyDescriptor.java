@@ -33,7 +33,6 @@ import org.apache.cayenne.jpa.JpaProviderException;
 /**
  * A descriptor of a class property that may or may not be persistent.
  * 
- * @author Andrus Adamchik
  */
 public class JpaPropertyDescriptor {
 

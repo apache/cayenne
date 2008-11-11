@@ -34,7 +34,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * by calling "setObject(..)" on PreparedStatement. Some adapters may need to override
  * this behavior as it doesn't work consistently across all JDBC drivers.
  * 
- * @author Andrus Adamchik
  */
 public abstract class AbstractType implements ExtendedType {
 

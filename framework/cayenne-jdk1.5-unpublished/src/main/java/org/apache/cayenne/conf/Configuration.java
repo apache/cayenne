@@ -48,8 +48,6 @@ import org.apache.commons.logging.LogFactory;
  * {@link DefaultConfiguration}is instantiated.
  * </p>
  * 
- * @author Andrus Adamchik
- * @author Holger Hoffstaette
  */
 public abstract class Configuration {
 

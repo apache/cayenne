@@ -30,7 +30,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * Defines a property descriptor that is a part of an Entity. Two examples of things that
  * are described by attributes are Java class properties and database table columns.
  * 
- * @author Andrus Adamchik
  */
 public abstract class Attribute implements CayenneMapEntry, XMLSerializable, Serializable {
 

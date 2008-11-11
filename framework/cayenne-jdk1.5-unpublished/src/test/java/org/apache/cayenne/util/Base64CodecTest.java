@@ -27,7 +27,6 @@ import junit.framework.TestCase;
 /**
  * <i>Just like Base64 codec, this test case is borrowed from Apache.</i>
  * 
- * @author Andrus Adamchik
  */
 public class Base64CodecTest extends TestCase {
 

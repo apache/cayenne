@@ -29,7 +29,6 @@ import org.apache.cayenne.CayenneException;
 /**
  * A Cayenne transaction. Currently supports managing JDBC connections.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public abstract class Transaction {

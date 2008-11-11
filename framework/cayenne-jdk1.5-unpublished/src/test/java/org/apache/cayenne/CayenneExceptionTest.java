@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class CayenneExceptionTest extends TestCase {
 

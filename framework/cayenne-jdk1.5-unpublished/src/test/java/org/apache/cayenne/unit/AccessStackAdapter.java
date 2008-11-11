@@ -47,7 +47,6 @@ import org.apache.commons.logging.LogFactory;
  * things implemented in subclasses may become future candidates for inclusion in the
  * corresponding adapter code.
  * 
- * @author Andrus Adamchik
  */
 public class AccessStackAdapter {
 

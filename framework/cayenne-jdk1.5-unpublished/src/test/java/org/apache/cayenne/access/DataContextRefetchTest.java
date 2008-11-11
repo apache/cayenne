@@ -24,7 +24,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  * @deprecated since 3.0
  */
 public class DataContextRefetchTest extends CayenneCase {

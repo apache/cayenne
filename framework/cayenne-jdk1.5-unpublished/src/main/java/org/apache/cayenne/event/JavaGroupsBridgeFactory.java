@@ -32,7 +32,6 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * this factory will return a noop EventBridge as a failover mechanism.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class JavaGroupsBridgeFactory implements EventBridgeFactory {
 

@@ -40,7 +40,6 @@ import org.apache.cayenne.util.ObjectContextQueryAction;
  * {@link org.apache.cayenne.util.ObjectContextQueryAction}.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DataContextQueryAction extends ObjectContextQueryAction {
 

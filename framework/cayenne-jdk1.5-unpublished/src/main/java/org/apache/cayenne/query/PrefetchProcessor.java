@@ -25,7 +25,6 @@ package org.apache.cayenne.query;
  * 
  * @since 1.2
  * @see org.apache.cayenne.query.PrefetchTreeNode#traverse(PrefetchProcessor)
- * @author Andrus Adamchik
  */
 public interface PrefetchProcessor {
 

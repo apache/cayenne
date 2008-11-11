@@ -24,7 +24,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.map.event.MapEvent;
 
 /**
- * @author Andrus Adamchik
  */
 public class ModelerEventTest extends TestCase {
 

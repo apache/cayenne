@@ -30,8 +30,6 @@ import org.apache.cayenne.project.validator.ValidationInfo;
 /**
  * DataDomain validation message.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DomainErrorMsg extends ValidationDisplayHandler {
 

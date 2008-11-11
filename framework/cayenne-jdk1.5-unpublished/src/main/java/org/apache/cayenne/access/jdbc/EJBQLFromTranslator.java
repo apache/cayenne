@@ -25,7 +25,6 @@ import org.apache.cayenne.ejbql.parser.EJBQLJoin;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EJBQLFromTranslator extends EJBQLBaseVisitor {
 

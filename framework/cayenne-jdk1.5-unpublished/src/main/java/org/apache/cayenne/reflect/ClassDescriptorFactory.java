@@ -23,7 +23,6 @@ package org.apache.cayenne.reflect;
  * A factory of {@link ClassDescriptor} instances.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface ClassDescriptorFactory {
 

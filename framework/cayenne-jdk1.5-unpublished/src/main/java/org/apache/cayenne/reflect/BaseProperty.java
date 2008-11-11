@@ -24,7 +24,6 @@ package org.apache.cayenne.reflect;
  * Used as a superclass for other implementations.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public abstract class BaseProperty implements Property {
 

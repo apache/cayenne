@@ -27,7 +27,6 @@ import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 /**
- * @author Andrus Adamchik
  */
 public class EventBridgeTest extends TestCase {
 

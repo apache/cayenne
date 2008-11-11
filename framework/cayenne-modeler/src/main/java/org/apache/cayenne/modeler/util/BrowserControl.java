@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 /**
  * Opens a URL in the system default browser.
  * 
- * @author Andrus Adamchik
  */
 public class BrowserControl {
 

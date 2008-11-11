@@ -26,7 +26,6 @@ import java.io.Serializable;
  * can be a Field, a pair of get/set methods or a map/DataObject.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface Accessor extends Serializable {
 

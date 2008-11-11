@@ -24,7 +24,6 @@ import java.util.EventListener;
 /** 
  * Listener for Procedure events.
  * 
- * @author Andrus Adamchik
  */
 public interface ProcedureListener extends EventListener {
     /** 

@@ -29,7 +29,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Or" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTOr extends AggregateConditionNode {
     ASTOr(int id) {

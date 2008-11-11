@@ -26,7 +26,6 @@ import org.objectweb.asm.ClassVisitor;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class JpaPojoVisitor extends PojoVisitor {
 

@@ -46,7 +46,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * Graph node ids are expected to be ObjectIds.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ChildDiffLoader implements GraphChangeHandler {
 

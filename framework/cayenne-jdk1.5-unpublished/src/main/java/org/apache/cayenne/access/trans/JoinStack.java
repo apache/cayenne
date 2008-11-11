@@ -32,7 +32,6 @@ import org.apache.cayenne.map.JoinType;
  * combined join tree.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class JoinStack {
 

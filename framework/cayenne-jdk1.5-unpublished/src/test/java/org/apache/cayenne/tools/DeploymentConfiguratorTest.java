@@ -33,7 +33,6 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.ZipUtil;
 
 /**
- * @author Andrus Adamchik
  */
 public class DeploymentConfiguratorTest extends CayenneCase {
 

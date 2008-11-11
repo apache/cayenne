@@ -33,7 +33,6 @@ import org.apache.cayenne.conn.DataSourceInfo;
  * Factory of DataSource objects used by the project model. Always tries to locate file
  * with direct connection info.
  * 
- * @author Andrus Adamchik
  */
 public class ProjectDataSourceFactory implements DataSourceFactory {
 

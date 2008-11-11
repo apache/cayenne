@@ -20,7 +20,6 @@
 package org.apache.cayenne.unit.jira;
 
 /**
- * @author Andrus Adamchik
  */
 public class CAY_207String1 {
 

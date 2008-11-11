@@ -31,7 +31,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * Provides a common interface for accessing query metadata.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface QueryMetadata {
 

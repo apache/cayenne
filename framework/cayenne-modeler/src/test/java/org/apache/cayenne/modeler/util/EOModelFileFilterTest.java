@@ -26,7 +26,6 @@ import javax.swing.filechooser.FileFilter;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class EOModelFileFilterTest extends TestCase {
 	protected FileFilter filter;

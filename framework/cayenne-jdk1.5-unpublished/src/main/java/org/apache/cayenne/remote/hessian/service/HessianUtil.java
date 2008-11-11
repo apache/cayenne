@@ -34,7 +34,6 @@ import com.caucho.hessian.io.HessianOutput;
  * Hessian related utilities.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public final class HessianUtil {
 

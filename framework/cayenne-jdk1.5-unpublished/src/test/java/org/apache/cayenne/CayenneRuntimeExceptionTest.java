@@ -25,7 +25,6 @@ import java.io.StringWriter;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class CayenneRuntimeExceptionTest extends TestCase {
 

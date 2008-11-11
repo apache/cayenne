@@ -25,7 +25,6 @@ import java.util.EventListener;
  * Interface for classes that are interested in Procedure 
  * display events. 
  * 
- * @author Andrus Adamchik
  */
 public interface ProcedureDisplayListener extends EventListener {
     public void currentProcedureChanged(ProcedureDisplayEvent e);

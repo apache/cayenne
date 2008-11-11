@@ -66,8 +66,6 @@ import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 /**
  * Detail view of the ObjEntity attributes.
  * 
- * @author Michael Misha Shengaout
- * @author Andrus Adamchik
  */
 public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayListener,
         ObjEntityListener, ObjAttributeListener, ExistingSelectionProcessor {

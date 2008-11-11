@@ -28,7 +28,6 @@ import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataRowTest extends CayenneCase {
 

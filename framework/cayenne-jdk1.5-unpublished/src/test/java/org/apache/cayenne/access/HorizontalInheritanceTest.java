@@ -12,7 +12,6 @@ import java.util.List;
 /**
  * Tests for horizontal inheritance implementation.
  * 
- * @author Dzmitry Rusak
  */
 public class HorizontalInheritanceTest extends InheritanceCase {
 

@@ -48,7 +48,6 @@ import org.apache.cayenne.util.Util;
  * the name.
  * </p>
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 // TODO Andrus, 10/15/2005 - potentially big inefficiency of concrete implementations of

@@ -28,7 +28,6 @@ import org.apache.cayenne.util.Util;
  * Superclass of test cases requiring multiple DataContexts with 
  * the same parent DataDomain.
  * 
- * @author Andrus Adamchik
  */
 public abstract class MultiContextCase extends CayenneCase {
 

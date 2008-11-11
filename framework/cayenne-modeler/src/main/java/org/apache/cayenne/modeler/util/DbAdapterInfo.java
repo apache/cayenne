@@ -44,7 +44,6 @@ import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 
 /**
- * @author Andrus Adamchik
  */
 public final class DbAdapterInfo {
 

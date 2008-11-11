@@ -40,7 +40,6 @@ import org.apache.velocity.runtime.parser.node.Node;
  * #bindObjectEqual($object $columns $idValues)".
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class BindObjectEqualDirective extends BindDirective {
 

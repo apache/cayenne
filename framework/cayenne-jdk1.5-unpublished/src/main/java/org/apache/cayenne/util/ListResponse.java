@@ -30,7 +30,6 @@ import org.apache.cayenne.QueryResponse;
  * A QueryResponse optimized to hold a single object or data row list.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class ListResponse implements QueryResponse, Serializable {
 

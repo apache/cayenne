@@ -39,7 +39,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * An Entity is an abstract descriptor for an entity mapping concept. Entity can represent
  * either a descriptor of database table or a persistent object.
  * 
- * @author Andrus Adamchik
  */
 public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serializable {
 

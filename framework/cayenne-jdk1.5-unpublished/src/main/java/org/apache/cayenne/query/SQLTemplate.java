@@ -70,7 +70,6 @@ import org.apache.commons.collections.Transformer;
  * </p>
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         XMLSerializable {

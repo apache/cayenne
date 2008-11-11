@@ -34,7 +34,6 @@ import org.apache.cayenne.util.EntityMergeSupport;
  * Common abstract superclass for all {@link MergerToken}s going from the database to the
  * model.
  * 
- * @author halset
  */
 public abstract class AbstractToModelToken implements MergerToken {
     

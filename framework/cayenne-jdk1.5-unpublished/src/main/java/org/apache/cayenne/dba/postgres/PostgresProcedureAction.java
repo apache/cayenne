@@ -34,7 +34,6 @@ import org.apache.cayenne.query.ProcedureQuery;
  * processed.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class PostgresProcedureAction extends SQLServerProcedureAction {
 

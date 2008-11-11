@@ -38,7 +38,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * DataDomain unit tests.
  * 
- * @author Andrus Adamchik
  */
 public class DataDomainTest extends CayenneCase {
 

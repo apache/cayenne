@@ -30,7 +30,6 @@ import org.apache.cayenne.util.PersistentObjectMap;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class ValueHolderMapProperty extends ValueHolderToManyProperty implements
         ToManyMapProperty {

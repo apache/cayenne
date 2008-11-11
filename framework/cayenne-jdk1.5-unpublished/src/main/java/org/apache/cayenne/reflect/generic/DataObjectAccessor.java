@@ -27,7 +27,6 @@ import org.apache.cayenne.reflect.PropertyException;
  * A PropertyAccessor that uses DataObject API to read/write values.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class DataObjectAccessor implements Accessor {
 

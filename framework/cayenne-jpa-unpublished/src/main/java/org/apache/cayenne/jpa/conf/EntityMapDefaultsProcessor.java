@@ -65,7 +65,6 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
 /**
  * Initializes JPA specification compatible mapping defaults.
  * 
- * @author Andrus Adamchik
  */
 public class EntityMapDefaultsProcessor {
 

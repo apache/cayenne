@@ -46,7 +46,6 @@ import java.util.regex.Matcher;
 /**
  * Attributes and Methods for working with Queries.
  *
- * @author Dzmitry Rusak
  * @since 3.0
  */
 public class DataMapUtils {

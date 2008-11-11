@@ -22,7 +22,6 @@ package org.apache.cayenne.access.types;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ByteArrayTypeTest extends CayenneCase {
 

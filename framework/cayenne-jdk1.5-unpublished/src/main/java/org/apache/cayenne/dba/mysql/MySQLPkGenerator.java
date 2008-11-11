@@ -31,7 +31,6 @@ import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
 
 /**
- * @author Andrus Adamchik
  */
 public class MySQLPkGenerator extends JdbcPkGenerator {
 

@@ -30,7 +30,6 @@ import org.xml.sax.InputSource;
  * Loads a DataMap and a shared entity namespace.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class CayenneGeneratorMapLoaderAction {
 

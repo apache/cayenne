@@ -41,7 +41,6 @@ import org.apache.cayenne.util.Util;
 /**
  * A controller for the custom generation mode.
  * 
- * @author Andrus Adamchik
  */
 public class CustomModeController extends GeneratorController {
 

@@ -26,7 +26,6 @@ import javax.sql.DataSource;
 /**
  * A factory that provides DataSources to PersistenceUnitInfo instances.
  * 
- * @author Andrus Adamchik
  */
 public interface JpaDataSourceFactory {
 

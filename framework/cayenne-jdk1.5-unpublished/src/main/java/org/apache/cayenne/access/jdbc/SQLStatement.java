@@ -24,7 +24,6 @@ package org.apache.cayenne.access.jdbc;
  * SQLStatement is essentially a "compiled" version of any single query.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class SQLStatement {
 

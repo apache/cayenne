@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.event;
 
 /**
  * Listens to changes in recent file list 
- * @author Andrey Razumovsky
  */
 public interface RecentFileListListener {
     /**

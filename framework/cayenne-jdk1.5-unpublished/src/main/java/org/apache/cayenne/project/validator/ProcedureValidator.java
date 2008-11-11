@@ -30,7 +30,6 @@ import org.apache.cayenne.util.Util;
 /**
  * Validator for stored procedures.
  * 
- * @author Andrus Adamchik
  */
 public class ProcedureValidator extends TreeNodeValidator {
 

@@ -23,7 +23,6 @@ package org.apache.cayenne;
 /**
  * Concrete ClientDataObject used for unit testing.
  * 
- * @author Andrus Adamchik
  */
 public class MockPersistentObject extends PersistentObject {
 

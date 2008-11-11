@@ -31,7 +31,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class SQLTemplateProcessorTest extends BasicCase {
 

@@ -31,7 +31,6 @@ import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.validation.ValidationException;
 
 /**
- * @author Andrus Adamchik
  */
 public class ComboSelectionBinding extends BindingBase {
 

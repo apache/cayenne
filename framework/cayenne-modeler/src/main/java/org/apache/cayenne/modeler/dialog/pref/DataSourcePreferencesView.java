@@ -33,7 +33,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataSourcePreferencesView extends JPanel {
 

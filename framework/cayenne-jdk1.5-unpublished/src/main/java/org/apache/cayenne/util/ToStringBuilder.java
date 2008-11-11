@@ -26,7 +26,6 @@ import java.util.Map;
  * implementation is a trimmed version of commons-lang ToStringBuilder.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class ToStringBuilder {
 

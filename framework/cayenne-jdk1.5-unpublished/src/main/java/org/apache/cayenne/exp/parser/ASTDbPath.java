@@ -31,7 +31,6 @@ import org.apache.cayenne.map.Entity;
  * Path expression traversing DB relationships and attributes.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTDbPath extends ASTPath {
 

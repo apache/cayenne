@@ -52,7 +52,6 @@ import org.apache.commons.logging.LogFactory;
  * its own instance.
  * </p>
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class DataRowStore implements Serializable {

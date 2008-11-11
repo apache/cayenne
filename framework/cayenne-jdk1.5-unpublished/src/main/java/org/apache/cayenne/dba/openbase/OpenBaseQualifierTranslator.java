@@ -30,8 +30,6 @@ import org.apache.cayenne.map.DbAttribute;
 /**
  * Translates query qualifier to SQL. Used as a helper class by query translators.
  * 
- * @author <a href="mailto:mkienenb@alaska.net">Mike Kienenberger</a>
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class OpenBaseQualifierTranslator extends QualifierTranslator {

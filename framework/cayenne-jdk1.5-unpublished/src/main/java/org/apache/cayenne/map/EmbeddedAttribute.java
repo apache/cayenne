@@ -33,7 +33,6 @@ import org.apache.cayenne.util.XMLEncoder;
  * An attribute of the ObjEntity that maps to an embeddable class.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EmbeddedAttribute extends ObjAttribute {
 

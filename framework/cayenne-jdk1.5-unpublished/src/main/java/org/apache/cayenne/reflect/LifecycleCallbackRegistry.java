@@ -30,7 +30,6 @@ import org.apache.cayenne.map.LifecycleEvent;
  * defined in {@link LifecycleEvent} enum.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class LifecycleCallbackRegistry {
 

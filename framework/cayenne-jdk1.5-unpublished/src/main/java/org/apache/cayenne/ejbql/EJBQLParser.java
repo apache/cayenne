@@ -24,7 +24,6 @@ import org.apache.cayenne.map.EntityResolver;
  * An abstract definition of EJBQL query parser. The actual parser implementing this
  * interface is generated from JavaCC grammar.
  * 
- * @author andrus
  * @since 3.0
  */
 public interface EJBQLParser {

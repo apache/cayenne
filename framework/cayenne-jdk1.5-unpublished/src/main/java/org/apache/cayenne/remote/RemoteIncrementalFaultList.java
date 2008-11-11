@@ -57,7 +57,6 @@ import org.apache.cayenne.util.Util;
  * </p>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class RemoteIncrementalFaultList implements List {
 

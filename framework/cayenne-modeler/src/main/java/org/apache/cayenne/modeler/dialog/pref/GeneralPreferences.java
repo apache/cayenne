@@ -34,7 +34,6 @@ import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationException;
 
 /**
- * @author Andrus Adamchik
  */
 public class GeneralPreferences extends CayenneController {
 

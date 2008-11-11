@@ -27,7 +27,6 @@ import org.apache.cayenne.project.ProjectPath;
 import java.awt.event.ActionEvent;
 
 /**
- * @author Andrus Adamchik
  */
 public class ExitAction extends ProjectAction {
 

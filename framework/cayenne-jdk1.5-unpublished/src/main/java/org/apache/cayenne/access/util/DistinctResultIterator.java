@@ -42,7 +42,6 @@ import org.apache.cayenne.map.DbEntity;
  * again. This is pretty sensible for most things in Cayenne.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class DistinctResultIterator implements ResultIterator {
 

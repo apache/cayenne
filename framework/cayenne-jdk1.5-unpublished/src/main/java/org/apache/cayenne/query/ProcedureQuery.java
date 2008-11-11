@@ -54,7 +54,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * {@link org.apache.cayenne.access.DataContext#performGenericQuery(Query)}.
  * </p>
  * 
- * @author Andrus Adamchik
  */
 public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
         XMLSerializable {

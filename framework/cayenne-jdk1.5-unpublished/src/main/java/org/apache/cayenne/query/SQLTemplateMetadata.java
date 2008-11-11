@@ -28,7 +28,6 @@ import org.apache.cayenne.map.ObjEntity;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class SQLTemplateMetadata extends BaseQueryMetadata {
 

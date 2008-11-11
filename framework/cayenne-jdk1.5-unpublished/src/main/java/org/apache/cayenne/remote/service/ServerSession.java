@@ -27,7 +27,6 @@ import org.apache.cayenne.remote.RemoteSession;
 /**
  * An object that stores server side objects for the client session.
  * 
- * @author Andrus Adamchik
  * @since 1.2
  */
 public class ServerSession implements Serializable {

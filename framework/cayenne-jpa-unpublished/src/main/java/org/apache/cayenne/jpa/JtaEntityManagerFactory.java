@@ -34,7 +34,6 @@ import org.apache.cayenne.access.DataDomain;
  * active JTA Transaction so that they could flush the object state to the database during
  * commit.
  * 
- * @author Andrus Adamchik
  */
 public class JtaEntityManagerFactory extends ResourceLocalEntityManagerFactory {
 

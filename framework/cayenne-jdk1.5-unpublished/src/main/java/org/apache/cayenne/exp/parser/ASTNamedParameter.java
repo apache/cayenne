@@ -29,7 +29,6 @@ import org.apache.cayenne.exp.ExpressionParameter;
  * A named expression parameter.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTNamedParameter extends ASTScalar {
     ASTNamedParameter(int id) {

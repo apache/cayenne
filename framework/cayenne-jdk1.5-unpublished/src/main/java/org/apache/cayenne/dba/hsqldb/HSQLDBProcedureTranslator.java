@@ -26,7 +26,6 @@ import org.apache.cayenne.map.Procedure;
  * Works around HSQLDB's pickiness about stored procedure syntax.
  * 
  * @since 1.2
- * @author Cristopher Daniluk
  */
 public class HSQLDBProcedureTranslator extends ProcedureTranslator {
 

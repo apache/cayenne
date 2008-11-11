@@ -23,7 +23,6 @@ import org.apache.cayenne.map.LifecycleEvent;
 /**
  * Entity for callback type. Contains type and type name
  * 
- * @author Vasil Tarasevich
  * @version 1.0 Oct 26, 2007
  */
 

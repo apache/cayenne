@@ -26,7 +26,6 @@ import java.util.List;
  * information about the full list.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class IncrementalListResponse extends ListResponse {
 

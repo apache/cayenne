@@ -29,7 +29,6 @@ import org.apache.cayenne.unit.MultiContextCase;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataContextDelegateSharedCacheTest extends MultiContextCase {
 

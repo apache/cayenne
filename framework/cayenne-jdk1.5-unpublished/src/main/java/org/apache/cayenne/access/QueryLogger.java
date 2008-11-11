@@ -42,7 +42,6 @@ import org.apache.commons.logging.LogFactory;
  * Internally QueryLogger uses commons-logging at the "info" level.
  * </p>
  * 
- * @author Andrus Adamchik
  */
 public class QueryLogger {
 

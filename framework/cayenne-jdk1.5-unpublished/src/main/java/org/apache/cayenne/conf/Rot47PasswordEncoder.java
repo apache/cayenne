@@ -29,7 +29,6 @@ package org.apache.cayenne.conf;
  * for more information on this topic.
  *
  * @since 3.0
- * @author Michael Gentry
  */
 public class Rot47PasswordEncoder implements PasswordEncoding
 {

@@ -54,7 +54,6 @@ import org.apache.cayenne.query.Query;
 
 /**
  * Action for pasting entities, queries etc. from the system buffer
- * @author Andrey Razumovsky
  */
 public class PasteAction extends CayenneAction implements FlavorListener {
     private static final String COPY_PREFIX = "Copy of ";

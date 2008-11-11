@@ -27,7 +27,6 @@ import java.awt.Component;
  * as a context of binding expressions. Child of the binding is a bound component that is
  * being synchronized with the context.
  * 
- * @author Andrus Adamchik
  */
 public interface ObjectBinding {
 

@@ -37,7 +37,6 @@ import org.apache.commons.collections.IteratorUtils;
  * A default ClassDescriptor implementation for persistent objects.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class PersistentDescriptor implements ClassDescriptor {
 

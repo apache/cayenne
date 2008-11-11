@@ -40,7 +40,6 @@ import org.apache.cayenne.conf.JNDIDataSourceFactory;
  * even when some of the resources are missing. It never instantiates Cayenne stack
  * objects, using other, lightweight, data structures instead.
  * 
- * @author Andrus Adamchik
  */
 public class PartialProject extends Project {
 

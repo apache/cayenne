@@ -26,7 +26,6 @@ import javax.swing.*;
 /**
  * A factory for a number of common bindings.
  * 
- * @author Andrus Adamchik
  */
 public class BindingFactory {
 

@@ -34,7 +34,6 @@ import org.apache.cayenne.validation.ValidationException;
 /**
  * Text adapter with live validation, which is fired in
  * VALIDATION_DELAY time.
- * @author Andrey Razumovsky
  */
 public abstract class ValidatorTextAdapter extends TextAdapter {
     /**

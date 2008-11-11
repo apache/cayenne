@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Helper JavaBean class that holds DataSource login information.
  * 
- * @author Andrus Adamchik
  */
 public class DataSourceInfo implements Cloneable, Serializable {
 

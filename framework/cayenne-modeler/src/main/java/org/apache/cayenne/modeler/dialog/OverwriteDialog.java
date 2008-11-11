@@ -26,7 +26,6 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 /**
- * @author Andrus Adamchik
  */
 public class OverwriteDialog {
 

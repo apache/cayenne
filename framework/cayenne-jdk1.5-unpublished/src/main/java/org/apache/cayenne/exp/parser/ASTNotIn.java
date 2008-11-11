@@ -26,7 +26,6 @@ import org.apache.commons.collections.Transformer;
 /**
  * "Not In" expression.
  * 
- * @author Andrus Adamchik
  */
 public class ASTNotIn extends ConditionNode {
     ASTNotIn(int id) {

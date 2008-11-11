@@ -30,7 +30,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
- * @author Andrus Adamchik
  */
 public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
 

@@ -67,7 +67,6 @@ import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
 /**
- * @author Andrus Adamchik
  */
 public class ProcedureParameterTab
     extends JPanel

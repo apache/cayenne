@@ -29,7 +29,6 @@ import org.apache.cayenne.query.Query;
  * notify caller about exceptions.
  * 
  * @see org.apache.cayenne.access.QueryEngine
- * @author Andrus Adamchik
  */
 // TODO: need a name that better reflects the functionality,
 // e.g. OperationContext or QueryContext

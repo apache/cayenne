@@ -26,7 +26,6 @@ import org.apache.velocity.VelocityContext;
  * {@link Artifact} facade for an ObjEntity.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EntityArtifact implements Artifact {
 

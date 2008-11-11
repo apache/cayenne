@@ -22,7 +22,6 @@ package org.apache.cayenne.map.event;
 import org.apache.cayenne.map.ProcedureParameter;
 
 /**
- * @author Andrus Adamchik
  */
 public class ProcedureParameterEvent extends MapEvent {
     protected ProcedureParameter parameter;

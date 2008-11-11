@@ -38,7 +38,6 @@ import org.apache.cayenne.query.SelectQuery;
  * An exception thrown on optimistic lock failure.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class OptimisticLockException extends CayenneRuntimeException {
 

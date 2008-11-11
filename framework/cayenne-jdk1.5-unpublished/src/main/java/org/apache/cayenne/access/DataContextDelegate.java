@@ -31,8 +31,6 @@ import org.apache.cayenne.query.Query;
  * by DataContext and its ObjectStore.
  * 
  * @see org.apache.cayenne.access.DataContext
- * @author Mike Kienenberger
- * @author Andrus Adamchik
  * @since 1.1
  */
 public interface DataContextDelegate {

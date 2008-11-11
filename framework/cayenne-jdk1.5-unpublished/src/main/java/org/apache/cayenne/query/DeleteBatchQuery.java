@@ -31,7 +31,6 @@ import org.apache.cayenne.map.DbEntity;
 /**
  * Batched delete query.
  * 
- * @author Andriy Shapochka
  */
 public class DeleteBatchQuery extends BatchQuery {
 

@@ -25,7 +25,6 @@ import org.apache.cayenne.access.DataContext;
 /**
  * An noop profiling case.
  * 
- * @author Andrus Adamchik
  */
 public class AbstractCase extends TestCase {
 

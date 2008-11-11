@@ -22,7 +22,6 @@ package org.apache.cayenne.validation;
 import junit.framework.TestCase;
 
 /**
- * @author Fabricio Voznika
  */
 public class ValidationResultTest extends TestCase {
 

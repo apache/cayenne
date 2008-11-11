@@ -28,7 +28,6 @@ import org.apache.cayenne.ValueHolder;
  * A generic superclass of CollectionProperty implementations.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public abstract class BaseToManyProperty extends BaseArcProperty implements
         ToManyProperty {

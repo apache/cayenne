@@ -30,7 +30,6 @@ import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
  * booleans, indicating whether the children of a given node should be visited.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface EJBQLExpressionVisitor {
 

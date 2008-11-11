@@ -34,7 +34,6 @@ import org.apache.cayenne.util.Util;
  * service. Emulation includes serialization/deserialization of objects.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class LocalConnection extends BaseConnection {
 

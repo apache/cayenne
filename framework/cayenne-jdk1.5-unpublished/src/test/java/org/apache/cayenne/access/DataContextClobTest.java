@@ -26,7 +26,6 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataContextClobTest extends CayenneCase {
 

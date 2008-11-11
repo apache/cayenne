@@ -26,7 +26,6 @@ import java.awt.*;
 /**
  * Dialog for CayenneModeler warnings.
  * 
- * @author Andrus Adamchik
  */
 public class WarningDialog extends ErrorDebugDialog {
 

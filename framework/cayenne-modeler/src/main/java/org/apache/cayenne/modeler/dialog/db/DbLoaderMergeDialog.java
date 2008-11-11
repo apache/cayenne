@@ -36,7 +36,6 @@ import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.PanelFactory;
 
 /**
- * @author Andrus Adamchik
  */
 public class DbLoaderMergeDialog extends CayenneDialog {
 

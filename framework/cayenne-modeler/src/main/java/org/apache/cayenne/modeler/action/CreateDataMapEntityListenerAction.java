@@ -25,7 +25,6 @@ import org.apache.cayenne.modeler.Application;
 /**
  * Action class for creating entity listeners on a DataMap
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 30, 2007
  */
 public class CreateDataMapEntityListenerAction extends CreateObjEntityListenerAction {

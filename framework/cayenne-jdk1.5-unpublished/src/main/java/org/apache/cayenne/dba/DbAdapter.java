@@ -42,7 +42,6 @@ import org.apache.cayenne.query.SQLAction;
  * <li>Allow for vendor-specific tuning of JDBC access.
  * </ul>
  * 
- * @author Andrus Adamchik
  */
 public interface DbAdapter {
 

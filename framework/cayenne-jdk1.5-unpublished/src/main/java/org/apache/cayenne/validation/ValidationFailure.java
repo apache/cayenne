@@ -27,7 +27,6 @@ import java.io.Serializable;
  * for the failure.
  *
  * @see BeanValidationFailure
- * @author Fabricio Voznika
  * @since 1.1
  */
 public interface ValidationFailure extends Serializable {

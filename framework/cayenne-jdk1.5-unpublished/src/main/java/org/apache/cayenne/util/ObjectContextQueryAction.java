@@ -47,7 +47,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * </p>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public abstract class ObjectContextQueryAction {
 

@@ -30,7 +30,6 @@ import org.apache.cayenne.modeler.event.EntityListenerEvent;
 /**
  * Action class for removing entity listeners from an ObjEntity
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 30, 2007
  */
 public class RemoveEntityListenerAction extends RemoveAction {

@@ -38,7 +38,6 @@ import org.apache.commons.collections.Transformer;
 /**
  * An extension of ObjEntity used to accomodate extra EOModel entity properties.
  * 
- * @author Andrus Adamchik
  */
 public class EOObjEntity extends ObjEntity {
 

@@ -39,7 +39,6 @@ import org.apache.commons.collections.ExtendedProperties;
  * in $HOME/.cayenne/connection.properties. As of now this is purely a utility class. Its
  * features are not used in deployment.
  * 
- * @author Andrus Adamchik
  */
 public class ConnectionProperties {
 

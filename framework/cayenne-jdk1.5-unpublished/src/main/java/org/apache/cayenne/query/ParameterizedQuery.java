@@ -27,7 +27,6 @@ import java.util.Map;
  * the mapped queries.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public interface ParameterizedQuery extends Query {
 

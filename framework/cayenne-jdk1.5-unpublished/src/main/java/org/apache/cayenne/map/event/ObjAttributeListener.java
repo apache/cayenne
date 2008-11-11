@@ -24,8 +24,6 @@ import java.util.EventListener;
 /** 
  * Listener for ObjAttribute events.
  * 
- * @author Andrus Adamchik
- * @author Misha Shengaout
  */
 public interface ObjAttributeListener extends EventListener
 { 

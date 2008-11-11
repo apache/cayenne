@@ -51,7 +51,6 @@ import org.apache.cayenne.util.Util;
  * <li>org.apache.cayenne.datasource..jdbc.maxConnections - (optional) Maximum pool size</li>
  * </ul>
  * 
- * @author Andrus Adamchik
  */
 public class DefaultDataSourceFactory implements JpaDataSourceFactory {
 

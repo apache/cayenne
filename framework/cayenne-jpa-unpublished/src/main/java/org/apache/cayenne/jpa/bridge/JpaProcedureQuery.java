@@ -27,7 +27,6 @@ import org.apache.cayenne.query.Query;
  * An indirect query that resolves to Cayenne ProcedureQuery using information from JPA
  * query hints.
  * 
- * @author Andrus Adamchik
  */
 public class JpaProcedureQuery extends JpaIndirectQuery {
 

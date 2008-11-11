@@ -25,8 +25,6 @@ import java.io.File;
  * Main class to start CayenneModeler on MacOSX.
  * 
  * @since 1.2
- * @author Michael Gentry
- * @author Andrus Adamchik
  */
 public class MacOSXMain extends Main {
 

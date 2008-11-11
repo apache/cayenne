@@ -32,7 +32,6 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.LockingCase;
 
 /**
- * @author Andrus Adamchik, Mike Kienenberger
  */
 public class UpdateBatchQueryBuilderTest extends LockingCase {
 

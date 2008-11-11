@@ -33,7 +33,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * A view for the main DataNode editor tab.
  * 
- * @author Andrus Adamchik
  */
 public class MainDataNodeView extends JPanel {
 

@@ -25,7 +25,6 @@ package org.apache.cayenne.validation;
  * failed object and a message describing the failure.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class SimpleValidationFailure implements ValidationFailure {
     protected Object source;

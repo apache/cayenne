@@ -25,7 +25,6 @@ import org.apache.cayenne.conf.Configuration;
 
 /**
  * @since 1.1
- * @author Andrus Adamchik
  */
 // TODO: andrus, 7/16/2006 - upgrade handler is rather primitive and relies on individual
 // loaders to be able to read older versions and convert them to the latest one in memory.

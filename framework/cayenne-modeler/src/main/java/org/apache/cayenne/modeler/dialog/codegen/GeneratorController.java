@@ -56,7 +56,6 @@ import org.apache.commons.collections.Predicate;
 /**
  * A mode-specific part of the code generation dialog.
  * 
- * @author Andrus Adamchik
  */
 public abstract class GeneratorController extends CayenneController {
 

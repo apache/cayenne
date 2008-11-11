@@ -31,7 +31,6 @@ import org.apache.cayenne.map.ObjEntity;
 /**
  * A {@link MergerToken} to remove a {@link DbAttribute} from a {@link DbEntity}.
  * 
- * @author halset
  */
 public class DropColumnToModel extends AbstractToModelToken.EntityAndColumn {
 

@@ -28,8 +28,6 @@ import org.apache.cayenne.util.XMLEncoder;
 /**
  * A DbAttribute defines a descriptor for a single database table column.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DbAttribute extends Attribute {
 

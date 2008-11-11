@@ -37,7 +37,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * A specialized PrefetchTreeNode used for disjoint prefetch resolving.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 // TODO: Andrus 2/9/2006 optional to-one relationships (Painting -> Artist) are not
 // connected by this algorithm. They are being intercepted later when a corresponding

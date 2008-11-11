@@ -25,7 +25,6 @@ import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
 
 /**
- * @author Andrus Adamchik
  */
 public class ObjAttributeValidator extends TreeNodeValidator {
 

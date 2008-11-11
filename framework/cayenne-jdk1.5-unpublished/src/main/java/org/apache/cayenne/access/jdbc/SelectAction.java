@@ -42,7 +42,6 @@ import org.apache.cayenne.query.SelectQuery;
  * A SQLAction that handles SelectQuery execution.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class SelectAction extends BaseSQLAction {
 

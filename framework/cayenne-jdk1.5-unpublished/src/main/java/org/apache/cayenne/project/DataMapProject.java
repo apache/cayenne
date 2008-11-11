@@ -33,7 +33,6 @@ import org.xml.sax.InputSource;
 /**
  * Cayenne project that consists of a single DataMap.
  * 
- * @author Andrus Adamchik
  */
 public class DataMapProject extends Project {
 

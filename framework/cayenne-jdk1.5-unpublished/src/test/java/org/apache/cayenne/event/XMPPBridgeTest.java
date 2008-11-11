@@ -25,7 +25,6 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class XMPPBridgeTest extends TestCase {
 

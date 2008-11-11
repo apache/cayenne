@@ -34,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A unit that loads all transformers into a shared Instrumentation instance.
  * 
- * @author Andrus Adamchik
  */
 public class InstrumentingUnit extends JpaUnit {
 

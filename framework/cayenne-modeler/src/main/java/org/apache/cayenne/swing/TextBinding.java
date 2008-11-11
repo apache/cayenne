@@ -37,7 +37,6 @@ import org.apache.cayenne.validation.ValidationException;
 /**
  * A generic text adapter that is bound to a bean property.
  * 
- * @author Andrus Adamchik
  */
 public class TextBinding extends BindingBase {
 

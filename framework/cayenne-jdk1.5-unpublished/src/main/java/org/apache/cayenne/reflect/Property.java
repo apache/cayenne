@@ -24,7 +24,6 @@ package org.apache.cayenne.reflect;
  * maintenance tasks.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface Property {
 

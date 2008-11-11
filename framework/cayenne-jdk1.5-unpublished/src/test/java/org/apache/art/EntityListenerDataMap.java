@@ -21,7 +21,6 @@ package org.apache.art;
 /**
  * Class for testing callbacks on datamap level
  * 
- * @author Vasil Tarasevich
  */
 public class EntityListenerDataMap {
 

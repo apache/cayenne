@@ -28,7 +28,6 @@ import org.apache.cayenne.util.Util;
 /**
  * A {@link MergerToken} to add a {@link DbEntity} to a {@link DataMap}
  * 
- * @author halset
  */
 public class CreateTableToModel extends AbstractToModelToken.Entity {
 

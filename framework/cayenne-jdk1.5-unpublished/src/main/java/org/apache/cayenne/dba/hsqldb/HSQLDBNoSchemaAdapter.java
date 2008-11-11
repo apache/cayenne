@@ -26,7 +26,6 @@ import org.apache.cayenne.map.DbEntity;
  * A flavor of HSQLDBAdapter that implements workarounds for some old driver limitations.
  * 
  * @since 1.2
- * @author Mike Kienenberger
  */
 public class HSQLDBNoSchemaAdapter extends HSQLDBAdapter {
     /**

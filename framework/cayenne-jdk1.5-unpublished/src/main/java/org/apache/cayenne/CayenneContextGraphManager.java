@@ -47,7 +47,6 @@ import org.apache.cayenne.reflect.ToManyMapProperty;
  * changes and send events.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 final class CayenneContextGraphManager extends GraphMap {
 

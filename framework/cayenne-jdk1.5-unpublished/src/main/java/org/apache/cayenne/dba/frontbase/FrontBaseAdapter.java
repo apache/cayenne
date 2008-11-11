@@ -48,7 +48,6 @@ import org.apache.cayenne.query.SQLAction;
  * </pre>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 // TODO, Andrus 11/8/2005:
 // Limitations (also see FrontBaseStackAdapter in unit tests):

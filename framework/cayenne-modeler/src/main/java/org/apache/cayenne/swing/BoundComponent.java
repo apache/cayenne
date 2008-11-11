@@ -27,7 +27,6 @@ import java.beans.PropertyChangeListener;
  * components.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface BoundComponent {
 

@@ -23,7 +23,6 @@ package org.apache.cayenne;
  * A runtime exception thrown when <code>DataObject.resolveFault()</code> finds that no
  * matching row exists in the database for an <code>ObjectId</code>.
  * 
- * @author Mike Kienenberger
  */
 public class FaultFailureException extends CayenneRuntimeException {
 

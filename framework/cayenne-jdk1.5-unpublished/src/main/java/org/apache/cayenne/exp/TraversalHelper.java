@@ -24,7 +24,6 @@ package org.apache.cayenne.exp;
  * Useful as a superclass for partial implementations 
  * of TraversalHandler. 
  * 
- * @author Andrus Adamchik
  */
 public class TraversalHelper implements TraversalHandler {
 

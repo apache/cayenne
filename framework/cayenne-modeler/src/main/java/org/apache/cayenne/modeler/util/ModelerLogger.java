@@ -27,7 +27,6 @@ import javax.swing.text.AttributeSet;
  * ModelerLogger is a Log implementation, which performs output
  * to the LogConsole. Default behavior is saved since they are delegated
  * to default Log instance. 
- * @author Andrey Razumovsky
  */
 public class ModelerLogger implements Log {
     /**

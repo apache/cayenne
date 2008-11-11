@@ -31,7 +31,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * an object serialization wrapper on top of byte[] ExtendedType.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class SerializableTypeFactory implements ExtendedTypeFactory {
 

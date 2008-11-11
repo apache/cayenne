@@ -49,7 +49,6 @@ import org.apache.commons.collections.IteratorUtils;
 /**
  * Implements a strategy for execution of SQLTemplates.
  * 
- * @author Andrus Adamchik
  * @since 1.2 replaces SQLTemplateExecutionPlan
  */
 public class SQLTemplateAction implements SQLAction {

@@ -34,7 +34,6 @@ import org.apache.cayenne.util.GenericResponse;
 /**
  * Stores all messages passed via this handler.
  * 
- * @author Andrus Adamchik
  */
 public class MockDataChannel implements DataChannel {
 

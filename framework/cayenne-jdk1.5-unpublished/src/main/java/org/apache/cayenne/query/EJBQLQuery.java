@@ -33,7 +33,6 @@ import org.apache.cayenne.map.EntityResolver;
  * An EJBQL query representation in Cayenne.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EJBQLQuery implements Query {
 

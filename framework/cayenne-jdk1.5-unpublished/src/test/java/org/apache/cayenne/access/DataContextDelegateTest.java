@@ -33,7 +33,6 @@ import org.apache.cayenne.unit.CayenneCase;
  * Tests various DataContextDelegate methods invocation and consequences on DataContext
  * behavior.
  * 
- * @author Andrus Adamchik
  */
 public class DataContextDelegateTest extends CayenneCase {
 

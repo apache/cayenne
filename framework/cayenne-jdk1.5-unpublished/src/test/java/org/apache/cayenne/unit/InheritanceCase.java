@@ -3,7 +3,6 @@ package org.apache.cayenne.unit;
 /**
  * A superclass of test cases using "inheritance" DataMap for its access stack.
  * 
- * @author Dzmitry Rusak
  */
 public abstract class InheritanceCase extends CayenneCase {
     public static final String INHERITANCE_ACCESS_STACK = "InheritanceStack";

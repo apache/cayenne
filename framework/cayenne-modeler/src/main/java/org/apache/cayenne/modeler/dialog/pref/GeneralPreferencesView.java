@@ -27,7 +27,6 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * @author Andrus Adamchik
  */
 public class GeneralPreferencesView extends JPanel {
 

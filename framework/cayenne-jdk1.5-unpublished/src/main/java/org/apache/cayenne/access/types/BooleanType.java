@@ -34,7 +34,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * <code>object.getBooleanProperty() == Boolean.TRUE</code>.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class BooleanType implements ExtendedType {
 

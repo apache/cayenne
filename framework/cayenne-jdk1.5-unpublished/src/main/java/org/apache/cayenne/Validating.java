@@ -25,7 +25,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * Entity class can implement this interface and its methods will be called automatically.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface Validating {
 

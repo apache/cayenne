@@ -25,7 +25,6 @@ import java.util.Map;
  * standard OSCache properties and also extra properties
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class OSQueryCacheFactory implements QueryCacheFactory {
 

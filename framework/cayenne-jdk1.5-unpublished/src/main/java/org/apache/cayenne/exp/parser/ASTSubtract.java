@@ -31,7 +31,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Subtract" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTSubtract extends SimpleNode {
     ASTSubtract(int id) {

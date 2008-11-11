@@ -25,7 +25,6 @@ import java.util.EventListener;
  * Listener for QueryEvents.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public interface QueryListener extends EventListener {
     /** 

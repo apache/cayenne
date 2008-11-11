@@ -28,7 +28,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * logging functionality via commons-logging.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public abstract class BaseConnection implements ClientConnection {
 

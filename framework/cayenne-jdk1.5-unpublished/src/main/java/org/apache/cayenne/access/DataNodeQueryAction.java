@@ -33,7 +33,6 @@ import org.apache.cayenne.query.SQLAction;
  * query execution state.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DataNodeQueryAction implements OperationObserver {
 

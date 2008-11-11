@@ -27,7 +27,6 @@ package org.apache.cayenne.conf;
  * in the XML model in clear text.
  * 
  * @since 3.0
- * @author Michael Gentry
  */
 public class PlainTextPasswordEncoder implements PasswordEncoding
 {

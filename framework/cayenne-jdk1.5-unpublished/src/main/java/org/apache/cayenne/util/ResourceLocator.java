@@ -37,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Utility class to find resources (files, etc.), using a preconfigured strategy.
  * 
- * @author Andrus Adamchik
  */
 public class ResourceLocator implements ResourceFinder {
 

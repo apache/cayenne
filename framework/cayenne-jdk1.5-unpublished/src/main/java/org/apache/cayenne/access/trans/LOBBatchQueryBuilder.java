@@ -35,7 +35,6 @@ import org.apache.cayenne.query.BatchQuery;
 /**
  * Superclass of query builders for the DML operations involving LOBs.
  * 
- * @author Andrus Adamchik
  */
 public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
 

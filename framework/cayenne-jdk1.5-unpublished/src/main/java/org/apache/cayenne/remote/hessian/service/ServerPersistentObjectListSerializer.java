@@ -30,7 +30,6 @@ import com.caucho.hessian.io.JavaSerializer;
  * Serializer for PersistentObjectLists.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ServerPersistentObjectListSerializer extends JavaSerializer {
 

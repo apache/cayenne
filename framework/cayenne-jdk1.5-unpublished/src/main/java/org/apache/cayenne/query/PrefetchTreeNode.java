@@ -35,7 +35,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * Defines a node in a prefetch tree.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class PrefetchTreeNode implements Serializable, XMLSerializable {
 

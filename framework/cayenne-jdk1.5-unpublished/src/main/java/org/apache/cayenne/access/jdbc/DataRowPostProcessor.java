@@ -39,7 +39,6 @@ import org.apache.cayenne.map.ObjEntity;
  * Deals with DataRow type conversion in inheritance situations.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class DataRowPostProcessor {
 

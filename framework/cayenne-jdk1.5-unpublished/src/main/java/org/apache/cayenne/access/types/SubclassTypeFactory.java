@@ -25,7 +25,6 @@ import org.apache.cayenne.util.Util;
  * of the className in the {@link ExtendedType}.
  * 
  * @since 3.0
- * @author halset
  */
 class SubclassTypeFactory implements ExtendedTypeFactory {
 

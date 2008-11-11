@@ -27,7 +27,6 @@ import java.lang.annotation.Target;
 /**
  * Annotates a public getter for the child property during the tree traversal.
  * 
- * @author Andrus Adamchik
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

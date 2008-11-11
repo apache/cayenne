@@ -27,7 +27,6 @@ import java.util.Collection;
  * graph of their changes.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface GraphManager extends GraphChangeHandler {
 

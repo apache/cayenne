@@ -23,7 +23,6 @@ package org.apache.cayenne.unit;
 /**
  * A superclass of test cases using "people" DataMap for its access stack.
  * 
- * @author Andrus Adamchik
  */
 public abstract class PeopleCase extends CayenneCase {
     public static final String PEOPLE_ACCESS_STACK = "PeopleStack";

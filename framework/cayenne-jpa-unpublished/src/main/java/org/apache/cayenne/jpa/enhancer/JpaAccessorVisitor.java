@@ -25,7 +25,6 @@ import org.apache.cayenne.jpa.map.JpaPropertyDescriptor;
 import org.objectweb.asm.ClassVisitor;
 
 /**
- * @author Andrus Adamchik
  */
 class JpaAccessorVisitor extends AccessorVisitor {
 

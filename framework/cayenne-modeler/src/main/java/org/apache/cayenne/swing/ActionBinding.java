@@ -28,7 +28,6 @@ import java.beans.PropertyChangeListener;
 import javax.swing.AbstractButton;
 
 /**
- * @author Andrus Adamchik
  */
 public class ActionBinding extends BindingBase {
 

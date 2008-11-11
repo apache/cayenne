@@ -31,7 +31,6 @@ import org.apache.cayenne.project.validator.ValidationInfo;
 /**
  * JUnit tests for ValidationDisplayHandler class.
  * 
- * @author Andrus Adamchik
  */
 public class ValidationDisplayHandlerTest extends TestCase {
 

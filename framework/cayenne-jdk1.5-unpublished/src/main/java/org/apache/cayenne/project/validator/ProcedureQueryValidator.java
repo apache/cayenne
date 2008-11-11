@@ -31,7 +31,6 @@ import org.apache.cayenne.util.Util;
 /**
  * Validator for ProcedureQueries.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class ProcedureQueryValidator extends TreeNodeValidator {

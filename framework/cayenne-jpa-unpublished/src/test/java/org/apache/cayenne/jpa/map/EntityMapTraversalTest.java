@@ -30,7 +30,6 @@ import org.apache.cayenne.util.TraversalUtil;
 /**
  * Tests traversal annotations.
  * 
- * @author Andrus Adamchik
  */
 public class EntityMapTraversalTest extends TestCase {
 

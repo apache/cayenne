@@ -30,7 +30,6 @@ import javax.swing.JLabel;
 /**
  * A label that works like an HTML hyperlink, generating ActionEvents on click.
  * 
- * @author Andrus Adamchik
  */
 public class ActionLink extends JLabel {
 

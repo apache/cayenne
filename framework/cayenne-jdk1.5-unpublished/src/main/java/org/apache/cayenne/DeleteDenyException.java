@@ -24,7 +24,6 @@ package org.apache.cayenne;
  * non-null related object, that has a DENY delete rule.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class DeleteDenyException extends CayenneRuntimeException {
 

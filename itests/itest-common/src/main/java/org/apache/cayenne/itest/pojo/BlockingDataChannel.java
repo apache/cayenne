@@ -30,7 +30,6 @@ import org.apache.cayenne.query.Query;
 /**
  * A DataChannel that throws on all query or update attempts.
  * 
- * @author Andrus Adamchik
  */
 class BlockingDataChannel implements DataChannel {
 

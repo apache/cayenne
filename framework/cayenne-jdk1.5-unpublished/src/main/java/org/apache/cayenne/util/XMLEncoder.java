@@ -28,7 +28,6 @@ import java.util.Map;
  * A helper class to encode objects to XML.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class XMLEncoder {
     protected String indent;

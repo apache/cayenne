@@ -38,7 +38,6 @@ import org.apache.tools.ant.Project;
  * A "cdataport" Ant task implementing a frontend to DataPort allowing porting database
  * data using Ant build scripts.
  * 
- * @author Andrus Adamchik
  * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples package.
  */
 public class DataPortTask extends CayenneTask {

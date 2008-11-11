@@ -37,7 +37,6 @@ import org.apache.cayenne.pref.PreferenceDetail;
 import org.apache.cayenne.pref.PreferenceEditor;
 
 /**
- * @author Andrus Adamchik
  */
 public class ClasspathPreferences extends CayenneController {
 

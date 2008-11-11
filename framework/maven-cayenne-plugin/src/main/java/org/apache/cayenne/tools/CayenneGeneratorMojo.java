@@ -36,7 +36,6 @@ import org.apache.maven.project.MavenProject;
  * Maven mojo to perform class generation from data map. This class is an Maven
  * adapter to DefaultClassGenerator class.
  * 
- * @author Andrus Adamchik, Kevin Menard
  * @since 3.0
  * 
  * @phase generate-sources

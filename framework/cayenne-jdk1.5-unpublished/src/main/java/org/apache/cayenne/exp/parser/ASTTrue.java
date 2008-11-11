@@ -29,7 +29,6 @@ import org.apache.cayenne.exp.Expression;
  * statmenet like " where ? and (...)", but we only need " where true and (...)".
  * 
  * @see ASTFalse
- * @author halset
  * @since 3.0
  */
 public class ASTTrue extends ConditionNode {

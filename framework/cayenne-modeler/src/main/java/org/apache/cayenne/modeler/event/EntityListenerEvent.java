@@ -23,7 +23,6 @@ import org.apache.cayenne.map.event.MapEvent;
 /**
  * Event for creating/removing/modifying entity listeners
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 25, 2007
  */
 public class EntityListenerEvent extends MapEvent{

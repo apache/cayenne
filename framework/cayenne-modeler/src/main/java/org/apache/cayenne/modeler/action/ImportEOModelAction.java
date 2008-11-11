@@ -66,7 +66,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Action handler for WebObjects EOModel import function.
  * 
- * @author Andrus Adamchik
  */
 public class ImportEOModelAction extends CayenneAction {
 

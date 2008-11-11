@@ -26,7 +26,6 @@ import org.apache.cayenne.query.SQLTemplate;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 class SQLiteActionBuilder extends JdbcActionBuilder {
 

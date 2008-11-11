@@ -22,7 +22,6 @@ package org.apache.cayenne.reflect;
  * A utility accessor class that wraps a simple property.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class PropertyAccessor implements Accessor {
 

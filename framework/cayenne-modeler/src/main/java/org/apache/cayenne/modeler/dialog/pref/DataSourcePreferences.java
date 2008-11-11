@@ -40,7 +40,6 @@ import org.apache.cayenne.util.Util;
 /**
  * Editor for the local DataSources configured in preferences.
  * 
- * @author Andrus Adamchik
  */
 public class DataSourcePreferences extends CayenneController {
 

@@ -34,8 +34,6 @@ import org.apache.commons.collections.Factory;
  * modifications, including inserts, updates and deletes. Single BatchQuery corresponds to
  * a parameterized PreparedStatement and a matrix of values.
  * 
- * @author Andriy Shapochka
- * @author Andrus Adamchik
  */
 public abstract class BatchQuery implements Query {
 

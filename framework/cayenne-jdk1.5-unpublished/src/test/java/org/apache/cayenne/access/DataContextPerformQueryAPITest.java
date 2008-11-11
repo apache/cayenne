@@ -33,7 +33,6 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataContextPerformQueryAPITest extends CayenneCase {
 

@@ -28,7 +28,6 @@ import org.apache.cayenne.util.PersistentObjectList;
  * Provides access to a property implemented as a List Field.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  * @deprecated since 3.0 replaced by non-public classes.
  */
 public class ListProperty extends BaseToManyProperty {

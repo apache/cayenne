@@ -28,7 +28,6 @@ import java.util.Map;
 /**
  * Factory for creating ModelerLogger instances. LogFactoryImpl is 
  * subclassed to save default behavior 
- * @author Andrey Razumovsky
  */
 public class ModelerLogFactory extends LogFactoryImpl {
     /**

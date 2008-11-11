@@ -44,7 +44,6 @@ import java.util.Properties;
  * close the underlying Connection object.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class TransactionConnectionDecorator implements Connection {
 

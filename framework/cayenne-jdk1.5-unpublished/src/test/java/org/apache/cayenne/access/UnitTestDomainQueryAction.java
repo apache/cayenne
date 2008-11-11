@@ -32,7 +32,6 @@ import org.apache.cayenne.query.Query;
  * A DataDomainQueryAction that can be configured to block queries that are not run from
  * cache.
  * 
- * @author Andrus Adamchik
  */
 public class UnitTestDomainQueryAction extends DataDomainQueryAction {
 

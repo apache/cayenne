@@ -25,7 +25,6 @@ import org.apache.cayenne.itest.jpa.ItestSetup;
 /**
  * A TestCase superclass that provides an entity manager and transaction management.
  * 
- * @author Andrus Adamchik
  */
 public class EntityManagerCase extends JpaTestCase {
 

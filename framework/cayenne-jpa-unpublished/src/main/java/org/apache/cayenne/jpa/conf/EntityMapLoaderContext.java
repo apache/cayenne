@@ -29,7 +29,6 @@ import org.apache.cayenne.validation.ValidationResult;
 /**
  * A common context shared by different loaders during JPA mapping information processing.
  * 
- * @author Andrus Adamchik
  */
 public class EntityMapLoaderContext {
 

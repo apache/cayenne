@@ -29,7 +29,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Test cases for DomainHelper class.
  * 
- * @author Andrus Adamchik
  */
 public class ConfigSaverTest extends CayenneCase {
 	protected ConfigSaver saver;

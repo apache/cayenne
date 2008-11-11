@@ -45,7 +45,6 @@ import javax.persistence.Persistence;
  * slow down the application significantly.</li>
  * </ul>
  * 
- * @author Andrus Adamchik
  */
 public class CayenneAgent {
 

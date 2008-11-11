@@ -50,7 +50,6 @@ import java.util.Collection;
  * "1.1".</li>
  * </ul>
  * 
- * @author Andrus Adamchik
  */
 public class Application {
 

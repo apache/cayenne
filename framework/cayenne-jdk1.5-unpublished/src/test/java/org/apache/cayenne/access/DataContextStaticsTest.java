@@ -24,7 +24,6 @@ import org.apache.cayenne.conf.ResourceFinder;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataContextStaticsTest extends CayenneCase {
 

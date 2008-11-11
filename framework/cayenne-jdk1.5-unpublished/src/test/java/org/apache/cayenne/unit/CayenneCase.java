@@ -38,7 +38,6 @@ import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 /**
  * Superclass of Cayenne test cases. Provides access to shared connection resources.
  * 
- * @author Andrus Adamchik
  */
 public abstract class CayenneCase extends BasicCase {
 

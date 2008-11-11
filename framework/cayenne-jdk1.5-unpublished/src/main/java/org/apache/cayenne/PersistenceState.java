@@ -30,7 +30,6 @@ package org.apache.cayenne;
  * responsibility of a ObjectContext/DataContext to maintain correct state of the managed
  * objects.
  * 
- * @author Andrus Adamchik
  */
 public class PersistenceState {
 

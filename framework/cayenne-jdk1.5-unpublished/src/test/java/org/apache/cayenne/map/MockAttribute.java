@@ -23,7 +23,6 @@ import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
- * @author Andrus Adamchik
  */
 public class MockAttribute extends Attribute {
 

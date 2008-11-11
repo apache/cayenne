@@ -24,7 +24,6 @@ import java.sql.Types;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ObjEntityInheritanceTest extends BasicCase {
 

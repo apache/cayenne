@@ -22,7 +22,6 @@ package org.apache.cayenne.exp;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ExpressionEqualsTest extends TestCase {
 

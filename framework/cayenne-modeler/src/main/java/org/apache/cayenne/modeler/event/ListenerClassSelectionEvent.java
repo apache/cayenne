@@ -24,7 +24,6 @@ import org.apache.cayenne.event.CayenneEvent;
 /**
  * Class for processing listener class selection
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
 

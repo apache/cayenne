@@ -29,7 +29,6 @@ import org.apache.cayenne.testdo.inherit.Manager;
 import org.apache.cayenne.unit.PeopleCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataContextQualifiedEntityTest extends PeopleCase {
     protected DataContext context;

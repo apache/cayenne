@@ -31,7 +31,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * and get null values.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class VoidType implements ExtendedType {
 

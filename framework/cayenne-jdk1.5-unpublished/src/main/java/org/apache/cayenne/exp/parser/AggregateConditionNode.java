@@ -28,7 +28,6 @@ import org.apache.cayenne.exp.ExpressionException;
  * are not addressed in the Cayenne expressions grammar.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public abstract class AggregateConditionNode extends SimpleNode {
     AggregateConditionNode(int i) {

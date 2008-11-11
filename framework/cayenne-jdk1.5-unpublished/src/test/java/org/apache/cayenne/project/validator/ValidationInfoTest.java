@@ -23,7 +23,6 @@ import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class ValidationInfoTest extends CayenneCase {
 

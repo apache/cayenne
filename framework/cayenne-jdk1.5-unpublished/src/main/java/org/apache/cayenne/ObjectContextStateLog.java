@@ -34,7 +34,6 @@ import org.apache.cayenne.graph.GraphManager;
  * Tracks dirty Persistent objects.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ObjectContextStateLog implements GraphChangeHandler {
 

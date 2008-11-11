@@ -34,7 +34,6 @@ import org.apache.cayenne.exp.TstTraversalHandler;
  * Tests parameterized expressions of the new form introduced in 1.1
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ParameterizedExpressionTest extends TestCase {
 

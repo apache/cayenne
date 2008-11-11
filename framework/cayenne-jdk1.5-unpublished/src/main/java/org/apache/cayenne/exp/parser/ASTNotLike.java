@@ -26,7 +26,6 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * "Not Like" expression.
  * 
- * @author Andrus Adamchik
  */
 public class ASTNotLike extends PatternMatchNode {
 

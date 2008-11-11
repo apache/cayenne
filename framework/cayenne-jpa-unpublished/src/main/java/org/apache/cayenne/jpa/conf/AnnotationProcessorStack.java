@@ -26,7 +26,6 @@ import java.lang.reflect.AnnotatedElement;
  * A context for the annotation processor with methods to inspect and modify the processor
  * stack and record conflicts.
  * 
- * @author Andrus Adamchik
  */
 public interface AnnotationProcessorStack {
 

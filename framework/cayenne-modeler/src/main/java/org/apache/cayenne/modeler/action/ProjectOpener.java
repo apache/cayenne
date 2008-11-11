@@ -40,7 +40,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * File chooser panel used to select a directory to store project files.
  * 
- * @author Andrus Adamchik
  */
 class ProjectOpener extends JFileChooser {
 

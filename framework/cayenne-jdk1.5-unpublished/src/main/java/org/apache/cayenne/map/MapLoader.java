@@ -43,10 +43,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * Default MapLoader. Its responsibilities include reading DataMaps from XML files and
  * saving DataMap objects back to XML.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
- * @author Andriy Shapochka
- * @author Dzmitry Rusak
  */
 public class MapLoader extends DefaultHandler {
 

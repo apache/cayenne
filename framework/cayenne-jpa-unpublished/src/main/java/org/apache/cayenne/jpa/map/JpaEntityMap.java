@@ -32,7 +32,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * An object that stores JPA mapping information. This is a root object in the hierarchy
  * defined in the <em>orm_1_0.xsd</em> schema.
  * 
- * @author Andrus Adamchik
  */
 public class JpaEntityMap implements XMLSerializable {
 

@@ -28,7 +28,6 @@ import javax.swing.AbstractButton;
 /**
  * Binds a checkbox state to an int or boolean property.
  * 
- * @author Andrus Adamchik
  */
 public class ItemEventBinding extends BindingBase {
 

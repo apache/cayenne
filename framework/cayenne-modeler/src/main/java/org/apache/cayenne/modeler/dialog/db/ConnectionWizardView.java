@@ -28,7 +28,6 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 /**
  * Dialog special for reverse engineering. Has one special combobox for
  * choosing naming strategy 
- * @author Andrey Razumovsky
  */
 public class ConnectionWizardView extends DataSourceWizardView {
     /**

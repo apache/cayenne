@@ -39,7 +39,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * A CayenneContext helper that processes object deletion.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ObjectContextDeleteAction {
 

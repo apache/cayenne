@@ -26,7 +26,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Greater Than Or Equal To" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTGreaterOrEqual extends ConditionNode {
 

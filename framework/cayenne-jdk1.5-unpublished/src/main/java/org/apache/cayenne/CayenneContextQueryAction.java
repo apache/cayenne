@@ -38,7 +38,6 @@ import org.apache.cayenne.util.ObjectContextQueryAction;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class CayenneContextQueryAction extends ObjectContextQueryAction {
 

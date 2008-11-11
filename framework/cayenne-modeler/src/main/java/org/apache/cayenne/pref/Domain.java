@@ -42,7 +42,6 @@ import org.apache.cayenne.util.Util;
  * Preferences "domain" is logical area for preferences storage. Domains are organized in
  * a tree hierarchy allowing cascading preferences lookup.
  * 
- * @author Andrus Adamchik
  */
 public class Domain extends _Domain {
 

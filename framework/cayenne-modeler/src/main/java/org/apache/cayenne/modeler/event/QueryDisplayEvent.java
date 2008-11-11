@@ -26,7 +26,6 @@ import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class QueryDisplayEvent extends DataMapDisplayEvent {
     protected Query query;

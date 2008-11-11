@@ -43,7 +43,6 @@ import java.util.Properties;
  * with PooledConnectionImpl, to generate pool events, provide limited automated
  * reconnection functionality, etc.
  * 
- * @author Andrus Adamchik
  */
 public class ConnectionWrapper implements Connection {
 

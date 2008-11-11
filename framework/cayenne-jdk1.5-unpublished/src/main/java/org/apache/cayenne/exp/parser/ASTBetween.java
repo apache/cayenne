@@ -26,7 +26,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * "Between" expression.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ASTBetween extends ConditionNode {
 

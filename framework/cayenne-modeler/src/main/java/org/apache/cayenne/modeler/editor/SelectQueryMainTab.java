@@ -62,7 +62,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * A tabbed pane that contains editors for various SelectQuery parts.
  * 
- * @author Andrus Adamchik
  */
 public class SelectQueryMainTab extends JPanel {
 

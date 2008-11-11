@@ -28,7 +28,6 @@ import org.apache.cayenne.event.JavaGroupsBridgeFactory;
 import org.scopemvc.core.Selector;
 
 /**
- * @author Andrus Adamchik
  */
 public class JGroupsConfigModel extends CacheSyncConfigModel {
     private static final String[] storedProperties =

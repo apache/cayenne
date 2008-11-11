@@ -40,7 +40,6 @@ import org.apache.cayenne.map.ObjEntity;
  * classes available on the client.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 // TODO: andrus, 2008/03/01 - integrate with GraphDiffCompressor.
 class ClientReturnDiffFilter implements GraphChangeHandler {

@@ -45,7 +45,6 @@ import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * Action for copying entities, queries etc. into system buffer
- * @author Andrey Razumovsky
  */
 public class CopyAction extends CayenneAction {
     public static String getActionName() {

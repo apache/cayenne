@@ -45,7 +45,6 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
  * Base abstract class for editing callback mapping on listener class
  * Adds entity listener class processing logic
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 29, 2007
  */
 public abstract class AbstractCallbackListenersTab extends AbstractCallbackMethodsTab {

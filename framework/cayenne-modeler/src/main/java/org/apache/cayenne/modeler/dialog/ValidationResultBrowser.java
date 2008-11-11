@@ -31,7 +31,6 @@ import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
- * @author Andrus Adamchik
  */
 public class ValidationResultBrowser extends CayenneController {
 

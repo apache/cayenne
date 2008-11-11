@@ -26,7 +26,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * Test cases for DbGenerator.
  * 
- * @author Andrus Adamchik
  */
 public class DbGeneratorTest extends CayenneCase {
 

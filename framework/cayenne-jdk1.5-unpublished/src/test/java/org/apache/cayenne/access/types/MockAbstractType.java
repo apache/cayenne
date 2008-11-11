@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import org.apache.cayenne.access.types.AbstractType;
 
 /**
- * @author Andrus Adamchik
  */
 public class MockAbstractType extends AbstractType {
 

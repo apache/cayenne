@@ -37,7 +37,6 @@ import org.apache.cayenne.util.Invocation;
  * creates one DispatchQueue per EventSubject. DispatchQueue is thread-safe - all methods
  * that read/modify internal collections are synchronized.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 class DispatchQueue {

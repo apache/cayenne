@@ -29,7 +29,6 @@ import org.apache.cayenne.validation.ValidationResult;
  * Decorates another ExtendedType, converting objects to other Java types.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 abstract class ExtendedTypeDecorator implements ExtendedType {
 

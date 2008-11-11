@@ -34,7 +34,6 @@ import java.util.*;
  * A Scope model for mapping an ObjRelationship to one or more DbRelationships.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class ObjRelationshipInfoModel extends BasicModel {
 

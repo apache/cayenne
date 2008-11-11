@@ -31,7 +31,6 @@ import org.apache.cayenne.util.ObjectContextGraphAction;
  * GraphManager notifications and bi-directional graph consistency.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class CayenneContextGraphAction extends ObjectContextGraphAction {
 

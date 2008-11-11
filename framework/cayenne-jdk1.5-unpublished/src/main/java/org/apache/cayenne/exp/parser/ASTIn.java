@@ -25,7 +25,6 @@ import org.apache.commons.collections.Transformer;
 /**
  * "In" expression.
  * 
- * @author Andrus Adamchik
  */
 public class ASTIn extends ConditionNode {
 

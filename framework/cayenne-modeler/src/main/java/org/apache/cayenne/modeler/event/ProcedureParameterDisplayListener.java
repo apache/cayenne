@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.event;
 import java.util.EventListener;
 
 /**
- * @author Andrus Adamchik
  */
 public interface ProcedureParameterDisplayListener extends EventListener {
     public void currentProcedureParameterChanged(ProcedureParameterDisplayEvent e);

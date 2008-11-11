@@ -28,7 +28,6 @@ import org.apache.cayenne.util.NameConverter;
  * old-fashioned manner, i.e. the same way Cayenne did before 3.0
  * 
  * @since 3.0
- * @author Andrey Razumovsky
  */
 public class BasicNamingStrategy implements NamingStrategy {
     public String createDbRelationshipName(

@@ -41,7 +41,6 @@ import org.apache.cayenne.util.Util;
  * DataContext.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 // TODO: andrus, 11/25/2006 - this logic is the same as the logic in DataRowUtils used to
 // merge snapshot changes. Any way to reconclie the two? (in fact DataRowUtils is more

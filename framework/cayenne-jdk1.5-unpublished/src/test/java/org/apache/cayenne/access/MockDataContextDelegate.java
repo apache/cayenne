@@ -27,7 +27,6 @@ import org.apache.cayenne.query.Query;
  * Default implementation of DataContextDelegate that serves as a superclass for mockup
  * test delegates.
  * 
- * @author Andrus Adamchik
  */
 public class MockDataContextDelegate implements DataContextDelegate {
 

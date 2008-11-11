@@ -41,7 +41,6 @@ import org.apache.cayenne.wocompat.parser.Parser;
  * <code>PropertyListSerialization</code> uses standard Java collections (lists and
  * maps) to store property lists.
  * 
- * @author Andrus Adamchik
  */
 public class PropertyListSerialization {
 

@@ -42,7 +42,6 @@ import java.io.Serializable;
  * </pre>
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface ValueHolder extends Serializable {
 

@@ -31,7 +31,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLResultSetMapping;
 
 /**
- * @author Andrus Adamchik
  */
 public class MockMappingNamespace implements MappingNamespace {
 

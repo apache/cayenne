@@ -26,7 +26,6 @@ import org.apache.cayenne.map.Procedure;
 /**
  * Display event for Stored Procedures.
  * 
- * @author Andrus Adamchik
  */
 public class ProcedureDisplayEvent extends DataMapDisplayEvent {
 	protected Procedure procedure;

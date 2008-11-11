@@ -31,7 +31,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * key generation per DbEntity in a RDBMS independent manner. DbAdapter generates actual
  * key values based on the configuration. For more details see data-map.dtd
  * 
- * @author Andriy Shapochka
  */
 
 public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable, Serializable {

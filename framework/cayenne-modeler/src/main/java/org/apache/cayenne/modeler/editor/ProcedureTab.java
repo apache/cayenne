@@ -46,7 +46,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * A panel for editing stored procedure general settings, such as name, schema, etc.
  * 
- * @author Andrus Adamchik
  */
 public class ProcedureTab extends JPanel implements ProcedureDisplayListener,
         ExistingSelectionProcessor {

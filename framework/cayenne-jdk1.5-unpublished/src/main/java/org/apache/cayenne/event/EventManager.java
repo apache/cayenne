@@ -35,9 +35,6 @@ import org.apache.cayenne.util.Invocation;
  * current state or a change thereof (Publisher) and a list of objects interested in the
  * Subject (Listeners).
  * 
- * @author Dirk Olmes
- * @author Holger Hoffstaette
- * @author Andrus Adamchik
  */
 public class EventManager {
 

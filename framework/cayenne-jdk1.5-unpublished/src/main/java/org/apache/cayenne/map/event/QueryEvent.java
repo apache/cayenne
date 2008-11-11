@@ -27,7 +27,6 @@ import org.apache.cayenne.query.Query;
  * removed from a DataMap, or changed within a DataMap.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class QueryEvent extends MapEvent {
     protected Query query;

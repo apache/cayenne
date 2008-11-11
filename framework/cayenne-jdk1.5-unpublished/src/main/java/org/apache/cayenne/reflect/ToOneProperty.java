@@ -23,7 +23,6 @@ package org.apache.cayenne.reflect;
  * An ArcProperty that points to a single graph node.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface ToOneProperty extends ArcProperty {
 

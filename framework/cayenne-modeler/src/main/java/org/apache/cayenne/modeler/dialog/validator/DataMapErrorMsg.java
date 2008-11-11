@@ -31,8 +31,6 @@ import org.apache.cayenne.project.validator.ValidationInfo;
 /**
  * DataMap validation message.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DataMapErrorMsg extends ValidationDisplayHandler {
     protected DataMap map;

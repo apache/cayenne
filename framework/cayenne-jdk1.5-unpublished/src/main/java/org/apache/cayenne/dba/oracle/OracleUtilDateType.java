@@ -28,7 +28,6 @@ import java.util.Date;
 import org.apache.cayenne.access.types.UtilDateType;
 
 /**
- * @author Andrus Adamchik
  */
 public class OracleUtilDateType extends UtilDateType {
 

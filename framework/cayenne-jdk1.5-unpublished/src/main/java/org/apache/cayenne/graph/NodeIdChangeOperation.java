@@ -23,7 +23,6 @@ package org.apache.cayenne.graph;
  * A GraphDiff representing a change in node ID.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class NodeIdChangeOperation extends NodeDiff {
 

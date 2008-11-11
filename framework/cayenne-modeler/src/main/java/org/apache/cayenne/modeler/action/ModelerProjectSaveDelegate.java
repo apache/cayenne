@@ -28,7 +28,6 @@ import org.apache.cayenne.modeler.util.ModelerDbAdapter;
  * A custom SaveDelegate that adds some special handling when saving is done from the
  * Modeler.
  * 
- * @author Andrus Adamchik
  */
 class ModelerProjectSaveDelegate extends RuntimeSaveDelegate {
 

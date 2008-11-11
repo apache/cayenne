@@ -23,7 +23,6 @@ import org.apache.art.auto._ArtistCallbackTest;
 /**
  * Class for testing callbacks
  *
- * @author Vasil Tarasevich
  */
 public class ArtistCallbackTest extends _ArtistCallbackTest {
     public void prePersistEntityObjEntity() {}

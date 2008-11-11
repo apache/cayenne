@@ -38,7 +38,6 @@ import org.apache.cayenne.map.Relationship;
  * A convenience superclass for {@link ClassDescriptorFactory} implementors.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public abstract class PersistentDescriptorFactory implements ClassDescriptorFactory {
 

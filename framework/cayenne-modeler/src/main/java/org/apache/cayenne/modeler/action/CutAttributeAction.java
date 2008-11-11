@@ -26,7 +26,6 @@ import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action for cutting attribute(s)
- * @author Andrey Razumovsky
  */
 public class CutAttributeAction extends CutAction implements MultipleObjectsAction {
     private final static String ACTION_NAME = "Cut Attribute";

@@ -72,7 +72,6 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
  * Further extension of OSQueryCache is possible by using OSCache listener API.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class OSQueryCache implements QueryCache {
 

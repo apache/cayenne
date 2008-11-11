@@ -25,7 +25,6 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
  * A translator of EJBQL UPDATE statements into SQL.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
 

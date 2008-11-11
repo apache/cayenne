@@ -82,7 +82,6 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
  * [Each managed class] should be annotated with either \@Entity, \@Embeddable or
  * \@MappedSuperclass
  * 
- * @author Andrus Adamchik
  */
 public class EntityMapAnnotationLoader {
 

@@ -25,8 +25,6 @@ import java.util.EventListener;
  * Interface for classes that are interested in DbEntity 
  * display events. 
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public interface DbEntityDisplayListener extends EventListener {
     /** Current entity used as a model has changed.*/

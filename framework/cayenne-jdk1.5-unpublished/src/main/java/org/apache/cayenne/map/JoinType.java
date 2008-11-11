@@ -21,7 +21,6 @@ package org.apache.cayenne.map;
 /**
  * Enumerates supported JOIN types.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 public enum JoinType {

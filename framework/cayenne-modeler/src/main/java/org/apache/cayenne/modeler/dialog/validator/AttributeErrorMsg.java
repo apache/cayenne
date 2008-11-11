@@ -35,8 +35,6 @@ import org.apache.cayenne.project.validator.ValidationInfo;
 /**
  * Attribute validation message.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class AttributeErrorMsg extends ValidationDisplayHandler {
 

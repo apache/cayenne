@@ -32,7 +32,6 @@ import org.jgroups.blocks.PullPushAdapter;
  * Implementation of EventBridge that passes and receives events via JavaGroups
  * communication software.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class JavaGroupsBridge extends EventBridge implements MessageListener {

@@ -61,7 +61,6 @@ import org.apache.cayenne.query.SQLAction;
  * to this adapter.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class AutoAdapter implements DbAdapter {
 

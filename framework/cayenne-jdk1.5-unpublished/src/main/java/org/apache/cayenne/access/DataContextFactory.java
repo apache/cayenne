@@ -25,7 +25,6 @@ import org.apache.cayenne.DataChannel;
  * An interface for creating DataContexts.
  * 
  * @since 1.2
- * @author Mike Kienenberger
  */
 public interface DataContextFactory {
     /**

@@ -30,7 +30,6 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * A primary key generator based on a database table.
  * 
- * @author Andrus Adamchik
  */
 public class JpaTableGenerator implements XMLSerializable {
 

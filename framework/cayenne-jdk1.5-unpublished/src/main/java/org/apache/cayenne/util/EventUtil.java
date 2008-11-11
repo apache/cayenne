@@ -29,7 +29,6 @@ import org.apache.cayenne.graph.GraphEvent;
  * Contains access stack events related utility methods.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class EventUtil {
 

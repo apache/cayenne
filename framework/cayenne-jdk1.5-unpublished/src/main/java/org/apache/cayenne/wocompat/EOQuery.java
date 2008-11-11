@@ -43,7 +43,6 @@ import org.apache.cayenne.query.SelectQuery;
  * Cayenne SelectQuery to provide access to the extra information of WebObjects
  * EOFetchSpecification.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class EOQuery extends SelectQuery {
@@ -243,7 +242,6 @@ public class EOQuery extends SelectQuery {
      * EOModel. It recursively builds Cayenne Expression objects and assembles them into
      * the final aggregate Expression.
      * 
-     * @author Travis Cripps
      */
     static class EOFetchSpecificationParser {
 

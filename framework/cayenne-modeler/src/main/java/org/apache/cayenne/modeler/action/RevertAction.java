@@ -29,7 +29,6 @@ import org.apache.cayenne.project.ApplicationProject;
 import org.apache.cayenne.project.Project;
 
 /**
- * @author Andrus Adamchik
  */
 public class RevertAction extends CayenneAction {
 

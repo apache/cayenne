@@ -21,7 +21,6 @@ package org.apache.cayenne.jpa.map;
 import org.apache.cayenne.util.TreeNodeChild;
 
 /**
- * @author Andrus Adamchik
  */
 public class JpaPersistenceUnitDefaults {
 

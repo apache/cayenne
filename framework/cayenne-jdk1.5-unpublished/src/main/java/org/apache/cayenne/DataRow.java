@@ -35,7 +35,6 @@ import org.apache.cayenne.util.Util;
  * DataRows are used to cache raw database data and as a reference point for tracking
  * DataObject changes.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class DataRow extends HashMap<String, Object> {

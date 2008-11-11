@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.util;
 /**
  * An enum that provides high-level information about the host OS.
  * 
- * @author Andrus Adamchik
  * @since 3.0
  */
 public enum OperatingSystem {

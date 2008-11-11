@@ -30,7 +30,6 @@ import org.apache.cayenne.remote.service.LocalConnection;
 /**
  * A ClientConnection that allows to block/unblock test client/server communications.
  * 
- * @author Andrus Adamchik
  */
 public class UnitLocalConnection extends LocalConnection {
 

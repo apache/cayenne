@@ -25,7 +25,6 @@ import org.apache.cayenne.map.Embeddable;
  * A default POJO embeddable descriptor.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class FieldEmbeddableDescriptor implements EmbeddableDescriptor {
 

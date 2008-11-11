@@ -30,7 +30,6 @@ import org.apache.cayenne.util.Util;
 /**
  * Validator for DataMaps.
  * 
- * @author Andrus Adamchik
  */
 public class DataMapValidator extends TreeNodeValidator {
 

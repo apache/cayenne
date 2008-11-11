@@ -31,7 +31,6 @@ import org.apache.cayenne.reflect.PropertyException;
  * boolean flag indicating whether the property in question is not yet resolved.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class EnhancedPojoToOneProperty extends BaseToOneProperty {
 

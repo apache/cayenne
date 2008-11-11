@@ -28,7 +28,6 @@ import org.apache.cayenne.remote.RemoteSession;
 /**
  * A proxy factory that handles HTTP sessions.
  * 
- * @author Andrus Adamchik
  * @since 1.2
  */
 class HessianProxyFactory extends com.caucho.hessian.client.HessianProxyFactory {

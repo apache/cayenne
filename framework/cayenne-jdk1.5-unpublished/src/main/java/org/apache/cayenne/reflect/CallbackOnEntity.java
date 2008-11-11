@@ -30,7 +30,6 @@ import org.apache.cayenne.util.Util;
  * the class hierarchy.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class CallbackOnEntity extends AbstractCallback {
 

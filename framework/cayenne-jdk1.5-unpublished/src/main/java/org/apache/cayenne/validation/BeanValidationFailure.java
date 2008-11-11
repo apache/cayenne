@@ -28,8 +28,6 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * ValidationFailure implementation that described a failure of a single named property of
  * a Java Bean object.
  * 
- * @author Fabricio Voznika
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class BeanValidationFailure extends SimpleValidationFailure {

@@ -48,9 +48,6 @@ import org.apache.commons.collections.Transformer;
  * ObjEntity is a mapping descriptor for a DataObject Java class. It contains the
  * information about the Java class itself, as well as its mapping to the DbEntity layer.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
- * @author Dzmitry Rusak
  */
 public class ObjEntity extends Entity implements ObjEntityListener {
 

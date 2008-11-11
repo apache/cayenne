@@ -24,7 +24,6 @@ import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 /**
  * Defines constants used in the modeler.
  * 
- * @author Andrus Adamchik
  */
 public interface ModelerConstants {
 

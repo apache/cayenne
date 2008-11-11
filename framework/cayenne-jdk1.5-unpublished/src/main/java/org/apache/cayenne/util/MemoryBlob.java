@@ -35,7 +35,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * </p>
  * 
  * @since 1.2
- * @author Andrus Adamchik, based on HSQLDB jdbcBlob.
  */
 public class MemoryBlob implements Blob {
 

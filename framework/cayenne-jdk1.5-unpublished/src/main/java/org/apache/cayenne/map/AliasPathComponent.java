@@ -24,7 +24,6 @@ import java.util.Collection;
  * Represents an alias for the relationship path.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class AliasPathComponent<T extends Attribute, U extends Relationship> implements
         PathComponent<T, U> {

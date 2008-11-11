@@ -36,7 +36,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * include optional default column names that can be overriden by the owning entity.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class Embeddable implements XMLSerializable, Serializable {
 

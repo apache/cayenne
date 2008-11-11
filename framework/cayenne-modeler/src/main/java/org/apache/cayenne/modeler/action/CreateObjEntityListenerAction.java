@@ -32,7 +32,6 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 /**
  * Action class for creating entity listeners on an ObjEntity
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 30, 2007
  */
 public class CreateObjEntityListenerAction extends CayenneAction {

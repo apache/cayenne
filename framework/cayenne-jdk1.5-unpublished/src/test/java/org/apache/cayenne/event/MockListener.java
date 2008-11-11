@@ -24,7 +24,6 @@ import java.util.EventObject;
 /**
  * A test event listener that reacts to an event by registering another listener.
  * 
- * @author Andrus Adamchik
  */
 public class MockListener {
 

@@ -29,7 +29,6 @@ import org.apache.cayenne.jpa.JpaProviderException;
 /**
  * A utility class that provides access to default JPA annotation instances.
  * 
- * @author Andrus Adamchik
  */
 @Table
 abstract class AnnotationPrototypes {

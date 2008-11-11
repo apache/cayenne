@@ -33,8 +33,6 @@ import java.util.Comparator;
 /**
  * Table model to display ObjRelationships.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class ObjRelationshipTableModel extends CayenneTableModel {
 

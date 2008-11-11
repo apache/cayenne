@@ -37,7 +37,6 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * Class that performs runtime loading of Cayenne configuration.
  * 
- * @author Andrus Adamchik
  */
 public class ConfigLoader {
 

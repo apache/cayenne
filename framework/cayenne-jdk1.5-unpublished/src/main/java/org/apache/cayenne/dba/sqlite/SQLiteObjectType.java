@@ -30,7 +30,6 @@ import org.apache.cayenne.access.types.DefaultType;
  * NULLs.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class SQLiteObjectType extends AbstractType {
 

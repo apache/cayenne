@@ -24,7 +24,6 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * A default EJBQLTranslatorFactory.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class JdbcEJBQLTranslatorFactory implements EJBQLTranslatorFactory {
 

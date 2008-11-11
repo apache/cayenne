@@ -38,7 +38,6 @@ import org.apache.cayenne.map.DbKeyGenerator;
  * Ingres-specific sequence based PK generator.
  * 
  * @since 1.2
- * @author Tore Halset
  */
 public class IngresPkGenerator extends OraclePkGenerator {
     

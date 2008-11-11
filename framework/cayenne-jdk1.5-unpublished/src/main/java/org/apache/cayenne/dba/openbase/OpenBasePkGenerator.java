@@ -38,8 +38,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.IDUtil;
 
 /**
- * @author <a href="mailto:mkienenb@alaska.net">Mike Kienenberger</a>
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class OpenBasePkGenerator extends JdbcPkGenerator {

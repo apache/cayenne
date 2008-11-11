@@ -26,7 +26,6 @@ import java.io.File;
  * is stored on the user machine. This is normally a <code>$HOME/.cayenne</code>
  * directory.
  * 
- * @author Andrus Adamchik
  */
 public class CayenneUserDir {
 

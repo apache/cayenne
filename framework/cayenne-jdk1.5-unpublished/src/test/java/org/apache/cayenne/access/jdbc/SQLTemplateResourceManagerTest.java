@@ -26,7 +26,6 @@ import org.apache.velocity.runtime.resource.ResourceManager;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class SQLTemplateResourceManagerTest extends BasicCase {
     public void testFetResource() throws Exception {

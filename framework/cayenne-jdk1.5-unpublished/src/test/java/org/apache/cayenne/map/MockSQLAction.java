@@ -26,7 +26,6 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * @author Andrus Adamchik
  */
 public class MockSQLAction implements SQLAction {
 

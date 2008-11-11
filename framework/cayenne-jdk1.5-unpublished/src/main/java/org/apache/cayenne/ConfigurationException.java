@@ -23,7 +23,6 @@ package org.apache.cayenne;
 /**
  * A runtime exception thrown on failures in Cayenne configuration.
  * 
- * @author Andrus Adamchik
  */
 public class ConfigurationException extends CayenneRuntimeException {
 

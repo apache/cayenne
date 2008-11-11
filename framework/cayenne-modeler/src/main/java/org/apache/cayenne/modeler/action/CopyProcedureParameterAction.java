@@ -27,7 +27,6 @@ import org.apache.cayenne.project.ProjectPath;
 
 /**
  * Action for copying procedure parameter(s)
- * @author Andrey Razumovsky
  */
 public class CopyProcedureParameterAction extends CopyAction implements MultipleObjectsAction {
     private final static String ACTION_NAME = "Copy Procedure Parameter";

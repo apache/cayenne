@@ -39,7 +39,6 @@ import org.apache.cayenne.unit.PeopleCase;
 /**
  * Testing Cayenne behavior with DataObject inheritance hierarchies.
  * 
- * @author Andrus Adamchik
  */
 public class InheritanceTest extends PeopleCase {
 

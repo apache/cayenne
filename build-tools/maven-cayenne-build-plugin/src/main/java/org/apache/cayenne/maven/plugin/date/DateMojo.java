@@ -31,7 +31,6 @@ import org.apache.maven.plugin.MojoFailureException;
  * Exports the "project.build.date" and "project.build.time" properties to the
  * environment.
  * 
- * @author Andrus Adamchik
  * @goal date
  * @phase generate-resources
  * @requiresProject

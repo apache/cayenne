@@ -34,7 +34,6 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataObjectMatchTranslator {
 

@@ -31,7 +31,6 @@ import org.apache.cayenne.exp.Expression;
  * (...)", but we only need " where true and (...)".
  * 
  * @see ASTTrue
- * @author halset
  * @since 3.0
  */
 public class ASTFalse extends ConditionNode {

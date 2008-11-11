@@ -22,7 +22,6 @@ package org.apache.cayenne.swing;
 import org.apache.cayenne.CayenneRuntimeException;
 
 /**
- * @author Andrus Adamchik
  */
 public class BindingException extends CayenneRuntimeException {
 

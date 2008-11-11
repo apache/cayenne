@@ -27,7 +27,6 @@ import org.apache.cayenne.reflect.PropertyVisitor;
  * A superclass of DataObject properties that accesses object via DataObject methods.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 abstract class DataObjectBaseProperty implements Property {
 

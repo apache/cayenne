@@ -26,7 +26,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 
 /**
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class SQLServerStackAdapter extends SybaseStackAdapter {

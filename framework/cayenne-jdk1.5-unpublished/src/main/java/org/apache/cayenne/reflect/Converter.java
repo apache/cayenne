@@ -23,7 +23,6 @@ package org.apache.cayenne.reflect;
  * A helper class to do property type conversions.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 // keeping non-public for now, but this can also be used in expressions and such...
 abstract class Converter {

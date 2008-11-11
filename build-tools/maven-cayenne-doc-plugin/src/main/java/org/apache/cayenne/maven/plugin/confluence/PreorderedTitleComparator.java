@@ -26,7 +26,6 @@ import java.util.List;
 /**
  * A comparator of pages based on preset case-insensitive ordering of titles.
  * 
- * @author Andrus Adamchik
  */
 class PreorderedTitleComparator implements Comparator {
 

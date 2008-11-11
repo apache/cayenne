@@ -24,7 +24,6 @@ import java.util.EventListener;
 /**
  * Listener for listener class selection
  *
- * @author Vasil Tarasevich
  * @version 1.0 Oct 28, 2007
  */
 public interface ListenerClassSelectionListener extends EventListener {

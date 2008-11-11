@@ -30,7 +30,6 @@ import org.apache.cayenne.project.DataMapFile;
  * A collection of common file filters used by CayenneModeler JFileChoosers.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class FileFilters {
 

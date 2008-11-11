@@ -38,7 +38,6 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * A dialog to select a type of newly created query.
  * 
- * @author Andrus Adamchik
  */
 public class QueryTypeDialog extends SPanel {
 

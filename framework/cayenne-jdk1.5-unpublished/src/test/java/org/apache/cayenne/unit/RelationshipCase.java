@@ -21,7 +21,6 @@
 package org.apache.cayenne.unit;
 
 /**
- * @author Andrus Adamchik
  */
 public abstract class RelationshipCase extends CayenneCase {
 

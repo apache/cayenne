@@ -32,7 +32,6 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 

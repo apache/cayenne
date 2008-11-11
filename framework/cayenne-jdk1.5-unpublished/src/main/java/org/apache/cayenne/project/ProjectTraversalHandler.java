@@ -23,7 +23,6 @@ package org.apache.cayenne.project;
  * ProjectTraversalHandler defines callback methods that are
  * invoked during project tree traversal.
  * 
- * @author Andrus Adamchik
  */
 public interface ProjectTraversalHandler {
     /** 

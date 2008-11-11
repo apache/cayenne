@@ -32,7 +32,6 @@ import org.apache.cayenne.modeler.util.ModelerDbAdapter;
 import org.apache.cayenne.project.ProjectDataSource;
 
 /**
- * @author Andrus Adamchik
  */
 public abstract class DBWizardAction extends CayenneAction {
 

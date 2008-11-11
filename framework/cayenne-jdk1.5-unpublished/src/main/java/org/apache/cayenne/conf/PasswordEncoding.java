@@ -32,7 +32,6 @@ package org.apache.cayenne.conf;
  * both the modeler and framework.
  * 
  * @since 3.0
- * @author Michael Gentry
  */
 public interface PasswordEncoding
 {

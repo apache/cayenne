@@ -23,7 +23,6 @@ import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.util.IDUtil;
 
 /**
- * @author Andrus Adamchik
  */
 public class QueryLoggerTest extends CayenneCase {
     public void testSqlLiteralForObject() throws Exception {

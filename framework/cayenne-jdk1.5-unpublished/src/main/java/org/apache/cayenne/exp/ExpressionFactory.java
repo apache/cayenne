@@ -60,7 +60,6 @@ import org.apache.cayenne.map.Entity;
  * Helper class to build expressions. Alternatively expressions can be built using
  * {@link org.apache.cayenne.exp.Expression#fromString(String)} method.
  * 
- * @author Andrus Adamchik
  */
 public class ExpressionFactory {
 

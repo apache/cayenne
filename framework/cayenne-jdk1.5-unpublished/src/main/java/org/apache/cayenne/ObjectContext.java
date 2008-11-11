@@ -32,7 +32,6 @@ import org.apache.cayenne.query.Query;
  * the application code to access Cayenne persistence features.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface ObjectContext extends Serializable {
 

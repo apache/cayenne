@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 
 
 /**
- * @author Andrus Adamchik
  */
 public class PersistentObjectTest extends TestCase {
 

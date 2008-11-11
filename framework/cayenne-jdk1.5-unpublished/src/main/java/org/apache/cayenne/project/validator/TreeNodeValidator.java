@@ -40,7 +40,6 @@ import org.apache.cayenne.query.SelectQuery;
  * Validator of a single node in a project object tree. <i>Do not confuse with
  * org.apache.cayenne.access.DataNode. </i>
  * 
- * @author Andrus Adamchik
  */
 public abstract class TreeNodeValidator {
 

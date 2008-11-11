@@ -34,7 +34,6 @@ import org.apache.commons.collections.Transformer;
  * types of inputs.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class RowDescriptorBuilder {
 

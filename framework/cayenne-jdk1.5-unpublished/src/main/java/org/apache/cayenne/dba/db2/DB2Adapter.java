@@ -49,7 +49,6 @@ import org.apache.cayenne.map.DbEntity;
  *   
  * </pre>
  * 
- * @author Holger Hoffstaette
  */
 public class DB2Adapter extends JdbcAdapter {
 

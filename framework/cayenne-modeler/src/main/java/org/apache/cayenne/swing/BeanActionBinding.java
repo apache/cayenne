@@ -32,7 +32,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * A binding that registers for action events of an arbitrary Component JavaBean that
  * provides a way to add an ActionListener via BeanDescriptor.
  * 
- * @author Andrus Adamchik
  */
 public class BeanActionBinding extends BindingBase {
 

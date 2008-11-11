@@ -42,7 +42,6 @@ import org.apache.cayenne.query.UpdateQuery;
  * custom actions for various query types.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class JdbcActionBuilder implements SQLActionVisitor {
 

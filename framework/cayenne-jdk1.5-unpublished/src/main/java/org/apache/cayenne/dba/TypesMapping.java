@@ -37,8 +37,6 @@ import org.apache.cayenne.util.Util;
  * A utility class that handles mappings of JDBC data types to the database types and Java
  * types. Also contains methods that provide information about JDBC types.
  * 
- * @author Michael Shengaout
- * @author Andrus Adamchik
  */
 public class TypesMapping {
 

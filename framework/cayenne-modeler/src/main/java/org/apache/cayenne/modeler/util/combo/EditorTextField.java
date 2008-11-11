@@ -35,7 +35,6 @@ import javax.swing.ListCellRenderer;
  * EditorTextField is a text field to be used in combobox editor. It paints self normally
  * when focused, otherwise combo's renderer is used.
  * 
- * @author Andrey Razumovsky
  */
 public class EditorTextField extends JTextField implements FocusListener {
 

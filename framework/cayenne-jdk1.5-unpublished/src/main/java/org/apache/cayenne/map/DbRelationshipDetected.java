@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 /**
  * A subclass of {@link DbRelationship} to hold some extra runtime information.
  * 
- * @author halset
  */
 public class DbRelationshipDetected extends DbRelationship {
 

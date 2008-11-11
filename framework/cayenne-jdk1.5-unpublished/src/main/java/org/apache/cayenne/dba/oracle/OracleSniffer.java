@@ -27,7 +27,6 @@ import org.apache.cayenne.dba.DbAdapterFactory;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class OracleSniffer implements DbAdapterFactory {
 

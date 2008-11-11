@@ -25,7 +25,6 @@ import org.apache.cayenne.project.ProjectPath;
  * ValidationInfo encapsulates information about a single node validation
  * on the project tree.
  * 
- * @author Andrus Adamchik
  */
 public class ValidationInfo {
     public static final int VALID = 0;

@@ -23,7 +23,6 @@ import org.apache.cayenne.access.trans.SelectTranslator;
 
 /**
  * @since 1.2
- * @author Andrus Adamchik
  */
 class FrontBaseSelectTranslator extends SelectTranslator {
 

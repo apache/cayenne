@@ -61,7 +61,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
 /**
  * A panel for picking SelectQuery orderings.
  * 
- * @author Andrus Adamchik
  */
 public class SelectQueryOrderingTab extends JPanel implements PropertyChangeListener {
 

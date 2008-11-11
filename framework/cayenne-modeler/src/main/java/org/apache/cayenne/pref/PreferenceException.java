@@ -22,7 +22,6 @@ package org.apache.cayenne.pref;
 /**
  * An exception describing a problem with preferences operations.
  * 
- * @author Andrus Adamchik
  */
 public class PreferenceException extends RuntimeException {
 

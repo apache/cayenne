@@ -26,7 +26,6 @@ import org.apache.cayenne.util.Util;
 /**
  * "Not equal to" expression.
  * 
- * @author Andrus Adamchik
  */
 public class ASTNotEqual extends ConditionNode {
     ASTNotEqual(int id) {

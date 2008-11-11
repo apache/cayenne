@@ -25,7 +25,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * enhanced and enhancement run should be stopped.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class DoubleEnhanceException extends CayenneRuntimeException {
 

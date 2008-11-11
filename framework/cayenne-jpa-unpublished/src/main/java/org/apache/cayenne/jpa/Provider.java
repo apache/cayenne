@@ -67,7 +67,6 @@ import org.apache.commons.logging.LogFactory;
  * A PersistenceProvider implementation based on Cayenne stack. Wraps a Cayenne
  * Configuration instance.
  * 
- * @author Andrus Adamchik
  */
 public class Provider implements PersistenceProvider {
 

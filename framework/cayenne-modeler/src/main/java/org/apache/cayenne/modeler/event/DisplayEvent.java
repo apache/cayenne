@@ -24,7 +24,6 @@ import java.util.EventObject;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
- * @author Andrus Adamchik
  */
 public class DisplayEvent extends EventObject {
     protected boolean refired;

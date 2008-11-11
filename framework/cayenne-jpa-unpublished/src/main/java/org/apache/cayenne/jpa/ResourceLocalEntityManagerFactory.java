@@ -32,7 +32,6 @@ import org.apache.cayenne.access.DataDomain;
 /**
  * A Cayenne EntityManagerFactory that supports resource-local transactions.
  * 
- * @author Andrus Adamchik
  */
 public class ResourceLocalEntityManagerFactory implements EntityManagerFactory {
 

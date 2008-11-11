@@ -33,7 +33,6 @@ import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 
 /**
- * @author Andrus Adamchik
  */
 public class EntitiesTabPanel extends JPanel {
 

@@ -33,7 +33,6 @@ import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
- * @author Andrus Adamchik
  */
 public class CayenneDataObjectValidationTest extends CayenneCase {
 

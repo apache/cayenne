@@ -25,7 +25,6 @@ import javax.persistence.PersistenceException;
 /**
  * A runtime exception thrown on various problems in the provider code.
  * 
- * @author Andrus Adamchik
  */
 public class JpaProviderException extends PersistenceException {
 

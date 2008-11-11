@@ -24,7 +24,6 @@ import org.apache.cayenne.event.JMSBridgeFactory;
 import org.scopemvc.core.Selector;
 
 /**
- * @author Andrus Adamchik
  */
 public class JMSConfigModel extends CacheSyncConfigModel {
     private static final String[] storedProperties =

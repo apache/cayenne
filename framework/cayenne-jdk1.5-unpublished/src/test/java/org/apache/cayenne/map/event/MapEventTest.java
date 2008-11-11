@@ -22,7 +22,6 @@ package org.apache.cayenne.map.event;
 import junit.framework.TestCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class MapEventTest extends TestCase {
 

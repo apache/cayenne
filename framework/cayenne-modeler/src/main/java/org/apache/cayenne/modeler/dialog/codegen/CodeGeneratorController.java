@@ -35,7 +35,6 @@ import java.awt.*;
 /**
  * A controller for the class generator dialog.
  * 
- * @author Andrus Adamchik
  */
 public class CodeGeneratorController extends CodeGeneratorControllerBase {
     /**

@@ -43,7 +43,6 @@ import org.scopemvc.view.awt.AWTUtilities;
  * Superclass of CayenneModeler dialogs. Adds support for popping hyperlinks 
  * in the default system browser.
  * 
- * @author Andrus Adamchik
  */
 public class CayenneDialog extends JDialog implements HyperlinkListener {
 

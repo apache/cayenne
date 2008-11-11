@@ -32,7 +32,6 @@ import org.apache.cayenne.map.ObjEntity;
  * A runtime callback processor for a single kind of lifecycle events.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class LifecycleCallbackEventHandler {
 

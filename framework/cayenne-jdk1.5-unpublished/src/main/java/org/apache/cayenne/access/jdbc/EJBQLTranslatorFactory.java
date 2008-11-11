@@ -25,7 +25,6 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * translation by providing their own factory implementation.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public interface EJBQLTranslatorFactory {
     

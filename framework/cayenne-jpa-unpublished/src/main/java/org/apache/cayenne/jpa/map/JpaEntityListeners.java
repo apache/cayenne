@@ -29,7 +29,6 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * A collection of entity listener descriptors.
  * 
- * @author Andrus Adamchik
  */
 // andrus: I'd rather we flatten this object into JpaEntity, but since we have to follow
 // the schema structure, we need this meaningless object.

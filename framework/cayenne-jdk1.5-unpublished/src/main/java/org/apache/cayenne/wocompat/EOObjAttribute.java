@@ -24,7 +24,6 @@ import org.apache.cayenne.map.ObjEntity;
 /**
  * An ObjAttribute extension that accomodates EOModel attributes.
  * 
- * @author Andrus Adamchik
  */
 public class EOObjAttribute extends ObjAttribute {
 

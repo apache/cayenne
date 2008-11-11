@@ -33,7 +33,6 @@ import org.apache.cayenne.project.ProjectFile;
 import org.apache.cayenne.unit.BasicCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class CAY_236Test extends BasicCase {
 

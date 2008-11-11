@@ -28,7 +28,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * Join column specifies a mapped column for joining an entity association, aka flattened
  * attribute.
  * 
- * @author Andrus Adamchik
  */
 public class JpaJoinColumn implements XMLSerializable {
 

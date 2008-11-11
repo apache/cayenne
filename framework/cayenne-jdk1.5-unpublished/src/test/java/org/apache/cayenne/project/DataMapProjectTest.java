@@ -28,7 +28,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataMapProjectTest extends CayenneCase {
     protected DataMapProject p;

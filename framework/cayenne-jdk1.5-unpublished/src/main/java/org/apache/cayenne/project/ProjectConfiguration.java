@@ -29,8 +29,6 @@ import org.apache.cayenne.conf.FileConfiguration;
 /**
  * Subclass of FileConfiguration used in the project model.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class ProjectConfiguration extends FileConfiguration {
 

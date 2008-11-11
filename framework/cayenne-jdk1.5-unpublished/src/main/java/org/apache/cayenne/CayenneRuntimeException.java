@@ -23,7 +23,6 @@ package org.apache.cayenne;
  * A generic unchecked exception that may be thrown by Cayenne framework. All runtime
  * exceptions in Cayenne inherit from this class.
  * 
- * @author Andrus Adamchik
  */
 public class CayenneRuntimeException extends RuntimeException {
 

@@ -35,7 +35,6 @@ import org.apache.cayenne.query.Query;
  * A collection of useful Comparators used by the modeler.
  * 
  * @since 1.1
- * @author Andrus Adamchik
  */
 public class Comparators {
 

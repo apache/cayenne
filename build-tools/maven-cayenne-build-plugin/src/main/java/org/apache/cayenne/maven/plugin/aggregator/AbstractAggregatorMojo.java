@@ -48,7 +48,6 @@ import org.codehaus.plexus.util.FileUtils;
 /**
  * A superclass of aggregator mojos.
  * 
- * @author Andrus Adamchik
  */
 public abstract class AbstractAggregatorMojo extends AbstractMojo {
 

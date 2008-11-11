@@ -28,7 +28,6 @@ import org.apache.cayenne.map.DbEntity;
 /**
  * Defines methods to support automatic primary key generation.
  * 
- * @author Andrus Adamchik
  */
 public interface PkGenerator {
 

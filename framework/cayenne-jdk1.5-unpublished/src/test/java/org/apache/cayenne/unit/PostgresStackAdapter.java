@@ -30,7 +30,6 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 
 /**
- * @author Andrus Adamchik
  */
 public class PostgresStackAdapter extends AccessStackAdapter {
 

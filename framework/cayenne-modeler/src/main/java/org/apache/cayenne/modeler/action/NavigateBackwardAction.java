@@ -27,7 +27,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
- * @author Garry Watkins
  */
 public class NavigateBackwardAction extends CayenneAction {
 

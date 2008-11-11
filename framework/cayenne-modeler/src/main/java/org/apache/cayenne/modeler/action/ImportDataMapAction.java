@@ -41,7 +41,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Modeler action that imports a DataMap into a project from an arbitrary location.
  * 
- * @author Andrus Adamchik
  * @since 1.1
  */
 public class ImportDataMapAction extends CayenneAction {

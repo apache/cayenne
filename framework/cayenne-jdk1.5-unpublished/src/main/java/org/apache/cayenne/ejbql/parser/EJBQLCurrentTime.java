@@ -22,7 +22,6 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EJBQLCurrentTime extends SimpleNode {
 

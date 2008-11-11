@@ -25,7 +25,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
 
 /**
- * @author Andrus Adamchik
  */
 public class IDUtilTest extends TestCase {
 

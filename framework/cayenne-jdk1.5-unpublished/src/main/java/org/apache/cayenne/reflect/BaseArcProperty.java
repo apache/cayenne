@@ -24,7 +24,6 @@ import org.apache.cayenne.map.ObjRelationship;
  * A base implementation of the {@link ArcProperty}.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public abstract class BaseArcProperty extends BaseProperty implements ArcProperty {
 

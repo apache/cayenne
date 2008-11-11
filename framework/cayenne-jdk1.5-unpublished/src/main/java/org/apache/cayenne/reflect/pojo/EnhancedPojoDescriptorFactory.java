@@ -42,7 +42,6 @@ import org.apache.cayenne.reflect.Property;
  * A {@link ClassDescriptorFactory} used to create descriptors for the enhanced POJO's.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class EnhancedPojoDescriptorFactory extends PersistentDescriptorFactory {
 

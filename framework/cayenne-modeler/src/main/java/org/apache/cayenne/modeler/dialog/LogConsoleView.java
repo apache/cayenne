@@ -25,7 +25,6 @@ import java.awt.*;
 /**
  * LogConsole is a window with text area filled with log messages of the
  * application. 
- * @author Andrey Razumovsky
  */
 public class LogConsoleView extends JPanel {
     

@@ -37,7 +37,6 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * DataNode test cases.
  * 
- * @author Andrus Adamchik
  */
 public class DataNodeQueriesTest extends CayenneCase {
 

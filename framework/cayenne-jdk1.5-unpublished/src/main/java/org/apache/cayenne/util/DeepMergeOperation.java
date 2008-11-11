@@ -40,7 +40,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * nodes.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class DeepMergeOperation {
 

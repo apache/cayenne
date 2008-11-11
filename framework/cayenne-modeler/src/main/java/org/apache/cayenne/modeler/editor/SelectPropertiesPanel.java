@@ -49,7 +49,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A panel that supports editing the properties of a GenericSelectQuery.
  * 
- * @author Andrus Adamchik
  */
 public abstract class SelectPropertiesPanel extends JPanel {
 

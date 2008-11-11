@@ -22,7 +22,6 @@ package org.apache.cayenne.dba;
 /**
  * Represents data structure to maintain a range of cached primary keys.
  * 
- * @author Andrus Adamchik
  * @deprecated since 3.0 repalced with a non-public LongPkRange.
  */
 public final class PkRange {

@@ -31,7 +31,6 @@ import org.apache.cayenne.ValueHolder;
  * used to initialize PersistentObjectHolder. Value is resolved on first access.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class PersistentObjectHolder extends RelationshipFault implements ValueHolder {
 

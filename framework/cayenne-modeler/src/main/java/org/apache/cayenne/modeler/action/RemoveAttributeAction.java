@@ -38,7 +38,6 @@ import org.apache.cayenne.project.ProjectPath;
 /**
  * Removes currently selected attribute from either the DbEntity or ObjEntity.
  * 
- * @author Garry Watkins
  */
 public class RemoveAttributeAction extends RemoveAction implements MultipleObjectsAction {
 

@@ -25,7 +25,6 @@ import org.apache.cayenne.map.ObjRelationship;
  * EntityMergeListener interface defines API useful for listening to
  * EntityMergeSupport processing.
  *  
- * @author Andrey Razumovsky
  */
 public interface EntityMergeListener {
     /**

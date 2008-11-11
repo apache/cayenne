@@ -68,7 +68,6 @@ import org.apache.cayenne.jpa.map.JpaVersion;
 /**
  * A factory of member annotation processors.
  * 
- * @author Andrus Adamchik
  */
 class MemberAnnotationProcessorFactory extends AnnotationProcessorFactory {
 

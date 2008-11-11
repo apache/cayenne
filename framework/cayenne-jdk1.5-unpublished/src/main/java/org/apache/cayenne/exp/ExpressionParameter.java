@@ -27,7 +27,6 @@ import java.io.Serializable;
 /**
  * Named parameter for paramterized expressions.
  * 
- * @author Andrus Adamchik
  */
 public class ExpressionParameter implements Serializable {
 	protected String name;

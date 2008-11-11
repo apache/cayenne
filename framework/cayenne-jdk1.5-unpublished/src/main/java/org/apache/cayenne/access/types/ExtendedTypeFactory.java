@@ -23,7 +23,6 @@ package org.apache.cayenne.access.types;
  * ExtendedType factory interface.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface ExtendedTypeFactory {
 

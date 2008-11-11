@@ -33,8 +33,6 @@ import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.project.ProjectPath;
 
 /**
- * @author Garry Watkins
- * @author Andrus Adamchik
  */
 public class CreateProcedureParameterAction extends CayenneAction {
 

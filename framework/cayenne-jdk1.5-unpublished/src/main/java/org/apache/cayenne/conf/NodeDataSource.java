@@ -33,7 +33,6 @@ import org.apache.cayenne.access.DataNode;
  * initialized itself.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class NodeDataSource implements DataSource {
 

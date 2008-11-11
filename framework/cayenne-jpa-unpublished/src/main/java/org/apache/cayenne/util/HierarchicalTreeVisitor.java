@@ -24,7 +24,6 @@ import org.apache.cayenne.project.ProjectPath;
 /**
  * A hierarchical visitor interface used for tree structures traversal.
  * 
- * @author Andrus Adamchik
  */
 // TODO, andrus, 4/24/2006 - move to Cayenne core in 2.0
 public interface HierarchicalTreeVisitor {

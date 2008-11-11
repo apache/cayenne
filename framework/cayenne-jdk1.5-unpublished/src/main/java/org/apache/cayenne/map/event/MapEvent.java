@@ -26,7 +26,6 @@ import org.apache.cayenne.util.Util;
 /**
  * Superclass of CayenneModeler events.
  * 
- * @author Andrus Adamchik
  */
 public abstract class MapEvent extends CayenneEvent {
 

@@ -41,7 +41,6 @@ import org.apache.cayenne.util.Util;
  * Superclass of CayenneModeler actions that implements support for some common
  * functionality, exception handling, etc.
  * 
- * @author Andrus Adamchik
  */
 public abstract class CayenneAction extends AbstractAction {
 

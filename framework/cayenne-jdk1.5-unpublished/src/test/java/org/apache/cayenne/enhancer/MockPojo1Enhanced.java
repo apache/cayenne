@@ -28,7 +28,6 @@ import org.apache.cayenne.Persistent;
  * building parts of the ASM enhancer. It demonstrates how a pojo should look like after
  * the enhancement.
  * 
- * @author Andrus Adamchik
  */
 public class MockPojo1Enhanced implements Persistent {
 

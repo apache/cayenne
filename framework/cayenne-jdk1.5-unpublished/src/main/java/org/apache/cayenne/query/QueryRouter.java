@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DataMap;
  * 1.2 QueryRouter only supports routing by DataMap.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface QueryRouter {
 

@@ -33,7 +33,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * A compiled EJBQL expression.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 class CompiledExpression implements EJBQLCompiledExpression {
 

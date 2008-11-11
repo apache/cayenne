@@ -35,7 +35,6 @@ import org.scopemvc.view.swing.SPanel;
 /**
  * A controller for batch DbEntities schema update.
  * 
- * @author Andrus Adamchik
  */
 public class SchemaUpdateController extends DefaultsPreferencesController {
 

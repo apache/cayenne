@@ -35,7 +35,6 @@ import org.apache.cayenne.modeler.util.ModelerDbAdapter;
  * Project loader delegate customized for use in CayenneModeler.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 class ModelerProjectLoadDelegate extends RuntimeLoadDelegate {
 

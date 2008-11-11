@@ -27,7 +27,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.dba.TypesMapping;
 
 /**
- * @author Andrus Adamchik
  */
 public class DbAttributeTest extends TestCase {
 

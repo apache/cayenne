@@ -37,7 +37,6 @@ import org.apache.cayenne.query.RelationshipQuery;
  * resolving the list from DB, are not synchronized. The safest way to implement custom
  * synchronization is to synchronize on parent ObjectStore.
  * 
- * @author Andrus Adamchik
  */
 public class ToManyList implements List, Serializable, ValueHolder {
 

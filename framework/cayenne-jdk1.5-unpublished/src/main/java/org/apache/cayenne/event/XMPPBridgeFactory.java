@@ -29,7 +29,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  * <em>smack.jar</em> library in the runtime.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public class XMPPBridgeFactory implements EventBridgeFactory {
 

@@ -31,7 +31,6 @@ import org.apache.cayenne.conf.RuntimeSaveDelegate;
  * Cayenne project. Right now Cayenne projects can not be renamed, so all the name
  * tracking functionality is pretty much noop.
  * 
- * @author Andrus Adamchik
  */
 public class ApplicationProjectFile extends ProjectFile {
 

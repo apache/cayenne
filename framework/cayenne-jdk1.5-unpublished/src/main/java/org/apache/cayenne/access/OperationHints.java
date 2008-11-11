@@ -23,7 +23,6 @@ package org.apache.cayenne.access;
  * Defines API that allows QueryEngine to obtain information about query execution
  * strategy.
  * 
- * @author Andrus Adamchik
  */
 public interface OperationHints {
 

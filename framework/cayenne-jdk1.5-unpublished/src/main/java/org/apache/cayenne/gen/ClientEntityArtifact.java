@@ -25,7 +25,6 @@ import org.apache.cayenne.map.ObjEntity;
  * Client code generation artifact based on ObjEntity.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class ClientEntityArtifact extends EntityArtifact {
 

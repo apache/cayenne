@@ -29,7 +29,6 @@ import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class BigIntegerType implements ExtendedType {
 

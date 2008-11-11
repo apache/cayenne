@@ -23,7 +23,6 @@ package org.apache.cayenne.exp;
  * Expression visitor interface. Defines callback methods invoked when 
  * walking the expression using {@link Expression#traverse(TraversalHandler)}.
  * 
- * @author Andrus Adamchik
  */
 public interface TraversalHandler {
 

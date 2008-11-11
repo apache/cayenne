@@ -26,7 +26,6 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.QueryMetadata;
 
 /**
- * @author Andrus Adamchik
  */
 public class SQLTemplateBuilderTest extends TestCase {
 

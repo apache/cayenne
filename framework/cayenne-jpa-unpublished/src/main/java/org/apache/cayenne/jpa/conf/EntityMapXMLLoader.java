@@ -38,7 +38,6 @@ import org.xml.sax.SAXException;
  * {@link org.apache.cayenne.jpa.map.JpaEntityMap} loader that reads mapping information
  * from the XML sources compatible with the JPA ORM schema.
  * 
- * @author Andrus Adamchik
  */
 public class EntityMapXMLLoader {
 

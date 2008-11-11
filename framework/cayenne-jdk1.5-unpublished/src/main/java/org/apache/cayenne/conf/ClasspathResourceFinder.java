@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
  * A ResourceFinder that looks up resources in the classpath.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class ClasspathResourceFinder implements ResourceFinder {
 

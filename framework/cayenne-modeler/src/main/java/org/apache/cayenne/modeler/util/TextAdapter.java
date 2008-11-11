@@ -38,7 +38,6 @@ import org.apache.cayenne.validation.ValidationException;
  * A validating adapter for JTextComponent. Implement {@link #updateModel(String)}to
  * initialize model on text change.
  * 
- * @author Andrus Adamchik
  */
 public abstract class TextAdapter {
 

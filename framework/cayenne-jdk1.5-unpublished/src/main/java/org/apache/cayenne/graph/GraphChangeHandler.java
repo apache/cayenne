@@ -26,7 +26,6 @@ package org.apache.cayenne.graph;
  * source node.
  * 
  * @since 1.2
- * @author Andrus Adamchik
  */
 public interface GraphChangeHandler {
 

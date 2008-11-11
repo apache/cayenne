@@ -31,7 +31,6 @@ import java.util.Map;
  * {@link #createProcessor(String)} method will use naming conventions to determine the
  * type of the processor.
  * 
- * @author Andrus Adamchik
  */
 abstract class AnnotationProcessorFactory {
 

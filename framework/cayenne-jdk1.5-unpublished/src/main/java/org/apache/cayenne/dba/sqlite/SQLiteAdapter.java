@@ -36,7 +36,6 @@ import org.apache.cayenne.query.SQLAction;
  * http://www.zentus.com/sqlitejdbc/ for the driver information.
  * 
  * @since 3.0
- * @author Andrus Adamchik
  */
 // check http://cwiki.apache.org/CAY/sqliteadapter.html for current limitations.
 public class SQLiteAdapter extends JdbcAdapter {

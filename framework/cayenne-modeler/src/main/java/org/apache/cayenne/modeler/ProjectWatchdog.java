@@ -34,7 +34,6 @@ import org.apache.cayenne.project.ProjectFile;
  * ProjectWatchdog class is responsible for tracking changes in cayenne.xml and other
  * Cayenne project files
  * 
- * @author Andrey Razumovsky
  */
 public class ProjectWatchdog extends FileWatchdog {
 

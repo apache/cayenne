@@ -32,7 +32,6 @@ import org.apache.cayenne.query.Query;
 /**
  * A superclass of indirect queries that map JPA to Cayenne queries.
  * 
- * @author Andrus Adamchik
  */
 public abstract class JpaIndirectQuery extends IndirectQuery implements
         ParameterizedQuery {

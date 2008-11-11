@@ -43,7 +43,6 @@ import org.apache.velocity.runtime.log.NullLogSystem;
 
 /**
  * @since 3.0
- * @author Andrus Adamchik
  */
 public class ClassGenerationAction {
 

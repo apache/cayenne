@@ -30,7 +30,6 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataRowStoreTest extends CayenneCase {
 

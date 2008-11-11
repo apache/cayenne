@@ -25,7 +25,6 @@ package org.apache.cayenne.tools;
  * DefaultClassGenerator class.
  * 
  * @deprecated since 3.0 renamed to CayenneGeneratorTask
- * @author Andrus Adamchik, Kevin Menard
  */
 public class CayenneGenerator extends CayenneGeneratorTask {
 

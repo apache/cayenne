@@ -25,7 +25,6 @@ import java.io.File;
 import org.apache.cayenne.unit.CayenneCase;
 
 /**
- * @author Andrus Adamchik
  */
 public class DataNodeConfigInfoTest extends CayenneCase {
 	protected DataNodeConfigInfo test; 

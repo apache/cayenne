@@ -39,8 +39,6 @@ import org.apache.commons.collections.Transformer;
  * A DbRelationship is a descriptor of a database inter-table relationship based on one or
  * more primary key/foreign key pairs.
  * 
- * @author Misha Shengaout
- * @author Andrus Adamchik
  */
 public class DbRelationship extends Relationship {
 

@@ -33,7 +33,6 @@ import org.apache.cayenne.query.SelectQuery;
 /**
  * A test case checking that TestDataDomain query blocking works.
  * 
- * @author Andrus Adamchik
  */
 public class TestDataDomainTest extends CayenneCase {
 

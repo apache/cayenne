@@ -59,8 +59,6 @@ import org.apache.commons.logging.LogFactory;
  * Utility class that does reverse engineering of the database. It can create DataMaps
  * using database meta data obtained via JDBC driver.
  * 
- * @author Michael Shengaout
- * @author Andrus Adamchik
  */
 public class DbLoader {
 
