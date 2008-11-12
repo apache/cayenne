@@ -110,7 +110,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
             encoder.print("\" superEntityName=\"");
             encoder.print(getSuperEntityName());
         }
-        
+
         if (getIsAbstract()) {
             encoder.print("\" abstract=\"true");
         }
@@ -422,14 +422,13 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         return (getDataMap() == null || isServerOnly()) ? false : getDataMap()
                 .isClientSupported();
     }
-    
+
     public boolean getIsAbstract() {
         return isAbstract;
     }
-    
+
     /**
      * Sets whether this entity is abstract only.
-     * 
      */
     public void setIsAbstract(boolean isAbstract) {
         this.isAbstract = isAbstract;
@@ -720,8 +719,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         map.putAll((Map<String, ObjAttribute>) super.getAttributeMap());
 
         ObjEntity superEntity = getSuperEntity();
-        if (superEntity != null) 
-        {
+        if (superEntity != null) {
             SortedMap<String, ObjAttribute> attributeMap = new TreeMap<String, ObjAttribute>();
             superEntity.appendAttributes(attributeMap);
             for (String attributeName : attributeMap.keySet()) {
@@ -737,7 +735,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
             }
         }
     }
-    
+
     /**
      * @since 3.0
      */
@@ -919,8 +917,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
     }
 
     /**
-     * Returns <code>true</code> if this ObjEntity represents a set of read-only
-     * objects.
+     * Returns <code>true</code> if this ObjEntity represents a set of read-only objects.
      * 
      * @return boolean
      */
