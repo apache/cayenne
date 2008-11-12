@@ -101,6 +101,7 @@ public class ObjRelationshipInfoModel extends BasicModel {
     protected DbEntity newRelTarget;
     protected List<DbEntity> newRelTargets;
 
+    @SuppressWarnings("unchecked")
     public ObjRelationshipInfoModel(ObjRelationship relationship) {
 
         this.relationship = relationship;

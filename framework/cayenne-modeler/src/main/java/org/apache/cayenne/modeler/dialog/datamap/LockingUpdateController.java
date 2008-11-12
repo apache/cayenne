@@ -56,7 +56,7 @@ public class LockingUpdateController extends CayenneController {
         view.setModal(true);
         centerView();
         makeCloseableOnEscape();
-        view.show();
+        view.setVisible(true);
     }
 
     public Component getView() {

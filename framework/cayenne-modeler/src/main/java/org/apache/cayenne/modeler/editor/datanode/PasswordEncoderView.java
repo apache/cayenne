@@ -35,7 +35,6 @@ import org.apache.cayenne.conf.PasswordEncoding;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;

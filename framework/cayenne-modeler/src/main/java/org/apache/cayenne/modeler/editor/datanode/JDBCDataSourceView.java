@@ -20,30 +20,16 @@
 package org.apache.cayenne.modeler.editor.datanode;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.util.Map;
-import java.util.TreeMap;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-import org.apache.cayenne.conf.PasswordEncoding;
-import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-/**
- */
 public class JDBCDataSourceView extends JPanel {
 
     protected JTextField     driver;

@@ -1,11 +1,10 @@
 package org.apache.cayenne.swing;
 
-import org.apache.cayenne.validation.ValidationException;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JCheckBox;
 
 /**
  * A generic adapter that binds a check box to a bean property.

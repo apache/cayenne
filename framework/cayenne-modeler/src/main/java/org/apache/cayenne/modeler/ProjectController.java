@@ -469,7 +469,7 @@ public class ProjectController extends CayenneController {
 
         synchronized (controllerStateHistory) {
             int count = controllerStateHistory.size();
-            ArrayList removeList = new ArrayList();
+            List<Object> removeList = new ArrayList<Object>();
 
             for (int i = 0; i < count; i++) {
                 ControllerState cs = (ControllerState) controllerStateHistory.get(i);
@@ -1671,6 +1671,7 @@ public class ProjectController extends CayenneController {
     /**
      * Returns currently selected object, null if there are none, List if there are several
      */
+    @SuppressWarnings("unchecked")
     public Object getCurrentObject() {
         if (getCurrentObjEntity() != null) {
             return getCurrentObjEntity();

@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
+import java.awt.Component;
+
+import javax.swing.JOptionPane;
+
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
@@ -28,9 +32,6 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * A controller for the class generator dialog.
@@ -71,7 +72,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         view.setModal(true);
         centerView();
         makeCloseableOnEscape();
-        view.show();
+        view.setVisible(true);
     }
 
     protected void initBindings() {

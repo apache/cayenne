@@ -28,8 +28,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
-import javax.swing.JTabbedPane;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
@@ -40,7 +38,6 @@ import org.apache.cayenne.conf.JNDIDataSourceFactory;
 import org.apache.cayenne.map.event.DataNodeEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
-import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;

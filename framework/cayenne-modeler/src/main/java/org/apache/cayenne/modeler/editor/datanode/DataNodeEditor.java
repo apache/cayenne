@@ -23,7 +23,6 @@ import java.awt.Component;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.text.StyledEditorKit.BoldAction;
 
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;

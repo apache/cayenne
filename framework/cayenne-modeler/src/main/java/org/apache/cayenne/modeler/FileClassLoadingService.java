@@ -37,10 +37,10 @@ import java.util.List;
 public class FileClassLoadingService implements ClassLoadingService {
 
     private FileClassLoader classLoader;
-    protected List pathFiles;
+    protected List<File> pathFiles;
 
     public FileClassLoadingService() {
-        this.pathFiles = new ArrayList(15);
+        this.pathFiles = new ArrayList<File>(15);
     }
 
     /**
@@ -60,11 +60,11 @@ public class FileClassLoadingService implements ClassLoadingService {
     /**
      * Returns an unmodifiable list of configured CLASSPATH locations.
      */
-    public synchronized List getPathFiles() {
+    public synchronized List<File> getPathFiles() {
         return Collections.unmodifiableList(pathFiles);
     }
 
-    public synchronized void setPathFiles(Collection files) {
+    public synchronized void setPathFiles(Collection<File> files) {
 
         pathFiles.clear();
         classLoader = null;
@@ -87,7 +87,7 @@ public class FileClassLoadingService implements ClassLoadingService {
 
         if (classLoader != null) {
             try {
-                classLoader.addURL(file.toURL());
+                classLoader.addURL(file.toURI().toURL());
             }
             catch (MalformedURLException ex) {
                 return;
@@ -122,7 +122,7 @@ public class FileClassLoadingService implements ClassLoadingService {
 
                 // I guess here we have to quetly ignore invalid URLs...
                 try {
-                    addURL(file.toURL());
+                    addURL(file.toURI().toURL());
                 }
                 catch (MalformedURLException ex) {
                 }

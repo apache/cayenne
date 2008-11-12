@@ -19,11 +19,26 @@
 
 package org.apache.cayenne.modeler;
 
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
+import java.io.File;
+import java.util.Collection;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
+import javax.swing.SwingUtilities;
+
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.pref.*;
+import org.apache.cayenne.pref.Domain;
+import org.apache.cayenne.pref.DomainPreference;
+import org.apache.cayenne.pref.HSQLEmbeddedPreferenceEditor;
+import org.apache.cayenne.pref.HSQLEmbeddedPreferenceService;
+import org.apache.cayenne.pref.PreferenceService;
 import org.apache.cayenne.project.CayenneUserDir;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.swing.BindingFactory;
@@ -34,11 +49,6 @@ import org.scopemvc.controller.swing.SwingContext;
 import org.scopemvc.core.View;
 import org.scopemvc.util.UIStrings;
 import org.scopemvc.view.swing.SwingView;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
-import java.util.Collection;
 
 /**
  * A main modeler application class that provides a number of services to the Modeler
@@ -210,6 +220,7 @@ public class Application {
     /**
      * Reinitializes ModelerClassLoader from preferences.
      */
+    @SuppressWarnings("unchecked")
     public void initClassLoader() {
         final FileClassLoadingService classLoader = new FileClassLoadingService();
 

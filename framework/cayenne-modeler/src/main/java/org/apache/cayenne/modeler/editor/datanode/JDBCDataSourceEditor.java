@@ -21,9 +21,6 @@ package org.apache.cayenne.modeler.editor.datanode;
 
 import java.awt.Component;
 
-import javax.swing.JOptionPane;
-
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -32,8 +29,6 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.swing.ObjectBinding;
 
-/**
- */
 public class JDBCDataSourceEditor extends DataSourceEditor {
 
     protected JDBCDataSourceView view;
