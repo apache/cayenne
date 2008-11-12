@@ -19,9 +19,20 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.tree.TreePath;
+
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Relationship;
@@ -29,14 +40,18 @@ import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.PanelFactory;
-import org.scopemvc.view.swing.*;
+import org.scopemvc.view.swing.SAction;
+import org.scopemvc.view.swing.SButton;
+import org.scopemvc.view.swing.SComboBox;
+import org.scopemvc.view.swing.SLabel;
+import org.scopemvc.view.swing.SListCellRenderer;
+import org.scopemvc.view.swing.SPanel;
+import org.scopemvc.view.swing.STextField;
+import org.scopemvc.view.swing.SwingView;
 
-import javax.swing.*;
-import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * A view of the dialog for mapping an ObjRelationship to one or more DbRelationships.
@@ -77,9 +92,22 @@ public class ObjRelationshipInfoDialog extends SPanel {
         SButton newToManyButton = new SButton(new SAction(
                 ObjRelationshipInfoController.NEW_TOMANY_CONTROL));
         newToManyButton.setEnabled(true);
-
+        
+        SButton selectPathButton = new SButton(new SAction(
+                ObjRelationshipInfoController.SELECT_PATH_CONTROL));
+        selectPathButton.setEnabled(true);
+        SButton revertPathButton = new SButton(new SAction(
+                ObjRelationshipInfoController.REVERT_PATH_CONTROL));
+        revertPathButton.setEnabled(true);
+        SButton clearPathButton = new SButton(new SAction(
+                ObjRelationshipInfoController.CLEAR_PATH_CONTROL));
+        clearPathButton.setEnabled(true);
+        
         STextField relationshipName = new STextField(25);
         relationshipName.setSelector(ObjRelationshipInfoModel.RELATIONSHIP_NAME_SELECTOR);
+        
+        SLabel currentPathLabel = new SLabel();
+        currentPathLabel.setSelector(ObjRelationshipInfoModel.CURRENT_PATH_SELECTOR);
 
         SLabel sourceEntityLabel = new SLabel();
         sourceEntityLabel
@@ -105,6 +133,12 @@ public class ObjRelationshipInfoDialog extends SPanel {
         pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
         pathBrowser.setDefaultRenderer();
         
+        SComboBox newRelCombo = new SComboBox();
+        newRelCombo.setSelector(ObjRelationshipInfoModel.NEW_REL_TARGETS_SELECTOR);
+        newRelCombo.setSelectionSelector(ObjRelationshipInfoModel.NEW_REL_TARGET_SELECTOR);
+        renderer = (SListCellRenderer) newRelCombo.getRenderer();
+        renderer.setTextSelector("name");
+        
         // enable/disable map keys for collection type selection
         collectionTypeCombo.addActionListener(new ActionListener() {
 
@@ -121,38 +155,66 @@ public class ObjRelationshipInfoDialog extends SPanel {
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
-                        "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, 120dlu, 3dlu, fill:min(120dlu;pref)",
-                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
+                        "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, 300dlu, 3dlu, fill:min(120dlu;pref)",
+                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
         builder.setDefaultDialogBorder();
 
         builder.addSeparator("ObjRelationship Information", cc.xywh(1, 1, 5, 1));
         builder.addLabel("Relationship:", cc.xy(1, 3));
         builder.add(relationshipName, cc.xywh(3, 3, 1, 1));
-        builder.addLabel("Source:", cc.xy(1, 5));
-        builder.add(sourceEntityLabel, cc.xywh(3, 5, 1, 1));
-        builder.addLabel("Target:", cc.xy(1, 7));
-        builder.add(targetCombo, cc.xywh(3, 7, 1, 1));
-        collectionTypeLabel = builder.addLabel("Collection Type:", cc.xy(1, 9));
-        builder.add(collectionTypeCombo, cc.xywh(3, 9, 1, 1));
-        mapKeysLabel = builder.addLabel("Map Key:", cc.xy(1, 11));
-        builder.add(mapKeysCombo, cc.xywh(3, 11, 1, 1));
+        
+        builder.addLabel("Current Db Path:", cc.xy(1, 5));
+        builder.add(currentPathLabel, cc.xywh(3, 5, 5, 1));
+        
+        builder.addLabel("Source:", cc.xy(1, 7));
+        builder.add(sourceEntityLabel, cc.xywh(3, 7, 1, 1));
+        builder.addLabel("Target:", cc.xy(1, 9));
+        builder.add(targetCombo, cc.xywh(3, 9, 1, 1));
+        collectionTypeLabel = builder.addLabel("Collection Type:", cc.xy(1, 11));
+        builder.add(collectionTypeCombo, cc.xywh(3, 11, 1, 1));
+        mapKeysLabel = builder.addLabel("Map Key:", cc.xy(1, 13));
+        builder.add(mapKeysCombo, cc.xywh(3, 13, 1, 1));
 
-        builder.addSeparator("Mapping to DbRelationships", cc.xywh(1, 13, 5, 1));
+        builder.addSeparator("Mapping to DbRelationships", cc.xywh(1, 15, 5, 1));
         builder.add(new JScrollPane(
                 pathBrowser,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 15, 5, 3));
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 17, 5, 3));
+        
+        PanelBuilder newRelPanelBuilder = new PanelBuilder(
+                new FormLayout(
+                        "right:max(50dlu;pref), 3dlu, fill:150dlu, 3dlu, 300dlu",
+                        "p, 3dlu, p, 3dlu, p, 3dlu"));
+        newRelPanelBuilder.setDefaultDialogBorder();
+        newRelPanelBuilder.addSeparator("Creating New Db Relationships", cc.xywh(1, 1, 5, 1));
+        newRelPanelBuilder.addLabel("Target:", cc.xy(1, 3));
+        newRelPanelBuilder.add(newRelCombo, cc.xywh(3, 3, 1, 1));
+        
+        JPanel buttonsPanel = new JPanel(new BorderLayout());
 
-        JPanel newRelationshipsButtons = new JPanel(new FlowLayout(FlowLayout.LEADING));
-        newRelationshipsButtons.add(newToOneButton);
+        JPanel newRelationshipsButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        newRelationshipsButtons.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         newRelationshipsButtons.add(newToManyButton);
-
-        builder.add(newRelationshipsButtons, cc.xywh(7, 15, 1, 3));
-
-        add(builder.getPanel(), BorderLayout.CENTER);
-        add(PanelFactory.createButtonPanel(new JButton[] {
+        newRelationshipsButtons.add(newToOneButton);
+        
+        JPanel newRelPanel = new JPanel(new BorderLayout());
+        JPanel selectButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        
+        selectButtonPanel.add(selectPathButton);
+        selectButtonPanel.add(revertPathButton);
+        selectButtonPanel.add(clearPathButton);
+        newRelPanel.add(selectButtonPanel, BorderLayout.NORTH);
+        newRelPanel.add(newRelPanelBuilder.getPanel(), BorderLayout.CENTER); 
+        
+        buttonsPanel.add(newRelPanel, BorderLayout.NORTH);
+        buttonsPanel.add(newRelationshipsButtons);
+        buttonsPanel.add(PanelFactory.createButtonPanel(new JButton[] {
                 saveButton, cancelButton
         }), BorderLayout.SOUTH);
+
+
+        add(builder.getPanel(), BorderLayout.CENTER);
+        add(buttonsPanel, BorderLayout.SOUTH);
     }
 
     /**
@@ -200,16 +262,22 @@ public class ObjRelationshipInfoDialog extends SPanel {
         
             pathBrowser.setModel(treeModel);
         
-            List<DbRelationship> rels = model.getDbRelationships();
-            if (rels.size() > 0) {
-                Object[] path = new Object[rels.size() + 1];
-                path[0] = model.getStartEntity();
-            
-                System.arraycopy(rels.toArray(), 0, path, 1, rels.size());
-            
-                pathBrowser.setSelectionPath(new TreePath(path));
-            }
+            setSelectionPath(model.getSavedDbRelationships());
         }
+    }
+    
+    /**
+     * Selects path in browser
+     */
+    void setSelectionPath(List<DbRelationship> rels) {
+        ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getController().getModel();
+        
+        Object[] path = new Object[rels.size() + 1];
+        path[0] = model.getStartEntity();
+
+        System.arraycopy(rels.toArray(), 0, path, 1, rels.size());
+
+        pathBrowser.setSelectionPath(new TreePath(path));
     }
     
     /**

@@ -18,15 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import org.apache.cayenne.modeler.util.MultiColumnBrowser;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.tree.TreePath;
+
+import org.apache.cayenne.modeler.util.MultiColumnBrowser;
 
 /**
  * Multi-column browser for obj relationships
@@ -52,8 +53,6 @@ public class ObjRelationshipPathBrowser extends MultiColumnBrowser {
     
     @Override
     protected void installColumn(BrowserPanel panel) {
-        panel.setToolTipText("Double-click on row to extend path");
-        
         if (panelOpener == null) {
             panelOpener = new PanelOpener();
         }
@@ -97,8 +96,8 @@ public class ObjRelationshipPathBrowser extends MultiColumnBrowser {
         /**
          * Invoked when the mouse has been clicked on a component.
          */
-        public void mouseClicked(MouseEvent e) {
-            if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+        public void mouseReleased(MouseEvent e) {
+            if (SwingUtilities.isLeftMouseButton(e)) {
                 process(e);
             }
         }

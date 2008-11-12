@@ -113,7 +113,7 @@ public class ClassNameUpdater extends CayenneController {
             view.setModal(true);
             centerView();
             makeCloseableOnEscape();
-            view.show();
+            view.setVisible(true);
         }
 
         return this.updatePerformed;

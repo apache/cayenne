@@ -19,14 +19,22 @@
 
 package org.apache.cayenne.modeler.util;
 
-import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.Relationship;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import java.util.*;
+
+import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.Relationship;
 
 /**
  * Swing TreeModel for Entity attributes and relationships
@@ -97,7 +105,7 @@ public class EntityTreeModel implements TreeModel {
         }
 
         synchronized (sortedChildren) {
-            Object key = node;
+            Object key = entity;
             Object[] sortedForNode = sortedChildren.get(key);
 
             if (sortedForNode == null) {
@@ -140,7 +148,7 @@ public class EntityTreeModel implements TreeModel {
      */
     public void invalidateChildren(Entity entity) {
         synchronized (sortedChildren) {
-            sortedChildren.remove(entity.getName());
+            sortedChildren.remove(entity);
         }
     }
 

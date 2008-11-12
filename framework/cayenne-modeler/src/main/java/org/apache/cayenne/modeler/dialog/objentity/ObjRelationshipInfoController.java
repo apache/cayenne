@@ -19,7 +19,22 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import org.apache.cayenne.map.*;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -31,15 +46,6 @@ import org.scopemvc.controller.basic.BasicController;
 import org.scopemvc.core.Control;
 import org.scopemvc.core.ControlException;
 
-import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.Vector;
-
 /**
  * @since 1.1
  */
@@ -49,6 +55,10 @@ public class ObjRelationshipInfoController extends BasicController implements Tr
     public static final String CANCEL_CONTROL = "cayenne.modeler.mapObjRelationship.cancel.button";
     public static final String NEW_TOONE_CONTROL = "cayenne.modeler.mapObjRelationship.newtoone.button";
     public static final String NEW_TOMANY_CONTROL = "cayenne.modeler.mapObjRelationship.newtomany.button";
+    
+    public static final String SELECT_PATH_CONTROL = "cayenne.modeler.mapObjRelationship.select.path.button";
+    public static final String REVERT_PATH_CONTROL = "cayenne.modeler.mapObjRelationship.revert.path.button";
+    public static final String CLEAR_PATH_CONTROL = "cayenne.modeler.mapObjRelationship.clear.path.button";
 
     protected ProjectController mediator;
 
@@ -56,10 +66,7 @@ public class ObjRelationshipInfoController extends BasicController implements Tr
             ObjRelationship relationship) {
 
         this.mediator = mediator;
-        Collection<ObjEntity> objEntities = mediator.getCurrentDataMap().getNamespace().getObjEntities();
-        ObjRelationshipInfoModel model = new ObjRelationshipInfoModel(
-                relationship,
-                objEntities);
+        ObjRelationshipInfoModel model = new ObjRelationshipInfoModel(relationship);
         setModel(model);
     }
     
@@ -104,10 +111,55 @@ public class ObjRelationshipInfoController extends BasicController implements Tr
         else if (control.matchesID(NEW_TOMANY_CONTROL)) {
             createRelationship(true);
         }
+        else if (control.matchesID(SELECT_PATH_CONTROL)) {
+            selectPath();
+        }
+        else if (control.matchesID(REVERT_PATH_CONTROL)) {
+            revertPath();
+        }
+        else if (control.matchesID(CLEAR_PATH_CONTROL)) {
+            clearPath();
+        }
+    }
+    
+    /**
+     * Saves selected path 
+     */
+    protected void selectPath() {
+        ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getModel();
+        model.selectPath();
+    }
+    
+    /**
+     * Reverts current path to saved path
+     */
+    protected void revertPath() {
+        ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getModel();
+        ((ObjRelationshipInfoDialog) getView()).setSelectionPath(model.getSavedDbRelationships());
+        model.setDbRelationships(model.getSavedDbRelationships());
+    }
+    
+    /**
+     * Clears paths and selections in browser
+     */
+    protected void clearPath() {
+        ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getModel();
+        ((ObjRelationshipInfoDialog) getView()).getPathBrowser().clearSelection();
+        model.setDbRelationships(new ArrayList<DbRelationship>());
     }
 
     protected void saveMapping() {
         ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getModel();
+        
+        if (!model.getDbRelationships().equals(model.getSavedDbRelationships())) {
+            if (JOptionPane.showConfirmDialog((Component) getView(), 
+                    "You have changed Db Relationship path. Do you want it to be saved?",
+                    "Save ObjRelationship",
+                    JOptionPane.YES_NO_OPTION)
+                    == JOptionPane.YES_OPTION) {
+                selectPath();
+            }
+        }
 
         if (model.savePath()) {
             mediator.fireObjRelationshipEvent(new RelationshipEvent(Application
@@ -125,18 +177,18 @@ public class ObjRelationshipInfoController extends BasicController implements Tr
      */
     protected void createRelationship(boolean toMany) {
         ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getModel();
-        DbEntity source = model.getStartEntity();
-        DbEntity target = model.getEndEntity();
-
-        DbRelationship dbRel = model.getLastRelationship();
-        if (dbRel != null) {
-            source = (DbEntity) dbRel.getSourceEntity();
-        }
         
+        DbEntity target = model.getNewRelTarget();        
         if (target == null) {
             JOptionPane.showMessageDialog((Component) getView(), "Please select target entity first.",
                     "Warning", JOptionPane.WARNING_MESSAGE);
             return;
+        }
+        
+        DbEntity source = model.getStartEntity();
+        DbRelationship dbRel = model.getLastRelationship();
+        if (dbRel != null) {
+            source = (DbEntity) dbRel.getTargetEntity();
         }
 
         DbRelationship dbRelationship = (DbRelationship) NamedObjectFactory
@@ -168,7 +220,7 @@ public class ObjRelationshipInfoController extends BasicController implements Tr
             treeModel.invalidateChildren(source);
             treeModel.invalidateChildren(target);
             
-            Object[] path = new Object[Math.max(oldPath.length, 2)];
+            Object[] path = new Object[oldPath.length + 1];
             System.arraycopy(oldPath, 0, path, 0, path.length - 1);
             
             path[path.length - 1] = dbRelationship;
@@ -196,13 +248,13 @@ public class ObjRelationshipInfoController extends BasicController implements Tr
          * Initialize root with one of mapped ObjEntities.
          */
         Collection<ObjEntity> objEntities = target.getDataMap().getMappedEntities(target);
-        model.setObjectTarget(objEntities.size() == 0 ? null : objEntities.iterator().next());
         
         List<DbRelationship> relPath = new Vector<DbRelationship>(selectedPath.getPathCount() - 1);
         for (int i = 1; i < selectedPath.getPathCount(); i++) {
             relPath.add((DbRelationship) selectedPath.getPathComponent(i));
         }
         model.setDbRelationships(relPath);
+        model.setObjectTarget(objEntities.size() == 0 ? null : objEntities.iterator().next());
         
         ((ObjRelationshipInfoDialog) getView()).updateCollectionChoosers();
     }

@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.DeleteRuleUpdater;
-import org.apache.cayenne.util.EntityMergeSupport;
-
-import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.DeleteRuleUpdater;
+import org.apache.cayenne.util.EntityMergeSupport;
 
 public class EntitySyncController extends CayenneController {
 
@@ -107,7 +107,7 @@ public class EntitySyncController extends CayenneController {
         view.setModal(true);
         centerView();
         makeCloseableOnEscape();
-        view.show();
+        view.setVisible(true);
 
         return cancel[0] ? null : merger;
     }

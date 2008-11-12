@@ -19,16 +19,26 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 import org.scopemvc.core.ModelChangeTypes;
 import org.scopemvc.core.Selector;
 import org.scopemvc.model.basic.BasicModel;
-
-import java.util.*;
 
 /**
  * A Scope model for mapping an ObjRelationship to one or more DbRelationships.
@@ -51,6 +61,11 @@ public class ObjRelationshipInfoModel extends BasicModel {
             .fromString("objectTarget");
     public static final Selector OBJECT_TARGETS_SELECTOR = Selector
             .fromString("objectTargets");
+    
+    public static final Selector NEW_REL_TARGET_SELECTOR = Selector.fromString("newRelTarget");
+    
+    public static final Selector NEW_REL_TARGETS_SELECTOR = Selector.fromString("newRelTargets");
+    
     public static final Selector RELATIONSHIP_NAME_SELECTOR = Selector
             .fromString("relationshipName");
     public static final Selector TARGET_COLLECTIONS_SELECTOR = Selector
@@ -59,6 +74,8 @@ public class ObjRelationshipInfoModel extends BasicModel {
             .fromString("targetCollection");
     public static final Selector MAP_KEYS_SELECTOR = Selector.fromString("mapKeys");
     public static final Selector MAP_KEY_SELECTOR = Selector.fromString("mapKey");
+    
+    public static final Selector CURRENT_PATH_SELECTOR = Selector.fromString("currentPath");
 
     protected ObjRelationship relationship;
     
@@ -67,15 +84,24 @@ public class ObjRelationshipInfoModel extends BasicModel {
      */
     protected List<DbRelationship> dbRelationships;
     
+    /**
+     * List of current saved DB Relationships
+     */
+    protected List<DbRelationship> savedDbRelationships;
+    
     protected ObjEntity objectTarget;
     protected List<ObjEntity> objectTargets;
     protected List<String> targetCollections;
-    protected List mapKeys;
+    protected List<String> mapKeys;
     protected String relationshipName;
     protected String targetCollection;
     protected String mapKey;
+    
+    protected String currentPath;
+    protected DbEntity newRelTarget;
+    protected List<DbEntity> newRelTargets;
 
-    public ObjRelationshipInfoModel(ObjRelationship relationship, Collection<ObjEntity> objEntities) {
+    public ObjRelationshipInfoModel(ObjRelationship relationship) {
 
         this.relationship = relationship;
         this.relationshipName = relationship.getName();
@@ -85,20 +111,11 @@ public class ObjRelationshipInfoModel extends BasicModel {
         if (targetCollection == null) {
             targetCollection = ObjRelationship.DEFAULT_COLLECTION_TYPE;
         }
-
-        // prepare entities - copy those that have DbEntities mapped, and then sort
-
-        this.objectTargets = new ArrayList<ObjEntity>(objEntities.size());
-        Iterator<ObjEntity> entities = objEntities.iterator();
-        while (entities.hasNext()) {
-            ObjEntity entity = entities.next();
-            if (entity.getDbEntity() != null) {
-                objectTargets.add(entity);
-            }
-        }
+        
         this.objectTarget = (ObjEntity) relationship.getTargetEntity();
-
-        Collections.sort(objectTargets, Comparators.getNamedObjectComparator());
+        if (objectTarget != null) {
+            updateTargetCombo(objectTarget.getDbEntity());
+        }
 
         // validate -
         // current limitation is that an ObjRelationship must have source
@@ -110,18 +127,39 @@ public class ObjRelationshipInfoModel extends BasicModel {
         targetCollections.add(ObjRelationship.DEFAULT_COLLECTION_TYPE);
         targetCollections.add(COLLECTION_TYPE_MAP);
         targetCollections.add(COLLECTION_TYPE_SET);
+        
+        this.newRelTargets = new ArrayList<DbEntity>(relationship.getSourceEntity().getDataMap().getDbEntities());
+        Collections.sort(newRelTargets, Comparators.getNamedObjectComparator());
 
-        this.mapKeys = new ArrayList();
+        this.mapKeys = new ArrayList<String>();
         initMapKeys();
 
         // setup path
         dbRelationships = new ArrayList<DbRelationship>(relationship.getDbRelationships());
+        selectPath();
 
         // this sets the right enabled state of collection type selectors
         fireModelChange(ModelChangeTypes.VALUE_CHANGED, DB_RELATIONSHIPS_SELECTOR);
 
         // add dummy last relationship if we are not connected
         connectEnds();
+    }
+    
+    /**
+     * Places in objectTargets list all ObjEntities for specified DbEntity
+     */
+    @SuppressWarnings("unchecked")
+    protected void updateTargetCombo(DbEntity dbTarget) {
+        // copy those that have DbEntities mapped to dbTarget, and then sort
+
+        this.objectTargets = new ArrayList<ObjEntity>();
+        
+        if (dbTarget != null) {
+            objectTargets.addAll(dbTarget.getDataMap().getMappedEntities(dbTarget));            
+            Collections.sort(objectTargets, Comparators.getNamedObjectComparator());
+        }
+        
+        fireModelChange(ModelChangeTypes.VALUE_CHANGED, OBJECT_TARGETS_SELECTOR);
     }
 
     public ObjRelationship getRelationship() {
@@ -136,6 +174,13 @@ public class ObjRelationshipInfoModel extends BasicModel {
     }
     
     /**
+     * @return list of saved DB Relationships 
+     */
+    public List<DbRelationship> getSavedDbRelationships() {
+        return savedDbRelationships;
+    }
+    
+    /**
      * @return last relationship in the path, or <code>null</code> if path is empty
      */
     public DbRelationship getLastRelationship() {
@@ -147,6 +192,35 @@ public class ObjRelationshipInfoModel extends BasicModel {
      */
     public void setDbRelationships(List<DbRelationship> rels) {
         this.dbRelationships = rels;
+        
+        updateTargetCombo(rels.size() > 0 ?
+                (DbEntity) rels.get(rels.size() - 1).getTargetEntity() : null);
+    }
+    
+    /**
+     * Sets list of saved DB Relationships
+     */
+    public void setSavedDbRelationships(List<DbRelationship> rels) {
+        this.savedDbRelationships = rels;
+        
+        String currPath = "";
+        for (DbRelationship rel : rels) {
+            currPath += "->" + rel.getName();
+        }
+        
+        if (rels.size() > 0) {
+            currPath = currPath.substring(2);
+        }
+        
+        currentPath = currPath;
+        fireModelChange(ModelChangeTypes.VALUE_CHANGED, CURRENT_PATH_SELECTOR);
+    }
+    
+    /**
+     * Confirms selection of Db Rels
+     */
+    public void selectPath() {
+        setSavedDbRelationships(new ArrayList<DbRelationship>(dbRelationships));
     }
 
     /**
@@ -255,9 +329,9 @@ public class ObjRelationshipInfoModel extends BasicModel {
             relationship.setName(relationshipName);
         }
         
-        if (dbRelationships.size() > 0) {
+        if (savedDbRelationships.size() > 0) {
             DbEntity lastEntity = (DbEntity)
-                dbRelationships.get(dbRelationships.size() - 1).getTargetEntity();
+                savedDbRelationships.get(savedDbRelationships.size() - 1).getTargetEntity();
 
             if (objectTarget == null || objectTarget.getDbEntity() != lastEntity) {
                 /**
@@ -283,13 +357,13 @@ public class ObjRelationshipInfoModel extends BasicModel {
 
         // check for path modifications
         List<DbRelationship> oldPath = relationship.getDbRelationships();
-        if (oldPath.size() != dbRelationships.size()) {
+        if (oldPath.size() != savedDbRelationships.size()) {
             hasChanges = true;
             updatePath();
         }
         else {
             for (int i = 0; i < oldPath.size(); i++) {
-                DbRelationship next = dbRelationships.get(i);
+                DbRelationship next = savedDbRelationships.get(i);
                 
                 if (oldPath.get(i) != next) {
                     hasChanges = true;
@@ -417,6 +491,10 @@ public class ObjRelationshipInfoModel extends BasicModel {
         this.mapKey = mapKey;
     }
 
+    public String getCurrentPath() {
+        return currentPath;
+    }
+
     public String getTargetCollection() {
         return targetCollection;
     }
@@ -431,5 +509,17 @@ public class ObjRelationshipInfoModel extends BasicModel {
 
     public List<String> getTargetCollections() {
         return targetCollections;
+    }
+    
+    public List<DbEntity> getNewRelTargets() {
+        return newRelTargets;
+    }
+    
+    public DbEntity getNewRelTarget() {
+        return newRelTarget;
+    }
+    
+    public void setNewRelTarget(DbEntity newRelTarget) {
+        this.newRelTarget = newRelTarget;
     }
 }
