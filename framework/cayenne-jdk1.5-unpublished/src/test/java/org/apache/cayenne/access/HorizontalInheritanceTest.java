@@ -1,9 +1,11 @@
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.unit.InheritanceCase;
 import org.apache.cayenne.testdo.horizontalinherit.SubEntity1;
 import org.apache.cayenne.testdo.horizontalinherit.AbstractSuperEntity;
 import org.apache.cayenne.testdo.horizontalinherit.SubEntity2;
+import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SQLTemplate;
 
@@ -15,16 +17,14 @@ import java.util.List;
  */
 public class HorizontalInheritanceTest extends InheritanceCase {
 
-    protected DataContext context;
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();
-        context = createDataContext();
     }
 
     public void testAbstractSuperEntity() {
+        ObjectContext context = createDataContext();
         SubEntity1 subEntity1 = context.newObject(SubEntity1.class);
         subEntity1.setSuperIntAttr(666);
         subEntity1.setSuperStringAttr("stringValue");
@@ -49,29 +49,34 @@ public class HorizontalInheritanceTest extends InheritanceCase {
         // assertEquals(2, result1.size());
     }
 
-    public void testUnions() {
-        SubEntity1 subEntity1 = context.newObject(SubEntity1.class);
-        subEntity1.setSuperIntAttr(666);
-        subEntity1.setSuperStringAttr("stringValue");
-        subEntity1.setSubEntityStringAttr("anotherStringValue");
-        context.commitChanges();
+    public void testDatabaseUnionCapabilities() {
 
-        SQLTemplate insertSql = new SQLTemplate(
-                SubEntity1.class,
-                " INSERT INTO DbEntity4 VALUES (13, 'Inserted value 1', 666, 'Inserted value 2')");
+        QueryChain inserts = new QueryChain();
+        inserts
+                .addQuery(new SQLTemplate(
+                        SubEntity1.class,
+                        "INSERT INTO INHERITANCE_SUB_ENTITY1 "
+                                + "(ID, SUBENTITY_STRING_DB_ATTR, SUPER_INT_DB_ATTR, SUPER_STRING_DB_ATTR) "
+                                + "VALUES (1, 'V11', 1, 'V21')"));
 
-        context.performQuery(insertSql);
+        inserts
+                .addQuery(new SQLTemplate(
+                        SubEntity1.class,
+                        "INSERT INTO INHERITANCE_SUB_ENTITY2 "
+                                + "(ID, OVERRIDDEN_STRING_DB_ATTR, SUBENTITY_INT_DB_ATTR, SUBENTITY_INT_DB_ATTR) "
+                                + "VALUES (1, 'VX11', 101, '201')"));
+
+        createDataContext().performGenericQuery(inserts);
 
         SQLTemplate unionSql = new SQLTemplate(
                 SubEntity1.class,
-                " SELECT ID_1 as ID, SUBENTITY_STRING_DB_ATTR_1 as SUBENTITY_STRING_DB_ATTR, SUPER_INT_DB_ATTR_1 as SUPER_INT_DB_ATTR, SUPER_STRING_DB_ATTR_1 as SUPER_STRING_DB_ATTR FROM DbEntity4"
+                "SELECT ID, SUBENTITY_STRING_DB_ATTR, SUPER_STRING_DB_ATTR, SUPER_INT_DB_ATTR, NULL, 'INHERITANCE_SUB_ENTITY1'"
+                        + " FROM INHERITANCE_SUB_ENTITY1"
                         + " UNION ALL"
-                        + " SELECT * FROM DbEntity1");
+                        + " SELECT ID, OVERRIDDEN_STRING_DB_ATTR, NULL, SUBENTITY_INT_DB_ATTR, SUBENTITY_INT_DB_ATTR, 'INHERITANCE_SUB_ENTITY2'"
+                        + " FROM INHERITANCE_SUB_ENTITY2");
 
-        List result = context.performQuery(unionSql);
-
-        assertNotNull(result);
-        assertEquals(2, result.size());
-
+        unionSql.setFetchingDataRows(true);
+        assertEquals(2, createDataContext().performQuery(unionSql).size());
     }
 }
