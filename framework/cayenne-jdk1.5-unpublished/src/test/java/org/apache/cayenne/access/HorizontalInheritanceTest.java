@@ -18,16 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.unit.InheritanceCase;
-import org.apache.cayenne.testdo.horizontalinherit.SubEntity1;
-import org.apache.cayenne.testdo.horizontalinherit.AbstractSuperEntity;
-import org.apache.cayenne.testdo.horizontalinherit.SubEntity2;
-import org.apache.cayenne.query.QueryChain;
-import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SQLTemplate;
-
 import java.util.List;
+
+import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.query.QueryChain;
+import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.horizontalinherit.SubEntity1;
+import org.apache.cayenne.unit.InheritanceCase;
 
 /**
  * Tests for horizontal inheritance implementation.
@@ -41,30 +39,32 @@ public class HorizontalInheritanceTest extends InheritanceCase {
         deleteTestData();
     }
 
-    public void testAbstractSuperEntity() {
-        ObjectContext context = createDataContext();
-        SubEntity1 subEntity1 = context.newObject(SubEntity1.class);
-        subEntity1.setSuperIntAttr(666);
-        subEntity1.setSuperStringAttr("stringValue");
-        subEntity1.setSubEntityStringAttr("anotherStringValue");
-        context.commitChanges();
+    public void testSelectQueryOnConcreteLeafEntity() {
 
-        SelectQuery concreteSelect = new SelectQuery(SubEntity1.class);
-        List result = context.performQuery(concreteSelect);
-        assertNotNull(result);
-        assertEquals(1, result.size());
+        QueryChain inserts = new QueryChain();
+        inserts
+                .addQuery(new SQLTemplate(
+                        SubEntity1.class,
+                        "INSERT INTO INHERITANCE_SUB_ENTITY1 "
+                                + "(ID, SUBENTITY_STRING_DB_ATTR, SUPER_INT_DB_ATTR, SUPER_STRING_DB_ATTR) "
+                                + "VALUES (1, 'V11', 1, 'V21')"));
+        inserts
+                .addQuery(new SQLTemplate(
+                        SubEntity1.class,
+                        "INSERT INTO INHERITANCE_SUB_ENTITY1 "
+                                + "(ID, SUBENTITY_STRING_DB_ATTR, SUPER_INT_DB_ATTR, SUPER_STRING_DB_ATTR) "
+                                + "VALUES (2, 'V12',2, 'V22')"));
+        createDataContext().performGenericQuery(inserts);
 
-        SubEntity2 subEntity2 = context.newObject(SubEntity2.class);
-        subEntity2.setSuperIntAttr(666);
-        subEntity2.setSuperStringAttr("stringValue");
-        subEntity2.setSubEntityIntAttr(13);
-        context.commitChanges();
+        SelectQuery select = new SelectQuery(SubEntity1.class);
+        select.addOrdering(SubEntity1.SUB_ENTITY_STRING_ATTR_PROPERTY, true);
 
-        SelectQuery abstractSelect = new SelectQuery(AbstractSuperEntity.class);
-        // this fails for now
-        // List result1 = context.performQuery(abstractSelect);
-        // assertNotNull(result1);
-        // assertEquals(2, result1.size());
+        List<SubEntity1> result = createDataContext().performQuery(select);
+        assertEquals(2, result.size());
+        assertEquals(PersistenceState.COMMITTED, result.get(0).getPersistenceState());
+        assertEquals("V11", result.get(0).getSubEntityStringAttr());
+        assertEquals(PersistenceState.COMMITTED, result.get(1).getPersistenceState());
+        assertEquals("V12", result.get(1).getSubEntityStringAttr());
     }
 
     public void testDatabaseUnionCapabilities() {

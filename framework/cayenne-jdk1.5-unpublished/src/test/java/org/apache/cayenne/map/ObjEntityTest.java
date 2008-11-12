@@ -33,6 +33,39 @@ import org.apache.cayenne.util.Util;
 
 public class ObjEntityTest extends CayenneCase {
 
+    public void testGetAttributeWithOverrides() {
+
+        DataMap map = new DataMap("dm");
+
+        ObjEntity superEntity = new ObjEntity("super");
+        superEntity.addAttribute(new ObjAttribute("a1", "int", superEntity));
+        superEntity.addAttribute(new ObjAttribute("a2", "int", superEntity));
+
+        map.addObjEntity(superEntity);
+
+        ObjEntity subEntity = new ObjEntity("sub");
+        subEntity.setSuperEntityName(superEntity.getName());
+        subEntity.addAttributeOverride("a1", "overridden.path");
+        subEntity.addAttribute(new ObjAttribute("a3", "int", subEntity));
+
+        map.addObjEntity(subEntity);
+
+        ObjAttribute a1 = (ObjAttribute) subEntity.getAttribute("a1");
+        assertNotNull(a1);
+        assertSame(subEntity, a1.getEntity());
+        assertEquals("overridden.path", a1.getDbAttributePath());
+        assertEquals("int", a1.getType());
+
+        ObjAttribute a2 = (ObjAttribute) subEntity.getAttribute("a2");
+        assertNotNull(a2);
+        assertSame(subEntity, a2.getEntity());
+        assertNull(a2.getDbAttributePath());
+
+        ObjAttribute a3 = (ObjAttribute) subEntity.getAttribute("a3");
+        assertNotNull(a3);
+        assertSame(subEntity, a3.getEntity());
+    }
+
     public void testGetPrimaryKeys() {
         ObjEntity artistE = getObjEntity("Artist");
         Collection<ObjAttribute> pks = artistE.getPrimaryKeys();
@@ -61,7 +94,7 @@ public class ObjEntityTest extends CayenneCase {
 
         ObjAttribute mpk = mpks.iterator().next();
         assertTrue(meaningfulPKE.getAttributes().contains(mpk));
-        
+
         ObjEntity clientMeaningfulPKE = meaningfulPKE.getClientEntity();
         Collection<ObjAttribute> clientmpks = clientMeaningfulPKE.getPrimaryKeys();
         assertEquals(1, clientmpks.size());

@@ -50,7 +50,11 @@ public class ObjAttribute extends Attribute {
         setEntity(entity);
     }
 
-    /** @since 3.0 */
+    /**
+     * Creates a clone of an ObjAttribute argument.
+     * 
+     * @since 3.0
+     */
     public ObjAttribute(ObjAttribute attribute) {
         setName(attribute.getName());
         setType(attribute.getType());
@@ -99,8 +103,9 @@ public class ObjAttribute extends Attribute {
         }
 
         // If this obj attribute is mapped to db attribute
-        if (getDbAttribute() != null || 
-                (((ObjEntity)getEntity()).getIsAbstract() && !Util.isEmptyString(getDbAttributePath()))) {
+        if (getDbAttribute() != null
+                || (((ObjEntity) getEntity()).getIsAbstract() && !Util
+                        .isEmptyString(getDbAttributePath()))) {
             encoder.print(" db-attribute-path=\"");
             encoder.print(Util.encodeXmlAttribute(getDbAttributePath()));
             encoder.print('\"');
@@ -124,15 +129,15 @@ public class ObjAttribute extends Attribute {
     public void setType(String type) {
         this.type = type;
     }
-    
+
     /**
      * @since 3.0
      */
     public boolean isPrimaryKey() {
-        if(dbAttributePath == null) {
+        if (dbAttributePath == null) {
             return false;
         }
-        
+
         DbAttribute dbAttribute = getDbAttribute();
         return dbAttribute != null && dbAttribute.isPrimaryKey();
     }
@@ -188,24 +193,25 @@ public class ObjAttribute extends Attribute {
 
         return null;
     }
-    
+
     /**
-     * Return <code>true</code> if attribute inhertit from parent {@link ObjEntity}.
-     *  
-     * @since 3.0 
+     * Returns <code>true</code> if attribute inherited from a super entity.
+     * 
+     * @since 3.0
      */
     public boolean isInherited() {
-        if (getEntity() == null) {
-            return false;
-        }
-        
-        ObjEntity parent = ((ObjEntity) getEntity()).getSuperEntity();
-
-        if (parent == null) {
+        ObjEntity owningEntity = (ObjEntity) getEntity();
+        if (owningEntity == null) {
             return false;
         }
 
-        return parent.getAttribute(getName()) != null;
+        ObjEntity superEntity = owningEntity.getSuperEntity();
+
+        if (superEntity == null) {
+            return false;
+        }
+
+        return superEntity.getAttribute(getName()) != null;
     }
 
     public Iterator<CayenneMapEntry> getDbPathIterator() {
@@ -216,7 +222,7 @@ public class ObjAttribute extends Attribute {
         if (dbAttributePath == null) {
             return IteratorUtils.EMPTY_ITERATOR;
         }
-       
+
         if (entity == null) {
             return IteratorUtils.EMPTY_ITERATOR;
         }
@@ -282,9 +288,9 @@ public class ObjAttribute extends Attribute {
 
     public void setDbAttributePath(String dbAttributePath) {
         this.dbAttributePath = dbAttributePath;
-        
+
         if (isInherited()) {
-            ((ObjEntity)entity).addAttributeOverride(getName(), dbAttributePath);
+            ((ObjEntity) entity).addAttributeOverride(getName(), dbAttributePath);
         }
     }
 
@@ -326,7 +332,7 @@ public class ObjAttribute extends Attribute {
 
         DbAttribute dbAttribute = getDbAttribute();
         if (dbAttribute != null) {
-            
+
             // expose PK attribute names - the client may need those to build ObjectIds
             if (dbAttribute.isPrimaryKey()) {
                 attribute.setDbAttributePath(dbAttribute.getName());

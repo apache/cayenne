@@ -652,8 +652,9 @@ public class ObjEntity extends Entity implements ObjEntityListener {
     }
 
     /**
-     * Returns a named attribute that either belongs to this ObjEntity or is inherited.
-     * Returns null if no matching attribute is found.
+     * Returns a named attribute that is either declared in this ObjEntity or is
+     * inherited. In any case returned attribute 'getEntity' method will return this
+     * entity. Returns null if no matching attribute is found.
      */
     @Override
     public Attribute getAttribute(String name) {
@@ -672,26 +673,27 @@ public class ObjEntity extends Entity implements ObjEntityListener {
             }
         }
 
-        if (superEntityName == null) {
-            return null;
-        }
-
+        // check super attribute
         ObjEntity superEntity = getSuperEntity();
         if (superEntity != null) {
-            Attribute attr = superEntity.getAttribute(name);
-            ObjAttribute result = null;
-            if (attr instanceof ObjAttribute) {
-                String overriddedDbPath = overriddenAttributes.get(name);
-                result = new ObjAttribute((ObjAttribute) attr);
-                result.setEntity(this);
-                if (overriddedDbPath != null) {
-                    result.setDbAttributePath(overriddedDbPath);
-                }
-                return result;
+
+            ObjAttribute superAttribute = (ObjAttribute) superEntity.getAttribute(name);
+            if (superAttribute == null) {
+                return null;
             }
 
-            return attr;
+            // decorate returned attribute to make it appear as if it belongs to this
+            // entity
 
+            ObjAttribute decoratedAttribute = new ObjAttribute(superAttribute);
+            decoratedAttribute.setEntity(this);
+
+            String pathOverride = overriddenAttributes.get(name);
+            if (pathOverride != null) {
+                decoratedAttribute.setDbAttributePath(pathOverride);
+            }
+
+            return decoratedAttribute;
         }
 
         return null;

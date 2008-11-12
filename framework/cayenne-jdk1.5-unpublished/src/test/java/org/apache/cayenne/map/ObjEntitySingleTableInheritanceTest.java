@@ -25,7 +25,7 @@ import org.apache.cayenne.unit.BasicCase;
 
 /**
  */
-public class ObjEntityInheritanceTest extends BasicCase {
+public class ObjEntitySingleTableInheritanceTest extends BasicCase {
 
     protected DataMap map;
 
