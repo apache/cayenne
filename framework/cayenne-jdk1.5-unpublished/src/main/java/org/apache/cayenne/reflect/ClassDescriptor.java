@@ -138,27 +138,31 @@ public interface ClassDescriptor {
     Iterator<ArcProperty> getMapArcProperties();
 
     /**
-     * Passes the visitor to all properties "visit" method, terminating properties
-     * walkthrough in case one of the properties returns false. Returns true if all
-     * visited properties returned true, false - if one property returned false.
+     * Passes the visitor to the properties "visit" method for all properties declared in
+     * this descriptor and all its subdescriptors. Properties that are overridden in
+     * subdescriptors will include overridden information. Walkthrough is terminated in
+     * case one of the properties returns false. Returns true if all visited properties
+     * returned true, false - if one property returned false.
      */
     boolean visitProperties(PropertyVisitor visitor);
 
     /**
      * Passes the visitor to the properties "visit" method for all properties declared in
-     * this descriptor, terminating properties walkthrough in case one of the properties
-     * returns false. Returns true if all visited properties returned true, false - if one
-     * property returned false.
+     * this descriptor. This property set excludes inherited properties, even those that
+     * got overridden in this subclass. Walkthrough is terminated in case one of the
+     * properties returns false. Returns true if all visited properties returned true,
+     * false - if one property returned false.
      * 
      * @since 3.0
      */
     boolean visitDeclaredProperties(PropertyVisitor visitor);
 
     /**
-     * Passes the visitor to the properties "visit" method for all properties declared in
-     * this descriptor, its super and subdescriptors, terminating properties walkthrough
-     * in case one of the properties returns false. Returns true if all visited properties
-     * returned true, false - if one property returned false.
+     * Passes the visitor to the properties "visit" method for a combination of all
+     * properties, including properties declared in this descriptor, its super
+     * descriptors, and all subdescriptors. Walkthrough is terminated in case one of the
+     * properties returns false. Returns true if all visited properties returned true,
+     * false - if one property returned false.
      * 
      * @since 3.0
      */
