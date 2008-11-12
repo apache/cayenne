@@ -125,6 +125,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 .lookupInheritanceTree(descriptor.getEntity());
         indexSubclassDescriptors(descriptor, inheritanceTree);
         indexQualifiers(descriptor, inheritanceTree);
+        indexSuperclassProperties(descriptor);
 
         return descriptor;
     }
@@ -205,9 +206,10 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         if (inheritanceTree != null) {
 
             for (EntityInheritanceTree child : inheritanceTree.getChildren()) {
-                descriptor.addSubclassDescriptor(descriptorMap.getDescriptor(child
-                        .getEntity()
-                        .getName()));
+                ObjEntity childEntity = child.getEntity();
+                descriptor.addSubclassDescriptor(
+                        childEntity.getClassName(),
+                        descriptorMap.getDescriptor(childEntity.getName()));
 
                 indexSubclassDescriptors(descriptor, child);
             }
@@ -248,6 +250,36 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
 
             descriptor.setDiscriminatorColumns(attributes);
             descriptor.setEntityQualifier(qualifier);
+        }
+    }
+
+    /**
+     * Adds superclass properties to the descriptor, applying proper overrides.
+     */
+    protected void indexSuperclassProperties(final PersistentDescriptor descriptor) {
+        ClassDescriptor superDescriptor = descriptor.getSuperclassDescriptor();
+        if (superDescriptor != null) {
+
+            superDescriptor.visitProperties(new PropertyVisitor() {
+
+                public boolean visitAttribute(AttributeProperty property) {
+                    // decorate super property to return an overridden attribute
+                    descriptor.addSuperProperty(new AttributePropertyDecorator(
+                            descriptor,
+                            property));
+                    return true;
+                }
+
+                public boolean visitToMany(ToManyProperty property) {
+                    descriptor.addSuperProperty(property);
+                    return true;
+                }
+
+                public boolean visitToOne(ToOneProperty property) {
+                    descriptor.addSuperProperty(property);
+                    return true;
+                }
+            });
         }
     }
 

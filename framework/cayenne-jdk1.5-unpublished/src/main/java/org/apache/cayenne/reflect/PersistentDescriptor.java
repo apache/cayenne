@@ -49,13 +49,17 @@ public class PersistentDescriptor implements ClassDescriptor {
     // compiled properties ...
     protected Class<?> objectClass;
     protected Map<String, Property> declaredProperties;
+    protected Map<String, Property> superProperties;
     protected Map<String, ClassDescriptor> subclassDescriptors;
     protected Accessor persistenceStateAccessor;
 
     protected ObjEntity entity;
 
-    protected Collection<Property> declaredIdProperties;
-    protected Collection<ArcProperty> declaredMapArcProperties;
+    // combines declared and super properties
+    protected Collection<Property> idProperties;
+
+    // combines declared and super properties
+    protected Collection<ArcProperty> mapArcProperties;
 
     // inheritance information
     protected Collection<DbAttribute> allDiscriminatorColumns;
@@ -66,6 +70,7 @@ public class PersistentDescriptor implements ClassDescriptor {
      */
     public PersistentDescriptor() {
         this.declaredProperties = new HashMap<String, Property>();
+        this.superProperties = new HashMap<String, Property>();
         this.subclassDescriptors = new HashMap<String, ClassDescriptor>();
     }
 
@@ -79,21 +84,32 @@ public class PersistentDescriptor implements ClassDescriptor {
     }
 
     /**
+     * Registers a superclass property.
+     */
+    public void addSuperProperty(Property property) {
+        superProperties.put(property.getName(), property);
+        indexAddedProperty(property);
+    }
+
+    /**
      * Registers a property. This method is useful to customize default ClassDescriptor
      * generated from ObjEntity by adding new properties or overriding the standard ones.
      */
     public void addDeclaredProperty(Property property) {
         declaredProperties.put(property.getName(), property);
+        indexAddedProperty(property);
+    }
 
+    void indexAddedProperty(Property property) {
         if (property instanceof AttributeProperty) {
             ObjAttribute attribute = ((AttributeProperty) property).getAttribute();
             if (attribute.isPrimaryKey()) {
 
-                if (declaredIdProperties == null) {
-                    declaredIdProperties = new ArrayList<Property>(2);
+                if (idProperties == null) {
+                    idProperties = new ArrayList<Property>(2);
                 }
 
-                declaredIdProperties.add(property);
+                idProperties.add(property);
             }
         }
         else if (property instanceof ArcProperty) {
@@ -102,11 +118,11 @@ public class PersistentDescriptor implements ClassDescriptor {
             if (reverseRelationship != null
                     && "java.util.Map".equals(reverseRelationship.getCollectionType())) {
 
-                if (declaredMapArcProperties == null) {
-                    declaredMapArcProperties = new ArrayList<ArcProperty>(2);
+                if (mapArcProperties == null) {
+                    mapArcProperties = new ArrayList<ArcProperty>(2);
                 }
 
-                declaredMapArcProperties.add((ArcProperty) property);
+                mapArcProperties.add((ArcProperty) property);
             }
         }
     }
@@ -119,20 +135,25 @@ public class PersistentDescriptor implements ClassDescriptor {
         Object removed = declaredProperties.remove(propertyName);
 
         if (removed != null) {
-            if (declaredIdProperties != null) {
-                declaredIdProperties.remove(removed);
+            if (idProperties != null) {
+                idProperties.remove(removed);
             }
 
-            if (declaredMapArcProperties != null) {
-                declaredMapArcProperties.remove(removed);
+            if (mapArcProperties != null) {
+                mapArcProperties.remove(removed);
             }
         }
     }
 
-    public void addSubclassDescriptor(ClassDescriptor subclassDescriptor) {
-        subclassDescriptors.put(
-                subclassDescriptor.getEntity().getClassName(),
-                subclassDescriptor);
+    /**
+     * Adds a subclass descriptor that maps to a given class name.
+     */
+    public void addSubclassDescriptor(String className, ClassDescriptor subclassDescriptor) {
+        // note that 'className' should be used instead of
+        // "subclassDescriptor.getEntity().getClassName()", as this method is called in
+        // the early phases of descriptor initialization and we do not want to trigger
+        // subclassDescriptor resolution just yet to prevent stack overflow.
+        subclassDescriptors.put(className, subclassDescriptor);
     }
 
     public ObjEntity getEntity() {
@@ -209,35 +230,20 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     public Iterator<Property> getIdProperties() {
 
-        Iterator<Property> it = null;
-
-        if (getSuperclassDescriptor() != null) {
-            it = getSuperclassDescriptor().getIdProperties();
+        if (idProperties != null) {
+            return idProperties.iterator();
         }
 
-        if (declaredIdProperties != null) {
-            it = (it != null) ? IteratorUtils.chainedIterator(it, declaredIdProperties
-                    .iterator()) : declaredIdProperties.iterator();
-        }
-
-        return it != null ? it : IteratorUtils.EMPTY_ITERATOR;
+        return IteratorUtils.EMPTY_ITERATOR;
     }
 
     public Iterator<ArcProperty> getMapArcProperties() {
-        Iterator<ArcProperty> it = null;
 
-        if (getSuperclassDescriptor() != null) {
-            it = getSuperclassDescriptor().getMapArcProperties();
+        if (mapArcProperties != null) {
+            return mapArcProperties.iterator();
         }
 
-        if (declaredMapArcProperties != null) {
-            it = (it != null) ? IteratorUtils.chainedIterator(
-                    it,
-                    declaredMapArcProperties.iterator()) : declaredMapArcProperties
-                    .iterator();
-        }
-
-        return it != null ? it : IteratorUtils.EMPTY_ITERATOR;
+        return IteratorUtils.EMPTY_ITERATOR;
     }
 
     /**
@@ -331,6 +337,19 @@ public class PersistentDescriptor implements ClassDescriptor {
     /**
      * @since 3.0
      */
+    boolean visitSuperProperties(PropertyVisitor visitor) {
+        for (Property next : superProperties.values()) {
+            if (!next.visit(visitor)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @since 3.0
+     */
     public boolean visitDeclaredProperties(PropertyVisitor visitor) {
 
         for (Property next : declaredProperties.values()) {
@@ -362,8 +381,7 @@ public class PersistentDescriptor implements ClassDescriptor {
     }
 
     public boolean visitProperties(PropertyVisitor visitor) {
-        if (superclassDescriptor != null
-                && !superclassDescriptor.visitProperties(visitor)) {
+        if (!visitSuperProperties(visitor)) {
             return false;
         }
 
