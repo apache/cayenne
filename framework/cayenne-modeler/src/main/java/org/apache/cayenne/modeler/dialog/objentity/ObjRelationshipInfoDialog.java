@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.dialog.objentity;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -86,22 +85,13 @@ public class ObjRelationshipInfoDialog extends SPanel {
                 ObjRelationshipInfoController.CANCEL_CONTROL));
         cancelButton.setEnabled(true);
 
-        SButton newToOneButton = new SButton(new SAction(
-                ObjRelationshipInfoController.NEW_TOONE_CONTROL));
-        newToOneButton.setEnabled(true);
-        SButton newToManyButton = new SButton(new SAction(
-                ObjRelationshipInfoController.NEW_TOMANY_CONTROL));
-        newToManyButton.setEnabled(true);
+        SButton newRelButton = new SButton(new SAction(
+                ObjRelationshipInfoController.NEW_REL_CONTROL));
+        newRelButton.setEnabled(true);
         
         SButton selectPathButton = new SButton(new SAction(
                 ObjRelationshipInfoController.SELECT_PATH_CONTROL));
         selectPathButton.setEnabled(true);
-        SButton revertPathButton = new SButton(new SAction(
-                ObjRelationshipInfoController.REVERT_PATH_CONTROL));
-        revertPathButton.setEnabled(true);
-        SButton clearPathButton = new SButton(new SAction(
-                ObjRelationshipInfoController.CLEAR_PATH_CONTROL));
-        clearPathButton.setEnabled(true);
         
         STextField relationshipName = new STextField(25);
         relationshipName.setSelector(ObjRelationshipInfoModel.RELATIONSHIP_NAME_SELECTOR);
@@ -133,12 +123,6 @@ public class ObjRelationshipInfoDialog extends SPanel {
         pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
         pathBrowser.setDefaultRenderer();
         
-        SComboBox newRelCombo = new SComboBox();
-        newRelCombo.setSelector(ObjRelationshipInfoModel.NEW_REL_TARGETS_SELECTOR);
-        newRelCombo.setSelectionSelector(ObjRelationshipInfoModel.NEW_REL_TARGET_SELECTOR);
-        renderer = (SListCellRenderer) newRelCombo.getRenderer();
-        renderer.setTextSelector("name");
-        
         // enable/disable map keys for collection type selection
         collectionTypeCombo.addActionListener(new ActionListener() {
 
@@ -156,7 +140,7 @@ public class ObjRelationshipInfoDialog extends SPanel {
         PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
                         "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, 300dlu, 3dlu, fill:min(120dlu;pref)",
-                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
+                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
         builder.setDefaultDialogBorder();
 
         builder.addSeparator("ObjRelationship Information", cc.xywh(1, 1, 5, 1));
@@ -176,45 +160,21 @@ public class ObjRelationshipInfoDialog extends SPanel {
         builder.add(mapKeysCombo, cc.xywh(3, 13, 1, 1));
 
         builder.addSeparator("Mapping to DbRelationships", cc.xywh(1, 15, 5, 1));
+        
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        buttonsPane.add(selectPathButton);
+        buttonsPane.add(newRelButton);
+        
+        builder.add(buttonsPane, cc.xywh(1, 17, 5, 1));
         builder.add(new JScrollPane(
                 pathBrowser,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 17, 5, 3));
-        
-        PanelBuilder newRelPanelBuilder = new PanelBuilder(
-                new FormLayout(
-                        "right:max(50dlu;pref), 3dlu, fill:150dlu, 3dlu, 300dlu",
-                        "p, 3dlu, p, 3dlu, p, 3dlu"));
-        newRelPanelBuilder.setDefaultDialogBorder();
-        newRelPanelBuilder.addSeparator("Creating New Db Relationships", cc.xywh(1, 1, 5, 1));
-        newRelPanelBuilder.addLabel("Target:", cc.xy(1, 3));
-        newRelPanelBuilder.add(newRelCombo, cc.xywh(3, 3, 1, 1));
-        
-        JPanel buttonsPanel = new JPanel(new BorderLayout());
-
-        JPanel newRelationshipsButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        newRelationshipsButtons.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        newRelationshipsButtons.add(newToManyButton);
-        newRelationshipsButtons.add(newToOneButton);
-        
-        JPanel newRelPanel = new JPanel(new BorderLayout());
-        JPanel selectButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        
-        selectButtonPanel.add(selectPathButton);
-        selectButtonPanel.add(revertPathButton);
-        selectButtonPanel.add(clearPathButton);
-        newRelPanel.add(selectButtonPanel, BorderLayout.NORTH);
-        newRelPanel.add(newRelPanelBuilder.getPanel(), BorderLayout.CENTER); 
-        
-        buttonsPanel.add(newRelPanel, BorderLayout.NORTH);
-        buttonsPanel.add(newRelationshipsButtons);
-        buttonsPanel.add(PanelFactory.createButtonPanel(new JButton[] {
-                saveButton, cancelButton
-        }), BorderLayout.SOUTH);
-
-
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 19, 5, 3));
+                
         add(builder.getPanel(), BorderLayout.CENTER);
-        add(buttonsPanel, BorderLayout.SOUTH);
+        add(PanelFactory.createButtonPanel(new JButton[] {
+                saveButton, cancelButton
+            }), BorderLayout.SOUTH);
     }
 
     /**
@@ -250,12 +210,8 @@ public class ObjRelationshipInfoDialog extends SPanel {
                             /**
                              * We do not allow A->B->A chains, where relationships are to-one
                              */
-                            Relationship prev = (Relationship) node;
-                            
-                            return !(!prev.isToMany() && !rel.isToMany() &&
-                                    rel.getTargetEntity() != null &&
-                                    prev.getSourceEntity() == rel.getTargetEntity() &&
-                                    prev.getSourceEntity() != prev.getTargetEntity());
+                            DbRelationship prev = (DbRelationship) node;
+                            return !(!prev.isToMany() && prev.getReverseRelationship() == rel);
                         }
                         
                     });

@@ -105,7 +105,7 @@ public class EntityTreeModel implements TreeModel {
         }
 
         synchronized (sortedChildren) {
-            Object key = entity;
+            Object key = node;
             Object[] sortedForNode = sortedChildren.get(key);
 
             if (sortedForNode == null) {
@@ -146,9 +146,22 @@ public class EntityTreeModel implements TreeModel {
     /**
      * Removes children cache for specified entity.
      */
+    public void invalidate() {
+        synchronized (sortedChildren) {
+            sortedChildren.clear();
+        }
+    }
+    
+    /**
+     * Removes children cache for specified entity.
+     */
     public void invalidateChildren(Entity entity) {
         synchronized (sortedChildren) {
             sortedChildren.remove(entity);
+            
+            for (Relationship rel : entity.getRelationships()) {
+                sortedChildren.remove(rel);
+            }
         }
     }
 

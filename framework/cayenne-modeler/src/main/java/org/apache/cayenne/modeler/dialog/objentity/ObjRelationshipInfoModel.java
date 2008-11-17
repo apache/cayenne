@@ -62,10 +62,6 @@ public class ObjRelationshipInfoModel extends BasicModel {
     public static final Selector OBJECT_TARGETS_SELECTOR = Selector
             .fromString("objectTargets");
     
-    public static final Selector NEW_REL_TARGET_SELECTOR = Selector.fromString("newRelTarget");
-    
-    public static final Selector NEW_REL_TARGETS_SELECTOR = Selector.fromString("newRelTargets");
-    
     public static final Selector RELATIONSHIP_NAME_SELECTOR = Selector
             .fromString("relationshipName");
     public static final Selector TARGET_COLLECTIONS_SELECTOR = Selector
@@ -98,8 +94,6 @@ public class ObjRelationshipInfoModel extends BasicModel {
     protected String mapKey;
     
     protected String currentPath;
-    protected DbEntity newRelTarget;
-    protected List<DbEntity> newRelTargets;
 
     @SuppressWarnings("unchecked")
     public ObjRelationshipInfoModel(ObjRelationship relationship) {
@@ -129,9 +123,6 @@ public class ObjRelationshipInfoModel extends BasicModel {
         targetCollections.add(COLLECTION_TYPE_MAP);
         targetCollections.add(COLLECTION_TYPE_SET);
         
-        this.newRelTargets = new ArrayList<DbEntity>(relationship.getSourceEntity().getDataMap().getDbEntities());
-        Collections.sort(newRelTargets, Comparators.getNamedObjectComparator());
-
         this.mapKeys = new ArrayList<String>();
         initMapKeys();
 
@@ -510,17 +501,5 @@ public class ObjRelationshipInfoModel extends BasicModel {
 
     public List<String> getTargetCollections() {
         return targetCollections;
-    }
-    
-    public List<DbEntity> getNewRelTargets() {
-        return newRelTargets;
-    }
-    
-    public DbEntity getNewRelTarget() {
-        return newRelTarget;
-    }
-    
-    public void setNewRelTarget(DbEntity newRelTarget) {
-        this.newRelTarget = newRelTarget;
     }
 }

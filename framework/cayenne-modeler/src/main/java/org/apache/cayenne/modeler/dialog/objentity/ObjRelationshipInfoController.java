@@ -53,8 +53,7 @@ public class ObjRelationshipInfoController extends BasicController implements Tr
 
     public static final String SAVE_CONTROL = "cayenne.modeler.mapObjRelationship.save.button";
     public static final String CANCEL_CONTROL = "cayenne.modeler.mapObjRelationship.cancel.button";
-    public static final String NEW_TOONE_CONTROL = "cayenne.modeler.mapObjRelationship.newtoone.button";
-    public static final String NEW_TOMANY_CONTROL = "cayenne.modeler.mapObjRelationship.newtomany.button";
+    public static final String NEW_REL_CONTROL = "cayenne.modeler.mapObjRelationship.newrel.button";
     
     public static final String SELECT_PATH_CONTROL = "cayenne.modeler.mapObjRelationship.select.path.button";
     public static final String REVERT_PATH_CONTROL = "cayenne.modeler.mapObjRelationship.revert.path.button";
@@ -105,11 +104,8 @@ public class ObjRelationshipInfoController extends BasicController implements Tr
         else if (control.matchesID(SAVE_CONTROL)) {
             saveMapping();
         }
-        else if (control.matchesID(NEW_TOONE_CONTROL)) {
-            createRelationship(false);
-        }
-        else if (control.matchesID(NEW_TOMANY_CONTROL)) {
-            createRelationship(true);
+        else if (control.matchesID(NEW_REL_CONTROL)) {
+            createRelationship();
         }
         else if (control.matchesID(SELECT_PATH_CONTROL)) {
             selectPath();
@@ -175,29 +171,30 @@ public class ObjRelationshipInfoController extends BasicController implements Tr
      * ObjRelationship target entity. User is allowed to edit the relationship, change its
      * name, and create joins.
      */
-    protected void createRelationship(boolean toMany) {
+    protected void createRelationship() {
         ObjRelationshipInfoModel model = (ObjRelationshipInfoModel) getModel();
         
-        DbEntity target = model.getNewRelTarget();        
-        if (target == null) {
-            JOptionPane.showMessageDialog((Component) getView(), "Please select target entity first.",
-                    "Warning", JOptionPane.WARNING_MESSAGE);
+        DbRelationship dbRel = model.getLastRelationship();
+        DbEntity source = dbRel != null ? (DbEntity) dbRel.getTargetEntity() : null; 
+        
+        DbRelationshipTargetController targetController = 
+            new DbRelationshipTargetController(model.getStartEntity(), source);
+        targetController.startup();
+        
+        if (!targetController.isSavePressed()) {
             return;
         }
         
-        DbEntity source = model.getStartEntity();
-        DbRelationship dbRel = model.getLastRelationship();
-        if (dbRel != null) {
-            source = (DbEntity) dbRel.getTargetEntity();
-        }
-
-        DbRelationship dbRelationship = (DbRelationship) NamedObjectFactory
-                .createRelationship(source, target, toMany);
+        DbRelationshipTargetModel targetModel = (DbRelationshipTargetModel) targetController.getModel();
+        
+        DbRelationship dbRelationship = (DbRelationship) NamedObjectFactory.createRelationship(
+                targetModel.getSource(), targetModel.getTarget(), targetModel.isToMany());
+        
         // note: NamedObjectFactory doesn't set source or target, just the name
-        dbRelationship.setSourceEntity(source);
-        dbRelationship.setTargetEntity(target);
-        dbRelationship.setToMany(toMany);
-        source.addRelationship(dbRelationship);
+        dbRelationship.setSourceEntity(targetModel.getSource());
+        dbRelationship.setTargetEntity(targetModel.getTarget());
+        dbRelationship.setToMany(targetModel.isToMany());
+        targetModel.getSource().addRelationship(dbRelationship);
 
         // TODO: creating relationship outside of ResolveDbRelationshipDialog confuses it
         // to send incorrect event - CHANGE instead of ADD
@@ -206,19 +203,21 @@ public class ObjRelationshipInfoController extends BasicController implements Tr
 
         dialog.setVisible(true);
         if (dialog.isCancelPressed()) {
-            source.removeRelationship(dbRelationship.getName());
+            targetModel.getSource().removeRelationship(dbRelationship.getName());
         }
         else {
             MultiColumnBrowser pathBrowser = ((ObjRelationshipInfoDialog) getView()).getPathBrowser();
-            Object[] oldPath = pathBrowser.getSelectionPath() == null ?
-                    new Object[0] : pathBrowser.getSelectionPath().getPath();
+            Object[] oldPath = targetModel.isSource1Selected() ?
+                    new Object[] { model.getStartEntity() } : pathBrowser.getSelectionPath().getPath();
             
             /**
              * Update the view
              */
             EntityTreeModel treeModel = (EntityTreeModel) pathBrowser.getModel();
-            treeModel.invalidateChildren(source);
-            treeModel.invalidateChildren(target);
+            treeModel.invalidate();
+            
+            pathBrowser.setSelectionPath(new TreePath(new Object[] { model.getStartEntity() }));
+            pathBrowser.repaint();
             
             Object[] path = new Object[oldPath.length + 1];
             System.arraycopy(oldPath, 0, path, 0, path.length - 1);
