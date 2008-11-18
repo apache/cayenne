@@ -26,7 +26,6 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.horizontalinherit.AbstractSuperEntity;
 import org.apache.cayenne.testdo.horizontalinherit.SubEntity1;
-import org.apache.cayenne.testdo.horizontalinherit.SubEntity2;
 import org.apache.cayenne.unit.InheritanceCase;
 
 /**
@@ -83,9 +82,9 @@ public class HorizontalInheritanceTest extends InheritanceCase {
         inserts
                 .addQuery(new SQLTemplate(
                         SubEntity1.class,
-                        "INSERT INTO INHERITANCE_SUB_ENTITY2 "
-                                + "(ID, OVERRIDDEN_STRING_DB_ATTR, SUBENTITY_INT_DB_ATTR, SUPER_INT_DB_ATTR) "
-                                + "VALUES (2, 'V21', 3, 4)"));
+                        "INSERT INTO INHERITANCE_SUB_ENTITY1 "
+                                + "(ID, SUBENTITY_STRING_DB_ATTR, SUPER_INT_DB_ATTR, SUPER_STRING_DB_ATTR) "
+                                + "VALUES (2, 'V12', 2, 'V22')"));
         createDataContext().performGenericQuery(inserts);
 
         SelectQuery select = new SelectQuery(SubEntity1.class);
@@ -97,34 +96,5 @@ public class HorizontalInheritanceTest extends InheritanceCase {
         assertEquals("V11", result.get(0).getSubEntityStringAttr());
         assertEquals(PersistenceState.COMMITTED, result.get(1).getPersistenceState());
         assertEquals("V12", result.get(1).getSubEntityStringAttr());
-    }
-
-    public void testSelectQueryOnAbstractEntity() {
-        QueryChain inserts = new QueryChain();
-        inserts
-                .addQuery(new SQLTemplate(
-                        SubEntity1.class,
-                        "INSERT INTO INHERITANCE_SUB_ENTITY1 "
-                                + "(ID, SUBENTITY_STRING_DB_ATTR, SUPER_INT_DB_ATTR, SUPER_STRING_DB_ATTR) "
-                                + "VALUES (1, 'V11', 1, 'V12')"));
-        inserts
-                .addQuery(new SQLTemplate(
-                        SubEntity1.class,
-                        "INSERT INTO INHERITANCE_SUB_ENTITY2 "
-                                + "(ID, SUBENTITY_STRING_DB_ATTR, SUPER_INT_DB_ATTR, SUPER_STRING_DB_ATTR) "
-                                + "VALUES (2, 'V21',2, 'V22')"));
-        
-        SelectQuery select = new SelectQuery(AbstractSuperEntity.class);
-        select.addOrdering(AbstractSuperEntity.SUPER_STRING_ATTR_PROPERTY, true);
-
-        List<AbstractSuperEntity> result = createDataContext().performQuery(select);
-        assertEquals(2, result.size());
-        assertTrue(result.get(0) instanceof SubEntity1);
-        assertEquals(PersistenceState.COMMITTED, result.get(0).getPersistenceState());
-        assertEquals("V12", result.get(0).getSuperStringAttr());
-        
-        assertTrue(result.get(1) instanceof SubEntity2);
-        assertEquals(PersistenceState.COMMITTED, result.get(1).getPersistenceState());
-        assertEquals("V22", result.get(1).getSuperStringAttr());
     }
 }
