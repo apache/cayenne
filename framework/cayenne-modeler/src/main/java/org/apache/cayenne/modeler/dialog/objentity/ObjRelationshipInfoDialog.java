@@ -211,7 +211,7 @@ public class ObjRelationshipInfoDialog extends SPanel {
                              * We do not allow A->B->A chains, where relationships are to-one
                              */
                             DbRelationship prev = (DbRelationship) node;
-                            return !(!prev.isToMany() && prev.getReverseRelationship() == rel);
+                            return !(!rel.isToMany() && prev.getReverseRelationship() == rel);
                         }
                         
                     });
