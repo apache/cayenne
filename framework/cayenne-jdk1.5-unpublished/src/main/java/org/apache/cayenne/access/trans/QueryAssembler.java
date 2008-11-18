@@ -32,7 +32,6 @@ import org.apache.cayenne.map.JoinType;
 
 /**
  * Abstract superclass of Query translators.
- * 
  */
 public abstract class QueryAssembler extends QueryTranslator {
 
@@ -82,8 +81,8 @@ public abstract class QueryAssembler extends QueryTranslator {
 
     /**
      * Translates query into sql string. This is a workhorse method of QueryAssembler. It
-     * is called internally from <code>createStatement</code>. Usually there is no need
-     * to invoke it explicitly.
+     * is called internally from <code>createStatement</code>. Usually there is no need to
+     * invoke it explicitly.
      */
     public abstract String createSqlString() throws Exception;
 

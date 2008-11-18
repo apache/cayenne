@@ -43,7 +43,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Translates parts of the query to SQL. Always works in the context of parent Translator.
- * 
  */
 public abstract class QueryAssemblerHelper {
 
@@ -237,8 +236,8 @@ public abstract class QueryAssemblerHelper {
      * If <code>val</code> is null, "NULL" is appended to the query.
      * </p>
      * <p>
-     * If <code>val</code> is a DataObject, its primary key value is used as a
-     * parameter. <i>Only objects with a single column primary key can be used.</i>
+     * If <code>val</code> is a DataObject, its primary key value is used as a parameter.
+     * <i>Only objects with a single column primary key can be used.</i>
      * 
      * @param val object that should be appended as a literal to the query. Must be of one
      *            of "standard JDBC" types, null or a DataObject.

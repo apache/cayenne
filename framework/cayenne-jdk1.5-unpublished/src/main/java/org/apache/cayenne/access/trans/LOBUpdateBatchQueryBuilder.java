@@ -29,8 +29,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
-/**
- */
 public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
 
     public LOBUpdateBatchQueryBuilder(DbAdapter adapter) {

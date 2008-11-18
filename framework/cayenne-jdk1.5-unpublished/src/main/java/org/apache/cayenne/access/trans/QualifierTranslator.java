@@ -39,7 +39,6 @@ import org.apache.commons.collections.IteratorUtils;
 
 /**
  * Translates query qualifier to SQL. Used as a helper class by query translators.
- * 
  */
 public class QualifierTranslator extends QueryAssemblerHelper implements TraversalHandler {
 

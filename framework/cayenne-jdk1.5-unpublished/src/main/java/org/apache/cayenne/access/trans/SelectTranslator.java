@@ -56,7 +56,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
  * A builder of JDBC PreparedStatements based on Cayenne SelectQueries. Translates
  * SelectQuery to parameterized SQL string and wraps it in a PreparedStatement.
  * SelectTranslator is stateful and thread-unsafe.
- * 
  */
 public class SelectTranslator extends QueryAssembler {
 

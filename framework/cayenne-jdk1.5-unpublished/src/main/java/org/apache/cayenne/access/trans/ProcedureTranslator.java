@@ -33,7 +33,6 @@ import org.apache.cayenne.query.ProcedureQuery;
 
 /**
  * Stored procedure query translator.
- * 
  */
 public class ProcedureTranslator extends QueryTranslator {
 
