@@ -64,15 +64,15 @@ public abstract class QueryAssembler {
     protected Map<String, String> getPathAliases() {
         return query.getMetaData(entityResolver).getPathSplitAliases();
     }
-    
+
     public EntityResolver getEntityResolver() {
         return entityResolver;
     }
-    
+
     public DbAdapter getAdapter() {
         return adapter;
     }
-    
+
     /**
      * Returns an EntityInheritanceTree for the root entity.
      * 
@@ -81,7 +81,7 @@ public abstract class QueryAssembler {
     public EntityInheritanceTree getRootInheritanceTree() {
         return getEntityResolver().lookupInheritanceTree(getRootEntity());
     }
-    
+
     /**
      * Returns query object being processed.
      */
@@ -105,13 +105,9 @@ public abstract class QueryAssembler {
         this.entityResolver = entityResolver;
     }
 
-    public ObjEntity getRootEntity() {
-        return query.getMetaData(entityResolver).getObjEntity();
-    }
+    public abstract ObjEntity getRootEntity();
 
-    public DbEntity getRootDbEntity() {
-        return query.getMetaData(entityResolver).getDbEntity();
-    }
+    public abstract DbEntity getRootDbEntity();
 
     /**
      * A callback invoked by a child qualifier or ordering processor allowing query

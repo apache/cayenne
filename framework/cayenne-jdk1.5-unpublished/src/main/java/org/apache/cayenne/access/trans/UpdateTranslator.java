@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.UpdateQuery;
 
 /**
@@ -43,6 +44,16 @@ public class UpdateTranslator extends QueryAssembler {
             JoinType joinType,
             String joinSplitAlias) {
         throw new UnsupportedOperationException("db relationships not supported");
+    }
+    
+    @Override
+    public DbEntity getRootDbEntity() {
+        return query.getMetaData(entityResolver).getDbEntity();
+    }
+    
+    @Override
+    public ObjEntity getRootEntity() {
+        return query.getMetaData(entityResolver).getObjEntity();
     }
 
     @Override

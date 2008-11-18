@@ -88,6 +88,16 @@ public class SelectTranslator extends QueryAssembler {
      */
     boolean forcingDistinct;
 
+    @Override
+    public DbEntity getRootDbEntity() {
+        return query.getMetaData(entityResolver).getDbEntity();
+    }
+
+    @Override
+    public ObjEntity getRootEntity() {
+        return query.getMetaData(entityResolver).getObjEntity();
+    }
+
     protected JoinStack createJoinStack() {
         return new JoinStack();
     }
@@ -104,13 +114,12 @@ public class SelectTranslator extends QueryAssembler {
         this.resultColumns = buildResultColumns();
 
         // build qualifier
-        StringBuilder qualifierBuffer = new StringBuilder();
-        adapter.getQualifierTranslator(this).appendPart(qualifierBuffer);
+        StringBuilder qualifierBuffer = adapter.getQualifierTranslator(this).appendPart(
+                new StringBuilder());
 
         // build ORDER BY
         OrderingTranslator orderingTranslator = new OrderingTranslator(this);
-        StringBuilder orderingBuffer = new StringBuilder();
-        orderingTranslator.appendPart(orderingBuffer);
+        StringBuilder orderingBuffer = orderingTranslator.appendPart(new StringBuilder());
 
         // assemble
         StringBuilder queryBuf = new StringBuilder();

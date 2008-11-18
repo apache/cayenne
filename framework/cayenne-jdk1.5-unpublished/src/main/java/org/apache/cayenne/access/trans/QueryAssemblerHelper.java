@@ -65,11 +65,18 @@ public abstract class QueryAssemblerHelper {
         return queryAssembler.getRootDbEntity();
     }
 
-    public void appendPart(Appendable out) throws IOException {
+    /**
+     * @since 3.0
+     */
+    public <T extends Appendable> T appendPart(T out) throws IOException {
         this.out = out;
         doAppendPart();
+        return out;
     }
 
+    /**
+     * @since 3.0
+     */
     protected abstract void doAppendPart() throws IOException;
 
     /**
