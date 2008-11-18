@@ -18,11 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import java.util.Collection;
+
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.testdo.horizontalinherit.SubEntity2;
 import org.apache.cayenne.unit.InheritanceCase;
 
-public class PersistentDescriptorVisitTest extends InheritanceCase {
+public class ClassDescriptorInheritanceInContextTest extends InheritanceCase {
 
     public void testVisitDeclaredProperties() {
 
@@ -101,5 +104,23 @@ public class PersistentDescriptorVisitTest extends InheritanceCase {
         });
 
         assertEquals(3, attributeCount[0]);
+    }
+
+    public void testGetRootDbEntities() {
+        ClassDescriptor abstractSuper = getDomain()
+                .getEntityResolver()
+                .getClassDescriptor("AbstractSuperEntity");
+        Collection<DbEntity> abstractSuperRoots = abstractSuper.getRootDbEntities();
+        assertEquals(3, abstractSuperRoots.size());
+
+        ClassDescriptor sub1 = getDomain().getEntityResolver().getClassDescriptor(
+                "SubEntity1");
+        Collection<DbEntity> sub1Roots = sub1.getRootDbEntities();
+        assertEquals(1, sub1Roots.size());
+
+        ClassDescriptor sub2 = getDomain().getEntityResolver().getClassDescriptor(
+                "SubEntity2");
+        Collection<DbEntity> sub2Roots = sub2.getRootDbEntities();
+        assertEquals(1, sub2Roots.size());
     }
 }

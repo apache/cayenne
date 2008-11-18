@@ -21,6 +21,7 @@ package org.apache.cayenne.reflect;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -54,6 +56,7 @@ public class PersistentDescriptor implements ClassDescriptor {
     protected Accessor persistenceStateAccessor;
 
     protected ObjEntity entity;
+    protected Collection<DbEntity> rootDbEntities;
 
     // combines declared and super properties
     protected Collection<Property> idProperties;
@@ -72,6 +75,7 @@ public class PersistentDescriptor implements ClassDescriptor {
         this.declaredProperties = new HashMap<String, Property>();
         this.superProperties = new HashMap<String, Property>();
         this.subclassDescriptors = new HashMap<String, ClassDescriptor>();
+        this.rootDbEntities = new HashSet<DbEntity>(1);
     }
 
     public void setDiscriminatorColumns(Collection<DbAttribute> columns) {
@@ -98,6 +102,13 @@ public class PersistentDescriptor implements ClassDescriptor {
     public void addDeclaredProperty(Property property) {
         declaredProperties.put(property.getName(), property);
         indexAddedProperty(property);
+    }
+
+    /**
+     * Adds a root DbEntity to the list of roots, filtering duplicates.
+     */
+    public void addRootDbEntity(DbEntity dbEntity) {
+        this.rootDbEntities.add(dbEntity);
     }
 
     void indexAddedProperty(Property property) {
@@ -158,6 +169,13 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     public ObjEntity getEntity() {
         return entity;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public Collection<DbEntity> getRootDbEntities() {
+        return rootDbEntities;
     }
 
     public boolean isFault(Object object) {

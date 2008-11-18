@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -73,6 +75,11 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
     public ObjEntity getEntity() {
         checkDescriptorInitialized();
         return descriptor.getEntity();
+    }
+
+    public Collection<DbEntity> getRootDbEntities() {
+        checkDescriptorInitialized();
+        return descriptor.getRootDbEntities();
     }
 
     public Class<?> getObjectClass() {

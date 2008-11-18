@@ -125,6 +125,10 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 .lookupInheritanceTree(descriptor.getEntity());
         indexSubclassDescriptors(descriptor, inheritanceTree);
         indexQualifiers(descriptor, inheritanceTree);
+
+        appendDeclaredRootDbEntity(descriptor, descriptor.getEntity());
+        indexRootDbEntities(descriptor, inheritanceTree);
+
         indexSuperclassProperties(descriptor);
 
         return descriptor;
@@ -212,6 +216,38 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                         descriptorMap.getDescriptor(childEntity.getName()));
 
                 indexSubclassDescriptors(descriptor, child);
+            }
+        }
+    }
+
+    protected void indexRootDbEntities(
+            PersistentDescriptor descriptor,
+            EntityInheritanceTree inheritanceTree) {
+
+        if (inheritanceTree != null) {
+
+            for (EntityInheritanceTree child : inheritanceTree.getChildren()) {
+                ObjEntity childEntity = child.getEntity();
+                appendDeclaredRootDbEntity(descriptor, childEntity);
+                indexRootDbEntities(descriptor, child);
+            }
+        }
+    }
+
+    private void appendDeclaredRootDbEntity(
+            PersistentDescriptor descriptor,
+            ObjEntity entity) {
+        // since we don't want the entity to look up its super DbEntity (which is
+        // already registered), lookup DbEntity ourselves by name
+        String dbEntityName = entity.getDbEntityName();
+        if (dbEntityName != null) {
+
+            DbEntity dbEntity = entity.getDataMap().getDbEntity(dbEntityName);
+            if (dbEntity != null) {
+
+                // descriptor takes care of weeding off duplicates, although the duplicate
+                // here is highly unlikely
+                descriptor.addRootDbEntity(dbEntity);
             }
         }
     }

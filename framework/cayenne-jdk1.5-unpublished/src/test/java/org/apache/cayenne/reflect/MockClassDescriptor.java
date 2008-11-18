@@ -19,17 +19,14 @@
 
 package org.apache.cayenne.reflect;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
-import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.Accessor;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
-import org.apache.cayenne.reflect.PropertyException;
-import org.apache.cayenne.reflect.PropertyVisitor;
 
 public class MockClassDescriptor implements ClassDescriptor {
 
@@ -39,6 +36,13 @@ public class MockClassDescriptor implements ClassDescriptor {
 
     public ObjEntity getEntity() {
         return null;
+    }
+    
+    /**
+     * @since 3.0
+     */
+    public Collection<DbEntity> getRootDbEntities() {
+        return Collections.emptyList();
     }
 
     public boolean isFault(Object object) {

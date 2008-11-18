@@ -19,10 +19,12 @@
 
 package org.apache.cayenne.reflect;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -38,6 +40,16 @@ public interface ClassDescriptor {
      * @since 3.0
      */
     ObjEntity getEntity();
+
+    /**
+     * Returns a collection of DbEntities that are the root tables for this descriptor's
+     * ObjEntity. Usually such collection would contain only one entity, however in cases
+     * involving subclass horizontal inheritance, it will be more than one, and in cases
+     * of abstract entities with no subclasses, the collection will be empty.
+     * 
+     * @since 3.0
+     */
+    Collection<DbEntity> getRootDbEntities();
 
     /**
      * Returns a class mapped by this descriptor.
