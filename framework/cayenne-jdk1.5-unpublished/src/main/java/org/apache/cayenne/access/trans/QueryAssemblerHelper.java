@@ -50,7 +50,7 @@ public abstract class QueryAssemblerHelper {
     protected Appendable out;
 
     /**
-     * Creates QueryAssemblerHelper initializaing with parent {@link QueryAssembler} and
+     * Creates QueryAssemblerHelper initializing with parent {@link QueryAssembler} and
      * output buffer object.
      */
     public QueryAssemblerHelper(QueryAssembler queryAssembler) {
