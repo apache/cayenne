@@ -53,7 +53,7 @@ public class DbRelationshipTargetDialog extends SPanel {
     protected void init(DbEntity source1, DbEntity source2) {
         // create widgets
         SButton saveButton = new SButton(new SAction(
-                DbRelationshipTargetController.SAVE_CONTROL));
+                DbRelationshipTargetController.CONTINUE_CONTROL));
         saveButton.setEnabled(true);
 
         SButton cancelButton = new SButton(new SAction(

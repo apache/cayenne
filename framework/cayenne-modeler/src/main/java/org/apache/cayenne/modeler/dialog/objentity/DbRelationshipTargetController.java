@@ -33,7 +33,7 @@ import org.scopemvc.core.ControlException;
  * Controller of a dialog to select source, target and cardinality for DbRelationship  
  */
 public class DbRelationshipTargetController extends BasicController {
-    public static final String SAVE_CONTROL = "cayenne.modeler.mapObjRelationship.save.button";
+    public static final String CONTINUE_CONTROL = "cayenne.modeler.mapObjRelationship.continue.button";
     public static final String CANCEL_CONTROL = "cayenne.modeler.mapObjRelationship.cancel.button";
     
     public static final String TOMANY_CONTROL = "cayenne.modeler.mapObjRelationship.tomany.checkbox";
@@ -59,7 +59,7 @@ public class DbRelationshipTargetController extends BasicController {
         if (control.matchesID(CANCEL_CONTROL)) {
             shutdown();
         }
-        else if (control.matchesID(SAVE_CONTROL)) {
+        else if (control.matchesID(CONTINUE_CONTROL)) {
             save();
         }
     }
