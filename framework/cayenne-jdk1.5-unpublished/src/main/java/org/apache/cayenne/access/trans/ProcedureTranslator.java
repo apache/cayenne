@@ -20,13 +20,15 @@
 package org.apache.cayenne.access.trans;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.access.QueryLogger;
-import org.apache.cayenne.access.QueryTranslator;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -34,7 +36,7 @@ import org.apache.cayenne.query.ProcedureQuery;
 /**
  * Stored procedure query translator.
  */
-public class ProcedureTranslator extends QueryTranslator {
+public class ProcedureTranslator {
 
     /**
      * Helper class to make OUT and VOID parameters logger-friendly.
@@ -55,8 +57,31 @@ public class ProcedureTranslator extends QueryTranslator {
 
     private static NotInParam OUT_PARAM = new NotInParam("[OUT]");
 
+    protected ProcedureQuery query;
+    protected Connection connection;
+    protected DbAdapter adapter;
+    protected EntityResolver entityResolver;
     protected List<ProcedureParameter> callParams;
     protected List<Object> values;
+
+    public void setQuery(ProcedureQuery query) {
+        this.query = query;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    public void setAdapter(DbAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    /**
+     * @since 1.2
+     */
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
 
     /**
      * Creates an SQL String for the stored procedure call.
@@ -94,7 +119,9 @@ public class ProcedureTranslator extends QueryTranslator {
         return buf.toString();
     }
 
-    @Override
+    /**
+     * Creates and binds a PreparedStatement to execute query SQL via JDBC.
+     */
     public PreparedStatement createStatement() throws Exception {
         long t1 = System.currentTimeMillis();
 
@@ -125,11 +152,11 @@ public class ProcedureTranslator extends QueryTranslator {
     }
 
     public Procedure getProcedure() {
-        return getEntityResolver().lookupProcedure(query);
+        return entityResolver.lookupProcedure(query);
     }
 
     public ProcedureQuery getProcedureQuery() {
-        return (ProcedureQuery) query;
+        return query;
     }
 
     /**

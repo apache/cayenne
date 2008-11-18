@@ -32,38 +32,23 @@ import org.apache.cayenne.query.Query;
 /**
  * Defines API for translation Cayenne queries to JDBC PreparedStatements.
  * 
+ * @deprecated since 3.0, as a part of translator inheritance hierarchy reorganization.
+ *             This class is no longer in use as a common superclass.
  */
 public abstract class QueryTranslator {
 
-    /** 
-     * Query being translated. 
-     */
     protected Query query;
-
-    /**
-     * JDBC database connection needed to create PreparedStatement. Prior to 1.2 this
-     * property was called "con".
-     */
     protected Connection connection;
-
-    /** Adapter helping to do SQL literal conversions, etc. */
     protected DbAdapter adapter;
-
-    /**
-     * Provides access to Cayenne mapping info.
-     * 
-     * @since 1.2
-     */
     protected EntityResolver entityResolver;
 
     /**
-     * Creates PreparedStatement. <code>logLevel</code> parameter is supplied to allow
-     * control of logging of produced SQL.
+     * Creates and binds a PreparedStatement to execute query SQL via JDBC.
      */
     public abstract PreparedStatement createStatement() throws Exception;
 
-    /** 
-     * Returns query object being processed. 
+    /**
+     * Returns query object being processed.
      */
     public Query getQuery() {
         return query;

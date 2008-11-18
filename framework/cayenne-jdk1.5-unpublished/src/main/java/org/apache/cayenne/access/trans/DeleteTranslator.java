@@ -59,7 +59,7 @@ public class DeleteTranslator extends QueryAssembler {
         StringBuilder queryBuf = new StringBuilder("DELETE FROM ");
 
         // 1. append table name
-        DbEntity dbEnt = getRootDbEntity();
+        DbEntity dbEnt = getRootEntity().getDbEntity();
         queryBuf.append(dbEnt.getFullyQualifiedName());
 
         // 2. build qualifier

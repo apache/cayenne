@@ -19,21 +19,32 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.access.QueryLogger;
-import org.apache.cayenne.access.QueryTranslator;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.JoinType;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.Query;
 
 /**
  * Abstract superclass of Query translators.
  */
-public abstract class QueryAssembler extends QueryTranslator {
+public abstract class QueryAssembler {
+
+    protected Query query;
+    protected Connection connection;
+    protected DbAdapter adapter;
+    protected EntityResolver entityResolver;
 
     /**
      * Holds PreparedStatement values.
@@ -51,7 +62,55 @@ public abstract class QueryAssembler extends QueryTranslator {
      * @since 3.0
      */
     protected Map<String, String> getPathAliases() {
-        return query.getMetaData(getEntityResolver()).getPathSplitAliases();
+        return query.getMetaData(entityResolver).getPathSplitAliases();
+    }
+    
+    public EntityResolver getEntityResolver() {
+        return entityResolver;
+    }
+    
+    public DbAdapter getAdapter() {
+        return adapter;
+    }
+    
+    /**
+     * Returns an EntityInheritanceTree for the root entity.
+     * 
+     * @since 1.1
+     */
+    public EntityInheritanceTree getRootInheritanceTree() {
+        return getEntityResolver().lookupInheritanceTree(getRootEntity());
+    }
+    
+    /**
+     * Returns query object being processed.
+     */
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    public void setAdapter(DbAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
+
+    public ObjEntity getRootEntity() {
+        return query.getMetaData(entityResolver).getObjEntity();
+    }
+
+    public DbEntity getRootDbEntity() {
+        return query.getMetaData(entityResolver).getDbEntity();
     }
 
     /**
@@ -108,7 +167,6 @@ public abstract class QueryAssembler extends QueryTranslator {
     /**
      * Translates internal query into PreparedStatement.
      */
-    @Override
     public PreparedStatement createStatement() throws Exception {
         long t1 = System.currentTimeMillis();
         String sqlStr = createSqlString();

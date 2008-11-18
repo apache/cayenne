@@ -48,7 +48,7 @@ public class TstQueryAssembler extends QueryAssembler {
     }
 
     public void dispose() throws SQLException {
-        super.getConnection().close();
+        connection.close();
     }
 
     @Override

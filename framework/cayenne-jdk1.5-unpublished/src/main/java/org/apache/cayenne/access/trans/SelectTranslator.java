@@ -283,7 +283,7 @@ public class SelectTranslator extends QueryAssembler {
         // * joined prefetch PK
 
         ClassDescriptor descriptor = query
-                .getMetaData(getEntityResolver())
+                .getMetaData(entityResolver)
                 .getClassDescriptor();
         ObjEntity oe = descriptor.getEntity();
 

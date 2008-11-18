@@ -26,8 +26,8 @@ import java.sql.SQLException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
-import org.apache.cayenne.access.QueryTranslator;
 import org.apache.cayenne.access.trans.DeleteTranslator;
+import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.trans.UpdateTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -48,8 +48,8 @@ public class UpdateAction extends BaseSQLAction {
         this.query = query;
     }
 
-    protected QueryTranslator createTranslator(Connection connection) {
-        QueryTranslator translator;
+    protected QueryAssembler createTranslator(Connection connection) {
+        QueryAssembler translator;
 
         if (query instanceof UpdateQuery) {
             translator = new UpdateTranslator();
@@ -73,7 +73,7 @@ public class UpdateAction extends BaseSQLAction {
     public void performAction(Connection connection, OperationObserver observer)
             throws SQLException, Exception {
 
-        QueryTranslator translator = createTranslator(connection);
+        QueryAssembler translator = createTranslator(connection);
 
         PreparedStatement statement = translator.createStatement();
 
