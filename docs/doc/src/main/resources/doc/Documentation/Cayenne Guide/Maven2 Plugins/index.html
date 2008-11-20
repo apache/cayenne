@@ -45,6 +45,8 @@
 <li><a href="../../../Documentation/Cayenne Guide/Ant Tasks/index.html">Ant Tasks</a></li>
 <li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/index.html">Maven2 Plugins</a><ul>
 <li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cgen/index.html">maven2-cgen</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbgen/index.html">maven2-cdbgen</a></li>
+<li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html">maven2-modeler</a></li>
 </ul>
 </li>
 <li><a href="../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
@@ -52,19 +54,11 @@
 </div>
 <div id="ConfluenceContent"><h2><a name="Maven2Plugins-Maven2Plugins"></a>Maven2 Plugins</h2>
 
-<p>Cayenne ships with Maven 2 plugins that provide Maven 2 frontend to a number of useful operations in Cayenne. The following tasks are included:</p>
+<p>Cayenne ships two plugins that provide Maven 2 frontend to a number of useful operations in Cayenne. </p>
 
-<ul>
-	<li><b><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cgen/index.html" title="maven2-cgen">maven2&#45;cgen</a></b> - Java class generator</li>
-	<li><b><span class="nobr"><a href="/confluence/pages/createpage.action?spaceKey=CAYDOC&amp;title=maven2-cdbgen&amp;linkCreation=true&amp;fromPageId=28627" title="Create Page: maven2-cdbgen" class="createlink">maven2&#45;cdbgen<sup><img class="rendericon" src="../../../images/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></b> - Database schema generator</li>
-	<li><b><span class="nobr"><a href="/confluence/pages/createpage.action?spaceKey=CAYDOC&amp;title=maven2-cdeploy&amp;linkCreation=true&amp;fromPageId=28627" title="Create Page: maven2-cdeploy" class="createlink">maven2&#45;cdeploy<sup><img class="rendericon" src="../../../images/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></b> - Deployment configurator</li>
-	<li><b><span class="nobr"><a href="/confluence/pages/createpage.action?spaceKey=CAYDOC&amp;title=maven2-cdataport&amp;linkCreation=true&amp;fromPageId=28627" title="Create Page: maven2-cdataport" class="createlink">maven2&#45;cdataport<sup><img class="rendericon" src="../../../images/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></b> - Data porting tool.</li>
-</ul>
+<h3><a name="Maven2Plugins-mavencayenneplugin"></a>maven-cayenne-plugin</h3>
 
-
-<h3><a name="Maven2Plugins-ImportingCayennePlugininpom.xml"></a>Importing Cayenne Plugin in pom.xml</h3>
-
-<p>You need to add the Cayenne plugin to your project by adding the following:</p>
+<p>This plugin is imported into pom.xml as follows:</p>
 
 <div class="code"><div class="codeContent">
 <pre class="code-java">&lt;build&gt;
@@ -72,19 +66,55 @@
     &lt;plugin&gt;
        &lt;groupId&gt;org.apache.cayenne.plugins&lt;/groupId&gt;
        &lt;artifactId&gt;maven-cayenne-plugin&lt;/artifactId&gt;
-       &lt;version&gt;3.0M1&lt;/version&gt;
+       &lt;version&gt;3.0-SNAPSHOT&lt;/version&gt;
     &lt;/plugin&gt;
   &lt;/plugins&gt;
 &lt;/build&gt;</pre>
 </div></div>
 
+<p>It has the following goals:</p>
+
+<ul>
+	<li><b><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cgen/index.html" title="maven2-cgen">cayenne:cgen</a></b> - Java class generator</li>
+	<li><b><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbgen/index.html" title="maven2-cdbgen">cayenne:cdbgen</a></b> - Database schema generator</li>
+</ul>
+
+
+
+<h3><a name="Maven2Plugins-mavencayennemodelerplugin"></a>maven-cayenne-modeler-plugin</h3>
+
+<p>This plugin is imported into pom.xml as follows:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">&lt;build&gt;
+  &lt;plugins&gt;
+    &lt;plugin&gt;
+       &lt;groupId&gt;org.apache.cayenne.plugins&lt;/groupId&gt;
+       &lt;artifactId&gt;maven-cayenne-modeler-plugin&lt;/artifactId&gt;
+       &lt;version&gt;3.0-SNAPSHOT&lt;/version&gt;
+    &lt;/plugin&gt;
+  &lt;/plugins&gt;
+&lt;/build&gt;</pre>
+</div></div>
+
+<p>It has one goal:</p>
+
+<ul>
+	<li><b><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html" title="maven2-modeler">cayenne-modeler:run</a></b> - Start up the modeler from the command-line</li>
+</ul>
+
+
+
+
+
+
+
 <h3><a name="Maven2Plugins-Sections"></a>Sections</h3>
 
 <ol>
 	<li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cgen/index.html" title="maven2-cgen">maven2&#45;cgen</a></li>
-	<li><span class="nobr"><a href="/confluence/pages/createpage.action?spaceKey=CAYDOC&amp;title=maven2-cdbgen&amp;linkCreation=true&amp;fromPageId=28627" title="Create Page: maven2-cdbgen" class="createlink">maven2&#45;cdbgen<sup><img class="rendericon" src="../../../images/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></li>
-	<li><span class="nobr"><a href="/confluence/pages/createpage.action?spaceKey=CAYDOC&amp;title=maven2-cdeploy&amp;linkCreation=true&amp;fromPageId=28627" title="Create Page: maven2-cdeploy" class="createlink">maven2&#45;cdeploy<sup><img class="rendericon" src="../../../images/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></li>
-	<li><span class="nobr"><a href="/confluence/pages/createpage.action?spaceKey=CAYDOC&amp;title=maven2-cdataport&amp;linkCreation=true&amp;fromPageId=28627" title="Create Page: maven2-cdataport" class="createlink">maven2&#45;cdataport<sup><img class="rendericon" src="../../../images/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></li>
+	<li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbgen/index.html" title="maven2-cdbgen">maven2&#45;cdbgen</a></li>
+	<li><a href="../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html" title="maven2-modeler">maven2&#45;modeler</a></li>
 </ol>
 
 </div>

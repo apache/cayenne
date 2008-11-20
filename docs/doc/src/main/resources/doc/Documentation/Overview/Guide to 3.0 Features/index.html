@@ -40,6 +40,19 @@
 </div>
 <div id="ConfluenceContent"><p>This page highlights the new features and changes introduced in 3.0 release, roughly corresponding to the latest released milestone. It is a high level overview and as such is by no means complete. Consult RELEASE-NOTES.txt file included in each release for the full list of changes.</p>
 
+<ul>
+	<li><a href="#Guideto3.0Features-DistributionContentsStructure" title="Distribution Contents Structure on Guide to 3.0 Features">Distribution Contents Structure</a></li>
+	<li><a href="#Guideto3.0Features-CayenneJPAProvider" title="Cayenne JPA Provider on Guide to 3.0 Features">Cayenne JPA Provider</a></li>
+	<li><a href="#Guideto3.0Features-ObjectRelationalMapping" title="Object Relational Mapping on Guide to 3.0 Features">Object Relational Mapping</a></li>
+	<li><a href="#Guideto3.0Features-CayennePersistenceAPI" title="Cayenne Persistence API on Guide to 3.0 Features">Cayenne Persistence API</a></li>
+	<li><a href="#Guideto3.0Features-RemoteObjectPersistence" title="Remote Object Persistence on Guide to 3.0 Features">Remote Object Persistence</a></li>
+	<li><a href="#Guideto3.0Features-CayenneModeler" title="CayenneModeler on Guide to 3.0 Features">CayenneModeler</a></li>
+	<li><a href="#Guideto3.0Features-DeploymentandRuntime" title="Deployment and Runtime on Guide to 3.0 Features">Deployment and Runtime</a></li>
+	<li><a href="#Guideto3.0Features-Tools" title="Tools on Guide to 3.0 Features">Tools</a></li>
+</ul>
+
+
+
 <h2><a name="Guideto3.0Features-DistributionContentsStructure"></a>Distribution Contents Structure</h2>
 
 <ul>
@@ -139,6 +152,13 @@
 
 <p>Just like EJBQL, lifecycle callbacks is a JPA-inspired feature that allows to perform custom operations at certain points in the object lifecycle. For more details see <a href="../../../Documentation/Cayenne Guide/Lifecycle Callbacks/index.html" title="Lifecycle Callbacks">this page</a>.</p>
 
+<h3><a name="Guideto3.0Features-GeneralQueryImprovements"></a>General Query Improvements</h3>
+
+<ul>
+	<li>Added support for fetch offset (complimentary to the existing "fetch limit").</li>
+</ul>
+
+
 <h3><a name="Guideto3.0Features-DataContextChanges"></a>DataContext Changes</h3>
 
 <p>Implemented <tt>DataContext.rollbackChangesLocally()</tt>. This was missing in 2.0, limiting the operation of the nested DataContexts.</p>
@@ -157,7 +177,7 @@
 
 <ul>
 	<li>Added missing DB expressions to ExpressionFactory.</li>
-	<li>Added support for OUTER JOINS <em>(as of M4 there is no <tt>Expression.fromString()</tt> support)</em>.</li>
+	<li><a href="../../../Documentation/Cayenne Guide/Expressions/Path Expressions/index.html" title="Path Expressions">Added support</a> for OUTER JOINS</li>
 	<li>Added support for matching against TRUE and FALSE.</li>
 </ul>
 
@@ -174,13 +194,26 @@
 </ul>
 
 
+<h3><a name="Guideto3.0Features-ClassGenerationImprovements"></a>Class Generation Improvements</h3>
+
+<ul>
+	<li>Generating classes for DataMaps that contain type-safe methods for all mapped SelectQueries.</li>
+</ul>
+
+
+<h3><a name="Guideto3.0Features-PrefetchingImprovements"></a>Prefetching Improvements</h3>
+
+<ul>
+	<li>Joint prefetches are switched to OUTER joins, removing the major limitation to their use.</li>
+</ul>
+
+
 <h3><a name="Guideto3.0Features-POJOPersistence"></a>POJO Persistence</h3>
 <p><em>(status: preview)</em></p>
 
 <ul>
 	<li>Implemented class enhancer to enhance POJO's into org.apache.cayenne.Persistent</li>
 </ul>
-
 
 
 
@@ -193,7 +226,16 @@
 
 <h2><a name="Guideto3.0Features-CayenneModeler"></a>CayenneModeler</h2>
 
+<p>The Modeler underwent significant changes with the goal to improve usability and look-and-feel.</p>
+
 <ul>
+	<li>Added copy/paste support</li>
+	<li>Reworked ObjRelationship mapping dialog</li>
+	<li>Added combo auto-completion</li>
+	<li>Added a usable and good looking welcome screen</li>
+	<li>Added contextual menus</li>
+	<li>Added detection of project file changes on disk</li>
+	<li>Added multi-item selection</li>
 	<li>Added ability to specify password encryption mechanism</li>
 	<li>Added ability to drag and drop cayenne.xml from the filesystem to the Modeler window to open the project.</li>
 	<li>Added support for to-many relationship collections mapping.</li>
@@ -203,6 +245,8 @@
 	<li>Removed support for DerivedDbEntity</li>
 	<li>Added confirmation dialog for delete actions</li>
 	<li>Reopen Last Project on Startup</li>
+	<li>Added progress/log view</li>
+	<li>Added SQL syntax highlighting.</li>
 </ul>
 
 

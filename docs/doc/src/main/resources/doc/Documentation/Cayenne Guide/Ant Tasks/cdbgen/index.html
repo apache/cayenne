@@ -119,9 +119,17 @@
 <td class='confluenceTd'>Defines whether cdbgen should create foreign key copnstraints. Default is "Yes".</td>
 <td class='confluenceTd'>No</td>
 </tr>
+<tr>
+<td class='confluenceTd'>classpath</td>
+<td class='confluenceTd'>The classpath used by the task.</td>
+<td class='confluenceTd'>No</td>
+</tr>
+<tr>
+<td class='confluenceTd'>classpathref</td>
+<td class='confluenceTd'>The classpath reference used by the task.</td>
+<td class='confluenceTd'>No</td>
+</tr>
 </tbody></table>
-
-<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">Driver Classpath</b><br />Support for "classpath" or "classpathref" attributes is pending. To work around this limitation, JDBC driver (and custom DbAdapter) classpath can be appended to the classpath used to load the task via "taskdef".</td></tr></table>
 
 <h3><a name="cdbgen-Example"></a>Example</h3>
 

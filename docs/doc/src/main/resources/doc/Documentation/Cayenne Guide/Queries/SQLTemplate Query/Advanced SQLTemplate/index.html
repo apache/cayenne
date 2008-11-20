@@ -89,7 +89,31 @@ List objects = context.performQuery(query);</pre>
 <pre class="code-java">SQLTemplate query = <span class="code-keyword">new</span> SQLTemplate(<span class="code-quote">"SELECT * FROM ARTIST"</span>);
 query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
 List objects = context.performQuery(query);</pre>
-</div></div></div>
+</div></div>
+
+
+<h3><a name="AdvancedSQLTemplate-SQLTemplateandPrefetching"></a>SQLTemplate and Prefetching</h3>
+
+<p><a href="../../../../../Documentation/Cayenne Guide/Performance Tuning/Prefetching/index.html" title="Prefetching">Prefetching</a> allows to fetch related objects of different kinds in a single query run. SQLTemplate uses "joint" prefetching. However Cayenne expects the user to provide special naming of the result columns to be able to instantiate persistent objects from the result set. Columns belonging to the "root" entity of the query should use unqualified names corresponding to the root DbEntity columns, for each related entity column names must be prefixed with relationship name and a dot (e.g. "toArtist.ID"). Column naming can be controlled with "#result" directive. E.g.:</p>
+
+<div class="code"><div class="codeContent">
+<pre class="code-java">SQLTemplate q = <span class="code-keyword">new</span> SQLTemplate(
+                Artist.class,
+                <span class="code-quote">"SELECT distinct "</span>
+                        + <span class="code-quote">"#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintingArray.ESTIMATED_PRICE'), "</span>
+                        + <span class="code-quote">"#result('PAINTING_TITLE' '<span class="code-object">String</span>' '' 'paintingArray.PAINTING_TITLE'), "</span>
+                        + <span class="code-quote">"#result('GALLERY_ID' '<span class="code-object">int</span>' '' 'paintingArray.GALLERY_ID'), "</span>
+                        + <span class="code-quote">"#result('PAINTING_ID' '<span class="code-object">int</span>' '' 'paintingArray.PAINTING_ID'), "</span>
+                        + <span class="code-quote">"#result('ARTIST_NAME' '<span class="code-object">String</span>'), "</span>
+                        + <span class="code-quote">"#result('DATE_OF_BIRTH' 'java.util.Date'), "</span>
+                        + <span class="code-quote">"#result('t0.ARTIST_ID' '<span class="code-object">int</span>' '' 'ARTIST_ID') "</span>
+                        + <span class="code-quote">"FROM ARTIST t0, PAINTING t1 "</span>
+                        + <span class="code-quote">"WHERE t0.ARTIST_ID = t1.ARTIST_ID"</span>);
+q.addPrefetch(<span class="code-quote">"paintingArray"</span>)
+List objects = context.performQuery(query);</pre>
+</div></div>
+
+<p>Note that a call to "addPrefetch" is still needed to tell Cayenne which relationships are prefetched.</p></div>
 </div>
   <div class="clearer">.</div>
   <div style="height: 12px; background-image: url('../../../../../images/border_bottom.gif'); background-repeat: repeat-x;"></div>

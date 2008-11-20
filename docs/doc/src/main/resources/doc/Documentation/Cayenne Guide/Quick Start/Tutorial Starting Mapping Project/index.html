@@ -61,22 +61,27 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent">
-<h3><a name="TutorialStartingMappingProject-StartCayenneModeler"></a>Start CayenneModeler</h3>
+<div id="ConfluenceContent"><h3><a name="TutorialStartingMappingProject-StartCayenneModeler"></a>Start CayenneModeler</h3>
 
-<p>Start CayenneModeler by doubleclicking the appropriate startup file in the <tt>bin</tt> directory of Cayenne installation (if the Modeler does not start, see <a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/Running CayenneModeler/index.html" title="Running CayenneModeler">this page</a> for more information).</p>
+<p>Start CayenneModeler by double-clicking the appropriate startup file in the <tt>bin</tt> directory of Cayenne installation (if the Modeler does not start, see <a href="../../../../Documentation/Modeler Guide/Introduction to CayenneModeler/Running CayenneModeler/index.html" title="Running CayenneModeler">this page</a> for more information).</p>
 
-<p>Go to <tt>"Tools &gt; Preferences &gt; ClassPath"</tt> and add a <tt>derby.jar</tt> file to the list of "Custom ClassPath" entries to allow CayenneModeler to work with Derby. When done click "Save". If you are using a database other then Derby, you should enter a location of that database JDBC driver instead.</p>
-
-<p><img src="modeler-classpath.jpg" align="absmiddle" border="0" /></p>
 
 <p>Now you will create both database schema definition and object mapping from scratch using CayenneModeler. Note that in cases when you already have a legacy database, this process can be automated by using reverse engineering features of the Modeler (<tt>"Tools &gt; Reengineer Database Schema"</tt>). Still understanding how manual mapping works is important.</p>
 
 <h3><a name="TutorialStartingMappingProject-CreateNewCayenneProject"></a>Create New Cayenne Project</h3>
 
-<p>Click on the "New Project" button on the toolbar (leftmost button). A new project will appear that contains a single DataDomain. The meaning of a DataDomain is explained elsewhere in the User Guide. For now it is sufficient to understand that DataDomain is the root of your mapping project:</p>
+<p>Click on the "New Project" button on Welcome screen. <br/>
+<img src="Picture 1.png" align="absmiddle" border="0" /></p>
+
+<p>A new project will appear that contains a single DataDomain. The meaning of a DataDomain is explained elsewhere in the User Guide. For now it is sufficient to understand that DataDomain is the root of your mapping project:</p>
 
 <p><img src="modeler-datadomain.jpg" align="absmiddle" border="0" /></p>
+
+<h3><a name="TutorialStartingMappingProject-Addadatabaseadaptor"></a>Add a database adaptor</h3>
+
+<p>Go to <tt>"Tools &gt; Preferences &gt; ClassPath"</tt> and add a <tt>derby.jar</tt> file to the list of "Custom ClassPath" entries to allow CayenneModeler to work with Derby. When done click "Save". If you are using a database other then Derby, you should enter a location of that database JDBC driver instead.</p>
+
+<p><img src="modeler-classpath.jpg" align="absmiddle" border="0" /></p>
 
 <h3><a name="TutorialStartingMappingProject-CreateDataNode"></a>Create DataNode</h3>
 

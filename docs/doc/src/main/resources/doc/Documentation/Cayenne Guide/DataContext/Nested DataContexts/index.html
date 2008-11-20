@@ -59,12 +59,14 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent">
-<p>One of the goals of the DataContext is to provide an isolated area where local object changes can be performed without affecting other similar areas or the underlying storage. At some point in time users would either commit changes to the underlying storage or undo them (roll them back). </p>
+<div id="ConfluenceContent"><p>One of the goals of the DataContext is to provide an isolated area where local object changes can be performed without affecting other similar areas or the underlying storage. At some point in time users would either commit changes to the underlying storage or undo them (roll them back). </p>
 
 <p>If a DataContext is directly attached to the DataDomain, a call to <tt>DataContext.commitChanges()</tt> results in changes written to the database. On the other hand if DataContext's direct parent in the access stack is not a DataDomain, but another DataContext, changes can be saved to the parent without saving them to the database. Such child context is often called "nested".</p>
 
 <p>Nested contexts are useful in many situations, such as nested UI dialogs, complicated workflows, etc.</p>
+
+<table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b class="strong">ROP</b><br />
+<p>Nested contexts are not available in Cayenne ROP (three tier).</p></td></tr></table> 
 
 <h3><a name="NestedDataContexts-CreatingNestedDataContext"></a>Creating Nested DataContext</h3>
 

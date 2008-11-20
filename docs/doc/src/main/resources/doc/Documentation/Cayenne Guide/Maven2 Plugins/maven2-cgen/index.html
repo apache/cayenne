@@ -47,15 +47,14 @@
 <li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cgen/index.html">maven2-cgen</a><ul>
 </ul>
 </li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-cdbgen/index.html">maven2-cdbgen</a></li>
+<li><a href="../../../../Documentation/Cayenne Guide/Maven2 Plugins/maven2-modeler/index.html">maven2-modeler</a></li>
 </ul>
 </li>
 <li><a href="../../../../Documentation/Cayenne Guide/Customization/index.html">Customization</a></li>
 </ul>
 </div>
-<div id="ConfluenceContent"><table cellpadding='5' width='85%' cellspacing='8px' class='noteMacro' border="0" align='center'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="../../../../images/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>
-<p>This documentation is very much work-in-progress and subject to change.</p></td></tr></table>
-
-<p><tt>cgen</tt> is an Maven 2 mojo that generates and maintains DataObjects source files based on Cayenne DataMap.  By default, it is bound to the <tt>generate-sources</tt> phase. If "makePairs" is set to "true" (default), this task will generate a pair of classes (superclass/subclass) for each ObjEntity in the DataMap. Superclasses should not be changed manually, since they are always overwritten. Subclasses are never overwritten and may be later customized by the user. If "makePairs" is set to "false", a single class will be generated for each ObjEntity.</p>
+<div id="ConfluenceContent"><p><tt>cgen</tt> is an Maven 2 mojo that generates and maintains DataObjects source files based on Cayenne DataMap.  By default, it is bound to the <tt>generate-sources</tt> phase. If "makePairs" is set to "true" (default), this task will generate a pair of classes (superclass/subclass) for each ObjEntity in the DataMap. Superclasses should not be changed manually, since they are always overwritten. Subclasses are never overwritten and may be later customized by the user. If "makePairs" is set to "false", a single class will be generated for each ObjEntity.</p>
 
 <p>By creating custom templates, <tt>cgen</tt> can also be used to generate other output (such as web pages, reports, specialized code templates) based on DataMap information.</p>
 
@@ -178,7 +177,7 @@
       			<span class="code-tag">&lt;goal&gt;</span>cgen<span class="code-tag">&lt;/goal&gt;</span>
       		    <span class="code-tag">&lt;/goals&gt;</span>
       		<span class="code-tag">&lt;/execution&gt;</span>
-      	<span class="code-tag">&lt;/executions&gt;</span>
+      	    <span class="code-tag">&lt;/executions&gt;</span>
         <span class="code-tag">&lt;/plugin&gt;</span>
     <span class="code-tag">&lt;/plugins&gt;</span>
 <span class="code-tag">&lt;/build&gt;</span></pre>
@@ -202,7 +201,7 @@
       			<span class="code-tag">&lt;goal&gt;</span>cgen<span class="code-tag">&lt;/goal&gt;</span>
       		    <span class="code-tag">&lt;/goals&gt;</span>
       		<span class="code-tag">&lt;/execution&gt;</span>
-      	<span class="code-tag">&lt;/executions&gt;</span>
+      	    <span class="code-tag">&lt;/executions&gt;</span>
         <span class="code-tag">&lt;/plugin&gt;</span>
     <span class="code-tag">&lt;/plugins&gt;</span>
 <span class="code-tag">&lt;/build&gt;</span></pre>
@@ -233,7 +232,7 @@
       			<span class="code-tag">&lt;goal&gt;</span>cgen<span class="code-tag">&lt;/goal&gt;</span>
       		    <span class="code-tag">&lt;/goals&gt;</span>
       		<span class="code-tag">&lt;/execution&gt;</span>
-      	<span class="code-tag">&lt;/executions&gt;</span>
+      	    <span class="code-tag">&lt;/executions&gt;</span>
         <span class="code-tag">&lt;/plugin&gt;</span>
     <span class="code-tag">&lt;/plugins&gt;</span>
 <span class="code-tag">&lt;/build&gt;</span></pre>

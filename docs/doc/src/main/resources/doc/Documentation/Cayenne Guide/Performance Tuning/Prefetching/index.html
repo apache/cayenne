@@ -139,8 +139,6 @@ Expression exp = ExpressionFactory.matchExp(<span class="code-quote">"paintingAr
 
 <h3><a name="Prefetching-DisjointPrefetches"></a>Disjoint Prefetches</h3>
 
-<p><em>(available since 1.0)</em></p>
-
 <p>"Disjoint" prefetches (aka "normal prefetches", as this is how Cayenne implemented prefetching since 1.0) internally result in a separate SQL statement per prefetch path.</p>
 
 <div class="code"><div class="codeContent">
@@ -156,8 +154,6 @@ query.addPrefetch(<span class="code-quote">"paintingArray.toGallery"</span>);
 
 <h3><a name="Prefetching-JointPrefetches"></a>Joint Prefetches</h3>
 
-<p><em>(available since 1.2M3, with significant API changes in 1.2M8)</em></p>
-
 <p>"Joint" is prefetch type that issues a single SQL statement for multiple prefetch paths. Cayenne processes in memory a cartesian product of the entities involved, converting it to an object tree. SQLTemplate and ProcedureQuery create joint prefetches by default. SelectQuery needs to be told to use joint prefetch:</p>
 
 <div class="code"><div class="codeContent">
@@ -168,7 +164,7 @@ query.addPrefetch(<span class="code-quote">"paintingArray.toGallery"</span>);
 context.performQuery(query);</pre>
 </div></div>
 
-<p>Code above will result in a single SQL statement issued. Inner joins will be used for this type of prefetch, so no Artist will be returned who has no Paintings.</p>
+<p>Code above will result in a single SQL statement issued. OUTER joins will be used for this type of prefetch. Specifics of the column naming when using prefetching with SQLTemplate are discussed <a href="../../../../Documentation/Cayenne Guide/Queries/SQLTemplate Query/Advanced SQLTemplate/index.html" title="Advanced SQLTemplate">here</a>.</p>
 </div>
 </div>
   <div class="clearer">.</div>
