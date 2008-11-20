@@ -237,18 +237,12 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     private void appendDeclaredRootDbEntity(
             PersistentDescriptor descriptor,
             ObjEntity entity) {
-        // since we don't want the entity to look up its super DbEntity (which is
-        // already registered), lookup DbEntity ourselves by name
-        String dbEntityName = entity.getDbEntityName();
-        if (dbEntityName != null) {
 
-            DbEntity dbEntity = entity.getDataMap().getDbEntity(dbEntityName);
-            if (dbEntity != null) {
-
-                // descriptor takes care of weeding off duplicates, although the duplicate
-                // here is highly unlikely
-                descriptor.addRootDbEntity(dbEntity);
-            }
+        DbEntity dbEntity = entity.getDbEntity();
+        if (dbEntity != null) {
+            // descriptor takes care of weeding off duplicates, which are likely in cases
+            // of non-horizontal inheritance
+            descriptor.addRootDbEntity(dbEntity);
         }
     }
 

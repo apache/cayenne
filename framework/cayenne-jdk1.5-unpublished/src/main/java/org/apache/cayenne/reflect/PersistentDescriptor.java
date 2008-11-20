@@ -75,6 +75,8 @@ public class PersistentDescriptor implements ClassDescriptor {
         this.declaredProperties = new HashMap<String, Property>();
         this.superProperties = new HashMap<String, Property>();
         this.subclassDescriptors = new HashMap<String, ClassDescriptor>();
+
+        // must be a set as duplicate addition attempts are expected...
         this.rootDbEntities = new HashSet<DbEntity>(1);
     }
 
