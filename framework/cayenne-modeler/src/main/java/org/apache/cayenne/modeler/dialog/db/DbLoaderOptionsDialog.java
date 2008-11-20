@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -32,14 +33,20 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.access.DbLoader;
+import org.apache.cayenne.access.reveng.NamingStrategy;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ClassLoadingService;
+import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -48,6 +55,21 @@ import com.jgoodies.forms.layout.FormLayout;
  * Dialog for selecting database reverse-engineering parameters.
  */
 public class DbLoaderOptionsDialog extends CayenneDialog {
+    private static final Log logObj = LogFactory.getLog(DbLoaderOptionsDialog.class);
+    
+    /**
+     * Preference to store latest strategies
+     */
+    private static final String STRATEGIES_PREFERENCE = "recent.preferences";
+    
+    /**
+     * Naming strategies to appear in combobox by default
+     */
+    private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
+    static {
+        PREDEFINED_STRATEGIES.add("org.apache.cayenne.access.reveng.BasicNamingStrategy");
+        PREDEFINED_STRATEGIES.add("org.apache.cayenne.modeler.util.SmartNamingStrategy");
+    };
 
     public static final int CANCEL = 0;
     public static final int SELECT = 1;
@@ -60,6 +82,14 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     protected JLabel procedureLabel;
     protected JButton selectButton;
     protected JButton cancelButton;
+    
+    /**
+     * Combobox for naming strategy
+     */
+    protected JComboBox strategyCombo;
+    
+    protected NamingStrategy strategy;
+    
     protected int choice;
 
     /**
@@ -89,6 +119,9 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         tableNamePatternField = new JTextField();
         procNamePatternField = new JTextField();
         loadProcedures = new JCheckBox();
+        
+        strategyCombo = new JComboBox();
+        strategyCombo.setEditable(true);
 
         // assemble
         FormLayout layout = new FormLayout(
@@ -101,6 +134,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         builder.append("Table Name Pattern:", tableNamePatternField);
         builder.append("Load Procedures:", loadProcedures);
         procedureLabel = builder.append("Procedure Name Pattern:", procNamePatternField);
+        builder.append("Naming Strategy:", strategyCombo);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
@@ -146,6 +180,10 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         this.procNamePatternField.setText(DbLoader.WILDCARD);
         this.procNamePatternField.setEnabled(shouldLoadProcedures);
         this.procedureLabel.setEnabled(shouldLoadProcedures);
+        
+        ModelerPreferences pref = ModelerPreferences.getPreferences();
+        Vector<?> arr = pref.getVector(STRATEGIES_PREFERENCE, PREDEFINED_STRATEGIES);
+        strategyCombo.setModel(new DefaultComboBoxModel(arr));
 
         boolean showSchemaSelector = schemas != null && !schemas.isEmpty();
         schemaSelector.setVisible(showSchemaSelector);
@@ -174,6 +212,35 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     }
 
     private void processSelect() {
+        try {
+            ClassLoadingService classLoader = Application.getInstance().getClassLoadingService();
+            String strategyClass = (String) strategyCombo.getSelectedItem();
+            
+            this.strategy = (NamingStrategy) classLoader.loadClass(strategyClass).newInstance();
+            
+            /**
+             * Be user-friendly and update preferences with specified strategy
+             */
+            ModelerPreferences pref = ModelerPreferences.getPreferences();
+            Vector arr = pref.getVector(STRATEGIES_PREFERENCE, PREDEFINED_STRATEGIES);
+            
+            //move to top
+            arr.remove(strategyClass);
+            arr.add(0, strategyClass);
+            
+            pref.setProperty(STRATEGIES_PREFERENCE, arr);
+        }
+        catch (Throwable th) {
+            logObj.error("Error in " + getClass().getName(), th);
+     
+            JOptionPane.showMessageDialog(this,
+                    "Naming Strategy Initialization Error: " + th.getMessage(),
+                    "Naming Strategy Initialization Error",
+                    JOptionPane.ERROR_MESSAGE);
+                    
+            return;
+        }
+        
         choice = SELECT;
         setVisible(false);
     }
@@ -209,5 +276,12 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     public String getProcedureNamePattern() {
         return "".equals(procNamePatternField.getText()) ? null : procNamePatternField
                 .getText();
+    }
+    
+    /**
+     * Returns configured naming strategy
+     */
+    public NamingStrategy getNamingStrategy() {
+        return strategy;
     }
 }

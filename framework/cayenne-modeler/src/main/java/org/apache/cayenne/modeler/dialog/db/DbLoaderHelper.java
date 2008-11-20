@@ -34,8 +34,6 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
-import org.apache.cayenne.access.reveng.BasicNamingStrategy;
-import org.apache.cayenne.access.reveng.NamingStrategy;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -98,17 +96,12 @@ public class DbLoaderHelper {
 
         return mergeDialog;
     }
-    
-    public DbLoaderHelper(ProjectController mediator, Connection connection,
-            DbAdapter adapter, String dbUserName) {
-        this(mediator, connection, adapter, dbUserName, new BasicNamingStrategy());
-    }
 
     public DbLoaderHelper(ProjectController mediator, Connection connection,
-            DbAdapter adapter, String dbUserName, NamingStrategy strategy) {
+            DbAdapter adapter, String dbUserName) {
         this.dbUserName = dbUserName;
         this.mediator = mediator;
-        this.loader = new DbLoader(connection, adapter, new LoaderDelegate(), strategy);
+        this.loader = new DbLoader(connection, adapter, new LoaderDelegate());
     }
 
     public void setOverwritingEntities(boolean overwritePreference) {
@@ -182,6 +175,8 @@ public class DbLoaderHelper {
         this.loadProcedures = dialog.isLoadingProcedures();
         this.procedureNamePattern = dialog.getProcedureNamePattern();
         this.addedObjEntities = new ArrayList<ObjEntity>();
+        
+        this.loader.setNamingStrategy(dialog.getNamingStrategy());
 
         // load DataMap...
         LongRunningTask loadDataMapTask = new LoadDataMapTask(Application
