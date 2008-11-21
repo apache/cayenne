@@ -47,43 +47,8 @@ public class DataContextQueryCachingTest extends CayenneCase {
         return getDomain().createDataContext();
     }
 
-    public void testLocalCacheDataRowsNoRefresh() throws Exception {
-        SelectQuery select = new SelectQuery(Artist.class);
-        select.setRefreshingObjects(false);
-        select.setFetchingDataRows(true);
-        select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-
-        MockDataNode engine = MockDataNode.interceptNode(getDomain(), getNode());
-
-        try {
-            List rows = mockupDataRows(2);
-            engine.reset();
-            engine.addExpectedResult(select, rows);
-
-            // first run, no cache yet
-            List resultRows = context.performQuery(select);
-            assertEquals(1, engine.getRunCount());
-            assertEquals(rows, resultRows);
-
-            QueryMetadata cacheKey = select.getMetaData(context.getEntityResolver());
-
-            assertNull(context.getParentDataDomain().getQueryCache().get(cacheKey));
-            assertEquals(rows, context.getQueryCache().get(cacheKey));
-
-            // now the query with the same name must run from cache
-            engine.reset();
-            List cachedResultRows = context.performQuery(select);
-            assertEquals(0, engine.getRunCount());
-            assertEquals(rows, cachedResultRows);
-        }
-        finally {
-            engine.stopInterceptNode();
-        }
-    }
-
     public void testLocalCacheDataRowsRefresh() throws Exception {
         SelectQuery select = new SelectQuery(Artist.class);
-        select.setRefreshingObjects(true);
         select.setFetchingDataRows(true);
         select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
@@ -120,53 +85,8 @@ public class DataContextQueryCachingTest extends CayenneCase {
         }
     }
 
-    public void testSharedCacheDataRowsNoRefresh() throws Exception {
-        SelectQuery select = new SelectQuery(Artist.class);
-        select.setName("c");
-        select.setRefreshingObjects(false);
-        select.setFetchingDataRows(true);
-        select.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-
-        MockDataNode engine = MockDataNode.interceptNode(getDomain(), getNode());
-
-        try {
-            List rows = mockupDataRows(2);
-            engine.reset();
-            engine.addExpectedResult(select, rows);
-
-            // first run, no cache yet
-            List resultRows = context.performQuery(select);
-            assertEquals(1, engine.getRunCount());
-            assertEquals(rows, resultRows);
-            QueryMetadata cacheKey = select.getMetaData(context.getEntityResolver());
-
-            assertNull(context.getQueryCache().get(cacheKey));
-            assertEquals(rows, context
-                    .getParentDataDomain()
-                    .getQueryCache()
-                    .get(cacheKey));
-
-            // now the query with the same name must run from cache
-            engine.reset();
-            List cachedResultRows = context.performQuery(select);
-            assertEquals(0, engine.getRunCount());
-            assertEquals(rows, cachedResultRows);
-
-            // query from an alt DataContext must run from cache
-            DataContext altContext = createDataContextNoCacheClear();
-            engine.reset();
-            List altResultRows = altContext.performQuery(select);
-            assertEquals(0, engine.getRunCount());
-            assertEquals(rows, altResultRows);
-        }
-        finally {
-            engine.stopInterceptNode();
-        }
-    }
-
     public void testSharedCacheDataRowsRefresh() throws Exception {
         SelectQuery select = new SelectQuery(Artist.class);
-        select.setRefreshingObjects(true);
         select.setFetchingDataRows(true);
         select.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
@@ -207,7 +127,6 @@ public class DataContextQueryCachingTest extends CayenneCase {
 
     public void testLocalCacheDataObjectsRefresh() throws Exception {
         SelectQuery select = new SelectQuery(Artist.class);
-        select.setRefreshingObjects(true);
         select.setFetchingDataRows(false);
         select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
@@ -245,86 +164,6 @@ public class DataContextQueryCachingTest extends CayenneCase {
         }
     }
 
-    public void testLocalCacheDataObjectsNoRefresh() throws Exception {
-        SelectQuery select = new SelectQuery(Artist.class);
-        select.setRefreshingObjects(false);
-        select.setFetchingDataRows(false);
-        select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-
-        MockDataNode engine = MockDataNode.interceptNode(getDomain(), getNode());
-
-        try {
-            List rows = mockupDataRows(2);
-            engine.reset();
-            engine.addExpectedResult(select, rows);
-
-            // first run, no cache yet
-            List resultRows = context.performQuery(select);
-            assertEquals(1, engine.getRunCount());
-            assertEquals(2, resultRows.size());
-            assertTrue(resultRows.get(0) instanceof DataObject);
-
-            QueryMetadata cacheKey = select.getMetaData(context.getEntityResolver());
-            assertNull(context.getParentDataDomain().getQueryCache().get(cacheKey));
-
-            assertEquals(resultRows, context.getQueryCache().get(cacheKey));
-
-            // now the query with the same name must run from cache
-            engine.reset();
-            List cachedResultRows = context.performQuery(select);
-            assertEquals(0, engine.getRunCount());
-            assertEquals(resultRows, cachedResultRows);
-        }
-        finally {
-            engine.stopInterceptNode();
-        }
-    }
-
-    public void testSharedCacheDataObjectsNoRefresh() throws Exception {
-        SelectQuery select = new SelectQuery(Artist.class);
-        select.setRefreshingObjects(false);
-        select.setFetchingDataRows(false);
-        select.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-
-        MockDataNode engine = MockDataNode.interceptNode(getDomain(), getNode());
-
-        try {
-            List rows = mockupDataRows(2);
-            engine.reset();
-            engine.addExpectedResult(select, rows);
-
-            // first run, no cache yet
-            List resultRows = context.performQuery(select);
-            assertEquals(1, engine.getRunCount());
-            assertEquals(2, resultRows.size());
-            assertTrue(resultRows.get(0) instanceof DataObject);
-            QueryMetadata cacheKey = select.getMetaData(context.getEntityResolver());
-            assertNull(context.getQueryCache().get(cacheKey));
-            assertEquals(rows, context
-                    .getParentDataDomain()
-                    .getQueryCache()
-                    .get(cacheKey));
-
-            // now the query with the same name must run from cache
-            engine.reset();
-            List cachedResultRows = context.performQuery(select);
-            assertEquals(0, engine.getRunCount());
-            assertEquals(2, cachedResultRows.size());
-            assertTrue(cachedResultRows.get(0) instanceof DataObject);
-
-            // query from an alt DataContext must run from cache
-            DataContext altContext = createDataContextNoCacheClear();
-            engine.reset();
-            List altResultRows = altContext.performQuery(select);
-            assertEquals(0, engine.getRunCount());
-            assertEquals(2, altResultRows.size());
-            assertTrue(altResultRows.get(0) instanceof DataObject);
-        }
-        finally {
-            engine.stopInterceptNode();
-        }
-    }
-
     public void testLocalCacheRefreshObjectsRefresh() throws Exception {
 
         deleteTestData();
@@ -332,7 +171,6 @@ public class DataContextQueryCachingTest extends CayenneCase {
 
         SelectQuery select = new SelectQuery(Artist.class);
         select.setName("c");
-        select.setRefreshingObjects(true);
         select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH);
 
         // no cache yet...
@@ -350,16 +188,6 @@ public class DataContextQueryCachingTest extends CayenneCase {
         Artist a2 = (Artist) objects2.get(0);
         assertSame(a1, a2);
         assertEquals("bbb", a2.getArtistName());
-
-        // cache, no refresh
-        select.setRefreshingObjects(false);
-        createTestData("testLocalCacheRefreshObjectsRefresh_Update1");
-
-        List objects3 = context.performQuery(select);
-        assertEquals(1, objects3.size());
-        Artist a3 = (Artist) objects3.get(0);
-        assertSame(a1, a3);
-        assertEquals("bbb", a3.getArtistName());
     }
 
     private List mockupDataRows(int len) {

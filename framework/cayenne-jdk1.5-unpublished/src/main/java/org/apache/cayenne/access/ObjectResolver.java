@@ -50,14 +50,13 @@ class ObjectResolver {
     Collection<DbAttribute> primaryKey;
 
     EntityInheritanceTree inheritanceTree;
-    boolean refreshObjects;
     DataRowStore cache;
 
-    ObjectResolver(DataContext context, ClassDescriptor descriptor, boolean refresh) {
-        init(context, descriptor, refresh);
+    ObjectResolver(DataContext context, ClassDescriptor descriptor) {
+        init(context, descriptor);
     }
 
-    void init(DataContext context, ClassDescriptor descriptor, boolean refresh) {
+    void init(DataContext context, ClassDescriptor descriptor) {
         // sanity check
         DbEntity dbEntity = descriptor.getEntity().getDbEntity();
         if (dbEntity == null) {
@@ -77,7 +76,6 @@ class ObjectResolver {
 
         this.context = context;
         this.cache = context.getObjectStore().getDataRowCache();
-        this.refreshObjects = refresh;
         this.descriptor = descriptor;
         this.inheritanceTree = context.getEntityResolver().lookupInheritanceTree(
                 descriptor.getEntity());
@@ -119,7 +117,7 @@ class ObjectResolver {
         }
 
         // now deal with snapshots
-        cache.snapshotsUpdatedForObjects(results, rows, refreshObjects);
+        cache.snapshotsUpdatedForObjects(results, rows);
 
         return results;
     }
@@ -184,7 +182,7 @@ class ObjectResolver {
         }
 
         // now deal with snapshots
-        cache.snapshotsUpdatedForObjects(results, rows, refreshObjects);
+        cache.snapshotsUpdatedForObjects(results, rows);
 
         return results;
     }
@@ -228,26 +226,19 @@ class ObjectResolver {
             case PersistenceState.COMMITTED:
             case PersistenceState.MODIFIED:
             case PersistenceState.DELETED:
-                // process the above only if refresh is requested...
-                if (refreshObjects) {
-                    DataRowUtils.mergeObjectWithSnapshot(
-                            context,
-                            classDescriptor,
-                            object,
-                            row);
 
-                    if (object instanceof DataObject) {
-                        ((DataObject) object).setSnapshotVersion(row.getVersion());
-                    }
+                DataRowUtils.mergeObjectWithSnapshot(
+                        context,
+                        classDescriptor,
+                        object,
+                        row);
+
+                if (object instanceof DataObject) {
+                    ((DataObject) object).setSnapshotVersion(row.getVersion());
                 }
+
                 break;
             case PersistenceState.HOLLOW:
-                if (!refreshObjects) {
-                    DataRow cachedRow = cache.getCachedSnapshot(anId);
-                    if (cachedRow != null) {
-                        row = cachedRow;
-                    }
-                }
                 DataRowUtils.mergeObjectWithSnapshot(
                         context,
                         classDescriptor,

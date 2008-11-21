@@ -418,14 +418,13 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @param refresh controls whether existing cached snapshots should be replaced with
      *            the new ones.
      * @since 1.1
+     * @deprecated since 3.0 unused
      */
-    // TODO:, andrus 5/25/2006 - mark as deprecated after 1.2 - this method is no longer
-    // used.
     public void snapshotsUpdatedForObjects(List objects, List snapshots, boolean refresh) {
         DataRowStore cache = getDataRowCache();
         if (cache != null) {
             synchronized (this) {
-                cache.snapshotsUpdatedForObjects(objects, snapshots, refresh);
+                cache.snapshotsUpdatedForObjects(objects, snapshots);
             }
         }
     }

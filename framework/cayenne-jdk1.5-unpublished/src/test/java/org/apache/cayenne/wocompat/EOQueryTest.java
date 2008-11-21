@@ -59,6 +59,5 @@ public class EOQueryTest extends TestCase {
         assertEquals(500, query.getFetchLimit());
         assertEquals(0, query.getPageSize());
         assertTrue(query.isDistinct());
-        assertFalse(query.isRefreshingObjects());
     }
 }

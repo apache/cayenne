@@ -23,17 +23,6 @@ import org.apache.cayenne.cache.OSQueryCacheFactory;
 public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingTest {
 
     @Override
-    public void testLocalCacheDataObjectsNoRefresh() throws Exception {
-        runTest(new TestRun() {
-
-            public void execute() throws Exception {
-                DataContextQueryCachingOSCacheTest.super
-                        .testLocalCacheDataObjectsNoRefresh();
-            }
-        });
-    }
-
-    @Override
     public void testLocalCacheDataObjectsRefresh() throws Exception {
         runTest(new TestRun() {
 
@@ -45,23 +34,11 @@ public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingT
     }
 
     @Override
-    public void testLocalCacheDataRowsNoRefresh() throws Exception {
-        runTest(new TestRun() {
-
-            public void execute() throws Exception {
-                DataContextQueryCachingOSCacheTest.super
-                        .testLocalCacheDataRowsNoRefresh();
-            }
-        });
-    }
-
-    @Override
     public void testLocalCacheDataRowsRefresh() throws Exception {
         runTest(new TestRun() {
 
             public void execute() throws Exception {
-                DataContextQueryCachingOSCacheTest.super
-                        .testLocalCacheDataRowsRefresh();
+                DataContextQueryCachingOSCacheTest.super.testLocalCacheDataRowsRefresh();
             }
         });
     }
@@ -78,34 +55,11 @@ public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingT
     }
 
     @Override
-    public void testSharedCacheDataObjectsNoRefresh() throws Exception {
-        runTest(new TestRun() {
-
-            public void execute() throws Exception {
-                DataContextQueryCachingOSCacheTest.super
-                        .testSharedCacheDataObjectsNoRefresh();
-            }
-        });
-    }
-
-    @Override
-    public void testSharedCacheDataRowsNoRefresh() throws Exception {
-        runTest(new TestRun() {
-
-            public void execute() throws Exception {
-                DataContextQueryCachingOSCacheTest.super
-                        .testSharedCacheDataRowsNoRefresh();
-            }
-        });
-    }
-
-    @Override
     public void testSharedCacheDataRowsRefresh() throws Exception {
         runTest(new TestRun() {
 
             public void execute() throws Exception {
-                DataContextQueryCachingOSCacheTest.super
-                        .testSharedCacheDataRowsRefresh();
+                DataContextQueryCachingOSCacheTest.super.testSharedCacheDataRowsRefresh();
             }
         });
     }

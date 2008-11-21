@@ -121,11 +121,7 @@ public class RelationshipQuery extends IndirectQuery {
         Expression qualifier = ExpressionFactory.matchDbExp(relationship
                 .getReverseDbRelationshipPath(), objectId);
 
-        SelectQuery query = new SelectQuery(
-                (ObjEntity) relationship.getTargetEntity(),
-                qualifier);
-        query.setRefreshingObjects(refreshing);
-        return query;
+        return new SelectQuery((ObjEntity) relationship.getTargetEntity(), qualifier);
     }
 
     /**

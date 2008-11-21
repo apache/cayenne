@@ -42,7 +42,6 @@ import org.apache.cayenne.unit.util.ThreadedTestHelper;
 /**
  * Test suite for testing behavior of multiple DataContexts that share the same underlying
  * DataDomain.
- * 
  */
 public class DataContextSharedCacheTest extends MultiContextCase {
 
@@ -514,7 +513,7 @@ public class DataContextSharedCacheTest extends MultiContextCase {
 
             @Override
             protected void assertResult() throws Exception {
-                Object value = altArtist.readPropertyDirectly("paintingArray"); 
+                Object value = altArtist.readPropertyDirectly("paintingArray");
                 assertTrue("Unexpected: " + value, value instanceof ToManyList);
                 assertTrue(((ToManyList) value).isFault());
             }
@@ -522,53 +521,6 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         helper.assertWithTimeout(2000);
         List list = altArtist.getPaintingArray();
         assertEquals(2, list.size());
-    }
-
-    /**
-     * Checks that cache is not refreshed when a query "refreshingObjects" property is set
-     * to false.
-     * 
-     * @throws Exception
-     */
-    public void testCacheNonRefreshingOnSelect() throws Exception {
-        String originalName = artist.getArtistName();
-        final String newName = "version2";
-
-        DataRow oldSnapshot = context
-                .getObjectStore()
-                .getDataRowCache()
-                .getCachedSnapshot(artist.getObjectId());
-        assertNotNull(oldSnapshot);
-        assertEquals(originalName, oldSnapshot.get("ARTIST_NAME"));
-
-        // update artist using raw SQL
-        SQLTemplate update = getSQLTemplateBuilder()
-                .createSQLTemplate(
-                        Artist.class,
-                        "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE ARTIST_NAME = #bind($oldName)");
-        Map map = new HashMap(3);
-        map.put("newName", newName);
-        map.put("oldName", originalName);
-        update.setParameters(map);
-        context.performNonSelectingQuery(update);
-
-        // fetch updated artist without refreshing
-        Expression qual = ExpressionFactory.matchExp("artistName", newName);
-        SelectQuery query = new SelectQuery(Artist.class, qual);
-        query.setRefreshingObjects(false);
-        List artists = context.performQuery(query);
-        assertEquals(1, artists.size());
-        artist = (Artist) artists.get(0);
-
-        // check underlying cache
-        DataRow freshSnapshot = context
-                .getObjectStore()
-                .getDataRowCache()
-                .getCachedSnapshot(artist.getObjectId());
-        assertSame(oldSnapshot, freshSnapshot);
-
-        // check an artist
-        assertEquals(originalName, artist.getArtistName());
     }
 
     /**
@@ -604,7 +556,6 @@ public class DataContextSharedCacheTest extends MultiContextCase {
         // fetch updated artist without refreshing
         Expression qual = ExpressionFactory.matchExp("artistName", newName);
         SelectQuery query = new SelectQuery(Artist.class, qual);
-        query.setRefreshingObjects(true);
         List artists = context.performQuery(query);
         assertEquals(1, artists.size());
         artist = (Artist) artists.get(0);

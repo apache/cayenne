@@ -129,7 +129,6 @@ public class ObjectIdQuery extends IndirectQuery {
                 .matchAllDbExp(objectId.getIdSnapshot(), Expression.EQUAL_TO));
 
         // if we got to the point of fetch, always force refresh....
-        query.setRefreshingObjects(true);
         query.setFetchingDataRows(fetchingDataRows);
         return query;
     }

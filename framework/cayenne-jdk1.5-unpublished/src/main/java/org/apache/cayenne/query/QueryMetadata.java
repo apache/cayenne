@@ -113,8 +113,14 @@ public interface QueryMetadata {
 
     public static final boolean FETCHING_DATA_ROWS_DEFAULT = false;
 
+    /**
+     * @deprecated since 3.0
+     */
     public static final String REFRESHING_OBJECTS_PROPERTY = "cayenne.GenericSelectQuery.refreshingObjects";
 
+    /**
+     * @deprecated since 3.0
+     */
     public static final boolean REFRESHING_OBJECTS_DEFAULT = true;
 
     /**

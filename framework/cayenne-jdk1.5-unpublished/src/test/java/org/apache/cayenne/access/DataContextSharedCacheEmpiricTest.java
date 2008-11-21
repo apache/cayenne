@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -64,7 +63,6 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
     public void testSelectSelectCommitRefresh() throws Exception {
 
         SelectQuery query = new SelectQuery(Artist.class);
-        query.setRefreshingObjects(true);
 
         // select both, a2 should go second...
         List artists = c1.performQuery(query);
@@ -77,33 +75,6 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
 
         // Update Artist
         a1.setArtistName(NEW_NAME);
-        c1.commitChanges();
-
-        assertOnCommit(a2);
-    }
-
-    public void testSelectSelectCommitNoRefresh() throws Exception {
-
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.setRefreshingObjects(false);
-
-        // select both, a2 should go second...
-        List artists = c1.performQuery(query);
-        Artist a1 = (Artist) artists.get(0);
-
-        List altArtists = c2.performQuery(query);
-        final Artist a2 = (Artist) altArtists.get(0);
-        assertNotNull(a2);
-        assertFalse(a2 == a1);
-
-        // Update Artist
-        assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
-        assertEquals("version1", a1.getArtistName());
-        a1.setArtistName(NEW_NAME);
-        assertEquals(NEW_NAME, a1.getArtistName());
-        assertEquals(PersistenceState.MODIFIED, a1.getPersistenceState());
-        assertSame(c1, a1.getObjectContext());
-        assertTrue(c1.hasChanges());
         c1.commitChanges();
 
         assertOnCommit(a2);
@@ -112,7 +83,6 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
     public void testSelectSelectCommitRefreshReverse() throws Exception {
 
         SelectQuery query = new SelectQuery(Artist.class);
-        query.setRefreshingObjects(true);
 
         List altArtists = c2.performQuery(query);
         final Artist a2 = (Artist) altArtists.get(0);
@@ -124,32 +94,6 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
 
         // Update Artist
         a1.setArtistName(NEW_NAME);
-        c1.commitChanges();
-
-        assertOnCommit(a2);
-    }
-
-    public void testSelectSelectCommitNoRefreshReverse() throws Exception {
-
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.setRefreshingObjects(false);
-
-        List altArtists = c2.performQuery(query);
-        final Artist a2 = (Artist) altArtists.get(0);
-
-        List artists = c1.performQuery(query);
-        Artist a1 = (Artist) artists.get(0);
-
-        assertFalse(a2 == a1);
-
-        // Update Artist
-        assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
-        assertEquals("version1", a1.getArtistName());
-        a1.setArtistName(NEW_NAME);
-        assertEquals(NEW_NAME, a1.getArtistName());
-        assertEquals(PersistenceState.MODIFIED, a1.getPersistenceState());
-        assertSame(c1, a1.getObjectContext());
-        assertTrue(c1.hasChanges());
         c1.commitChanges();
 
         assertOnCommit(a2);
@@ -158,27 +102,6 @@ public class DataContextSharedCacheEmpiricTest extends CayenneCase {
     public void testSelectUpdateSelectCommitRefresh() throws Exception {
 
         SelectQuery query = new SelectQuery(Artist.class);
-        query.setRefreshingObjects(true);
-
-        List artists = c1.performQuery(query);
-        Artist a1 = (Artist) artists.get(0);
-
-        // Update Artist
-        a1.setArtistName(NEW_NAME);
-
-        List altArtists = c2.performQuery(query);
-        final Artist a2 = (Artist) altArtists.get(0);
-        assertNotNull(a2);
-        assertFalse(a2 == a1);
-
-        c1.commitChanges();
-        assertOnCommit(a2);
-    }
-
-    public void testSelectUpdateSelectCommitNoRefresh() throws Exception {
-
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.setRefreshingObjects(false);
 
         List artists = c1.performQuery(query);
         Artist a1 = (Artist) artists.get(0);
