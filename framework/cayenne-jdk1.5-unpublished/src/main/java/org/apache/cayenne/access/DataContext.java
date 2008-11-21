@@ -80,7 +80,6 @@ import org.apache.cayenne.util.Util;
  * container of an object graph, in a sense that any uncommitted changes to persistent
  * objects that are registered with the context, are not visible to the users of other
  * contexts.
- * 
  */
 public class DataContext extends BaseContext implements DataChannel {
 
@@ -130,8 +129,8 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Binds a DataContext to the current thread. DataContext can later be retrieved by
-     * users in the same thread by calling {@link DataContext#getThreadDataContext}.
-     * Using null parameter will unbind currently bound DataContext.
+     * users in the same thread by calling {@link DataContext#getThreadDataContext}. Using
+     * null parameter will unbind currently bound DataContext.
      * 
      * @since 1.1
      * @deprecated since 3.0, replaced by BaseContex#getThreadObjectContext().
@@ -239,8 +238,6 @@ public class DataContext extends BaseContext implements DataChannel {
 
         return queryCache;
     }
-
-
 
     /**
      * Returns a map of user-defined properties associated with this DataContext.
@@ -597,6 +594,9 @@ public class DataContext extends BaseContext implements DataChannel {
      * Converts a list of data rows to a list of DataObjects.
      * 
      * @since 1.1
+     * @deprecated since 3.0 as refreshing and resolvingInheritanceHierarchy flags are
+     *             deprecated. Use {@link #objectsFromDataRows(ClassDescriptor, List)}
+     *             instead.
      */
     public List objectsFromDataRows(
             ObjEntity entity,
@@ -604,20 +604,31 @@ public class DataContext extends BaseContext implements DataChannel {
             boolean refresh,
             boolean resolveInheritanceHierarchy) {
 
-        // TODO: andrus, 10/11/2006 - instead of doing ClassDescriptor lookup, deprecate
-        // this method, replacing it with the one that takes CD as argument. Or get rid of
-        // it all together
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
                 entity.getName());
-        return new ObjectResolver(this, descriptor, refresh, resolveInheritanceHierarchy)
+        return objectsFromDataRows(descriptor, dataRows);
+    }
+
+    /**
+     * Converts a list of DataRows to a List of DataObject registered with this
+     * DataContext.
+     * 
+     * @since 3.0
+     */
+    public List objectsFromDataRows(
+            ClassDescriptor descriptor,
+            List<? extends DataRow> dataRows) {
+        return new ObjectResolver(this, descriptor, true)
                 .synchronizedObjectsFromDataRows(dataRows);
     }
 
     /**
      * Converts a list of DataRows to a List of DataObject registered with this
-     * DataContext. Internally calls
-     * {@link #objectsFromDataRows(ObjEntity,List,boolean,boolean)}.
+     * DataContext.
      * 
+     * @deprecated since 3.0 as refresh and resolveInheritanceHierarchy flags are
+     *             deprecated. Use {@link #objectsFromDataRows(ClassDescriptor, List)}
+     *             instead.
      * @since 1.1
      * @see DataRow
      */
@@ -632,22 +643,31 @@ public class DataContext extends BaseContext implements DataChannel {
             throw new CayenneRuntimeException("Unmapped Java class: " + objectClass);
         }
 
-        return objectsFromDataRows(entity, dataRows, refresh, resolveInheritanceHierarchy);
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
+                entity.getName());
+        return objectsFromDataRows(descriptor, dataRows);
     }
 
     /**
-     * Creates a DataObject from DataRow. This is a convenience shortcut to
-     * {@link #objectsFromDataRows(Class,java.util.List,boolean,boolean)}.
+     * Creates a DataObject from DataRow.
      * 
      * @see DataRow
      */
-    public DataObject objectFromDataRow(
-            Class<?> objectClass,
+    public <T extends DataObject> T objectFromDataRow(
+            Class<T> objectClass,
             DataRow dataRow,
             boolean refresh) {
-        List<?> list = objectsFromDataRows(objectClass, Collections
-                .singletonList(dataRow), refresh, true);
-        return (DataObject) list.get(0);
+
+        ObjEntity entity = this.getEntityResolver().lookupObjEntity(objectClass);
+
+        if (entity == null) {
+            throw new CayenneRuntimeException("Unmapped Java class: " + objectClass);
+        }
+
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
+                entity.getName());
+        List<T> list = objectsFromDataRows(descriptor, Collections.singletonList(dataRow));
+        return list.get(0);
     }
 
     /**
@@ -662,13 +682,9 @@ public class DataContext extends BaseContext implements DataChannel {
             DataRow dataRow,
             boolean refresh) {
 
-        ObjEntity entity = getEntityResolver().getObjEntity(entityName);
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entityName);
+        List<?> list = objectsFromDataRows(descriptor, Collections.singletonList(dataRow));
 
-        List<?> list = objectsFromDataRows(
-                entity,
-                Collections.singletonList(dataRow),
-                refresh,
-                true);
         return (DataObject) list.get(0);
     }
 
@@ -702,8 +718,9 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * Instantiates a new object and registers it with this context. Object class is
      * determined from the mapped entity. Object class must have a default constructor.
-     * <p/> <i>Note: in most cases {@link #newObject(Class)} method should be used,
-     * however this method is helpful when generic persistent classes are used.</i>
+     * <p/>
+     * <i>Note: in most cases {@link #newObject(Class)} method should be used, however
+     * this method is helpful when generic persistent classes are used.</i>
      * 
      * @since 3.0
      */
@@ -765,8 +782,9 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Registers a transient object with the context, recursively registering all
-     * transient persistent objects attached to this object via relationships. <p/><i>Note
-     * that since 3.0 this method takes Object as an argument instead of a
+     * transient persistent objects attached to this object via relationships.
+     * <p/>
+     * <i>Note that since 3.0 this method takes Object as an argument instead of a
      * {@link DataObject}.</i>
      * 
      * @param object new object that needs to be made persistent.
@@ -944,8 +962,8 @@ public class DataContext extends BaseContext implements DataChannel {
 
     /**
      * Refetches object data for ObjectId. This method is used internally by Cayenne to
-     * resolve objects in state <code>PersistenceState.HOLLOW</code>. It can also be
-     * used to refresh certain objects.
+     * resolve objects in state <code>PersistenceState.HOLLOW</code>. It can also be used
+     * to refresh certain objects.
      * 
      * @throws CayenneRuntimeException if object id doesn't match any records, or if there
      *             is more than one object is fetched.
@@ -1032,11 +1050,11 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * "Flushes" the changes to the parent {@link DataChannel}. If the parent channel is
-     * a DataContext, it updates its objects with this context's changes, without a
-     * database update. If it is a DataDomain (the most common case), the changes are
-     * written to the database. To cause cascading commit all the way to the database, one
-     * must use {@link #commitChanges()}.
+     * "Flushes" the changes to the parent {@link DataChannel}. If the parent channel is a
+     * DataContext, it updates its objects with this context's changes, without a database
+     * update. If it is a DataDomain (the most common case), the changes are written to
+     * the database. To cause cascading commit all the way to the database, one must use
+     * {@link #commitChanges()}.
      * 
      * @since 1.2
      * @see #commitChanges()
@@ -1364,8 +1382,8 @@ public class DataContext extends BaseContext implements DataChannel {
      * @param queryName a name of a GenericSelectQuery defined in one of the DataMaps. If
      *            no such query is defined, this method will throw a
      *            CayenneRuntimeException.
-     * @param expireCachedLists A flag that determines whether refresh of <b>cached lists</b>
-     *            is required in case a query uses caching.
+     * @param expireCachedLists A flag that determines whether refresh of <b>cached
+     *            lists</b> is required in case a query uses caching.
      * @since 1.1
      */
     public List<?> performQuery(String queryName, boolean expireCachedLists) {
@@ -1381,8 +1399,8 @@ public class DataContext extends BaseContext implements DataChannel {
      *            no such query is defined, this method will throw a
      *            CayenneRuntimeException.
      * @param parameters A map of parameters to use with stored query.
-     * @param expireCachedLists A flag that determines whether refresh of <b>cached lists</b>
-     *            is required in case a query uses caching.
+     * @param expireCachedLists A flag that determines whether refresh of <b>cached
+     *            lists</b> is required in case a query uses caching.
      * @since 1.1
      */
     public List<?> performQuery(

@@ -51,19 +51,13 @@ class ObjectResolver {
 
     EntityInheritanceTree inheritanceTree;
     boolean refreshObjects;
-    boolean resolveInheritance;
     DataRowStore cache;
 
-    ObjectResolver(DataContext context, ClassDescriptor descriptor, boolean refresh,
-            boolean resolveInheritanceHierarchy) {
-        init(context, descriptor, refresh, resolveInheritanceHierarchy);
+    ObjectResolver(DataContext context, ClassDescriptor descriptor, boolean refresh) {
+        init(context, descriptor, refresh);
     }
 
-    void init(
-            DataContext context,
-            ClassDescriptor descriptor,
-            boolean refresh,
-            boolean resolveInheritanceHierarchy) {
+    void init(DataContext context, ClassDescriptor descriptor, boolean refresh) {
         // sanity check
         DbEntity dbEntity = descriptor.getEntity().getDbEntity();
         if (dbEntity == null) {
@@ -87,9 +81,6 @@ class ObjectResolver {
         this.descriptor = descriptor;
         this.inheritanceTree = context.getEntityResolver().lookupInheritanceTree(
                 descriptor.getEntity());
-        this.resolveInheritance = (inheritanceTree != null)
-                ? resolveInheritanceHierarchy
-                : false;
     }
 
     /**
@@ -119,11 +110,11 @@ class ObjectResolver {
         while (it.hasNext()) {
             DataRow row = (DataRow) it.next();
             Persistent object = objectFromDataRow(row);
-            
+
             if (object == null) {
                 throw new CayenneRuntimeException("Can't build Object from row: " + row);
             }
-            
+
             results.add(object);
         }
 
@@ -207,7 +198,7 @@ class ObjectResolver {
         // determine entity to use
         ClassDescriptor classDescriptor;
 
-        if (resolveInheritance) {
+        if (inheritanceTree != null) {
             ObjEntity objectEntity = inheritanceTree.entityMatchingRow(row);
 
             // null probably means that inheritance qualifiers are messed up
@@ -318,7 +309,7 @@ class ObjectResolver {
                     .getName();
 
             Object val = dataRow.get(key);
-            
+
             // this is possible when processing left outer joint prefetches
             if (val == null) {
                 return null;

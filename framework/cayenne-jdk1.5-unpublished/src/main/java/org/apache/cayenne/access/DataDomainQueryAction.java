@@ -588,7 +588,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // take a shortcut when no prefetches exist...
             if (prefetchTree == null) {
                 objects = new ObjectResolver(context, descriptor, metadata
-                        .isRefreshingObjects(), metadata.isResolvingInherited())
+                        .isRefreshingObjects())
                         .synchronizedObjectsFromDataRows(normalizedRows);
             }
             else {

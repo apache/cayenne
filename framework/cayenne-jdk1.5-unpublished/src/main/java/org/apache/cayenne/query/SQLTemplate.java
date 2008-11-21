@@ -31,7 +31,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 import org.apache.commons.collections.IteratorUtils;
@@ -410,7 +409,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     }
 
     /**
-     * @deprecate since 3.0. With introduction of the cache strategies this setting is
+     * @deprecated since 3.0. With introduction of the cache strategies this setting is
      *            redundant, although it is still being taken into account. It will be
      *            removed in the later versions of Cayenne.
      */
@@ -419,7 +418,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     }
 
     /**
-     * @deprecate since 3.0. With introduction of the cache strategies this setting is
+     * @deprecated since 3.0. With introduction of the cache strategies this setting is
      *            redundant, although it is still being taken into account. It will be
      *            removed in the later versions of Cayenne.
      */
@@ -427,12 +426,18 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         metaData.setRefreshingObjects(flag);
     }
 
+    /**
+     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
+     */
     public boolean isResolvingInherited() {
-        return metaData.isResolvingInherited();
+        return true;
     }
 
+    /**
+     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
+     */
     public void setResolvingInherited(boolean b) {
-        metaData.setResolvingInherited(b);
+        // noop
     }
 
     /**

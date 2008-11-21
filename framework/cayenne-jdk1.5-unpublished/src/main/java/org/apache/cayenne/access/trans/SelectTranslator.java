@@ -347,12 +347,7 @@ public class SelectTranslator extends QueryAssembler {
             }
         };
 
-        if (query.isResolvingInherited()) {
-            descriptor.visitAllProperties(visitor);
-        }
-        else {
-            descriptor.visitProperties(visitor);
-        }
+        descriptor.visitAllProperties(visitor);
 
         // add remaining needed attrs from DbEntity
         DbEntity table = getRootDbEntity();

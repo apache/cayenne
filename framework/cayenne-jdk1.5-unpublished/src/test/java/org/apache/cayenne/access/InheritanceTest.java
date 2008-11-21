@@ -148,27 +148,11 @@ public class InheritanceTest extends PeopleCase {
         assertEquals(1, countObjectOfClass(employees, Manager.class));
     }
 
-    public void testSelectNoInheritanceResolving() throws Exception {
-        createTestData("testSelect");
-
-        // select Abstract Ppl
-        SelectQuery query = new SelectQuery(AbstractPerson.class);
-        query.setResolvingInherited(false);
-        assertFalse(query.isResolvingInherited());
-        List abstractPpl = context.performQuery(query);
-        assertEquals(6, abstractPpl.size());
-        assertEquals(0, countObjectOfClass(abstractPpl, CustomerRepresentative.class));
-        assertEquals(0, countObjectOfClass(abstractPpl, Employee.class));
-        assertEquals(0, countObjectOfClass(abstractPpl, Manager.class));
-    }
-
     public void testSelectInheritanceResolving() throws Exception {
         createTestData("testSelect");
 
         // select Abstract Ppl
         SelectQuery query = new SelectQuery(AbstractPerson.class);
-        query.setResolvingInherited(true);
-        assertTrue(query.isResolvingInherited());
         List abstractPpl = context.performQuery(query);
         assertEquals(6, abstractPpl.size());
 

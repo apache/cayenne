@@ -53,10 +53,9 @@ import org.apache.cayenne.util.Util;
  * result in an exception.
  * </p>
  * <p>
- * Performance note: certain operations like <code>toArray</code> would trigger full
- * list fetch.
+ * Performance note: certain operations like <code>toArray</code> would trigger full list
+ * fetch.
  * </p>
- * 
  */
 public class IncrementalFaultList<E> implements List<E> {
 
@@ -133,7 +132,6 @@ public class IncrementalFaultList<E> implements List<E> {
         // various parameters
         this.internalQuery = new SelectQuery(rootEntity);
         this.internalQuery.setFetchingDataRows(metadata.isFetchingDataRows());
-        this.internalQuery.setResolvingInherited(metadata.isResolvingInherited());
         this.internalQuery.setPrefetchTree(metadata.getPrefetchTree());
 
         this.helper = createHelper(metadata);
@@ -251,9 +249,9 @@ public class IncrementalFaultList<E> implements List<E> {
             // fill in the first page AFTER the iterator was closed, otherwise we may
             // cause an (unobvious) deadlock due to connection pool exhaustion
             if (!fetchesDataRows && lastResolved > 0) {
-                List objects = dataContext.objectsFromDataRows(rootEntity, elementsList
-                        .subList(0, lastResolved), info.isRefreshingObjects(), info
-                        .isResolvingInherited());
+                List objects = dataContext.objectsFromDataRows(
+                        info.getClassDescriptor(),
+                        elementsList.subList(0, lastResolved));
 
                 for (int i = 0; i < lastResolved; i++) {
                     elementsList.set(i, objects.get(i));

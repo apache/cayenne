@@ -218,7 +218,7 @@ class ObjectTreeResolver {
 
             node.setDataRows(rows);
             node.setResolver(new ObjectResolver(context, descriptor, queryMetadata
-                    .isRefreshingObjects(), queryMetadata.isResolvingInherited()));
+                    .isRefreshingObjects()));
             node.setIncoming(arc);
 
             if (currentNode != null) {

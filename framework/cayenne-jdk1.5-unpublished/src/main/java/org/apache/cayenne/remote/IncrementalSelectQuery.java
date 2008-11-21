@@ -304,11 +304,17 @@ class IncrementalSelectQuery extends SelectQuery {
         return query.isFetchingDataRows();
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     @Override
     public boolean isRefreshingObjects() {
         return query.isRefreshingObjects();
     }
 
+    /**
+     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
+     */
     @Override
     public boolean isResolvingInherited() {
         return query.isResolvingInherited();

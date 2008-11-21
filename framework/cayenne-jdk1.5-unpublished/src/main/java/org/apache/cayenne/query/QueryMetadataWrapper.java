@@ -140,6 +140,9 @@ class QueryMetadataWrapper implements QueryMetadata {
         return b != null && b.booleanValue();
     }
 
+    /**
+     * @deprecated since 3.0 as super is deprecated.
+     */
     public boolean isRefreshingObjects() {
         if (!overrideExists(QueryMetadata.REFRESHING_OBJECTS_PROPERTY)) {
             return info.isRefreshingObjects();
@@ -149,13 +152,11 @@ class QueryMetadataWrapper implements QueryMetadata {
         return b != null && b.booleanValue();
     }
 
+    /**
+     * @deprecated since 3.0 inheritance resolving is not optional.
+     */
     public boolean isResolvingInherited() {
-        if (!overrideExists(QueryMetadata.RESOLVING_INHERITED_PROPERTY)) {
-            return info.isResolvingInherited();
-        }
-
-        Boolean b = (Boolean) overrides.get(QueryMetadata.RESOLVING_INHERITED_PROPERTY);
-        return b != null && b.booleanValue();
+        return true;
     }
 
     public int getPageSize() {

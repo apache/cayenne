@@ -50,7 +50,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     int pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
     boolean fetchingDataRows = QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
     boolean refreshingObjects = QueryMetadata.REFRESHING_OBJECTS_DEFAULT;
-    boolean resolvingInherited = QueryMetadata.RESOLVING_INHERITED_DEFAULT;
     QueryCacheStrategy cacheStrategy = QueryCacheStrategy.getDefaultStrategy();
 
     PrefetchTreeNode prefetchTree;
@@ -77,7 +76,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         this.fetchLimit = info.getFetchLimit();
         this.pageSize = info.getPageSize();
         this.refreshingObjects = info.isRefreshingObjects();
-        this.resolvingInherited = info.isResolvingInherited();
         this.cacheStrategy = info.getCacheStrategy();
         this.cacheKey = info.getCacheKey();
 
@@ -159,9 +157,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         Object fetchingDataRows = properties
                 .get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY);
 
-        Object resolvingInherited = properties
-                .get(QueryMetadata.RESOLVING_INHERITED_PROPERTY);
-
         // deprecated cache policy... handle it for backwards compatibility.
         Object cachePolicy = properties.get(QueryMetadata.CACHE_POLICY_PROPERTY);
         Object cacheStrategy = properties.get(QueryMetadata.CACHE_STRATEGY_PROPERTY);
@@ -188,10 +183,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         this.fetchingDataRows = (fetchingDataRows != null)
                 ? "true".equalsIgnoreCase(fetchingDataRows.toString())
                 : QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
-
-        this.resolvingInherited = (resolvingInherited != null)
-                ? "true".equalsIgnoreCase(resolvingInherited.toString())
-                : QueryMetadata.RESOLVING_INHERITED_DEFAULT;
 
         this.cacheStrategy = (cacheStrategy != null) ? QueryCacheStrategy
                 .safeValueOf(cacheStrategy.toString()) : QueryCacheStrategy
@@ -226,12 +217,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
             encoder.printProperty(
                     QueryMetadata.FETCHING_DATA_ROWS_PROPERTY,
                     fetchingDataRows);
-        }
-
-        if (resolvingInherited != QueryMetadata.RESOLVING_INHERITED_DEFAULT) {
-            encoder.printProperty(
-                    QueryMetadata.RESOLVING_INHERITED_PROPERTY,
-                    resolvingInherited);
         }
 
         if (fetchOffset != QueryMetadata.FETCH_OFFSET_DEFAULT) {
@@ -464,8 +449,11 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         return refreshingObjects;
     }
 
+    /**
+     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
+     */
     public boolean isResolvingInherited() {
-        return resolvingInherited;
+        return true;
     }
 
     void setFetchingDataRows(boolean b) {
@@ -486,10 +474,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
     void setRefreshingObjects(boolean b) {
         refreshingObjects = b;
-    }
-
-    void setResolvingInherited(boolean b) {
-        resolvingInherited = b;
     }
 
     /**

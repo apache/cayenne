@@ -72,7 +72,8 @@ public interface QueryMetadata {
     public static final String SHARED_CACHE_REFRESH = "sharedcache_refresh";
 
     /**
-     * Defines the name of the property for the query {@link #getFetchLimit() fetch limit}.
+     * Defines the name of the property for the query {@link #getFetchLimit() fetch limit}
+     * .
      */
     public static final String FETCH_LIMIT_PROPERTY = "cayenne.GenericSelectQuery.fetchLimit";
 
@@ -81,14 +82,15 @@ public interface QueryMetadata {
      * should be fetched.
      */
     public static final int FETCH_LIMIT_DEFAULT = 0;
-    
+
     /**
-     * Defines the name of the property for the query {@link #getFetchOffset() fetch offset}.
+     * Defines the name of the property for the query {@link #getFetchOffset() fetch
+     * offset}.
      * 
      * @since 3.0
      */
     public static final String FETCH_OFFSET_PROPERTY = "cayenne.GenericSelectQuery.fetchOffset";
-    
+
     /**
      * Defines default query fetch start index, which is 0, meaning that matching rows
      * selected starting from the first.
@@ -115,8 +117,14 @@ public interface QueryMetadata {
 
     public static final boolean REFRESHING_OBJECTS_DEFAULT = true;
 
+    /**
+     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
+     */
     public static final String RESOLVING_INHERITED_PROPERTY = "cayenne.GenericSelectQuery.resolvingInherited";
 
+    /**
+     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
+     */
     public static final boolean RESOLVING_INHERITED_DEFAULT = true;
 
     /**
@@ -204,10 +212,9 @@ public interface QueryMetadata {
     boolean isFetchingDataRows();
 
     /**
-     * Returns <code>true</code> if the query results should replace any currently
-     * cached values, returns <code>false</code> otherwise. If
-     * {@link #isFetchingDataRows()}returns <code>true</code>, this setting is not
-     * applicable and has no effect.
+     * Returns <code>true</code> if the query results should replace any currently cached
+     * values, returns <code>false</code> otherwise. If {@link #isFetchingDataRows()}
+     * returns <code>true</code>, this setting is not applicable and has no effect.
      * 
      * @deprecated since 3.0. With introduction of the cache strategies this setting is
      *             redundant, although it is still being taken into account. It will be
@@ -218,6 +225,8 @@ public interface QueryMetadata {
     /**
      * Returns true if objects fetched via this query should be fully resolved according
      * to the inheritance hierarchy.
+     * 
+     * @deprecated since 3.0. Inheritance resolving is not optional anymore.
      */
     boolean isResolvingInherited();
 
@@ -234,7 +243,7 @@ public interface QueryMetadata {
      * @since 3.0
      */
     int getFetchOffset();
-    
+
     /**
      * @deprecated since 3.0, renamed to {@link #getFetchOffset()}.
      */

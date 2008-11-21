@@ -144,10 +144,16 @@ class IncrementalQuery implements Query {
                 return metadata.isFetchingDataRows();
             }
 
+            /**
+             * @deprecated since 3.0
+             */
             public boolean isRefreshingObjects() {
                 return metadata.isRefreshingObjects();
             }
 
+            /**
+             * @deprecated since 3.0. Inheritance resolving is not optional anymore.
+             */
             public boolean isResolvingInherited() {
                 return metadata.isResolvingInherited();
             }
