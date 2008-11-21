@@ -28,7 +28,6 @@ import java.util.TreeMap;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -77,7 +76,6 @@ public abstract class SelectPropertiesPanel extends JPanel {
     protected TextAdapter fetchLimit;
     protected TextAdapter pageSize;
     protected JComboBox cacheStrategy;
-    protected JCheckBox refreshesResults;
 
     protected ProjectController mediator;
 
@@ -111,7 +109,6 @@ public abstract class SelectPropertiesPanel extends JPanel {
 
         cacheStrategy = CayenneWidgetFactory.createComboBox();
         cacheStrategy.setRenderer(new CacheStrategyRenderer());
-        refreshesResults = new JCheckBox();
     }
 
     protected void initController() {
@@ -120,14 +117,6 @@ public abstract class SelectPropertiesPanel extends JPanel {
             public void actionPerformed(ActionEvent event) {
                 Object strategy = cacheStrategy.getModel().getSelectedItem();
                 setQueryProperty("cacheStrategy", strategy);
-            }
-        });
-
-        refreshesResults.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent event) {
-                Boolean b = refreshesResults.isSelected() ? Boolean.TRUE : Boolean.FALSE;
-                setQueryProperty("refreshingObjects", b);
             }
         });
     }
@@ -152,7 +141,6 @@ public abstract class SelectPropertiesPanel extends JPanel {
         fetchOffset.setText(String.valueOf(query.getMetaData(resolver).getFetchOffset()));
         fetchLimit.setText(String.valueOf(query.getMetaData(resolver).getFetchLimit()));
         pageSize.setText(String.valueOf(query.getMetaData(resolver).getPageSize()));
-        refreshesResults.setSelected(query.getMetaData(resolver).isRefreshingObjects());
     }
     
     void setFetchOffset(String string) {

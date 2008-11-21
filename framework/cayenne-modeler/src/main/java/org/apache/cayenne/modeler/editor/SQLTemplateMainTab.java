@@ -233,8 +233,8 @@ public class SQLTemplateMainTab extends JPanel {
             }
 
             CellConstraints cc = new CellConstraints();
-            builder.addLabel("Row Label Case:", cc.xy(1, 17));
-            builder.add(labelCase, cc.xywh(3, 17, 5, 1));
+            builder.addLabel("Row Label Case:", cc.xy(1, 15));
+            builder.add(labelCase, cc.xywh(3, 15, 5, 1));
 
             return builder;
         }

@@ -64,14 +64,12 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
         builder.add(cacheStrategy, cc.xywh(3, 3, 2, 1));
         builder.addLabel("Fetch Data Rows:", cc.xy(1, 7));
         builder.add(dataRows, cc.xy(3, 7));
-        builder.addLabel("Refresh Results:", cc.xy(1, 9));
-        builder.add(refreshesResults, cc.xy(3, 9));
-        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 11));
-        builder.add(fetchOffset.getComponent(), cc.xy(3, 11));
-        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 13));
-        builder.add(fetchLimit.getComponent(), cc.xy(3, 13));
-        builder.addLabel("Page Size:", cc.xy(1, 15));
-        builder.add(pageSize.getComponent(), cc.xy(3, 15));
+        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 9));
+        builder.add(fetchOffset.getComponent(), cc.xy(3, 9));
+        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 11));
+        builder.add(fetchLimit.getComponent(), cc.xy(3, 11));
+        builder.addLabel("Page Size:", cc.xy(1, 13));
+        builder.add(pageSize.getComponent(), cc.xy(3, 13));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
