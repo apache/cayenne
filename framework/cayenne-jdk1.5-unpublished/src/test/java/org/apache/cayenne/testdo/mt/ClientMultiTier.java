@@ -18,11 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.testdo.mt;
 
-import org.apache.cayenne.testdo.mt.auto._ClientMtTableBool;
+import org.apache.cayenne.testdo.mt.auto._ClientMultiTier;
 
-/**
- * A persistent class mapped as "MtTableBool" Cayenne entity.
- */
-public class ClientMtTableBool extends _ClientMtTableBool {
+public class ClientMultiTier extends _ClientMultiTier {
 
+    private static ClientMultiTier instance;
+
+    public ClientMultiTier() {}
+
+    public static ClientMultiTier getInstance() {
+        if(instance == null) {
+            instance = new ClientMultiTier();
+        }
+
+        return instance;
+    }
 }
