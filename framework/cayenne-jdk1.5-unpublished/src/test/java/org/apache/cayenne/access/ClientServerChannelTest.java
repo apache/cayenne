@@ -164,7 +164,6 @@ public class ClientServerChannelTest extends CayenneCase {
         // must use real SelectQuery instead of mockup as root overriding depends on the
         // fact that Query inherits from AbstractQuery.
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
-        query.setResolvingInherited(true);
 
         // must pass through the serialization pipe before running query as
         // HessianSerializer has needed preprocessing hooks...

@@ -395,11 +395,17 @@ class IncrementalSelectQuery extends SelectQuery {
         query.setQualifier(qualifier);
     }
 
+    /**
+     * @deprecated since 3.0 as wrapped method is also deprecated.
+     */
     @Override
     public void setRefreshingObjects(boolean flag) {
         query.setRefreshingObjects(flag);
     }
 
+    /**
+     * @deprecated since 3.0 as wrapped method is also deprecated.
+     */
     @Override
     public void setResolvingInherited(boolean b) {
         query.setResolvingInherited(b);

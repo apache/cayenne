@@ -43,10 +43,6 @@ public class EOSQLQuery extends SQLTemplate {
 
     protected void initFromPlist(Map plistMap) {
 
-        setResolvingInherited("YES".equalsIgnoreCase((String) plistMap.get("isDeep")));
-        setRefreshingObjects("YES".equalsIgnoreCase((String) plistMap
-                .get("refreshesRefetchedObjects")));
-
         Object fetchLimit = plistMap.get("fetchLimit");
         if (fetchLimit != null) {
             try {

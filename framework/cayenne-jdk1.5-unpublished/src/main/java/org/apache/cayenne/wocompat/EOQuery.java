@@ -58,10 +58,6 @@ public class EOQuery extends SelectQuery {
 
     protected void initFromPlist(Map plistMap) {
 
-        setResolvingInherited("YES".equalsIgnoreCase((String) plistMap.get("isDeep")));
-        setRefreshingObjects("YES".equalsIgnoreCase((String) plistMap
-                .get("refreshesRefetchedObjects")));
-
         setDistinct("YES".equalsIgnoreCase((String) plistMap.get("usesDistinct")));
 
         Object fetchLimit = plistMap.get("fetchLimit");

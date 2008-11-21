@@ -113,12 +113,18 @@ class DefaultQueryMetadata implements QueryMetadata {
         return QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public boolean isRefreshingObjects() {
-        return QueryMetadata.REFRESHING_OBJECTS_DEFAULT;
+        return true;
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public boolean isResolvingInherited() {
-        return QueryMetadata.RESOLVING_INHERITED_DEFAULT;
+        return true;
     }
 
     public int getPageSize() {

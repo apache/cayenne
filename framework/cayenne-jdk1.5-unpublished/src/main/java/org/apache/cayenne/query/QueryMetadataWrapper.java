@@ -144,12 +144,7 @@ class QueryMetadataWrapper implements QueryMetadata {
      * @deprecated since 3.0 as super is deprecated.
      */
     public boolean isRefreshingObjects() {
-        if (!overrideExists(QueryMetadata.REFRESHING_OBJECTS_PROPERTY)) {
-            return info.isRefreshingObjects();
-        }
-
-        Boolean b = (Boolean) overrides.get(QueryMetadata.REFRESHING_OBJECTS_PROPERTY);
-        return b != null && b.booleanValue();
+        return true;
     }
 
     /**
