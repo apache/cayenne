@@ -46,6 +46,7 @@ CAY-1128 Switch JOINT prefetches to generate OUTER Joins.
 CAY-1131 Add LIMIT / OFFSET clause generation method to SelectTranslator lifecycle
 CAY-1133  Split Maven cayenne:modeler goal into a separate plugin from cgen and others
 CAY-1137 Deprecate and start ignoring QueryMetadata.isResolvingInherited()
+CAY-1138 Stop using "QueryMetadata.isRefreshingObjects()"
 
 Bug fixes since M4:
 
