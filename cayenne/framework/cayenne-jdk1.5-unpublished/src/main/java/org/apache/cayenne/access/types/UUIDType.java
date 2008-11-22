@@ -79,7 +79,7 @@ public class UUIDType implements ExtendedType {
             statement.setNull(pos, type);
         }
         else if (value instanceof UUID) {
-            statement.setObject(pos, value);
+            statement.setObject(pos, value, type);
         }
         else {
             throw new IllegalArgumentException("Expected java.util.UUID, got "

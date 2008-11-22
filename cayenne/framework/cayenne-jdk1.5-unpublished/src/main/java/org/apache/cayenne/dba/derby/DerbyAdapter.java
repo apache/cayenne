@@ -86,6 +86,7 @@ public class DerbyAdapter extends JdbcAdapter {
         // address Derby driver inability to handle java.lang.Short and java.lang.Byte
         map.registerType(new ShortType(true));
         map.registerType(new ByteType(true));
+        map.registerType(new DerbyUUIDType());
     }
 
     /**
