@@ -220,6 +220,7 @@ public class OracleAdapter extends JdbcAdapter {
         map.registerType(new OracleDoubleType());
 
         map.registerType(new OracleBooleanType());
+        map.registerType(new OracleUUIDType());
     }
 
     /**
