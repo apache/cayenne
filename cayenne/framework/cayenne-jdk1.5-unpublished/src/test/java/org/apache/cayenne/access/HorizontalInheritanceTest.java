@@ -24,7 +24,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.testdo.horizontalinherit.AbstractSuperEntity;
 import org.apache.cayenne.testdo.horizontalinherit.SubEntity1;
 import org.apache.cayenne.unit.InheritanceCase;
 
@@ -53,17 +52,17 @@ public class HorizontalInheritanceTest extends InheritanceCase {
                 .addQuery(new SQLTemplate(
                         SubEntity1.class,
                         "INSERT INTO INHERITANCE_SUB_ENTITY2 "
-                                + "(ID, OVERRIDDEN_STRING_DB_ATTR, SUBENTITY_INT_DB_ATTR, SUBENTITY_INT_DB_ATTR) "
-                                + "VALUES (1, 'VX11', 101, '201')"));
+                                + "(ID, OVERRIDDEN_STRING_DB_ATTR, SUPER_INT_DB_ATTR, SUBENTITY_INT_DB_ATTR) "
+                                + "VALUES (1, 'VX11', 101, 201)"));
 
         createDataContext().performGenericQuery(inserts);
 
         SQLTemplate unionSql = new SQLTemplate(
                 SubEntity1.class,
-                "SELECT ID, SUBENTITY_STRING_DB_ATTR, SUPER_STRING_DB_ATTR, SUPER_INT_DB_ATTR, NULL, 'INHERITANCE_SUB_ENTITY1'"
+                "SELECT ID, SUBENTITY_STRING_DB_ATTR, SUPER_STRING_DB_ATTR, SUPER_INT_DB_ATTR, 0, 'INHERITANCE_SUB_ENTITY1'"
                         + " FROM INHERITANCE_SUB_ENTITY1"
                         + " UNION ALL"
-                        + " SELECT ID, OVERRIDDEN_STRING_DB_ATTR, NULL, SUBENTITY_INT_DB_ATTR, SUBENTITY_INT_DB_ATTR, 'INHERITANCE_SUB_ENTITY2'"
+                        + " SELECT ID, OVERRIDDEN_STRING_DB_ATTR, '', SUBENTITY_INT_DB_ATTR, SUBENTITY_INT_DB_ATTR, 'INHERITANCE_SUB_ENTITY2'"
                         + " FROM INHERITANCE_SUB_ENTITY2");
 
         unionSql.setFetchingDataRows(true);
