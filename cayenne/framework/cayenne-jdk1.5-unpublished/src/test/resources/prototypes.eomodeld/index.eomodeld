@@ -1,0 +1,13 @@
+{
+    EOModelVersion = "2.1"; 
+    adaptorName = None; 
+    entities = (
+        {className = "xyz.Document"; name = Document; }, 
+        {className = EOGenericRecord; name = EOPrototypes; }, 
+        {className = EOGenericRecord; name = EOXYZPrototypes; }, 
+        {className = "xyz.Estimate"; name = Estimate; parent = Document; }, 
+        {className = "xyz.Invoice"; name = Invoice; parent = Document; }, 
+        {className = "xyz.VendorPO"; name = VendorPO; parent = Document; }
+    ); 
+    internalInfo = {}; 
+}

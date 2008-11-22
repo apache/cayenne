@@ -1,0 +1,41 @@
+{
+    attributes = (
+        {
+            allowsNull = Y; 
+            columnName = IMAGE_BLOB; 
+            externalType = image; 
+            name = imageBlob; 
+            valueClassName = NSData; 
+        }, 
+        {
+            columnName = PAINTING_ID; 
+            externalType = int; 
+            name = paintingId; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {
+            allowsNull = Y; 
+            columnName = TEXT_REVIEW; 
+            externalType = text; 
+            name = textReview; 
+            valueClassName = NSString; 
+        }
+    ); 
+    attributesUsedForLocking = (paintingId); 
+    className = org.apache.art.PaintingInfo; 
+    classProperties = (imageBlob, textReview, painting); 
+    externalName = PAINTING_INFO; 
+    fetchSpecificationDictionary = {}; 
+    name = PaintingInfo; 
+    primaryKeyAttributes = (paintingId); 
+    relationships = (
+        {
+            destination = Painting; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = paintingId; sourceAttribute = paintingId; }); 
+            name = painting; 
+        }
+    ); 
+}

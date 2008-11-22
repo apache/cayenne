@@ -1,0 +1,5 @@
+<driver project-version="1.0" class="another.strange.driver.xyz.abc.1111111">
+	<url value="jdbc:mysql://long-long-host-name/test"/>
+	<connectionPool min="100000" max="1000000000" />
+	<login userName="dummy" password="dummy"/>
+</driver>

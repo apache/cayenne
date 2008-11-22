@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">	
+	<!-- ======================================= -->
+	<!-- Named Queries -->
+	<!-- ======================================= -->
+	
+	<!-- ARTIST -->
+	<bean id="A1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33001, 'AA1')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="A2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33002, 'AA2')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="A3" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33003, 'BB1')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="A4" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Artist</value></constructor-arg>
+		<constructor-arg><value>
+		insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (33004, 'BB2')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="P11" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33001, 'P1', 33001, 3000)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="P12" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.Painting</value></constructor-arg>
+		<constructor-arg><value>
+		INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) VALUES (33002, 'P2', 33002, 5000)
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="CP1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_PK_TEST (KEY1, KEY2) values ('a1', 'a2')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="CP2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundPkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_PK_TEST (KEY1, KEY2) values ('b1', 'b2')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="CF1" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_FK_TEST (PKEY, F_KEY1, F_KEY2) values (33001, 'a1', 'a2')
+		</value></constructor-arg>
+	</bean>
+	
+	<bean id="CF2" class="org.apache.cayenne.unit.util.UpdatingSQLTemplate">
+		<constructor-arg type="java.lang.Class"><value>org.apache.art.CompoundFkTestEntity</value></constructor-arg>
+		<constructor-arg><value>
+		insert into COMPOUND_FK_TEST (PKEY, F_KEY1, F_KEY2) values (33002, 'b1', 'b2')
+		</value></constructor-arg>
+	</bean>
+	
+
+	<!-- ======================================= -->
+	<!-- Data Sets -->
+	<!-- ======================================= -->	
+	
+	<bean id="prepare" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="A1"/>
+				<ref bean="A2"/>
+				<ref bean="A3"/>
+				<ref bean="A4"/>
+				<ref bean="P11"/>
+				<ref bean="P12"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="prepareCompound" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="CP1"/>
+				<ref bean="CP2"/>
+				<ref bean="CF1"/>
+				<ref bean="CF2"/>
+			</list>
+		</constructor-arg>
+	</bean>
+</beans>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="2.0">
+<domain name="pojo-domain">
+	<map name="pojo-map" location="pojo-map.map.xml"/>
+
+	<node name="pojo-node"
+		 datasource="pojo-node.driver.xml"
+		 factory="org.apache.cayenne.conf.DriverDataSourceFactory">
+			<map-ref name="pojo-map"/>
+	 </node>
+</domain>
+</domains>

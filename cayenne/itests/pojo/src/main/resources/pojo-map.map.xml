@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="2.0">
+	<property name="defaultPackage" value="org.apache.cayenne.itest.pojo"/>
+	<db-entity name="entity1">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="name" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="exposed_pk_entity1">
+		<db-attribute name="name" type="VARCHAR" length="100"/>
+		<db-attribute name="pk" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="many_to_one_entity1">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="one_to_many_entity1_id" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="one_to_many_entity1">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="Entity1" className="org.apache.cayenne.itest.pojo.Entity1" dbEntityName="entity1">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="ExposedPkEntity1" className="org.apache.cayenne.itest.pojo.ExposedPkEntity1" dbEntityName="exposed_pk_entity1">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+		<obj-attribute name="pk" type="int" db-attribute-path="pk"/>
+	</obj-entity>
+	<obj-entity name="ManyToOneEntity1" className="org.apache.cayenne.itest.pojo.ManyToOneEntity1" dbEntityName="many_to_one_entity1">
+	</obj-entity>
+	<obj-entity name="OneToManyEntity1" className="org.apache.cayenne.itest.pojo.OneToManyEntity1" dbEntityName="one_to_many_entity1">
+	</obj-entity>
+	<db-relationship name="to_one" source="many_to_one_entity1" target="one_to_many_entity1" toMany="false">
+		<db-attribute-pair source="one_to_many_entity1_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="to_many" source="one_to_many_entity1" target="many_to_one_entity1" toMany="true">
+		<db-attribute-pair source="id" target="one_to_many_entity1_id"/>
+	</db-relationship>
+	<obj-relationship name="toOne" source="ManyToOneEntity1" target="OneToManyEntity1" db-relationship-path="to_one"/>
+	<obj-relationship name="toMany" source="OneToManyEntity1" target="ManyToOneEntity1" db-relationship-path="to_many"/>
+</data-map>

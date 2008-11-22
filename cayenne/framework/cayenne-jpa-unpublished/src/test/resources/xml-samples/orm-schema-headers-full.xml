@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+
+<!-- an entity mapping that contains all possible XML elements per ORM schema. This mapping may not 
+	make sense from the ORM perspective, and used for XML loader testing only.
+-->
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm 
+       http://java.sun.com/xml/ns/persistence/orm/orm_1_0.xsd" version="1.0">
+	
+	<description>Test Description</description>
+	
+	<persistence-unit-metadata>
+		<persistence-unit-defaults>
+			<schema>dschema</schema>
+			<catalog>dcatalog</catalog>
+			<entity-listeners>
+				<entity-listener class="org.apache.cayenne.jpa.entity.MockEntityListener1">
+					<pre-persist method-name="prePersist"/>
+					<post-persist method-name="postPersist"/>
+					<pre-remove method-name="preRemove"/>
+					<post-remove method-name="postRemove"/>
+					<pre-update method-name="preUpdate"/>
+					<post-update method-name="postUpdate"/>
+					<post-load method-name="postLoad"/>
+				</entity-listener>
+			
+				<entity-listener class="org.apache.cayenne.jpa.entity.MockEntityListener2">
+					<post-persist method-name="postPersist"/>
+				</entity-listener>
+			</entity-listeners>
+		</persistence-unit-defaults>
+	</persistence-unit-metadata>
+	
+	<package>default_package</package>
+	<schema>default_schema</schema>
+	<catalog>default_catalog</catalog>
+	<access>FIELD</access>
+	
+	<!-- SEQUENCE GENERATORS -->
+	<sequence-generator name="sg-name" sequence-name="seq-name" initial-value="5" allocation-size="10"/>
+	<sequence-generator name="sg-name2"/>
+	
+	<!-- TABLE GENERATORS -->
+	<table-generator name="table-generator" table="auto_pk_table" catalog="catalog1" schema="schema1"
+			pk-column-name="next_id" value-column-name="x" pk-column-value="y" initial-value="4" allocation-size="20">
+		<unique-constraint>
+			<column-name>pk1</column-name>
+		</unique-constraint>
+	</table-generator>
+	<table-generator name="table-generator2"/>
+	
+	<!-- NAMED QUERIES -->
+	<named-query name="query1">
+		<query>select x</query>
+		<hint name="hint1" value="value1"/>
+		<hint name="hint2" value="value2"/>
+	</named-query>
+		
+	<named-query name="query2">
+		<query>select y</query>
+	</named-query>
+		
+	<!-- NAMED NATIVE QUERIES -->
+	<named-native-query name="query3" result-class="org.apache.cayenne.jpa.entity.MockResultClass" result-set-mapping="rs-mapping1">
+		<query>select z</query>
+		<hint name="hint3" value="value3"/>
+		<hint name="hint4" value="value4"/>
+	</named-native-query>
+	
+	<named-native-query name="query4">
+		<query>select a</query>
+	</named-native-query>
+	
+	<!-- SQL RESULT SET MAPPINGS -->
+	<sql-result-set-mapping name="result-map1">
+		<entity-result entity-class="org.apache.cayenne.jpa.entity.MockEntityX" discriminator-column="column1">
+			<field-result name="field1" column="column1"/>
+			<field-result name="field2" column="column2"/>
+		</entity-result>
+		<entity-result entity-class="org.apache.cayenne.jpa.entity.MockEntityY" discriminator-column="column2">
+			<field-result name="field3" column="column3"/>
+			<field-result name="field4" column="column4"/>
+		</entity-result>
+		<column-result name="column-result1"/>
+		<column-result name="column-result2"/>
+	</sql-result-set-mapping>
+	
+	<sql-result-set-mapping name="result-map2"/>
+	
+	<!-- MAPPED SUPERCLASSES -->
+	<mapped-superclass class="org.apache.cayenne.jpa.entity.MockMappedSuperclass1" access="FIELD" metadata-complete="true">
+		<id-class class="org.apache.cayenne.jpa.entity.MockIdClass"/>
+	
+		<exclude-default-listeners/>
+		<exclude-superclass-listeners/>
+	
+		<entity-listeners>
+			<entity-listener class="org.apache.cayenne.jpa.entity.MockEntityListener1">
+				<pre-persist method-name="prePersist"/>
+				<post-persist method-name="postPersist"/>
+				<pre-remove method-name="preRemove"/>
+				<post-remove method-name="postRemove"/>
+				<pre-update method-name="preUpdate"/>
+				<post-update method-name="postUpdate"/>
+				<post-load method-name="postLoad"/>
+			</entity-listener>
+		</entity-listeners>
+		
+		<pre-persist method-name="eprePersist"/>
+		<post-persist method-name="epostPersist"/>
+		<pre-remove method-name="epreRemove"/>
+		<post-remove method-name="epostRemove"/>
+		<pre-update method-name="epreUpdate"/>
+		<post-update method-name="epostUpdate"/>
+		<post-load method-name="epostLoad"/>
+	</mapped-superclass>
+	
+	<!-- MAPPED SUPERCLASS WITH EMBEDDED Id -->
+	<mapped-superclass class="org.apache.cayenne.jpa.entity.MockMappedSuperclass2">
+		<attributes>
+			<embedded-id name="embeddedId">
+				<attribute-override name="attribute1">
+					<column name="ao_column1"/>
+				</attribute-override>
+				<attribute-override name="attribute2">
+					<column name="ao_column2"/>
+				</attribute-override>
+			</embedded-id>
+		</attributes>
+	</mapped-superclass>
+	
+	<!-- Mapped Superclass w/Attributes -->
+	<mapped-superclass class="org.apache.cayenne.jpa.entity.MockMappedSuperclass3">
+	
+		<attributes>	
+			<!-- basic attribute -->			
+			<basic fetch="EAGER" optional="true" name="attribute1"/>
+		
+			<!-- basic with column attribute -->
+			<basic name="attribute9">
+				<column name="column9"/>
+			</basic>
+			
+			<!-- basic lob attribute -->
+			<basic name="attribute12">
+				<lob/>
+			</basic>
+			
+			<!-- basic temporal attribute -->
+			<basic name="attribute13">
+				<temporal>DATE</temporal>
+			</basic>
+			
+			<!-- basic enumerated attribute -->
+			<basic name="attribute14">
+				<enumerated>ORDINAL</enumerated>
+			</basic>
+			
+			<!-- version attribute -->
+			<version name="attribute2"/>
+		
+			<!-- many-to-one attribute -->
+			<many-to-one name="attribute5" target-entity="org.apache.cayenne.jpa.entity.MockTargetEntity1" fetch="LAZY" optional="true">
+				<cascade>
+					<cascade-persist/>
+					<cascade-merge/>
+				</cascade>
+			</many-to-one>
+			
+			<!-- one-to-many attribute -->
+			<one-to-many name="attribute4" target-entity="org.apache.cayenne.jpa.entity.MockTargetEntity2" fetch="LAZY" mapped-by="mb2">
+				<cascade>
+					<cascade-persist/>
+					<cascade-merge/>
+				</cascade>
+			</one-to-many>
+			
+			<!-- join-column attribute -->
+			<one-to-many name="attribute10">
+				<join-column name="join-column-10" referenced-column-name="x-ref" unique="true" nullable="true"
+					insertable="true" updatable="true" column-definition="x-def" table="jt1"/>
+			</one-to-many>
+		
+			<!-- join-table attribute -->
+			<one-to-many name="attribute11">
+				<join-table name="jtable1" catalog="catalog1" schema="schema1">
+					<join-column name="join_column1"/>
+					<join-column name="join_column2"/>
+					<inverse-join-column name="ijoin_column1"/>
+					<inverse-join-column name="ijoin_column2"/>
+					<unique-constraint>
+						<column-name>pk1</column-name>
+					</unique-constraint>
+				</join-table>
+			</one-to-many>
+			
+			<!-- one-to-one attribute -->
+			<one-to-one name="attribute3" target-entity="org.apache.cayenne.jpa.entity.MockTargetEntity1" 
+				   fetch="LAZY" optional="true" mapped-by="mb1">
+				<cascade>
+					<cascade-remove/>
+					<cascade-refresh/>
+				</cascade>
+			</one-to-one>
+		
+			<!-- many-to-many attribute -->
+			<many-to-many name="attribute6" target-entity="org.apache.cayenne.jpa.entity.MockTargetEntity1" fetch="LAZY" mapped-by="mb4">
+				<cascade>
+					<cascade-persist/>
+					<cascade-merge/>
+				</cascade>
+			</many-to-many>
+			
+			<!-- map-key attribute -->
+			<many-to-many name="attribute15">
+				<map-key name="mk"/>
+			</many-to-many>
+			
+			<!-- order-by attribute -->
+			<many-to-many name="attribute16">
+				<order-by>x ASC</order-by>
+			</many-to-many>
+		
+			<!-- embedded attribute -->
+			<embedded name="attribute7"/>
+		
+			<!-- transient attribute -->
+			<transient name="attribute8"/>
+		</attributes>
+	</mapped-superclass>
+	
+	<!-- ENTITIES -->
+	
+	<!-- no inheritance -->
+	<entity name="MockEntity1" class="org.apache.cayenne.jpa.entity.MockEntity1" access="PROPERTY" metadata-complete="true">
+		
+		<table name="mock_persistent_1" catalog="catalog1" schema="schema1">
+			<unique-constraint>
+				<column-name>column1</column-name>
+				<column-name>column2</column-name>
+			</unique-constraint>
+			<unique-constraint>
+				<column-name>column3</column-name>
+			</unique-constraint>
+		</table>
+		
+		<secondary-table name="secondary1" catalog="catalog1" schema="schema1">
+			<primary-key-join-column name="secondary_column1" referenced-column-name="column1" column-definition="count(1)"/>
+			<primary-key-join-column name="secondary_column2" referenced-column-name="column2"/>
+			<unique-constraint>
+				<column-name>column1</column-name>
+				<column-name>column2</column-name>
+			</unique-constraint>
+		</secondary-table>
+		
+		<secondary-table name="secondary2"/>
+
+		<id-class class="org.apache.cayenne.jpa.entity.MockIdClass"/>
+		
+		<sequence-generator name="sg-name" sequence-name="seq-name" initial-value="5" allocation-size="10"/>
+		
+		<table-generator name="table-generator" table="auto_pk_table" catalog="catalog1" schema="schema1"
+			pk-column-name="next_id" value-column-name="x" pk-column-value="y" initial-value="4" allocation-size="20">
+			<unique-constraint>
+				<column-name>pk1</column-name>
+			</unique-constraint>
+		</table-generator>
+		
+		<named-query name="query1">
+			<query>select x</query>
+			<hint name="hint1" value="value1"/>
+			<hint name="hint2" value="value2"/>
+		</named-query>
+		
+		<named-query name="query2">
+			<query>select y</query>
+		</named-query>
+		
+		<named-native-query name="query3" result-class="org.apache.cayenne.jpa.entity.MockResultClass" result-set-mapping="rs-mapping1">
+			<query>select z</query>
+			<hint name="hint3" value="value3"/>
+			<hint name="hint4" value="value4"/>
+		</named-native-query>
+		
+		<named-native-query name="query4">
+			<query>select a</query>
+		</named-native-query>
+		
+		<sql-result-set-mapping name="result-map1">
+			<entity-result entity-class="org.apache.cayenne.jpa.entity.MockEntityX" discriminator-column="column1">
+				<field-result name="field1" column="column1"/>
+				<field-result name="field2" column="column2"/>
+			</entity-result>
+			<entity-result entity-class="org.apache.cayenne.jpa.entity.MockEntityY" discriminator-column="column2">
+				<field-result name="field3" column="column3"/>
+				<field-result name="field4" column="column4"/>
+			</entity-result>
+			<column-result name="column-result1"/>
+			<column-result name="column-result2"/>
+		</sql-result-set-mapping>
+		
+		<exclude-default-listeners/>
+		<exclude-superclass-listeners/>
+		
+		<entity-listeners>
+			<entity-listener class="org.apache.cayenne.jpa.entity.MockEntityListener1">
+				<pre-persist method-name="prePersist"/>
+				<post-persist method-name="postPersist"/>
+				<pre-remove method-name="preRemove"/>
+				<post-remove method-name="postRemove"/>
+				<pre-update method-name="preUpdate"/>
+				<post-update method-name="postUpdate"/>
+				<post-load method-name="postLoad"/>
+			</entity-listener>
+			
+			<entity-listener class="org.apache.cayenne.jpa.entity.MockEntityListener2">
+				<post-persist method-name="postPersist"/>
+			</entity-listener>
+			
+		</entity-listeners>
+		
+		<pre-persist method-name="eprePersist"/>
+		<post-persist method-name="epostPersist"/>
+		<pre-remove method-name="epreRemove"/>
+		<post-remove method-name="epostRemove"/>
+		<pre-update method-name="epreUpdate"/>
+		<post-update method-name="epostUpdate"/>
+		<post-load method-name="epostLoad"/>
+		
+		<attributes>
+			<id name="id1">
+				<column name="id_column" unique="true" nullable="true" insertable="true" updatable="true" 
+				 	table="id_table" length="3" precision="4" scale="5"/>
+				<generated-value strategy="SEQUENCE" generator="id-generator"/>
+				<temporal>TIME</temporal>
+			</id>
+		</attributes>
+	</entity>
+	
+	<!-- JOINED inheritance -->
+	<entity name="MockEntity2" class="org.apache.cayenne.jpa.entity.MockEntity2">
+		<primary-key-join-column name="pk_column1" referenced-column-name="super_column1" column-definition="count(1)"/>
+		<primary-key-join-column name="pk_column2"/>
+		<inheritance strategy="JOINED"/>
+		
+		<attribute-override name="attribute1">
+			<column name="ao_column1" unique="true" nullable="true" insertable="true" updatable="true" 
+				column-definition="count(1)" table="ao_table1" length="3" precision="4" scale="5"/>
+		</attribute-override>
+		
+		<attribute-override name="attribute2">
+			<column name="ao_column2" unique="true" nullable="true" insertable="true" updatable="true" 
+				column-definition="count(1)" table="ao_table1" length="3" precision="4" scale="5"/>
+		</attribute-override>
+	</entity>
+	
+	<!-- SINGLE_TABLE inheritance -->
+	<entity name="MockEntity3" class="org.apache.cayenne.jpa.entity.MockEntity3">
+		<inheritance strategy="SINGLE_TABLE"/>
+		<discriminator-value>DV</discriminator-value>
+		<discriminator-column name="column1" discriminator-type="CHAR" column-definition="count(1)" length="5"/>
+	</entity>
+	
+	<!-- EMBEDDED Id -->
+	<entity name="MockEntity4" class="org.apache.cayenne.jpa.entity.MockEntity4">
+		<attributes>
+			<embedded-id name="embeddedId">
+				<attribute-override name="attribute1">
+					<column name="ao_column1"/>
+				</attribute-override>
+				<attribute-override name="attribute2">
+					<column name="ao_column2"/>
+				</attribute-override>
+		</embedded-id>
+		</attributes>
+	</entity>
+	
+	<!-- Entity with Attributes -->
+	<entity name="MockEntity5" class="org.apache.cayenne.jpa.entity.MockEntity5">
+	
+		<attribute-override name="attribute1">
+				<column name="ao_column1"/>
+		</attribute-override>
+		<attribute-override name="attribute2">
+				<column name="ao_column2"/>
+		</attribute-override>
+		
+		<attributes>
+			<!-- basic attribute -->
+			<basic fetch="EAGER" optional="true" name="attribute1"/>
+		
+			<!-- basic with column attribute -->
+			<basic name="attribute9">
+				<column name="column9"/>
+			</basic>
+			
+			<!-- basic lob attribute -->
+			<basic name="attribute12">
+				<lob/>
+			</basic>
+			
+			<!-- basic temporal attribute -->
+			<basic name="attribute13">
+				<temporal>DATE</temporal>
+			</basic>
+			
+			<!-- basic enumerated attribute -->
+			<basic name="attribute14">
+				<enumerated>ORDINAL</enumerated>
+			</basic>
+			
+			<!-- version attribute -->
+			<version name="attribute2"/>
+		
+			<!-- many-to-one attribute -->
+			<many-to-one name="attribute5" target-entity="org.apache.cayenne.jpa.entity.MockTargetEntity1" fetch="LAZY" optional="true">
+				<cascade>
+					<cascade-persist/>
+					<cascade-merge/>
+				</cascade>
+			</many-to-one>
+			
+			<!-- one-to-many attribute -->
+			<one-to-many name="attribute4" target-entity="org.apache.cayenne.jpa.entity.MockTargetEntity2" fetch="LAZY" mapped-by="mb2">
+				<cascade>
+					<cascade-persist/>
+					<cascade-merge/>
+				</cascade>
+			</one-to-many>
+			
+			<!-- join-column attribute -->
+			<one-to-many name="attribute10">
+				<join-column name="join-column-10" referenced-column-name="x-ref" unique="true" nullable="true"
+					insertable="true" updatable="true" column-definition="x-def" table="jt1"/>
+			</one-to-many>
+		
+			<!-- join-table attribute -->
+			<one-to-many name="attribute11">
+				<join-table name="jtable1" catalog="catalog1" schema="schema1">
+					<join-column name="join_column1"/>
+					<join-column name="join_column2"/>
+					<inverse-join-column name="ijoin_column1"/>
+					<inverse-join-column name="ijoin_column2"/>
+					<unique-constraint>
+						<column-name>pk1</column-name>
+					</unique-constraint>
+				</join-table>
+			</one-to-many>
+			
+			<!-- one-to-one attribute -->
+			<one-to-one name="attribute3" target-entity="org.apache.cayenne.jpa.entity.MockTargetEntity1" 
+				   fetch="LAZY" optional="true" mapped-by="mb1">
+				<cascade>
+					<cascade-remove/>
+					<cascade-refresh/>
+				</cascade>
+			</one-to-one>
+		
+			<!-- many-to-many attribute -->
+			<many-to-many name="attribute6" target-entity="org.apache.cayenne.jpa.entity.MockTargetEntity1" fetch="LAZY" mapped-by="mb4">
+				<cascade>
+					<cascade-persist/>
+					<cascade-merge/>
+				</cascade>
+			</many-to-many>
+			
+			<!-- map-key attribute -->
+			<many-to-many name="attribute15">
+				<map-key name="mk"/>
+			</many-to-many>
+			
+			<!-- order-by attribute -->
+			<many-to-many name="attribute16">
+				<order-by>x ASC</order-by>
+			</many-to-many>
+		
+			<!-- embedded attribute -->
+			<embedded name="attribute7"/>
+		
+			<!-- transient attribute -->
+			<transient name="attribute8"/>
+		</attributes>
+	</entity>
+	
+	<!-- EMBEDDABLES -->
+	
+	<embeddable class="org.apache.cayenne.jpa.entity.MockEmbed1" access="FIELD" metadata-complete="true">
+		<attributes>
+			<basic fetch="EAGER" optional="true" name="ea1">
+				<column name="column9"/>
+				<lob/>
+			</basic>
+
+			<transient name="ea2"/>
+		</attributes>
+	</embeddable>
+	
+	<embeddable class="org.apache.cayenne.jpa.entity.MockEmbded2"/>
+	
+</entity-mappings>

@@ -1,0 +1,15 @@
+<Test type="org.apache.cayenne.xml.TestObject">
+<parent type="org.apache.cayenne.xml.TestObject">
+<parent type="org.apache.cayenne.xml.TestObject">
+<name type="java.lang.String">Sue</name>
+<age type="java.lang.Integer">117</age>
+<open type="java.lang.Boolean">false</open>
+</parent>
+<name type="java.lang.String">Bill</name>
+<age type="java.lang.Integer">94</age>
+<open type="java.lang.Boolean">true</open>
+</parent>
+<name type="java.lang.String">George</name>
+<age type="java.lang.Integer">57</age>
+<open type="java.lang.Boolean">false</open>
+</Test>

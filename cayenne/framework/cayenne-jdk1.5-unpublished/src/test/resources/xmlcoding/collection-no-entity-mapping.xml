@@ -1,0 +1,8 @@
+<model>
+    <entity name="org.apache.cayenne.xml.TestObject" xmlTag="Family">
+        <property name="name" xmlTag="Name"/>
+		
+		<!-- children should decode as strings as there is no mapping for the tag 'Child' -->
+        <property name="children" xmlTag="Child"/>
+    </entity>
+</model>
