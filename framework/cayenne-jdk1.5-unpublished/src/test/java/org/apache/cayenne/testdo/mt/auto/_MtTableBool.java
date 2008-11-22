@@ -13,7 +13,7 @@ public abstract class _MtTableBool extends CayenneDataObject {
     public static final String BLABLACHECK_PROPERTY = "blablacheck";
     public static final String NUMBER_PROPERTY = "number";
 
-    public static final String ID_PK_COLUMN = "id";
+    public static final String ID_PK_COLUMN = "ID";
 
     public void setBlablacheck(boolean blablacheck) {
         writeProperty("blablacheck", blablacheck);

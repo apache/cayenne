@@ -64,9 +64,9 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="MT_TABLE_BOOL">
-		<db-attribute name="blablacheck" type="BOOLEAN"/>
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="number" type="INTEGER"/>
+		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NUMERIC_COLUMN" type="INTEGER"/>
 	</db-entity>
 	<obj-entity name="MtDeleteCascade" className="org.apache.cayenne.testdo.mt.MtDeleteCascade" clientClassName="org.apache.cayenne.testdo.mt.ClientMtDeleteCascade" dbEntityName="MT_DELETE_CASCADE">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
@@ -110,8 +110,8 @@
 	<obj-entity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable5" dbEntityName="MT_TABLE5">
 	</obj-entity>
 	<obj-entity name="MtTableBool" className="org.apache.cayenne.testdo.mt.MtTableBool" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTableBool" dbEntityName="MT_TABLE_BOOL">
-		<obj-attribute name="blablacheck" type="boolean" db-attribute-path="blablacheck"/>
-		<obj-attribute name="number" type="int" db-attribute-path="number"/>
+		<obj-attribute name="blablacheck" type="boolean" db-attribute-path="BOOLEAN_COLUMN"/>
+		<obj-attribute name="number" type="int" db-attribute-path="NUMERIC_COLUMN"/>
 	</obj-entity>
 	<db-relationship name="cascade" source="MT_DELETE_CASCADE" target="MT_DELETE_RULE" toMany="false">
 		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
