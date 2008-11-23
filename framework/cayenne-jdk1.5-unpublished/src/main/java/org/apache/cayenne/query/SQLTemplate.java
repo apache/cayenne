@@ -423,7 +423,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      *            removed in the later versions of Cayenne.
      */
     public void setRefreshingObjects(boolean flag) {
-        metaData.setRefreshingObjects(flag);
+        // noop
     }
 
     /**

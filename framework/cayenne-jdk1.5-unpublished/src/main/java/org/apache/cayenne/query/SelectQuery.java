@@ -529,7 +529,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      *            removed in the later versions of Cayenne.
      */
     public void setRefreshingObjects(boolean flag) {
-        metaData.setRefreshingObjects(flag);
+        // noop
     }
 
     /**

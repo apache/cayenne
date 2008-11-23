@@ -49,7 +49,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
     int pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
     boolean fetchingDataRows = QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
-    boolean refreshingObjects = QueryMetadata.REFRESHING_OBJECTS_DEFAULT;
     QueryCacheStrategy cacheStrategy = QueryCacheStrategy.getDefaultStrategy();
 
     PrefetchTreeNode prefetchTree;
@@ -75,7 +74,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         this.fetchingDataRows = info.isFetchingDataRows();
         this.fetchLimit = info.getFetchLimit();
         this.pageSize = info.getPageSize();
-        this.refreshingObjects = info.isRefreshingObjects();
         this.cacheStrategy = info.getCacheStrategy();
         this.cacheKey = info.getCacheKey();
 
@@ -152,8 +150,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         Object fetchOffset = properties.get(QueryMetadata.FETCH_OFFSET_PROPERTY);
         Object fetchLimit = properties.get(QueryMetadata.FETCH_LIMIT_PROPERTY);
         Object pageSize = properties.get(QueryMetadata.PAGE_SIZE_PROPERTY);
-        Object refreshingObjects = properties
-                .get(QueryMetadata.REFRESHING_OBJECTS_PROPERTY);
         Object fetchingDataRows = properties
                 .get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY);
 
@@ -175,10 +171,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         this.pageSize = (pageSize != null)
                 ? Integer.parseInt(pageSize.toString())
                 : QueryMetadata.PAGE_SIZE_DEFAULT;
-
-        this.refreshingObjects = (refreshingObjects != null)
-                ? "true".equalsIgnoreCase(refreshingObjects.toString())
-                : QueryMetadata.REFRESHING_OBJECTS_DEFAULT;
 
         this.fetchingDataRows = (fetchingDataRows != null)
                 ? "true".equalsIgnoreCase(fetchingDataRows.toString())
@@ -207,11 +199,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     }
 
     public void encodeAsXML(XMLEncoder encoder) {
-        if (refreshingObjects != QueryMetadata.REFRESHING_OBJECTS_DEFAULT) {
-            encoder.printProperty(
-                    QueryMetadata.REFRESHING_OBJECTS_PROPERTY,
-                    refreshingObjects);
-        }
 
         if (fetchingDataRows != QueryMetadata.FETCHING_DATA_ROWS_DEFAULT) {
             encoder.printProperty(
@@ -445,8 +432,11 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         return getFetchOffset();
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public boolean isRefreshingObjects() {
-        return refreshingObjects;
+        return true;
     }
 
     /**
@@ -470,10 +460,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
     void setPageSize(int i) {
         pageSize = i;
-    }
-
-    void setRefreshingObjects(boolean b) {
-        refreshingObjects = b;
     }
 
     /**
