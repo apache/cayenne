@@ -95,6 +95,9 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
         return result.nextDataRow();
     }
 
+    /**
+     * @deprecated since 3.0 in favor of {@link #nextId(DbEntity)}.
+     */
     public Map nextObjectId(DbEntity entity) throws CayenneException {
         return result.nextObjectId(entity);
     }

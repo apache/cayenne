@@ -130,6 +130,9 @@ public class LimitResultIterator implements ResultIterator {
 
     }
 
+    /**
+     * @deprecated since 3.0 in favor of {@link #nextId(DbEntity)}.
+     */
     public Map<String, Object> nextObjectId(DbEntity entity) throws CayenneException {
 
         if (!hasNextRow()) {
