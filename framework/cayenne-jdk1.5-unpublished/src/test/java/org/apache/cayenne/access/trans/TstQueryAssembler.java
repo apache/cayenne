@@ -25,10 +25,8 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 
 public class TstQueryAssembler extends QueryAssembler {
@@ -47,16 +45,6 @@ public class TstQueryAssembler extends QueryAssembler {
         }
         super.setEntityResolver(node.getEntityResolver());
         super.setQuery(q);
-    }
-    
-    @Override
-    public DbEntity getRootDbEntity() {
-        return query.getMetaData(entityResolver).getDbEntity();
-    }
-    
-    @Override
-    public ObjEntity getRootEntity() {
-        return query.getMetaData(entityResolver).getObjEntity();
     }
 
     public void dispose() throws SQLException {

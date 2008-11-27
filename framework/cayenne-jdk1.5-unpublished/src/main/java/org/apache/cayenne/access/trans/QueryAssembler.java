@@ -35,6 +35,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * Abstract superclass of Query translators.
@@ -42,6 +43,7 @@ import org.apache.cayenne.query.Query;
 public abstract class QueryAssembler {
 
     protected Query query;
+    protected QueryMetadata queryMetadata;
     protected Connection connection;
     protected DbAdapter adapter;
     protected EntityResolver entityResolver;
@@ -89,8 +91,13 @@ public abstract class QueryAssembler {
         return query;
     }
 
+    public QueryMetadata getQueryMetadata() {
+        return queryMetadata;
+    }
+
     public void setQuery(Query query) {
         this.query = query;
+        refreshMetadata();
     }
 
     public void setConnection(Connection connection) {
@@ -103,11 +110,25 @@ public abstract class QueryAssembler {
 
     public void setEntityResolver(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
+        refreshMetadata();
     }
 
-    public abstract ObjEntity getRootEntity();
+    private void refreshMetadata() {
+        if (query != null && entityResolver != null) {
+            queryMetadata = query.getMetaData(entityResolver);
+        }
+        else {
+            queryMetadata = null;
+        }
+    }
 
-    public abstract DbEntity getRootDbEntity();
+    public DbEntity getRootDbEntity() {
+        return queryMetadata.getDbEntity();
+    }
+
+    public ObjEntity getRootEntity() {
+        return queryMetadata.getObjEntity();
+    }
 
     /**
      * A callback invoked by a child qualifier or ordering processor allowing query

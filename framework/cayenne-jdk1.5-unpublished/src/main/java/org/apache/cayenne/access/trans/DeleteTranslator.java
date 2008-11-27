@@ -22,7 +22,6 @@ package org.apache.cayenne.access.trans;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.DeleteQuery;
 
 /**
@@ -32,16 +31,6 @@ import org.apache.cayenne.query.DeleteQuery;
  * @deprecated since 3.0 since {@link DeleteQuery} is deprecated.
  */
 public class DeleteTranslator extends QueryAssembler {
-    
-    @Override
-    public DbEntity getRootDbEntity() {
-        return query.getMetaData(entityResolver).getDbEntity();
-    }
-    
-    @Override
-    public ObjEntity getRootEntity() {
-        return query.getMetaData(entityResolver).getObjEntity();
-    }
 
     @Override
     public void dbRelationshipAdded(

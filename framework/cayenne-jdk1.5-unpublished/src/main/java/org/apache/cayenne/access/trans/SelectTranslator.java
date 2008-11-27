@@ -88,16 +88,6 @@ public class SelectTranslator extends QueryAssembler {
      */
     boolean forcingDistinct;
 
-    @Override
-    public DbEntity getRootDbEntity() {
-        return query.getMetaData(entityResolver).getDbEntity();
-    }
-
-    @Override
-    public ObjEntity getRootEntity() {
-        return query.getMetaData(entityResolver).getObjEntity();
-    }
-
     protected JoinStack createJoinStack() {
         return new JoinStack();
     }
@@ -291,9 +281,7 @@ public class SelectTranslator extends QueryAssembler {
         // * GROUP BY
         // * joined prefetch PK
 
-        ClassDescriptor descriptor = query
-                .getMetaData(entityResolver)
-                .getClassDescriptor();
+        ClassDescriptor descriptor = queryMetadata.getClassDescriptor();
         ObjEntity oe = descriptor.getEntity();
 
         PropertyVisitor visitor = new PropertyVisitor() {

@@ -31,22 +31,13 @@ import org.apache.cayenne.exp.TstTernaryExpSuite;
 import org.apache.cayenne.exp.TstUnaryExpSuite;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MockQuery;
-import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class QualifierTranslatorTest extends CayenneCase {
 
-    protected TstQueryAssembler qa;
-
-    @Override
-    protected void setUp() throws java.lang.Exception {
-        qa = new TstQueryAssembler(getNode(), new SelectQuery());
-    }
-
     public void testNonQualifiedQuery() throws Exception {
-        qa.dispose();
-        qa = new TstQueryAssembler(getNode(), new MockQuery());
+        TstQueryAssembler qa = new TstQueryAssembler(getNode(), new MockQuery());
 
         try {
             new QualifierTranslator(qa).appendPart(new StringBuilder());
@@ -61,6 +52,8 @@ public class QualifierTranslatorTest extends CayenneCase {
     }
 
     public void testNullQualifier() throws Exception {
+        TstQueryAssembler qa = new TstQueryAssembler(getNode(), new SelectQuery());
+
         StringBuilder out = new StringBuilder();
         try {
             new QualifierTranslator(qa).appendPart(out);
@@ -110,17 +103,21 @@ public class QualifierTranslatorTest extends CayenneCase {
 
     private void doExpressionTest(TstExpressionSuite suite) throws Exception {
 
+        TstQueryAssembler qa = new TstQueryAssembler(getNode(), new MockQuery());
+
         try {
             TstExpressionCase[] cases = suite.cases();
 
             int len = cases.length;
             for (int i = 0; i < len; i++) {
                 try {
-                    QualifiedQuery q = (QualifiedQuery) qa.getQuery();
+
+                    ObjEntity entity = getObjEntity(cases[i].getRootEntity());
+                    assertNotNull(entity);
+                    SelectQuery q = new SelectQuery(entity);
                     q.setQualifier(cases[i].getCayenneExp());
-                    ObjEntity ent = getObjEntity(cases[i].getRootEntity());
-                    assertNotNull(ent);
-                    q.setRoot(ent);
+                    qa.setQuery(q);
+                    
                     StringBuilder out = new StringBuilder();
                     new QualifierTranslator(qa).appendPart(out);
                     cases[i].assertTranslatedWell(out.toString());

@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * @since 1.2
@@ -29,11 +28,10 @@ class PostgresSelectTranslator extends SelectTranslator {
 
     @Override
     protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
-        QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
 
         // limit results
-        int offset = metadata.getFetchOffset();
-        int limit = metadata.getFetchLimit();
+        int offset = queryMetadata.getFetchOffset();
+        int limit = queryMetadata.getFetchLimit();
 
         if (limit > 0) {
             buffer.append(" LIMIT ").append(limit);

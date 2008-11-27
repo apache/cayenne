@@ -34,7 +34,7 @@ class OpenBaseSelectTranslator extends SelectTranslator {
 
     @Override
     protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
-        int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
+        int limit = queryMetadata.getFetchLimit();
         if (limit > 0) {
             buffer.append(" RETURN RESULTS ").append(limit);
         }

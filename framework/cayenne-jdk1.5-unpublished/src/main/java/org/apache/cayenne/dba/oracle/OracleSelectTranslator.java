@@ -33,9 +33,8 @@ class OracleSelectTranslator extends SelectTranslator {
 
     @Override
     protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
-        QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
-        int offset = metadata.getFetchOffset();
-        int limit = metadata.getFetchLimit();
+        int offset = queryMetadata.getFetchOffset();
+        int limit = queryMetadata.getFetchLimit();
 
         if (limit > 0 || offset > 0) {
             int max = (limit <= 0) ? Integer.MAX_VALUE : limit + offset;

@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * @since 1.2
@@ -29,9 +28,8 @@ class MySQLSelectTranslator extends SelectTranslator {
 
     @Override
     protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
-        QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
-        int offset = metadata.getFetchOffset();
-        int limit = metadata.getFetchLimit();
+        int offset = queryMetadata.getFetchOffset();
+        int limit = queryMetadata.getFetchLimit();
 
         if (offset > 0 || limit > 0) {
             buffer.append(" LIMIT ");

@@ -31,7 +31,7 @@ class FrontBaseSelectTranslator extends SelectTranslator {
     @Override
     protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
 
-        int limit = getQuery().getMetaData(getEntityResolver()).getFetchLimit();
+        int limit = queryMetadata.getFetchLimit();
         if (limit > 0 && buffer.length() > SELECT_PREFIX.length()) {
 
             if (SELECT_PREFIX.equals(buffer.substring(0, SELECT_PREFIX.length()))) {
