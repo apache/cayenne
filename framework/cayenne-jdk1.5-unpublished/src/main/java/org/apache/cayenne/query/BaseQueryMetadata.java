@@ -54,6 +54,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     PrefetchTreeNode prefetchTree;
     String cacheKey;
     String[] cacheGroups;
+    SQLResultSetMapping resultSetMapping;
 
     transient DbEntity dbEntity;
     transient DataMap dataMap;
@@ -76,6 +77,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         this.pageSize = info.getPageSize();
         this.cacheStrategy = info.getCacheStrategy();
         this.cacheKey = info.getCacheKey();
+        this.resultSetMapping = info.getResultSetMapping();
 
         setPrefetchTree(info.getPrefetchTree());
     }
@@ -160,9 +162,8 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         Object cacheGroups = properties.get(QueryMetadata.CACHE_GROUPS_PROPERTY);
 
         // init ivars from properties
-        this.fetchOffset = (fetchOffset != null)
-                ? Integer.parseInt(fetchOffset.toString())
-                : QueryMetadata.FETCH_OFFSET_DEFAULT;
+        this.fetchOffset = (fetchOffset != null) ? Integer.parseInt(fetchOffset
+                .toString()) : QueryMetadata.FETCH_OFFSET_DEFAULT;
 
         this.fetchLimit = (fetchLimit != null)
                 ? Integer.parseInt(fetchLimit.toString())
@@ -287,12 +288,17 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     }
 
     /**
-     * Always returns null, as this is not supported for most classic queries.
-     * 
+     * @since 3.0
+     */
+    void setResultSetMapping(SQLResultSetMapping resultSetMapping) {
+        this.resultSetMapping = resultSetMapping;
+    }
+
+    /**
      * @since 3.0
      */
     public SQLResultSetMapping getResultSetMapping() {
-        return null;
+        return resultSetMapping;
     }
 
     /**
