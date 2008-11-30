@@ -33,6 +33,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.EntityResult;
 import org.apache.commons.collections.IteratorUtils;
 
 /**
@@ -57,6 +58,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     protected ObjEntity entity;
     protected Collection<DbEntity> rootDbEntities;
+    protected EntityResult entityResult;
 
     // combines declared and super properties
     protected Collection<Property> idProperties;
@@ -173,11 +175,16 @@ public class PersistentDescriptor implements ClassDescriptor {
         return entity;
     }
 
-    /**
-     * @since 3.0
-     */
     public Collection<DbEntity> getRootDbEntities() {
         return rootDbEntities;
+    }
+    
+    public EntityResult getEntityResult() {
+        return entityResult;
+    }
+    
+    public void setEntityResult(EntityResult entityResult) {
+        this.entityResult = entityResult;
     }
 
     public boolean isFault(Object object) {

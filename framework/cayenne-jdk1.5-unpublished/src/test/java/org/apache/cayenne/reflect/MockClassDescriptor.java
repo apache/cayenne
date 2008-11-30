@@ -27,6 +27,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.EntityResult;
 
 public class MockClassDescriptor implements ClassDescriptor {
 
@@ -35,6 +36,10 @@ public class MockClassDescriptor implements ClassDescriptor {
     }
 
     public ObjEntity getEntity() {
+        return null;
+    }
+    
+    public EntityResult getEntityResult() {
         return null;
     }
     

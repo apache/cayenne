@@ -19,6 +19,7 @@
 package org.apache.cayenne.reflect;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -27,12 +28,15 @@ import org.apache.cayenne.exp.TraversalHelper;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.query.EntityResult;
 
 /**
  * A convenience superclass for {@link ClassDescriptorFactory} implementors.
@@ -130,6 +134,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         indexRootDbEntities(descriptor, inheritanceTree);
 
         indexSuperclassProperties(descriptor);
+        indexEntityResult(descriptor);
 
         return descriptor;
     }
@@ -311,6 +316,70 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 }
             });
         }
+    }
+
+    protected void indexEntityResult(PersistentDescriptor descriptor) {
+
+        if (descriptor.getRootDbEntities().isEmpty()) {
+            // client descriptor?
+            return;
+        }
+
+        final EntityResult entityResult = new EntityResult(descriptor.getObjectClass());
+        final Set<String> visited = new HashSet<String>();
+
+        PropertyVisitor visitor = new PropertyVisitor() {
+
+            public boolean visitAttribute(AttributeProperty property) {
+                ObjAttribute oa = property.getAttribute();
+                if (visited.add(oa.getDbAttributePath())) {
+                    entityResult.addObjectField(
+                            oa.getEntity().getName(),
+                            oa.getName(),
+                            oa.getDbAttributePath());
+                }
+                return true;
+            }
+
+            public boolean visitToMany(ToManyProperty property) {
+                return true;
+            }
+
+            public boolean visitToOne(ToOneProperty property) {
+                ObjRelationship rel = property.getRelationship();
+                DbRelationship dbRel = rel.getDbRelationships().get(0);
+
+                for (DbJoin join : dbRel.getJoins()) {
+                    DbAttribute src = join.getSource();
+                    if (src.isForeignKey() && visited.add(src.getName())) {
+                        entityResult.addDbField(src.getName(), src.getName());
+                    }
+                }
+
+                return true;
+            }
+        };
+
+        descriptor.visitProperties(visitor);
+
+        // append id columns ... (some may have been appended already via relationships)
+        for (String pkName : descriptor.getEntity().getPrimaryKeyNames()) {
+            if (visited.add(pkName)) {
+                entityResult.addDbField(pkName, pkName);
+            }
+        }
+
+        // append inheritance discriminator columns...
+        Iterator<DbAttribute> discriminatorColumns = descriptor.getDiscriminatorColumns();
+        while (discriminatorColumns.hasNext()) {
+            DbAttribute column = discriminatorColumns.next();
+
+            if (visited.add(column.getName())) {
+                entityResult.addDbField(column.getName(), column.getName());
+            }
+        }
+
+        descriptor.setEntityResult(entityResult);
     }
 
     /**

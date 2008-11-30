@@ -187,8 +187,6 @@ class Compiler {
             }
         };
 
-        // EJBQL queries are polymorphic by definition - there is no distinction between
-        // inheritance/no-inheritance fetch
         descriptor.visitAllProperties(visitor);
 
         // append id columns ... (some may have been appended already via relationships)

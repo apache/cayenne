@@ -47,7 +47,6 @@ import org.apache.commons.collections.Transformer;
 /**
  * ObjEntity is a mapping descriptor for a DataObject Java class. It contains the
  * information about the Java class itself, as well as its mapping to the DbEntity layer.
- * 
  */
 public class ObjEntity extends Entity implements ObjEntityListener {
 
@@ -862,11 +861,14 @@ public class ObjEntity extends Entity implements ObjEntityListener {
      * @since 3.0
      */
     public Collection<String> getPrimaryKeyNames() {
-        if (getDbEntity() == null) {
-            throw new CayenneRuntimeException("No DbEntity for ObjEntity: " + getName());
+        DbEntity dbEntity = getDbEntity();
+
+        // abstract entities may have no DbEntity mapping
+        if (dbEntity == null) {
+            return Collections.emptyList();
         }
 
-        Collection<DbAttribute> pkAttributes = getDbEntity().getPrimaryKeys();
+        Collection<DbAttribute> pkAttributes = dbEntity.getPrimaryKeys();
         Collection<String> names = new ArrayList<String>(pkAttributes.size());
 
         for (DbAttribute pk : pkAttributes) {

@@ -25,6 +25,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.EntityResult;
 
 /**
  * A ClassDescriptor wrapper that compiles decorated descriptor lazily on first access.
@@ -80,6 +81,11 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
     public Collection<DbEntity> getRootDbEntities() {
         checkDescriptorInitialized();
         return descriptor.getRootDbEntities();
+    }
+
+    public EntityResult getEntityResult() {
+        checkDescriptorInitialized();
+        return descriptor.getEntityResult();
     }
 
     public Class<?> getObjectClass() {

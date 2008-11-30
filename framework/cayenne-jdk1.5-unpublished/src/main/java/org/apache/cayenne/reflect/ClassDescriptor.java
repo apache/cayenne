@@ -26,6 +26,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.EntityResult;
 
 /**
  * A runtime descriptor of an persistent class.
@@ -50,6 +51,14 @@ public interface ClassDescriptor {
      * @since 3.0
      */
     Collection<DbEntity> getRootDbEntities();
+
+    /**
+     * Returns the EntityResult that describes the mapping of the ResultSet when entity
+     * data is fetched.
+     * 
+     * @since 3.0
+     */
+    EntityResult getEntityResult();
 
     /**
      * Returns a class mapped by this descriptor.
@@ -151,7 +160,7 @@ public interface ClassDescriptor {
 
     /**
      * Passes the visitor to the properties "visit" method for all properties declared in
-     * this descriptor and all its subdescriptors. Properties that are overridden in
+     * this descriptor and all its super-decsriptors. Properties that are overridden in
      * subdescriptors will include overridden information. Walkthrough is terminated in
      * case one of the properties returns false. Returns true if all visited properties
      * returned true, false - if one property returned false.
