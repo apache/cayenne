@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.query;
+package org.apache.cayenne.map;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,14 +24,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.ClassDescriptor;
-
 /**
  * A metadata object that provides mapping of a set of result columns to an ObjEntity.
- * Used by {@link SQLResultSetMapping}.
+ * Used by {@link SQLResultSet}.
  * 
  * @since 3.0
  */
@@ -47,10 +42,6 @@ public class EntityResult {
 
     public EntityResult(String entityName) {
         this.entityName = entityName;
-    }
-
-    public ClassDescriptor getClassDescriptor(EntityResolver resolver) {
-        return resolver.getClassDescriptor(getRootEntity(resolver).getName());
     }
 
     /**

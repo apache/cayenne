@@ -72,12 +72,12 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.EntityListener;
+import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.project.ProjectPath;
-import org.apache.cayenne.query.EntityResult;
-import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.util.BaseTreeVisitor;
 import org.apache.cayenne.util.HierarchicalTreeVisitor;
 import org.apache.cayenne.util.TraversalUtil;
@@ -651,7 +651,7 @@ public class DataMapConverter {
         public boolean onStartNode(ProjectPath path) {
             JpaSqlResultSetMapping jpaMapping = (JpaSqlResultSetMapping) path.getObject();
 
-            SQLResultSetMapping mapping = new SQLResultSetMapping(jpaMapping.getName());
+            SQLResultSet mapping = new SQLResultSet(jpaMapping.getName());
 
             for (JpaColumnResult c : jpaMapping.getColumnResults()) {
                 mapping.addColumnResult(c.getName());
@@ -670,7 +670,7 @@ public class DataMapConverter {
             // my understanding of JPA SQLResultSetMapping is that regardless of whether
             // it belongs to entity or to the entire persistence unit, the scope is still
             // persistence unit??
-            targetPath.firstInstanceOf(DataMap.class).addResultSetMapping(mapping);
+            targetPath.firstInstanceOf(DataMap.class).addResultSet(mapping);
             return false;
         }
     }

@@ -36,10 +36,10 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.EntityResult;
-import org.apache.cayenne.query.SQLResultSetMapping;
+import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -124,7 +124,7 @@ class Compiler {
         compiled.setIncomingById(incomingById);
 
         if (resultSetMappings != null) {
-            SQLResultSetMapping mapping = new SQLResultSetMapping();
+            SQLResultSet mapping = new SQLResultSet();
 
             for (int i = 0; i < resultSetMappings.size(); i++) {
                 Object nextMapping = resultSetMappings.get(i);

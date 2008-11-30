@@ -16,30 +16,36 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.query;
+package org.apache.cayenne.map;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 /**
- * A metadata object that defines how a DataRow can be converted to result objects. This
- * object provides mapping in a JPA-compliant manner, i.e. the DataRow is mapped either to
- * a single Object or an Object[]. Each object (single result object or an array element
- * object) can be a scalar or a Persistent object.
+ * A metadata object that defines how a row in a result set can be converted to result
+ * objects. SQLResultSet can map to a single scalar, a single entity or a mix of scalars
+ * and entities that is represented as an Object[].
  * 
  * @since 3.0
  */
-public class SQLResultSetMapping {
+public class SQLResultSet {
 
     protected String name;
     protected List<Object> resultDescriptors;
 
-    public SQLResultSetMapping() {
+    /**
+     * Creates an unnamed SQLResultSet.
+     */
+    public SQLResultSet() {
 
     }
 
-    public SQLResultSetMapping(String name) {
+    /**
+     * Creates a named SQLResultSet.
+     */
+    public SQLResultSet(String name) {
         this.name = name;
     }
 

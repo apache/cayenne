@@ -34,8 +34,8 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.EntityResult;
-import org.apache.cayenne.query.SQLResultSetMapping;
+import org.apache.cayenne.map.EntityResult;
+import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -69,10 +69,10 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         artistResult.addObjectField(Artist.ARTIST_NAME_PROPERTY, "Y");
         artistResult.addObjectField(Artist.DATE_OF_BIRTH_PROPERTY, "Z");
 
-        SQLResultSetMapping rsMap = new SQLResultSetMapping();
+        SQLResultSet rsMap = new SQLResultSet();
         rsMap.addEntityResult(artistResult);
         rsMap.addColumnResult("C");
-        query.setResultSetMapping(rsMap);
+        query.setResultSet(rsMap);
 
         List objects = createDataContext().performQuery(query);
         assertEquals(4, objects.size());
@@ -110,9 +110,9 @@ public class DataContextSQLTemplateTest extends CayenneCase {
                 "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
         query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
 
-        SQLResultSetMapping rsMap = new SQLResultSetMapping();
+        SQLResultSet rsMap = new SQLResultSet();
         rsMap.addColumnResult("X");
-        query.setResultSetMapping(rsMap);
+        query.setResultSet(rsMap);
 
         List objects = createDataContext().performQuery(query);
         assertEquals(1, objects.size());
@@ -137,10 +137,10 @@ public class DataContextSQLTemplateTest extends CayenneCase {
                 "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY 77");
         query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
 
-        SQLResultSetMapping rsMap = new SQLResultSetMapping();
+        SQLResultSet rsMap = new SQLResultSet();
         rsMap.addColumnResult("X");
         rsMap.addColumnResult("Y");
-        query.setResultSetMapping(rsMap);
+        query.setResultSet(rsMap);
 
         List objects = createDataContext().performQuery(query);
         assertEquals(1, objects.size());

@@ -26,6 +26,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -60,7 +61,7 @@ class DefaultQueryMetadata implements QueryMetadata {
     /**
      * @since 3.0
      */
-    public SQLResultSetMapping getResultSetMapping() {
+    public SQLResultSet getResultSetMapping() {
         return null;
     }
 

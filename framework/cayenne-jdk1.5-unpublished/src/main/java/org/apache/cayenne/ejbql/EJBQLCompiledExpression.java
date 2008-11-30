@@ -21,7 +21,7 @@ package org.apache.cayenne.ejbql;
 import java.util.List;
 
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.query.SQLResultSetMapping;
+import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -62,5 +62,5 @@ public interface EJBQLCompiledExpression {
      * Returns a mapping of the result set columns, or null if this is not a select
      * expression.
      */
-    SQLResultSetMapping getResultSetMapping();
+    SQLResultSet getResultSet();
 }

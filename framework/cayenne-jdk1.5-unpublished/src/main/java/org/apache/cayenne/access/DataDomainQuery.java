@@ -25,6 +25,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -32,7 +33,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
-import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -51,7 +51,7 @@ class DataDomainQuery implements Query, QueryMetadata {
         return this;
     }
 
-    public SQLResultSetMapping getResultSetMapping() {
+    public SQLResultSet getResultSetMapping() {
         return null;
     }
 

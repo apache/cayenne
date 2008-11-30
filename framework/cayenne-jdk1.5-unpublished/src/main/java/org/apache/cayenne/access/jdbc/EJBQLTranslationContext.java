@@ -29,8 +29,8 @@ import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.EntityResult;
-import org.apache.cayenne.query.SQLResultSetMapping;
+import org.apache.cayenne.map.EntityResult;
+import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -379,7 +379,7 @@ public class EJBQLTranslationContext {
      */
     EntityResult nextEntityResult() {
 
-        SQLResultSetMapping resultSetMapping = compiledExpression.getResultSetMapping();
+        SQLResultSet resultSetMapping = compiledExpression.getResultSet();
         if (resultSetMapping == null) {
             throw new EJBQLException(
                     "No result set mapping exists for expression, can't map EntityResult");
@@ -393,7 +393,7 @@ public class EJBQLTranslationContext {
      */
     String nextColumnAlias() {
 
-        SQLResultSetMapping resultSetMapping = compiledExpression.getResultSetMapping();
+        SQLResultSet resultSetMapping = compiledExpression.getResultSet();
         if (resultSetMapping == null) {
             throw new EJBQLException(
                     "No result set mapping exists for expression, can't map column aliases");

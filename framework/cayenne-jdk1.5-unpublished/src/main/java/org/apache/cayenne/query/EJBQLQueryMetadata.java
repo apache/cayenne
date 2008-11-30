@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.SQLResultSet;
 
 /**
  * A metadata object for the {@link EJBQLQuery}.
@@ -29,20 +30,20 @@ import org.apache.cayenne.map.ObjEntity;
  */
 class EJBQLQueryMetadata extends BaseQueryMetadata {
 
-    private transient SQLResultSetMapping resultSetMapping;
+    private transient SQLResultSet resultSetMapping;
 
-    void setResultSetMapping(SQLResultSetMapping resultSetMapping) {
+    void setResultSetMapping(SQLResultSet resultSetMapping) {
         this.resultSetMapping = resultSetMapping;
     }
 
     @Override
-    public SQLResultSetMapping getResultSetMapping() {
+    public SQLResultSet getResultSetMapping() {
         return resultSetMapping;
     }
 
     boolean resolve(EntityResolver resolver, EJBQLQuery query) {
         EJBQLCompiledExpression expression = query.getExpression(resolver);
-        setResultSetMapping(expression.getResultSetMapping());
+        setResultSetMapping(expression.getResultSet());
         
         ObjEntity root = expression.getRootDescriptor().getEntity();
 

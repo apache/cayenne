@@ -28,7 +28,6 @@ import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLResultSetMapping;
 
 /**
  */
@@ -43,7 +42,7 @@ public class MockMappingNamespace implements MappingNamespace {
         return null;
     }
 
-    public SQLResultSetMapping getResultSetMapping(String name) {
+    public SQLResultSet getResultSet(String name) {
         return null;
     }
 

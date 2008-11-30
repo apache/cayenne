@@ -48,13 +48,13 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.RefreshQuery;
-import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -1161,7 +1161,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             return cacheKey;
         }
 
-        public SQLResultSetMapping getResultSetMapping() {
+        public SQLResultSet getResultSetMapping() {
             return null;
         }
 

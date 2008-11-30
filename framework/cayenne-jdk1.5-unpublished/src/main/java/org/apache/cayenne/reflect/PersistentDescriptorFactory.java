@@ -32,11 +32,11 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.query.EntityResult;
 
 /**
  * A convenience superclass for {@link ClassDescriptorFactory} implementors.

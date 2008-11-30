@@ -24,8 +24,8 @@ import java.util.Iterator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.EntityResult;
 
 /**
  * A ClassDescriptor wrapper that compiles decorated descriptor lazily on first access.

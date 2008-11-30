@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 import java.util.Collection;
 
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLResultSetMapping;
 
 /**
  * Defines API of a container of DbEntities, ObjEntities, Procedures, Queries and other
@@ -45,7 +44,7 @@ public interface MappingNamespace {
      * 
      * @since 3.0
      */
-    SQLResultSetMapping getResultSetMapping(String name);
+    SQLResultSet getResultSet(String name);
 
     /**
      * Returns DbEntity for a given name, or null if no such DbEntity is found in the

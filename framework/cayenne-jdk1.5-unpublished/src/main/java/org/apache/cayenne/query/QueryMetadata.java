@@ -25,6 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -298,5 +299,5 @@ public interface QueryMetadata {
      * 
      * @since 3.0
      */
-    SQLResultSetMapping getResultSetMapping();
+    SQLResultSet getResultSetMapping();
 }

@@ -38,7 +38,6 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -119,7 +118,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     private SortedMap<String, DbEntity> dbEntityMap;
     private SortedMap<String, Procedure> procedureMap;
     private SortedMap<String, Query> queryMap;
-    private SortedMap<String, SQLResultSetMapping> resultSetMappings;
+    private SortedMap<String, SQLResultSet> resultSets;
 
     private List<EntityListener> defaultEntityListeners;
 
@@ -144,7 +143,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         procedureMap = new TreeMap<String, Procedure>();
         queryMap = new TreeMap<String, Query>();
         defaultEntityListeners = new ArrayList<EntityListener>(3);
-        resultSetMappings = new TreeMap<String, SQLResultSetMapping>();
+        resultSets = new TreeMap<String, SQLResultSet>();
 
         setName(mapName);
         initWithProperties(properties);
@@ -471,8 +470,8 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * @since 3.0
      */
-    public void clearResultSetMappings() {
-        resultSetMappings.clear();
+    public void clearResultSets() {
+        resultSets.clear();
     }
 
     /**
@@ -551,31 +550,32 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     /**
+     * Adds a named SQLResultSet to the DataMap.
+     * 
      * @since 3.0
      */
-    public void addResultSetMapping(SQLResultSetMapping resultSetMapping) {
-        if (resultSetMapping == null) {
-            throw new NullPointerException("Null resultSetMapping");
+    public void addResultSet(SQLResultSet resultSet) {
+        if (resultSet == null) {
+            throw new NullPointerException("Null resultSet");
         }
 
-        if (resultSetMapping.getName() == null) {
+        if (resultSet.getName() == null) {
             throw new NullPointerException(
                     "Attempt to add resultSetMapping with no name.");
         }
 
-        Object existing = resultSetMappings.get(resultSetMapping.getName());
+        Object existing = resultSets.get(resultSet.getName());
         if (existing != null) {
-            if (existing == resultSetMapping) {
+            if (existing == resultSet) {
                 return;
             }
             else {
                 throw new IllegalArgumentException(
-                        "An attempt to override resultSetMapping '"
-                                + resultSetMapping.getName());
+                        "An attempt to override resultSetMapping '" + resultSet.getName());
             }
         }
 
-        resultSetMappings.put(resultSetMapping.getName(), resultSetMapping);
+        resultSets.put(resultSet.getName(), resultSet);
     }
 
     /**
@@ -654,15 +654,15 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * @since 3.0
      */
-    public Map<String, SQLResultSetMapping> getResultSetMappingsMap() {
-        return Collections.unmodifiableMap(resultSetMappings);
+    public Map<String, SQLResultSet> getResultSetsMap() {
+        return Collections.unmodifiableMap(resultSets);
     }
 
     /**
      * @since 3.0
      */
-    public Collection<SQLResultSetMapping> getResultSetMappings() {
-        return Collections.unmodifiableCollection(resultSetMappings.values());
+    public Collection<SQLResultSet> getResultSets() {
+        return Collections.unmodifiableCollection(resultSets.values());
     }
 
     /**
@@ -680,13 +680,13 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * @since 3.0
      */
-    public SQLResultSetMapping getResultSetMapping(String name) {
-        SQLResultSetMapping rsMapping = resultSetMappings.get(name);
+    public SQLResultSet getResultSet(String name) {
+        SQLResultSet rsMapping = resultSets.get(name);
         if (rsMapping != null) {
             return rsMapping;
         }
 
-        return namespace != null ? namespace.getResultSetMapping(name) : null;
+        return namespace != null ? namespace.getResultSet(name) : null;
     }
 
     /**
@@ -755,8 +755,8 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     /**
-     * Returns DbEntity matching the <code>name</code> parameter. No dependencies will
-     * be searched.
+     * Returns DbEntity matching the <code>name</code> parameter. No dependencies will be
+     * searched.
      */
     public DbEntity getDbEntity(String dbEntityName) {
         DbEntity entity = dbEntityMap.get(dbEntityName);
@@ -838,8 +838,8 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * @since 3.0
      */
-    public void removeResultSetMapping(String name) {
-        resultSetMappings.remove(name);
+    public void removeResultSet(String name) {
+        resultSets.remove(name);
     }
 
     /**
@@ -898,8 +898,8 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     }
 
     /**
-     * Removes ObjEntity from the DataMap. If <code>clearDependencies</code> is true,
-     * all ObjRelationships that reference this entity are also removed.
+     * Removes ObjEntity from the DataMap. If <code>clearDependencies</code> is true, all
+     * ObjRelationships that reference this entity are also removed.
      * 
      * @since 1.1
      */

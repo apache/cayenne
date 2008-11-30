@@ -37,10 +37,12 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.EntityResult;
+import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -50,7 +52,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
-import org.apache.cayenne.query.SQLResultSetMapping;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.util.GenericResponse;
@@ -434,7 +435,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
                 ObjectConversionStrategy converter;
 
-                SQLResultSetMapping rsMapping = metadata.getResultSetMapping();
+                SQLResultSet rsMapping = metadata.getResultSetMapping();
                 if (rsMapping == null) {
                     converter = new SingleObjectConversionStrategy();
                 }
@@ -643,7 +644,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             List<DataRow> normalized;
 
             // convert data rows to standardized format...
-            SQLResultSetMapping rsMapping = metadata.getResultSetMapping();
+            SQLResultSet rsMapping = metadata.getResultSetMapping();
             if (rsMapping != null) {
                 // expect 1 and only 1 entityMapping...
                 EntityResult entityMapping = rsMapping.getEntityResult(0);
@@ -675,7 +676,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         @Override
         void convert(List<DataRow> mainRows) {
 
-            SQLResultSetMapping rsMapping = metadata.getResultSetMapping();
+            SQLResultSet rsMapping = metadata.getResultSetMapping();
 
             int rowsLen = mainRows.size();
 
@@ -699,7 +700,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             int rowsLen = mainRows.size();
             List<Object[]> objects = new ArrayList<Object[]>(rowsLen);
 
-            SQLResultSetMapping rsMapping = metadata.getResultSetMapping();
+            SQLResultSet rsMapping = metadata.getResultSetMapping();
 
             // pass 1 - init Object[]'s and resolve scalars for each row
 
@@ -717,14 +718,19 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             }
 
             // pass 2 - resolve individual object columns, and then update the rows...
+            EntityResolver resolver = domain.getEntityResolver();
             List[] resultLists = new List[entityPositions.length];
             for (int i = 0; i < entityPositions.length; i++) {
                 int pos = entityPositions[i];
                 EntityResult entityMapping = rsMapping.getEntityResult(pos);
                 List<DataRow> normalized = toNormalizedDataRows(entityMapping, mainRows);
 
-                List<Persistent> nextResult = toObjects(entityMapping
-                        .getClassDescriptor(domain.getEntityResolver()), null, normalized);
+                ClassDescriptor classDescriptor = resolver
+                        .getClassDescriptor(entityMapping
+                                .getRootEntity(resolver)
+                                .getName());
+
+                List<Persistent> nextResult = toObjects(classDescriptor, null, normalized);
 
                 for (int j = 0; j < rowsLen; j++) {
                     objects.get(j)[pos] = nextResult.get(j);
