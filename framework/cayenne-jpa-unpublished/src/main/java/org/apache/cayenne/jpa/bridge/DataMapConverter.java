@@ -76,7 +76,7 @@ import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.SQLResultSet;
+import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.BaseTreeVisitor;
 import org.apache.cayenne.util.HierarchicalTreeVisitor;
@@ -651,7 +651,7 @@ public class DataMapConverter {
         public boolean onStartNode(ProjectPath path) {
             JpaSqlResultSetMapping jpaMapping = (JpaSqlResultSetMapping) path.getObject();
 
-            SQLResultSet mapping = new SQLResultSet(jpaMapping.getName());
+            SQLResult mapping = new SQLResult(jpaMapping.getName());
 
             for (JpaColumnResult c : jpaMapping.getColumnResults()) {
                 mapping.addColumnResult(c.getName());
@@ -670,7 +670,7 @@ public class DataMapConverter {
             // my understanding of JPA SQLResultSetMapping is that regardless of whether
             // it belongs to entity or to the entire persistence unit, the scope is still
             // persistence unit??
-            targetPath.firstInstanceOf(DataMap.class).addResultSet(mapping);
+            targetPath.firstInstanceOf(DataMap.class).addResult(mapping);
             return false;
         }
     }

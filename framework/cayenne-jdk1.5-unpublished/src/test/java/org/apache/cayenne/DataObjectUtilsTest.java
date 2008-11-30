@@ -31,7 +31,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.SQLResultSet;
+import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLTemplate;
@@ -60,9 +60,9 @@ public class DataObjectUtilsTest extends CayenneCase {
         query.setTemplate(OpenBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
         query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
 
-        SQLResultSet rsMap = new SQLResultSet();
+        SQLResult rsMap = new SQLResult();
         rsMap.addColumnResult("X");
-        query.setResultSet(rsMap);
+        query.setResult(rsMap);
 
         Object object = DataObjectUtils.objectForQuery(context, query);
         assertNotNull(object);

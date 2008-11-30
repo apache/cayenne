@@ -44,7 +44,7 @@ public interface MappingNamespace {
      * 
      * @since 3.0
      */
-    SQLResultSet getResultSet(String name);
+    SQLResult getResult(String name);
 
     /**
      * Returns DbEntity for a given name, or null if no such DbEntity is found in the

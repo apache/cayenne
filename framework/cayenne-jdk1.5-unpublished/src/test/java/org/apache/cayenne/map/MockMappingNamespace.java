@@ -42,7 +42,7 @@ public class MockMappingNamespace implements MappingNamespace {
         return null;
     }
 
-    public SQLResultSet getResultSet(String name) {
+    public SQLResult getResult(String name) {
         return null;
     }
 

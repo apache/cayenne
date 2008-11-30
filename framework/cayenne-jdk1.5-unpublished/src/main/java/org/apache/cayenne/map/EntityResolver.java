@@ -65,7 +65,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     protected transient Map<String, Query> queryCache;
     protected transient Map<String, Embeddable> embeddableCache;
-    protected transient Map<String, SQLResultSet> resultSetCache;
+    protected transient Map<String, SQLResult> resultsCache;
     protected transient Map<String, DbEntity> dbEntityCache;
     protected transient Map<String, ObjEntity> objEntityCache;
     protected transient Map<String, Procedure> procedureCache;
@@ -93,7 +93,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
         this.objEntityCache = new HashMap<String, ObjEntity>();
         this.procedureCache = new HashMap<String, Procedure>();
         this.entityInheritanceCache = new HashMap<String, EntityInheritanceTree>();
-        this.resultSetCache = new HashMap<String, SQLResultSet>();
+        this.resultsCache = new HashMap<String, SQLResult>();
     }
 
     /**
@@ -389,10 +389,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * @since 3.0
      */
-    public Collection<SQLResultSet> getResultSets() {
+    public Collection<SQLResult> getResultSets() {
         CompositeCollection c = new CompositeCollection();
         for (DataMap map : getDataMaps()) {
-            c.addComposited(map.getResultSets());
+            c.addComposited(map.getResults());
         }
         
         return c;
@@ -451,14 +451,14 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * @since 3.0
      */
-    public SQLResultSet getResultSet(String name) {
-        SQLResultSet result = resultSetCache.get(name);
+    public SQLResult getResult(String name) {
+        SQLResult result = resultsCache.get(name);
 
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             constructCache();
-            result = resultSetCache.get(name);
+            result = resultsCache.get(name);
         }
 
         return result;
@@ -497,7 +497,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
         objEntityCache.clear();
         procedureCache.clear();
         entityInheritanceCache.clear();
-        resultSetCache.clear();
+        resultsCache.clear();
         embeddableCache.clear();
         clientEntityResolver = null;
     }

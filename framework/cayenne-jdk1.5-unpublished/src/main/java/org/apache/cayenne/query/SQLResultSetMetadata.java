@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.map.SQLResultSet;
+import org.apache.cayenne.map.SQLResult;
 
 /**
- * A "compiled" version of a {@link SQLResultSet} descriptor.
+ * A "compiled" version of a {@link SQLResult} descriptor.
  * 
  * @since 3.0
  */

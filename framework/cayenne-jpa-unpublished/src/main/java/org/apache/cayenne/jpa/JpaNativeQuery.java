@@ -55,7 +55,7 @@ public class JpaNativeQuery extends JpaQuery {
         query = new SQLTemplate(map, processSQLString(sqlString));
         
         if(resultSetMappingName != null) {
-            query.setResultSet(map.getResultSet(resultSetMappingName));
+            query.setResult(map.getResult(resultSetMappingName));
         }
     }
 

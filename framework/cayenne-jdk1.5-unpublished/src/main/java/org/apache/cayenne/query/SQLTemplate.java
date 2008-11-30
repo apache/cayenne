@@ -31,7 +31,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.SQLResultSet;
+import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 import org.apache.commons.collections.IteratorUtils;
@@ -95,7 +95,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     protected Map<String, String> templates;
     protected Map<String, ?>[] parameters;
     protected String columnNamesCapitalization;
-    protected SQLResultSet resultSet;
+    protected SQLResult result;
 
     SQLTemplateMetadata metaData = new SQLTemplateMetadata();
 
@@ -616,18 +616,18 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     /**
      * Sets an optional explicit mapping of the result set. If result set mapping is
      * specified, the result of SQLTemplate may not be a normal list of Persistent objects
-     * or DataRows, instead it will follow the {@link SQLResultSet} rules.
+     * or DataRows, instead it will follow the {@link SQLResult} rules.
      * 
      * @since 3.0
      */
-    public void setResultSet(SQLResultSet resultSet) {
-        this.resultSet = resultSet;
+    public void setResult(SQLResult resultSet) {
+        this.result = resultSet;
     }
 
     /**
      * @since 3.0
      */
-    public SQLResultSet getResultSet() {
-        return resultSet;
+    public SQLResult getResult() {
+        return result;
     }
 }

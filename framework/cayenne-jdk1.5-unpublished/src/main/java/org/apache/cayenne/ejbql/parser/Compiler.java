@@ -39,7 +39,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.SQLResultSet;
+import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -68,7 +68,7 @@ class Compiler {
     private EJBQLExpressionVisitor joinVisitor;
     private EJBQLExpressionVisitor pathVisitor;
     private EJBQLExpressionVisitor rootDescriptorVisitor;
-    private List<Object> resultSetMappings;
+    private List<Object> resultComponents;
 
     Compiler(EntityResolver resolver) {
         this.resolver = resolver;
@@ -123,11 +123,11 @@ class Compiler {
         compiled.setDescriptorsById(descriptorsById);
         compiled.setIncomingById(incomingById);
 
-        if (resultSetMappings != null) {
-            SQLResultSet mapping = new SQLResultSet();
+        if (resultComponents != null) {
+            SQLResult mapping = new SQLResult();
 
-            for (int i = 0; i < resultSetMappings.size(); i++) {
-                Object nextMapping = resultSetMappings.get(i);
+            for (int i = 0; i < resultComponents.size(); i++) {
+                Object nextMapping = resultComponents.get(i);
                 if (nextMapping instanceof String) {
                     mapping.addColumnResult((String) nextMapping);
                 }
@@ -443,23 +443,23 @@ class Compiler {
 
         private void addEntityResult(EJBQLExpression expression) {
             if (appendingResultColumns) {
-                if (resultSetMappings == null) {
-                    resultSetMappings = new ArrayList<Object>();
+                if (resultComponents == null) {
+                    resultComponents = new ArrayList<Object>();
                 }
 
                 // defer EntityResult creation until we resolve all ids...
-                resultSetMappings.add(expression);
+                resultComponents.add(expression);
             }
         }
 
         private void addResultSetColumn() {
             if (appendingResultColumns) {
-                if (resultSetMappings == null) {
-                    resultSetMappings = new ArrayList<Object>();
+                if (resultComponents == null) {
+                    resultComponents = new ArrayList<Object>();
                 }
 
-                String column = "sc" + resultSetMappings.size();
-                resultSetMappings.add(column);
+                String column = "sc" + resultComponents.size();
+                resultComponents.add(column);
             }
         }
     }

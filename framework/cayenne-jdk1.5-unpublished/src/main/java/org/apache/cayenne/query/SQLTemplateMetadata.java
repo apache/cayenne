@@ -35,8 +35,8 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
 
         if (super.resolve(root, resolver, null)) {
 
-            resultSetMapping = query.getResultSet() != null
-                    ? new DefaultResultSetMetadata(query.getResultSet(), resolver)
+            resultSetMapping = query.getResult() != null
+                    ? new DefaultResultSetMetadata(query.getResult(), resolver)
                     : null;
 
             // generate unique cache key...

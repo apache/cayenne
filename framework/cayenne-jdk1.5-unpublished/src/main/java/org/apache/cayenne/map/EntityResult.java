@@ -28,7 +28,7 @@ import org.apache.cayenne.util.ToStringBuilder;
 
 /**
  * A metadata object that provides mapping of a set of result columns to an ObjEntity.
- * Used by {@link SQLResultSet}.
+ * Used by {@link SQLResult}.
  * 
  * @since 3.0
  */
@@ -122,10 +122,6 @@ public class EntityResult {
 
     public Class<?> getEntityClass() {
         return entityClass;
-    }
-
-    public Collection<FieldResult> getFields() {
-        return fields != null ? fields : Collections.EMPTY_LIST;
     }
 
     class FieldResult {

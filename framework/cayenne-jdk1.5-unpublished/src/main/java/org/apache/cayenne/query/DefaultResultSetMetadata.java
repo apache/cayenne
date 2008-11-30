@@ -24,11 +24,11 @@ import java.util.Map;
 
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntityResult;
-import org.apache.cayenne.map.SQLResultSet;
+import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
- * A SQLResultSetMetadata implementation based on {@link SQLResultSet}.
+ * A SQLResultSetMetadata implementation based on {@link SQLResult}.
  * 
  * @since 3.0
  */
@@ -38,8 +38,8 @@ class DefaultResultSetMetadata implements SQLResultSetMetadata {
     private int[] scalarSegments;
     private int[] entitySegments;
 
-    DefaultResultSetMetadata(SQLResultSet resultSet, EntityResolver resolver) {
-        List<Object> descriptors = resultSet.getResultDescriptors();
+    DefaultResultSetMetadata(SQLResult result, EntityResolver resolver) {
+        List<Object> descriptors = result.getComponents();
 
         this.segments = new ArrayList<Object>(descriptors.size());
 

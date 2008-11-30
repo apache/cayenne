@@ -118,7 +118,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     private SortedMap<String, DbEntity> dbEntityMap;
     private SortedMap<String, Procedure> procedureMap;
     private SortedMap<String, Query> queryMap;
-    private SortedMap<String, SQLResultSet> resultSets;
+    private SortedMap<String, SQLResult> results;
 
     private List<EntityListener> defaultEntityListeners;
 
@@ -143,7 +143,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         procedureMap = new TreeMap<String, Procedure>();
         queryMap = new TreeMap<String, Query>();
         defaultEntityListeners = new ArrayList<EntityListener>(3);
-        resultSets = new TreeMap<String, SQLResultSet>();
+        results = new TreeMap<String, SQLResult>();
 
         setName(mapName);
         initWithProperties(properties);
@@ -471,7 +471,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 3.0
      */
     public void clearResultSets() {
-        resultSets.clear();
+        results.clear();
     }
 
     /**
@@ -554,28 +554,28 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * 
      * @since 3.0
      */
-    public void addResultSet(SQLResultSet resultSet) {
-        if (resultSet == null) {
-            throw new NullPointerException("Null resultSet");
+    public void addResult(SQLResult result) {
+        if (result == null) {
+            throw new NullPointerException("Null result");
         }
 
-        if (resultSet.getName() == null) {
+        if (result.getName() == null) {
             throw new NullPointerException(
                     "Attempt to add resultSetMapping with no name.");
         }
 
-        Object existing = resultSets.get(resultSet.getName());
+        Object existing = results.get(result.getName());
         if (existing != null) {
-            if (existing == resultSet) {
+            if (existing == result) {
                 return;
             }
             else {
                 throw new IllegalArgumentException(
-                        "An attempt to override resultSetMapping '" + resultSet.getName());
+                        "An attempt to override resultSetMapping '" + result.getName());
             }
         }
 
-        resultSets.put(resultSet.getName(), resultSet);
+        results.put(result.getName(), result);
     }
 
     /**
@@ -654,15 +654,15 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * @since 3.0
      */
-    public Map<String, SQLResultSet> getResultSetsMap() {
-        return Collections.unmodifiableMap(resultSets);
+    public Map<String, SQLResult> getResultsMap() {
+        return Collections.unmodifiableMap(results);
     }
 
     /**
      * @since 3.0
      */
-    public Collection<SQLResultSet> getResultSets() {
-        return Collections.unmodifiableCollection(resultSets.values());
+    public Collection<SQLResult> getResults() {
+        return Collections.unmodifiableCollection(results.values());
     }
 
     /**
@@ -680,13 +680,13 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * @since 3.0
      */
-    public SQLResultSet getResultSet(String name) {
-        SQLResultSet rsMapping = resultSets.get(name);
+    public SQLResult getResult(String name) {
+        SQLResult rsMapping = results.get(name);
         if (rsMapping != null) {
             return rsMapping;
         }
 
-        return namespace != null ? namespace.getResultSet(name) : null;
+        return namespace != null ? namespace.getResult(name) : null;
     }
 
     /**
@@ -838,8 +838,8 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
     /**
      * @since 3.0
      */
-    public void removeResultSet(String name) {
-        resultSets.remove(name);
+    public void removeResult(String name) {
+        results.remove(name);
     }
 
     /**
