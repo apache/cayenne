@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLParser;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -34,16 +35,22 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         return translateSelect(ejbql, Collections.EMPTY_MAP);
     }
 
-    private SQLTemplate translateSelect(String ejbql, Map<Object, Object> parameters) {
+    private SQLTemplate translateSelect(
+            String ejbql,
+            final Map<Object, Object> queryParameters) {
         EJBQLParser parser = EJBQLParserFactory.getParser();
         EJBQLCompiledExpression select = parser.compile(ejbql, getDomain()
                 .getEntityResolver());
+        EJBQLQuery query = new EJBQLQuery(ejbql) {
 
-        EJBQLTranslationContext tr = new EJBQLTranslationContext(
-                getDomain().getEntityResolver(),
-                select,
-                parameters,
-                new JdbcEJBQLTranslatorFactory());
+            @Override
+            public Map<Object, Object> getParameters() {
+                return queryParameters;
+            }
+        };
+
+        EJBQLTranslationContext tr = new EJBQLTranslationContext(getDomain()
+                .getEntityResolver(), query, select, new JdbcEJBQLTranslatorFactory());
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         return tr.getQuery();
     }

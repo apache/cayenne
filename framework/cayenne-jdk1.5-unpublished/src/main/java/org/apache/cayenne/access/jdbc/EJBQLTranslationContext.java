@@ -29,8 +29,9 @@ import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntityResult;
-import org.apache.cayenne.map.SQLResultSet;
+import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.EntityResultMetadata;
+import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -45,6 +46,7 @@ public class EJBQLTranslationContext {
     private Map<Object, Object> parameters;
     private EJBQLTranslatorFactory translatorFactory;
     private EntityResolver entityResolver;
+    private SQLResultSetMetadata resultSetMetadata;
 
     private Map<String, String> tableAliases;
     private Map<String, Object> boundParameters;
@@ -61,14 +63,15 @@ public class EJBQLTranslationContext {
     // not.
     private boolean appendingResultColumns;
 
-    public EJBQLTranslationContext(EntityResolver entityResolver,
-            EJBQLCompiledExpression compiledExpression, Map<Object, Object> parameters,
+    public EJBQLTranslationContext(EntityResolver entityResolver, EJBQLQuery query,
+            EJBQLCompiledExpression compiledExpression,
             EJBQLTranslatorFactory translatorFactory) {
 
         this.entityResolver = entityResolver;
         this.compiledExpression = compiledExpression;
+        this.resultSetMetadata = query.getMetaData(entityResolver).getResultSetMapping();
 
-        this.parameters = parameters;
+        this.parameters = query.getParameters();
         this.translatorFactory = translatorFactory;
         this.usingAliases = true;
 
@@ -377,15 +380,14 @@ public class EJBQLTranslationContext {
     /**
      * Returns a positional EntityResult, incrementing position index on each call.
      */
-    EntityResult nextEntityResult() {
+    EntityResultMetadata nextEntityResult() {
 
-        SQLResultSet resultSetMapping = compiledExpression.getResultSet();
-        if (resultSetMapping == null) {
+        if (resultSetMetadata == null) {
             throw new EJBQLException(
                     "No result set mapping exists for expression, can't map EntityResult");
         }
 
-        return resultSetMapping.getEntityResult(resultDescriptorPosition++);
+        return resultSetMetadata.getEntitySegment(resultDescriptorPosition++);
     }
 
     /**
@@ -393,13 +395,12 @@ public class EJBQLTranslationContext {
      */
     String nextColumnAlias() {
 
-        SQLResultSet resultSetMapping = compiledExpression.getResultSet();
-        if (resultSetMapping == null) {
+        if (resultSetMetadata == null) {
             throw new EJBQLException(
                     "No result set mapping exists for expression, can't map column aliases");
         }
 
-        return resultSetMapping.getColumnResult(resultDescriptorPosition++);
+        return resultSetMetadata.getScalarSegment(resultDescriptorPosition++);
     }
 
     boolean isAppendingResultColumns() {

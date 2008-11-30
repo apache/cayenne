@@ -32,7 +32,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -55,8 +54,8 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     PrefetchTreeNode prefetchTree;
     String cacheKey;
     String[] cacheGroups;
-    SQLResultSet resultSetMapping;
-
+    
+    transient SQLResultSetMetadata resultSetMapping;
     transient DbEntity dbEntity;
     transient DataMap dataMap;
     transient Object lastRoot;
@@ -291,14 +290,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     /**
      * @since 3.0
      */
-    void setResultSetMapping(SQLResultSet resultSetMapping) {
-        this.resultSetMapping = resultSetMapping;
-    }
-
-    /**
-     * @since 3.0
-     */
-    public SQLResultSet getResultSetMapping() {
+    public SQLResultSetMetadata getResultSetMapping() {
         return resultSetMapping;
     }
 

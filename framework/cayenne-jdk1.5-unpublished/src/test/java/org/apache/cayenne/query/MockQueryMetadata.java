@@ -25,12 +25,11 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 public class MockQueryMetadata implements QueryMetadata {
     
-    public SQLResultSet getResultSetMapping() {
+    public SQLResultSetMetadata getResultSetMapping() {
         return null;
     }
 

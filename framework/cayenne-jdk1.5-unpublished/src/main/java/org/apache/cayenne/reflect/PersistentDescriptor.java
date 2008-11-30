@@ -30,10 +30,10 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.EntityResultMetadata;
 import org.apache.commons.collections.IteratorUtils;
 
 /**
@@ -58,7 +58,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     protected ObjEntity entity;
     protected Collection<DbEntity> rootDbEntities;
-    protected EntityResult entityResult;
+    protected EntityResultMetadata entityResultMetadata;
 
     // combines declared and super properties
     protected Collection<Property> idProperties;
@@ -178,13 +178,13 @@ public class PersistentDescriptor implements ClassDescriptor {
     public Collection<DbEntity> getRootDbEntities() {
         return rootDbEntities;
     }
-    
-    public EntityResult getEntityResult() {
-        return entityResult;
+
+    public EntityResultMetadata getEntityResultMetadata() {
+        return entityResultMetadata;
     }
-    
-    public void setEntityResult(EntityResult entityResult) {
-        this.entityResult = entityResult;
+
+    public void setEntityResultMetadata(EntityResultMetadata entityResultMetadata) {
+        this.entityResultMetadata = entityResultMetadata;
     }
 
     public boolean isFault(Object object) {

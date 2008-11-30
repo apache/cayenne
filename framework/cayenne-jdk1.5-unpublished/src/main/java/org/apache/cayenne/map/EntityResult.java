@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cayenne.util.ToStringBuilder;
+
 /**
  * A metadata object that provides mapping of a set of result columns to an ObjEntity.
  * Used by {@link SQLResultSet}.
@@ -72,7 +74,7 @@ public class EntityResult {
         return dbFields;
     }
 
-    public ObjEntity getRootEntity(EntityResolver resolver) {
+    private ObjEntity getRootEntity(EntityResolver resolver) {
         if (entityName != null) {
             return resolver.getObjEntity(entityName);
         }
@@ -124,5 +126,47 @@ public class EntityResult {
 
     public Collection<FieldResult> getFields() {
         return fields != null ? fields : Collections.EMPTY_LIST;
+    }
+
+    class FieldResult {
+
+        protected String entityName;
+        protected String attributeName;
+        protected String column;
+        protected boolean dbAttribute;
+
+        FieldResult(String entityName, String attributeName, String column,
+                boolean dbAttribute) {
+
+            this.entityName = entityName;
+            this.attributeName = attributeName;
+            this.column = column;
+            this.dbAttribute = dbAttribute;
+        }
+
+        public String getEntityName() {
+            return entityName;
+        }
+
+        public String getAttributeName() {
+            return attributeName;
+        }
+
+        public String getColumn() {
+            return column;
+        }
+
+        public boolean isDbAttribute() {
+            return dbAttribute;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this)
+                    .append("attributeName", attributeName)
+                    .append("column", column)
+                    .append("db", dbAttribute)
+                    .toString();
+        }
     }
 }

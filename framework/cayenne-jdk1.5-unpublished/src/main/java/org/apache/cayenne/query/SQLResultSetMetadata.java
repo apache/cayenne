@@ -18,27 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.SQLResultSet;
 
 /**
- * A metadata object for the {@link EJBQLQuery}.
+ * A "compiled" version of a {@link SQLResultSet} descriptor.
  * 
  * @since 3.0
  */
-class EJBQLQueryMetadata extends BaseQueryMetadata {
+public interface SQLResultSetMetadata {
 
-    boolean resolve(EntityResolver resolver, EJBQLQuery query) {
-        EJBQLCompiledExpression expression = query.getExpression(resolver);
+    /**
+     * Returns a number of scalar or entity segments in the result set.
+     */
+    int getSegmentsCount();
 
-        resultSetMapping = expression.getResultSet() != null
-                ? new DefaultResultSetMetadata(expression.getResultSet(), resolver)
-                : null;
+    int[] getScalarSegments();
 
-        ObjEntity root = expression.getRootDescriptor().getEntity();
+    int[] getEntitySegments();
 
-        // TODO: andrus, 4/3/2007 - generate cache key based on EJBQL statement
-        return super.resolve(root, resolver, null);
-    }
+    EntityResultMetadata getEntitySegment(int position);
+
+    String getScalarSegment(int position);
 }

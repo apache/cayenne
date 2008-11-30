@@ -38,11 +38,10 @@ import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.SQLResultSet;
+import org.apache.cayenne.query.EntityResultMetadata;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -52,6 +51,7 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
+import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.util.GenericResponse;
@@ -435,22 +435,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
                 ObjectConversionStrategy converter;
 
-                SQLResultSet rsMapping = metadata.getResultSetMapping();
+                SQLResultSetMetadata rsMapping = metadata.getResultSetMapping();
                 if (rsMapping == null) {
                     converter = new SingleObjectConversionStrategy();
                 }
                 else {
 
-                    int entityResultCount = 0;
-                    int columnResultCount = 0;
-                    for (Object result : rsMapping.getResultDescriptors()) {
-                        if (result instanceof String) {
-                            columnResultCount++;
-                        }
-                        else {
-                            entityResultCount++;
-                        }
-                    }
+                    int entityResultCount = rsMapping.getEntitySegments().length;
+                    int columnResultCount = rsMapping.getScalarSegments().length;
 
                     if (entityResultCount == 1 && columnResultCount == 0) {
                         converter = new SingleObjectConversionStrategy();
@@ -602,12 +594,11 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         protected List<DataRow> toNormalizedDataRows(
-                EntityResult entityMapping,
+                EntityResultMetadata entityMapping,
                 List<DataRow> dataRows) {
             List<DataRow> normalized = new ArrayList<DataRow>(dataRows.size());
 
-            Map<String, String> fields = entityMapping.getDbFields(domain
-                    .getEntityResolver());
+            Map<String, String> fields = entityMapping.getFields();
             int rowCapacity = (int) Math.ceil(fields.size() / 0.75);
 
             for (DataRow src : dataRows) {
@@ -644,10 +635,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             List<DataRow> normalized;
 
             // convert data rows to standardized format...
-            SQLResultSet rsMapping = metadata.getResultSetMapping();
+            SQLResultSetMetadata rsMapping = metadata.getResultSetMapping();
             if (rsMapping != null) {
                 // expect 1 and only 1 entityMapping...
-                EntityResult entityMapping = rsMapping.getEntityResult(0);
+                EntityResultMetadata entityMapping = rsMapping.getEntitySegment(0);
                 normalized = toNormalizedDataRows(entityMapping, mainRows);
             }
             else {
@@ -676,12 +667,12 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         @Override
         void convert(List<DataRow> mainRows) {
 
-            SQLResultSet rsMapping = metadata.getResultSetMapping();
+            SQLResultSetMetadata rsMapping = metadata.getResultSetMapping();
 
             int rowsLen = mainRows.size();
 
             List objects = new ArrayList(rowsLen);
-            String column = rsMapping.getColumnResult(0);
+            String column = rsMapping.getScalarSegment(0);
 
             // add scalars to the result
             for (DataRow row : mainRows) {
@@ -700,19 +691,19 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             int rowsLen = mainRows.size();
             List<Object[]> objects = new ArrayList<Object[]>(rowsLen);
 
-            SQLResultSet rsMapping = metadata.getResultSetMapping();
+            SQLResultSetMetadata rsMapping = metadata.getResultSetMapping();
 
             // pass 1 - init Object[]'s and resolve scalars for each row
 
-            int resultWidth = rsMapping.getResultDescriptors().size();
-            int[] entityPositions = rsMapping.getEntityResultPositions();
-            int[] columnPositions = rsMapping.getColumnResultPositions();
+            int resultWidth = rsMapping.getSegmentsCount();
+            int[] entityPositions = rsMapping.getEntitySegments();
+            int[] columnPositions = rsMapping.getScalarSegments();
 
             for (DataRow row : mainRows) {
                 Object[] resultRow = new Object[resultWidth];
                 for (int i = 0; i < columnPositions.length; i++) {
                     int pos = columnPositions[i];
-                    resultRow[pos] = row.get(rsMapping.getColumnResult(pos));
+                    resultRow[pos] = row.get(rsMapping.getScalarSegment(pos));
                 }
                 objects.add(resultRow);
             }
@@ -722,15 +713,11 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             List[] resultLists = new List[entityPositions.length];
             for (int i = 0; i < entityPositions.length; i++) {
                 int pos = entityPositions[i];
-                EntityResult entityMapping = rsMapping.getEntityResult(pos);
+                EntityResultMetadata entityMapping = rsMapping.getEntitySegment(pos);
                 List<DataRow> normalized = toNormalizedDataRows(entityMapping, mainRows);
 
-                ClassDescriptor classDescriptor = resolver
-                        .getClassDescriptor(entityMapping
-                                .getRootEntity(resolver)
-                                .getName());
-
-                List<Persistent> nextResult = toObjects(classDescriptor, null, normalized);
+                List<Persistent> nextResult = toObjects(entityMapping
+                        .getClassDescriptor(), null, normalized);
 
                 for (int j = 0; j < rowsLen; j++) {
                     objects.get(j)[pos] = nextResult.get(j);

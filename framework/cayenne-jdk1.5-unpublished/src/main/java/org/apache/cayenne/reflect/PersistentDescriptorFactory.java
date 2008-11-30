@@ -32,7 +32,6 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -134,7 +133,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         indexRootDbEntities(descriptor, inheritanceTree);
 
         indexSuperclassProperties(descriptor);
-        indexEntityResult(descriptor);
+        indexEntityResultMetadata(descriptor);
 
         return descriptor;
     }
@@ -318,14 +317,15 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         }
     }
 
-    protected void indexEntityResult(PersistentDescriptor descriptor) {
+    protected void indexEntityResultMetadata(PersistentDescriptor descriptor) {
 
         if (descriptor.getRootDbEntities().isEmpty()) {
             // client descriptor?
             return;
         }
 
-        final EntityResult entityResult = new EntityResult(descriptor.getObjectClass());
+        final PersistentDescriptorResultMetadata resultMetadata = new PersistentDescriptorResultMetadata(
+                descriptor);
         final Set<String> visited = new HashSet<String>();
 
         PropertyVisitor visitor = new PropertyVisitor() {
@@ -333,7 +333,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             public boolean visitAttribute(AttributeProperty property) {
                 ObjAttribute oa = property.getAttribute();
                 if (visited.add(oa.getDbAttributePath())) {
-                    entityResult.addObjectField(
+                    resultMetadata.addObjectField(
                             oa.getEntity().getName(),
                             oa.getName(),
                             oa.getDbAttributePath());
@@ -352,7 +352,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 for (DbJoin join : dbRel.getJoins()) {
                     DbAttribute src = join.getSource();
                     if (src.isForeignKey() && visited.add(src.getName())) {
-                        entityResult.addDbField(src.getName(), src.getName());
+                        resultMetadata.addDbField(src.getName(), src.getName());
                     }
                 }
 
@@ -365,7 +365,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         // append id columns ... (some may have been appended already via relationships)
         for (String pkName : descriptor.getEntity().getPrimaryKeyNames()) {
             if (visited.add(pkName)) {
-                entityResult.addDbField(pkName, pkName);
+                resultMetadata.addDbField(pkName, pkName);
             }
         }
 
@@ -375,11 +375,11 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             DbAttribute column = discriminatorColumns.next();
 
             if (visited.add(column.getName())) {
-                entityResult.addDbField(column.getName(), column.getName());
+                resultMetadata.addDbField(column.getName(), column.getName());
             }
         }
 
-        descriptor.setEntityResult(entityResult);
+        descriptor.setEntityResultMetadata(resultMetadata);
     }
 
     /**

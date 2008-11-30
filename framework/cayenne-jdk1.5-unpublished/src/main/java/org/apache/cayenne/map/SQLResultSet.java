@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 /**
  * A metadata object that defines how a row in a result set can be converted to result
  * objects. SQLResultSet can map to a single scalar, a single entity or a mix of scalars
@@ -63,72 +62,6 @@ public class SQLResultSet {
      */
     public List<Object> getResultDescriptors() {
         return resultDescriptors != null ? resultDescriptors : Collections.EMPTY_LIST;
-    }
-
-    public int[] getEntityResultPositions() {
-        if (resultDescriptors == null) {
-            return new int[0];
-        }
-
-        int[] positions = new int[resultDescriptors.size()];
-        int j = 0;
-        for (int i = 0; i < positions.length; i++) {
-            if (resultDescriptors.get(i) instanceof EntityResult) {
-                positions[j++] = i;
-            }
-        }
-
-        int[] trimmed = new int[j];
-        System.arraycopy(positions, 0, trimmed, 0, j);
-        return trimmed;
-    }
-
-    public int[] getColumnResultPositions() {
-        if (resultDescriptors == null) {
-            return new int[0];
-        }
-
-        int[] positions = new int[resultDescriptors.size()];
-        int j = 0;
-        for (int i = 0; i < positions.length; i++) {
-            if (resultDescriptors.get(i) instanceof String) {
-                positions[j++] = i;
-            }
-        }
-
-        int[] trimmed = new int[j];
-        System.arraycopy(positions, 0, trimmed, 0, j);
-        return trimmed;
-    }
-
-    public EntityResult getEntityResult(int position) {
-        if (resultDescriptors == null) {
-            throw new IndexOutOfBoundsException("Invalid EntityResult index: " + position);
-        }
-
-        Object result = resultDescriptors.get(position);
-        if (result instanceof EntityResult) {
-            return (EntityResult) result;
-        }
-
-        throw new IllegalArgumentException("Result at position "
-                + position
-                + " is not an entity result");
-    }
-
-    public String getColumnResult(int position) {
-        if (resultDescriptors == null) {
-            throw new IndexOutOfBoundsException("Invalid column index: " + position);
-        }
-
-        Object result = resultDescriptors.get(position);
-        if (result instanceof String) {
-            return (String) result;
-        }
-
-        throw new IllegalArgumentException("Result at position "
-                + position
-                + " is not a column result");
     }
 
     public void addEntityResult(EntityResult entityResult) {

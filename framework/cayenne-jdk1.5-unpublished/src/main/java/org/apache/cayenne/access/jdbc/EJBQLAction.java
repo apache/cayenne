@@ -59,8 +59,8 @@ public class EJBQLAction extends BaseSQLAction {
                 .getEjbqlTranslatorFactory();
         final EJBQLTranslationContext context = new EJBQLTranslationContext(
                 entityResolver,
+                query,
                 compiledExpression,
-                query.getParameters(),
                 translatorFactory);
 
         compiledExpression.getExpression().visit(new EJBQLBaseVisitor(false) {

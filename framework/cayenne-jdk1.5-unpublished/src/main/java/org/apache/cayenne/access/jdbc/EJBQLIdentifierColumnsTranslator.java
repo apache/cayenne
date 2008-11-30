@@ -57,7 +57,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
         Map<String, String> xfields = null;
         if (context.isAppendingResultColumns()) {
-            xfields = context.nextEntityResult().getDbFields(context.getEntityResolver());
+            xfields = context.nextEntityResult().getFields();
         }
 
         // assign whatever we have to a final ivar so that it can be accessed within

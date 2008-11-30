@@ -25,11 +25,11 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.SQLResultSet;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -196,7 +196,7 @@ public class NestedQueryCache implements QueryCache {
             return mdDelegate.getProcedure();
         }
 
-        public SQLResultSet getResultSetMapping() {
+        public SQLResultSetMetadata getResultSetMapping() {
             return mdDelegate.getResultSetMapping();
         }
 

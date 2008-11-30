@@ -39,8 +39,7 @@ import org.apache.commons.collections.Transformer;
 
 /**
  * A query that executes unchanged (except for template preprocessing) "raw" SQL specified
- * by the user.
- * <h3>Template Script</h3>
+ * by the user. <h3>Template Script</h3>
  * <p>
  * SQLTemplate stores a dynamic template for the SQL query that supports parameters and
  * customization using Velocity scripting language. The most straightforward use of
@@ -50,7 +49,6 @@ import org.apache.commons.collections.Transformer;
  * <pre>
  *                  SELECT ID, NAME FROM SOME_TABLE WHERE NAME LIKE $a
  * </pre>
- * 
  * <p>
  * <i>For advanced scripting options see "Scripting SQLTemplate" chapter in the User
  * Guide. </i>
@@ -97,6 +95,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     protected Map<String, String> templates;
     protected Map<String, ?>[] parameters;
     protected String columnNamesCapitalization;
+    protected SQLResultSet resultSet;
 
     SQLTemplateMetadata metaData = new SQLTemplateMetadata();
 
@@ -378,7 +377,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     public void setFetchLimit(int fetchLimit) {
         this.metaData.setFetchLimit(fetchLimit);
     }
-    
+
     /**
      * @since 3.0
      */
@@ -411,8 +410,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 
     /**
      * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *            redundant, although it is still being taken into account. It will be
-     *            removed in the later versions of Cayenne.
+     *             redundant, although it is still being taken into account. It will be
+     *             removed in the later versions of Cayenne.
      */
     public boolean isRefreshingObjects() {
         return metaData.isRefreshingObjects();
@@ -420,8 +419,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 
     /**
      * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *            redundant, although it is still being taken into account. It will be
-     *            removed in the later versions of Cayenne.
+     *             redundant, although it is still being taken into account. It will be
+     *             removed in the later versions of Cayenne.
      */
     public void setRefreshingObjects(boolean flag) {
         // noop
@@ -513,7 +512,9 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * have one.
      */
     public Map<String, ?> getParameters() {
-        Map<String, ?> map = (parameters != null && parameters.length > 0) ? parameters[0] : null;
+        Map<String, ?> map = (parameters != null && parameters.length > 0)
+                ? parameters[0]
+                : null;
         return (map != null) ? map : Collections.EMPTY_MAP;
     }
 
@@ -530,9 +531,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
             // serializable with Hessian...
             this.parameters = new Map[parameters.length];
             for (int i = 0; i < parameters.length; i++) {
-                this.parameters[i] = parameters[i] != null
-                        ? new HashMap<String, Object>(parameters[i])
-                        : new HashMap<String, Object>();
+                this.parameters[i] = parameters[i] != null ? new HashMap<String, Object>(
+                        parameters[i]) : new HashMap<String, Object>();
             }
         }
     }
@@ -601,9 +601,9 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * Cayenne column mapping strategy (e.g. all column names in uppercase) is portable
      * across database engines that can have varying default capitalization. Default
      * (null) value indicates that column names provided in result set are used unchanged.
-     * <p/> Note that while a non-default setting is useful for queries that do not rely
-     * on a #result directive to describe columns, it works for all SQLTemplates the same
-     * way.
+     * <p/>
+     * Note that while a non-default setting is useful for queries that do not rely on a
+     * #result directive to describe columns, it works for all SQLTemplates the same way.
      * 
      * @param columnNameCapitalization Can be null of one of
      *            {@link #LOWERCASE_COLUMN_NAMES} or {@link #UPPERCASE_COLUMN_NAMES}.
@@ -620,7 +620,14 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 3.0
      */
-    public void setResultSet(SQLResultSet resultSetMapping) {
-        metaData.setResultSetMapping(resultSetMapping);
+    public void setResultSet(SQLResultSet resultSet) {
+        this.resultSet = resultSet;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public SQLResultSet getResultSet() {
+        return resultSet;
     }
 }

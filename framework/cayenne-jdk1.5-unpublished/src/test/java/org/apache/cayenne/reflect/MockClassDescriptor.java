@@ -26,8 +26,8 @@ import java.util.Iterator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.EntityResultMetadata;
 
 public class MockClassDescriptor implements ClassDescriptor {
 
@@ -38,11 +38,11 @@ public class MockClassDescriptor implements ClassDescriptor {
     public ObjEntity getEntity() {
         return null;
     }
-    
-    public EntityResult getEntityResult() {
+
+    public EntityResultMetadata getEntityResultMetadata() {
         return null;
     }
-    
+
     /**
      * @since 3.0
      */

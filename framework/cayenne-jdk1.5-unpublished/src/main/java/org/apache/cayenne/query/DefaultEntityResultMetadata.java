@@ -18,27 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
+import java.util.Map;
+
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
- * A metadata object for the {@link EJBQLQuery}.
- * 
  * @since 3.0
  */
-class EJBQLQueryMetadata extends BaseQueryMetadata {
+class DefaultEntityResultMetadata implements EntityResultMetadata {
 
-    boolean resolve(EntityResolver resolver, EJBQLQuery query) {
-        EJBQLCompiledExpression expression = query.getExpression(resolver);
+    private ClassDescriptor classDescriptor;
+    private Map<String, String> fields;
 
-        resultSetMapping = expression.getResultSet() != null
-                ? new DefaultResultSetMetadata(expression.getResultSet(), resolver)
-                : null;
+    DefaultEntityResultMetadata(ClassDescriptor classDescriptor,
+            Map<String, String> fields) {
+        this.classDescriptor = classDescriptor;
+        this.fields = fields;
+    }
 
-        ObjEntity root = expression.getRootDescriptor().getEntity();
+    public ClassDescriptor getClassDescriptor() {
+        return classDescriptor;
+    }
 
-        // TODO: andrus, 4/3/2007 - generate cache key based on EJBQL statement
-        return super.resolve(root, resolver, null);
+    public Map<String, String> getFields() {
+        return fields;
     }
 }
