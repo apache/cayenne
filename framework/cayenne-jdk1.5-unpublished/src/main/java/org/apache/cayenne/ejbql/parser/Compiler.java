@@ -138,7 +138,7 @@ class Compiler {
                 }
             }
 
-            compiled.setResultSetMapping(mapping);
+            compiled.setResult(mapping);
         }
 
         return compiled;

@@ -41,7 +41,7 @@ class CompiledExpression implements EJBQLCompiledExpression {
     private Map<String, ClassDescriptor> descriptorsById;
     private Map<String, ObjRelationship> incomingById;
     private EJBQLExpression expression;
-    private SQLResult resultSetMapping;
+    private SQLResult result;
 
     public ClassDescriptor getEntityDescriptor(String idVariable) {
         if (idVariable == null) {
@@ -52,7 +52,7 @@ class CompiledExpression implements EJBQLCompiledExpression {
     }
 
     public SQLResult getResult() {
-        return resultSetMapping;
+        return result;
     }
 
     public ClassDescriptor getRootDescriptor() {
@@ -96,7 +96,7 @@ class CompiledExpression implements EJBQLCompiledExpression {
         this.rootId = rootId;
     }
 
-    void setResultSetMapping(SQLResult resultSetMapping) {
-        this.resultSetMapping = resultSetMapping;
+    void setResult(SQLResult resultSetMapping) {
+        this.result = resultSetMapping;
     }
 }
