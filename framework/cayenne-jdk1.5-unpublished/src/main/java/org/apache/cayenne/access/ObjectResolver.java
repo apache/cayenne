@@ -89,9 +89,15 @@ class ObjectResolver {
     /**
      * Properly synchronized version of 'objectsFromDataRows'.
      */
-    List<Persistent> synchronizedObjectsFromDataRows(List rows) {
+    List<Persistent> synchronizedObjectsFromDataRows(List<? extends DataRow> rows) {
         synchronized (context.getObjectStore()) {
             return objectsFromDataRows(rows);
+        }
+    }
+
+    List<Persistent> synchronizedObjectsFromDataRows(List<Object[]> rows, int position) {
+        synchronized (context.getObjectStore()) {
+            return objectsFromDataRows(rows, position);
         }
     }
 
@@ -102,20 +108,41 @@ class ObjectResolver {
      * and DataRowStore.
      * </p>
      */
-    List<Persistent> objectsFromDataRows(List rows) {
+    List<Persistent> objectsFromDataRows(List<? extends DataRow> rows) {
         if (rows == null || rows.size() == 0) {
             return new ArrayList<Persistent>(1);
         }
 
         List<Persistent> results = new ArrayList<Persistent>(rows.size());
-        Iterator it = rows.iterator();
 
-        while (it.hasNext()) {
-            DataRow row = (DataRow) it.next();
+        for (DataRow row : rows) {
             Persistent object = objectFromDataRow(row);
 
             if (object == null) {
                 throw new CayenneRuntimeException("Can't build Object from row: " + row);
+            }
+
+            results.add(object);
+        }
+
+        // now deal with snapshots
+        cache.snapshotsUpdatedForObjects(results, rows);
+
+        return results;
+    }
+
+    List<Persistent> objectsFromDataRows(List<Object[]> rows, int position) {
+        if (rows == null || rows.size() == 0) {
+            return new ArrayList<Persistent>(1);
+        }
+
+        List<Persistent> results = new ArrayList<Persistent>(rows.size());
+
+        for (Object[] row : rows) {
+            Persistent object = objectFromDataRow((DataRow) row[position]);
+
+            if (object == null) {
+                throw new CayenneRuntimeException("Can't build Object from row: " + row[position]);
             }
 
             results.add(object);
@@ -308,6 +335,7 @@ class ObjectResolver {
     }
 
     interface DescriptorResolutionStrategy {
+
         ClassDescriptor descriptorForRow(DataRow row);
     }
 

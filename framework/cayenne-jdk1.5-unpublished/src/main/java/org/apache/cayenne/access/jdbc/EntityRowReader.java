@@ -50,15 +50,14 @@ class EntityRowReader extends BaseRowReader<DataRow> {
                 valueIndices[j++] = i;
             }
         }
-
     }
 
     @Override
     public DataRow readRow(ResultSet resultSet) throws CayenneException {
-        
+
         try {
-            DataRow idRow = new DataRow(mapCapacity);
-            idRow.setEntityName(entityName);
+            DataRow row = new DataRow(mapCapacity);
+            row.setEntityName(entityName);
             int len = valueIndices.length;
 
             for (int i = 0; i < len; i++) {
@@ -71,14 +70,14 @@ class EntityRowReader extends BaseRowReader<DataRow> {
                         resultSet,
                         index + 1,
                         types[index]);
-                idRow.put(labels[index], val);
+                row.put(labels[index], val);
             }
 
             if (postProcessor != null) {
-                postProcessor.postprocessRow(resultSet, idRow);
+                postProcessor.postprocessRow(resultSet, row);
             }
 
-            return idRow;
+            return row;
         }
         catch (CayenneException cex) {
             // rethrow unmodified

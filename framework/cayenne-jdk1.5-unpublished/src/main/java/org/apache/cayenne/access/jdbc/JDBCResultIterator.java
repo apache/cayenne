@@ -117,12 +117,12 @@ public class JDBCResultIterator implements ResultIterator {
                     reader.addRowReader(i, new EntityRowReader(
                             descriptor,
                             queryMetadata,
-                            rsMapping.getEntitySegment(entitySegments[i])));
+                            rsMapping.getEntitySegment(i)));
                 }
 
                 for (int i : scalarSegments) {
                     reader.addRowReader(i, new ScalarRowReader(descriptor, rsMapping
-                            .getScalarSegment(scalarSegments[i])));
+                            .getScalarSegment(i)));
                 }
 
                 return reader;

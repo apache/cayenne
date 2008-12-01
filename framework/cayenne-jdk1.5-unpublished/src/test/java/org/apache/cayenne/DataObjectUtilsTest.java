@@ -78,7 +78,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         Object object = DataObjectUtils.objectForQuery(context, query);
         assertNotNull(object);
-        assertTrue(object instanceof Number);
+        assertTrue("Object class: " + object.getClass().getName(), object instanceof Number);
         assertEquals(2, ((Number) object).intValue());
     }
 

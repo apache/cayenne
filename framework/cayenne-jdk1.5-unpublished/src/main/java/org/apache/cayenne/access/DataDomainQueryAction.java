@@ -41,7 +41,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.EntityResultMetadata;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -430,7 +429,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         if (context != null && !metadata.isFetchingDataRows()) {
 
-            List<DataRow> mainRows = response.firstList();
+            List<Object> mainRows = response.firstList();
             if (mainRows != null && !mainRows.isEmpty()) {
 
                 ObjectConversionStrategy converter;
@@ -568,9 +567,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         return isQualifiedEntity(entity);
     }
 
-    abstract class ObjectConversionStrategy {
+    abstract class ObjectConversionStrategy<T> {
 
-        abstract void convert(List<DataRow> mainRows);
+        abstract void convert(List<T> mainRows);
 
         protected List<Persistent> toObjects(
                 ClassDescriptor descriptor,
@@ -593,27 +592,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             return objects;
         }
 
-        protected List<DataRow> toNormalizedDataRows(
-                EntityResultMetadata entityMapping,
-                List<DataRow> dataRows) {
-            List<DataRow> normalized = new ArrayList<DataRow>(dataRows.size());
-
-            Map<String, String> fields = entityMapping.getFields();
-            int rowCapacity = (int) Math.ceil(fields.size() / 0.75);
-
-            for (DataRow src : dataRows) {
-                DataRow target = new DataRow(rowCapacity);
-
-                for (Map.Entry<String, String> field : fields.entrySet()) {
-                    target.put(field.getKey(), src.get(field.getValue()));
-                }
-
-                normalized.add(target);
-            }
-
-            return normalized;
-        }
-
         protected void updateResponse(List sourceObjects, List targetObjects) {
             if (response instanceof GenericResponse) {
                 ((GenericResponse) response).replaceResult(sourceObjects, targetObjects);
@@ -627,28 +605,15 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
-    class SingleObjectConversionStrategy extends ObjectConversionStrategy {
+    class SingleObjectConversionStrategy extends ObjectConversionStrategy<DataRow> {
 
         @Override
         void convert(List<DataRow> mainRows) {
 
-            List<DataRow> normalized;
-
-            // convert data rows to standardized format...
-            SQLResultSetMetadata rsMapping = metadata.getResultSetMapping();
-            if (rsMapping != null) {
-                // expect 1 and only 1 entityMapping...
-                EntityResultMetadata entityMapping = rsMapping.getEntitySegment(0);
-                normalized = toNormalizedDataRows(entityMapping, mainRows);
-            }
-            else {
-                normalized = mainRows;
-            }
-
             ClassDescriptor descriptor = metadata.getClassDescriptor();
             PrefetchTreeNode prefetchTree = metadata.getPrefetchTree();
 
-            List<Persistent> objects = toObjects(descriptor, prefetchTree, normalized);
+            List<Persistent> objects = toObjects(descriptor, prefetchTree, mainRows);
             updateResponse(mainRows, objects);
 
             // apply POST_LOAD callback
@@ -662,71 +627,68 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
-    class SingleScalarConversionStrategy extends ObjectConversionStrategy {
+    class SingleScalarConversionStrategy extends ObjectConversionStrategy<Object> {
 
         @Override
-        void convert(List<DataRow> mainRows) {
-
-            SQLResultSetMetadata rsMapping = metadata.getResultSetMapping();
-
-            int rowsLen = mainRows.size();
-
-            List objects = new ArrayList(rowsLen);
-            String column = rsMapping.getScalarSegment(0);
-
-            // add scalars to the result
-            for (DataRow row : mainRows) {
-                objects.add(row.get(column));
-            }
-
-            updateResponse(mainRows, objects);
+        void convert(List<Object> mainRows) {
+            // noop... scalars require no further processing
         }
     }
 
-    class MixedConversionStrategy extends ObjectConversionStrategy {
+    class MixedConversionStrategy extends ObjectConversionStrategy<Object[]> {
+
+        protected List<Persistent> toObjects(
+                ClassDescriptor descriptor,
+                PrefetchTreeNode prefetchTree,
+                List<Object[]> rows,
+                int position) {
+            List<Persistent> objects;
+
+            // take a shortcut when no prefetches exist...
+            if (prefetchTree == null) {
+                objects = new ObjectResolver(context, descriptor)
+                        .synchronizedObjectsFromDataRows(rows, position);
+            }
+            else {
+                ObjectTreeResolver resolver = new ObjectTreeResolver(context, metadata);
+                objects = resolver.synchronizedObjectsFromDataRows(
+                        prefetchTree,
+                        rows,
+                        prefetchResultsByPath);
+            }
+            return objects;
+        }
 
         @Override
-        void convert(List<DataRow> mainRows) {
+        void convert(List<Object[]> mainRows) {
 
             int rowsLen = mainRows.size();
-            List<Object[]> objects = new ArrayList<Object[]>(rowsLen);
 
             SQLResultSetMetadata rsMapping = metadata.getResultSetMapping();
 
-            // pass 1 - init Object[]'s and resolve scalars for each row
+            // no conversions needed for scalar positions; reuse Object[]'s to fill them
+            // with resolved objects
 
-            int resultWidth = rsMapping.getSegmentsCount();
             int[] entityPositions = rsMapping.getEntitySegments();
-            int[] columnPositions = rsMapping.getScalarSegments();
-
-            for (DataRow row : mainRows) {
-                Object[] resultRow = new Object[resultWidth];
-                for (int i = 0; i < columnPositions.length; i++) {
-                    int pos = columnPositions[i];
-                    resultRow[pos] = row.get(rsMapping.getScalarSegment(pos));
-                }
-                objects.add(resultRow);
-            }
-
-            // pass 2 - resolve individual object columns, and then update the rows...
             EntityResolver resolver = domain.getEntityResolver();
             List[] resultLists = new List[entityPositions.length];
             for (int i = 0; i < entityPositions.length; i++) {
                 int pos = entityPositions[i];
-                EntityResultMetadata entityMapping = rsMapping.getEntitySegment(pos);
-                List<DataRow> normalized = toNormalizedDataRows(entityMapping, mainRows);
 
-                List<Persistent> nextResult = toObjects(entityMapping
-                        .getClassDescriptor(), null, normalized);
-
-                for (int j = 0; j < rowsLen; j++) {
-                    objects.get(j)[pos] = nextResult.get(j);
-                }
+                List<Persistent> nextResult = toObjects(rsMapping
+                        .getEntitySegment(pos)
+                        .getClassDescriptor(), null, mainRows, pos);
 
                 resultLists[i] = nextResult;
             }
 
-            updateResponse(mainRows, objects);
+            for (int j = 0; j < rowsLen; j++) {
+
+                Object[] row = mainRows.get(j);
+                for (int i = 0; i < entityPositions.length; i++) {
+                    row[i] = resultLists[i].get(j);
+                }
+            }
 
             // invoke callbacks now that all objects are resolved...
             LifecycleCallbackRegistry callbackRegistry = context
