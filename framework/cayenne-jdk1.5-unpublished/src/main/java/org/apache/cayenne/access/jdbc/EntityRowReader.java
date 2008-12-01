@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.query.EntityResult;
+import org.apache.cayenne.query.EntityResultMetadata;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
 
@@ -36,10 +36,10 @@ class EntityRowReader extends BaseRowReader<DataRow> {
     private int mapCapacity;
 
     EntityRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
-            EntityResult entityResult) {
+            EntityResultMetadata entityResult) {
         super(descriptor, queryMetadata);
 
-        Map<String, String> fields = entityResult.getDbFields();
+        Map<String, String> fields = entityResult.getFields();
 
         this.mapCapacity = (int) Math.ceil((fields.size()) / 0.75);
         this.valueIndices = new int[fields.size()];

@@ -32,9 +32,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.EntityResult;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SQLResultSetMapping;
+import org.apache.cayenne.query.SQLResultSetMetadata;
 
 /**
  * A ResultIterator over the underlying JDBC ResultSet.
@@ -91,28 +90,39 @@ public class JDBCResultIterator implements ResultIterator {
             RowDescriptor descriptor,
             QueryMetadata queryMetadata) {
 
-        SQLResultSetMapping rsMapping = queryMetadata.getResultSetMapping();
+        SQLResultSetMetadata rsMapping = queryMetadata.getResultSetMapping();
         if (rsMapping != null) {
 
-            List<?> resultDescriptors = rsMapping.getResultDescriptors();
-            int resultWidth = resultDescriptors.size();
+            int resultWidth = rsMapping.getSegmentsCount();
+            int[] entitySegments = rsMapping.getEntitySegments();
+            int[] scalarSegments = rsMapping.getScalarSegments();
 
             if (resultWidth == 0) {
                 throw new CayenneRuntimeException("Empty result descriptor");
             }
             else if (resultWidth == 1) {
-                return createSegmentRowReader(
-                        descriptor,
-                        queryMetadata,
-                        resultDescriptors.get(0));
+
+                if (entitySegments.length > 0) {
+                    return new EntityRowReader(descriptor, queryMetadata, rsMapping
+                            .getEntitySegment(entitySegments[0]));
+                }
+                else {
+                    return new ScalarRowReader(descriptor, rsMapping
+                            .getScalarSegment(scalarSegments[0]));
+                }
             }
             else {
                 CompoundRowReader reader = new CompoundRowReader(resultWidth);
-                for (int i = 0; i < resultWidth; i++) {
-                    reader.addRowReader(i, createSegmentRowReader(
+                for (int i : entitySegments) {
+                    reader.addRowReader(i, new EntityRowReader(
                             descriptor,
                             queryMetadata,
-                            resultDescriptors.get(i)));
+                            rsMapping.getEntitySegment(entitySegments[i])));
+                }
+
+                for (int i : scalarSegments) {
+                    reader.addRowReader(i, new ScalarRowReader(descriptor, rsMapping
+                            .getScalarSegment(scalarSegments[i])));
                 }
 
                 return reader;
@@ -120,26 +130,6 @@ public class JDBCResultIterator implements ResultIterator {
         }
         else {
             return createFullRowReader(descriptor, queryMetadata);
-        }
-    }
-
-    private RowReader<?> createSegmentRowReader(
-            RowDescriptor descriptor,
-            QueryMetadata queryMetadata,
-            Object segmentDescriptor) {
-
-        if (segmentDescriptor instanceof String) {
-            return new ScalarRowReader(descriptor, (String) segmentDescriptor);
-        }
-        else if (segmentDescriptor instanceof EntityResult) {
-            return new EntityRowReader(
-                    descriptor,
-                    queryMetadata,
-                    (EntityResult) segmentDescriptor);
-        }
-        else {
-            throw new IllegalArgumentException(
-                    "Expected either String or Entity Result: " + segmentDescriptor);
         }
     }
 
