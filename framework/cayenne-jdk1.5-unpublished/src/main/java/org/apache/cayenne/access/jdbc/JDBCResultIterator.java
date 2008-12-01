@@ -145,6 +145,8 @@ public class JDBCResultIterator implements ResultIterator {
     /**
      * Returns a map of ObjectId values from the next result row. Primary key columns are
      * determined from the provided DbEntity.
+     * 
+     * @deprecated since 3.0 in favor of {@link #nextId(DbEntity)}.
      */
     public Map<String, Object> nextObjectId(DbEntity entity) throws CayenneException {
         if (!hasNextRow()) {
