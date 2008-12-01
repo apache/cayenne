@@ -32,6 +32,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.EntityResultMetadata;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLResultSetMetadata;
 
@@ -103,21 +104,19 @@ public class JDBCResultIterator implements ResultIterator {
             else if (resultWidth == 1) {
 
                 if (entitySegments.length > 0) {
-                    return new EntityRowReader(descriptor, queryMetadata, rsMapping
-                            .getEntitySegment(entitySegments[0]));
+                    return createEntityRowReader(descriptor, rsMapping
+                            .getEntitySegment(0));
                 }
                 else {
-                    return new ScalarRowReader(descriptor, rsMapping
-                            .getScalarSegment(scalarSegments[0]));
+                    return new ScalarRowReader(descriptor, rsMapping.getScalarSegment(0));
                 }
             }
             else {
                 CompoundRowReader reader = new CompoundRowReader(resultWidth);
                 for (int i : entitySegments) {
-                    reader.addRowReader(i, new EntityRowReader(
-                            descriptor,
-                            queryMetadata,
-                            rsMapping.getEntitySegment(i)));
+
+                    reader.addRowReader(i, createEntityRowReader(descriptor, rsMapping
+                            .getEntitySegment(i)));
                 }
 
                 for (int i : scalarSegments) {
@@ -130,6 +129,19 @@ public class JDBCResultIterator implements ResultIterator {
         }
         else {
             return createFullRowReader(descriptor, queryMetadata);
+        }
+    }
+
+    private RowReader<?> createEntityRowReader(
+            RowDescriptor descriptor,
+            EntityResultMetadata resultMetadata) {
+
+        if (resultMetadata.getClassDescriptor() != null
+                && resultMetadata.getClassDescriptor().getEntityInheritanceTree() != null) {
+            return new InheritanceAwareEntityRowReader(descriptor, resultMetadata);
+        }
+        else {
+            return new EntityRowReader(descriptor, resultMetadata);
         }
     }
 

@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.query.ScalarResultMetadata;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -33,18 +34,12 @@ class ScalarRowReader implements RowReader<Object> {
     private int index;
     private int type;
 
-    ScalarRowReader(RowDescriptor descriptor, String columnName) {
-        ColumnDescriptor[] columns = descriptor.getColumns();
-        for (int i = 0; i < columns.length; i++) {
-            if (columnName.equals(columns[i].getLabel())) {
+    ScalarRowReader(RowDescriptor descriptor, ScalarResultMetadata segmentMetadata) {
 
-                this.converter = descriptor.getConverters()[i];
-                this.type = columns[i].getJdbcType();
-                this.index = i + 1;
-
-                break;
-            }
-        }
+        int scalarIndex = segmentMetadata.getColumnOffset();
+        this.converter = descriptor.getConverters()[scalarIndex];
+        this.type = descriptor.getColumns()[scalarIndex].getJdbcType();
+        this.index = scalarIndex + 1;
     }
 
     public Object readRow(ResultSet resultSet) throws CayenneException {

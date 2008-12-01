@@ -32,5 +32,21 @@ public interface EntityResultMetadata {
 
     ClassDescriptor getClassDescriptor();
 
+    /**
+     * Returns a map of ResultSet labels keyed by column paths. Note that ordering of
+     * fields in the returned map is generally undefined and should not be relied upon
+     * when processing query result sets.
+     */
     Map<String, String> getFields();
+
+    /**
+     * Performs a reverse lookup of the column path for a given ResultSet label.
+     */
+    String getColumnPath(String resultSetLabel);
+
+    /**
+     * Returns a zero-based column index of the first column of this segment in the
+     * ResultSet.
+     */
+    int getColumnOffset();
 }

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.map.ObjAttribute;
@@ -32,12 +32,12 @@ class PersistentDescriptorResultMetadata implements EntityResultMetadata {
 
     ClassDescriptor classDescriptor;
     Map<String, String> fields;
+    Map<String, String> reverseFields;
 
     PersistentDescriptorResultMetadata(ClassDescriptor classDescriptor) {
         this.classDescriptor = classDescriptor;
-
-        // preserve field addition order by using linked map.
-        this.fields = new LinkedHashMap<String, String>();
+        this.fields = new HashMap<String, String>();
+        this.reverseFields = new HashMap<String, String>();
     }
 
     public ClassDescriptor getClassDescriptor() {
@@ -48,11 +48,16 @@ class PersistentDescriptorResultMetadata implements EntityResultMetadata {
         return fields;
     }
 
+    public String getColumnPath(String resultSetLabel) {
+        return reverseFields.get(resultSetLabel);
+    }
+
     void addObjectField(String attributeName, String column) {
         ObjEntity entity = classDescriptor.getEntity();
 
         ObjAttribute attribute = (ObjAttribute) entity.getAttribute(attributeName);
         fields.put(attribute.getDbAttributePath(), column);
+        reverseFields.put(column, attribute.getDbAttributePath());
     }
 
     /**
@@ -65,6 +70,7 @@ class PersistentDescriptorResultMetadata implements EntityResultMetadata {
 
         ObjAttribute attribute = (ObjAttribute) entity.getAttribute(attributeName);
         fields.put(attribute.getDbAttributePath(), column);
+        reverseFields.put(column, attribute.getDbAttributePath());
     }
 
     /**
@@ -72,5 +78,11 @@ class PersistentDescriptorResultMetadata implements EntityResultMetadata {
      */
     void addDbField(String dbAttributeName, String column) {
         fields.put(dbAttributeName, column);
+        reverseFields.put(column, dbAttributeName);
+    }
+
+    public int getColumnOffset() {
+        throw new UnsupportedOperationException(
+                "Column offset only makes sense in the context of a query");
     }
 }

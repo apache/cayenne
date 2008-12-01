@@ -47,11 +47,14 @@ class DefaultResultSetMetadata implements SQLResultSetMetadata {
         int[] entitySegments = new int[descriptors.size()];
 
         int ss = 0, es = 0;
+        int offset = 0;
         for (int i = 0; i < descriptors.size(); i++) {
 
             Object descriptor = descriptors.get(i);
             if (descriptor instanceof String) {
-                segments.add(descriptor);
+                segments
+                        .add(new DefaultScalarResultMetadata((String) descriptor, offset));
+                offset = offset + 1;
                 scalarSegments[ss++] = i;
             }
             else if (descriptor instanceof EntityResult) {
@@ -66,7 +69,11 @@ class DefaultResultSetMetadata implements SQLResultSetMetadata {
                 }
 
                 ClassDescriptor classDescriptor = resolver.getClassDescriptor(entityName);
-                segments.add(new DefaultEntityResultMetadata(classDescriptor, fields));
+                segments.add(new DefaultEntityResultMetadata(
+                        classDescriptor,
+                        fields,
+                        offset));
+                offset = offset + fields.size();
                 entitySegments[es++] = i;
             }
             else {
@@ -100,11 +107,11 @@ class DefaultResultSetMetadata implements SQLResultSetMetadata {
         return entitySegments;
     }
 
-    public String getScalarSegment(int position) {
+    public ScalarResultMetadata getScalarSegment(int position) {
 
         Object result = segments.get(position);
-        if (result instanceof String) {
-            return (String) result;
+        if (result instanceof ScalarResultMetadata) {
+            return (ScalarResultMetadata) result;
         }
 
         throw new IllegalArgumentException("Segment at position "

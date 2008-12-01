@@ -18,25 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.map.SQLResult;
-
 /**
- * A "compiled" version of a {@link SQLResult} descriptor.
- * 
  * @since 3.0
  */
-public interface SQLResultSetMetadata {
+public interface ScalarResultMetadata {
+
+    String getColumn();
 
     /**
-     * Returns a number of scalar or entity segments in the result set.
+     * Returns a zero-based column index of the first column of this segment in the
+     * ResultSet.
      */
-    int getSegmentsCount();
-
-    int[] getScalarSegments();
-
-    int[] getEntitySegments();
-
-    EntityResultMetadata getEntitySegment(int position);
-
-    ScalarResultMetadata getScalarSegment(int position);
+    int getColumnOffset();
 }

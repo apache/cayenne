@@ -29,11 +29,13 @@ class DefaultEntityResultMetadata implements EntityResultMetadata {
 
     private ClassDescriptor classDescriptor;
     private Map<String, String> fields;
+    private int offset;
 
     DefaultEntityResultMetadata(ClassDescriptor classDescriptor,
-            Map<String, String> fields) {
+            Map<String, String> fields, int offset) {
         this.classDescriptor = classDescriptor;
         this.fields = fields;
+        this.offset = offset;
     }
 
     public ClassDescriptor getClassDescriptor() {
@@ -42,5 +44,20 @@ class DefaultEntityResultMetadata implements EntityResultMetadata {
 
     public Map<String, String> getFields() {
         return fields;
+    }
+
+    public int getColumnOffset() {
+        return offset;
+    }
+
+    public String getColumnPath(String resultSetLabel) {
+
+        for (Map.Entry<String, String> entry : fields.entrySet()) {
+            if (resultSetLabel.equals(entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+
+        return null;
     }
 }

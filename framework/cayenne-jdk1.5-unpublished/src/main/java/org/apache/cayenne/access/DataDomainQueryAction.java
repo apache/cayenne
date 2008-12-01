@@ -642,18 +642,24 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 PrefetchTreeNode prefetchTree,
                 List<Object[]> rows,
                 int position) {
+
+            int len = rows.size();
+            List<DataRow> rowsColumn = new ArrayList<DataRow>(len);
+            for (int i = 0; i < len; i++) {
+                rowsColumn.add((DataRow) rows.get(i)[position]);
+            }
             List<Persistent> objects;
 
             // take a shortcut when no prefetches exist...
             if (prefetchTree == null) {
                 objects = new ObjectResolver(context, descriptor)
-                        .synchronizedObjectsFromDataRows(rows, position);
+                        .synchronizedObjectsFromDataRows(rowsColumn);
             }
             else {
                 ObjectTreeResolver resolver = new ObjectTreeResolver(context, metadata);
                 objects = resolver.synchronizedObjectsFromDataRows(
                         prefetchTree,
-                        rows,
+                        rowsColumn,
                         prefetchResultsByPath);
             }
             return objects;
@@ -686,7 +692,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
                 Object[] row = mainRows.get(j);
                 for (int i = 0; i < entityPositions.length; i++) {
-                    row[i] = resultLists[i].get(j);
+                    row[entityPositions[i]] = resultLists[i].get(j);
                 }
             }
 

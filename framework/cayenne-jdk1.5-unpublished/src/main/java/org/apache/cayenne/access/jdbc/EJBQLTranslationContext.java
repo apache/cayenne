@@ -400,7 +400,7 @@ public class EJBQLTranslationContext {
                     "No result set mapping exists for expression, can't map column aliases");
         }
 
-        return resultSetMetadata.getScalarSegment(resultDescriptorPosition++);
+        return resultSetMetadata.getScalarSegment(resultDescriptorPosition++).getColumn();
     }
 
     boolean isAppendingResultColumns() {

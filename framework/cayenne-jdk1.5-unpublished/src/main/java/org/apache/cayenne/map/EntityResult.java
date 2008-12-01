@@ -28,7 +28,9 @@ import org.apache.cayenne.util.ToStringBuilder;
 
 /**
  * A metadata object that provides mapping of a set of result columns to an ObjEntity.
- * Used by {@link SQLResult}.
+ * Used by {@link SQLResult}. Note that fields in the EntityResult are not required to
+ * follow the order of columns in the actual query, and can be added in the arbitrary
+ * order.
  * 
  * @since 3.0
  */
