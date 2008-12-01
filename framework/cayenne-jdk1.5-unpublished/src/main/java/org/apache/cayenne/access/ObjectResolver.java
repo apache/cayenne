@@ -49,8 +49,8 @@ class ObjectResolver {
     ClassDescriptor descriptor;
     Collection<DbAttribute> primaryKey;
 
-    EntityInheritanceTree inheritanceTree;
     DataRowStore cache;
+    DescriptorResolutionStrategy descriptorResolutionStrategy;
 
     ObjectResolver(DataContext context, ClassDescriptor descriptor) {
         init(context, descriptor);
@@ -77,8 +77,13 @@ class ObjectResolver {
         this.context = context;
         this.cache = context.getObjectStore().getDataRowCache();
         this.descriptor = descriptor;
-        this.inheritanceTree = context.getEntityResolver().lookupInheritanceTree(
-                descriptor.getEntity());
+
+        EntityInheritanceTree inheritanceTree = context
+                .getEntityResolver()
+                .lookupInheritanceTree(descriptor.getEntity());
+        this.descriptorResolutionStrategy = inheritanceTree != null
+                ? new InheritanceStrategy()
+                : new NoInheritanceStrategy();
     }
 
     /**
@@ -194,19 +199,8 @@ class ObjectResolver {
     Persistent objectFromDataRow(DataRow row) {
 
         // determine entity to use
-        ClassDescriptor classDescriptor;
-
-        if (inheritanceTree != null) {
-            ObjEntity objectEntity = inheritanceTree.entityMatchingRow(row);
-
-            // null probably means that inheritance qualifiers are messed up
-            classDescriptor = (objectEntity != null) ? context
-                    .getEntityResolver()
-                    .getClassDescriptor(objectEntity.getName()) : descriptor;
-        }
-        else {
-            classDescriptor = descriptor;
-        }
+        ClassDescriptor classDescriptor = descriptorResolutionStrategy
+                .descriptorForRow(row);
 
         // not using DataRow.createObjectId for performance reasons - ObjectResolver has
         // all needed metadata already cached.
@@ -311,5 +305,27 @@ class ObjectResolver {
         }
 
         return new ObjectId(objEntity.getName(), idMap);
+    }
+
+    interface DescriptorResolutionStrategy {
+        ClassDescriptor descriptorForRow(DataRow row);
+    }
+
+    class NoInheritanceStrategy implements DescriptorResolutionStrategy {
+
+        public final ClassDescriptor descriptorForRow(DataRow row) {
+            return descriptor;
+        }
+    }
+
+    class InheritanceStrategy implements DescriptorResolutionStrategy {
+
+        public final ClassDescriptor descriptorForRow(DataRow row) {
+            String entityName = row.getEntityName();
+
+            // null probably means that inheritance qualifiers are messed up
+            return (entityName != null) ? context.getEntityResolver().getClassDescriptor(
+                    entityName) : descriptor;
+        }
     }
 }

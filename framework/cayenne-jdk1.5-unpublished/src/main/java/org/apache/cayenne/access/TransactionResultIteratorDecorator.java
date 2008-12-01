@@ -105,8 +105,8 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
     /**
      * @since 3.0
      */
-    public Object nextId(DbEntity entity) throws CayenneException {
-        return result.nextId(entity);
+    public Object nextId() throws CayenneException {
+        return result.nextId();
     }
 
     public void skipDataRow() throws CayenneException {

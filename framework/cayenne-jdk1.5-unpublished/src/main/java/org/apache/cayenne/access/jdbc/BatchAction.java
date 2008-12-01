@@ -297,7 +297,8 @@ public class BatchAction extends BaseSQLAction {
                 null,
                 null,
                 keysRS,
-                keyRowDescriptor);
+                keyRowDescriptor,
+                query.getMetaData(getEntityResolver()));
 
         observer.nextGeneratedDataRows(query, iterator);
     }

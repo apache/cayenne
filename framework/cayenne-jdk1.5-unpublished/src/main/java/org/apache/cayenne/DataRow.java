@@ -48,6 +48,11 @@ public class DataRow extends HashMap<String, Object> {
     protected long version = currentVersion++;
     protected long replacesVersion = DataObject.DEFAULT_VERSION;
 
+    /**
+     * @since 3.0
+     */
+    protected String entityName;
+
     public DataRow(Map<String, ?> map) {
         super(map);
     }
@@ -88,9 +93,9 @@ public class DataRow extends HashMap<String, Object> {
     /**
      * Creates a DataRow that contains only the keys that have values that differ between
      * this object and <code>row</code> parameter. Diff values are taken from the
-     * <code>row</code> parameter. It is assumed that key sets are compatible in both
-     * rows (e.g. they represent snapshots for the same entity). Returns null if no
-     * differences are found.
+     * <code>row</code> parameter. It is assumed that key sets are compatible in both rows
+     * (e.g. they represent snapshots for the same entity). Returns null if no differences
+     * are found.
      */
     public DataRow createDiff(DataRow row) {
 
@@ -215,5 +220,19 @@ public class DataRow extends HashMap<String, Object> {
         return new ToStringBuilder(this).append("values", super.toString()).append(
                 " version",
                 version).append(" replaces", replacesVersion).toString();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public String getEntityName() {
+        return entityName;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
     }
 }

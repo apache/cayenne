@@ -41,6 +41,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
@@ -55,7 +56,7 @@ public class SQLTemplateAction implements SQLAction {
 
     protected DbAdapter adapter;
     protected SQLTemplate query;
-    protected ObjEntity entity;
+    protected QueryMetadata queryMetadata;
 
     /**
      * @deprecated since 3.0 use a
@@ -74,7 +75,7 @@ public class SQLTemplateAction implements SQLAction {
             EntityResolver entityResolver) {
         this.query = query;
         this.adapter = adapter;
-        this.entity = query.getMetaData(entityResolver).getObjEntity();
+        this.queryMetadata = query.getMetaData(entityResolver);
     }
 
     /**
@@ -215,7 +216,7 @@ public class SQLTemplateAction implements SQLAction {
             long startTime) throws Exception {
 
         boolean iteratedResult = callback.isIteratedResult();
-        
+
         ExtendedTypeMap types = adapter.getExtendedTypes();
         RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
 
@@ -223,10 +224,12 @@ public class SQLTemplateAction implements SQLAction {
                 connection,
                 statement,
                 resultSet,
-                builder.getDescriptor(types));
-        
-        LimitResultIterator it = new LimitResultIterator(result, getFetchOffset(), query.getFetchLimit());
-        
+                builder.getDescriptor(types),
+                queryMetadata);
+
+        LimitResultIterator it = new LimitResultIterator(result, getFetchOffset(), query
+                .getFetchLimit());
+
         if (!iteratedResult) {
             List<DataRow> resultRows = it.dataRows(false);
             QueryLogger.logSelectCount(resultRows.size(), System.currentTimeMillis()
@@ -262,6 +265,7 @@ public class SQLTemplateAction implements SQLAction {
         else {
             builder.setResultSet(resultSet);
 
+            ObjEntity entity = queryMetadata.getObjEntity();
             if (entity != null) {
 
                 // TODO: andrus 2008/03/28 support flattened attributes with aliases...
@@ -350,7 +354,7 @@ public class SQLTemplateAction implements SQLAction {
     public SQLTemplate getQuery() {
         return query;
     }
-    
+
     /**
      * @since 3.0
      */

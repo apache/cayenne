@@ -68,15 +68,18 @@ public abstract class BaseSQLAction implements SQLAction {
         long t1 = System.currentTimeMillis();
 
         QueryMetadata metadata = query.getMetaData(getEntityResolver());
-       
 
         JDBCResultIterator resultReader = new JDBCResultIterator(
                 null,
                 null,
                 resultSet,
-                descriptor);
-        
-        LimitResultIterator it = new LimitResultIterator(resultReader, getInMemoryOffset(metadata.getFetchOffset()), metadata.getFetchLimit());
+                descriptor,
+                metadata);
+
+        LimitResultIterator it = new LimitResultIterator(
+                resultReader,
+                getInMemoryOffset(metadata.getFetchOffset()),
+                metadata.getFetchLimit());
 
         if (!delegate.isIteratedResult()) {
             List<DataRow> resultRows = it.dataRows(false);

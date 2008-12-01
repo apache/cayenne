@@ -70,7 +70,7 @@ public class SelectAction extends BaseSQLAction {
         SelectTranslator translator = createTranslator(connection);
         PreparedStatement prepStmt = translator.createStatement();
         ResultSet rs = prepStmt.executeQuery();
-
+        QueryMetadata md = query.getMetaData(getEntityResolver());
         RowDescriptor descriptor = new RowDescriptorBuilder().setColumns(
                 translator.getResultColumns()).getDescriptor(
                 getAdapter().getExtendedTypes());
@@ -79,7 +79,8 @@ public class SelectAction extends BaseSQLAction {
                 connection,
                 prepStmt,
                 rs,
-                descriptor);
+                descriptor,
+                md);
 
         workerIterator.setPostProcessor(DataRowPostProcessor
                 .createPostProcessor(translator));
@@ -93,7 +94,6 @@ public class SelectAction extends BaseSQLAction {
 
             final boolean[] compareFullRows = new boolean[1];
 
-            QueryMetadata md = query.getMetaData(getEntityResolver());
             final PrefetchTreeNode rootPrefetch = md.getPrefetchTree();
 
             if (rootPrefetch != null) {

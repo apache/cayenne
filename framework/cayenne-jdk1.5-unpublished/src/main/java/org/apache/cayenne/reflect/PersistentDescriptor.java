@@ -30,6 +30,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -59,6 +60,7 @@ public class PersistentDescriptor implements ClassDescriptor {
     protected ObjEntity entity;
     protected Collection<DbEntity> rootDbEntities;
     protected EntityResultMetadata entityResultMetadata;
+    protected EntityInheritanceTree entityInheritanceTree;
 
     // combines declared and super properties
     protected Collection<Property> idProperties;
@@ -433,5 +435,13 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     public void setEntityQualifier(Expression entityQualifier) {
         this.entityQualifier = entityQualifier;
+    }
+
+    public EntityInheritanceTree getEntityInheritanceTree() {
+        return entityInheritanceTree;
+    }
+
+    public void setEntityInheritanceTree(EntityInheritanceTree entityInheritanceTree) {
+        this.entityInheritanceTree = entityInheritanceTree;
     }
 }

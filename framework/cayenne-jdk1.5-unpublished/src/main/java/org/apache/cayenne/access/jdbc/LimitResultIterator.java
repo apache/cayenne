@@ -74,9 +74,8 @@ public class LimitResultIterator implements ResultIterator {
 
     }
 
-    protected Map readDataRow() throws CayenneException {
-        Map<String, Object> next = wrappedIterator.nextDataRow();
-        return next;
+    private Map<String, Object> readDataRow() throws CayenneException {
+        return wrappedIterator.nextDataRow();
     }
 
     public void close() throws CayenneException {
@@ -84,19 +83,21 @@ public class LimitResultIterator implements ResultIterator {
     }
 
     public List dataRows(boolean close) throws CayenneException {
-        List<Map> list = new ArrayList<Map>();
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
         try {
             while (this.hasNextRow()) {
                 list.add(this.nextDataRow());
             }
-            return list;
         }
         finally {
             if (close) {
                 close();
             }
         }
+
+        return list;
     }
 
     public int getDataRowWidth() {
@@ -107,7 +108,7 @@ public class LimitResultIterator implements ResultIterator {
         return nextRow;
     }
 
-    public Map nextDataRow() throws CayenneException {
+    public Map<String, Object> nextDataRow() throws CayenneException {
         if (!hasNextRow()) {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
@@ -118,14 +119,14 @@ public class LimitResultIterator implements ResultIterator {
         return row;
     }
 
-    public Object nextId(DbEntity entity) throws CayenneException {
+    public Object nextId() throws CayenneException {
         if (!hasNextRow()) {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
         }
 
-        Object id = readId(entity);
-        checkNextId(entity);
+        Object id = readId();
+        checkNextId();
         return id;
 
     }
@@ -148,26 +149,22 @@ public class LimitResultIterator implements ResultIterator {
         wrappedIterator.skipDataRow();
     }
 
-    void checkNextId(DbEntity entity) throws CayenneException {
-        if (entity == null) {
-            throw new CayenneException("Null DbEntity, can't create id.");
-        }
+    void checkNextId() throws CayenneException {
         nextRow = false;
         if (wrappedIterator.hasNextRow()) {
             nextRow = true;
         }
     }
 
-    public Object readId(DbEntity entity) throws CayenneException {
-
-        Object next = wrappedIterator.nextId(entity);
+    private Object readId() throws CayenneException {
+        Object next = wrappedIterator.nextId();
         return next;
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     void checkNextObjectId(DbEntity entity) throws CayenneException {
-        if (entity == null) {
-            throw new CayenneException("Null DbEntity, can't create id.");
-        }
 
         nextRow = false;
         nextDataObjectIds = null;

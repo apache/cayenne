@@ -25,8 +25,8 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.query.MockQueryMetadata;
 
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockResultSet;
@@ -67,7 +67,7 @@ public class JDBCResultIteratorTest extends TestCase {
                 .setResultSet(rs)
                 .getDescriptor(new ExtendedTypeMap());
 
-        JDBCResultIterator it = new JDBCResultIterator(c, s, rs, descriptor);
+        JDBCResultIterator it = new JDBCResultIterator(c, s, rs, descriptor, new MockQueryMetadata());
 
         assertFalse(rs.isClosed());
         assertFalse(s.isClosed());
@@ -93,7 +93,7 @@ public class JDBCResultIteratorTest extends TestCase {
         RowDescriptor descriptor = new RowDescriptorBuilder()
                 .setResultSet(rs)
                 .getDescriptor(new ExtendedTypeMap());
-        return new JDBCResultIterator(c, s, rs, descriptor);
+        return new JDBCResultIterator(c, s, rs, descriptor, new MockQueryMetadata());
     }
 
 }

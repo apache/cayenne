@@ -25,7 +25,7 @@ import java.util.Iterator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResult;
+import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EntityResultMetadata;
 
@@ -52,6 +52,11 @@ public interface ClassDescriptor {
      * @since 3.0
      */
     Collection<DbEntity> getRootDbEntities();
+    
+    /**
+     * @since 3.0
+     */
+    EntityInheritanceTree getEntityInheritanceTree();
 
     /**
      * Returns the EntityResultMetadata that describes the mapping of the ResultSet when

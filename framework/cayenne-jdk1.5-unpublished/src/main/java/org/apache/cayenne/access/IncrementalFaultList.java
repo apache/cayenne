@@ -34,7 +34,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
@@ -233,9 +232,8 @@ public class IncrementalFaultList<E> implements List<E> {
                 }
 
                 // continue reading ids
-                DbEntity entity = rootEntity.getDbEntity();
                 while (it.hasNextRow()) {
-                    elementsList.add(it.nextId(entity));
+                    elementsList.add(it.nextId());
                 }
 
                 QueryLogger.logSelectCount(elementsList.size(), System

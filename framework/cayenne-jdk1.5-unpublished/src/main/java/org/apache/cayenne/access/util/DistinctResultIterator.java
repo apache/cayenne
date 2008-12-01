@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -156,11 +155,7 @@ public class DistinctResultIterator implements ResultIterator {
     /**
      * @since 3.0
      */
-    public Object nextId(DbEntity entity) throws CayenneException {
-        Collection<DbAttribute> pk = entity.getPrimaryKeys();
-        if (pk.size() != 1) {
-            return nextObjectId(entity);
-        }
+    public Object nextId() throws CayenneException {
 
         if (!hasNextRow()) {
             throw new CayenneException(
@@ -169,11 +164,11 @@ public class DistinctResultIterator implements ResultIterator {
 
         Map<String, Object> row = nextDataRow;
 
-        checkNextId(entity);
+        checkNextId(defaultEntity);
 
         // TODO: andrus 3/6/2008: not very efficient ... a better algorithm would've
         // relied on wrapped iterator 'nextId' method.
-        return row.get(pk.iterator().next().getName());
+        return row.get(defaultEntity.getPrimaryKeys().iterator().next().getName());
     }
 
     public void skipDataRow() throws CayenneException {
@@ -239,6 +234,9 @@ public class DistinctResultIterator implements ResultIterator {
         }
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     void checkNextId(DbEntity entity) throws CayenneException {
         if (entity == null) {
             throw new CayenneException("Null DbEntity, can't create id.");

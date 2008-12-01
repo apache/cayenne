@@ -28,20 +28,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.ResultIterator;
-import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.util.Util;
+import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * A ResultIterator over the underlying JDBC ResultSet.
  * 
  * @since 1.2
  */
-// Replaces DefaultResultIterator
 public class JDBCResultIterator implements ResultIterator {
 
     // Connection information
@@ -50,51 +46,56 @@ public class JDBCResultIterator implements ResultIterator {
     protected ResultSet resultSet;
 
     protected RowDescriptor rowDescriptor;
-
-    DataRowPostProcessor postProcessor;
+    protected QueryMetadata queryMetadata;
 
     // last indexed PK
-    protected DbEntity rootEntity;
-    protected int[] pkIndices;
-
-    protected int mapCapacity;
 
     protected boolean closingConnection;
     protected boolean closed;
 
     protected boolean nextRow;
 
-    private String[] labels;
-    private int[] types;
+    private DataRowPostProcessor postProcessor;
+    private RowReader<DataRow> rowReader;
+    private RowReader<Object> idRowReader;
 
     /**
      * Creates new JDBCResultIterator that reads from provided ResultSet.
+     * 
+     * @since 3.0
      */
     public JDBCResultIterator(Connection connection, Statement statement,
-            ResultSet resultSet, RowDescriptor descriptor)
+            ResultSet resultSet, RowDescriptor descriptor, QueryMetadata queryMetadata)
             throws CayenneException {
 
         this.connection = connection;
         this.statement = statement;
         this.resultSet = resultSet;
         this.rowDescriptor = descriptor;
-
-        this.mapCapacity = (int) Math.ceil((descriptor.getWidth()) / 0.75);
+        this.queryMetadata = queryMetadata;
 
         checkNextRow();
 
         if (nextRow) {
-            // extract column parameters to speed up processing...
-            ColumnDescriptor[] columns = descriptor.getColumns();
-            int width = columns.length;
-            labels = new String[width];
-            types = new int[width];
-
-            for (int i = 0; i < width; i++) {
-                labels[i] = columns[i].getLabel();
-                types[i] = columns[i].getJdbcType();
-            }
+            this.rowReader = createRowReader(descriptor, queryMetadata);
         }
+    }
+
+    /**
+     * RowReader factory method.
+     */
+    private RowReader<DataRow> createRowReader(
+            RowDescriptor descriptor,
+            QueryMetadata queryMetadata) {
+        
+        if (queryMetadata.getClassDescriptor() != null
+                && queryMetadata.getClassDescriptor().getEntityInheritanceTree() != null) {
+            return new InheritanceAwareRowReader(descriptor, queryMetadata);
+        }
+        else {
+            return new FullRowReader(descriptor, queryMetadata);
+        }
+
     }
 
     /**
@@ -155,9 +156,9 @@ public class JDBCResultIterator implements ResultIterator {
         }
 
         // index id
-        if (rootEntity != entity || pkIndices == null) {
-            this.rootEntity = entity;
-            indexPK();
+        if (idRowReader == null) {
+            this.idRowReader = new IdRowReader(rowDescriptor, queryMetadata);
+            idRowReader.setPostProcessor(postProcessor);
         }
 
         // read ...
@@ -174,19 +175,19 @@ public class JDBCResultIterator implements ResultIterator {
     /**
      * @since 3.0
      */
-    public Object nextId(DbEntity entity) throws CayenneException {
+    public Object nextId() throws CayenneException {
         if (!hasNextRow()) {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
         }
 
         // index id
-        if (rootEntity != entity || pkIndices == null) {
-            this.rootEntity = entity;
-            indexPK();
+        if (idRowReader == null) {
+            this.idRowReader = new IdRowReader(rowDescriptor, queryMetadata);
+            idRowReader.setPostProcessor(postProcessor);
         }
 
-        Object id = readId();
+        Object id = idRowReader.readRow(resultSet);
 
         // rewind
         checkNextRow();
@@ -200,7 +201,7 @@ public class JDBCResultIterator implements ResultIterator {
         }
         checkNextRow();
     }
-    
+
     /**
      * Closes ResultIterator and associated ResultSet. This method must be called
      * explicitly when the user is finished processing the records. Otherwise unused
@@ -279,135 +280,33 @@ public class JDBCResultIterator implements ResultIterator {
      * Reads a row from the internal ResultSet at the current cursor position.
      */
     protected Map<String, Object> readDataRow() throws CayenneException {
-        try {
-            DataRow dataRow = new DataRow(mapCapacity);
-            ExtendedType[] converters = rowDescriptor.getConverters();
-
-            int resultWidth = labels.length;
-
-            // process result row columns,
-            for (int i = 0; i < resultWidth; i++) {
-                // note: jdbc column indexes start from 1, not 0 unlike everywhere else
-                Object val = converters[i].materializeObject(resultSet, i + 1, types[i]);
-                dataRow.put(labels[i], val);
-            }
-
-            if (postProcessor != null) {
-                postProcessor.postprocessRow(resultSet, dataRow);
-            }
-
-            return dataRow;
-        }
-        catch (CayenneException cex) {
-            // rethrow unmodified
-            throw cex;
-        }
-        catch (Exception otherex) {
-            throw new CayenneException("Exception materializing column.", Util
-                    .unwindException(otherex));
-        }
-    }
-
-    protected Object readId() throws CayenneException {
-
-        int len = pkIndices.length;
-
-        if (len != 1) {
-            return readIdRow();
-        }
-
-        ExtendedType[] converters = rowDescriptor.getConverters();
-
-        try {
-
-            // dereference column index
-            int index = pkIndices[0];
-
-            // note: jdbc column indexes start from 1, not 0 as in arrays
-            Object val = converters[index].materializeObject(
-                    resultSet,
-                    index + 1,
-                    types[index]);
-
-            // note that postProcessor overrides are not applied. ID mapping must be the
-            // same across inheritance hierarchy, so overrides do not make sense.
-            return val;
-        }
-        catch (CayenneException cex) {
-            // rethrow unmodified
-            throw cex;
-        }
-        catch (Exception otherex) {
-            throw new CayenneException("Exception materializing id column.", Util
-                    .unwindException(otherex));
-        }
+        return rowReader.readRow(resultSet);
     }
 
     /**
      * Reads a row from the internal ResultSet at the current cursor position, processing
      * only columns that are part of the ObjectId of a target class.
+     * 
+     * @deprecated since 3.0 as the calling method is deprecated
      */
     protected Map<String, Object> readIdRow() throws CayenneException {
-        try {
-            DataRow idRow = new DataRow(2);
-            ExtendedType[] converters = rowDescriptor.getConverters();
-            int len = pkIndices.length;
+        Object value = idRowReader.readRow(resultSet);
 
-            for (int i = 0; i < len; i++) {
-
-                // dereference column index
-                int index = pkIndices[i];
-
-                // note: jdbc column indexes start from 1, not 0 as in arrays
-                Object val = converters[index].materializeObject(
-                        resultSet,
-                        index + 1,
-                        types[index]);
-                idRow.put(labels[index], val);
-            }
-
-            if (postProcessor != null) {
-                postProcessor.postprocessRow(resultSet, idRow);
-            }
-
-            return idRow;
-        }
-        catch (CayenneException cex) {
-            // rethrow unmodified
-            throw cex;
-        }
-        catch (Exception otherex) {
-            throw new CayenneException("Exception materializing id column.", Util
-                    .unwindException(otherex));
-        }
-    }
-
-    /**
-     * Creates an index of PK columns in the RowDescriptor.
-     */
-    protected void indexPK() {
-        if (rootEntity == null) {
-            throw new CayenneRuntimeException("Null root DbEntity, can't index PK");
+        if (value instanceof Map) {
+            return (Map<String, Object>) value;
         }
 
-        int len = rootEntity.getPrimaryKeys().size();
+        // wrap into a map...
 
-        // sanity check
-        if (len == 0) {
-            throw new CayenneRuntimeException("Root DbEntity has no PK defined: "
-                    + rootEntity);
-        }
-
-        int[] pk = new int[len];
-        ColumnDescriptor[] columns = rowDescriptor.getColumns();
-        for (int i = 0, j = 0; i < columns.length; i++) {
-            DbAttribute a = (DbAttribute) rootEntity.getAttribute(columns[i].getName());
-            if (a != null && a.isPrimaryKey()) {
-                pk[j++] = i;
-            }
-        }
-
-        this.pkIndices = pk;
+        String pkName = queryMetadata
+                .getDbEntity()
+                .getPrimaryKeys()
+                .iterator()
+                .next()
+                .getName();
+        DataRow dataRow = new DataRow(2);
+        dataRow.put(pkName, value);
+        return dataRow;
     }
 
     /**
@@ -430,7 +329,16 @@ public class JDBCResultIterator implements ResultIterator {
         return rowDescriptor;
     }
 
+    // TODO: andrus 11/27/2008 refactor the postprocessor hack into a special row reader.
     void setPostProcessor(DataRowPostProcessor postProcessor) {
         this.postProcessor = postProcessor;
+
+        if (rowReader != null) {
+            rowReader.setPostProcessor(postProcessor);
+        }
+
+        if (idRowReader != null) {
+            idRowReader.setPostProcessor(postProcessor);
+        }
     }
 }

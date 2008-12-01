@@ -126,6 +126,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         EntityInheritanceTree inheritanceTree = descriptorMap
                 .getResolver()
                 .lookupInheritanceTree(descriptor.getEntity());
+        descriptor.setEntityInheritanceTree(inheritanceTree);
         indexSubclassDescriptors(descriptor, inheritanceTree);
         indexQualifiers(descriptor, inheritanceTree);
 

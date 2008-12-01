@@ -31,7 +31,6 @@ import org.apache.cayenne.map.DbEntity;
  * execution. Usually a ResultIterator is supported by an open java.sql.ResultSet,
  * therefore most of the methods would throw checked exceptions. ResultIterators must be
  * explicitly closed when the user is done working with them.
- * 
  */
 public interface ResultIterator {
 
@@ -62,14 +61,14 @@ public interface ResultIterator {
     Map<String, Object> nextObjectId(DbEntity entity) throws CayenneException;
 
     /**
-     * Reads and returns an id column or columns for the DbEntity. If an entity has a
-     * single column id, the return value is an Object matching the column type (e.g.
-     * java.lang.Long). If an entity has a compound PK, the return value is a DataRow
-     * (i.e. equivalent to {@link #nextObjectId(DbEntity)}).
+     * Reads and returns an id column or columns for the current row DbEntity. If an
+     * entity has a single column id, the return value is an Object matching the column
+     * type (e.g. java.lang.Long). If an entity has a compound PK, the return value is a
+     * DataRow.
      * 
      * @since 3.0
      */
-    Object nextId(DbEntity entity) throws CayenneException;
+    Object nextId() throws CayenneException;
 
     /**
      * Skips current data row instead of reading it.
