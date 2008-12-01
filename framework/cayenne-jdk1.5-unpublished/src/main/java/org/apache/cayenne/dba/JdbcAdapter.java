@@ -522,7 +522,7 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * Returns a translator factory for EJBQL to SQL translation. This property is
      * normally initialized in constructor by calling
-     * {@link #createEJBQLTranslatorFactory()}, and can be overriden by calling
+     * {@link #createEJBQLTranslatorFactory()}, and can be overridden by calling
      * {@link #setEjbqlTranslatorFactory(EJBQLTranslatorFactory)}.
      * 
      * @since 3.0

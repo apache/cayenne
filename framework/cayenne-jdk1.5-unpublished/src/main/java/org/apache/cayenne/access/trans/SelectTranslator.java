@@ -277,8 +277,7 @@ public class SelectTranslator extends QueryAssembler {
         // 
         // * class properties
         // * PK
-        // * FK used in relationships
-        // * GROUP BY
+        // * FK used in relationship
         // * joined prefetch PK
 
         ClassDescriptor descriptor = queryMetadata.getClassDescriptor();
@@ -413,7 +412,6 @@ public class SelectTranslator extends QueryAssembler {
                                 attributes,
                                 labelPrefix);
                     }
-
                 }
             }
         }
@@ -464,7 +462,6 @@ public class SelectTranslator extends QueryAssembler {
                             throw new CayenneRuntimeException(
                                     "ObjAttribute has no component: " + oa.getName());
                         }
-
                         else if (pathPart instanceof DbRelationship) {
                             DbRelationship rel = (DbRelationship) pathPart;
                             dbRelationshipAdded(rel, JoinType.INNER, null);
