@@ -28,10 +28,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.EntityResult;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.SQLResultSetMapping;
 
 /**
  * A ResultIterator over the underlying JDBC ResultSet.
@@ -56,7 +59,7 @@ public class JDBCResultIterator implements ResultIterator {
     protected boolean nextRow;
 
     private DataRowPostProcessor postProcessor;
-    private RowReader<DataRow> rowReader;
+    private RowReader<?> rowReader;
     private RowReader<Object> idRowReader;
 
     /**
@@ -84,10 +87,65 @@ public class JDBCResultIterator implements ResultIterator {
     /**
      * RowReader factory method.
      */
-    private RowReader<DataRow> createRowReader(
+    private RowReader<?> createRowReader(
             RowDescriptor descriptor,
             QueryMetadata queryMetadata) {
-        
+
+        SQLResultSetMapping rsMapping = queryMetadata.getResultSetMapping();
+        if (rsMapping != null) {
+
+            List<?> resultDescriptors = rsMapping.getResultDescriptors();
+            int resultWidth = resultDescriptors.size();
+
+            if (resultWidth == 0) {
+                throw new CayenneRuntimeException("Empty result descriptor");
+            }
+            else if (resultWidth == 1) {
+                return createSegmentRowReader(
+                        descriptor,
+                        queryMetadata,
+                        resultDescriptors.get(0));
+            }
+            else {
+                CompoundRowReader reader = new CompoundRowReader(resultWidth);
+                for (int i = 0; i < resultWidth; i++) {
+                    reader.addRowReader(i, createSegmentRowReader(
+                            descriptor,
+                            queryMetadata,
+                            resultDescriptors.get(i)));
+                }
+
+                return reader;
+            }
+        }
+        else {
+            return createFullRowReader(descriptor, queryMetadata);
+        }
+    }
+
+    private RowReader<?> createSegmentRowReader(
+            RowDescriptor descriptor,
+            QueryMetadata queryMetadata,
+            Object segmentDescriptor) {
+
+        if (segmentDescriptor instanceof String) {
+            return new ScalarRowReader(descriptor, (String) segmentDescriptor);
+        }
+        else if (segmentDescriptor instanceof EntityResult) {
+            return new EntityRowReader(
+                    descriptor,
+                    queryMetadata,
+                    (EntityResult) segmentDescriptor);
+        }
+        else {
+            throw new IllegalArgumentException(
+                    "Expected either String or Entity Result: " + segmentDescriptor);
+        }
+    }
+
+    private RowReader<?> createFullRowReader(
+            RowDescriptor descriptor,
+            QueryMetadata queryMetadata) {
         if (queryMetadata.getClassDescriptor() != null
                 && queryMetadata.getClassDescriptor().getEntityInheritanceTree() != null) {
             return new InheritanceAwareRowReader(descriptor, queryMetadata);
@@ -95,18 +153,26 @@ public class JDBCResultIterator implements ResultIterator {
         else {
             return new FullRowReader(descriptor, queryMetadata);
         }
-
     }
 
     /**
      * Returns all unread data rows from ResultSet, closing this iterator if needed.
+     * 
+     * @deprecated since 3.0
      */
     public List<DataRow> dataRows(boolean close) throws CayenneException {
-        List<DataRow> list = new ArrayList<DataRow>();
+        return allRows(close);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public List allRows(boolean close) throws CayenneException {
+        List<Object> list = new ArrayList<Object>();
 
         try {
             while (hasNextRow()) {
-                list.add((DataRow) nextDataRow());
+                list.add(nextRow());
             }
         }
         finally {
@@ -128,17 +194,23 @@ public class JDBCResultIterator implements ResultIterator {
 
     /**
      * Returns the next result row as a Map.
+     * 
+     * @deprecated since 3.0
      */
     public Map<String, Object> nextDataRow() throws CayenneException {
+        return (DataRow) nextRow();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public Object nextRow() throws CayenneException {
         if (!hasNextRow()) {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
         }
 
-        // read
-        Map<String, Object> row = readDataRow();
-
-        // rewind
+        Object row = rowReader.readRow(resultSet);
         checkNextRow();
         return row;
     }
@@ -194,7 +266,17 @@ public class JDBCResultIterator implements ResultIterator {
         return id;
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public void skipDataRow() throws CayenneException {
+        skipRow();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void skipRow() throws CayenneException {
         if (!hasNextRow()) {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
@@ -255,8 +337,17 @@ public class JDBCResultIterator implements ResultIterator {
 
     /**
      * Returns the number of columns in the result row.
+     * 
+     * @deprecated since 3.0
      */
     public int getDataRowWidth() {
+        return getResultSetWidth();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public int getResultSetWidth() {
         return rowDescriptor.getWidth();
     }
 
@@ -278,9 +369,11 @@ public class JDBCResultIterator implements ResultIterator {
 
     /**
      * Reads a row from the internal ResultSet at the current cursor position.
+     * 
+     * @deprecated since 3.0. Internal rowReader is used to read individual rows.
      */
     protected Map<String, Object> readDataRow() throws CayenneException {
-        return rowReader.readRow(resultSet);
+        return (DataRow) rowReader.readRow(resultSet);
     }
 
     /**

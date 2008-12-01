@@ -60,18 +60,28 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
             throw new CayenneException(e);
         }
         finally {
-            if(Transaction.getThreadTransaction() == tx) {
+            if (Transaction.getThreadTransaction() == tx) {
                 Transaction.bindThreadTransaction(null);
             }
         }
     }
 
+    /**
+     * @deprecated since 3.0 in favor of {@link #allRows(boolean)}.
+     */
     public List dataRows(boolean close) throws CayenneException {
-        List<Map> list = new ArrayList<Map>();
+        return allRows(close);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public List allRows(boolean close) throws CayenneException {
+        List list = new ArrayList<Object>();
 
         try {
             while (hasNextRow()) {
-                list.add(nextDataRow());
+                list.add(nextRow());
             }
         }
         finally {
@@ -83,16 +93,36 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
         return list;
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public int getDataRowWidth() {
         return result.getDataRowWidth();
+    }
+    
+    /**
+     * @since 3.0
+     */
+    public int getResultSetWidth() {
+        return result.getResultSetWidth();
     }
 
     public boolean hasNextRow() throws CayenneException {
         return result.hasNextRow();
     }
 
-    public Map nextDataRow() throws CayenneException {
+    /**
+     * @deprecated since 3.0 in favor of {@link #nextRow()}.
+     */
+    public Map<String, Object> nextDataRow() throws CayenneException {
         return result.nextDataRow();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public Object nextRow() throws CayenneException {
+        return result.nextRow();
     }
 
     /**
@@ -101,7 +131,7 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
     public Map nextObjectId(DbEntity entity) throws CayenneException {
         return result.nextObjectId(entity);
     }
-    
+
     /**
      * @since 3.0
      */
@@ -109,7 +139,17 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
         return result.nextId();
     }
 
+    /**
+     * @deprecated since 3.0 in favor of {@link #skipRow()}.
+     */
     public void skipDataRow() throws CayenneException {
         result.skipDataRow();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void skipRow() throws CayenneException {
+        result.skipRow();
     }
 }

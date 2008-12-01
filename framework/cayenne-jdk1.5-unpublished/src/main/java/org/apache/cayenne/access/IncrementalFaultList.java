@@ -218,13 +218,13 @@ public class IncrementalFaultList<E> implements List<E> {
             ResultIterator it = dataContext.performIteratedQuery(query);
             try {
 
-                rowWidth = it.getDataRowWidth();
+                rowWidth = it.getResultSetWidth();
 
                 // resolve first page if we can
                 if (resolvesFirstPage) {
                     // read first page completely, the rest as ObjectIds
                     for (int i = 0; i < pageSize && it.hasNextRow(); i++) {
-                        elementsList.add(it.nextDataRow());
+                        elementsList.add(it.nextRow());
                         lastResolved++;
                     }
 

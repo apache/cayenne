@@ -416,7 +416,7 @@ public class DataContextTest extends DataContextCase {
         try {
             int count = 0;
             while (it.hasNextRow()) {
-                it.nextDataRow();
+                it.nextRow();
                 count++;
             }
 
@@ -437,7 +437,7 @@ public class DataContextTest extends DataContextCase {
 
         try {
             while (it.hasNextRow()) {
-                DataRow row = (DataRow) it.nextDataRow();
+                DataRow row = (DataRow) it.nextRow();
 
                 // try instantiating an object and fetching its relationships
                 Artist artist = (Artist) context.objectFromDataRow(

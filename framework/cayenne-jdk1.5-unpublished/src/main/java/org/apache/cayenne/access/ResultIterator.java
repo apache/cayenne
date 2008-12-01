@@ -31,14 +31,28 @@ import org.apache.cayenne.map.DbEntity;
  * execution. Usually a ResultIterator is supported by an open java.sql.ResultSet,
  * therefore most of the methods would throw checked exceptions. ResultIterators must be
  * explicitly closed when the user is done working with them.
+ * <p>
+ * Result "rows", depending on the query, may be represented as scalar values, DataRows,
+ * or Object[] arrays containing a mix of scalars and DataRows.
+ * </p>
  */
 public interface ResultIterator {
 
     /**
      * Returns all unread data rows from ResultSet and closes this iterator if asked to do
      * so.
+     * 
+     * @deprecated since 3.0 use {@link #allRows(boolean)}.
      */
     List<DataRow> dataRows(boolean close) throws CayenneException;
+
+    /**
+     * Returns all yet unread rows from ResultSet and closes this iterator if asked to do
+     * so.
+     * 
+     * @since 3.0
+     */
+    List allRows(boolean close) throws CayenneException;
 
     /**
      * Returns true if there is at least one more record that can be read from the
@@ -48,8 +62,18 @@ public interface ResultIterator {
 
     /**
      * Returns the next result row as a Map.
+     * 
+     * @deprecated since 3.0 use {@link #nextRow()}.
      */
     Map<String, Object> nextDataRow() throws CayenneException;
+
+    /**
+     * Returns the next result row that is, depending on the query, may be a scalar value,
+     * a DataRow, or an Object[] array containing a mix of scalars and DataRows.
+     * 
+     * @since 3.0
+     */
+    Object nextRow() throws CayenneException;
 
     /**
      * Returns a map of ObjectId values from the next result row. Primary key columns are
@@ -72,8 +96,15 @@ public interface ResultIterator {
 
     /**
      * Skips current data row instead of reading it.
+     * 
+     * @deprecated since 3.0 use {@link #skipRow()} instead.
      */
     void skipDataRow() throws CayenneException;
+
+    /**
+     * @since 3.0
+     */
+    void skipRow() throws CayenneException;
 
     /**
      * Closes ResultIterator and associated ResultSet. This method must be called
@@ -86,6 +117,14 @@ public interface ResultIterator {
      * Returns the number of columns in the result row.
      * 
      * @since 1.0.6
+     * @deprecated since 3.0 in favor of {@link #getResultSetWidth()}.
      */
     int getDataRowWidth();
+
+    /**
+     * Returns a number of columns in the underlying ResultSet.
+     * 
+     * @since 3.0
+     */
+    int getResultSetWidth();
 }

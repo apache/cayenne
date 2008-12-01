@@ -25,6 +25,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.query.MockQueryMetadata;
 
@@ -49,7 +50,7 @@ public class JDBCResultIteratorTest extends TestCase {
     public void testNextDataRow() throws Exception {
         JDBCResultIterator it = makeIterator();
 
-        Map row = it.nextDataRow();
+        DataRow row = (DataRow) it.nextRow();
 
         assertNotNull(row);
         assertEquals(1, row.size());

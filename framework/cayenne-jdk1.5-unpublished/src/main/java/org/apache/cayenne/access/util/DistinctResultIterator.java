@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -46,7 +47,7 @@ public class DistinctResultIterator implements ResultIterator {
 
     protected ResultIterator wrappedIterator;
     protected Set<Map<String, Object>> fetchedIds;
-    protected Map<String, Object> nextDataRow;
+    protected Object nextDataRow;
     protected DbEntity defaultEntity;
     protected boolean compareFullRows;
 
@@ -85,13 +86,22 @@ public class DistinctResultIterator implements ResultIterator {
 
     /**
      * Returns all data rows.
+     * 
+     * @deprecated since 3.0
      */
     public List dataRows(boolean close) throws CayenneException {
-        List<Map> list = new ArrayList<Map>();
+        return allRows(close);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public List allRows(boolean close) throws CayenneException {
+        List<Object> list = new ArrayList<Object>();
 
         try {
             while (this.hasNextRow()) {
-                list.add(this.nextDataRow());
+                list.add(nextRow());
             }
             return list;
         }
@@ -102,21 +112,35 @@ public class DistinctResultIterator implements ResultIterator {
         }
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public int getDataRowWidth() {
         return wrappedIterator.getDataRowWidth();
+    }
+    
+    public int getResultSetWidth() {
+        return wrappedIterator.getResultSetWidth();
     }
 
     public boolean hasNextRow() throws CayenneException {
         return nextDataRow != null;
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public Map nextDataRow() throws CayenneException {
+        return (DataRow) nextRow();
+    }
+
+    public Object nextRow() throws CayenneException {
         if (!hasNextRow()) {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
         }
 
-        Map<String, Object> row = nextDataRow;
+        Object row = nextDataRow;
         checkNextRow();
         return row;
     }
@@ -133,7 +157,7 @@ public class DistinctResultIterator implements ResultIterator {
                     "An attempt to read uninitialized row or past the end of the iterator.");
         }
 
-        Map<String, Object> row = nextDataRow;
+        DataRow row = (DataRow) nextDataRow;
 
         // if we were previously reading full rows, we need to strip extra keys...
         if (!readingIds) {
@@ -162,7 +186,12 @@ public class DistinctResultIterator implements ResultIterator {
                     "An attempt to read uninitialized row or past the end of the iterator.");
         }
 
-        Map<String, Object> row = nextDataRow;
+        if (!(nextDataRow instanceof DataRow)) {
+            throw new IllegalStateException(
+                    "A query is not fetching DataRows. Can't call 'nextId'");
+        }
+
+        DataRow row = (DataRow) nextDataRow;
 
         checkNextId(defaultEntity);
 
@@ -171,7 +200,17 @@ public class DistinctResultIterator implements ResultIterator {
         return row.get(defaultEntity.getPrimaryKeys().iterator().next().getName());
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public void skipDataRow() throws CayenneException {
+        skipRow();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void skipRow() throws CayenneException {
         if (!hasNextRow()) {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
@@ -203,7 +242,7 @@ public class DistinctResultIterator implements ResultIterator {
 
         nextDataRow = null;
         while (wrappedIterator.hasNextRow()) {
-            Map<String, Object> next = wrappedIterator.nextDataRow();
+            DataRow next = (DataRow) wrappedIterator.nextRow();
 
             if (fetchedIds.add(next)) {
                 this.nextDataRow = next;
@@ -216,7 +255,7 @@ public class DistinctResultIterator implements ResultIterator {
 
         nextDataRow = null;
         while (wrappedIterator.hasNextRow()) {
-            Map<String, Object> next = wrappedIterator.nextDataRow();
+            DataRow next = (DataRow) wrappedIterator.nextRow();
 
             // create id map...
             // TODO: this can be optimized by creating an array with id keys

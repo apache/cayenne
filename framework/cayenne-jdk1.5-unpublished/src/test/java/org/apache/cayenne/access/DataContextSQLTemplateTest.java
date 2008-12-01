@@ -525,7 +525,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
             while (it.hasNextRow()) {
                 i++;
 
-                Map row = it.nextDataRow();
+                DataRow row = (DataRow) it.nextRow();
                 assertEquals(3, row.size());
                 assertEquals(33000l + i, row.get("ARTIST_ID"));
             }

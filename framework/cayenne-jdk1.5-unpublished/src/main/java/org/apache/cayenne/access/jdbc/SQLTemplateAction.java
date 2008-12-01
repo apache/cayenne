@@ -231,7 +231,7 @@ public class SQLTemplateAction implements SQLAction {
                 .getFetchLimit());
 
         if (!iteratedResult) {
-            List<DataRow> resultRows = it.dataRows(false);
+            List<DataRow> resultRows = it.allRows(false);
             QueryLogger.logSelectCount(resultRows.size(), System.currentTimeMillis()
                     - startTime);
 

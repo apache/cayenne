@@ -134,8 +134,8 @@ public class SelectAction extends BaseSQLAction {
         }
 
         // wrap iterator in a fetch limit checker ... there are a few cases when in-memory
-        // fetch limit is a noop, however in a geberal case this is needed, as teh SQL
-        // result count does not directly correspind to the number of objects returned
+        // fetch limit is a noop, however in a general case this is needed, as the SQL
+        // result count does not directly correspond to the number of objects returned
         // from Cayenne.
 
         int fetchLimit = query.getFetchLimit();
@@ -150,7 +150,7 @@ public class SelectAction extends BaseSQLAction {
         if (!observer.isIteratedResult()) {
             // note that we don't need to close ResultIterator
             // since "dataRows" will do it internally
-            List<DataRow> resultRows = it.dataRows(true);
+            List<DataRow> resultRows = it.allRows(true);
             QueryLogger
                     .logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 

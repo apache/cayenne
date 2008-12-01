@@ -530,7 +530,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     public void nextGeneratedDataRows(Query query, ResultIterator keysIterator) {
         if (keysIterator != null) {
             try {
-                nextDataRows(query, keysIterator.dataRows(true));
+                nextDataRows(query, keysIterator.allRows(true));
             }
             catch (CayenneException ex) {
                 // don't throw here....

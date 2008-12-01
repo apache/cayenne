@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -228,7 +229,7 @@ public class DataPort {
 
                     currentRow++;
 
-                    Map<String, Object> nextRow = result.nextDataRow();
+                    Map<String, Object> nextRow = (DataRow) result.nextRow();
                     insert.add(nextRow);
                 }
 

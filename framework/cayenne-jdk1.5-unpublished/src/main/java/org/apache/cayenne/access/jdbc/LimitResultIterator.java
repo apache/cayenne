@@ -19,13 +19,12 @@
 package org.apache.cayenne.access.jdbc;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.ResultIterator;
-
 import org.apache.cayenne.map.DbEntity;
 
 /**
@@ -59,7 +58,7 @@ public class LimitResultIterator implements ResultIterator {
 
     private void checkOffset() throws CayenneException {
         for (int i = 0; i < offset && wrappedIterator.hasNextRow(); i++) {
-            wrappedIterator.nextDataRow();
+            wrappedIterator.nextRow();
         }
     }
 
@@ -71,24 +70,29 @@ public class LimitResultIterator implements ResultIterator {
             nextRow = true;
             fetchedSoFar++;
         }
-
-    }
-
-    private Map<String, Object> readDataRow() throws CayenneException {
-        return wrappedIterator.nextDataRow();
     }
 
     public void close() throws CayenneException {
         wrappedIterator.close();
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public List dataRows(boolean close) throws CayenneException {
+        return allRows(close);
+    }
 
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+    /**
+     * @since 3.0
+     */
+    public List allRows(boolean close) throws CayenneException {
+
+        List<Object> list = new ArrayList<Object>();
 
         try {
             while (this.hasNextRow()) {
-                list.add(this.nextDataRow());
+                list.add(this.nextRow());
             }
         }
         finally {
@@ -100,22 +104,42 @@ public class LimitResultIterator implements ResultIterator {
         return list;
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public int getDataRowWidth() {
         return wrappedIterator.getDataRowWidth();
+    }
+    
+    /**
+     * @since 3.0
+     */
+    public int getResultSetWidth() {
+        return wrappedIterator.getResultSetWidth();
     }
 
     public boolean hasNextRow() throws CayenneException {
         return nextRow;
     }
 
+    /**
+     * @deprecated since 3.0
+     */
     public Map<String, Object> nextDataRow() throws CayenneException {
+        return (DataRow) nextRow();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public Object nextRow() throws CayenneException {
         if (!hasNextRow()) {
             throw new CayenneException(
                     "An attempt to read uninitialized row or past the end of the iterator.");
         }
-        Map<String, Object> row = readDataRow();
-        checkNextRow();
 
+        Object row = wrappedIterator.nextRow();
+        checkNextRow();
         return row;
     }
 
@@ -145,8 +169,18 @@ public class LimitResultIterator implements ResultIterator {
         return nextDataObjectIds;
     }
 
+    /**
+     * @deprecated since 3.0 in favor of {@link #skipRow()}.
+     */
     public void skipDataRow() throws CayenneException {
         wrappedIterator.skipDataRow();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void skipRow() throws CayenneException {
+        wrappedIterator.skipRow();
     }
 
     void checkNextId() throws CayenneException {
@@ -174,5 +208,4 @@ public class LimitResultIterator implements ResultIterator {
             nextDataObjectIds = next;
         }
     }
-
 }
