@@ -323,7 +323,7 @@ public class IncrementalFaultList<E> implements List<E> {
             List<Object> ids = new ArrayList<Object>(pageSize);
             for (int i = fromIndex; i < toIndex; i++) {
                 Object object = elements.get(i);
-                if (helper.incorrectObjectType(object)) {
+                if (helper.unresolvedSuspect(object)) {
                     quals.add(buildIdQualifier(object));
                     ids.add(object);
                 }
@@ -601,7 +601,7 @@ public class IncrementalFaultList<E> implements List<E> {
         synchronized (elements) {
             Object o = elements.get(index);
 
-            if (helper.incorrectObjectType(o)) {
+            if (helper.unresolvedSuspect(o)) {
                 // read this page
                 int pageStart = pageIndex(index) * pageSize;
                 resolveInterval(pageStart, pageStart + pageSize);
@@ -710,7 +710,7 @@ public class IncrementalFaultList<E> implements List<E> {
     abstract class IncrementalListHelper {
 
         int indexOfObject(Object object) {
-            if (incorrectObjectType(object)) {
+            if (unresolvedSuspect(object)) {
                 return -1;
             }
 
@@ -725,7 +725,7 @@ public class IncrementalFaultList<E> implements List<E> {
         }
 
         int lastIndexOfObject(Object object) {
-            if (incorrectObjectType(object)) {
+            if (unresolvedSuspect(object)) {
                 return -1;
             }
 
@@ -759,7 +759,15 @@ public class IncrementalFaultList<E> implements List<E> {
             }
         }
 
-        abstract boolean incorrectObjectType(Object object);
+        /**
+         * Returns true if an object is not the type of object expected in the list. This
+         * method is not expected to perform thorough checking of the object type. What's
+         * important is the guarantee that an unresolved object representation will always
+         * return true for this method, and resolved will return false. Other types of
+         * objects that users may choose to add to the list will not be analyzed in
+         * detail.
+         */
+        abstract boolean unresolvedSuspect(Object object);
 
         abstract boolean objectsAreEqual(Object object, Object objectInTheList);
 
@@ -769,21 +777,16 @@ public class IncrementalFaultList<E> implements List<E> {
     class PersistentListHelper extends IncrementalListHelper {
 
         @Override
-        boolean incorrectObjectType(Object object) {
+        boolean unresolvedSuspect(Object object) {
             if (!(object instanceof Persistent)) {
                 return true;
             }
 
-            Persistent persistent = (Persistent) object;
-            // NULL ObjectContext can be a result of a delete/commit operation
-            if (persistent.getObjectContext() != null
-                    && persistent.getObjectContext() != dataContext) {
-                return true;
-            }
-
-            if (!persistent.getObjectId().getEntityName().equals(rootEntity.getName())) {
-                return true;
-            }
+            // don't do a full check for object type matching the type of objects in the
+            // list... what's important is a quick "false" return if the object is of type
+            // representing unresolved objects.. furthermore, if inheritance is involved,
+            // we'll need an even more extensive check (see CAY-1142 on inheritance
+            // issues).
 
             return false;
         }
@@ -815,13 +818,12 @@ public class IncrementalFaultList<E> implements List<E> {
     class DataRowListHelper extends IncrementalListHelper {
 
         @Override
-        boolean incorrectObjectType(Object object) {
+        boolean unresolvedSuspect(Object object) {
             if (!(object instanceof Map)) {
                 return true;
             }
 
-            Map<?, ?> map = (Map<?, ?>) object;
-            return map.size() != rowWidth;
+            return false;
         }
 
         @Override
@@ -834,6 +836,10 @@ public class IncrementalFaultList<E> implements List<E> {
 
                 Map<?, ?> id = (Map<?, ?>) objectInTheList;
                 Map<?, ?> map = (Map<?, ?>) object;
+                
+                if(id.size() != map.size()) {
+                    return false;
+                }
 
                 // id must be a subset of this map
                 for (Map.Entry<?, ?> entry : id.entrySet()) {

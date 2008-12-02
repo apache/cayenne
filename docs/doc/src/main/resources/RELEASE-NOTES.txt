@@ -15,6 +15,7 @@ Date:
 Changes/New Features Since M5:
 
 CAY-1140 Store ObjEntity name in the DataRow
+CAY-1142 (Single table) Inheritance and Paginated lists 
 
 ----------------------------------
 Release: 3.0M5

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.Ordering;
@@ -83,8 +84,11 @@ public class SimpleIdIncrementalFaultListDataRowsTest extends CayenneCase {
 
         Map row = (Map) artists.get(0);
         assertEquals(19, list.indexOf(row));
+        
+        DataRow clone = new DataRow(row);
+        assertEquals(19, list.indexOf(clone));
 
-        row.remove("ARTIST_NAME");
+        row.remove("ARTIST_ID");
         assertEquals(-1, list.indexOf(row));
     }
 
@@ -135,7 +139,7 @@ public class SimpleIdIncrementalFaultListDataRowsTest extends CayenneCase {
         Map row = (Map) artists.get(0);
         assertEquals(19, list.lastIndexOf(row));
 
-        row.remove("ARTIST_NAME");
+        row.remove("ARTIST_ID");
         assertEquals(-1, list.lastIndexOf(row));
     }
 
