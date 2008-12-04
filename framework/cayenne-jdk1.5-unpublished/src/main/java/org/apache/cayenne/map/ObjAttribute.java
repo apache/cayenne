@@ -250,6 +250,7 @@ public class ObjAttribute extends Attribute {
      * @deprecated since 3.0 - this method only works for non-flattened attributes.
      *             'setDbAttributePath' should be used instead.
      */
+    @Deprecated
     public void setDbAttribute(DbAttribute dbAttribute) {
         if (dbAttribute == null) {
             setDbAttributePath(null);
@@ -282,6 +283,7 @@ public class ObjAttribute extends Attribute {
      * 
      * @deprecated since 3.0 use {@link #setDbAttributePath(String)}.
      */
+    @Deprecated
     public void setDbAttributeName(String name) {
         setDbAttributePath(name);
     }
@@ -306,6 +308,7 @@ public class ObjAttribute extends Attribute {
     /**
      * @deprecated since 3.0 use 'isFlattened'.
      */
+    @Deprecated
     public boolean isCompound() {
         return isFlattened();
     }
@@ -318,6 +321,24 @@ public class ObjAttribute extends Attribute {
      */
     public boolean isFlattened() {
         return dbAttributePath != null && dbAttributePath.indexOf('.') >= 0;
+    }
+    
+    /**
+     * Returns whether this attribute is mandatory
+     * @see DbAttribute#isMandatory()
+     */
+    public boolean isMandatory() {
+        DbAttribute dbAttribute = getDbAttribute();
+        return dbAttribute == null ? false : dbAttribute.isMandatory();
+    }
+    
+    /**
+     * Returns this attribute's maximum allowed length
+     * @see DbAttribute#getMaxLength()
+     */
+    public int getMaxLength() {
+        DbAttribute dbAttribute = getDbAttribute();
+        return dbAttribute == null ? -1 : dbAttribute.getMaxLength();
     }
 
     /**
@@ -339,8 +360,8 @@ public class ObjAttribute extends Attribute {
                 attribute.setPrimaryKey(true);
             }
 
-            attribute.setMandatory(dbAttribute.isMandatory());
-            attribute.setMaxLength(dbAttribute.getMaxLength());
+            attribute.setMandatory(isMandatory());
+            attribute.setMaxLength(getMaxLength());
         }
 
         // TODO: will likely need "userForLocking" property as well.

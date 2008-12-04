@@ -42,6 +42,7 @@ class ClientObjAttribute extends ObjAttribute {
     /**
      * @see DbAttribute#isMandatory()
      */
+    @Override
     public boolean isMandatory() {
         return mandatory;
     }
@@ -53,6 +54,7 @@ class ClientObjAttribute extends ObjAttribute {
     /**
      * @see DbAttribute#getMaxLength()
      */
+    @Override
     public int getMaxLength() {
         return maxLength;
     }

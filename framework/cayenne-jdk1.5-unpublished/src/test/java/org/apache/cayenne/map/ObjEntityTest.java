@@ -103,10 +103,19 @@ public class ObjEntityTest extends CayenneCase {
         assertEquals("java.lang.Integer", clientmpk.getType());
         assertTrue(clientMeaningfulPKE.getAttributes().contains(clientmpk));
     }
+    
+    public void testAttributes() {
+        ObjEntity artistE = getObjEntity("Artist");
+        ObjAttribute attr = (ObjAttribute) artistE.getAttribute("artistName");
+        
+        assertEquals(attr.getMaxLength(), attr.getDbAttribute().getMaxLength());
+        assertEquals(attr.isMandatory(), attr.getDbAttribute().isMandatory());
+    }
 
     /**
      * @deprecated since 3.0 as the method being tested is deprecated.
      */
+    @Deprecated
     public void testLastPathComponentLegacy() {
         ObjEntity artistE = getObjEntity("Artist");
 
