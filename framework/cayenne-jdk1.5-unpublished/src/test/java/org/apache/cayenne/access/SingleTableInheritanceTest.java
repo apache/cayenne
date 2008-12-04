@@ -20,6 +20,7 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -34,6 +35,49 @@ public class SingleTableInheritanceTest extends PeopleCase {
     protected void setUp() throws Exception {
         super.setUp();
         deleteTestData();
+    }
+    
+    public void testMatchingOnSuperAttributes() {
+        QueryChain insert = new QueryChain();
+        insert
+                .addQuery(new SQLTemplate(
+                        AbstractPerson.class,
+                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (1, 'E1', 'EE')"));
+        insert
+                .addQuery(new SQLTemplate(
+                        AbstractPerson.class,
+                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (2, 'E2', 'EM')"));
+        createDataContext().performGenericQuery(insert);
+        
+        // fetch on leaf, but match on a super attribute
+        SelectQuery select = new SelectQuery(Manager.class);
+        select.andQualifier(ExpressionFactory.matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
+    
+        List<Manager> results = createDataContext().performQuery(select);
+        assertEquals(1, results.size());
+        assertEquals("E2", results.get(0).getName());
+    }
+    
+    public void testMatchingOnSuperAttributesWithPrefetch() {
+        QueryChain insert = new QueryChain();
+        insert
+                .addQuery(new SQLTemplate(
+                        AbstractPerson.class,
+                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (1, 'E1', 'EE')"));
+        insert
+                .addQuery(new SQLTemplate(
+                        AbstractPerson.class,
+                        "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (2, 'E2', 'EM')"));
+        createDataContext().performGenericQuery(insert);
+        
+        // fetch on leaf, but match on a super attribute
+        SelectQuery select = new SelectQuery(Employee.class);
+        select.addPrefetch(Employee.TO_DEPARTMENT_PROPERTY);
+        select.andQualifier(ExpressionFactory.matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
+    
+        List<Manager> results = createDataContext().performQuery(select);
+        assertEquals(1, results.size());
+        assertEquals("E2", results.get(0).getName());
     }
 
     public void testPaginatedQueries() {
