@@ -749,10 +749,14 @@ public class MapLoader extends DefaultHandler {
      */
     protected ResourceFinder createResourceFinder() {
         ResourceLocator locator = new ResourceLocator();
-        locator.setSkipAbsolutePath(true);
+
+        // absolute paths are usually passed by the Modeler
+        // while runtime would use classpath
+
+        locator.setSkipAbsolutePath(false);
         locator.setSkipClasspath(false);
         locator.setSkipCurrentDirectory(false);
-        locator.setSkipHomeDirectory(false);
+        locator.setSkipHomeDirectory(true);
         return locator;
     }
     
