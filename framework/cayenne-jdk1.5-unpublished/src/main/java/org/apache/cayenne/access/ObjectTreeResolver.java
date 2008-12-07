@@ -217,7 +217,8 @@ class ObjectTreeResolver {
             }
 
             node.setDataRows(rows);
-            node.setResolver(new ObjectResolver(context, descriptor));
+            node.setResolver(new ObjectResolver(context, descriptor, queryMetadata
+                    .isRefreshingObjects()));
             node.setIncoming(arc);
 
             if (currentNode != null) {
@@ -274,7 +275,8 @@ class ObjectTreeResolver {
 
                 cache.snapshotsUpdatedForObjects(
                         objects,
-                        ((PrefetchProcessorJointNode) processorNode).getResolvedRows());
+                        ((PrefetchProcessorJointNode) processorNode).getResolvedRows(),
+                        queryMetadata.isRefreshingObjects());
             }
             // disjoint prefetch on flattened relationships still requires manual matching
             else if (processorNode.getIncoming() != null
@@ -477,7 +479,8 @@ class ObjectTreeResolver {
             if (!processorNode.getObjects().isEmpty()) {
                 cache.snapshotsUpdatedForObjects(
                         processorNode.getObjects(),
-                        processorNode.getResolvedRows());
+                        processorNode.getResolvedRows(),
+                        queryMetadata.isRefreshingObjects());
             }
 
             // run 'connectToParents' even if the object list is empty. This is needed to

@@ -579,7 +579,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             // take a shortcut when no prefetches exist...
             if (prefetchTree == null) {
-                objects = new ObjectResolver(context, descriptor)
+                objects = new ObjectResolver(context, descriptor, metadata
+                        .isRefreshingObjects())
                         .synchronizedObjectsFromDataRows(normalizedRows);
             }
             else {
@@ -652,7 +653,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             // take a shortcut when no prefetches exist...
             if (prefetchTree == null) {
-                objects = new ObjectResolver(context, descriptor)
+                objects = new ObjectResolver(context, descriptor, metadata
+                        .isRefreshingObjects())
                         .synchronizedObjectsFromDataRows(rowsColumn);
             }
             else {

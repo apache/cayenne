@@ -431,9 +431,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         return getFetchOffset();
     }
 
-    /**
-     * @deprecated since 3.0
-     */
     public boolean isRefreshingObjects() {
         return true;
     }

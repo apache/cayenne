@@ -221,10 +221,6 @@ public interface QueryMetadata {
      * Returns <code>true</code> if the query results should replace any currently cached
      * values, returns <code>false</code> otherwise. If {@link #isFetchingDataRows()}
      * returns <code>true</code>, this setting is not applicable and has no effect.
-     * 
-     * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *             redundant, although it is still being taken into account. It will be
-     *             removed in the later versions of Cayenne.
      */
     boolean isRefreshingObjects();
 

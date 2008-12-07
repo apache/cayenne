@@ -192,8 +192,7 @@ public class DataRowStore implements Serializable {
                 EventBridgeFactory factory = (EventBridgeFactory) Class.forName(
                         eventBridgeFactory).newInstance();
 
-                Collection<EventSubject> subjects = Collections
-                        .singleton(getSnapshotEventSubject());
+                Collection<EventSubject> subjects = Collections.singleton(getSnapshotEventSubject());
                 String externalSubject = EventBridge
                         .convertToExternalSubject(getSnapshotEventSubject());
                 this.remoteNotificationsHandler = factory.createEventBridge(
@@ -212,9 +211,9 @@ public class DataRowStore implements Serializable {
     /**
      * Updates cached snapshots for the list of objects.
      * 
-     * @since 3.0
+     * @since 1.2
      */
-    void snapshotsUpdatedForObjects(List objects, List snapshots) {
+    void snapshotsUpdatedForObjects(List objects, List snapshots, boolean refresh) {
 
         int size = objects.size();
 
@@ -246,27 +245,30 @@ public class DataRowStore implements Serializable {
                 // missing
 
                 DataRow cachedSnapshot = (DataRow) this.snapshots.get(oid);
-                DataRow newSnapshot = (DataRow) snapshots.get(i);
+                if (refresh || cachedSnapshot == null) {
 
-                if (cachedSnapshot != null) {
-                    // use old snapshot if no changes occurred
-                    if (object instanceof DataObject
-                            && cachedSnapshot.equals(newSnapshot)) {
-                        ((DataObject) object).setSnapshotVersion(cachedSnapshot
-                                .getVersion());
-                        continue;
+                    DataRow newSnapshot = (DataRow) snapshots.get(i);
+
+                    if (cachedSnapshot != null) {
+                        // use old snapshot if no changes occurred
+                        if (object instanceof DataObject
+                                && cachedSnapshot.equals(newSnapshot)) {
+                            ((DataObject) object).setSnapshotVersion(cachedSnapshot
+                                    .getVersion());
+                            continue;
+                        }
+                        else {
+                            newSnapshot.setReplacesVersion(cachedSnapshot.getVersion());
+                        }
                     }
-                    else {
-                        newSnapshot.setReplacesVersion(cachedSnapshot.getVersion());
+
+                    if (modified == null) {
+                        modified = new HashMap();
+                        eventPostedBy = object.getObjectContext().getGraphManager();
                     }
-                }
 
-                if (modified == null) {
-                    modified = new HashMap();
-                    eventPostedBy = object.getObjectContext().getGraphManager();
+                    modified.put(oid, newSnapshot);
                 }
-
-                modified.put(oid, newSnapshot);
             }
 
             if (modified != null) {

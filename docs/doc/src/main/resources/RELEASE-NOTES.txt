@@ -57,7 +57,7 @@ CAY-1131 Add LIMIT / OFFSET clause generation method to SelectTranslator lifecyc
 CAY-1132 DataMap class generator mechanism for the ROP client
 CAY-1133  Split Maven cayenne:modeler goal into a separate plugin from cgen and others
 CAY-1137 Deprecate and start ignoring QueryMetadata.isResolvingInherited()
-CAY-1138 Stop using "QueryMetadata.isRefreshingObjects()"
+CAY-1138 Stop using Query.isRefreshingObjects()
 
 Bug fixes since M4:
 

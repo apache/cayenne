@@ -61,6 +61,30 @@ public class DataContextObjectIdQueryTest extends CayenneCase {
         assertNull(a1.getDateOfBirth());
         assertEquals("X", a1.getArtistName());
     }
+    
+    public void testNoRefreshValuesNew() {
+
+        DataContext context = createDataContext();
+
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("X");
+
+        context.commitChanges();
+
+        context.performGenericQuery(new SQLTemplate(
+                Artist.class,
+                "UPDATE ARTIST SET ARTIST_NAME = 'Y'"));
+
+        long id = DataObjectUtils.longPKForObject(a);
+        ObjectIdQuery query = new ObjectIdQuery(new ObjectId(
+                "Artist",
+                Artist.ARTIST_ID_PK_COLUMN,
+                id), false, ObjectIdQuery.CACHE);
+
+        Artist a1 = (Artist) DataObjectUtils.objectForQuery(context, query);
+        assertEquals("X", a1.getArtistName());
+    }
+    
 
     public void testRefreshNullifiedValuesExisting() {
 

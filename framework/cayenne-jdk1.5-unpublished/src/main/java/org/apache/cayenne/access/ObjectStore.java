@@ -424,7 +424,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         DataRowStore cache = getDataRowCache();
         if (cache != null) {
             synchronized (this) {
-                cache.snapshotsUpdatedForObjects(objects, snapshots);
+                cache.snapshotsUpdatedForObjects(objects, snapshots, refresh);
             }
         }
     }
