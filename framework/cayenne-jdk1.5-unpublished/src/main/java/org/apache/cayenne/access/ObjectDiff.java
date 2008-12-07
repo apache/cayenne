@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -118,7 +117,7 @@ class ObjectDiff extends NodeDiff {
             });
         }
     }
-    
+
     Object getObject() {
         return object;
     }
