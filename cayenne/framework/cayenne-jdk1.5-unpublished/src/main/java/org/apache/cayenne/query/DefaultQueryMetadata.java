@@ -113,9 +113,6 @@ class DefaultQueryMetadata implements QueryMetadata {
         return QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
     }
 
-    /**
-     * @deprecated since 3.0
-     */
     public boolean isRefreshingObjects() {
         return true;
     }

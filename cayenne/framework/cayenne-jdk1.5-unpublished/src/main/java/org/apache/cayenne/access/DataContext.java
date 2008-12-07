@@ -618,7 +618,7 @@ public class DataContext extends BaseContext implements DataChannel {
     public List objectsFromDataRows(
             ClassDescriptor descriptor,
             List<? extends DataRow> dataRows) {
-        return new ObjectResolver(this, descriptor)
+        return new ObjectResolver(this, descriptor, true)
                 .synchronizedObjectsFromDataRows(dataRows);
     }
 

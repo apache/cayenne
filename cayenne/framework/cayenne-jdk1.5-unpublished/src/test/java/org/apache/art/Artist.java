@@ -33,6 +33,7 @@ public class Artist extends _Artist {
     protected boolean postRemoved;
     protected boolean postPersisted;
     protected int postLoaded;
+    protected transient int propertyWrittenDirectly;
 
     protected String someOtherProperty;
     protected Object someOtherObjectProperty;
@@ -139,4 +140,15 @@ public class Artist extends _Artist {
     public void setSomeOtherObjectProperty(Object object) {
         someOtherObjectProperty = object;
     }
+    
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        propertyWrittenDirectly++;
+        super.writePropertyDirectly(propName, val);
+    }
+    
+    public int getPropertyWrittenDirectly() {
+        return propertyWrittenDirectly;
+    }
+
 }
