@@ -20,13 +20,14 @@
 package org.apache.cayenne.access;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class NestedDataContextParentEventsTest extends CayenneCase {
 
     public void testParentUpdatedId() {
         DataContext context = createDataContext();
-        DataContext child1 = context.createChildDataContext();
+        ObjectContext child1 = context.createChildObjectContext();
 
         Artist ac = child1.newObject(Artist.class);
         ac.setArtistName("X");

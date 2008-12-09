@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -29,10 +30,10 @@ public class NestedDataContextValidationTest extends CayenneCase {
         DataContext context = createDataContext();
         context.setValidatingObjectsOnCommit(true);
 
-        DataContext childContext = context.createChildDataContext();
+        ObjectContext childContext = context.createChildObjectContext();
         assertTrue(
                 "Child context must have inherited the validation flag from parent",
-                childContext.isValidatingObjectsOnCommit());
+                ((DataContext) childContext).isValidatingObjectsOnCommit());
 
         Artist a1 = childContext.newObject(Artist.class);
         try {

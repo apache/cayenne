@@ -28,6 +28,7 @@ import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.art.PaintingInfo;
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -50,7 +51,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         createTestData("testDeleteNew");
 
         DataContext context = createDataContext();
-        DataContext childContext = context.createChildDataContext();
+        ObjectContext childContext = context.createChildObjectContext();
 
         Artist a = DataObjectUtils.objectForPK(childContext, Artist.class, 33001);
         Painting p = childContext.newObject(Painting.class);
@@ -73,8 +74,8 @@ public class NestedDataContextWriteTest extends CayenneCase {
         createTestData("testNullifyToOne");
 
         DataContext context = createDataContext();
-        DataContext childContext = context.createChildDataContext();
-        DataContext childContextPeer = context.createChildDataContext();
+        ObjectContext childContext = context.createChildObjectContext();
+        ObjectContext childContextPeer = context.createChildObjectContext();
 
         Painting childP1 = DataObjectUtils.objectForPK(
                 childContext,
@@ -108,7 +109,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         createTestData("testFlushChanges");
 
         DataContext context = createDataContext();
-        DataContext childContext = context.createChildDataContext();
+        ObjectContext childContext = context.createChildObjectContext();
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
@@ -180,7 +181,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         createTestData("testFlushChanges");
 
         DataContext context = createDataContext();
-        DataContext childContext = context.createChildDataContext();
+        ObjectContext childContext = context.createChildObjectContext();
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
@@ -217,7 +218,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         createTestData("testFlushChanges");
 
         DataContext context = createDataContext();
-        DataContext childContext = context.createChildDataContext();
+        ObjectContext childContext = context.createChildObjectContext();
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
@@ -284,7 +285,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         createTestData("testCommitChangesToParent_MergeProperties");
 
         DataContext context = createDataContext();
-        DataContext childContext = context.createChildDataContext();
+        ObjectContext childContext = context.createChildObjectContext();
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Painting.class);
@@ -364,7 +365,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         deleteTestData();
 
         DataContext context = createDataContext();
-        DataContext childContext = context.createChildDataContext();
+        ObjectContext childContext = context.createChildObjectContext();
 
         Painting childMaster = childContext.newObject(Painting.class);
         childMaster.setPaintingTitle("Master");
@@ -404,7 +405,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         deleteTestData();
 
         DataContext context = createDataContext();
-        DataContext childContext = context.createChildDataContext();
+        ObjectContext childContext = context.createChildObjectContext();
 
         Artist childO1 = childContext.newObject(Artist.class);
         childO1.setArtistName("Master");
@@ -448,7 +449,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
         deleteTestData();
 
         DataContext context = createDataContext();
-        DataContext childContext = context.createChildDataContext();
+        ObjectContext childContext = context.createChildObjectContext();
 
         Artist childO1 = childContext.newObject(Artist.class);
         childO1.setArtistName("o1");
@@ -546,7 +547,7 @@ public class NestedDataContextWriteTest extends CayenneCase {
     public void testAddRemove() {
 
         DataContext context = createDataContext();
-        DataContext child = context.createChildDataContext();
+        ObjectContext child = context.createChildObjectContext();
 
         Artist a = child.newObject(Artist.class);
         a.setArtistName("X");

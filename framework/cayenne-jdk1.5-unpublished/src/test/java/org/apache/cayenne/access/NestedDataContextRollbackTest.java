@@ -19,41 +19,42 @@
 package org.apache.cayenne.access;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.unit.CayenneCase;
 
 public class NestedDataContextRollbackTest extends CayenneCase {
 
     public void testRollbackChanges() {
         DataContext context = createDataContext();
-        DataContext child1 = context.createChildDataContext();
-        
+        ObjectContext child1 = context.createChildObjectContext();
+
         assertFalse(context.hasChanges());
         assertFalse(child1.hasChanges());
-        
+
         context.newObject(Artist.class);
         child1.newObject(Artist.class);
-        
+
         assertTrue(context.hasChanges());
         assertTrue(child1.hasChanges());
-        
+
         child1.rollbackChanges();
         assertFalse(context.hasChanges());
         assertFalse(child1.hasChanges());
     }
-    
+
     public void testRollbackChangesLocally() {
         DataContext context = createDataContext();
-        DataContext child1 = context.createChildDataContext();
-        
+        ObjectContext child1 = context.createChildObjectContext();
+
         assertFalse(context.hasChanges());
         assertFalse(child1.hasChanges());
-        
+
         context.newObject(Artist.class);
         child1.newObject(Artist.class);
-        
+
         assertTrue(context.hasChanges());
         assertTrue(child1.hasChanges());
-        
+
         child1.rollbackChangesLocally();
         assertTrue(context.hasChanges());
         assertFalse(child1.hasChanges());

@@ -21,7 +21,9 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.art.Artist;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.BaseContext;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -36,19 +38,19 @@ public class NestedDataContextLocalCacheTest extends CayenneCase {
     public void testLocalCacheStaysLocal() {
 
         SelectQuery query = new SelectQuery(Artist.class);
-        query.setCachePolicy(QueryMetadata.LOCAL_CACHE);
+        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         DataContext context = createDataContext();
-        DataContext child1 = context.createChildDataContext();
+        ObjectContext child1 = context.createChildObjectContext();
 
-        assertNull(child1.getQueryCache().get(
+        assertNull(((BaseContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));
 
         assertNull(context.getQueryCache().get(
                 query.getMetaData(context.getEntityResolver())));
 
         List<?> results = child1.performQuery(query);
-        assertSame(results, child1.getQueryCache().get(
+        assertSame(results, ((BaseContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));
 
         assertNull(context.getQueryCache().get(

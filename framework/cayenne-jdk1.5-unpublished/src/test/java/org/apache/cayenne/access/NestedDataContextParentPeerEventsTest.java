@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
@@ -36,7 +37,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
         DataContext parentPeer = context.getParentDataDomain().createDataContext();
         Artist a1 = (Artist) parentPeer.localObject(a.getObjectId(), a);
 
-        final DataContext peer2 = context.createChildDataContext();
+        final ObjectContext peer2 = context.createChildObjectContext();
         final Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
 
         a1.setArtistName("Y");
@@ -73,7 +74,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
         Painting p1 = (Painting) parentPeer.localObject(p.getObjectId(), p);
         Artist altA1 = (Artist) parentPeer.localObject(altA.getObjectId(), altA);
 
-        final DataContext peer2 = context.createChildDataContext();
+        final ObjectContext peer2 = context.createChildObjectContext();
         final Painting p2 = (Painting) peer2.localObject(p.getObjectId(), p);
         final Artist altA2 = (Artist) peer2.localObject(altA.getObjectId(), altA);
         Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
@@ -114,7 +115,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
         Painting py1 = (Painting) parentPeer.localObject(py.getObjectId(), py);
         Artist a1 = (Artist) parentPeer.localObject(a.getObjectId(), a);
 
-        final DataContext peer2 = context.createChildDataContext();
+        final ObjectContext peer2 = context.createChildObjectContext();
         final Painting py2 = (Painting) peer2.localObject(py.getObjectId(), py);
         final Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
 

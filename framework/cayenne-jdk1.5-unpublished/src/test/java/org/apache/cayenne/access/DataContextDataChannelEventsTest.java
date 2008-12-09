@@ -20,7 +20,9 @@
 package org.apache.cayenne.access;
 
 import org.apache.art.Artist;
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.util.ThreadedTestHelper;
@@ -28,7 +30,7 @@ import org.apache.cayenne.util.EventUtil;
 
 /**
  * Tests that DataContext sends DataChannel events.
- * 
+ *
  */
 public class DataContextDataChannelEventsTest extends CayenneCase {
 
@@ -78,7 +80,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
         MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents(context, listener);
 
-        DataContext child = context.createChildDataContext();
+        ObjectContext child = context.createChildObjectContext();
         Artist a1 = (Artist) child.localObject(a.getObjectId(), a);
 
         a1.setArtistName("Y");
@@ -118,16 +120,17 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
 
     public void testChangeEventOnPeerChangeSecondNestingLevel() throws Exception {
         DataContext context = createDataContext();
-        DataContext childPeer1 = context.createChildDataContext();
+
+        ObjectContext childPeer1 = context.createChildObjectContext();
 
         Artist a = childPeer1.newObject(Artist.class);
         a.setArtistName("X");
         childPeer1.commitChanges();
 
         final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents(childPeer1, listener);
+        EventUtil.listenForChannelEvents((DataChannel) childPeer1, listener);
 
-        DataContext childPeer2 = context.createChildDataContext();
+        ObjectContext childPeer2 = context.createChildObjectContext();
 
         Artist a1 = (Artist) childPeer2.localObject(a.getObjectId(), a);
 

@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -29,12 +30,12 @@ public class NestedDataContextPeerEventsTest extends CayenneCase {
     public void testPeerObjectUpdatedTempOID() {
         DataContext context = createDataContext();
 
-        DataContext peer1 = context.createChildDataContext();
+        ObjectContext peer1 = context.createChildObjectContext();
         Artist a1 = peer1.newObject(Artist.class);
         a1.setArtistName("Y");
         ObjectId a1TempId = a1.getObjectId();
 
-        DataContext peer2 = context.createChildDataContext();
+        ObjectContext peer2 = context.createChildObjectContext();
         Artist a2 = (Artist) peer2.localObject(a1TempId, a1);
 
         assertEquals(a1TempId, a2.getObjectId());
@@ -52,10 +53,10 @@ public class NestedDataContextPeerEventsTest extends CayenneCase {
         a.setArtistName("X");
         context.commitChanges();
 
-        DataContext peer1 = context.createChildDataContext();
+        ObjectContext peer1 = context.createChildObjectContext();
         Artist a1 = (Artist) peer1.localObject(a.getObjectId(), a);
 
-        DataContext peer2 = context.createChildDataContext();
+        ObjectContext peer2 = context.createChildObjectContext();
         Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
 
         a1.setArtistName("Y");
@@ -81,11 +82,11 @@ public class NestedDataContextPeerEventsTest extends CayenneCase {
         altA.setArtistName("Y");
         context.commitChanges();
 
-        DataContext peer1 = context.createChildDataContext();
+        ObjectContext peer1 = context.createChildObjectContext();
         Painting p1 = (Painting) peer1.localObject(p.getObjectId(), p);
         Artist altA1 = (Artist) peer1.localObject(altA.getObjectId(), altA);
 
-        DataContext peer2 = context.createChildDataContext();
+        ObjectContext peer2 = context.createChildObjectContext();
         Painting p2 = (Painting) peer2.localObject(p.getObjectId(), p);
         Artist altA2 = (Artist) peer2.localObject(altA.getObjectId(), altA);
         Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
@@ -115,11 +116,11 @@ public class NestedDataContextPeerEventsTest extends CayenneCase {
 
         context.commitChanges();
 
-        DataContext peer1 = context.createChildDataContext();
+        ObjectContext peer1 = context.createChildObjectContext();
         Painting py1 = (Painting) peer1.localObject(py.getObjectId(), py);
         Artist a1 = (Artist) peer1.localObject(a.getObjectId(), a);
 
-        DataContext peer2 = context.createChildDataContext();
+        ObjectContext peer2 = context.createChildObjectContext();
         Painting py2 = (Painting) peer2.localObject(py.getObjectId(), py);
         Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
 
