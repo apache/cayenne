@@ -93,10 +93,6 @@ public class MockObjectContext implements ObjectContext {
 
     public void deleteObject(Object object) {
     }
-
-    public Persistent newObject(Class persistentClass) {
-        return null;
-    }
     
     public void registerNewObject(Object object) {
     }
