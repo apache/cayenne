@@ -135,19 +135,15 @@ final class CayenneContextGraphManager extends GraphMap {
         }
 
         remapTargets();
+        
+        stateLog.graphCommitted();
+        reset();
 
         if (lifecycleEventsEnabled) {
-            GraphDiff diff = changeLog.getDiffsAfterMarker(COMMIT_MARKER);
-
-            stateLog.graphCommitted();
-            reset();
-
             // include all diffs after the commit start marker.
-            send(diff, DataChannel.GRAPH_FLUSHED_SUBJECT, context);
-        }
-        else {
-            stateLog.graphCommitted();
-            reset();
+            //We fire event as if it was posted by parent channel, so that
+            //nested contexts could catch it
+            context.fireDataChannelCommitted(context.getChannel(), parentSyncDiff);
         }
     }
 
@@ -238,7 +234,7 @@ final class CayenneContextGraphManager extends GraphMap {
         reset();
 
         if (lifecycleEventsEnabled) {
-            send(diff, DataChannel.GRAPH_ROLLEDBACK_SUBJECT, context);
+            context.fireDataChannelRolledback(context, diff);
         }
     }
 
@@ -297,7 +293,7 @@ final class CayenneContextGraphManager extends GraphMap {
         changeLog.addOperation(diff);
 
         if (changeEventsEnabled) {
-            send(diff, DataChannel.GRAPH_CHANGED_SUBJECT, context);
+            context.fireDataChannelChanged(context, diff);
         }
     }
 

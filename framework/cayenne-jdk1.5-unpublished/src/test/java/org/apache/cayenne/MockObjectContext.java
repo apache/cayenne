@@ -104,6 +104,7 @@ public class MockObjectContext implements ObjectContext {
     /**
      * @deprecated since 3.0
      */
+    @Deprecated
     public void prepareForAccess(Persistent persistent, String property) {
     }
     
@@ -135,5 +136,20 @@ public class MockObjectContext implements ObjectContext {
 
     public QueryResponse performGenericQuery(Query queryPlan) {
         return null;
+    }
+
+    public ObjectContext createChildObjectContext() {
+        return null;
+    }
+
+    public <T> T newObject(Class<T> persistentClass) {
+        return null;
+    }
+
+    public boolean hasChanges() {
+        return false;
+    }
+
+    public void invalidateObjects(Collection objects) {
     }
 }

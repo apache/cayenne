@@ -24,7 +24,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.access.ChildDiffLoader;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
@@ -223,9 +225,10 @@ public class CayenneContext extends BaseContext {
 
                 graphManager.graphCommitStarted();
 
+                GraphDiff changes = graphManager.getDiffsSinceLastFlush();
+                
                 try {
-                    commitDiff = channel.onSync(this, graphManager
-                            .getDiffsSinceLastFlush(), syncType);
+                    commitDiff = channel.onSync(this, changes, syncType);
                 }
                 catch (Throwable th) {
                     graphManager.graphCommitAborted();
@@ -239,6 +242,10 @@ public class CayenneContext extends BaseContext {
                 }
 
                 graphManager.graphCommitted(commitDiff);
+                
+                // this event is caught by peer nested ObjectContexts to synchronize the
+                // state
+                fireDataChannelCommitted(this, changes);
             }
         }
 
@@ -259,6 +266,7 @@ public class CayenneContext extends BaseContext {
                 graphManager.graphReverted();
 
                 channel.onSync(this, diff, DataChannel.ROLLBACK_CASCADE_SYNC);
+                fireDataChannelRolledback(this, diff);
             }
         }
     }
@@ -267,7 +275,10 @@ public class CayenneContext extends BaseContext {
     public void rollbackChangesLocally() {
         synchronized (graphManager) {
             if (graphManager.hasChanges()) {
+                GraphDiff diff = graphManager.getDiffs();
                 graphManager.graphReverted();
+                
+                fireDataChannelRolledback(this, diff);
             }
         }
     }
@@ -333,9 +344,7 @@ public class CayenneContext extends BaseContext {
         return onQuery(this, query);
     }
 
-    // TODO: Andrus, 2/2/2006 - make public once CayenneContext is officially declared to
-    // support DataChannel API.
-    QueryResponse onQuery(ObjectContext context, Query query) {
+    public QueryResponse onQuery(ObjectContext context, Query query) {
         return new CayenneContextQueryAction(this, context, query).execute();
     }
 
@@ -410,7 +419,8 @@ public class CayenneContext extends BaseContext {
 
                 getGraphManager().registerNode(id, localObject);
 
-                if (prototype != null) {
+                if (prototype != null
+                        && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
                     localObject.setPersistenceState(PersistenceState.COMMITTED);
                     descriptor.shallowMerge(prototype, localObject);
                 }
@@ -471,17 +481,24 @@ public class CayenneContext extends BaseContext {
             Persistent object,
             String entityName,
             ClassDescriptor descriptor) {
-        ObjectId id = new ObjectId(entityName);
+        /**
+         * We should create new id only if it is not set for this object.
+         * It could have been created, for instance, in child context
+         */
+        ObjectId id = object.getObjectId();
+        if (id == null) {
+            id = new ObjectId(entityName);
+            object.setObjectId(id);
+        }
 
         // must follow this exact order of property initialization per CAY-653, i.e. have
         // the id and the context in place BEFORE setPersistence is called
-        object.setObjectId(id);
         object.setObjectContext(this);
         object.setPersistenceState(PersistenceState.NEW);
 
         synchronized (graphManager) {
-            graphManager.registerNode(object.getObjectId(), object);
-            graphManager.nodeCreated(object.getObjectId());
+            graphManager.registerNode(id, object);
+            graphManager.nodeCreated(id);
         }
     }
 
@@ -515,5 +532,65 @@ public class CayenneContext extends BaseContext {
      */
     void setPropertyChangeCallbacksDisabled(boolean propertyChangeCallbacksDisabled) {
         this.propertyChangeCallbacksDisabled = propertyChangeCallbacksDisabled;
+    }
+
+    /**
+     * Creates and returns a new child ObjectContext.
+     * 
+     * @since 3.0
+     */
+    public ObjectContext createChildObjectContext() {
+        return new CayenneContext(this, graphManager.changeEventsEnabled, 
+                graphManager.lifecycleEventsEnabled);
+    }
+
+    @Override
+    protected GraphDiff onContextFlush(
+            ObjectContext originatingContext,
+            GraphDiff changes,
+            boolean cascade) {
+
+        boolean childContext = this != originatingContext && changes != null;
+
+        if (childContext) {
+           changes.apply(new CayenneContextChildDiffLoader(this));
+           fireDataChannelChanged(originatingContext, changes);
+        }
+
+        return (cascade) ? doCommitChanges(true) : new CompoundDiff();
+    }
+    
+    /**
+     * Returns <code>true</code> if there are any modified, deleted or new objects
+     * registered with this CayenneContext, <code>false</code> otherwise.
+     */
+    public boolean hasChanges() {
+        return graphManager.hasChanges();
+    }
+    
+    /**
+     * Class for loading child's CayenneContext changes to parent context.
+     * Required to register diffs in CayenneContext's graph manager when node's simple property changes:
+     * CayenneContext's way of setting properties differs from DataContext's, and method of notifying
+     * graph manager is sealed in every 'set' method of Cayenne Client Data Object class.
+     * So here we should notify graph manager too, so that objects's state will update and they will
+     * be marked as dirty.   
+     */
+    class CayenneContextChildDiffLoader extends ChildDiffLoader {
+        public CayenneContextChildDiffLoader(ObjectContext context) {
+            super(context);
+        }
+        
+        @Override
+        public void nodePropertyChanged(
+                Object nodeId,
+                String property,
+                Object oldValue,
+                Object newValue) {
+            super.nodePropertyChanged(nodeId, property, oldValue, newValue);
+            
+            Persistent object = (Persistent) getGraphManager().getNode(nodeId);
+            propertyChanged(object, property, oldValue, newValue);
+        }
     }
 }

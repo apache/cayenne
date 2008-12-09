@@ -104,10 +104,7 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
     void repostAfterMerge(GraphEvent originalEvent) {
         // though the subject is CHANGE, "merge" events are really lifecycle.
         if (context.isLifecycleEventsEnabled()) {
-            context.internalGraphManager().send(
-                    originalEvent.getDiff(),
-                    DataChannel.GRAPH_CHANGED_SUBJECT,
-                    originalEvent.getSource());
+            context.fireDataChannelChanged(originalEvent.getSource(), originalEvent.getDiff());
         }
     }
 

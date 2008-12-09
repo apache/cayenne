@@ -33,10 +33,12 @@ import org.apache.cayenne.unit.UnitLocalConnection;
 public abstract class RemoteCayenneCase extends CayenneCase {
     protected CayenneContext context;
     
+    protected DataContext parentDataContext;
+    
     @Override
     public void setUp() throws Exception {
-        DataContext dataContext = createDataContext();
-        ClientServerChannel clientServerChannel = new ClientServerChannel(dataContext);
+        parentDataContext = createDataContext();
+        ClientServerChannel clientServerChannel = new ClientServerChannel(parentDataContext);
         UnitLocalConnection connection = new UnitLocalConnection(
                 clientServerChannel,
                 LocalConnection.HESSIAN_SERIALIZATION);

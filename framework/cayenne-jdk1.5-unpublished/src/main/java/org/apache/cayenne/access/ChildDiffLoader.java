@@ -42,12 +42,13 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
- * A GraphChangeHandler that loads child ObjectContext diffs into a parent DataContext.
+ * A GraphChangeHandler that loads child ObjectContext diffs into a parent ObjectContext.
  * Graph node ids are expected to be ObjectIds.
+ * This class is made public since 3.0 to be used in ObjectContext synchronizing
  * 
  * @since 1.2
  */
-class ChildDiffLoader implements GraphChangeHandler {
+public class ChildDiffLoader implements GraphChangeHandler {
 
     static final ThreadLocal<Boolean> childDiffProcessing = new ThreadLocal<Boolean>() {
 
@@ -77,7 +78,7 @@ class ChildDiffLoader implements GraphChangeHandler {
         childDiffProcessing.set(flag);
     }
 
-    ChildDiffLoader(ObjectContext context) {
+    public ChildDiffLoader(ObjectContext context) {
         this.context = context;
     }
 
@@ -142,8 +143,8 @@ class ChildDiffLoader implements GraphChangeHandler {
                 ((ObjectId) nodeId).getEntityName());
 
         setExternalChange(Boolean.TRUE);
-        try {
-            descriptor.getProperty(property).writeProperty(object, null, newValue);
+        try {            
+            descriptor.getProperty(property).writeProperty(object, null, newValue);            
         }
         catch (Exception e) {
             throw new CayenneRuntimeException("Error setting property: " + property, e);

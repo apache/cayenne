@@ -51,7 +51,6 @@ import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -64,7 +63,6 @@ import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -123,6 +121,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * @see org.apache.cayenne.conf.WebApplicationContextFilter
      * @deprecated since 3.0, replaced by BaseContex#getThreadObjectContext().
      */
+    @Deprecated
     public static DataContext getThreadDataContext() throws IllegalStateException {
         return (DataContext) BaseContext.getThreadObjectContext();
     }
@@ -135,6 +134,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * @since 1.1
      * @deprecated since 3.0, replaced by BaseContex#getThreadObjectContext().
      */
+    @Deprecated
     public static void bindThreadDataContext(DataContext context) {
         BaseContext.bindThreadObjectContext(context);
     }
@@ -255,10 +255,21 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
+     * Creates and returns a new child ObjectContext.
+     * 
+     * @since 3.0
+     */
+    public ObjectContext createChildObjectContext() {
+        return createChildDataContext();
+    }
+
+    /**
      * Creates and returns a new child DataContext.
      * 
      * @since 1.2
+     * @deprecated since 3.0 use {@link #createChildObjectContext()}.
      */
+    @Deprecated
     public DataContext createChildDataContext() {
         DataContextFactory factory = getParentDataDomain().getDataContextFactory();
 
@@ -598,6 +609,7 @@ public class DataContext extends BaseContext implements DataChannel {
      *             deprecated. Use {@link #objectsFromDataRows(ClassDescriptor, List)}
      *             instead.
      */
+    @Deprecated
     public List objectsFromDataRows(
             ObjEntity entity,
             List dataRows,
@@ -632,6 +644,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * @since 1.1
      * @see DataRow
      */
+    @Deprecated
     public List objectsFromDataRows(
             Class<?> objectClass,
             List<? extends DataRow> dataRows,
@@ -691,6 +704,7 @@ public class DataContext extends BaseContext implements DataChannel {
     /**
      * @deprecated since 3.0, use {@link #newObject(String)} instead.
      */
+    @Deprecated
     public DataObject createAndRegisterNewObject(String objEntityName) {
         return (DataObject) newObject(objEntityName);
     }
@@ -766,6 +780,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * @since 1.1
      * @deprecated since 3.0, use {@link #newObject(Class)} instead.
      */
+    @Deprecated
     public DataObject createAndRegisterNewObject(Class objectClass) {
         if (objectClass == null) {
             throw new NullPointerException("DataObject class can't be null.");
@@ -907,18 +922,6 @@ public class DataContext extends BaseContext implements DataChannel {
     }
 
     /**
-     * "Invalidates" a Collection of persistent objects. This operation would remove each
-     * object's snapshot from cache and change object's state to HOLLOW. On the next
-     * access to this object, it will be refetched.
-     * 
-     * @see #unregisterObjects(Collection)
-     * @see RefreshQuery
-     */
-    public void invalidateObjects(Collection objects) {
-        performGenericQuery(new RefreshQuery(objects));
-    }
-
-    /**
      * Schedules all objects in the collection for deletion on the next commit of this
      * DataContext. Object's persistence state is changed to PersistenceState.DELETED;
      * objects related to this object are processed according to delete rules, i.e.
@@ -969,6 +972,7 @@ public class DataContext extends BaseContext implements DataChannel {
      *             is more than one object is fetched.
      * @deprecated since 3.0 use {@link ObjectIdQuery} with appropriate refresh settings.
      */
+    @Deprecated
     public DataObject refetchObject(ObjectId oid) {
 
         if (oid == null) {
@@ -1073,45 +1077,8 @@ public class DataContext extends BaseContext implements DataChannel {
         flushToParent(true);
     }
 
-    /**
-     * Returns EventManager associated with the ObjectStore.
-     * 
-     * @since 1.2
-     */
-    public EventManager getEventManager() {
-        return channel != null ? channel.getEventManager() : null;
-    }
-
-    /**
-     * An implementation of a {@link DataChannel} method that is used by child contexts to
-     * synchronize state with this context. Not intended for direct use.
-     * 
-     * @since 1.2
-     */
-    public GraphDiff onSync(
-            ObjectContext originatingContext,
-            GraphDiff changes,
-            int syncType) {
-        // sync client changes
-        switch (syncType) {
-            case DataChannel.ROLLBACK_CASCADE_SYNC:
-                return onContextRollback(originatingContext);
-            case DataChannel.FLUSH_NOCASCADE_SYNC:
-                return onContextFlush(originatingContext, changes, false);
-            case DataChannel.FLUSH_CASCADE_SYNC:
-                return onContextFlush(originatingContext, changes, true);
-            default:
-                throw new CayenneRuntimeException("Unrecognized SyncMessage type: "
-                        + syncType);
-        }
-    }
-
-    GraphDiff onContextRollback(ObjectContext originatingContext) {
-        rollbackChanges();
-        return new CompoundDiff();
-    }
-
-    GraphDiff onContextFlush(
+    @Override
+    protected GraphDiff onContextFlush(
             ObjectContext originatingContext,
             GraphDiff changes,
             boolean cascade) {
@@ -1452,42 +1419,6 @@ public class DataContext extends BaseContext implements DataChannel {
         this.validatingObjectsOnCommit = flag;
     }
 
-    /**
-     * @since 1.2
-     */
-    void fireDataChannelCommitted(Object postedBy, GraphDiff changes) {
-        EventManager manager = getEventManager();
-
-        if (manager != null) {
-            GraphEvent e = new GraphEvent(this, postedBy, changes);
-            manager.postEvent(e, DataChannel.GRAPH_FLUSHED_SUBJECT);
-        }
-    }
-
-    /**
-     * @since 1.2
-     */
-    void fireDataChannelRolledback(Object postedBy, GraphDiff changes) {
-        EventManager manager = getEventManager();
-
-        if (manager != null) {
-            GraphEvent e = new GraphEvent(this, postedBy, changes);
-            manager.postEvent(e, DataChannel.GRAPH_ROLLEDBACK_SUBJECT);
-        }
-    }
-
-    /**
-     * @since 1.2
-     */
-    void fireDataChannelChanged(Object postedBy, GraphDiff changes) {
-        EventManager manager = getEventManager();
-
-        if (manager != null) {
-            GraphEvent e = new GraphEvent(this, postedBy, changes);
-            manager.postEvent(e, DataChannel.GRAPH_CHANGED_SUBJECT);
-        }
-    }
-
     // ---------------------------------------------
     // Serialization Support
     // ---------------------------------------------
@@ -1685,5 +1616,9 @@ public class DataContext extends BaseContext implements DataChannel {
                 return localObject;
             }
         }
+    }
+    
+    protected void fireDataChannelChanged(Object postedBy, GraphDiff changes) {
+        super.fireDataChannelChanged(postedBy, changes);
     }
 }

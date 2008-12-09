@@ -24,10 +24,15 @@ import java.util.List;
 
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.graph.CompoundDiff;
+import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.Property;
@@ -40,7 +45,7 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * 
  * @since 3.0
  */
-public abstract class BaseContext implements ObjectContext {
+public abstract class BaseContext implements ObjectContext, DataChannel {
 
     /**
      * A holder of a ObjectContext bound to the current thread.
@@ -118,6 +123,7 @@ public abstract class BaseContext implements ObjectContext {
      * @deprecated since 3.0 this method is replaced by
      *             {@link #prepareForAccess(Persistent, String, boolean)}.
      */
+    @Deprecated
     public void prepareForAccess(Persistent object, String property) {
         prepareForAccess(object, property, false);
     }
@@ -259,5 +265,89 @@ public abstract class BaseContext implements ObjectContext {
      */
     public synchronized void setQueryCache(QueryCache queryCache) {
         this.queryCache = queryCache;
+    }
+    
+    /**
+     * Returns EventManager associated with the ObjectStore.
+     * 
+     * @since 1.2
+     */
+    public EventManager getEventManager() {
+        return channel != null ? channel.getEventManager() : null;
+    }
+    
+    public GraphDiff onSync(
+            ObjectContext originatingContext,
+            GraphDiff changes,
+            int syncType) {
+        switch (syncType) {
+            case DataChannel.ROLLBACK_CASCADE_SYNC:
+                return onContextRollback(originatingContext);
+            case DataChannel.FLUSH_NOCASCADE_SYNC:
+                return onContextFlush(originatingContext, changes, false);
+            case DataChannel.FLUSH_CASCADE_SYNC:
+                return onContextFlush(originatingContext, changes, true);
+            default:
+                throw new CayenneRuntimeException("Unrecognized SyncMessage type: "
+                        + syncType);
+        }
+    }
+    
+    GraphDiff onContextRollback(ObjectContext originatingContext) {
+        rollbackChanges();
+        return new CompoundDiff();
+    }
+    
+    protected abstract GraphDiff onContextFlush(
+            ObjectContext originatingContext,
+            GraphDiff changes,
+            boolean cascade);
+    
+    /**
+     * @since 1.2
+     */
+    protected void fireDataChannelCommitted(Object postedBy, GraphDiff changes) {
+        EventManager manager = getEventManager();
+
+        if (manager != null) {
+            GraphEvent e = new GraphEvent(this, postedBy, changes);
+            manager.postEvent(e, DataChannel.GRAPH_FLUSHED_SUBJECT);
+        }
+    }
+
+    /**
+     * @since 1.2
+     */
+    protected void fireDataChannelRolledback(Object postedBy, GraphDiff changes) {
+        EventManager manager = getEventManager();
+
+        if (manager != null) {
+            GraphEvent e = new GraphEvent(this, postedBy, changes);
+            manager.postEvent(e, DataChannel.GRAPH_ROLLEDBACK_SUBJECT);
+        }
+    }
+
+    /**
+     * @since 1.2
+     */
+    protected void fireDataChannelChanged(Object postedBy, GraphDiff changes) {
+        EventManager manager = getEventManager();
+
+        if (manager != null) {
+            GraphEvent e = new GraphEvent(this, postedBy, changes);
+            manager.postEvent(e, DataChannel.GRAPH_CHANGED_SUBJECT);
+        }
+    }
+    
+    /**
+     * "Invalidates" a Collection of persistent objects. This operation would remove each
+     * object's snapshot from cache and change object's state to HOLLOW. On the next
+     * access to this object, it will be refetched.
+     * 
+     * @see #unregisterObjects(Collection)
+     * @see RefreshQuery
+     */
+    public void invalidateObjects(Collection objects) {
+        performGenericQuery(new RefreshQuery(objects));
     }
 }

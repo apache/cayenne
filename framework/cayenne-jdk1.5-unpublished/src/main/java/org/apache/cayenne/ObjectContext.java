@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.RefreshQuery;
 
 /**
  * A Cayenne object facade to a persistent store. Instances of ObjectContext are used in
@@ -113,6 +114,7 @@ public interface ObjectContext extends Serializable {
     /**
      * @deprecated since 3.0 use {@link #prepareForAccess(Persistent, String, boolean)}.
      */
+    @Deprecated
     void prepareForAccess(Persistent object, String property);
 
     /**
@@ -172,4 +174,28 @@ public interface ObjectContext extends Serializable {
      * Returns an DataChannel used by this context.
      */
     DataChannel getChannel();
+    
+    /**
+     * Creates and returns a new child ObjectContext.
+     * 
+     * @since 3.0
+     */
+    ObjectContext createChildObjectContext();
+    
+    /**
+     * Returns <code>true</code> if there are any modified, deleted or new objects
+     * registered with this ObjectContext, <code>false</code> otherwise.
+     * 
+     * @since 3.0
+     */
+    boolean hasChanges();
+    
+    /**
+     * "Invalidates" a Collection of persistent objects. This operation would remove each
+     * object's snapshot from cache and change object's state to HOLLOW. On the next
+     * access to this object, it will be refetched.
+     * 
+     * @see RefreshQuery
+     */
+    void invalidateObjects(Collection objects);
 }
