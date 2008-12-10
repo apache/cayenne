@@ -16,7 +16,11 @@ Changes/New Features Since M5:
 
 CAY-1140 Store ObjEntity name in the DataRow
 CAY-1142 (Single table) Inheritance and Paginated lists 
+
+BugFixes Since M5:
+
 CAY-1143 CayenneModeler 'Import DataMap' function error
+CAY-1144 EJBQL mixed GROUP BY clause is generated incorrectly
 
 ----------------------------------
 Release: 3.0M5
