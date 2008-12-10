@@ -109,4 +109,15 @@ public class MockObjectContext implements ObjectContext {
         return null;
     }
 
+    public ObjectContext createChildObjectContext() {
+        return null;
+    }
+
+    public boolean hasChanges() {
+        return false;
+    }
+
+    public void invalidateObjects(Collection objects) {
+    
+    }
 }
