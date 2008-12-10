@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EntityResultMetadata;
+import org.apache.cayenne.util.ToStringBuilder;
 
 /**
  * A ClassDescriptor wrapper that compiles decorated descriptor lazily on first access.
@@ -43,6 +44,11 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
             String entityName) {
         this.descriptorMap = descriptorMap;
         this.entityName = entityName;
+    }
+    
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("entity", entityName).toString();
     }
 
     /**
