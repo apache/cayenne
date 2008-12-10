@@ -41,7 +41,7 @@ public class NestedDataContextLocalCacheTest extends CayenneCase {
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         DataContext context = createDataContext();
-        ObjectContext child1 = context.createChildObjectContext();
+        ObjectContext child1 = context.createChildContext();
 
         assertNull(((BaseContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));

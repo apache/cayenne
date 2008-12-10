@@ -31,7 +31,7 @@ public class NestedObjectContextLocalTest extends RemoteCayenneCase {
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        BaseContext child1 = (BaseContext) context.createChildObjectContext();
+        BaseContext child1 = (BaseContext) context.createChildContext();
 
         assertNull(child1.getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));

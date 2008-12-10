@@ -24,7 +24,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 public class NestedObjectContextRollbackTest extends RemoteCayenneCase {
 
     public void testRollbackChanges() {
-        ObjectContext child1 = context.createChildObjectContext();
+        ObjectContext child1 = context.createChildContext();
         
         assertFalse(context.hasChanges());
         assertFalse(child1.hasChanges());
@@ -43,7 +43,7 @@ public class NestedObjectContextRollbackTest extends RemoteCayenneCase {
     }
     
     public void testRollbackChangesLocally() {
-        ObjectContext child1 = context.createChildObjectContext();
+        ObjectContext child1 = context.createChildContext();
         
         assertFalse(context.hasChanges());
         assertFalse(child1.hasChanges());

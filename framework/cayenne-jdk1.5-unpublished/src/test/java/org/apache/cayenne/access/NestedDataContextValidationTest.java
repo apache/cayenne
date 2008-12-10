@@ -30,7 +30,7 @@ public class NestedDataContextValidationTest extends CayenneCase {
         DataContext context = createDataContext();
         context.setValidatingObjectsOnCommit(true);
 
-        ObjectContext childContext = context.createChildObjectContext();
+        ObjectContext childContext = context.createChildContext();
         assertTrue(
                 "Child context must have inherited the validation flag from parent",
                 ((DataContext) childContext).isValidatingObjectsOnCommit());

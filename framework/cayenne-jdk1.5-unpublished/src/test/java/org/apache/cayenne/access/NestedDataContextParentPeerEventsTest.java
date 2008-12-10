@@ -37,7 +37,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
         DataContext parentPeer = context.getParentDataDomain().createDataContext();
         Artist a1 = (Artist) parentPeer.localObject(a.getObjectId(), a);
 
-        final ObjectContext peer2 = context.createChildObjectContext();
+        final ObjectContext peer2 = context.createChildContext();
         final Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
 
         a1.setArtistName("Y");
@@ -74,7 +74,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
         Painting p1 = (Painting) parentPeer.localObject(p.getObjectId(), p);
         Artist altA1 = (Artist) parentPeer.localObject(altA.getObjectId(), altA);
 
-        final ObjectContext peer2 = context.createChildObjectContext();
+        final ObjectContext peer2 = context.createChildContext();
         final Painting p2 = (Painting) peer2.localObject(p.getObjectId(), p);
         final Artist altA2 = (Artist) peer2.localObject(altA.getObjectId(), altA);
         Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
@@ -115,7 +115,7 @@ public class NestedDataContextParentPeerEventsTest extends CayenneCase {
         Painting py1 = (Painting) parentPeer.localObject(py.getObjectId(), py);
         Artist a1 = (Artist) parentPeer.localObject(a.getObjectId(), a);
 
-        final ObjectContext peer2 = context.createChildObjectContext();
+        final ObjectContext peer2 = context.createChildContext();
         final Painting py2 = (Painting) peer2.localObject(py.getObjectId(), py);
         final Artist a2 = (Artist) peer2.localObject(a.getObjectId(), a);
 

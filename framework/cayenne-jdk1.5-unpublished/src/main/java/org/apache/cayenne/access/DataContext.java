@@ -259,7 +259,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * 
      * @since 3.0
      */
-    public ObjectContext createChildObjectContext() {
+    public ObjectContext createChildContext() {
         return createChildDataContext();
     }
 
@@ -267,7 +267,7 @@ public class DataContext extends BaseContext implements DataChannel {
      * Creates and returns a new child DataContext.
      * 
      * @since 1.2
-     * @deprecated since 3.0 use {@link #createChildObjectContext()}.
+     * @deprecated since 3.0 use {@link #createChildContext()}.
      */
     @Deprecated
     public DataContext createChildDataContext() {

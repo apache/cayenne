@@ -37,13 +37,13 @@ import org.apache.cayenne.testdo.mt.ClientMtTable2;
  */
 public class NestedObjectContextTest extends RemoteCayenneCase {
     public void testChannels() {
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         assertNotNull(child);
         assertSame(context, child.getChannel());
 
         // second level of nesting
-        ObjectContext grandchild = child.createChildObjectContext();
+        ObjectContext grandchild = child.createChildContext();
 
         assertNotNull(grandchild);
         assertSame(child, grandchild.getChannel());
@@ -52,7 +52,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
     public void testLocalObjectSynchronize() throws Exception {
         deleteTestData();
 
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         ClientMtTable1 committed = context.newObject(ClientMtTable1.class);
         ClientMtTable1 deleted = context.newObject(ClientMtTable1.class);
@@ -117,7 +117,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
     public void testLocalObjectsNoOverride() throws Exception {
         deleteTestData();
 
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         ClientMtTable1 modified = context.newObject(ClientMtTable1.class);
         context.commitChanges();
@@ -149,7 +149,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
     public void testLocalObjectRelationship() throws Exception {
         deleteTestData();
 
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         ClientMtTable1 _new = context.newObject(ClientMtTable1.class);
         ClientMtTable2 _new2 = context.newObject(ClientMtTable2.class);
@@ -172,7 +172,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
     public void testSelect() throws Exception {
         deleteTestData();
 
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         ClientMtTable1 committed = context.newObject(ClientMtTable1.class);
         ClientMtTable1 deleted = context.newObject(ClientMtTable1.class);
@@ -221,7 +221,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
 
         context.commitChanges();
 
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         SelectQuery q = new SelectQuery(ClientMtTable2.class);
         q.addPrefetch(ClientMtTable2.TABLE1_PROPERTY);
@@ -266,7 +266,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
 
         context.commitChanges();
 
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class);
         q.addOrdering("globalAttribute1", true);
@@ -308,7 +308,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
 
     public void testDeleteNew() throws Exception {
         deleteTestData();
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         ClientMtTable1 a = context.newObject(ClientMtTable1.class);
         context.commitChanges();
@@ -338,8 +338,8 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
 
         context.commitChanges();
 
-        ObjectContext child = context.createChildObjectContext();
-        ObjectContext childPeer = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
+        ObjectContext childPeer = context.createChildContext();
 
         ClientMtTable2 childP1 = (ClientMtTable2) DataObjectUtils.objectForPK(child, b.getObjectId());
 
@@ -374,7 +374,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
         context.newObject(ClientMtTable1.class);
         context.commitChanges();
 
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
         List objects = child.performQuery(query);
@@ -443,7 +443,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
         context.newObject(ClientMtTable1.class);
         context.commitChanges();
 
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
@@ -483,7 +483,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
         context.newObject(ClientMtTable1.class);
         context.commitChanges();
 
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
@@ -544,7 +544,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
 
     public void testAddRemove() throws Exception {
         deleteTestData();
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         ClientMtTable1 a = child.newObject(ClientMtTable1.class);
         a.setGlobalAttribute1("X");
@@ -569,7 +569,7 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
 
     public void testChangeRel() throws Exception {
         deleteTestData();
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
 
         ClientMtTable1 a = child.newObject(ClientMtTable1.class);
         ClientMtTable2 b = child.newObject(ClientMtTable2.class);

@@ -40,7 +40,7 @@ public class NestedDataContextReadTest extends CayenneCase {
         DataContext parent = createDataContext();
         parent.setValidatingObjectsOnCommit(true);
 
-        ObjectContext child1 = parent.createChildObjectContext();
+        ObjectContext child1 = parent.createChildContext();
 
         assertNotNull(child1);
         assertSame(parent, child1.getChannel());
@@ -48,14 +48,14 @@ public class NestedDataContextReadTest extends CayenneCase {
 
         parent.setValidatingObjectsOnCommit(false);
 
-        ObjectContext child2 = parent.createChildObjectContext();
+        ObjectContext child2 = parent.createChildContext();
 
         assertNotNull(child2);
         assertSame(parent, child2.getChannel());
         assertFalse(((DataContext) child2).isValidatingObjectsOnCommit());
 
         // second level of nesting
-        ObjectContext child21 = child2.createChildObjectContext();
+        ObjectContext child21 = child2.createChildContext();
 
         assertNotNull(child21);
         assertSame(child2, child21.getChannel());
@@ -67,7 +67,7 @@ public class NestedDataContextReadTest extends CayenneCase {
         createTestData("testArtists");
 
         DataContext context = createDataContext();
-        ObjectContext childContext = context.createChildObjectContext();
+        ObjectContext childContext = context.createChildContext();
 
         Persistent _new = context.newObject(Artist.class);
 
@@ -159,7 +159,7 @@ public class NestedDataContextReadTest extends CayenneCase {
         createTestData("testArtists");
 
         DataContext context = createDataContext();
-        ObjectContext childContext = context.createChildObjectContext();
+        ObjectContext childContext = context.createChildContext();
 
         int modifiedId = 33003;
         Artist modified = (Artist) DataObjectUtils.objectForQuery(
@@ -202,7 +202,7 @@ public class NestedDataContextReadTest extends CayenneCase {
         deleteTestData();
 
         DataContext context = createDataContext();
-        ObjectContext childContext = context.createChildObjectContext();
+        ObjectContext childContext = context.createChildContext();
 
         Artist _new = context.newObject(Artist.class);
         Painting _newP = context.newObject(Painting.class);
@@ -227,7 +227,7 @@ public class NestedDataContextReadTest extends CayenneCase {
         createTestData("testArtists");
 
         DataContext parent = createDataContext();
-        ObjectContext child = parent.createChildObjectContext();
+        ObjectContext child = parent.createChildContext();
 
         // test how different object states appear in the child on select
 
@@ -286,7 +286,7 @@ public class NestedDataContextReadTest extends CayenneCase {
         createTestData("testReadRelationship");
 
         DataContext parent = createDataContext();
-        ObjectContext child = parent.createChildObjectContext();
+        ObjectContext child = parent.createChildContext();
 
         // test how different object states appear in the child on select
 
@@ -397,7 +397,7 @@ public class NestedDataContextReadTest extends CayenneCase {
         createTestData("testPrefetching");
 
         DataContext parent = createDataContext();
-        ObjectContext child = parent.createChildObjectContext();
+        ObjectContext child = parent.createChildContext();
 
         ObjectId prefetchedId = new ObjectId(
                 "Artist",
@@ -436,7 +436,7 @@ public class NestedDataContextReadTest extends CayenneCase {
         createTestData("testPrefetching");
 
         DataContext parent = createDataContext();
-        ObjectContext child = parent.createChildObjectContext();
+        ObjectContext child = parent.createChildContext();
 
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering(Artist.ARTIST_NAME_PROPERTY, true);

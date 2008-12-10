@@ -31,7 +31,7 @@ import org.apache.cayenne.query.RefreshQuery;
 /**
  * A Cayenne object facade to a persistent store. Instances of ObjectContext are used in
  * the application code to access Cayenne persistence features.
- * 
+ *
  * @since 1.2
  */
 public interface ObjectContext extends Serializable {
@@ -87,7 +87,7 @@ public interface ObjectContext extends Serializable {
      * Registers a transient object with the context. The difference with
      * {@link #newObject(Class)} is that a user creates an object herself, before
      * attaching it to the context, instead of relying on Cayenne to do that.
-     * 
+     *
      * @param object new object that needs to be made persistent.
      * @since 3.0
      */
@@ -95,7 +95,7 @@ public interface ObjectContext extends Serializable {
 
     /**
      * Schedules a persistent object for deletion on next commit.
-     * 
+     *
      * @throws DeleteDenyException if a {@link org.apache.cayenne.map.DeleteRule#DENY}
      *             delete rule is applicable for object deletion.
      */
@@ -106,11 +106,11 @@ public interface ObjectContext extends Serializable {
      * accessing property values. This callback allows ObjectContext to "inflate"
      * unresolved objects on demand and also resolve properties that rely on lazy
      * faulting.
-     * 
+     *
      * @since 3.0
      */
     void prepareForAccess(Persistent object, String property, boolean lazyFaulting);
-    
+
     /**
      * @deprecated since 3.0 use {@link #prepareForAccess(Persistent, String, boolean)}.
      */
@@ -174,27 +174,27 @@ public interface ObjectContext extends Serializable {
      * Returns an DataChannel used by this context.
      */
     DataChannel getChannel();
-    
+
     /**
      * Creates and returns a new child ObjectContext.
-     * 
+     *
      * @since 3.0
      */
-    ObjectContext createChildObjectContext();
-    
+    ObjectContext createChildContext();
+
     /**
      * Returns <code>true</code> if there are any modified, deleted or new objects
      * registered with this ObjectContext, <code>false</code> otherwise.
-     * 
+     *
      * @since 3.0
      */
     boolean hasChanges();
-    
+
     /**
      * "Invalidates" a Collection of persistent objects. This operation would remove each
      * object's snapshot from cache and change object's state to HOLLOW. On the next
      * access to this object, it will be refetched.
-     * 
+     *
      * @see RefreshQuery
      */
     void invalidateObjects(Collection objects);

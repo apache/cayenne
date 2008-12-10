@@ -27,7 +27,7 @@ public class NestedDataContextParentEventsTest extends CayenneCase {
 
     public void testParentUpdatedId() {
         DataContext context = createDataContext();
-        ObjectContext child1 = context.createChildObjectContext();
+        ObjectContext child1 = context.createChildContext();
 
         Artist ac = child1.newObject(Artist.class);
         ac.setArtistName("X");

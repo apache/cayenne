@@ -134,7 +134,7 @@ public class MockObjectContext implements ObjectContext {
         return null;
     }
 
-    public ObjectContext createChildObjectContext() {
+    public ObjectContext createChildContext() {
         return null;
     }
 

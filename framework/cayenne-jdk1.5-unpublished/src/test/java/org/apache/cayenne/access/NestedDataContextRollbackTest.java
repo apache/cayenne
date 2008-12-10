@@ -26,7 +26,7 @@ public class NestedDataContextRollbackTest extends CayenneCase {
 
     public void testRollbackChanges() {
         DataContext context = createDataContext();
-        ObjectContext child1 = context.createChildObjectContext();
+        ObjectContext child1 = context.createChildContext();
 
         assertFalse(context.hasChanges());
         assertFalse(child1.hasChanges());
@@ -44,7 +44,7 @@ public class NestedDataContextRollbackTest extends CayenneCase {
 
     public void testRollbackChangesLocally() {
         DataContext context = createDataContext();
-        ObjectContext child1 = context.createChildObjectContext();
+        ObjectContext child1 = context.createChildContext();
 
         assertFalse(context.hasChanges());
         assertFalse(child1.hasChanges());

@@ -539,7 +539,7 @@ public class CayenneContext extends BaseContext {
      * 
      * @since 3.0
      */
-    public ObjectContext createChildObjectContext() {
+    public ObjectContext createChildContext() {
         return new CayenneContext(this, graphManager.changeEventsEnabled, 
                 graphManager.lifecycleEventsEnabled);
     }

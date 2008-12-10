@@ -80,7 +80,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
         MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents(context, listener);
 
-        ObjectContext child = context.createChildObjectContext();
+        ObjectContext child = context.createChildContext();
         Artist a1 = (Artist) child.localObject(a.getObjectId(), a);
 
         a1.setArtistName("Y");
@@ -121,7 +121,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
     public void testChangeEventOnPeerChangeSecondNestingLevel() throws Exception {
         DataContext context = createDataContext();
 
-        ObjectContext childPeer1 = context.createChildObjectContext();
+        ObjectContext childPeer1 = context.createChildContext();
 
         Artist a = childPeer1.newObject(Artist.class);
         a.setArtistName("X");
@@ -130,7 +130,7 @@ public class DataContextDataChannelEventsTest extends CayenneCase {
         final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents((DataChannel) childPeer1, listener);
 
-        ObjectContext childPeer2 = context.createChildObjectContext();
+        ObjectContext childPeer2 = context.createChildContext();
 
         Artist a1 = (Artist) childPeer2.localObject(a.getObjectId(), a);
 
