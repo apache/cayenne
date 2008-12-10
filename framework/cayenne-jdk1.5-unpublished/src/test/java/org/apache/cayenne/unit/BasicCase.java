@@ -32,7 +32,8 @@ import junit.framework.TestCase;
 public abstract class BasicCase extends TestCase {
 
     public static void assertEquals(BigDecimal d1, Object d2, double delta) {
-        assertTrue(d2 instanceof BigDecimal);
+        assertNotNull(d2);
+        assertTrue("d2: " + d2.getClass().getName(), d2 instanceof BigDecimal);
         BigDecimal d3 = d1.subtract((BigDecimal) d2);
         assertTrue(Math.abs(d3.doubleValue()) < delta);
     }

@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.art.Artist;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -78,6 +79,26 @@ public class DataContextEJBQLGroupByHavingTest extends CayenneCase {
         assertEquals(new BigDecimal(2d), row2[0], 0.001d);
         assertEquals("PY", row2[1]);
         assertEquals(new Long(2), row2[2]);
+    }
+
+    public void testGroupByRelatedEntity() throws Exception {
+
+        createTestData("testGroupByRelatedEntity");
+
+        String ejbql = "SELECT COUNT(p), a, a.artistName "
+                + "FROM Painting p INNER JOIN p.toArtist a GROUP BY a, a.artistName "
+                + "ORDER BY a.artistName";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List data = createDataContext().performQuery(query);
+        assertEquals(2, data.size());
+
+        assertTrue(data.get(0) instanceof Object[]);
+        Object[] row0 = (Object[]) data.get(0);
+        assertEquals(3, row0.length);
+        assertEquals(new Long(1), row0[0]);
+        assertEquals("AA1", row0[2]);
+        assertTrue(row0[1] instanceof Artist);
     }
 
     public void testGroupByIdVariable() throws Exception {

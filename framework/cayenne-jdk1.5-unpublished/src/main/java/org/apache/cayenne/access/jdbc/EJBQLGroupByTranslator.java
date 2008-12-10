@@ -37,7 +37,12 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitIdentifier(EJBQLExpression expression) {
-        expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(context));
+        if (itemCount++ > 0) {
+            context.append(',');
+        }
+        
+        expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(
+                context));
         return false;
     }
 
