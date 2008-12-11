@@ -52,6 +52,14 @@ public class EJBQLQuery implements Query {
         return metadata;
     }
 
+    public boolean isFetchingDataRows() {
+        return metadata.isFetchingDataRows();
+    }
+
+    public void setFetchingDataRows(boolean flag) {
+        metadata.setFetchingDataRows(flag);
+    }
+
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         DataMap map = getMetaData(resolver).getDataMap();
 

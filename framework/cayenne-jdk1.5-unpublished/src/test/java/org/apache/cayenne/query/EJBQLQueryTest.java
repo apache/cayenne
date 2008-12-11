@@ -18,8 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.List;
 import java.util.Map;
 
+import org.apache.art.Artist;
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.CayenneCase;
@@ -36,6 +40,34 @@ public class EJBQLQueryTest extends CayenneCase {
         assertEquals(2, parameters.size());
         assertEquals("X", parameters.get(new Integer(1)));
         assertEquals("Y", parameters.get("name"));
+    }
+
+    public void testDataRows() {
+        insertValue();
+        String ejbql = "select a FROM Artist a";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setFetchingDataRows(true);
+        List artists = createDataContext().performQuery(query);
+
+        Map row = (Map) artists.get(0);
+        assertTrue(row instanceof DataRow);
+
+        Artist artist = (Artist) createDataContext().objectFromDataRow(
+                "Artist",
+                (DataRow) row,
+                true);
+        assertEquals("a0", artist.getArtistName());
+
+    }
+
+    private void insertValue() {
+        DataContext context = createDataContext();
+
+        for (int i = 0; i < 5; i++) {
+            Artist obj = context.newObject(Artist.class);
+            obj.setArtistName("a" + i);
+            context.commitChanges();
+        }
     }
 
     public void testGetExpression() {
