@@ -198,4 +198,20 @@ public interface ObjectContext extends Serializable {
      * @see RefreshQuery
      */
     void invalidateObjects(Collection objects);
+
+    /**
+     * Returns a user-defined property previously set via 'setUserProperty'. Note that it
+     * is a caller responsibility to synchronize access to properties.
+     *
+     * @since 3.0
+     */
+    public Object getUserProperty(String key);
+
+    /**
+     * Sets a user-defined property. Note that it is a caller responsibility to
+     * synchronize access to properties.
+     *
+     * @since 3.0
+     */
+    public void setUserProperty(String key, Object value);
 }

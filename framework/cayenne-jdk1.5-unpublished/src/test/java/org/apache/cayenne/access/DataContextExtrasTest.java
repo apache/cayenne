@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
@@ -45,7 +44,7 @@ import org.apache.cayenne.unit.CayenneCase;
 /**
  * "Lightweight" test cases for DataContext. These tests do not require any additional
  * database setup.
- * 
+ *
  */
 public class DataContextExtrasTest extends CayenneCase {
 
@@ -99,15 +98,6 @@ public class DataContextExtrasTest extends CayenneCase {
         catch (CayenneRuntimeException ex) {
 
         }
-    }
-
-    public void testUserPropertiesLazyInit() {
-        DataContext context = createDataContext();
-        assertNull(context.userProperties);
-
-        Map properties = context.getUserProperties();
-        assertNotNull(properties);
-        assertSame(properties, context.getUserProperties());
     }
 
     public void testUserProperties() {
@@ -172,7 +162,7 @@ public class DataContextExtrasTest extends CayenneCase {
         row.put("ARTIST_ID", new Integer(123456));
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
-        Artist obj = (Artist) context.objectFromDataRow(Artist.class, row, false);
+        Artist obj = context.objectFromDataRow(Artist.class, row, false);
 
         assertTrue(context.getGraphManager().registeredNodes().contains(obj));
         assertEquals(PersistenceState.COMMITTED, obj.getPersistenceState());
@@ -192,7 +182,7 @@ public class DataContextExtrasTest extends CayenneCase {
                     throws Exception {
                 throw new CayenneRuntimeException("Synthetic error....");
             }
-            
+
             @Override
             public Object generatePk(DataNode node, DbAttribute pk)
                     throws Exception {

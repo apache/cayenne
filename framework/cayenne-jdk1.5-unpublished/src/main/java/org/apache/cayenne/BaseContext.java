@@ -20,7 +20,9 @@ package org.apache.cayenne;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
@@ -42,7 +44,7 @@ import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * A common base superclass for Cayenne ObjectContext implementors.
- * 
+ *
  * @since 3.0
  */
 public abstract class BaseContext implements ObjectContext, DataChannel {
@@ -87,6 +89,13 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     // reinjected later if needed
     protected transient DataChannel channel;
     protected QueryCache queryCache;
+
+    /**
+     * Stores user defined properties associated with this DataContext.
+     *
+     * @since 3.0
+     */
+    protected Map<String, Object> userProperties;
 
     public abstract void commitChanges();
 
@@ -256,7 +265,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
                 }
             }
         }
-        
+
         return queryCache;
     }
 
@@ -266,16 +275,16 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     public synchronized void setQueryCache(QueryCache queryCache) {
         this.queryCache = queryCache;
     }
-    
+
     /**
      * Returns EventManager associated with the ObjectStore.
-     * 
+     *
      * @since 1.2
      */
     public EventManager getEventManager() {
         return channel != null ? channel.getEventManager() : null;
     }
-    
+
     public GraphDiff onSync(
             ObjectContext originatingContext,
             GraphDiff changes,
@@ -292,17 +301,17 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
                         + syncType);
         }
     }
-    
+
     GraphDiff onContextRollback(ObjectContext originatingContext) {
         rollbackChanges();
         return new CompoundDiff();
     }
-    
+
     protected abstract GraphDiff onContextFlush(
             ObjectContext originatingContext,
             GraphDiff changes,
             boolean cascade);
-    
+
     /**
      * @since 1.2
      */
@@ -338,16 +347,51 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
             manager.postEvent(e, DataChannel.GRAPH_CHANGED_SUBJECT);
         }
     }
-    
+
     /**
      * "Invalidates" a Collection of persistent objects. This operation would remove each
      * object's snapshot from cache and change object's state to HOLLOW. On the next
      * access to this object, it will be refetched.
-     * 
+     *
      * @see #unregisterObjects(Collection)
      * @see RefreshQuery
      */
     public void invalidateObjects(Collection objects) {
         performGenericQuery(new RefreshQuery(objects));
+    }
+
+    /**
+     * Returns a map of user-defined properties associated with this DataContext.
+     *
+     * @since 3.0
+     */
+    protected Map<String, Object> getUserProperties() {
+        // as not all users will take advantage of properties, creating the
+        // map on demand to keep DataContext lean...
+        if (userProperties == null) {
+            userProperties = new HashMap<String, Object>();
+        }
+
+        return userProperties;
+    }
+
+    /**
+     * Returns a user-defined property previously set via 'setUserProperty'. Note that it
+     * is a caller responsibility to synchronize access to properties.
+     *
+     * @since 3.0
+     */
+    public Object getUserProperty(String key) {
+        return getUserProperties().get(key);
+    }
+
+    /**
+     * Sets a user-defined property. Note that it is a caller responsibility to
+     * synchronize access to properties.
+     *
+     * @since 3.0
+     */
+    public void setUserProperty(String key, Object value) {
+        getUserProperties().put(key, value);
     }
 }
