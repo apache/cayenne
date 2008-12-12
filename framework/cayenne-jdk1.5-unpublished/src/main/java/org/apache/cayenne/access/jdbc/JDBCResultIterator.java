@@ -32,7 +32,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.EntityResultMetadata;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLResultSetMetadata;
 
@@ -134,7 +134,7 @@ public class JDBCResultIterator implements ResultIterator {
 
     private RowReader<?> createEntityRowReader(
             RowDescriptor descriptor,
-            EntityResultMetadata resultMetadata) {
+            EntityResultSegment resultMetadata) {
 
         if (resultMetadata.getClassDescriptor() != null
                 && resultMetadata.getClassDescriptor().getEntityInheritanceTree() != null) {

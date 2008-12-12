@@ -53,7 +53,7 @@ class DefaultResultSetMetadata implements SQLResultSetMetadata {
             Object descriptor = descriptors.get(i);
             if (descriptor instanceof String) {
                 segments
-                        .add(new DefaultScalarResultMetadata((String) descriptor, offset));
+                        .add(new DefaultScalarResultSegment((String) descriptor, offset));
                 offset = offset + 1;
                 scalarSegments[ss++] = i;
             }
@@ -69,7 +69,7 @@ class DefaultResultSetMetadata implements SQLResultSetMetadata {
                 }
 
                 ClassDescriptor classDescriptor = resolver.getClassDescriptor(entityName);
-                segments.add(new DefaultEntityResultMetadata(
+                segments.add(new DefaultEntityResultSegment(
                         classDescriptor,
                         fields,
                         offset));
@@ -92,10 +92,10 @@ class DefaultResultSetMetadata implements SQLResultSetMetadata {
         return trimmed;
     }
 
-    public EntityResultMetadata getEntitySegment(int position) {
+    public EntityResultSegment getEntitySegment(int position) {
         Object result = segments.get(position);
-        if (result instanceof EntityResultMetadata) {
-            return (EntityResultMetadata) result;
+        if (result instanceof EntityResultSegment) {
+            return (EntityResultSegment) result;
         }
 
         throw new IllegalArgumentException("Segment at position "
@@ -107,11 +107,11 @@ class DefaultResultSetMetadata implements SQLResultSetMetadata {
         return entitySegments;
     }
 
-    public ScalarResultMetadata getScalarSegment(int position) {
+    public ScalarResultSegment getScalarSegment(int position) {
 
         Object result = segments.get(position);
-        if (result instanceof ScalarResultMetadata) {
-            return (ScalarResultMetadata) result;
+        if (result instanceof ScalarResultSegment) {
+            return (ScalarResultSegment) result;
         }
 
         throw new IllegalArgumentException("Segment at position "

@@ -27,7 +27,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.EntityResultMetadata;
+import org.apache.cayenne.query.EntityResultSegment;
 
 /**
  * A runtime descriptor of an persistent class.
@@ -64,7 +64,7 @@ public interface ClassDescriptor {
      * 
      * @since 3.0
      */
-    EntityResultMetadata getEntityResultMetadata();
+    EntityResultSegment getEntityResultMetadata();
 
     /**
      * Returns a class mapped by this descriptor.

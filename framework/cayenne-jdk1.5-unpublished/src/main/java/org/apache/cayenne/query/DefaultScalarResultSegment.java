@@ -21,13 +21,22 @@ package org.apache.cayenne.query;
 /**
  * @since 3.0
  */
-public interface ScalarResultMetadata {
+class DefaultScalarResultSegment implements ScalarResultSegment {
 
-    String getColumn();
+    private String column;
+    private int offset;
 
-    /**
-     * Returns a zero-based column index of the first column of this segment in the
-     * ResultSet.
-     */
-    int getColumnOffset();
+    DefaultScalarResultSegment(String column, int offset) {
+        this.column = column;
+        this.offset = offset;
+    }
+
+    public String getColumn() {
+        return column;
+    }
+
+    public int getColumnOffset() {
+        return offset;
+    }
+
 }

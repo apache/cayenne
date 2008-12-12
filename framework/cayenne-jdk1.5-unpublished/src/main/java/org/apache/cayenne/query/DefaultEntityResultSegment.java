@@ -25,13 +25,13 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 /**
  * @since 3.0
  */
-class DefaultEntityResultMetadata implements EntityResultMetadata {
+class DefaultEntityResultSegment implements EntityResultSegment {
 
     private ClassDescriptor classDescriptor;
     private Map<String, String> fields;
     private int offset;
 
-    DefaultEntityResultMetadata(ClassDescriptor classDescriptor,
+    DefaultEntityResultSegment(ClassDescriptor classDescriptor,
             Map<String, String> fields, int offset) {
         this.classDescriptor = classDescriptor;
         this.fields = fields;

@@ -30,7 +30,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.EntityResultMetadata;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -380,7 +380,7 @@ public class EJBQLTranslationContext {
     /**
      * Returns a positional EntityResult, incrementing position index on each call.
      */
-    EntityResultMetadata nextEntityResult() {
+    EntityResultSegment nextEntityResult() {
 
         if (resultSetMetadata == null) {
             throw new EJBQLException(

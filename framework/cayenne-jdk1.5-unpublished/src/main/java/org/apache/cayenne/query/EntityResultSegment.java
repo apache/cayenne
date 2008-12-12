@@ -28,7 +28,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * 
  * @since 3.0
  */
-public interface EntityResultMetadata {
+public interface EntityResultSegment {
 
     ClassDescriptor getClassDescriptor();
 

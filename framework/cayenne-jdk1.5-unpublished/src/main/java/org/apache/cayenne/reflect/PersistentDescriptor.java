@@ -34,7 +34,7 @@ import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.EntityResultMetadata;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.commons.collections.IteratorUtils;
 
 /**
@@ -59,7 +59,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     protected ObjEntity entity;
     protected Collection<DbEntity> rootDbEntities;
-    protected EntityResultMetadata entityResultMetadata;
+    protected EntityResultSegment entityResultMetadata;
     protected EntityInheritanceTree entityInheritanceTree;
 
     // combines declared and super properties
@@ -181,11 +181,11 @@ public class PersistentDescriptor implements ClassDescriptor {
         return rootDbEntities;
     }
 
-    public EntityResultMetadata getEntityResultMetadata() {
+    public EntityResultSegment getEntityResultMetadata() {
         return entityResultMetadata;
     }
 
-    public void setEntityResultMetadata(EntityResultMetadata entityResultMetadata) {
+    public void setEntityResultMetadata(EntityResultSegment entityResultMetadata) {
         this.entityResultMetadata = entityResultMetadata;
     }
 

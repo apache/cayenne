@@ -23,7 +23,7 @@ import java.sql.ResultSet;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.query.EntityResultMetadata;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.Util;
 
@@ -42,7 +42,7 @@ class EntityRowReader implements RowReader<DataRow> {
 
     DataRowPostProcessor postProcessor;
 
-    EntityRowReader(RowDescriptor descriptor, EntityResultMetadata segmentMetadata) {
+    EntityRowReader(RowDescriptor descriptor, EntityResultSegment segmentMetadata) {
 
         ClassDescriptor classDescriptor = segmentMetadata.getClassDescriptor();
 

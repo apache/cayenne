@@ -23,12 +23,12 @@ import java.util.Map;
 
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.EntityResultMetadata;
+import org.apache.cayenne.query.EntityResultSegment;
 
 /**
  * @since 3.0
  */
-class PersistentDescriptorResultMetadata implements EntityResultMetadata {
+class PersistentDescriptorResultMetadata implements EntityResultSegment {
 
     ClassDescriptor classDescriptor;
     Map<String, String> fields;

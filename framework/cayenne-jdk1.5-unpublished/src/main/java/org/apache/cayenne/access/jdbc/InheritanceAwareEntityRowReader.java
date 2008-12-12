@@ -23,7 +23,7 @@ import java.sql.ResultSet;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.EntityResultMetadata;
+import org.apache.cayenne.query.EntityResultSegment;
 
 /**
  * @since 3.0
@@ -33,7 +33,7 @@ class InheritanceAwareEntityRowReader extends EntityRowReader {
     private EntityInheritanceTree entityInheritanceTree;
 
     public InheritanceAwareEntityRowReader(RowDescriptor descriptor,
-            EntityResultMetadata segmentMetadata) {
+            EntityResultSegment segmentMetadata) {
         super(descriptor, segmentMetadata);
 
         entityInheritanceTree = segmentMetadata

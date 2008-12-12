@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.EntityResultMetadata;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.util.ToStringBuilder;
 
 /**
@@ -95,7 +95,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         return descriptor.getEntityInheritanceTree();
     }
 
-    public EntityResultMetadata getEntityResultMetadata() {
+    public EntityResultSegment getEntityResultMetadata() {
         checkDescriptorInitialized();
         return descriptor.getEntityResultMetadata();
     }

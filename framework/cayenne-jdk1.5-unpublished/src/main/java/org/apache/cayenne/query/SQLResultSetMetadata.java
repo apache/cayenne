@@ -36,7 +36,7 @@ public interface SQLResultSetMetadata {
 
     int[] getEntitySegments();
 
-    EntityResultMetadata getEntitySegment(int position);
+    EntityResultSegment getEntitySegment(int position);
 
-    ScalarResultMetadata getScalarSegment(int position);
+    ScalarResultSegment getScalarSegment(int position);
 }
