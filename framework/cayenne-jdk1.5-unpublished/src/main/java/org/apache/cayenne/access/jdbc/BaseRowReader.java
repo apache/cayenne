@@ -50,7 +50,7 @@ abstract class BaseRowReader<T> implements RowReader<T> {
         this.types = new int[width];
 
         for (int i = 0; i < width; i++) {
-            labels[i] = columns[i].getLabel();
+            labels[i] = columns[i].getDataRowKey();
             types[i] = columns[i].getJdbcType();
         }
     }

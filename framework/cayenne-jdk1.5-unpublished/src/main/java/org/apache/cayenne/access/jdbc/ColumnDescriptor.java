@@ -43,10 +43,10 @@ public class ColumnDescriptor implements Serializable {
 
     // identifies column in result set
     protected String name;
-    protected String qualifiedColumnName;
+    protected String namePrefix;
 
     // identifies column in a DataRow
-    protected String label;
+    protected String dataRowKey;
 
     protected int jdbcType;
     protected String javaClass;
@@ -64,8 +64,7 @@ public class ColumnDescriptor implements Serializable {
      */
     public ColumnDescriptor(String columnName, int jdbcType, String javaClass) {
         this.name = columnName;
-        this.qualifiedColumnName = columnName;
-        this.label = columnName;
+        this.dataRowKey = columnName;
         this.jdbcType = jdbcType;
         this.javaClass = javaClass;
     }
@@ -75,10 +74,10 @@ public class ColumnDescriptor implements Serializable {
      * 
      * @since 1.2
      */
-    public ColumnDescriptor(DbAttribute attribute, String columnAlias) {
+    public ColumnDescriptor(DbAttribute attribute, String tableAlias) {
         this.name = attribute.getName();
-        this.qualifiedColumnName = attribute.getAliasedName(columnAlias);
-        this.label = name;
+        this.namePrefix = tableAlias;
+        this.dataRowKey = name;
         this.jdbcType = attribute.getType();
         this.javaClass = getDefaultJavaClass(attribute.getMaxLength(), attribute
                 .getScale());
@@ -94,7 +93,7 @@ public class ColumnDescriptor implements Serializable {
     public ColumnDescriptor(ObjAttribute objAttribute, DbAttribute dbAttribute,
             String columnAlias) {
         this(dbAttribute, columnAlias);
-        this.label = objAttribute.getDbAttributePath();
+        this.dataRowKey = objAttribute.getDbAttributePath();
         this.javaClass = objAttribute.getType();
     }
 
@@ -105,8 +104,7 @@ public class ColumnDescriptor implements Serializable {
      */
     public ColumnDescriptor(ProcedureParameter parameter) {
         this.name = parameter.getName();
-        this.qualifiedColumnName = name;
-        this.label = name;
+        this.dataRowKey = name;
         this.jdbcType = parameter.getType();
         this.javaClass = getDefaultJavaClass(parameter.getMaxLength(), parameter
                 .getPrecision());
@@ -132,8 +130,7 @@ public class ColumnDescriptor implements Serializable {
         }
 
         this.name = name;
-        this.qualifiedColumnName = name;
-        this.label = name;
+        this.dataRowKey = name;
         this.jdbcType = metaData.getColumnType(position);
         this.javaClass = metaData.getColumnClassName(position);
     }
@@ -152,10 +149,10 @@ public class ColumnDescriptor implements Serializable {
 
         ColumnDescriptor rhs = (ColumnDescriptor) o;
         return new EqualsBuilder().append(name, rhs.name).append(
-                qualifiedColumnName,
-                rhs.qualifiedColumnName).append(procedureName, rhs.procedureName).append(
-                label,
-                rhs.label).append(tableName, rhs.tableName).isEquals();
+                namePrefix,
+                rhs.namePrefix).append(procedureName, rhs.procedureName).append(
+                dataRowKey,
+                rhs.dataRowKey).append(tableName, rhs.tableName).isEquals();
     }
 
     /**
@@ -163,13 +160,8 @@ public class ColumnDescriptor implements Serializable {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(23, 43)
-                .append(name)
-                .append(qualifiedColumnName)
-                .append(procedureName)
-                .append(tableName)
-                .append(label)
-                .toHashCode();
+        return new HashCodeBuilder(23, 43).append(name).append(namePrefix).append(
+                procedureName).append(tableName).append(dataRowKey).toHashCode();
     }
 
     /**
@@ -178,9 +170,9 @@ public class ColumnDescriptor implements Serializable {
     @Override
     public String toString() {
         ToStringBuilder builder = new ToStringBuilder(this);
-        builder.append("namePrefix", getQualifiedColumnName());
+        builder.append("namePrefix", namePrefix);
         builder.append("name", getName());
-        builder.append("label", getLabel());
+        builder.append("dataRowKey", getDataRowKey());
         builder.append("tableName", getTableName());
         builder.append("procedureName", getProcedureName());
         builder.append("javaClass", getJavaClass());
@@ -203,7 +195,7 @@ public class ColumnDescriptor implements Serializable {
      * @since 1.2
      */
     public String getQualifiedColumnName() {
-        return qualifiedColumnName != null ? qualifiedColumnName : name;
+        return (namePrefix != null) ? namePrefix + '.' + name : name;
     }
 
     public int getJdbcType() {
@@ -266,25 +258,34 @@ public class ColumnDescriptor implements Serializable {
     }
 
     /**
-     * @since 1.2
-     */
-    public void setQualifiedColumnName(String namePrefix) {
-        this.qualifiedColumnName = namePrefix;
-    }
-
-    /**
      * Returns "label" used in a DataRow for column value.
      * 
      * @since 1.2
+     * @deprecated since 3.0 use {@link #getDataRowKey()}
      */
     public String getLabel() {
-        return (label != null) ? label : getName();
+        return getDataRowKey();
     }
 
     /**
      * @since 1.2
+     * @deprecated since 3.0 use {@link #setDataRowKey(String)}.
      */
-    public void setLabel(String columnName) {
-        this.label = columnName;
+    public void setLabel(String label) {
+        setDataRowKey(label);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public String getDataRowKey() {
+        return dataRowKey != null ? dataRowKey : getName();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setDataRowKey(String dataRowKey) {
+        this.dataRowKey = dataRowKey;
     }
 }

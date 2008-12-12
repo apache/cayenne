@@ -533,7 +533,7 @@ public class SelectTranslator extends QueryAssembler {
                     alias) : new ColumnDescriptor(attribute, alias);
 
             if (label != null) {
-                column.setLabel(label);
+                column.setDataRowKey(label);
             }
 
             columns.add(column);

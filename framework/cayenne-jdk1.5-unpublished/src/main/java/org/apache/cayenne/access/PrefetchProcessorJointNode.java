@@ -98,7 +98,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
         Map<String, Object> id = new TreeMap<String, Object>();
         for (int idIndex : idIndices) {
-            Object value = flatRow.get(columns[idIndex].getLabel());
+            Object value = flatRow.get(columns[idIndex].getDataRowKey());
             id.put(columns[idIndex].getName(), value);
         }
 
@@ -129,7 +129,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
         // extract subset of flat row columns, recasting to the target keys
         for (ColumnDescriptor column : columns) {
-            row.put(column.getName(), flatRow.get(column.getLabel()));
+            row.put(column.getName(), flatRow.get(column.getDataRowKey()));
         }
 
         return row;
@@ -220,7 +220,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         if (column == null) {
             column = new ColumnDescriptor();
             column.setName(name);
-            column.setLabel(label);
+            column.setDataRowKey(label);
             map.put(name, column);
         }
 

@@ -468,7 +468,7 @@ public class SelectTranslatorTest extends CayenneCase {
             }
 
             ColumnDescriptor c = new ColumnDescriptor(a, "t1");
-            c.setLabel("toArtist." + a.getName());
+            c.setDataRowKey("toArtist." + a.getName());
             assertTrue("No descriptor for " + a + ", columns: " + columns, columns
                     .contains(c));
         }

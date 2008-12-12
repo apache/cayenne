@@ -210,7 +210,7 @@ public class ProcedureAction extends BaseSQLAction {
             Object val = type.materializeObject(statement, i + 1, descriptor
                     .getJdbcType());
 
-            result.put(descriptor.getLabel(), val);
+            result.put(descriptor.getDataRowKey(), val);
         }
 
         if (result != null && !result.isEmpty()) {

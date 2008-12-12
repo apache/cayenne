@@ -67,7 +67,7 @@ class EntityRowReader implements RowReader<DataRow> {
             // query translator may change the order of fields compare to the entity
             // result, so figure out DataRow labels by doing reverse lookup of
             // RowDescriptor labels...
-            labels[i] = segmentMetadata.getColumnPath(columns[startIndex + i].getLabel());
+            labels[i] = segmentMetadata.getColumnPath(columns[startIndex + i].getDataRowKey());
         }
     }
 

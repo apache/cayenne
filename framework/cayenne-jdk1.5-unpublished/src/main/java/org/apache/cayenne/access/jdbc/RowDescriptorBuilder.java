@@ -93,11 +93,11 @@ public class RowDescriptorBuilder {
         if (caseTransformer != null) {
             for (int i = 0; i < len; i++) {
 
-                String oldLabel = columns[i].getLabel();
+                String oldLabel = columns[i].getDataRowKey();
                 String oldName = columns[i].getName();
 
                 String newLabel = (String) caseTransformer.transform(oldLabel);
-                columns[i].setLabel(newLabel);
+                columns[i].setDataRowKey(newLabel);
 
                 // do we even need to check this?
                 if (oldName.equals(oldLabel)) {

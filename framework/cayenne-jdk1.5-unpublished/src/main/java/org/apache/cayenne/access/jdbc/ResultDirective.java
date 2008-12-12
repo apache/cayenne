@@ -130,7 +130,7 @@ public class ResultDirective extends Directive {
 
         ColumnDescriptor columnDescriptor = new ColumnDescriptor();
         columnDescriptor.setName(column);
-        columnDescriptor.setLabel(label);
+        columnDescriptor.setDataRowKey(label);
 
         String type = getChildAsString(context, node, 1);
         if (type != null) {

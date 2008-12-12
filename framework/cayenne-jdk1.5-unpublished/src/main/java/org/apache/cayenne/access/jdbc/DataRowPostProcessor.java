@@ -75,7 +75,7 @@ class DataRowPostProcessor {
                         // note that JDBC index is "1" based
                         index = i + 1;
                         jdbcType = columns[i].getJdbcType();
-                        key = columns[i].getLabel();
+                        key = columns[i].getDataRowKey();
                     }
 
                     break;

@@ -38,8 +38,8 @@ public class ColumnDescriptorTest extends TestCase {
 
     public void testLabel() {
         ColumnDescriptor column = new ColumnDescriptor();
-        column.setLabel("abc");
-        assertEquals("abc", column.getLabel());
+        column.setDataRowKey("abc");
+        assertEquals("abc", column.getDataRowKey());
     }
 
     public void testDbAttributeConstructor() {
@@ -56,27 +56,27 @@ public class ColumnDescriptorTest extends TestCase {
         assertEquals("name", column.getQualifiedColumnName());
         assertEquals("entity", column.getTableName());
         assertEquals(String.class.getName(), column.getJavaClass());
-        assertEquals("name", column.getLabel());
+        assertEquals("name", column.getDataRowKey());
         assertEquals(Types.VARCHAR, column.getJdbcType());
     }
 
     public void testEquals() {
         ColumnDescriptor column1 = new ColumnDescriptor();
         column1.setName("n1");
-        column1.setQualifiedColumnName("np1");
+        column1.namePrefix = "np1";
         column1.setTableName("t1");
         // type should be ignored in the comparison
         column1.setJdbcType(Types.VARCHAR);
 
         ColumnDescriptor column2 = new ColumnDescriptor();
         column2.setName("n1");
-        column2.setQualifiedColumnName("np1");
+        column2.namePrefix = "np1";
         column2.setTableName("t1");
         column2.setJdbcType(Types.BOOLEAN);
 
         ColumnDescriptor column3 = new ColumnDescriptor();
         column3.setName("n1");
-        column3.setQualifiedColumnName("np3");
+        column3.namePrefix = "np3";
         column3.setTableName("t1");
 
         assertEquals(column1, column2);
@@ -87,20 +87,20 @@ public class ColumnDescriptorTest extends TestCase {
     public void testHashCode() {
         ColumnDescriptor column1 = new ColumnDescriptor();
         column1.setName("n1");
-        column1.setQualifiedColumnName("np1");
+        column1.namePrefix = "np1";
         column1.setTableName("t1");
         // type should be ignored in the comparison
         column1.setJdbcType(Types.VARCHAR);
 
         ColumnDescriptor column2 = new ColumnDescriptor();
         column2.setName("n1");
-        column2.setQualifiedColumnName("np1");
+        column2.namePrefix = "np1";
         column2.setTableName("t1");
         column2.setJdbcType(Types.BOOLEAN);
 
         ColumnDescriptor column3 = new ColumnDescriptor();
         column3.setName("n1");
-        column3.setQualifiedColumnName("np3");
+        column3.namePrefix = "np3";
         column3.setTableName("t1");
 
         assertEquals(column1.hashCode(), column2.hashCode());

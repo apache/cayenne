@@ -98,7 +98,7 @@ class OracleProcedureAction extends ProcedureAction {
                 Object val = type.materializeObject(statement, i + 1, descriptor
                         .getJdbcType());
 
-                result.put(descriptor.getLabel(), val);
+                result.put(descriptor.getDataRowKey(), val);
             }
         }
 

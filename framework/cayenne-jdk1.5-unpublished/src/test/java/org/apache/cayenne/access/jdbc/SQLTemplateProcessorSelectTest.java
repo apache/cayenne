@@ -81,7 +81,7 @@ public class SQLTemplateProcessorSelectTest extends BasicCase {
         assertEquals(1, compiled.getResultColumns().length);
         ColumnDescriptor column = compiled.getResultColumns()[0];
         assertEquals("A", column.getName());
-        assertEquals("B", column.getLabel());
+        assertEquals("B", column.getDataRowKey());
         assertEquals("java.lang.String", column.getJavaClass());
     }
 
