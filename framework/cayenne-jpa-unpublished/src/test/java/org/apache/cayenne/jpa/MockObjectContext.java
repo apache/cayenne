@@ -120,4 +120,11 @@ public class MockObjectContext implements ObjectContext {
     public void invalidateObjects(Collection objects) {
 
     }
+
+    public Object getUserProperty(String key) {
+        return null;
+    }
+
+    public void setUserProperty(String key, Object value) {
+    }
 }
