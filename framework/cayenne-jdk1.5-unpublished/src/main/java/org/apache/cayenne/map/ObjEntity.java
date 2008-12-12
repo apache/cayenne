@@ -615,7 +615,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
      * the table described by this DbEntity. Note that since PK is very often not an
      * object property, the returned collection may contain "synthetic" ObjAttributes that
      * are created on the fly and are not a part of ObjEntity and will not be a part of
-     * entity.getAttributes(). Real meaningful PK attributes
+     * entity.getAttributes().
      * 
      * @since 3.0
      */
