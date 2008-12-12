@@ -39,7 +39,6 @@ import org.apache.cayenne.util.XMLSerializable;
  * A query that selects persistent objects of a certain type or "raw data" (aka DataRows).
  * Supports expression qualifier, multiple orderings and a number of other parameters that
  * serve as runtime hints to Cayenne on how to optimize the fetch and result processing.
- * 
  */
 public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
         XMLSerializable {
@@ -165,7 +164,12 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     @Override
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         super.route(router, resolver, substitutedQuery);
-        routePrefetches(router, resolver);
+
+        // suppress prefetches for paginated queries.. instead prefetches will be resolved
+        // per row...
+        if (metaData.getPageSize() <= 0) {
+            routePrefetches(router, resolver);
+        }
     }
 
     /**
@@ -396,8 +400,8 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Adds one or more aliases for the qualifier expression path. Aliases serve to
      * instruct Cayenne to generate separate sets of joins for overlapping paths, that
-     * maybe needed for complex conditions. An example of an <i>implicit<i> splits is
-     * this method: {@link ExpressionFactory#matchAllExp(String, Object...)}.
+     * maybe needed for complex conditions. An example of an <i>implicit<i> splits is this
+     * method: {@link ExpressionFactory#matchAllExp(String, Object...)}.
      * 
      * @since 3.0
      */
@@ -438,8 +442,8 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Returns <code>true</code> if there is at least one custom query attribute
-     * specified, otherwise returns <code>false</code> for the case when the query
-     * results will contain only the root entity attributes.
+     * specified, otherwise returns <code>false</code> for the case when the query results
+     * will contain only the root entity attributes.
      * <p>
      * Note that queries that are fetching custom attributes always return data rows
      * instead of DataObjects.
@@ -499,8 +503,8 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /**
-     * Sets query result type. If <code>flag</code> parameter is <code>true</code>,
-     * then results will be in the form of data rows.
+     * Sets query result type. If <code>flag</code> parameter is <code>true</code>, then
+     * results will be in the form of data rows.
      * <p>
      * <i>Note that if <code>isFetchingCustAttributes()</code> returns <code>true</code>,
      * this setting has no effect, and data rows are always fetched. </i>
@@ -515,8 +519,8 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * 
      * @since 1.1
      * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *            redundant, although it is still being taken into account. It will be
-     *            removed in the later versions of Cayenne.
+     *             redundant, although it is still being taken into account. It will be
+     *             removed in the later versions of Cayenne.
      */
     public boolean isRefreshingObjects() {
         return metaData.isRefreshingObjects();
@@ -525,8 +529,8 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * @since 1.1
      * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *            redundant, although it is still being taken into account. It will be
-     *            removed in the later versions of Cayenne.
+     *             redundant, although it is still being taken into account. It will be
+     *             removed in the later versions of Cayenne.
      */
     public void setRefreshingObjects(boolean flag) {
         // noop
@@ -576,7 +580,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     public void setCacheGroups(String... cacheGroups) {
         this.metaData.setCacheGroups(cacheGroups);
     }
-    
+
     /**
      * Returns the fetchOffset.
      * 
@@ -585,7 +589,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     public int getFetchOffset() {
         return metaData.getFetchOffset();
     }
-    
+
     /**
      * Returns the fetchLimit.
      */
@@ -599,7 +603,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     public void setFetchLimit(int fetchLimit) {
         this.metaData.setFetchLimit(fetchLimit);
     }
-    
+
     /**
      * @since 3.0
      */

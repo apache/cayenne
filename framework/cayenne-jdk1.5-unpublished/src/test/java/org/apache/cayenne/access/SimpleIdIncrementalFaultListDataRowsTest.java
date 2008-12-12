@@ -58,17 +58,15 @@ public class SimpleIdIncrementalFaultListDataRowsTest extends CayenneCase {
     }
 
     public void testGet1() throws Exception {
-        assertEquals(3, list.rowWidth);
-        assertTrue(list.elements.get(0) instanceof Map);
-        assertEquals(list.rowWidth, ((Map) list.elements.get(0)).size());
-
+        assertEquals(1, list.idWidth);
+        assertFalse(list.elements.get(0) instanceof Map);
         assertTrue(list.elements.get(19) instanceof Long);
 
         Object a = list.get(19);
 
         assertNotNull(a);
         assertTrue(a instanceof Map);
-        assertEquals(list.rowWidth, ((Map) a).size());
+        assertEquals(3, ((Map) a).size());
         assertEquals("artist20", ((Map) a).get("ARTIST_NAME"));
     }
 
@@ -94,6 +92,9 @@ public class SimpleIdIncrementalFaultListDataRowsTest extends CayenneCase {
 
     public void testIndexOf2() throws Exception {
         DataContext parallelContext = createDataContext();
+        
+        // resolve first page
+        list.get(0);
 
         Expression qual = ExpressionFactory.matchExp("artistName", "artist2");
         SelectQuery query = new SelectQuery(Artist.class, qual);
@@ -111,6 +112,9 @@ public class SimpleIdIncrementalFaultListDataRowsTest extends CayenneCase {
 
     public void testLastIndexOf1() throws Exception {
         DataContext parallelContext = createDataContext();
+       
+        // resolve first page
+        list.get(0);
 
         Expression qual = ExpressionFactory.matchExp("artistName", "artist3");
         SelectQuery query = new SelectQuery(Artist.class, qual);
@@ -144,7 +148,7 @@ public class SimpleIdIncrementalFaultListDataRowsTest extends CayenneCase {
     }
 
     public void testIterator() throws Exception {
-        assertEquals(3, list.rowWidth);
+        assertEquals(1, list.idWidth);
 
         Iterator it = list.iterator();
         int counter = 0;
@@ -154,7 +158,7 @@ public class SimpleIdIncrementalFaultListDataRowsTest extends CayenneCase {
             assertTrue(
                     "Unexpected object class: " + obj.getClass().getName(),
                     obj instanceof Map);
-            assertEquals(list.rowWidth, ((Map) obj).size());
+            assertEquals(3, ((Map) obj).size());
 
             // iterator must be resolved page by page
             int expectedResolved = list.pageIndex(counter)

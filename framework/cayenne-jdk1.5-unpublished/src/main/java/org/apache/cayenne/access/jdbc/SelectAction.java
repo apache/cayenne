@@ -30,7 +30,6 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.access.util.DistinctResultIterator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.PrefetchProcessor;

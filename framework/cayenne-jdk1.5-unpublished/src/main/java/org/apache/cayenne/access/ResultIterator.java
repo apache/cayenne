@@ -20,11 +20,8 @@
 package org.apache.cayenne.access;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.map.DbEntity;
 
 /**
  * Defines API of an iterator over the records returned as a result of SelectQuery
@@ -37,14 +34,6 @@ import org.apache.cayenne.map.DbEntity;
  * </p>
  */
 public interface ResultIterator {
-
-    /**
-     * Returns all unread data rows from ResultSet and closes this iterator if asked to do
-     * so.
-     * 
-     * @deprecated since 3.0 use {@link #allRows(boolean)}.
-     */
-    List<DataRow> dataRows(boolean close) throws CayenneException;
 
     /**
      * Returns all yet unread rows from ResultSet and closes this iterator if asked to do
@@ -61,45 +50,12 @@ public interface ResultIterator {
     boolean hasNextRow() throws CayenneException;
 
     /**
-     * Returns the next result row as a Map.
-     * 
-     * @deprecated since 3.0 use {@link #nextRow()}.
-     */
-    Map<String, Object> nextDataRow() throws CayenneException;
-
-    /**
      * Returns the next result row that is, depending on the query, may be a scalar value,
      * a DataRow, or an Object[] array containing a mix of scalars and DataRows.
      * 
      * @since 3.0
      */
     Object nextRow() throws CayenneException;
-
-    /**
-     * Returns a map of ObjectId values from the next result row. Primary key columns are
-     * determined from the provided DbEntity.
-     * 
-     * @since 1.1
-     * @deprecated since 3.0 in favor of {@link #nextId(DbEntity)}.
-     */
-    Map<String, Object> nextObjectId(DbEntity entity) throws CayenneException;
-
-    /**
-     * Reads and returns an id column or columns for the current row DbEntity. If an
-     * entity has a single column id, the return value is an Object matching the column
-     * type (e.g. java.lang.Long). If an entity has a compound PK, the return value is a
-     * DataRow.
-     * 
-     * @since 3.0
-     */
-    Object nextId() throws CayenneException;
-
-    /**
-     * Skips current data row instead of reading it.
-     * 
-     * @deprecated since 3.0 use {@link #skipRow()} instead.
-     */
-    void skipDataRow() throws CayenneException;
 
     /**
      * @since 3.0
@@ -112,19 +68,4 @@ public interface ResultIterator {
      * database resources will not be released properly.
      */
     void close() throws CayenneException;
-
-    /**
-     * Returns the number of columns in the result row.
-     * 
-     * @since 1.0.6
-     * @deprecated since 3.0 in favor of {@link #getResultSetWidth()}.
-     */
-    int getDataRowWidth();
-
-    /**
-     * Returns a number of columns in the underlying ResultSet.
-     * 
-     * @since 3.0
-     */
-    int getResultSetWidth();
 }

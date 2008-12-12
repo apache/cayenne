@@ -256,6 +256,9 @@ public class SelectTranslator extends QueryAssembler {
         if (query.isFetchingCustomAttributes()) {
             appendCustomColumns(columns, query);
         }
+        else if (getQueryMetadata().getPageSize() > 0) {
+            appendIdColumns(columns, query);
+        }
         else {
             appendQueryColumns(columns, query);
         }
@@ -488,6 +491,27 @@ public class SelectTranslator extends QueryAssembler {
                             + attribute.getName());
                 }
             }
+        }
+
+        return columns;
+    }
+
+    List<ColumnDescriptor> appendIdColumns(
+            final List<ColumnDescriptor> columns,
+            SelectQuery query) {
+
+        Set<DbAttribute> skipSet = new HashSet<DbAttribute>();
+
+        ClassDescriptor descriptor = queryMetadata.getClassDescriptor();
+        ObjEntity oe = descriptor.getEntity();
+        DbEntity dbEntity = oe.getDbEntity();
+        for (ObjAttribute attribute : oe.getPrimaryKeys()) {
+
+            // synthetic objattributes can't reliably lookup their DbAttribute, so do
+            // it manually..
+            DbAttribute dbAttribute = (DbAttribute) dbEntity.getAttribute(attribute
+                    .getDbAttributeName());
+            appendColumn(columns, attribute, dbAttribute, skipSet, null);
         }
 
         return columns;

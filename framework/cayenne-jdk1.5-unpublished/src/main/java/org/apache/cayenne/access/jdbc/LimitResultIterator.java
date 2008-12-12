@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.ResultIterator;
-import org.apache.cayenne.map.DbEntity;
 
 /**
  * @since 3.0
@@ -77,13 +75,6 @@ public class LimitResultIterator implements ResultIterator {
     }
 
     /**
-     * @deprecated since 3.0
-     */
-    public List dataRows(boolean close) throws CayenneException {
-        return allRows(close);
-    }
-
-    /**
      * @since 3.0
      */
     public List allRows(boolean close) throws CayenneException {
@@ -104,29 +95,8 @@ public class LimitResultIterator implements ResultIterator {
         return list;
     }
 
-    /**
-     * @deprecated since 3.0
-     */
-    public int getDataRowWidth() {
-        return wrappedIterator.getDataRowWidth();
-    }
-    
-    /**
-     * @since 3.0
-     */
-    public int getResultSetWidth() {
-        return wrappedIterator.getResultSetWidth();
-    }
-
     public boolean hasNextRow() throws CayenneException {
         return nextRow;
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public Map<String, Object> nextDataRow() throws CayenneException {
-        return (DataRow) nextRow();
     }
 
     /**
@@ -143,69 +113,10 @@ public class LimitResultIterator implements ResultIterator {
         return row;
     }
 
-    public Object nextId() throws CayenneException {
-        if (!hasNextRow()) {
-            throw new CayenneException(
-                    "An attempt to read uninitialized row or past the end of the iterator.");
-        }
-
-        Object id = readId();
-        checkNextId();
-        return id;
-
-    }
-
-    /**
-     * @deprecated since 3.0 in favor of {@link #nextId(DbEntity)}.
-     */
-    public Map<String, Object> nextObjectId(DbEntity entity) throws CayenneException {
-
-        if (!hasNextRow()) {
-            throw new CayenneException(
-                    "An attempt to read uninitialized row or past the end of the iterator.");
-        }
-
-        checkNextObjectId(entity);
-        return nextDataObjectIds;
-    }
-
-    /**
-     * @deprecated since 3.0 in favor of {@link #skipRow()}.
-     */
-    public void skipDataRow() throws CayenneException {
-        wrappedIterator.skipDataRow();
-    }
-
     /**
      * @since 3.0
      */
     public void skipRow() throws CayenneException {
         wrappedIterator.skipRow();
-    }
-
-    void checkNextId() throws CayenneException {
-        nextRow = false;
-        if (wrappedIterator.hasNextRow()) {
-            nextRow = true;
-        }
-    }
-
-    private Object readId() throws CayenneException {
-        Object next = wrappedIterator.nextId();
-        return next;
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    void checkNextObjectId(DbEntity entity) throws CayenneException {
-
-        nextRow = false;
-        nextDataObjectIds = null;
-        if (wrappedIterator.hasNextRow()) {
-            nextRow = true;
-            Map<String, Object> next = wrappedIterator.nextObjectId(entity);
-            nextDataObjectIds = next;
-        }
     }
 }

@@ -33,7 +33,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
@@ -69,7 +68,7 @@ public class IncrementalFaultList<E> implements List<E> {
      * Stores a hint allowing to distinguish data rows from unfetched ids when the query
      * fetches data rows.
      */
-    protected int rowWidth;
+    protected int idWidth;
 
     private IncrementalListHelper helper;
 
@@ -97,7 +96,7 @@ public class IncrementalFaultList<E> implements List<E> {
         this.dataContext = list.dataContext;
         this.rootEntity = list.rootEntity;
         this.maxFetchSize = list.maxFetchSize;
-        this.rowWidth = list.rowWidth;
+        this.idWidth = list.idWidth;
         this.helper = list.helper;
         elements = Collections.synchronizedList(new ArrayList<Object>());
     }
@@ -134,33 +133,10 @@ public class IncrementalFaultList<E> implements List<E> {
         this.internalQuery.setPrefetchTree(metadata.getPrefetchTree());
 
         this.helper = createHelper(metadata);
-
-        boolean resolvesFirstPage = true;
-
-        if (!metadata.isFetchingDataRows() && (query instanceof SelectQuery)) {
-            SelectQuery select = (SelectQuery) query;
-
-            // optimize SelectQuery:
-            // * just select ID columns - this gives a 5-10x speedup
-            // * strip prefetches as they blow the iterated result, and are actually not
-            // needed
-
-            SelectQuery clone = select.queryWithParameters(Collections.EMPTY_MAP, true);
-            clone.clearPrefetches();
-
-            // I guess this check is redundant, as custom attributes warrant data rows
-            if (!select.isFetchingCustomAttributes()) {
-                for (DbAttribute attribute : rootEntity.getDbEntity().getPrimaryKeys()) {
-                    clone.addCustomDbAttribute(attribute.getName());
-                }
-            }
-
-            query = clone;
-            resolvesFirstPage = false;
-        }
+        this.idWidth = metadata.getDbEntity().getPrimaryKeys().size();
 
         List<Object> elementsUnsynced = new ArrayList<Object>();
-        fillIn(query, elementsUnsynced, resolvesFirstPage);
+        fillIn(query, elementsUnsynced);
         this.elements = Collections.synchronizedList(elementsUnsynced);
     }
 
@@ -188,13 +164,13 @@ public class IncrementalFaultList<E> implements List<E> {
      * fully resolved. For the rest of the list, only ObjectIds are read.
      * 
      * @deprecated since 3.0 this method is not called and is deprecated in favor of
-     *             {@link #fillIn(Query, List, boolean)}, as this method performed
-     *             unneeded synchronization.
+     *             {@link #fillIn(Query, List)}, as this method performed unneeded
+     *             synchronization.
      * @since 1.0.6
      */
     protected void fillIn(Query query) {
         synchronized (elements) {
-            fillIn(query, elements, true);
+            fillIn(query, elements);
         }
     }
 
@@ -204,36 +180,17 @@ public class IncrementalFaultList<E> implements List<E> {
      * 
      * @since 3.0
      */
-    protected void fillIn(Query query, List elementsList, boolean resolvesFirstPage) {
-        QueryMetadata info = query.getMetaData(dataContext.getEntityResolver());
-        boolean fetchesDataRows = internalQuery.isFetchingDataRows();
+    protected void fillIn(final Query query, List elementsList) {
 
-        // start fresh
         elementsList.clear();
-        rowWidth = 0;
 
         try {
-            int lastResolved = 0;
             long t1 = System.currentTimeMillis();
             ResultIterator it = dataContext.performIteratedQuery(query);
             try {
 
-                rowWidth = it.getResultSetWidth();
-
-                // resolve first page if we can
-                if (resolvesFirstPage) {
-                    // read first page completely, the rest as ObjectIds
-                    for (int i = 0; i < pageSize && it.hasNextRow(); i++) {
-                        elementsList.add(it.nextRow());
-                        lastResolved++;
-                    }
-
-                    // defer DataRows -> Objects conversion till we are completely done.
-                }
-
-                // continue reading ids
                 while (it.hasNextRow()) {
-                    elementsList.add(it.nextId());
+                    elementsList.add(it.nextRow());
                 }
 
                 QueryLogger.logSelectCount(elementsList.size(), System
@@ -243,27 +200,13 @@ public class IncrementalFaultList<E> implements List<E> {
             finally {
                 it.close();
             }
-
-            // fill in the first page AFTER the iterator was closed, otherwise we may
-            // cause an (unobvious) deadlock due to connection pool exhaustion
-            if (!fetchesDataRows && lastResolved > 0) {
-                List objects = dataContext.objectsFromDataRows(
-                        info.getClassDescriptor(),
-                        elementsList.subList(0, lastResolved));
-
-                for (int i = 0; i < lastResolved; i++) {
-                    elementsList.set(i, objects.get(i));
-                }
-            }
         }
         catch (CayenneException e) {
             throw new CayenneRuntimeException("Error performing query.", Util
                     .unwindException(e));
         }
 
-        unfetchedObjects = (resolvesFirstPage)
-                ? elementsList.size() - pageSize
-                : elementsList.size();
+        unfetchedObjects = elementsList.size();
     }
 
     /**
@@ -836,8 +779,8 @@ public class IncrementalFaultList<E> implements List<E> {
 
                 Map<?, ?> id = (Map<?, ?>) objectInTheList;
                 Map<?, ?> map = (Map<?, ?>) object;
-                
-                if(id.size() != map.size()) {
+
+                if (id.size() != map.size()) {
                     return false;
                 }
 
@@ -860,7 +803,7 @@ public class IncrementalFaultList<E> implements List<E> {
         boolean replacesObject(Object object, Object objectInTheList) {
 
             Map<?, ?> id = (Map<?, ?>) objectInTheList;
-            if (id.size() == rowWidth) {
+            if (id.size() > idWidth) {
                 return false;
             }
 

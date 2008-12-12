@@ -25,13 +25,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.ResultIterator;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLResultSetMetadata;
@@ -58,9 +55,7 @@ public class JDBCResultIterator implements ResultIterator {
 
     protected boolean nextRow;
 
-    private DataRowPostProcessor postProcessor;
     private RowReader<?> rowReader;
-    private RowReader<Object> idRowReader;
 
     /**
      * Creates new JDBCResultIterator that reads from provided ResultSet.
@@ -148,22 +143,17 @@ public class JDBCResultIterator implements ResultIterator {
     private RowReader<?> createFullRowReader(
             RowDescriptor descriptor,
             QueryMetadata queryMetadata) {
-        if (queryMetadata.getClassDescriptor() != null
+
+        if (queryMetadata.getPageSize() > 0) {
+            return new IdRowReader(descriptor, queryMetadata);
+        }
+        else if (queryMetadata.getClassDescriptor() != null
                 && queryMetadata.getClassDescriptor().getEntityInheritanceTree() != null) {
             return new InheritanceAwareRowReader(descriptor, queryMetadata);
         }
         else {
             return new FullRowReader(descriptor, queryMetadata);
         }
-    }
-
-    /**
-     * Returns all unread data rows from ResultSet, closing this iterator if needed.
-     * 
-     * @deprecated since 3.0
-     */
-    public List<DataRow> dataRows(boolean close) throws CayenneException {
-        return allRows(close);
     }
 
     /**
@@ -195,15 +185,6 @@ public class JDBCResultIterator implements ResultIterator {
     }
 
     /**
-     * Returns the next result row as a Map.
-     * 
-     * @deprecated since 3.0
-     */
-    public Map<String, Object> nextDataRow() throws CayenneException {
-        return (DataRow) nextRow();
-    }
-
-    /**
      * @since 3.0
      */
     public Object nextRow() throws CayenneException {
@@ -215,64 +196,6 @@ public class JDBCResultIterator implements ResultIterator {
         Object row = rowReader.readRow(resultSet);
         checkNextRow();
         return row;
-    }
-
-    /**
-     * Returns a map of ObjectId values from the next result row. Primary key columns are
-     * determined from the provided DbEntity.
-     * 
-     * @deprecated since 3.0 in favor of {@link #nextId(DbEntity)}.
-     */
-    public Map<String, Object> nextObjectId(DbEntity entity) throws CayenneException {
-        if (!hasNextRow()) {
-            throw new CayenneException(
-                    "An attempt to read uninitialized row or past the end of the iterator.");
-        }
-
-        // index id
-        if (idRowReader == null) {
-            this.idRowReader = new IdRowReader(rowDescriptor, queryMetadata);
-            idRowReader.setPostProcessor(postProcessor);
-        }
-
-        // read ...
-        // TODO: note a mismatch with 1.1 API - ID positions are preset and are
-        // not affected by the entity specified (think of deprecating/replacing this)
-        Map<String, Object> row = readIdRow();
-
-        // rewind
-        checkNextRow();
-
-        return row;
-    }
-
-    /**
-     * @since 3.0
-     */
-    public Object nextId() throws CayenneException {
-        if (!hasNextRow()) {
-            throw new CayenneException(
-                    "An attempt to read uninitialized row or past the end of the iterator.");
-        }
-
-        // index id
-        if (idRowReader == null) {
-            this.idRowReader = new IdRowReader(rowDescriptor, queryMetadata);
-            idRowReader.setPostProcessor(postProcessor);
-        }
-
-        Object id = idRowReader.readRow(resultSet);
-
-        // rewind
-        checkNextRow();
-        return id;
-    }
-
-    /**
-     * @deprecated since 3.0
-     */
-    public void skipDataRow() throws CayenneException {
-        skipRow();
     }
 
     /**
@@ -338,22 +261,6 @@ public class JDBCResultIterator implements ResultIterator {
     }
 
     /**
-     * Returns the number of columns in the result row.
-     * 
-     * @deprecated since 3.0
-     */
-    public int getDataRowWidth() {
-        return getResultSetWidth();
-    }
-
-    /**
-     * @since 3.0
-     */
-    public int getResultSetWidth() {
-        return rowDescriptor.getWidth();
-    }
-
-    /**
      * Moves internal ResultSet cursor position down one row. Checks if the next row is
      * available.
      */
@@ -367,41 +274,6 @@ public class JDBCResultIterator implements ResultIterator {
         catch (SQLException e) {
             throw new CayenneException("Error rewinding ResultSet", e);
         }
-    }
-
-    /**
-     * Reads a row from the internal ResultSet at the current cursor position.
-     * 
-     * @deprecated since 3.0. Internal rowReader is used to read individual rows.
-     */
-    protected Map<String, Object> readDataRow() throws CayenneException {
-        return (DataRow) rowReader.readRow(resultSet);
-    }
-
-    /**
-     * Reads a row from the internal ResultSet at the current cursor position, processing
-     * only columns that are part of the ObjectId of a target class.
-     * 
-     * @deprecated since 3.0 as the calling method is deprecated
-     */
-    protected Map<String, Object> readIdRow() throws CayenneException {
-        Object value = idRowReader.readRow(resultSet);
-
-        if (value instanceof Map) {
-            return (Map<String, Object>) value;
-        }
-
-        // wrap into a map...
-
-        String pkName = queryMetadata
-                .getDbEntity()
-                .getPrimaryKeys()
-                .iterator()
-                .next()
-                .getName();
-        DataRow dataRow = new DataRow(2);
-        dataRow.put(pkName, value);
-        return dataRow;
     }
 
     /**
@@ -426,14 +298,9 @@ public class JDBCResultIterator implements ResultIterator {
 
     // TODO: andrus 11/27/2008 refactor the postprocessor hack into a special row reader.
     void setPostProcessor(DataRowPostProcessor postProcessor) {
-        this.postProcessor = postProcessor;
 
         if (rowReader != null) {
             rowReader.setPostProcessor(postProcessor);
-        }
-
-        if (idRowReader != null) {
-            idRowReader.setPostProcessor(postProcessor);
         }
     }
 }

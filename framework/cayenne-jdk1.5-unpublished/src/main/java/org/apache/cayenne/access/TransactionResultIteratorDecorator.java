@@ -21,10 +21,8 @@ package org.apache.cayenne.access;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.map.DbEntity;
 
 /**
  * Decorates ResultIterator to close active transaction when the iterator is closed.
@@ -93,29 +91,8 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
         return list;
     }
 
-    /**
-     * @deprecated since 3.0
-     */
-    public int getDataRowWidth() {
-        return result.getDataRowWidth();
-    }
-    
-    /**
-     * @since 3.0
-     */
-    public int getResultSetWidth() {
-        return result.getResultSetWidth();
-    }
-
     public boolean hasNextRow() throws CayenneException {
         return result.hasNextRow();
-    }
-
-    /**
-     * @deprecated since 3.0 in favor of {@link #nextRow()}.
-     */
-    public Map<String, Object> nextDataRow() throws CayenneException {
-        return result.nextDataRow();
     }
 
     /**
@@ -123,27 +100,6 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
      */
     public Object nextRow() throws CayenneException {
         return result.nextRow();
-    }
-
-    /**
-     * @deprecated since 3.0 in favor of {@link #nextId(DbEntity)}.
-     */
-    public Map nextObjectId(DbEntity entity) throws CayenneException {
-        return result.nextObjectId(entity);
-    }
-
-    /**
-     * @since 3.0
-     */
-    public Object nextId() throws CayenneException {
-        return result.nextId();
-    }
-
-    /**
-     * @deprecated since 3.0 in favor of {@link #skipRow()}.
-     */
-    public void skipDataRow() throws CayenneException {
-        result.skipDataRow();
     }
 
     /**
