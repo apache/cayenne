@@ -231,7 +231,12 @@ public class SQLTemplateAction implements SQLAction {
                 .getFetchLimit());
 
         if (!iteratedResult) {
-            List<DataRow> resultRows = it.allRows(false);
+
+            // note that we are not closing the iterator here, relying on caller to close
+            // the underlying ResultSet on its own... this is a hack, maybe a cleaner flow
+            // is due here.
+            List<DataRow> resultRows = (List<DataRow>) it.allRows();
+
             QueryLogger.logSelectCount(resultRows.size(), System.currentTimeMillis()
                     - startTime);
 

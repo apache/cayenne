@@ -65,27 +65,13 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
     }
 
     /**
-     * @deprecated since 3.0 in favor of {@link #allRows(boolean)}.
-     */
-    public List dataRows(boolean close) throws CayenneException {
-        return allRows(close);
-    }
-
-    /**
      * @since 3.0
      */
-    public List allRows(boolean close) throws CayenneException {
-        List list = new ArrayList<Object>();
+    public List<?> allRows() throws CayenneException {
+        List<Object> list = new ArrayList<Object>();
 
-        try {
-            while (hasNextRow()) {
-                list.add(nextRow());
-            }
-        }
-        finally {
-            if (close) {
-                close();
-            }
+        while (hasNextRow()) {
+            list.add(nextRow());
         }
 
         return list;

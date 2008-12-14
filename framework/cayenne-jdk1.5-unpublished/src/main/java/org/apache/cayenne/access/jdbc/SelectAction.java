@@ -149,7 +149,15 @@ public class SelectAction extends BaseSQLAction {
         if (!observer.isIteratedResult()) {
             // note that we don't need to close ResultIterator
             // since "dataRows" will do it internally
-            List<DataRow> resultRows = it.allRows(true);
+
+            List<DataRow> resultRows;
+            try {
+                resultRows = (List<DataRow>) it.allRows();
+            }
+            finally {
+                it.close();
+            }
+
             QueryLogger
                     .logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 

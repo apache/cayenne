@@ -82,7 +82,7 @@ public abstract class BaseSQLAction implements SQLAction {
                 metadata.getFetchLimit());
 
         if (!delegate.isIteratedResult()) {
-            List<DataRow> resultRows = it.allRows(false);
+            List<DataRow> resultRows = (List<DataRow>) it.allRows();
             QueryLogger
                     .logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 

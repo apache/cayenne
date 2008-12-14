@@ -31,17 +31,15 @@ import org.apache.cayenne.CayenneException;
  * <p>
  * Result "rows", depending on the query, may be represented as scalar values, DataRows,
  * or Object[] arrays containing a mix of scalars and DataRows.
- * </p>
  */
 public interface ResultIterator {
 
     /**
-     * Returns all yet unread rows from ResultSet and closes this iterator if asked to do
-     * so.
+     * Returns all yet unread rows from ResultSet without closing it.
      * 
      * @since 3.0
      */
-    List allRows(boolean close) throws CayenneException;
+    List<?> allRows() throws CayenneException;
 
     /**
      * Returns true if there is at least one more record that can be read from the

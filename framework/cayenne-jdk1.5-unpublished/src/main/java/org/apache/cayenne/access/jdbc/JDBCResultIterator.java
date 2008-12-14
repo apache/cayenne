@@ -159,18 +159,11 @@ public class JDBCResultIterator implements ResultIterator {
     /**
      * @since 3.0
      */
-    public List allRows(boolean close) throws CayenneException {
+    public List<?> allRows() throws CayenneException {
         List<Object> list = new ArrayList<Object>();
 
-        try {
-            while (hasNextRow()) {
-                list.add(nextRow());
-            }
-        }
-        finally {
-            if (close) {
-                this.close();
-            }
+        while (hasNextRow()) {
+            list.add(nextRow());
         }
 
         return list;

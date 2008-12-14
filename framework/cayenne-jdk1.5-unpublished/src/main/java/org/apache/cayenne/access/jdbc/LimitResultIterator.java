@@ -77,19 +77,12 @@ public class LimitResultIterator implements ResultIterator {
     /**
      * @since 3.0
      */
-    public List allRows(boolean close) throws CayenneException {
+    public List<?> allRows() throws CayenneException {
 
         List<Object> list = new ArrayList<Object>();
 
-        try {
-            while (this.hasNextRow()) {
-                list.add(this.nextRow());
-            }
-        }
-        finally {
-            if (close) {
-                close();
-            }
+        while (this.hasNextRow()) {
+            list.add(this.nextRow());
         }
 
         return list;

@@ -59,11 +59,21 @@ class DataDomainFlushObserver implements OperationObserver {
         // read and close the iterator before doing anything else
         List<DataRow> keys;
         try {
-            keys = keysIterator.allRows(true);
+            keys = (List<DataRow>) keysIterator.allRows();
         }
         catch (CayenneException ex) {
             throw new CayenneRuntimeException("Error reading primary key", Util
                     .unwindException(ex));
+        }
+        finally {
+            try {
+                keysIterator.close();
+            }
+            catch (CayenneException e) {
+                throw new CayenneRuntimeException(
+                        "Error closing primary key result set",
+                        Util.unwindException(e));
+            }
         }
 
         if (!(query instanceof InsertBatchQuery)) {
