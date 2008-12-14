@@ -161,12 +161,12 @@ public class SelectAction extends BaseSQLAction {
             QueryLogger
                     .logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 
-            observer.nextDataRows(query, resultRows);
+            observer.nextRows(query, resultRows);
         }
         else {
             try {
                 workerIterator.setClosingConnection(true);
-                observer.nextDataRows(translator.getQuery(), it);
+                observer.nextRows(translator.getQuery(), it);
             }
             catch (Exception ex) {
                 it.close();

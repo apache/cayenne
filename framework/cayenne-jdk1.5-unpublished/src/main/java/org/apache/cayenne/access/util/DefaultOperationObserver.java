@@ -22,7 +22,6 @@ package org.apache.cayenne.access.util;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -104,7 +103,7 @@ public class DefaultOperationObserver implements OperationObserver {
 
     }
 
-    public void nextDataRows(Query query, List dataRows) {
+    public void nextRows(Query query, List<?> dataRows) {
         // noop
     }
 
@@ -112,7 +111,7 @@ public class DefaultOperationObserver implements OperationObserver {
      * Closes ResultIterator without reading its data. If you implement a custom subclass,
      * only call super if closing the iterator is what you need.
      */
-    public void nextDataRows(Query query, ResultIterator it) {
+    public void nextRows(Query query, ResultIterator it) {
         if (it != null) {
             try {
                 it.close();
@@ -128,9 +127,9 @@ public class DefaultOperationObserver implements OperationObserver {
      * Closes ResultIterator without reading its data. If you implement a custom subclass,
      * only call super if closing the iterator is what you need.
      * 
-     * @since 1.2
+     * @since 3.0
      */
-    public void nextGeneratedDataRows(Query query, ResultIterator keysIterator) {
+    public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
         if (keysIterator != null) {
             try {
                 keysIterator.close();

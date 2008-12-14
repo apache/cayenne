@@ -510,7 +510,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         fullResponse.addBatchUpdateCount(resultCount);
     }
 
-    public void nextDataRows(Query query, List<DataRow> dataRows) {
+    public void nextRows(Query query, List<?> dataRows) {
 
         // exclude prefetched rows in the main result
         if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery) {
@@ -522,14 +522,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
-    public void nextDataRows(Query q, ResultIterator it) {
+    public void nextRows(Query q, ResultIterator it) {
         throw new CayenneRuntimeException("Invalid attempt to fetch a cursor.");
     }
 
-    public void nextGeneratedDataRows(Query query, ResultIterator keysIterator) {
+    public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
         if (keysIterator != null) {
             try {
-                nextDataRows(query, (List<DataRow>) keysIterator.allRows());
+                nextRows(query, keysIterator.allRows());
             }
             catch (CayenneException ex) {
                 // don't throw here....

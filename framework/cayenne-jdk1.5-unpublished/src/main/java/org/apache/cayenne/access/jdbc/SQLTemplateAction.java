@@ -240,12 +240,12 @@ public class SQLTemplateAction implements SQLAction {
             QueryLogger.logSelectCount(resultRows.size(), System.currentTimeMillis()
                     - startTime);
 
-            callback.nextDataRows(query, resultRows);
+            callback.nextRows(query, resultRows);
         }
         else {
             try {
                 result.setClosingConnection(true);
-                callback.nextDataRows(query, it);
+                callback.nextRows(query, it);
             }
             catch (Exception ex) {
                 it.close();

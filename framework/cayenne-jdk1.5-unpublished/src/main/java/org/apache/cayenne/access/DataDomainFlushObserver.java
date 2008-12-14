@@ -54,7 +54,7 @@ class DataDomainFlushObserver implements OperationObserver {
      * 
      * @since 1.2
      */
-    public void nextGeneratedDataRows(Query query, ResultIterator keysIterator) {
+    public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
 
         // read and close the iterator before doing anything else
         List<DataRow> keys;
@@ -139,10 +139,10 @@ class DataDomainFlushObserver implements OperationObserver {
     public void nextCount(Query query, int resultCount) {
     }
 
-    public void nextDataRows(Query query, List<DataRow> dataRows) {
+    public void nextRows(Query query, List<?> dataRows) {
     }
 
-    public void nextDataRows(Query q, ResultIterator it) {
+    public void nextRows(Query q, ResultIterator it) {
         throw new UnsupportedOperationException(
                 "'nextDataRows(Query,ResultIterator)' is unsupported (and unexpected) on commit.");
     }

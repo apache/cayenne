@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
@@ -125,7 +124,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 
     class Observer implements OperationObserver {
 
-        List<List<DataRow>> results;
+        List<List<?>> results;
         List<Integer> counts;
         OperationObserver observer;
 
@@ -135,8 +134,8 @@ public class SQLServerProcedureAction extends ProcedureAction {
 
         void flushResults(Query query) {
             if (results != null) {
-                for (List<DataRow> result : results) {
-                    observer.nextDataRows(query, result);
+                for (List<?> result : results) {
+                    observer.nextRows(query, result);
                 }
                 results = null;
             }
@@ -163,26 +162,26 @@ public class SQLServerProcedureAction extends ProcedureAction {
             counts.add(Integer.valueOf(resultCount));
         }
 
-        public void nextDataRows(Query query, List<DataRow> dataRows) {
+        public void nextRows(Query query, List<?> dataRows) {
             // does not delegate to wrapped observer
             // but instead caches results locally.
             if (results == null) {
-                results = new ArrayList<List<DataRow>>();
+                results = new ArrayList<List<?>>();
             }
 
             results.add(dataRows);
         }
 
-        public void nextDataRows(Query q, ResultIterator it) {
-            observer.nextDataRows(q, it);
+        public void nextRows(Query q, ResultIterator it) {
+            observer.nextRows(q, it);
         }
 
         public void nextGlobalException(Exception ex) {
             observer.nextGlobalException(ex);
         }
 
-        public void nextGeneratedDataRows(Query query, ResultIterator keysIterator) {
-            observer.nextGeneratedDataRows(query, keysIterator);
+        public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
+            observer.nextGeneratedRows(query, keysIterator);
         }
 
         public void nextQueryException(Query query, Exception ex) {

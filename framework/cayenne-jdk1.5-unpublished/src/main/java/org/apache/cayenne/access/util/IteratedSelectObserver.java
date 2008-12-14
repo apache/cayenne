@@ -44,12 +44,12 @@ public class IteratedSelectObserver extends DefaultOperationObserver {
 	}
 
 	@Override
-    public void nextDataRows(Query query, List dataRows) {
+    public void nextRows(Query query, List<?> dataRows) {
 		throw new CayenneRuntimeException("Results unexpectedly returned as list.");
 	}
 
 	@Override
-    public void nextDataRows(Query q, ResultIterator it) {
+    public void nextRows(Query q, ResultIterator it) {
 	    // don't call super - it closes the iterator
 		resultIterator = it;
 	}

@@ -175,7 +175,7 @@ final class FlattenedArcKey {
         node.performQueries(Collections.singleton((Query) query), new DefaultOperationObserver() {
 
             @Override
-            public void nextDataRows(Query query, List dataRows) {
+            public void nextRows(Query query, List dataRows) {
                 result[0] = dataRows;
             }
         });

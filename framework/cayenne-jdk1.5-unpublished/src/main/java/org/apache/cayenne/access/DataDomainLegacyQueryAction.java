@@ -132,16 +132,16 @@ public class DataDomainLegacyQueryAction implements QueryRouter, OperationObserv
         callback.nextBatchCount(queryForExecutedQuery(query), resultCount);
     }
 
-    public void nextDataRows(Query query, List dataRows) {
-        callback.nextDataRows(queryForExecutedQuery(query), dataRows);
+    public void nextRows(Query query, List<?> dataRows) {
+        callback.nextRows(queryForExecutedQuery(query), dataRows);
     }
 
-    public void nextDataRows(Query q, ResultIterator it) {
-        callback.nextDataRows(queryForExecutedQuery(q), it);
+    public void nextRows(Query q, ResultIterator it) {
+        callback.nextRows(queryForExecutedQuery(q), it);
     }
 
-    public void nextGeneratedDataRows(Query query, ResultIterator keysIterator) {
-        callback.nextGeneratedDataRows(queryForExecutedQuery(query), keysIterator);
+    public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
+        callback.nextGeneratedRows(queryForExecutedQuery(query), keysIterator);
     }
 
     public void nextQueryException(Query query, Exception ex) {

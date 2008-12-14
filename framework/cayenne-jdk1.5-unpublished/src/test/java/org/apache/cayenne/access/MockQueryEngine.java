@@ -87,7 +87,7 @@ public class MockQueryEngine implements QueryEngine {
         Iterator it = queries.iterator();
         while (it.hasNext()) {
             Query query = (Query) it.next();
-            resultConsumer.nextDataRows(query, (List) results.get(query));
+            resultConsumer.nextRows(query, (List) results.get(query));
         }
     }
 

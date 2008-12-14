@@ -21,49 +21,47 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.query.Query;
 
 /**
- * Defines a set of callback methods that allow QueryEngine to pass back query results and
- * notify caller about exceptions.
- * 
- * @see org.apache.cayenne.access.QueryEngine
+ * Defines a set of callback methods that allow {@link QueryEngine} to pass back query
+ * results and notify caller about exceptions.
  */
-// TODO: need a name that better reflects the functionality,
-// e.g. OperationContext or QueryContext
 public interface OperationObserver extends OperationHints {
 
     /**
      * Callback method invoked after an updating query is executed.
      */
-    public void nextCount(Query query, int resultCount);
+    void nextCount(Query query, int resultCount);
 
     /**
      * Callback method invoked after a batch update is executed.
      */
-    public void nextBatchCount(Query query, int[] resultCount);
+    void nextBatchCount(Query query, int[] resultCount);
 
     /**
      * Callback method invoked for each processed ResultSet.
+     * 
+     * @since 3.0
      */
-    public void nextDataRows(Query query, List<DataRow> dataRows);
+    void nextRows(Query query, List<?> dataRows);
 
     /**
      * Callback method invoked for each opened ResultIterator. If this observer requested
      * results to be returned as a ResultIterator, this method is invoked instead of
-     * "nextDataRows(Query,List)". OperationObserver is responsible for closing the
-     * ResultIterators passed via this method.
+     * {@link #nextRows(Query, List)}.
+     * 
+     * @since 3.0
      */
-    public void nextDataRows(Query q, ResultIterator it);
+    void nextRows(Query q, ResultIterator it);
 
     /**
      * Callback method invoked after each batch of generated values is read during an
      * update.
      * 
-     * @since 1.2
+     * @since 3.0
      */
-    public void nextGeneratedDataRows(Query query, ResultIterator keysIterator);
+    void nextGeneratedRows(Query query, ResultIterator keysIterator);
 
     /**
      * Callback method invoked on exceptions that happen during an execution of a specific

@@ -300,6 +300,6 @@ public class BatchAction extends BaseSQLAction {
                 keyRowDescriptor,
                 query.getMetaData(getEntityResolver()));
 
-        observer.nextGeneratedDataRows(query, iterator);
+        observer.nextGeneratedRows(query, iterator);
     }
 }

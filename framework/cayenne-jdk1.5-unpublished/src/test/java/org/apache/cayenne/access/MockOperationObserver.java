@@ -52,7 +52,7 @@ public class MockOperationObserver implements OperationObserver {
         resultCounts.put(query, new Integer(resultCount));
     }
 
-    public void nextDataRows(Query query, List dataRows) {
+    public void nextRows(Query query, List<?> dataRows) {
         resultRows.put(query, dataRows);
     }
 
@@ -68,10 +68,10 @@ public class MockOperationObserver implements OperationObserver {
         throw new CayenneRuntimeException(ex);
     }
 
-    public void nextDataRows(Query q, ResultIterator it) {
+    public void nextRows(Query q, ResultIterator it) {
     }
 
-    public void nextGeneratedDataRows(Query query, ResultIterator keysIterator) {
+    public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
     }
 
     public boolean isIteratedResult() {

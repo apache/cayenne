@@ -23,7 +23,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -34,58 +33,57 @@ import org.apache.cayenne.query.SQLAction;
  * 
  * @since 1.2
  */
-class DataNodeQueryAction implements OperationObserver {
+class DataNodeQueryAction {
 
     OperationObserver observer;
     DataNode node;
-
-    private Query currentQuery;
 
     public DataNodeQueryAction(DataNode node, OperationObserver observer) {
         this.observer = observer;
         this.node = node;
     }
 
-    public void runQuery(Connection connection, Query query) throws SQLException,
-            Exception {
+    public void runQuery(Connection connection, final Query originalQuery)
+            throws SQLException, Exception {
 
-        // remember root query ... it will be used to map the results, even if SQLAction
-        // uses query substitute...
-        this.currentQuery = query;
+        // wrap to ensure that the result is mapped back to the original query, even if
+        // the underlying SQLAction uses query substitute...
+        OperationObserver wrapper = new OperationObserver() {
 
-        SQLAction action = node.getAdapter().getAction(query, node);
-        action.performAction(connection, this);
-    }
+            public void nextBatchCount(Query query, int[] resultCount) {
+                observer.nextBatchCount(originalQuery, resultCount);
+            }
 
-    public void nextBatchCount(Query query, int[] resultCount) {
-        observer.nextBatchCount(currentQuery, resultCount);
-    }
+            public void nextCount(Query query, int resultCount) {
+                observer.nextCount(originalQuery, resultCount);
+            }
 
-    public void nextCount(Query query, int resultCount) {
-        observer.nextCount(currentQuery, resultCount);
-    }
+            public void nextRows(Query query, List<?> dataRows) {
+                observer.nextRows(originalQuery, dataRows);
+            }
 
-    public void nextDataRows(Query query, List<DataRow> dataRows) {
-        observer.nextDataRows(currentQuery, dataRows);
-    }
+            public void nextRows(Query q, ResultIterator it) {
+                observer.nextRows(originalQuery, it);
+            }
 
-    public void nextDataRows(Query q, ResultIterator it) {
-        observer.nextDataRows(currentQuery, it);
-    }
+            public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
+                observer.nextGeneratedRows(originalQuery, keysIterator);
+            }
 
-    public void nextGeneratedDataRows(Query query, ResultIterator keysIterator) {
-        observer.nextGeneratedDataRows(currentQuery, keysIterator);
-    }
+            public void nextGlobalException(Exception ex) {
+                observer.nextGlobalException(ex);
+            }
 
-    public void nextGlobalException(Exception ex) {
-        observer.nextGlobalException(ex);
-    }
+            public void nextQueryException(Query query, Exception ex) {
+                observer.nextQueryException(originalQuery, ex);
+            }
 
-    public void nextQueryException(Query query, Exception ex) {
-        observer.nextQueryException(currentQuery, ex);
-    }
+            public boolean isIteratedResult() {
+                return observer.isIteratedResult();
+            }
+        };
 
-    public boolean isIteratedResult() {
-        return observer.isIteratedResult();
+        SQLAction action = node.getAdapter().getAction(originalQuery, node);
+        action.performAction(connection, wrapper);
     }
 }

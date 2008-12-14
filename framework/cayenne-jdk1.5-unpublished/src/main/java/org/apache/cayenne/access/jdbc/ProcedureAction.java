@@ -216,7 +216,7 @@ public class ProcedureAction extends BaseSQLAction {
         if (result != null && !result.isEmpty()) {
             // treat out parameters as a separate data row set
             QueryLogger.logSelectCount(1, System.currentTimeMillis() - t1);
-            delegate.nextDataRows(query, Collections.singletonList(result));
+            delegate.nextRows(query, Collections.singletonList(result));
         }
     }
 }

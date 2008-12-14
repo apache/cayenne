@@ -438,7 +438,7 @@ public class JdbcPkGenerator implements PkGenerator {
             return id.intValue();
         }
 
-        public void nextDataRows(Query query, List<DataRow> dataRows) {
+        public void nextRows(Query query, List<?> dataRows) {
 
             // process selected object, issue an update query
             if (dataRows == null || dataRows.size() == 0) {
@@ -451,7 +451,7 @@ public class JdbcPkGenerator implements PkGenerator {
                         "Error generating PK : too many rows for entity: " + entityName);
             }
 
-            DataRow lastPk = dataRows.get(0);
+            DataRow lastPk = (DataRow) dataRows.get(0);
             id = (Number) lastPk.get("NEXT_ID");
         }
 
@@ -467,10 +467,10 @@ public class JdbcPkGenerator implements PkGenerator {
         public void nextBatchCount(Query query, int[] resultCount) {
         }
 
-        public void nextGeneratedDataRows(Query query, ResultIterator keysIterator) {
+        public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
         }
 
-        public void nextDataRows(Query q, ResultIterator it) {
+        public void nextRows(Query q, ResultIterator it) {
         }
 
         public void nextQueryException(Query query, Exception ex) {

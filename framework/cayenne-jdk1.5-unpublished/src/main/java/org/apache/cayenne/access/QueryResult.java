@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ import org.apache.cayenne.util.Util;
  * QueryResult encapsulates a result of execution of zero or more queries using
  * QueryEngine. QueryResult supports queries with multiple mixed selects and updates, such
  * as ProcedureQueries.
- * 
  */
 public class QueryResult extends DefaultOperationObserver {
 
@@ -68,8 +66,7 @@ public class QueryResult extends DefaultOperationObserver {
     }
 
     /**
-     * Returns the first update count for the query. This is a shortcut for
-     * <code>(Integer)getUpdates(query).get(0)<code>, kind of like Google's "I'm feeling lucky".
+     * Returns the first update count for the query. This is a shortcut for <code>(Integer)getUpdates(query).get(0)<code>, kind of like Google's "I'm feeling lucky".
      * Returns -1 if no update count is found for the query.
      */
     public int getFirstUpdateCount(Query query) {
@@ -126,8 +123,7 @@ public class QueryResult extends DefaultOperationObserver {
     }
 
     /**
-     * Returns the first results for the query. This is a shortcut for
-     * <code>(List)getRows(query).get(0)<code>, kind of like Google's "I'm feeling lucky".
+     * Returns the first results for the query. This is a shortcut for <code>(List)getRows(query).get(0)<code>, kind of like Google's "I'm feeling lucky".
      */
     public List getFirstRows(Query query) {
         List allResults = getResults(query);
@@ -151,7 +147,7 @@ public class QueryResult extends DefaultOperationObserver {
      * by the query. ResultSets are returned in the oder they were obtained. Any updates
      * that were performed are not included.
      */
-    public List getRows(Query query) {
+    public List<?> getRows(Query query) {
         List allResults = getResults(query);
         int size = allResults.size();
         if (size == 0) {
@@ -249,8 +245,8 @@ public class QueryResult extends DefaultOperationObserver {
     }
 
     @Override
-    public void nextDataRows(Query query, List dataRows) {
-        super.nextDataRows(query, dataRows);
+    public void nextRows(Query query, List<?> dataRows) {
+        super.nextRows(query, dataRows);
 
         List list = (List) queries.get(query);
         if (list == null) {
@@ -262,7 +258,7 @@ public class QueryResult extends DefaultOperationObserver {
     }
 
     @Override
-    public void nextDataRows(Query q, ResultIterator it) {
+    public void nextRows(Query q, ResultIterator it) {
         throw new CayenneRuntimeException("Iterated results are not supported by "
                 + this.getClass().getName());
     }

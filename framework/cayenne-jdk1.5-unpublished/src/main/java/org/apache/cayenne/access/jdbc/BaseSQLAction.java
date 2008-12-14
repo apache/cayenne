@@ -86,12 +86,12 @@ public abstract class BaseSQLAction implements SQLAction {
             QueryLogger
                     .logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 
-            delegate.nextDataRows(query, resultRows);
+            delegate.nextRows(query, resultRows);
         }
         else {
             try {
                 resultReader.setClosingConnection(true);
-                delegate.nextDataRows(query, it);
+                delegate.nextRows(query, it);
             }
             catch (Exception ex) {
 
