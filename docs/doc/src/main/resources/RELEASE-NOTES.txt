@@ -26,7 +26,7 @@ CAY-1144 EJBQL mixed GROUP BY clause is generated incorrectly
 
 ----------------------------------
 Release: 3.0M5
-Date: 
+Date: 15 Dec 2008
 ----------------------------------
 
 Changes/New Features Since M4:
@@ -90,7 +90,7 @@ CAY-1129 ROP: CayenneContext does not unregister deleted nodes
 
 ----------------------------------
 Release: 3.0M4
-Date: 05/29/2008
+Date: 29 May 2008
 ----------------------------------
 
 Changes/New Features Since M3:
@@ -150,7 +150,7 @@ CAY-1054 Error removing object from a paginated list after the object was delete
 
 ----------------------------------
 Release: 3.0M3
-Date: 02/04/2008
+Date: 04 Feb 2008
 ----------------------------------
 
 Changes/New Features Since M2:
@@ -200,7 +200,7 @@ CAY-976 EntityResolver Fault dependency leads to ClassNotFound on the ROP client
 
 ----------------------------------
 Release: 3.0M2
-Date: 11/11/2007
+Date: 11 Nov 2007
 ----------------------------------
 
 Changes/New Features Since M1:
@@ -253,7 +253,7 @@ CAY-901 Cannot set more than one to-one relationship to null.
 
 ----------------------------------
 Release: 3.0M1
-Date: 07/17/2007
+Date: 17 Jul 2007
 ----------------------------------
 
 Changes/New Features:
