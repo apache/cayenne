@@ -20,8 +20,8 @@ package org.apache.cayenne.modeler.util;
 
 import java.util.Locale;
 
-import org.apache.cayenne.access.reveng.BasicNamingStrategy;
-import org.apache.cayenne.access.reveng.ExportedKey;
+import org.apache.cayenne.map.naming.BasicNamingStrategy;
+import org.apache.cayenne.map.naming.ExportedKey;
 import org.apache.cayenne.util.NameConverter;
 import org.jvnet.inflector.Noun;
 

@@ -20,10 +20,10 @@ package org.apache.cayenne.modeler.util;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.access.reveng.ExportedKey;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.naming.ExportedKey;
 
 public class SmartNamingStrategyTest extends TestCase {
     public void testStrategy() throws Exception {

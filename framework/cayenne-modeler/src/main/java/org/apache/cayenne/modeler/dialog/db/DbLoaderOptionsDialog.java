@@ -40,7 +40,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.reveng.NamingStrategy;
+import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ModelerPreferences;
@@ -67,7 +67,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
      */
     private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
     static {
-        PREDEFINED_STRATEGIES.add("org.apache.cayenne.access.reveng.BasicNamingStrategy");
+        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.BasicNamingStrategy");
         PREDEFINED_STRATEGIES.add("org.apache.cayenne.modeler.util.SmartNamingStrategy");
     };
 
