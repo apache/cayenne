@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.access.reveng.BasicNamingStrategy;
-import org.apache.cayenne.access.reveng.NamingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -36,6 +34,8 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.naming.BasicNamingStrategy;
+import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.project.NamedObjectFactory;
 
 /**

@@ -16,13 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.reveng;
+package org.apache.cayenne.map.naming;
 
 import junit.framework.TestCase;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.naming.BasicNamingStrategy;
+import org.apache.cayenne.map.naming.ExportedKey;
 
 public class BasicNamingStrategyTest extends TestCase {
     public void testStrategy() throws Exception {
