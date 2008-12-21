@@ -1,6 +1,11 @@
 Apache Cayenne Upgrade Information
 ==================================
 
+UPGRADING FROM 3.0M5
+
+* Per CAY-1154, org.apache.cayenne.access.reveng package was renamed to org.apache.cayenne.map.naming. So, if you
+  use your own naming strategies, you should update as well.
+
 UPGRADING FROM 3.0M4
 
 * Per CAY-1127, query "name" property is no longer used as an internal cache key. This change should be transparent

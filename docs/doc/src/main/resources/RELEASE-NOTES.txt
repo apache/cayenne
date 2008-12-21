@@ -19,6 +19,7 @@ CAY-1142 (Single table) Inheritance and Paginated lists
 CAY-1146 Move User properties API to ObjectContext & BaseContext
 CAY-1147 Remove id reading functionality from ResultIterator
 CAY-1153 MySQL : Enable views during reverse engineering
+CAY-1154 Rename .access.reveng package to .map.naming
 
 BugFixes Since M5:
 
