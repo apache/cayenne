@@ -151,7 +151,7 @@ public class AdapterMapping {
                 "com.openbase.jdbc.ObDriver");
         adapterToJDBCDriverMap.put(
                 SQLServerAdapter.class.getName(),
-                "com.microsoft.jdbc.sqlserver.SQLServerDriver");
+                "com.microsoft.sqlserver.jdbc.SQLServerDriver");
         adapterToJDBCDriverMap.put(
                 DerbyAdapter.class.getName(),
                 "org.apache.derby.jdbc.EmbeddedDriver");
