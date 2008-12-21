@@ -183,15 +183,6 @@ public class MySQLAdapter extends JdbcAdapter {
     }
 
     /**
-     * Returns null, since views are not yet supported in MySQL. Views are available on
-     * newer versions of MySQL.
-     */
-    @Override
-    public String tableTypeForView() {
-        return null;
-    }
-
-    /**
      * Creates and returns a primary key generator. Overrides superclass implementation to
      * return an instance of MySQLPkGenerator that does the correct table locking.
      */

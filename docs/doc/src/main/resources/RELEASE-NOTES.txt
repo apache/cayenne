@@ -18,6 +18,7 @@ CAY-1140 Store ObjEntity name in the DataRow
 CAY-1142 (Single table) Inheritance and Paginated lists 
 CAY-1146 Move User properties API to ObjectContext & BaseContext
 CAY-1147 Remove id reading functionality from ResultIterator
+CAY-1153 MySQL : Enable views during reverse engineering
 
 BugFixes Since M5:
 
