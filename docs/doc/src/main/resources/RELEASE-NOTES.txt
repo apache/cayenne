@@ -20,6 +20,7 @@ CAY-1146 Move User properties API to ObjectContext & BaseContext
 CAY-1147 Remove id reading functionality from ResultIterator
 CAY-1153 MySQL : Enable views during reverse engineering
 CAY-1154 Rename .access.reveng package to .map.naming
+CAY-1156 Modeler search improvement
 
 BugFixes Since M5:
 
