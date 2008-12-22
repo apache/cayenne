@@ -24,16 +24,32 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.tree.TreePath;
 
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ProjectTreeModel;
 import org.apache.cayenne.modeler.dialog.FindDialog;
+import org.apache.cayenne.modeler.dialog.FindDialogView;
+import org.apache.cayenne.modeler.editor.EditorView;
+import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project.ProjectPath;
 
 public class FindAction extends CayenneAction {
@@ -61,7 +77,7 @@ public class FindAction extends CayenneAction {
             Iterator it = getProjectController().getProject().treeNodes();
             while(it.hasNext()) {
                 ProjectPath path = (ProjectPath) it.next();
-
+                
                 Object o = path.getObject();
                 if ((o instanceof ObjEntity || o instanceof DbEntity) && matchFound(((Entity) o).getName(), pattern))
                     paths.add(path.getPath());
@@ -71,10 +87,19 @@ public class FindAction extends CayenneAction {
                     paths.add(path.getPath());
             }
         }
-
-        source.setText("");
-
-        new FindDialog(getApplication().getFrameController(), paths).startupAction();
+     
+        if(paths.size()!=1){
+            new FindDialog(getApplication().getFrameController(), paths).startupAction();
+        } else {
+            
+            Iterator it = paths.iterator();
+            int index = 0;
+            if (it.hasNext()) {
+                Object[] path = (Object[]) it.next();
+                EditorView editor =  ((CayenneModelerFrame) getApplication().getFrameController().getView()).getView();
+                FindDialog.jumpToResult(path, editor);
+            }   
+        }
     }
 
     private boolean matchFound(String entityName, Pattern pattern) {
@@ -82,4 +107,5 @@ public class FindAction extends CayenneAction {
 
         return m.find();
     }
+
 }
