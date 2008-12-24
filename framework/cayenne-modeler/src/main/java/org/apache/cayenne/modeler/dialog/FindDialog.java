@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.ColorModel;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -88,11 +87,14 @@ public class FindDialog extends CayenneController {
             }
 
             if (path[path.length - 1] instanceof Attribute) {
-                attrNames.put(new Integer(index++), ((Attribute) path[path.length - 1]).getName());
+                Object parentObject = ((Attribute) path[path.length - 1]).getParent(); 
+                attrNames.put(new Integer(index++), getParentName(path, parentObject) +"."+ ((Attribute) path[path.length - 1]).getName());
+           
             }
 
             if (path[path.length - 1] instanceof Relationship) {
-                relatNames.put(new Integer(index++), ((Relationship) path[path.length - 1]).getName());
+                Object parentObject = ((Relationship) path[path.length - 1]).getParent(); 
+                relatNames.put(new Integer(index++), getParentName(path, parentObject) +"."+ ((Relationship) path[path.length - 1]).getName());                
             }
         }
 
@@ -136,12 +138,10 @@ public class FindDialog extends CayenneController {
             b.addKeyListener(new JumpToResultsKeyListener());  
             EntityButtonsIdListAndButtonId.put(((FindDialogView.EntityButtonModel) b.getModel()).getIndex().intValue(), idEntityButtons);
             idEntityButtons++;
-        }
-        
+        }        
         if (view.getEntityButtons().size() > 0) {
             selectedButton = 0;
-            ((JButton) view.getEntityButtons().get(selectedButton)).setFont(fontSelected);
-            
+            ((JButton) view.getEntityButtons().get(selectedButton)).setFont(fontSelected);            
         }
     }
 
@@ -227,17 +227,41 @@ public class FindDialog extends CayenneController {
                 .getFrameController().getView()).getView();
         
         public void keyPressed(KeyEvent e) { 
-            
+            if (e.getKeyCode() == KeyEvent.VK_PAGE_UP) {
+                if (view.getEntityButtons().size() > 0 && selectedButton - 1 >= 0) {
+                    if(selectedButton - 13 >= 0){
+                        setSelectedButton(selectedButton-13);
+                    } else {
+                        setSelectedButton(0);
+                    }
+               }
+            }
+            if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN) {
+                    if (view.getEntityButtons().size() > 0 && selectedButton + 2 <= view.getEntityButtons().size()) {
+                    if(selectedButton + 14 <= view.getEntityButtons().size()) {   
+                        setSelectedButton(selectedButton+13);
+                    } else {
+                        setSelectedButton(view.getEntityButtons().size()-1); 
+                    }
+               }
+            }
             if (e.getKeyCode() == KeyEvent.VK_UP) {
                 if (view.getEntityButtons().size() > 0 && selectedButton - 1 >= 0) {
                     setSelectedButton(selectedButton-1);
-                  }
+               }
             }
             if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     if (view.getEntityButtons().size() > 0 && selectedButton + 2 <= view.getEntityButtons().size()) {
                     setSelectedButton(selectedButton+1);
-                }
+               }
             }
+            if (e.getKeyCode() == KeyEvent.VK_HOME) {
+                setSelectedButton(0);               
+            }
+            if (e.getKeyCode() == KeyEvent.VK_END) {
+                setSelectedButton(view.getEntityButtons().size()-1);
+            }
+            
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 JButton source = (JButton) view.getEntityButtons().get(selectedButton);
                 
@@ -253,7 +277,6 @@ public class FindDialog extends CayenneController {
 
         public void keyTyped(KeyEvent e) {
         }
-
     }
 
     private class JumpToResultActionListener implements ActionListener {
@@ -294,9 +317,24 @@ public class FindDialog extends CayenneController {
     }
     
     private void setSelectedButton(Integer newSelectedButton) {
-        ((JButton) view.getEntityButtons().get(selectedButton)).setFont(font);
+        ((JButton) view.getEntityButtons().get(selectedButton)).setFont(font);        
         selectedButton = newSelectedButton;
-        ((JButton) view.getEntityButtons().get(selectedButton)).setFont(fontSelected);
+        FindDialogView.scrollPaneToPosition((selectedButton)*((JButton) view.getEntityButtons().get(selectedButton)).getHeight());        
+        ((JButton) view.getEntityButtons().get(selectedButton)).setFont(fontSelected);       
     }    
+    
+    private String getParentName(Object[] path, Object  parentObject) {
+        String nameParent = null;
+        
+        if(parentObject  instanceof ObjEntity){
+            ObjEntity objEntity = (ObjEntity)parentObject;
+            nameParent = objEntity.getName();
+        }
+        if(parentObject  instanceof DbEntity){
+            DbEntity dbEntity = (DbEntity)parentObject;
+            nameParent = dbEntity.getName();                    
+        }
+        return nameParent;
+    }  
 
 }

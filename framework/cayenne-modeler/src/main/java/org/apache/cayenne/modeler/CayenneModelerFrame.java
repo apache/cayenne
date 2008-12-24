@@ -22,12 +22,14 @@ package org.apache.cayenne.modeler;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.List;
 import java.util.Vector;
 
@@ -365,18 +367,40 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         JPanel east = new JPanel(new BorderLayout());   // is used to place search feature components the most right on a toolbar  
         final JTextField findField = new JTextField(10);
+        findField.addKeyListener(new KeyListener(){
+
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() != KeyEvent.VK_ENTER){
+                     findField.setBackground(Color.white);
+                }
+            }
+
+            public void keyReleased(KeyEvent e) {
+            }
+
+            public void keyTyped(KeyEvent e) {
+            }
+            
+        });
         findField.setAction(getAction(FindAction.getActionName()));
         JLabel findLabel = new JLabel("Search:");
         findLabel.setLabelFor(findField);
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
             public void eventDispatched(AWTEvent event) {
+               
+                
                 if (event instanceof KeyEvent) {
-                    if (((KeyEvent) event).getModifiers() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
-                            && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F)
-                                findField.requestFocus();
-                }
-            }
+                   
+                   if (((KeyEvent) event).getModifiers() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+                            && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F){                               
+                               findField.requestFocus();                               
+                   }                    
+                }                      
+            }    
+            
         }, AWTEvent.KEY_EVENT_MASK);
+        
+        
         JPanel box = new JPanel();  // is used to place label and text field one after another
         box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
         box.add(findLabel);

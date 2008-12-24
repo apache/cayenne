@@ -36,6 +36,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.cayenne.map.DbEntity;
@@ -51,6 +52,7 @@ public class FindDialogView extends JDialog {
 
     private JButton okButton;
     private java.util.List entityButtons;
+    private static JScrollPane scrollPane;
 
     public FindDialogView(Map objEntityNames, Map dbEntityNames, Map attrNames,
             Map relatNames) {
@@ -82,12 +84,15 @@ public class FindDialogView extends JDialog {
             JComponent contentPane = (JComponent) getContentPane();
             
             contentPane.setLayout(new BorderLayout());
-            contentPane.add(new JScrollPane(
+            
+            scrollPane = new JScrollPane(
                     panel,
                     JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                    JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+                    JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            
+            contentPane.add(scrollPane);
             contentPane.add(okPanel, BorderLayout.SOUTH);
-
+            
             contentPane.setPreferredSize(new Dimension(400, 325));            
             setTitle("Search results"); 
     }
@@ -131,4 +136,34 @@ public class FindDialogView extends JDialog {
             return index;
         }
     }
+
+    
+    public static void scrollPaneToBottom() {
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                scrollPane.getVerticalScrollBar().setValue(
+                        scrollPane.getVerticalScrollBar().getMaximum());
+            }
+        });
+    }
+    
+    public static void scrollPaneToUp() {
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                scrollPane.getVerticalScrollBar().setValue(
+                        scrollPane.getVerticalScrollBar().getMinimum());
+            }
+        });
+    }
+  
+    public static void scrollPaneToPosition(final int position) {
+      
+      SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+              scrollPane.getVerticalScrollBar().setValue(position);
+          }
+      });
+   }
 }

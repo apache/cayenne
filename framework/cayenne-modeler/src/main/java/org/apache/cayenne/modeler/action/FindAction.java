@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,13 +42,8 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
-import org.apache.cayenne.modeler.ProjectTreeModel;
 import org.apache.cayenne.modeler.dialog.FindDialog;
-import org.apache.cayenne.modeler.dialog.FindDialogView;
 import org.apache.cayenne.modeler.editor.EditorView;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project.ProjectPath;
@@ -88,10 +84,12 @@ public class FindAction extends CayenneAction {
             }
         }
      
-        if(paths.size()!=1){
+        if(paths.size()==0){
+            source.setBackground(Color.pink);
+        } else if(paths.size()!=1){
             new FindDialog(getApplication().getFrameController(), paths).startupAction();
         } else {
-            
+           
             Iterator it = paths.iterator();
             int index = 0;
             if (it.hasNext()) {
