@@ -34,4 +34,10 @@ public interface RowReader<T> {
      * Extracts a DataRow from the ResultSet at its current position.
      */
     T readRow(ResultSet resultSet) throws CayenneException;
+
+    /**
+     * Sets an absolute offset of the first column processed by the reader from the
+     * begginging of the result set row.
+     */
+    void setColumnOffset(int offset);
 }

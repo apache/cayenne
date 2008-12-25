@@ -31,19 +31,14 @@ import org.apache.cayenne.map.DbRelationship;
  * 
  * @since 3.0
  */
-class ScalarSegment implements SelectSegment, SelectColumn {
+class ScalarSegment implements SelectDescriptor<Object>, SelectColumn {
 
     private String columnName;
-    private ExtendedType converter;
     private RowReader<Object> rowReader;
 
     ScalarSegment(String columnName, ExtendedType converter) {
         this.columnName = columnName;
-        this.converter = converter;
-    }
-
-    private RowReader<Object> createRowReader(int offset) {
-        return new ScalarRowReader(converter, offset + 1);
+        this.rowReader = new ScalarRowReader(converter, TypesMapping.NOT_DEFINED);
     }
 
     public List<SelectColumn> getColumns() {
@@ -51,16 +46,7 @@ class ScalarSegment implements SelectSegment, SelectColumn {
     }
 
     public RowReader<Object> getRowReader(ResultSet resultSet) {
-
-        if (rowReader == null) {
-            rowReader = createRowReader(0);
-        }
-
         return rowReader;
-    }
-
-    public void setColumnOffset(int offset) {
-        this.rowReader = createRowReader(offset);
     }
 
     public String getColumnName(int unionSegmentIndex, String tableAlias) {
@@ -77,11 +63,11 @@ class ScalarSegment implements SelectSegment, SelectColumn {
 
     public String getDataRowKey() {
         throw new UnsupportedOperationException(
-                "'dataRowKey' is meaningless for Scalar columns");
+                "'dataRowKey' is meaningless for Scalar segments");
     }
 
     public List<DbRelationship> getPath(int unionSegmentIndex) {
         throw new UnsupportedOperationException(
-                "'dataRowKey' is unsupported for Scalar columns");
+                "'getPath' is unsupported for Scalar segments");
     }
 }

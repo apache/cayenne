@@ -29,15 +29,15 @@ import org.apache.cayenne.CayenneException;
  */
 class CompoundSelectDescriptor implements SelectDescriptor<Object[]> {
 
-    private SelectSegment[] segments;
+    private SelectDescriptor<Object>[] segments;
     private CompoundRowReader rowReader;
     private List<SelectColumn> columns;
 
     CompoundSelectDescriptor(int width) {
-        this.segments = new SelectSegment[width];
+        this.segments = new SelectDescriptor[width];
     }
 
-    void append(int position, SelectSegment segmentDescriptor) {
+    void append(int position, SelectDescriptor<Object> segmentDescriptor) {
         segments[position] = segmentDescriptor;
     }
 
@@ -60,9 +60,13 @@ class CompoundSelectDescriptor implements SelectDescriptor<Object[]> {
 
         // finish descriptor initialization
         for (int i = 0; i < segments.length; i++) {
-            segments[i].setColumnOffset(columns.size());
+
+            int offset = columns.size();
             columns.addAll(segments[i].getColumns());
-            rowReader.addRowReader(i, segments[i].getRowReader(resultSet));
+
+            RowReader<Object> rowReader = segments[i].getRowReader(resultSet);
+            rowReader.setColumnOffset(offset);
+            this.rowReader.addRowReader(i, rowReader);
         }
     }
 }

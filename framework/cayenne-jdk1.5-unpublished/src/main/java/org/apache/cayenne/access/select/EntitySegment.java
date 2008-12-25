@@ -26,19 +26,14 @@ import org.apache.cayenne.CayenneException;
 /**
  * @since 3.0
  */
-class EntitySegment implements SelectSegment {
+class EntitySegment implements SelectDescriptor<Object> {
 
     private List<? extends SelectColumn> columns;
-    private EntityRowReader rowReader;
+    private RowReader<Object> rowReader;
 
-    EntitySegment(EntityRowReader rowReader, List<? extends SelectColumn> columns) {
+    EntitySegment(RowReader<Object> rowReader, List<? extends SelectColumn> columns) {
         this.columns = columns;
         this.rowReader = rowReader;
-    }
-
-    public void setColumnOffset(int offset) {
-        rowReader.setColumnOffset(offset);
-
     }
 
     public List<? extends SelectColumn> getColumns() {

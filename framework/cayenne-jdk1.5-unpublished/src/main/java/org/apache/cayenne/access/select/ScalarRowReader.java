@@ -22,7 +22,6 @@ import java.sql.ResultSet;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -32,16 +31,21 @@ class ScalarRowReader implements RowReader<Object> {
 
     private ExtendedType converter;
     private int index;
+    private int jdbcType;
 
-    ScalarRowReader(ExtendedType converter, int index) {
+    ScalarRowReader(ExtendedType converter, int jdbcType) {
         this.converter = converter;
-        this.index = index;
+        this.index = 1;
+        this.jdbcType = jdbcType;
+    }
+    
+    public void setColumnOffset(int offset) {
+        this.index = offset + 1;
     }
 
     public Object readRow(ResultSet resultSet) throws CayenneException {
         try {
-            return converter
-                    .materializeObject(resultSet, index, TypesMapping.NOT_DEFINED);
+            return converter.materializeObject(resultSet, index, jdbcType);
         }
         catch (CayenneException cex) {
             // rethrow unmodified

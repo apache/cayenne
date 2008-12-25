@@ -36,7 +36,7 @@ class ScalarSegmentBuilder {
         this.metadata = metadata;
     }
 
-    SelectSegment getSegment(int position) {
+    SelectDescriptor<Object> getSegment(int position) {
         ScalarResultSegment segment = metadata.getScalarSegment(position);
         return new ScalarSegment(segment.getColumn(), converter);
     }

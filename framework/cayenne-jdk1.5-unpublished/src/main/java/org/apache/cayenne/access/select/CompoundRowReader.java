@@ -39,6 +39,12 @@ class CompoundRowReader implements RowReader<Object[]> {
         this.readers[pos] = reader;
     }
 
+    public void setColumnOffset(int offset) {
+        for (int i = 0; i < readers.length; i++) {
+            readers[i].setColumnOffset(offset);
+        }
+    }
+
     public Object[] readRow(ResultSet resultSet) throws CayenneException {
 
         int width = readers.length;

@@ -57,7 +57,7 @@ class EntityRowReader implements RowReader<Object> {
         }
     }
 
-    void setColumnOffset(int offset) {
+    public void setColumnOffset(int offset) {
         for (int i = 0; i < columnIndexes.length; i++) {
             columnIndexes[i] = i + offset + 1;
         }

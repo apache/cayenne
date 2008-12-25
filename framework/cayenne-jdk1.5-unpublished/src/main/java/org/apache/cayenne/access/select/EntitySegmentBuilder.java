@@ -51,7 +51,7 @@ class EntitySegmentBuilder {
         this.metadata = metadata;
     }
 
-    SelectSegment getSegment(int position) {
+    SelectDescriptor<Object> getSegment(int position) {
 
         ClassDescriptor rootDescriptor;
         EntityResultSegment segmentMetadata;
@@ -81,7 +81,7 @@ class EntitySegmentBuilder {
         return forEntity(rootDescriptor, segmentMetadata);
     }
 
-    private SelectSegment forEntity(
+    private SelectDescriptor<Object> forEntity(
             ClassDescriptor rootDescriptor,
             EntityResultSegment segmentMetadata) {
 
@@ -97,7 +97,7 @@ class EntitySegmentBuilder {
 
     }
 
-    private SelectSegment forSingleSelectEntity(
+    private SelectDescriptor<Object> forSingleSelectEntity(
             ClassDescriptor rootDescriptor,
             EntityResultSegment segmentMetadata,
             DbEntity root) {
@@ -111,14 +111,22 @@ class EntitySegmentBuilder {
             appender.appendAll();
         }
 
-        EntityRowReader rowReader = new EntityRowReader(rootDescriptor
-                .getEntity()
-                .getName(), appender.columns);
+        RowReader<Object> rowReader;
+        // read single column ID as scalar
+        if (metadata.getPageSize() > 0 && appender.columns.size() == 1) {
+            EntitySelectColumn column = appender.columns.get(0);
+            rowReader = new ScalarRowReader(column.getConverter(), column.getJdbcType());
+        }
+        else {
+            rowReader = new EntityRowReader(
+                    rootDescriptor.getEntity().getName(),
+                    appender.columns);
+        }
 
         return new EntitySegment(rowReader, appender.columns);
     }
 
-    private SelectSegment forUnionSelectEntity(
+    private SelectDescriptor<Object> forUnionSelectEntity(
             ClassDescriptor rootDescriptor,
             EntityResultSegment segmentMetadata,
             Collection<DbEntity> unionRoots) {
@@ -126,7 +134,7 @@ class EntitySegmentBuilder {
         throw new UnsupportedOperationException("TODO: union query");
     }
 
-    private SelectSegment forDbEntity(
+    private SelectDescriptor<Object> forDbEntity(
             DbEntity dbEntity,
             EntityResultSegment segmentMetadata) {
         // TODO - queries with DbEntity root
