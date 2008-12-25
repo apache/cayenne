@@ -22,11 +22,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.util.ToStringBuilder;
 
 /**
@@ -45,7 +44,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         this.descriptorMap = descriptorMap;
         this.entityName = entityName;
     }
-    
+
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("entity", entityName).toString();
@@ -89,15 +88,10 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         checkDescriptorInitialized();
         return descriptor.getRootDbEntities();
     }
-    
+
     public EntityInheritanceTree getEntityInheritanceTree() {
         checkDescriptorInitialized();
         return descriptor.getEntityInheritanceTree();
-    }
-
-    public EntityResultSegment getEntityResultMetadata() {
-        checkDescriptorInitialized();
-        return descriptor.getEntityResultMetadata();
     }
 
     public Class<?> getObjectClass() {
@@ -130,7 +124,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         return descriptor.getIdProperties();
     }
 
-    public Iterator<DbAttribute> getDiscriminatorColumns() {
+    public Iterator<ObjAttribute> getDiscriminatorColumns() {
         checkDescriptorInitialized();
         return descriptor.getDiscriminatorColumns();
     }

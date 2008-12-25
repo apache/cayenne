@@ -144,9 +144,11 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
         }
 
         // append inheritance discriminator columns...
-        Iterator<DbAttribute> discriminatorColumns = descriptor.getDiscriminatorColumns();
+        Iterator<ObjAttribute> discriminatorColumns = descriptor.getDiscriminatorColumns();
         while (discriminatorColumns.hasNext()) {
-            appendColumn(idVar, null, discriminatorColumns.next(), fields);
+            
+            ObjAttribute attribute = discriminatorColumns.next();
+            appendColumn(idVar, attribute, attribute.getDbAttribute(), fields);
         }
 
         return false;

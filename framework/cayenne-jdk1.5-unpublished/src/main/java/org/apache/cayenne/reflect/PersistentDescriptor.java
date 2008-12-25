@@ -28,13 +28,11 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.commons.collections.IteratorUtils;
 
 /**
@@ -59,7 +57,6 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     protected ObjEntity entity;
     protected Collection<DbEntity> rootDbEntities;
-    protected EntityResultSegment entityResultMetadata;
     protected EntityInheritanceTree entityInheritanceTree;
 
     // combines declared and super properties
@@ -69,7 +66,7 @@ public class PersistentDescriptor implements ClassDescriptor {
     protected Collection<ArcProperty> mapArcProperties;
 
     // inheritance information
-    protected Collection<DbAttribute> allDiscriminatorColumns;
+    protected Collection<ObjAttribute> allDiscriminatorColumns;
     protected Expression entityQualifier;
 
     /**
@@ -84,12 +81,12 @@ public class PersistentDescriptor implements ClassDescriptor {
         this.rootDbEntities = new HashSet<DbEntity>(1);
     }
 
-    public void setDiscriminatorColumns(Collection<DbAttribute> columns) {
+    public void setDiscriminatorColumns(Collection<ObjAttribute> columns) {
         if (columns == null || columns.isEmpty()) {
             allDiscriminatorColumns = null;
         }
         else {
-            allDiscriminatorColumns = new ArrayList<DbAttribute>(columns);
+            allDiscriminatorColumns = new ArrayList<ObjAttribute>(columns);
         }
     }
 
@@ -181,14 +178,6 @@ public class PersistentDescriptor implements ClassDescriptor {
         return rootDbEntities;
     }
 
-    public EntityResultSegment getEntityResultMetadata() {
-        return entityResultMetadata;
-    }
-
-    public void setEntityResultMetadata(EntityResultSegment entityResultMetadata) {
-        this.entityResultMetadata = entityResultMetadata;
-    }
-
     public boolean isFault(Object object) {
         if (superclassDescriptor != null) {
             return superclassDescriptor.isFault(object);
@@ -251,7 +240,7 @@ public class PersistentDescriptor implements ClassDescriptor {
         }
     }
 
-    public Iterator<DbAttribute> getDiscriminatorColumns() {
+    public Iterator<ObjAttribute> getDiscriminatorColumns() {
         return allDiscriminatorColumns != null
                 ? allDiscriminatorColumns.iterator()
                 : IteratorUtils.EMPTY_ITERATOR;

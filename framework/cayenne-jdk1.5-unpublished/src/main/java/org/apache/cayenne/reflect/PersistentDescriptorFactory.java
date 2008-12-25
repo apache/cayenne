@@ -19,17 +19,15 @@
 package org.apache.cayenne.reflect;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHelper;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
@@ -134,7 +132,6 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         indexRootDbEntities(descriptor, inheritanceTree);
 
         indexSuperclassProperties(descriptor);
-        indexEntityResultMetadata(descriptor);
 
         return descriptor;
     }
@@ -266,7 +263,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
 
         if (qualifier != null) {
 
-            final Set<DbAttribute> attributes = new HashSet<DbAttribute>();
+            final Set<ObjAttribute> attributes = new HashSet<ObjAttribute>();
             final DbEntity dbEntity = descriptor.getEntity().getDbEntity();
 
             qualifier.traverse(new TraversalHelper() {
@@ -275,10 +272,40 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 public void startNode(Expression node, Expression parentNode) {
                     if (node.getType() == Expression.DB_PATH) {
                         String path = node.getOperand(0).toString();
-                        DbAttribute attribute = (DbAttribute) dbEntity.getAttribute(path);
+                        final DbAttribute attribute = (DbAttribute) dbEntity
+                                .getAttribute(path);
                         if (attribute != null) {
-                            attributes.add(attribute);
+
+                            ObjAttribute objectAttribute = descriptor
+                                    .getEntity()
+                                    .getAttributeForDbAttribute(attribute);
+
+                            if (objectAttribute == null) {
+                                objectAttribute = new ObjAttribute(attribute.getName()) {
+
+                                    @Override
+                                    public DbAttribute getDbAttribute() {
+                                        return attribute;
+                                    }
+                                };
+
+                                // we semi-officially DO NOT support inheritance
+                                // descriptors based on related entities, so here we
+                                // assume that DbAttribute is rooted in the root
+                                // DbEntity, and no relationship is involved.
+                                objectAttribute.setDbAttributePath(attribute.getName());
+                                objectAttribute.setType(TypesMapping
+                                        .getJavaBySqlType(attribute.getType()));
+                            }
+
+                            attributes.add(objectAttribute);
                         }
+                    }
+                    else if (node.getType() == Expression.OBJ_PATH) {
+                        String path = node.getOperand(0).toString();
+                        attributes.add((ObjAttribute) descriptor
+                                .getEntity()
+                                .getAttribute(path));
                     }
                 }
             });
@@ -316,71 +343,6 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 }
             });
         }
-    }
-
-    protected void indexEntityResultMetadata(PersistentDescriptor descriptor) {
-
-        if (descriptor.getRootDbEntities().isEmpty()) {
-            // client descriptor?
-            return;
-        }
-
-        final PersistentDescriptorResultMetadata resultMetadata = new PersistentDescriptorResultMetadata(
-                descriptor);
-        final Set<String> visited = new HashSet<String>();
-
-        PropertyVisitor visitor = new PropertyVisitor() {
-
-            public boolean visitAttribute(AttributeProperty property) {
-                ObjAttribute oa = property.getAttribute();
-                if (visited.add(oa.getDbAttributePath())) {
-                    resultMetadata.addObjectField(
-                            oa.getEntity().getName(),
-                            oa.getName(),
-                            oa.getDbAttributePath());
-                }
-                return true;
-            }
-
-            public boolean visitToMany(ToManyProperty property) {
-                return true;
-            }
-
-            public boolean visitToOne(ToOneProperty property) {
-                ObjRelationship rel = property.getRelationship();
-                DbRelationship dbRel = rel.getDbRelationships().get(0);
-
-                for (DbJoin join : dbRel.getJoins()) {
-                    DbAttribute src = join.getSource();
-                    if (src.isForeignKey() && visited.add(src.getName())) {
-                        resultMetadata.addDbField(src.getName(), src.getName());
-                    }
-                }
-
-                return true;
-            }
-        };
-
-        descriptor.visitProperties(visitor);
-
-        // append id columns ... (some may have been appended already via relationships)
-        for (String pkName : descriptor.getEntity().getPrimaryKeyNames()) {
-            if (visited.add(pkName)) {
-                resultMetadata.addDbField(pkName, pkName);
-            }
-        }
-
-        // append inheritance discriminator columns...
-        Iterator<DbAttribute> discriminatorColumns = descriptor.getDiscriminatorColumns();
-        while (discriminatorColumns.hasNext()) {
-            DbAttribute column = discriminatorColumns.next();
-
-            if (visited.add(column.getName())) {
-                resultMetadata.addDbField(column.getName(), column.getName());
-            }
-        }
-
-        descriptor.setEntityResultMetadata(resultMetadata);
     }
 
     /**

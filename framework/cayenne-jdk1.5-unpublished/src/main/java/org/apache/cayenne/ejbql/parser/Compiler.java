@@ -197,12 +197,12 @@ class Compiler {
         }
 
         // append inheritance discriminator columns...
-        Iterator<DbAttribute> discriminatorColumns = descriptor.getDiscriminatorColumns();
+        Iterator<ObjAttribute> discriminatorColumns = descriptor.getDiscriminatorColumns();
         while (discriminatorColumns.hasNext()) {
-            DbAttribute column = discriminatorColumns.next();
+            ObjAttribute column = discriminatorColumns.next();
 
             if (visited.add(column.getName())) {
-                entityResult.addDbField(column.getName(), prefix + index[0]++);
+                entityResult.addDbField(column.getDbAttributePath(), prefix + index[0]++);
             }
         }
 

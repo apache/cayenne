@@ -23,11 +23,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.EntityResultSegment;
 
 /**
  * A runtime descriptor of an persistent class.
@@ -52,19 +51,11 @@ public interface ClassDescriptor {
      * @since 3.0
      */
     Collection<DbEntity> getRootDbEntities();
-    
+
     /**
      * @since 3.0
      */
     EntityInheritanceTree getEntityInheritanceTree();
-
-    /**
-     * Returns the EntityResultMetadata that describes the mapping of the ResultSet when
-     * entity data is fetched.
-     * 
-     * @since 3.0
-     */
-    EntityResultSegment getEntityResultMetadata();
 
     /**
      * Returns a class mapped by this descriptor.
@@ -136,13 +127,14 @@ public interface ClassDescriptor {
     Iterator<Property> getIdProperties();
 
     /**
-     * Returns a collection of DbAttributes for the described class, its superclasses and
-     * subclasses, that participate in inheritance qualifier, but are not mapped as object
-     * properties.
+     * Returns a collection of ObjAttribute for the described class, its superclasses and
+     * subclasses, that participate in inheritance qualifier. If a discriminator
+     * expression specifies a DbAttribute instead of an ObjAttribute, a synthetic
+     * ObjAttribute is created and returned.
      * 
      * @since 3.0
      */
-    Iterator<DbAttribute> getDiscriminatorColumns();
+    Iterator<ObjAttribute> getDiscriminatorColumns();
 
     /**
      * Returns entity qualifier as a Cayenne expression that includes qualifiers for this
