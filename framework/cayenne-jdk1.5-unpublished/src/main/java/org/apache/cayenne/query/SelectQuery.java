@@ -411,6 +411,9 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Returns a list of attributes that will be included in the results of this query.
+     * 
+     * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
+     *             EJBQL.
      */
     public List<String> getCustomDbAttributes() {
         // if query root is DbEntity, and no custom attributes
@@ -431,11 +434,18 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * Adds a path to the DbAttribute that should be included in the results of this
      * query. Valid paths would look like <code>ARTIST_NAME</code>,
      * <code>PAINTING_ARRAY.PAINTING_ID</code>, etc.
+     * 
+     * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
+     *             EJBQL.
      */
     public void addCustomDbAttribute(String attributePath) {
         nonNullCustomDbAttributes().add(attributePath);
     }
 
+    /**
+     * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
+     *             EJBQL.
+     */
     public void addCustomDbAttributes(List<String> attrPaths) {
         nonNullCustomDbAttributes().addAll(attrPaths);
     }

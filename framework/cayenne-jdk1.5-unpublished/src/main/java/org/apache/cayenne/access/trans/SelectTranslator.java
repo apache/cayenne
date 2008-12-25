@@ -519,6 +519,9 @@ public class SelectTranslator extends QueryAssembler {
 
     /**
      * Appends custom columns from SelectQuery to the provided list.
+     * 
+     * @deprecated since 3.0. Will likely be removed after 3.0M6. Can be replaced with
+     *             EJBQL.
      */
     List<ColumnDescriptor> appendCustomColumns(
             List<ColumnDescriptor> columns,
