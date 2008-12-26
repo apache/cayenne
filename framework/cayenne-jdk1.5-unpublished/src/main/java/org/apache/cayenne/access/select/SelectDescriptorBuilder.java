@@ -22,8 +22,10 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * A class used as a builder of SelectDescriptors of any complexity.
@@ -33,42 +35,42 @@ import org.apache.cayenne.query.QueryMetadata;
 public class SelectDescriptorBuilder {
 
     private ExtendedTypeMap extendedTypes;
-
     private transient ScalarSegmentBuilder scalarSegmentBuilder;
-    private transient EntitySegmentBuilder entitySegmentBuilder;
 
     public SelectDescriptorBuilder(ExtendedTypeMap extendedTypes) {
         this.extendedTypes = extendedTypes;
     }
 
-    public SelectDescriptor<?> fromQueryMetadata(QueryMetadata queryMetadata) {
+    public SelectDescriptor<?> fromQueryMetadata(QueryMetadata metadata) {
 
-        List<Object> segmentDescriptors = queryMetadata.getResultSetMapping();
-        int resultWidth = segmentDescriptors != null ? segmentDescriptors.size() : 1;
+        List<Object> segmentMap = metadata.getResultSetMapping();
+        int segmentsCount = segmentMap != null ? segmentMap.size() : 1;
 
-        if (resultWidth == 0) {
+        if (segmentsCount == 0) {
             throw new CayenneRuntimeException("Empty result descriptor");
         }
 
         int entitySegments = 0, scalarSegments = 0;
-        SelectDescriptor<Object>[] segments = new SelectDescriptor[resultWidth];
+        SelectDescriptor<Object>[] segments = new SelectDescriptor[segmentsCount];
 
-        if (segmentDescriptors == null) {
-            segments[0] = getEntitySegmentBuilder(queryMetadata).getSegment(0);
+        if (segmentMap == null) {
+            segments[0] = getEntitySegment(metadata, null, 0);
             entitySegments++;
         }
         else {
-            for (int i = 0; i < resultWidth; i++) {
+            for (int i = 0; i < segmentsCount; i++) {
 
-                Object segmentDescriptor = segmentDescriptors.get(i);
+                Object segmentDescriptor = segmentMap.get(i);
 
                 if (segmentDescriptor instanceof EntityResultSegment) {
-                    segments[i] = getEntitySegmentBuilder(queryMetadata).getSegment(i);
+                    segments[i] = getEntitySegment(
+                            metadata,
+                            (EntityResultSegment) segmentDescriptor,
+                            i);
                     entitySegments++;
                 }
                 else {
-                    segments[i] = getScalarSegmentBuilder(segmentDescriptors).getSegment(
-                            i);
+                    segments[i] = getScalarSegment(segmentMap, i);
                     scalarSegments++;
                 }
             }
@@ -76,7 +78,7 @@ public class SelectDescriptorBuilder {
 
         // sanity check - paginated queries are only possible if there is an "id" of each
         // row. for now this means single entity queries...
-        if (queryMetadata.getPageSize() > 0) {
+        if (metadata.getPageSize() > 0) {
             if (entitySegments != 1 || scalarSegments != 0) {
                 throw new CayenneRuntimeException(
                         "Paginated queries are only supported for a single entity result");
@@ -84,26 +86,63 @@ public class SelectDescriptorBuilder {
         }
 
         // do some small optimizations for the common 1 segment results...
-        if (resultWidth == 1) {
+        if (segmentsCount == 1) {
             return segments[0];
         }
 
         return new CompoundSelectDescriptor(segments);
     }
 
-    protected EntitySegmentBuilder getEntitySegmentBuilder(QueryMetadata queryMetadata) {
-        if (entitySegmentBuilder == null) {
-            entitySegmentBuilder = new EntitySegmentBuilder(extendedTypes, queryMetadata);
+    protected SelectDescriptor<Object> getEntitySegment(
+            QueryMetadata metadata,
+            EntityResultSegment segmentDescriptor,
+            int position) {
+
+        ClassDescriptor classDescriptor;
+        EntityResultSegment segmentMetadata;
+
+        List<Object> segmentDesriptors = metadata.getResultSetMapping();
+        if (segmentDesriptors != null) {
+            segmentMetadata = (EntityResultSegment) segmentDesriptors.get(position);
+            classDescriptor = segmentMetadata.getClassDescriptor();
         }
-        return entitySegmentBuilder;
+        else {
+            segmentMetadata = null;
+            classDescriptor = metadata.getClassDescriptor();
+        }
+
+        // no ObjEntity and Java class at the root of the query...
+        if (classDescriptor == null) {
+            DbEntity dbEntity = metadata.getDbEntity();
+            if (dbEntity == null) {
+                throw new CayenneRuntimeException("Invalid entity segment in position "
+                        + position
+                        + ", no root DbEntity specified");
+            }
+
+            throw new UnsupportedOperationException("TODO: DbEntity based queries");
+        }
+
+        if (classDescriptor.getEntityInheritanceTree() != null) {
+            throw new UnsupportedOperationException("TODO: Inheritance aware queries");
+        }
+        else {
+            return new EntitySegmentBuilder(
+                    metadata,
+                    extendedTypes,
+                    classDescriptor,
+                    classDescriptor.getEntity().getDbEntity()).getDescriptor();
+        }
     }
 
-    protected ScalarSegmentBuilder getScalarSegmentBuilder(List<Object> segmentDescriptors) {
+    protected SelectDescriptor<Object> getScalarSegment(
+            List<Object> segmentDescriptors,
+            int position) {
         if (scalarSegmentBuilder == null) {
             scalarSegmentBuilder = new ScalarSegmentBuilder(
                     extendedTypes,
                     segmentDescriptors);
         }
-        return scalarSegmentBuilder;
+        return scalarSegmentBuilder.getSegment(position);
     }
 }
