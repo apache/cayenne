@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.query;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.map.DataMap;
@@ -29,7 +30,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 public class MockQueryMetadata implements QueryMetadata {
     
-    public SQLResultSetMetadata getResultSetMapping() {
+    public List<Object> getResultSetMapping() {
         return null;
     }
 

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.map.DataMap;
@@ -32,7 +33,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
-import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -51,7 +51,7 @@ class DataDomainQuery implements Query, QueryMetadata {
         return this;
     }
 
-    public SQLResultSetMetadata getResultSetMapping() {
+    public List<Object> getResultSetMapping() {
         return null;
     }
 
@@ -73,7 +73,7 @@ class DataDomainQuery implements Query, QueryMetadata {
     public String getCacheKey() {
         return null;
     }
-    
+
     public Map<String, String> getPathSplitAliases() {
         return null;
     }
@@ -104,7 +104,7 @@ class DataDomainQuery implements Query, QueryMetadata {
     public int getFetchOffset() {
         return 0;
     }
-    
+
     /**
      * @deprecated since 3.0
      */

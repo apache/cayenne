@@ -22,6 +22,7 @@ package org.apache.cayenne.query;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -55,7 +56,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     String cacheKey;
     String[] cacheGroups;
     
-    transient SQLResultSetMetadata resultSetMapping;
+    transient List<Object> resultSetMapping;
     transient DbEntity dbEntity;
     transient DataMap dataMap;
     transient Object lastRoot;
@@ -290,7 +291,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     /**
      * @since 3.0
      */
-    public SQLResultSetMetadata getResultSetMapping() {
+    public List<Object> getResultSetMapping() {
         return resultSetMapping;
     }
 

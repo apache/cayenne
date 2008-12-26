@@ -54,7 +54,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.RefreshQuery;
-import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -406,8 +405,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     }
 
     /**
-     * Updates snapshots in the underlying DataRowStore. If <code>refresh</code> is
-     * true, all snapshots in <code>snapshots</code> will be loaded into DataRowStore,
+     * Updates snapshots in the underlying DataRowStore. If <code>refresh</code> is true,
+     * all snapshots in <code>snapshots</code> will be loaded into DataRowStore,
      * regardless of the existing cache state. If <code>refresh</code> is false, only
      * missing snapshots are loaded. This method is normally called internally by the
      * DataContext owning the ObjectStore to update the caches after a select query.
@@ -1161,7 +1160,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             return cacheKey;
         }
 
-        public SQLResultSetMetadata getResultSetMapping() {
+        public List<Object> getResultSetMapping() {
             return null;
         }
 
@@ -1196,7 +1195,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         public int getFetchOffset() {
             return 0;
         }
-        
+
         /**
          * @deprecated since 3.0
          */

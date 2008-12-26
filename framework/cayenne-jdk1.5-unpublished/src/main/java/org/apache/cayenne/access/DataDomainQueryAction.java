@@ -37,10 +37,10 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -50,7 +50,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
-import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.util.GenericResponse;
@@ -434,20 +433,19 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
                 ObjectConversionStrategy converter;
 
-                SQLResultSetMetadata rsMapping = metadata.getResultSetMapping();
+                List<Object> rsMapping = metadata.getResultSetMapping();
                 if (rsMapping == null) {
                     converter = new SingleObjectConversionStrategy();
                 }
                 else {
 
-                    int entityResultCount = rsMapping.getEntitySegments().length;
-                    int columnResultCount = rsMapping.getScalarSegments().length;
-
-                    if (entityResultCount == 1 && columnResultCount == 0) {
-                        converter = new SingleObjectConversionStrategy();
-                    }
-                    else if (entityResultCount == 0 && columnResultCount == 1) {
-                        converter = new SingleScalarConversionStrategy();
+                    if (rsMapping.size() == 1) {
+                        if (rsMapping.get(0) instanceof EntityResultSegment) {
+                            converter = new SingleObjectConversionStrategy();
+                        }
+                        else {
+                            converter = new SingleScalarConversionStrategy();
+                        }
                     }
                     else {
                         converter = new MixedConversionStrategy();
@@ -681,29 +679,25 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             int rowsLen = mainRows.size();
 
-            SQLResultSetMetadata rsMapping = metadata.getResultSetMapping();
+            List<Object> rsMapping = metadata.getResultSetMapping();
+            int width = rsMapping.size();
 
             // no conversions needed for scalar positions; reuse Object[]'s to fill them
             // with resolved objects
+            List<List<?>> resultLists = new ArrayList<List<?>>(width);
+            for (int i = 0; i < width; i++) {
 
-            int[] entityPositions = rsMapping.getEntitySegments();
-            EntityResolver resolver = domain.getEntityResolver();
-            List[] resultLists = new List[entityPositions.length];
-            for (int i = 0; i < entityPositions.length; i++) {
-                int pos = entityPositions[i];
+                if (rsMapping.get(i) instanceof EntityResultSegment) {
+                    EntityResultSegment entitySegment = (EntityResultSegment) rsMapping
+                            .get(i);
+                    List<Persistent> nextResult = toObjects(entitySegment
+                            .getClassDescriptor(), null, mainRows, i);
+                    resultLists.add(nextResult);
 
-                List<Persistent> nextResult = toObjects(rsMapping
-                        .getEntitySegment(pos)
-                        .getClassDescriptor(), null, mainRows, pos);
-
-                resultLists[i] = nextResult;
-            }
-
-            for (int j = 0; j < rowsLen; j++) {
-
-                Object[] row = mainRows.get(j);
-                for (int i = 0; i < entityPositions.length; i++) {
-                    row[entityPositions[i]] = resultLists[i].get(j);
+                    for (int j = 0; j < rowsLen; j++) {
+                        Object[] row = mainRows.get(j);
+                        row[i] = nextResult.get(j);
+                    }
                 }
             }
 
@@ -713,10 +707,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     .getCallbackRegistry();
 
             if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
-                for (int i = 0; i < entityPositions.length; i++) {
-                    callbackRegistry.performCallbacks(
-                            LifecycleEvent.POST_LOAD,
-                            resultLists[i]);
+                for (List<?> list : resultLists) {
+                    callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, list);
                 }
             }
         }

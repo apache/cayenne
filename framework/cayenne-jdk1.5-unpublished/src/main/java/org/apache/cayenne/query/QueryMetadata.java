@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.query;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.map.DataMap;
@@ -289,10 +290,11 @@ public interface QueryMetadata {
     Map<String, String> getPathSplitAliases();
 
     /**
-     * Returns a mapping of the result set data rows. Can be null. If not null overrides
-     * prefetching and data row settings.
+     * Returns an optional list of result set mapping hints. Elements in the list can be
+     * either {@link EntityResultSegment} or {@link ScalarResultSegment}. The returned
+     * list can be null.
      * 
      * @since 3.0
      */
-    SQLResultSetMetadata getResultSetMapping();
+    List<Object> getResultSetMapping();
 }

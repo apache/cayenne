@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.remote;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.map.DataMap;
@@ -33,7 +34,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
-import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -76,7 +76,7 @@ class RangeQuery implements Query {
                 return originatingQuery;
             }
 
-            public SQLResultSetMetadata getResultSetMapping() {
+            public List<Object> getResultSetMapping() {
                 return null;
             }
 

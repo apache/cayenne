@@ -35,7 +35,6 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -56,9 +55,9 @@ class EntitySegmentBuilder {
         ClassDescriptor rootDescriptor;
         EntityResultSegment segmentMetadata;
 
-        SQLResultSetMetadata resultSetMetadata = metadata.getResultSetMapping();
-        if (resultSetMetadata != null) {
-            segmentMetadata = resultSetMetadata.getEntitySegment(position);
+        List<Object> segmentDesriptors = metadata.getResultSetMapping();
+        if (segmentDesriptors != null) {
+            segmentMetadata = (EntityResultSegment) segmentDesriptors.get(position);
             rootDescriptor = segmentMetadata.getClassDescriptor();
         }
         else {

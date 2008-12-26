@@ -16,10 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.query;
+package org.apache.cayenne.map;
 
 import java.util.Map;
 
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**

@@ -32,9 +32,9 @@ class EJBQLQueryMetadata extends BaseQueryMetadata {
     boolean resolve(EntityResolver resolver, EJBQLQuery query) {
         EJBQLCompiledExpression expression = query.getExpression(resolver);
 
-        resultSetMapping = expression.getResult() != null
-                ? new DefaultResultSetMetadata(expression.getResult(), resolver)
-                : null;
+        resultSetMapping = expression.getResult() != null ? expression
+                .getResult()
+                .getResolvedComponents(resolver) : null;
 
         ObjEntity root = expression.getRootDescriptor().getEntity();
 

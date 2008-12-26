@@ -16,7 +16,9 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.query;
+package org.apache.cayenne.map;
+
+import org.apache.cayenne.query.ScalarResultSegment;
 
 /**
  * @since 3.0

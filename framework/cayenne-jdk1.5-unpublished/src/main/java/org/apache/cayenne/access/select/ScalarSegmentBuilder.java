@@ -18,9 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.access.select;
 
+import java.util.List;
+
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
 
 /**
@@ -28,16 +29,17 @@ import org.apache.cayenne.query.ScalarResultSegment;
  */
 class ScalarSegmentBuilder {
 
-    private SQLResultSetMetadata metadata;
+    private List<Object> resultDescriptors;
     private ExtendedType converter;
 
-    ScalarSegmentBuilder(ExtendedTypeMap extendedTypes, SQLResultSetMetadata metadata) {
+    ScalarSegmentBuilder(ExtendedTypeMap extendedTypes, List<Object> resultDescriptors) {
         this.converter = extendedTypes.getDefaultType();
-        this.metadata = metadata;
+        this.resultDescriptors = resultDescriptors;
     }
 
     SelectDescriptor<Object> getSegment(int position) {
-        ScalarResultSegment segment = metadata.getScalarSegment(position);
+        ScalarResultSegment segment = (ScalarResultSegment) resultDescriptors
+                .get(position);
         return new ScalarSegment(segment.getColumn(), converter);
     }
 }

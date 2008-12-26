@@ -29,7 +29,6 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -164,7 +163,7 @@ public class NestedQueryCache implements QueryCache {
         public int getFetchOffset() {
             return mdDelegate.getFetchOffset();
         }
-        
+
         /**
          * @deprecated since 3.0
          */
@@ -187,7 +186,7 @@ public class NestedQueryCache implements QueryCache {
         public PrefetchTreeNode getPrefetchTree() {
             return mdDelegate.getPrefetchTree();
         }
-        
+
         public Map<String, String> getPathSplitAliases() {
             return mdDelegate.getPathSplitAliases();
         }
@@ -196,7 +195,7 @@ public class NestedQueryCache implements QueryCache {
             return mdDelegate.getProcedure();
         }
 
-        public SQLResultSetMetadata getResultSetMapping() {
+        public List<Object> getResultSetMapping() {
             return mdDelegate.getResultSetMapping();
         }
 

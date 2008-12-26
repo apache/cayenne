@@ -33,12 +33,8 @@ class CompoundSelectDescriptor implements SelectDescriptor<Object[]> {
     private CompoundRowReader rowReader;
     private List<SelectColumn> columns;
 
-    CompoundSelectDescriptor(int width) {
-        this.segments = new SelectDescriptor[width];
-    }
-
-    void append(int position, SelectDescriptor<Object> segmentDescriptor) {
-        segments[position] = segmentDescriptor;
+    CompoundSelectDescriptor(SelectDescriptor<Object>[] segments) {
+        this.segments = segments;
     }
 
     public List<SelectColumn> getColumns() {

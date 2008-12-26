@@ -36,7 +36,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
-import org.apache.cayenne.query.SQLResultSetMetadata;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.XMLEncoder;
@@ -79,7 +78,7 @@ class IncrementalSelectQuery extends SelectQuery {
                 return cacheKey;
             }
 
-            public SQLResultSetMetadata getResultSetMapping() {
+            public List<Object> getResultSetMapping() {
                 return metadata.getResultSetMapping();
             }
 
@@ -113,7 +112,7 @@ class IncrementalSelectQuery extends SelectQuery {
             public int getFetchOffset() {
                 return metadata.getFetchOffset();
             }
-            
+
             /**
              * @deprecated since 3.0
              */

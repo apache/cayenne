@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access.select;
 
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SQLResultSetMetadata;
 
 /**
  * A class used as a builder of SelectDescriptors of any complexity.
@@ -41,75 +43,67 @@ public class SelectDescriptorBuilder {
 
     public SelectDescriptor<?> fromQueryMetadata(QueryMetadata queryMetadata) {
 
-        int resultWidth;
-        int[] entitySegments;
-        int[] scalarSegments;
-
-        // No metadata mapping means a single entity result...
-        SQLResultSetMetadata resultSetMetadata = queryMetadata.getResultSetMapping();
-        if (resultSetMetadata != null) {
-            resultWidth = resultSetMetadata.getSegmentsCount();
-            entitySegments = resultSetMetadata.getEntitySegments();
-            scalarSegments = resultSetMetadata.getScalarSegments();
-        }
-        else {
-            resultWidth = 1;
-            entitySegments = new int[] {
-                0
-            };
-            scalarSegments = new int[0];
-        }
+        List<Object> segmentDescriptors = queryMetadata.getResultSetMapping();
+        int resultWidth = segmentDescriptors != null ? segmentDescriptors.size() : 1;
 
         if (resultWidth == 0) {
             throw new CayenneRuntimeException("Empty result descriptor");
         }
 
+        int entitySegments = 0, scalarSegments = 0;
+        SelectDescriptor<Object>[] segments = new SelectDescriptor[resultWidth];
+
+        if (segmentDescriptors == null) {
+            segments[0] = getEntitySegmentBuilder(queryMetadata).getSegment(0);
+            entitySegments++;
+        }
+        else {
+            for (int i = 0; i < resultWidth; i++) {
+
+                Object segmentDescriptor = segmentDescriptors.get(i);
+
+                if (segmentDescriptor instanceof EntityResultSegment) {
+                    segments[i] = getEntitySegmentBuilder(queryMetadata).getSegment(i);
+                    entitySegments++;
+                }
+                else {
+                    segments[i] = getScalarSegmentBuilder(segmentDescriptors).getSegment(
+                            i);
+                    scalarSegments++;
+                }
+            }
+        }
+
         // sanity check - paginated queries are only possible if there is an "id" of each
         // row. for now this means single entity queries...
         if (queryMetadata.getPageSize() > 0) {
-            if (entitySegments.length != 1 || scalarSegments.length != 0) {
+            if (entitySegments != 1 || scalarSegments != 0) {
                 throw new CayenneRuntimeException(
                         "Paginated queries are only supported for a single entity result");
             }
         }
 
-        if (scalarSegments.length > 0) {
-            scalarSegmentBuilder = createScalarSegmentBuilder(resultSetMetadata);
-        }
-
-        if (entitySegments.length > 0) {
-            entitySegmentBuilder = createEntitySegmentBuilder(queryMetadata);
-        }
-
         // do some small optimizations for the common 1 segment results...
         if (resultWidth == 1) {
-            if (entitySegments.length > 0) {
-                return entitySegmentBuilder.getSegment(0);
-            }
-            else {
-                return scalarSegmentBuilder.getSegment(0);
-            }
+            return segments[0];
         }
 
-        CompoundSelectDescriptor compoundDescriptor = new CompoundSelectDescriptor(
-                resultWidth);
-
-        for (int i : entitySegments) {
-            compoundDescriptor.append(i, entitySegmentBuilder.getSegment(i));
-        }
-
-        for (int i : scalarSegments) {
-            compoundDescriptor.append(i, scalarSegmentBuilder.getSegment(i));
-        }
-
-        return compoundDescriptor;
+        return new CompoundSelectDescriptor(segments);
     }
 
-    protected EntitySegmentBuilder createEntitySegmentBuilder(QueryMetadata queryMetadata) {
-        return new EntitySegmentBuilder(extendedTypes, queryMetadata);
+    protected EntitySegmentBuilder getEntitySegmentBuilder(QueryMetadata queryMetadata) {
+        if (entitySegmentBuilder == null) {
+            entitySegmentBuilder = new EntitySegmentBuilder(extendedTypes, queryMetadata);
+        }
+        return entitySegmentBuilder;
     }
 
-    protected ScalarSegmentBuilder createScalarSegmentBuilder(SQLResultSetMetadata md) {
-        return new ScalarSegmentBuilder(extendedTypes, md);
+    protected ScalarSegmentBuilder getScalarSegmentBuilder(List<Object> segmentDescriptors) {
+        if (scalarSegmentBuilder == null) {
+            scalarSegmentBuilder = new ScalarSegmentBuilder(
+                    extendedTypes,
+                    segmentDescriptors);
+        }
+        return scalarSegmentBuilder;
     }
 }
