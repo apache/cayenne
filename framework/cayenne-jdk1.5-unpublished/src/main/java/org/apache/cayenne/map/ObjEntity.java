@@ -81,7 +81,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
     protected boolean excludingDefaultListeners;
     protected boolean excludingSuperclassListeners;
 
-    protected Map<String, String> overriddenAttributes;
+    protected Map<String, String> attributeOverrides;
 
     public ObjEntity() {
         this(null);
@@ -92,7 +92,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         this.lockType = LOCK_TYPE_NONE;
         this.callbacks = new CallbackMap();
         this.entityListeners = new ArrayList<EntityListener>(2);
-        this.overriddenAttributes = new TreeMap<String, String>();
+        this.attributeOverrides = new TreeMap<String, String>();
     }
 
     /**
@@ -171,7 +171,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
         // store attributes
         encoder.print(getDeclaredAttributes());
 
-        for (Map.Entry<String, String> override : overriddenAttributes.entrySet()) {
+        for (Map.Entry<String, String> override : attributeOverrides.entrySet()) {
             encoder.print("<attribute-override name=\"" + override.getKey() + '\"');
             encoder.print(" db-attribute-path=\"");
             encoder.print(Util.encodeXmlAttribute(override.getValue()));
@@ -687,7 +687,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
             ObjAttribute decoratedAttribute = new ObjAttribute(superAttribute);
             decoratedAttribute.setEntity(this);
 
-            String pathOverride = overriddenAttributes.get(name);
+            String pathOverride = attributeOverrides.get(name);
             if (pathOverride != null) {
                 decoratedAttribute.setDbAttributePath(pathOverride);
             }
@@ -725,7 +725,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
             superEntity.appendAttributes(attributeMap);
             for (String attributeName : attributeMap.keySet()) {
 
-                String overridedDbPath = overriddenAttributes.get(attributeName);
+                String overridedDbPath = attributeOverrides.get(attributeName);
 
                 ObjAttribute attribute = new ObjAttribute(attributeMap.get(attributeName));
                 attribute.setEntity(this);
@@ -741,7 +741,14 @@ public class ObjEntity extends Entity implements ObjEntityListener {
      * @since 3.0
      */
     public void addAttributeOverride(String attributeName, String dbPath) {
-        overriddenAttributes.put(attributeName, dbPath);
+        attributeOverrides.put(attributeName, dbPath);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public Map<String, String> getDeclaredAttributeOverrides() {
+        return Collections.unmodifiableMap(attributeOverrides);
     }
 
     /**
