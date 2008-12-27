@@ -44,7 +44,7 @@ public class ObjEntityValidator extends TreeNodeValidator {
         validateSuperClassName(ent, path, validator);
 
         // validate DbEntity presence
-        if (ent.getDbEntity() == null && !ent.getIsAbstract()) {
+        if (ent.getDbEntity() == null && !ent.isAbstract()) {
             validator.registerWarning("ObjEntity has no DbEntity mapping.", path);
         }
     }

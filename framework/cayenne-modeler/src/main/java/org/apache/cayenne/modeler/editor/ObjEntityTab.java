@@ -386,7 +386,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
             public void actionPerformed(ActionEvent e) {
                 ObjEntity entity = mediator.getCurrentObjEntity();
                 if (entity != null) {
-                    entity.setIsAbstract(isAbstract.isSelected());
+                    entity.setAbstract(isAbstract.isSelected());
                     mediator.fireObjEntityEvent(new EntityEvent(this, entity));
                 }
             }
@@ -408,7 +408,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         className.setText(entity.getClassName());
         readOnly.setSelected(entity.isReadOnly());
         
-        isAbstract.setSelected(entity.getIsAbstract());
+        isAbstract.setSelected(entity.isAbstract());
         serverOnly.setSelected(entity.isServerOnly());
         clientClassName.setText(entity.getClientClassName());
         clientSuperClassName.setText(entity.getClientSuperClassName());

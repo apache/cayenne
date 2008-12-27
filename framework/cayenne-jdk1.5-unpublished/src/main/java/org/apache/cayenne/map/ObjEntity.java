@@ -71,7 +71,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
     protected boolean readOnly;
     protected int lockType;
 
-    protected boolean isAbstract;
+    protected boolean _abstract;
     protected boolean serverOnly;
     protected String clientClassName;
     protected String clientSuperClassName;
@@ -110,7 +110,7 @@ public class ObjEntity extends Entity implements ObjEntityListener {
             encoder.print(getSuperEntityName());
         }
 
-        if (getIsAbstract()) {
+        if (isAbstract()) {
             encoder.print("\" abstract=\"true");
         }
 
@@ -422,15 +422,15 @@ public class ObjEntity extends Entity implements ObjEntityListener {
                 .isClientSupported();
     }
 
-    public boolean getIsAbstract() {
-        return isAbstract;
+    public boolean isAbstract() {
+        return _abstract;
     }
 
     /**
      * Sets whether this entity is abstract only.
      */
-    public void setIsAbstract(boolean isAbstract) {
-        this.isAbstract = isAbstract;
+    public void setAbstract(boolean isAbstract) {
+        this._abstract = isAbstract;
     }
 
     /**

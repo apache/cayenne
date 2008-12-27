@@ -104,7 +104,7 @@ public class ObjAttribute extends Attribute {
 
         // If this obj attribute is mapped to db attribute
         if (getDbAttribute() != null
-                || (((ObjEntity) getEntity()).getIsAbstract() && !Util
+                || (((ObjEntity) getEntity()).isAbstract() && !Util
                         .isEmptyString(getDbAttributePath()))) {
             encoder.print(" db-attribute-path=\"");
             encoder.print(Util.encodeXmlAttribute(getDbAttributePath()));

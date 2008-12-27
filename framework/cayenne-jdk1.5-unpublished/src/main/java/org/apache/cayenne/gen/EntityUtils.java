@@ -176,7 +176,7 @@ public class EntityUtils {
         if (anObjEntity == null) 
             return false;
         
-        return objEntity.getIsAbstract();
+        return objEntity.isAbstract();
     }
 
     /**

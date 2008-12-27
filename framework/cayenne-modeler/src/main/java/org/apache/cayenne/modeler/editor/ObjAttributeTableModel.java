@@ -159,7 +159,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
             DbAttribute dbAttribute = attribute.getDbAttribute();
             if (column == DB_ATTRIBUTE) {
                 if (dbAttribute == null) {
-                    if (!attribute.isInherited() && ((ObjEntity)attribute.getEntity()).getIsAbstract()) {
+                    if (!attribute.isInherited() && ((ObjEntity)attribute.getEntity()).isAbstract()) {
                         return attribute.getDbAttributePath();
                     } else {
                         return null;

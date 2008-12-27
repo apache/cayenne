@@ -70,7 +70,7 @@ public class ObjAttributeValidator extends TreeNodeValidator {
             validator.registerWarning("ObjAttribute has no type.", path);
         }
 
-        if (attribute.getEntity() instanceof ObjEntity && ((ObjEntity)attribute.getEntity()).getIsAbstract()) {
+        if (attribute.getEntity() instanceof ObjEntity && ((ObjEntity)attribute.getEntity()).isAbstract()) {
             //nothing, abstract entity does not have to define a dbAttribute
         } else if (attribute.getDbAttribute() == null) {
             validator.registerWarning("ObjAttribute has no DbAttribute mapping.", path);
