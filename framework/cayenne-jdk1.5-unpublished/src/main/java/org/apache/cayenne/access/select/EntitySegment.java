@@ -28,19 +28,23 @@ import org.apache.cayenne.CayenneException;
  */
 class EntitySegment implements SelectDescriptor<Object> {
 
-    private List<? extends SelectColumn> columns;
+    private List<EntitySelectColumn> columns;
     private RowReader<Object> rowReader;
 
-    EntitySegment(RowReader<Object> rowReader, List<? extends SelectColumn> columns) {
+    EntitySegment(RowReader<Object> rowReader, List<EntitySelectColumn> columns) {
         this.columns = columns;
         this.rowReader = rowReader;
     }
+    
+    RowReader<Object> getRowReader() {
+        return rowReader;
+    }
 
-    public List<? extends SelectColumn> getColumns() {
+    public List<EntitySelectColumn> getColumns() {
         return columns;
     }
 
     public RowReader<Object> getRowReader(ResultSet resultSet) throws CayenneException {
-        return rowReader;
+        return getRowReader();
     }
 }

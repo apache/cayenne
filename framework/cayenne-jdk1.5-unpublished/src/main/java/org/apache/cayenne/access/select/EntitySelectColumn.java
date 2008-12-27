@@ -18,14 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.access.select;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjAttribute;
 
 /**
  * @since 3.0
@@ -71,19 +68,7 @@ class EntitySelectColumn implements SelectColumn {
         this.jdbcType = jdbcType;
     }
 
-    void setPath(ObjAttribute attribute) {
-
-        List<DbRelationship> path = new ArrayList<DbRelationship>(2);
-        Iterator<?> it = attribute.getDbPathIterator();
-        while (it.hasNext()) {
-            Object pathComponent = it.next();
-            if (!(pathComponent instanceof DbRelationship)) {
-                break;
-            }
-
-            path.add((DbRelationship) pathComponent);
-        }
-
+    void setPath(List<DbRelationship> path) {
         this.path = path;
     }
 

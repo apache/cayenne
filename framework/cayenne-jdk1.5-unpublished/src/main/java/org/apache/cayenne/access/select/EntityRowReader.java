@@ -33,6 +33,7 @@ import org.apache.cayenne.util.Util;
  */
 class EntityRowReader implements RowReader<Object> {
 
+    private EntityRowReader superReader;
     private ExtendedType[] converters;
     private String[] dataRowKeys;
     private int[] jdbcTypes;
@@ -41,25 +42,53 @@ class EntityRowReader implements RowReader<Object> {
     private int mapCapacity;
 
     EntityRowReader(String entityName, List<EntitySelectColumn> columns) {
-        int len = columns.size();
 
+        int len = columns.size();
+        int[] columnIndexes = new int[len];
+
+        for (int i = 0; i < len; i++) {
+            columnIndexes[i] = i + 1;
+        }
+
+        init(entityName, columns, columnIndexes);
+    }
+
+    EntityRowReader(String entityName, List<EntitySelectColumn> columns,
+            int[] columnIndexes) {
+        init(entityName, columns, columnIndexes);
+    }
+
+    private void init(
+            String entityName,
+            List<EntitySelectColumn> columns,
+            int[] columnIndexes) {
+        this.entityName = entityName;
+
+        int len = columns.size();
         this.mapCapacity = (int) Math.ceil(len / 0.75);
         this.converters = new ExtendedType[len];
         this.dataRowKeys = new String[len];
         this.jdbcTypes = new int[len];
-        this.columnIndexes = new int[len];
+        this.columnIndexes = columnIndexes;
 
         for (int i = 0; i < len; i++) {
             converters[i] = columns.get(i).getConverter();
             dataRowKeys[i] = columns.get(i).getDataRowKey();
             jdbcTypes[i] = columns.get(i).getJdbcType();
-            columnIndexes[i] = i + 1;
+        }
+    }
+
+    void setSuperReader(EntityRowReader superReader) {
+        this.superReader = superReader;
+
+        if (superReader != null) {
+            mapCapacity += superReader.mapCapacity;
         }
     }
 
     public void setColumnOffset(int offset) {
         for (int i = 0; i < columnIndexes.length; i++) {
-            columnIndexes[i] = i + offset + 1;
+            columnIndexes[i] = columnIndexes[i] + offset;
         }
     }
 
@@ -67,6 +96,16 @@ class EntityRowReader implements RowReader<Object> {
         DataRow row = new DataRow(mapCapacity);
         row.setEntityName(entityName);
 
+        if (superReader != null) {
+            superReader.fillRow(resultSet, row);
+        }
+
+        fillRow(resultSet, row);
+
+        return row;
+    }
+
+    private final void fillRow(ResultSet resultSet, DataRow row) throws CayenneException {
         int len = converters.length;
 
         try {
@@ -85,7 +124,6 @@ class EntityRowReader implements RowReader<Object> {
             throw new CayenneException("Exception materializing row", Util
                     .unwindException(ex));
         }
-
-        return row;
     }
+
 }

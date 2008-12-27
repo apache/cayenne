@@ -32,15 +32,15 @@ import org.apache.cayenne.exp.Expression;
 class EntityTreeRowReader implements RowReader<Object> {
 
     private RowReader<?> discriminatorReader;
-    private Expression[] discriminatorExpressions;
-    private RowReader<Object>[] rowReaders;
+    private Expression[] entityQualifiers;
+    private RowReader<Object>[] entityReaders;
 
-    EntityTreeRowReader(RowReader<?> discriminatorReader,
-            Expression[] discriminatorExpressions, RowReader<Object>[] rowReaders) {
+    EntityTreeRowReader(RowReader<?> discriminatorReader, Expression[] entityQualifiers,
+            RowReader<Object>[] entityReaders) {
 
         this.discriminatorReader = discriminatorReader;
-        this.discriminatorExpressions = discriminatorExpressions;
-        this.rowReaders = rowReaders;
+        this.entityQualifiers = entityQualifiers;
+        this.entityReaders = entityReaders;
     }
 
     public void setColumnOffset(int offset) {
@@ -52,14 +52,17 @@ class EntityTreeRowReader implements RowReader<Object> {
         Map<String, Object> discriminator = (Map<String, Object>) discriminatorReader
                 .readRow(resultSet);
 
-        int len = discriminatorExpressions.length;
-        for (int i = 0; i < len; i++) {
+        // read qualifiers list in reverse order to ensure that for each superclass,
+        // subclass qualifiers are run first... This way we can even support empty
+        // qualifier superclasses.
+        int len = entityQualifiers.length;
+        for (int i = len - 1; i >= 0; i--) {
 
             // TODO: andrus, 12/25/2008 - Expression in-memory evaluation for each row in
             // a ResultSet will be a very slow operation. This procedure should be
             // optimized somehow...
-            if (discriminatorExpressions[i].match(discriminator)) {
-                return rowReaders[i].readRow(resultSet);
+            if (entityQualifiers[i].match(discriminator)) {
+                return entityReaders[i].readRow(resultSet);
             }
         }
 

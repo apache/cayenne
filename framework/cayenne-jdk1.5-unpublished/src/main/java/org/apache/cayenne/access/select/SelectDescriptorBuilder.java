@@ -124,14 +124,12 @@ public class SelectDescriptorBuilder {
         }
 
         if (classDescriptor.getEntityInheritanceTree() != null) {
-            throw new UnsupportedOperationException("TODO: Inheritance aware queries");
+            return new EntityTreeSegmentBuilder(metadata, extendedTypes, classDescriptor)
+                    .getDescriptor();
         }
         else {
-            return new EntitySegmentBuilder(
-                    metadata,
-                    extendedTypes,
-                    classDescriptor,
-                    classDescriptor.getEntity().getDbEntity()).getDescriptor();
+            return new EntitySegmentBuilder(metadata, extendedTypes, classDescriptor
+                    .getEntity()).buildSegment();
         }
     }
 

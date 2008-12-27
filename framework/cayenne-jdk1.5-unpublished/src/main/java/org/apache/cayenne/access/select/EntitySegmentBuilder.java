@@ -18,52 +18,47 @@
  ****************************************************************/
 package org.apache.cayenne.access.select;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 3.0
  */
-class EntitySegmentBuilder {
+class EntitySegmentBuilder extends MappedColumnBuilder {
 
-    private QueryMetadata metadata;
-    private ExtendedTypeMap extendedTypes;
-    private List<EntitySelectColumn> columns;
-    private Map<DbAttribute, Integer> columnMap;
-    private DbEntity dbEntity;
-    private ClassDescriptor classDescriptor;
+    protected QueryMetadata metadata;
+    protected ObjEntity entity;
 
     EntitySegmentBuilder(QueryMetadata metadata, ExtendedTypeMap extendedTypes,
-            ClassDescriptor classDescriptor, DbEntity dbEntity) {
+            ObjEntity entity) {
 
-        this.columns = new ArrayList<EntitySelectColumn>();
-        this.columnMap = new HashMap<DbAttribute, Integer>();
-        this.dbEntity = dbEntity;
-        this.classDescriptor = classDescriptor;
+        super(extendedTypes);
+        this.entity = entity;
         this.metadata = metadata;
-        this.extendedTypes = extendedTypes;
     }
 
-    SelectDescriptor<Object> getDescriptor() {
+    List<EntitySelectColumn> buildColumns() {
         if (metadata.getPageSize() > 0) {
             appendId();
         }
         else {
             appendAll();
         }
+
+        return columns;
+    }
+
+    EntitySegment buildSegment() {
+
+        buildColumns();
 
         RowReader<Object> rowReader;
         // read single column ID as scalar
@@ -72,15 +67,13 @@ class EntitySegmentBuilder {
             rowReader = new ScalarRowReader(column.getConverter(), column.getJdbcType());
         }
         else {
-            rowReader = new EntityRowReader(
-                    classDescriptor.getEntity().getName(),
-                    columns);
+            rowReader = new EntityRowReader(entity.getName(), columns);
         }
 
         return new EntitySegment(rowReader, columns);
     }
 
-    private void appendId() {
+    protected void appendId() {
         // append meaningful attributes prior to any special DbAttributes; this way if
         // there is an overlap between meaningful and Db attributes, the right Java
         // type will be used.
@@ -88,7 +81,7 @@ class EntitySegmentBuilder {
         appendIdDbAttributes();
     }
 
-    private void appendAll() {
+    protected void appendAll() {
         // append meaningful attributes prior to any special DbAttributes; this way if
         // there is an overlap between meaningful and Db attributes, the right Java
         // type will be used.
@@ -99,86 +92,48 @@ class EntitySegmentBuilder {
         appendJointPrefetches();
     }
 
-    private void appendIdObjAttributes() {
-        for (ObjAttribute attribute : classDescriptor.getEntity().getDeclaredAttributes()) {
+    protected void appendIdObjAttributes() {
+        for (ObjAttribute attribute : entity.getDeclaredAttributes()) {
 
             if (attribute.isPrimaryKey()) {
-                appendObjAttribute(attribute);
+                append(attribute);
             }
         }
     }
 
-    private void appendObjAttributes() {
-        for (ObjAttribute attribute : classDescriptor.getEntity().getDeclaredAttributes()) {
-            appendObjAttribute(attribute);
+    protected void appendObjAttributes() {
+        for (ObjAttribute attribute : entity.getDeclaredAttributes()) {
+            append(attribute);
         }
     }
 
-    private void appendIdDbAttributes() {
-        for (DbAttribute attribute : dbEntity.getPrimaryKeys()) {
-            appendDbAttrribute(attribute);
+    protected void appendIdDbAttributes() {
+
+        // if this ObjENtity inherits DbEntity from super, we will rely in super
+        // descriptor to map ID columns
+        if (entity.getDbEntityName() != null) {
+            for (DbAttribute attribute : entity.getDbEntity().getPrimaryKeys()) {
+                append(attribute);
+            }
         }
     }
 
-    private void appendFK() {
-        for (ObjRelationship relationship : classDescriptor
-                .getEntity()
-                .getDeclaredRelationships()) {
+    protected void appendFK() {
+        for (ObjRelationship relationship : entity.getDeclaredRelationships()) {
 
             DbRelationship dbRel = relationship.getDbRelationships().get(0);
 
             List<DbJoin> joins = dbRel.getJoins();
             int len = joins.size();
             for (int i = 0; i < len; i++) {
-                appendDbAttrribute(joins.get(i).getSource());
+                append(joins.get(i).getSource());
             }
         }
     }
 
-    private void appendJointPrefetches() {
+    protected void appendJointPrefetches() {
         if (metadata.getPrefetchTree() != null) {
             throw new UnsupportedOperationException("TODO: joint prefetches");
-        }
-    }
-
-    private void appendObjAttribute(ObjAttribute attribute) {
-        EntitySelectColumn column = new EntitySelectColumn();
-
-        DbAttribute dbAttribute = attribute.getDbAttribute();
-
-        // void column
-        if (dbAttribute == null) {
-            int jdbcType = TypesMapping.getSqlTypeByJava(attribute.getType());
-            column.setColumnName(TypesMapping.isNumeric(jdbcType) ? "1" : "'1'");
-            column.setJdbcType(jdbcType);
-        }
-        else {
-            column.setColumnName(dbAttribute.getName());
-            column.setJdbcType(dbAttribute.getType());
-        }
-
-        column.setDataRowKey(attribute.getDbAttributePath());
-        column.setPath(attribute);
-        column.setConverter(extendedTypes.getRegisteredType(attribute.getType()));
-
-        columnMap.put(dbAttribute, columns.size());
-        columns.add(column);
-    }
-
-    private void appendDbAttrribute(DbAttribute attribute) {
-        // skip if already appended via ObjAttributes
-        if (!columnMap.containsKey(attribute)) {
-
-            EntitySelectColumn column = new EntitySelectColumn();
-            column.setColumnName(attribute.getName());
-            column.setJdbcType(attribute.getType());
-            column.setDataRowKey(attribute.getName());
-
-            String javaType = TypesMapping.getJavaBySqlType(attribute.getType());
-            column.setConverter(extendedTypes.getRegisteredType(javaType));
-
-            columnMap.put(attribute, columns.size());
-            columns.add(column);
         }
     }
 }

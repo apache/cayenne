@@ -87,17 +87,31 @@ public class EntityInheritanceTree {
             }
         }
 
-        Expression qualifier = entity.getDeclaredQualifier();
+        Expression qualifier = getDbQualifier();
         if (qualifier != null) {
-            if (normalizedQualifier == null) {
-                normalizedQualifier = entity.translateToDbPath(qualifier);
-            }
-
-            return normalizedQualifier.match(row) ? entity : null;
+            return qualifier.match(row) ? entity : null;
         }
 
         // no qualifier ... matches all rows
         return entity;
+    }
+
+    /**
+     * Returns entity qualifier expressed as DB path qualifier or null if entity has no
+     * qualifier.
+     * 
+     * @since 3.0
+     */
+    public Expression getDbQualifier() {
+        if (entity.getDeclaredQualifier() == null) {
+            return null;
+        }
+
+        if (normalizedQualifier == null) {
+            normalizedQualifier = entity.translateToDbPath(entity.getDeclaredQualifier());
+        }
+
+        return normalizedQualifier;
     }
 
     public void addChildNode(EntityInheritanceTree node) {
