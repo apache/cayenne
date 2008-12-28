@@ -32,8 +32,8 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
- * Builder of the non-leaf entity segment that has at least one subclass or superclass or
- * any combination of them.
+ * Builder of an entity segment that has at least one subclass or superclass or any
+ * combination of them.
  * 
  * @since 3.0
  */
