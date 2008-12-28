@@ -39,7 +39,7 @@ public class TemplatePreferences extends CayenneController {
 
     protected TemplatePreferencesView view;
     protected PreferenceEditor editor;
-    protected List templateEntries;
+    protected List<FSPath> templateEntries;
     protected ObjectBinding tableBinding;
 
     public TemplatePreferences(PreferenceDialog parent) {
@@ -88,7 +88,7 @@ public class TemplatePreferences extends CayenneController {
         tableBuilder.bindToTable(view.getTable(), "templateEntries").updateView();
     }
 
-    public List getTemplateEntries() {
+    public List<FSPath> getTemplateEntries() {
         return templateEntries;
     }
 

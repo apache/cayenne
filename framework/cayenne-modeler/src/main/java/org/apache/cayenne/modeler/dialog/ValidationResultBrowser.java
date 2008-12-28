@@ -83,14 +83,12 @@ public class ValidationResultBrowser extends CayenneController {
         StringBuffer buffer = new StringBuffer();
         String separator = System.getProperty("line.separator");
 
-        Iterator it = validationResult.getFailures().iterator();
-        while (it.hasNext()) {
+        for (ValidationFailure failure : validationResult.getFailures()) {
 
             if (buffer.length() > 0) {
                 buffer.append(separator);
             }
 
-            ValidationFailure failure = (ValidationFailure) it.next();
             if (failure.getSource() != null) {
                 buffer.append("[SQL: ").append(failure.getSource()).append("] - ");
             }

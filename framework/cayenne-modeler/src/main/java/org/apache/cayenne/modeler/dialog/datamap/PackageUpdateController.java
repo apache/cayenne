@@ -74,11 +74,9 @@ public class PackageUpdateController extends DefaultsPreferencesController {
             defaultPackage = defaultPackage + '.';
         }
 
-        Iterator it = dataMap.getObjEntities().iterator();
-        while (it.hasNext()) {
-            ObjEntity entity = (ObjEntity) it.next();
+        for (ObjEntity entity : dataMap.getObjEntities()) {
             String oldName = getClassName(entity);
-            
+
             if (doAll || Util.isEmptyString(oldName) || oldName.indexOf('.') < 0) {
                 String className = extractClassName(Util.isEmptyString(oldName) ? entity
                         .getName() : oldName);

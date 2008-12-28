@@ -51,7 +51,7 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 public class FindDialogView extends JDialog {
 
     private JButton okButton;
-    private java.util.List entityButtons;
+    private java.util.List<JButton> entityButtons;
     private static JScrollPane scrollPane;
 
     public FindDialogView(Map objEntityNames, Map dbEntityNames, Map attrNames,
@@ -119,7 +119,7 @@ public class FindDialogView extends JDialog {
         return okButton;
     }
 
-    public java.util.List getEntityButtons() {
+    public java.util.List<JButton> getEntityButtons() {
         return entityButtons;
     }
 

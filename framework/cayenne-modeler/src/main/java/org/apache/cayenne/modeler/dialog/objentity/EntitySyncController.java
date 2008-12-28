@@ -55,7 +55,7 @@ public class EntitySyncController extends CayenneController {
     }
 
     public EntityMergeSupport createMerger() {
-        Collection entities = getObjEntities();
+        Collection<ObjEntity> entities = getObjEntities();
         if (entities.isEmpty()) {
             return null;
         }
@@ -65,9 +65,7 @@ public class EntitySyncController extends CayenneController {
 
         // see if we need to remove meaningful attributes...
         boolean showDialog = false;
-        Iterator it = entities.iterator();
-        while (it.hasNext()) {
-            ObjEntity entity = (ObjEntity) it.next();
+        for (ObjEntity entity : entities) {
             if (!merger.getMeaningfulFKs(entity).isEmpty()) {
                 showDialog = true;
                 break;
@@ -117,7 +115,7 @@ public class EntitySyncController extends CayenneController {
         return view;
     }
 
-    protected Collection getObjEntities() {
+    protected Collection<ObjEntity> getObjEntities() {
         return (objEntity != null) ? Collections.singleton(objEntity) : dbEntity
                 .getDataMap()
                 .getMappedEntities(dbEntity);

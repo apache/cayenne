@@ -48,7 +48,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     protected ValidationResult validation;
 
-    protected List entities;
+    protected List<ObjEntity> entities;
     protected Set selectedEntities;
 
     protected transient ObjEntity currentEntity;
@@ -68,9 +68,8 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         ValidationResult validationBuffer = new ValidationResult();
 
         if (validator != null) {
-            Iterator it = entities.iterator();
-            while (it.hasNext()) {
-                validator.validateEntity(validationBuffer, (ObjEntity) it.next(), false);
+            for (ObjEntity entity : entities) {
+                validator.validateEntity(validationBuffer, entity, false);
             }
         }
 
@@ -81,18 +80,14 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
         boolean modified = false;
 
-        Iterator it = entities.iterator();
-        while (it.hasNext()) {
-            ObjEntity entity = (ObjEntity) it.next();
-
+        for (ObjEntity entity : entities) {
             boolean select = predicate.evaluate(entity);
 
             if (select) {
                 if (selectedEntities.add(entity.getName())) {
                     modified = true;
                 }
-            }
-            else {
+            } else {
                 if (selectedEntities.remove(entity.getName())) {
                     modified = true;
                 }
@@ -115,11 +110,9 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     public List<ObjEntity> getSelectedEntities() {
         List<ObjEntity> selected = new ArrayList<ObjEntity>(selectedEntities.size());
 
-        Iterator it = entities.iterator();
-        while (it.hasNext()) {
-            ObjEntity e = (ObjEntity) it.next();
-            if (selectedEntities.contains(e.getName())) {
-                selected.add(e);
+        for (ObjEntity entity : entities) {
+            if (selectedEntities.contains(entity.getName())) {
+                selected.add(entity);
             }
         }
 

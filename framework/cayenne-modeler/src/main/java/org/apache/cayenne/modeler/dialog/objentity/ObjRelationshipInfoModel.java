@@ -249,9 +249,7 @@ public class ObjRelationshipInfoModel extends BasicModel {
             return;
         }
 
-        Iterator attributes = this.objectTarget.getAttributes().iterator();
-        while (attributes.hasNext()) {
-            ObjAttribute attribute = (ObjAttribute) attributes.next();
+        for (ObjAttribute attribute : this.objectTarget.getAttributes()) {
             mapKeys.add(attribute.getName());
         }
 
@@ -296,11 +294,8 @@ public class ObjRelationshipInfoModel extends BasicModel {
         // copied algorithm from ObjRelationship.calculateToMany(), only iterating through
         // the unsaved dbrels selection.
 
-        Iterator<DbRelationship> dbRelIterator = dbRelationships.iterator();
-        while (dbRelIterator.hasNext()) {
-            
-            DbRelationship relationship = dbRelIterator.next();
-            if (relationship != null && relationship.isToMany()) {
+        for (DbRelationship relationship : dbRelationships) {
+            if (this.relationship != null && this.relationship.isToMany()) {
                 return true;
             }
         }
@@ -395,9 +390,7 @@ public class ObjRelationshipInfoModel extends BasicModel {
     private void updatePath() {
         relationship.clearDbRelationships();
 
-        Iterator<DbRelationship> it = dbRelationships.iterator();
-        while (it.hasNext()) {
-            Relationship nextPathComponent = it.next();
+        for (DbRelationship nextPathComponent : dbRelationships) {
             if (nextPathComponent == null) {
                 break;
             }

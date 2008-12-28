@@ -95,7 +95,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
             attributes.removeItemListener(listener);
         }
 
-        Collection pkAttributes = entity.getPrimaryKeys();
+        Collection<DbAttribute> pkAttributes = entity.getPrimaryKeys();
         if (pkAttributes.isEmpty()) {
             attributes.removeAllItems();
             attributes.addItem("<Entity has no PK columns>");
@@ -111,9 +111,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
             model.setSelectedItem(noSelection);
             attributes.setModel(model);
 
-            Iterator it = pkAttributes.iterator();
-            while (it.hasNext()) {
-                DbAttribute a = (DbAttribute) it.next();
+            for (DbAttribute a : pkAttributes) {
                 if (a.isGenerated()) {
                     model.setSelectedItem(a);
                     break;

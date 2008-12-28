@@ -157,9 +157,8 @@ public abstract class CayennePreferenceService implements PreferenceService {
     protected void initSchema() {
         DataDomain domain = dataContext.getParentDataDomain();
 
-        Iterator maps = domain.getDataMaps().iterator();
-        while (maps.hasNext()) {
-            DataMap map = (DataMap) maps.next();
+        for (DataMap dataMap : domain.getDataMaps()) {
+            DataMap map = dataMap;
             DataNode node = domain.lookupDataNode(map);
             DbAdapter adapter = node.getAdapter();
             DbGenerator generator = new DbGenerator(adapter, map);

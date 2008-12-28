@@ -485,9 +485,7 @@ public class DataMapView extends JPanel {
 
         DataMap matchingMap = null;
 
-        Iterator it = config.getDomains().iterator();
-        while (it.hasNext()) {
-            DataDomain domain = (DataDomain) it.next();
+        for (DataDomain domain : config.getDomains()) {
             DataMap nextMap = domain.getMap(newName);
 
             if (nextMap == map) {
@@ -528,10 +526,8 @@ public class DataMapView extends JPanel {
         boolean hasChanges = false;
 
         // unlink map from any nodes
-        Iterator nodes = eventController.getCurrentDataDomain().getDataNodes().iterator();
 
-        while (nodes.hasNext()) {
-            DataNode nextNode = (DataNode) nodes.next();
+        for (DataNode nextNode : eventController.getCurrentDataDomain().getDataNodes()) {
 
             // Theoretically only one node may contain a datamap at each given time.
             // Being paranoid, we will still scan through all.

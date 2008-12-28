@@ -170,7 +170,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     }
 
     protected void initFromModel(
-            Collection schemas,
+            Collection<String> schemas,
             String dbUserName,
             boolean shouldLoadProcedures) {
 
@@ -195,9 +195,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
 
             // select schema belonging to the user
             if (dbUserName != null) {
-                Iterator it = schemas.iterator();
-                while (it.hasNext()) {
-                    String schema = (String) it.next();
+                for (String schema : schemas) {
                     if (dbUserName.equalsIgnoreCase(schema)) {
                         schemaSelector.setSelectedItem(schema);
                         break;

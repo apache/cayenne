@@ -61,9 +61,7 @@ public abstract class PKGeneratorPanel extends JPanel {
         }
 
         if (resetDBGenerated) {
-            Iterator it = entity.getPrimaryKeys().iterator();
-            while (it.hasNext()) {
-                DbAttribute a = (DbAttribute) it.next();
+            for (DbAttribute a : entity.getPrimaryKeys()) {
                 if (a.isGenerated()) {
                     a.setGenerated(false);
                     hasChanges = true;

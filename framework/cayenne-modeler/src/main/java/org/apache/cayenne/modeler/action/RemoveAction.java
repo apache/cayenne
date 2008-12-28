@@ -263,15 +263,14 @@ public class RemoveAction extends CayenneAction {
         // TODO: (Andrus, 09/09/2005) show warning dialog?
 
         // clone to be able to remove within iterator...
-        Iterator it = new ArrayList(map.getQueries()).iterator();
-        while (it.hasNext()) {
-            AbstractQuery next = (AbstractQuery) it.next();
+        for (Query query : new ArrayList<Query>(map.getQueries())) {
+            AbstractQuery next = (AbstractQuery) query;
             Object root = next.getRoot();
 
             if (root == entity
                     || (root instanceof String && root
-                            .toString()
-                            .equals(entity.getName()))) {
+                    .toString()
+                    .equals(entity.getName()))) {
                 removeQuery(map, next);
             }
         }

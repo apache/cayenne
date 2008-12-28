@@ -58,9 +58,7 @@ public class TemplateCreator extends CayenneController {
         this.editor = parent.getEditor();
         this.domain = parent.getTemplateDomain();
 
-        Iterator it = parent.getTemplateEntries().iterator();
-        while (it.hasNext()) {
-            FSPath path = (FSPath) it.next();
+        for (FSPath path : parent.getTemplateEntries()) {
             existingNames.add(path.getKey());
         }
         initBindings();

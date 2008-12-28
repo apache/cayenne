@@ -374,7 +374,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
     }
 
     private Collection getReverseJoins() {
-        Collection joins = relationship.getJoins();
+        Collection<DbJoin> joins = relationship.getJoins();
 
         if ((joins == null) || (joins.size() == 0)) {
             return Collections.EMPTY_LIST;
@@ -384,9 +384,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
 
         // Loop through the list of attribute pairs, create reverse pairs
         // and put them to the reverse list.
-        Iterator it = joins.iterator();
-        while (it.hasNext()) {
-            DbJoin pair = (DbJoin) it.next();
+        for (DbJoin pair : joins) {
             DbJoin reverseJoin = pair.createReverseJoin();
 
             // since reverse relationship is not yet initialized,

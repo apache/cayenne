@@ -69,10 +69,7 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
         String defaultSchema = dataMap.getDefaultSchema();
 
         // set schema for DbEntities
-        Iterator dbEntities = dataMap.getDbEntities().iterator();
-        while (dbEntities.hasNext()) {
-            DbEntity entity = (DbEntity) dbEntities.next();
-            
+        for (DbEntity entity : dataMap.getDbEntities()) {
             if (doAll || Util.isEmptyString(entity.getSchema())) {
                 if (!Util.nullSafeEquals(defaultSchema, entity.getSchema())) {
                     entity.setSchema(defaultSchema);
@@ -85,9 +82,7 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
         }
 
         // set schema for procedures...
-        Iterator procedures = dataMap.getProcedures().iterator();
-        while (procedures.hasNext()) {
-            Procedure procedure = (Procedure) procedures.next();
+        for (Procedure procedure : dataMap.getProcedures()) {
             if (doAll || Util.isEmptyString(procedure.getSchema())) {
                 if (!Util.nullSafeEquals(defaultSchema, procedure.getSchema())) {
                     procedure.setSchema(defaultSchema);

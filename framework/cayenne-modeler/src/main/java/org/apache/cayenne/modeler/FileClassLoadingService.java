@@ -69,9 +69,8 @@ public class FileClassLoadingService implements ClassLoadingService {
         pathFiles.clear();
         classLoader = null;
 
-        Iterator it = files.iterator();
-        while (it.hasNext()) {
-            addFile((File) it.next());
+        for (File file : files) {
+            addFile(file);
         }
     }
 
@@ -113,13 +112,10 @@ public class FileClassLoadingService implements ClassLoadingService {
             super(new URL[0], parent);
         }
 
-        FileClassLoader(ClassLoader parent, List files) {
+        FileClassLoader(ClassLoader parent, List<File> files) {
             this(parent);
 
-            Iterator it = files.iterator();
-            while (it.hasNext()) {
-                File file = (File) it.next();
-
+            for (File file : files) {
                 // I guess here we have to quetly ignore invalid URLs...
                 try {
                     addURL(file.toURI().toURL());

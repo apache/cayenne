@@ -572,10 +572,9 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         });
 
         // Clean up map from the nodes
-        Iterator nodes = new ArrayList(domain.getDataNodes()).iterator();
-        while (nodes.hasNext()) {
-            removeNode(new Object[] {
-                    domain, nodes.next(), map
+        for (DataNode dataNode : new ArrayList<DataNode>(domain.getDataNodes())) {
+            removeNode(new Object[]{
+                    domain, dataNode, map
             });
         }
     }

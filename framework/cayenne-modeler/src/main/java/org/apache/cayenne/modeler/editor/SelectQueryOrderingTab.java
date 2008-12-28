@@ -264,9 +264,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         }
 
         // check if such ordering already exists
-        Iterator it = selectQuery.getOrderings().iterator();
-        while (it.hasNext()) {
-            Ordering ord = (Ordering) it.next();
+        for (Ordering ord : selectQuery.getOrderings()) {
             if (orderingPath.equals(ord.getSortSpecString())) {
                 return;
             }

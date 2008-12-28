@@ -215,11 +215,8 @@ public abstract class GeneratorController extends CayenneController {
         }
 
         {
-            Iterator it = entity.getRelationships().iterator();
-            while (it.hasNext()) {
-
-                ValidationFailure failure = validateRelationship((ObjRelationship) it
-                        .next(), clientValidation);
+            for (ObjRelationship rel : entity.getRelationships()) {
+                ValidationFailure failure = validateRelationship(rel, clientValidation);
                 if (failure != null) {
                     validationBuffer.addFailure(failure);
                     return;

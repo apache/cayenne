@@ -49,10 +49,10 @@ public class TableSelectorController extends CayenneController {
     protected ObjectBinding tableBinding;
 
     protected DbEntity table;
-    protected List tables;
+    protected List<DbEntity> tables;
     protected int permanentlyExcludedCount;
     protected Map excludedTables;
-    protected List selectableTablesList;
+    protected List<DbEntity> selectableTablesList;
     protected Map validationMessages;
 
     public TableSelectorController(ProjectController parent) {
@@ -184,22 +184,18 @@ public class TableSelectorController extends CayenneController {
         int validationCode = validator.validate();
         if (validationCode >= ValidationDisplayHandler.WARNING) {
 
-            Iterator it = validator.validationResults().iterator();
-            while (it.hasNext()) {
-                ValidationInfo nextProblem = (ValidationInfo) it.next();
+            for (ValidationInfo nextProblem : validator.validationResults()) {
                 Entity failedEntity = null;
 
                 if (nextProblem.getValidatedObject() instanceof DbAttribute) {
                     DbAttribute failedAttribute = (DbAttribute) nextProblem
                             .getValidatedObject();
                     failedEntity = failedAttribute.getEntity();
-                }
-                else if (nextProblem.getValidatedObject() instanceof DbRelationship) {
+                } else if (nextProblem.getValidatedObject() instanceof DbRelationship) {
                     DbRelationship failedRelationship = (DbRelationship) nextProblem
                             .getValidatedObject();
                     failedEntity = failedRelationship.getSourceEntity();
-                }
-                else if (nextProblem.getValidatedObject() instanceof DbEntity) {
+                } else if (nextProblem.getValidatedObject() instanceof DbEntity) {
                     failedEntity = (Entity) nextProblem.getValidatedObject();
                 }
 
@@ -215,10 +211,7 @@ public class TableSelectorController extends CayenneController {
         // Find selectable tables
         permanentlyExcludedCount = excludedTables.size();
         selectableTablesList.clear();
-        Iterator tablesIt = tables.iterator();
-        while (tablesIt.hasNext()) {
-            DbEntity table = (DbEntity) tablesIt.next();
-            
+        for (DbEntity table : tables) {
             if (false == excludedTables.containsKey(table.getName())) {
                 selectableTablesList.add(table);
             }
@@ -233,9 +226,7 @@ public class TableSelectorController extends CayenneController {
         boolean isCheckAllSelected = view.getCheckAll().isSelected();
         
         // now do a pass through the selectable tables and reset selected status
-        Iterator tablesIt = selectableTablesList.iterator();
-        while (tablesIt.hasNext()) {
-            table = (DbEntity) tablesIt.next();
+        for (DbEntity table : selectableTablesList) {
             setIncluded(isCheckAllSelected);
         }
         

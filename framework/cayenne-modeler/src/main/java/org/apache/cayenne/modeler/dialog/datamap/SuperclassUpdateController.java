@@ -67,9 +67,7 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
         boolean doAll = ((DefaultsPreferencesModel) getModel()).isAllEntities();
         String defaultSuperclass = getSuperclass();
 
-        Iterator it = dataMap.getObjEntities().iterator();
-        while (it.hasNext()) {
-            ObjEntity entity = (ObjEntity) it.next();
+        for (ObjEntity entity : dataMap.getObjEntities()) {
             if (doAll || Util.isEmptyString(getSuperClassName(entity))) {
                 if (!Util.nullSafeEquals(defaultSuperclass, getSuperClassName(entity))) {
                     setSuperClassName(entity, defaultSuperclass);

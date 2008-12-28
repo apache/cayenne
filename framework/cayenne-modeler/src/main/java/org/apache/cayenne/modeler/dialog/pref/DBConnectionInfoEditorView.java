@@ -20,12 +20,11 @@
 package org.apache.cayenne.modeler.dialog.pref;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -45,7 +44,7 @@ public class DBConnectionInfoEditorView extends JPanel {
     protected JTextField userName;
     protected JPasswordField password;
 
-    protected Collection labels;
+    protected Collection<JLabel> labels;
     
     protected DefaultFormBuilder builder;
 
@@ -104,10 +103,8 @@ public class DBConnectionInfoEditorView extends JPanel {
     public void setEnabled(boolean enabled) {
         if (isEnabled() != enabled) {
             super.setEnabled(enabled);
-            Iterator it = labels.iterator();
-            while (it.hasNext()) {
-                Component c = (Component) it.next();
-                c.setEnabled(enabled);
+            for (JLabel label : labels) {
+                label.setEnabled(enabled);
             }
 
             adapters.setEnabled(enabled);

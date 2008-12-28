@@ -131,11 +131,9 @@ public class FindDialog extends CayenneController {
         Color color = view.getOkButton().getBackground();        
         EntityButtonsIdListAndButtonId = new HashMap<Integer, Integer>();
         Integer idEntityButtons = 0;
-        Iterator it = view.getEntityButtons().iterator();
-        while (it.hasNext()) {
-            JButton b = (JButton) it.next();
+        for (JButton b : view.getEntityButtons()) {
             b.addActionListener(new JumpToResultActionListener());
-            b.addKeyListener(new JumpToResultsKeyListener());  
+            b.addKeyListener(new JumpToResultsKeyListener());
             EntityButtonsIdListAndButtonId.put(((FindDialogView.EntityButtonModel) b.getModel()).getIndex().intValue(), idEntityButtons);
             idEntityButtons++;
         }        

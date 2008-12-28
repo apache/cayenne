@@ -87,20 +87,14 @@ public class LockingUpdateController extends CayenneController {
         boolean updateRelationships = view.getRelationships().isSelected();
         ProjectController parent = (ProjectController) getParent();
 
-        Iterator it = dataMap.getObjEntities().iterator();
-        while (it.hasNext()) {
-            ObjEntity entity = (ObjEntity) it.next();
-
+        for (ObjEntity entity : dataMap.getObjEntities()) {
             if (updateEntities && defaultLockType != entity.getDeclaredLockType()) {
                 entity.setDeclaredLockType(defaultLockType);
                 parent.fireObjEntityEvent(new EntityEvent(this, entity));
             }
 
             if (updateAttributes) {
-                Iterator attributes = entity.getAttributes().iterator();
-                while (attributes.hasNext()) {
-
-                    ObjAttribute a = (ObjAttribute) attributes.next();
+                for (ObjAttribute a : entity.getAttributes()) {
                     if (a.isUsedForLocking() != on) {
                         a.setUsedForLocking(on);
                         parent.fireObjAttributeEvent(new AttributeEvent(this, a, entity));
@@ -109,10 +103,7 @@ public class LockingUpdateController extends CayenneController {
             }
 
             if (updateRelationships) {
-                Iterator relationships = entity.getRelationships().iterator();
-                while (relationships.hasNext()) {
-
-                    ObjRelationship r = (ObjRelationship) relationships.next();
+                for (ObjRelationship r : entity.getRelationships()) {
                     if (r.isUsedForLocking() != on) {
                         r.setUsedForLocking(on);
                         parent.fireObjRelationshipEvent(new RelationshipEvent(

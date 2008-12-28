@@ -115,19 +115,13 @@ public class EntityTreeModel implements TreeModel {
                 List<Object> nodes = new Vector<Object>();
                                 
                 // combine two collections in an array
-                Iterator<? extends Attribute> ait = attributes.iterator();
-                while (ait.hasNext()) {
-                    Attribute attr = ait.next(); 
-                    
+                for (Attribute attr : attributes) {
                     if (filter == null || filter.attributeMatch(node, attr)) {
                         nodes.add(attr);
                     }
                 }
 
-                Iterator<? extends Relationship> rit = relationships.iterator();
-                while (rit.hasNext()) {
-                    Relationship rel = rit.next();
-                    
+                for (Relationship rel : relationships) {
                     if (filter == null || filter.relationshipMatch(node, rel)) {
                         nodes.add(rel);
                     }
