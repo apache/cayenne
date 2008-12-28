@@ -101,7 +101,7 @@ public class CodeTemplateManager {
         this.customTemplates = new HashMap<String, String>(templates.size(), 1);
 
         for (Map.Entry<String, FSPath> entry : templates.entrySet()) {
-            FSPath path = (FSPath) entry.getValue();
+            FSPath path = entry.getValue();
             customTemplates.put(entry.getKey(), path.getPath());
         }
     }

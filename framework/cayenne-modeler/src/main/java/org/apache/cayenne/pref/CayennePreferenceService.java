@@ -100,7 +100,7 @@ public abstract class CayennePreferenceService implements PreferenceService {
             return null;
         }
 
-        Domain domain = (Domain) getDataContext().newObject(Domain.class);
+        Domain domain = getDataContext().newObject(Domain.class);
         domain.setLevel(new Integer(0));
         domain.setName(name);
         savePreferences();

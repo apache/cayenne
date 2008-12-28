@@ -116,24 +116,19 @@ public abstract class GeneratorController extends CayenneController {
 
         // no destination folder
         if (outputDir == null) {
-            JOptionPane.showMessageDialog(
-                    (Component) this.getView(),
-                    "Select directory for source files.");
+            JOptionPane.showMessageDialog(this.getView(), "Select directory for source files.");
             return null;
         }
 
         // no such folder
         if (!outputDir.exists() && !outputDir.mkdirs()) {
-            JOptionPane.showMessageDialog(
-                    (Component) this.getView(),
-                    "Can't create directory " + outputDir + ". Select a different one.");
+            JOptionPane.showMessageDialog(this.getView(), "Can't create directory " + outputDir + ". Select a different one.");
             return null;
         }
 
         // not a directory
         if (!outputDir.isDirectory()) {
-            JOptionPane.showMessageDialog((Component) this.getView(), outputDir
-                    + " is not a valid directory.");
+            JOptionPane.showMessageDialog(this.getView(), outputDir + " is not a valid directory.");
             return null;
         }
 

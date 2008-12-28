@@ -185,7 +185,7 @@ public class SQLTemplateMainTab extends JPanel {
         SQLTemplate template = getQuery();
         if (template != null) {
             // in case of null entity, set root to DataMap
-            Object root = entity != null ? (Object) entity : mediator.getCurrentDataMap();
+            Object root = entity != null ? entity : mediator.getCurrentDataMap();
             template.setRoot(root);
 
             mediator.fireQueryEvent(new QueryEvent(this, template));

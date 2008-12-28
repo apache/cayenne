@@ -73,7 +73,7 @@ public abstract class MapModel extends BasicModel {
     }
 
     public String getProperty(String key) {
-        String value = (map != null) ? (String) map.get(key) : null;
+        String value = (map != null) ? map.get(key) : null;
         return (value != null) ? value : defaultForKey(key);
     }
 

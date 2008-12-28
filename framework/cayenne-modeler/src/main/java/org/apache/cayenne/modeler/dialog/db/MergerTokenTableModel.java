@@ -84,7 +84,7 @@ public class MergerTokenTableModel extends AbstractTableModel {
     }
 
     public MergerToken getToken(int rowIndex) {
-        return (MergerToken) tokens.get(rowIndex);
+        return tokens.get(rowIndex);
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {

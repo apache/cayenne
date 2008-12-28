@@ -63,8 +63,7 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
 
     public PreferenceDetail createDetail(Domain domain, String key) {
         domain = editableInstance(domain);
-        DomainPreference preference = (DomainPreference) getEditingContext().newObject(
-                DomainPreference.class);
+        DomainPreference preference = getEditingContext().newObject(DomainPreference.class);
         preference.setDomain(domain);
         preference.setKey(key);
 
@@ -73,8 +72,7 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
 
     public PreferenceDetail createDetail(Domain domain, String key, Class javaClass) {
         domain = editableInstance(domain);
-        DomainPreference preferenceLink = (DomainPreference) getEditingContext()
-                .newObject(DomainPreference.class);
+        DomainPreference preferenceLink = getEditingContext().newObject(DomainPreference.class);
         preferenceLink.setDomain(domain);
         preferenceLink.setKey(key);
 

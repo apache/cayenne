@@ -79,7 +79,7 @@ public class ValidateAction extends CayenneAction {
 			return false;
 		}
 
-		Project project = (Project)path.firstInstanceOf(Project.class);
+		Project project = path.firstInstanceOf(Project.class);
 		return project != null;
 	}
 }

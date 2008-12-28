@@ -221,8 +221,7 @@ public class Domain extends _Domain {
                 return null;
             }
 
-            preferenceLink = (DomainPreference) getObjectContext().newObject(
-                    DomainPreference.class);
+            preferenceLink = getObjectContext().newObject(DomainPreference.class);
             preferenceLink.setDomain(this);
             preferenceLink.setKey(key);
             getObjectContext().commitChanges();
