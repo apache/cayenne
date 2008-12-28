@@ -238,8 +238,8 @@ public abstract class CayenneTableModel extends AbstractTableModel {
             }
 
             try {
-                Comparable p1 = (Comparable) getter.invoke(o1, null);
-                Comparable p2 = (Comparable) getter.invoke(o2, null);
+                Comparable p1 = (Comparable) getter.invoke(o1);
+                Comparable p2 = (Comparable) getter.invoke(o2);
 
                 return (p1 == null) ? -1 : p1.compareTo(p2);
             }
