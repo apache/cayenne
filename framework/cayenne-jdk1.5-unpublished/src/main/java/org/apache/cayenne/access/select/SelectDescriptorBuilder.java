@@ -123,9 +123,10 @@ public class SelectDescriptorBuilder {
             throw new UnsupportedOperationException("TODO: DbEntity based queries");
         }
 
-        if (classDescriptor.getEntityInheritanceTree() != null) {
+        if (classDescriptor.getEntityInheritanceTree() != null
+                || classDescriptor.getSuperclassDescriptor() != null) {
             return new EntityTreeSegmentBuilder(metadata, extendedTypes, classDescriptor)
-                    .getDescriptor();
+                    .buildSegment();
         }
         else {
             return new EntitySegmentBuilder(metadata, extendedTypes, classDescriptor

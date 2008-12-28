@@ -32,13 +32,96 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.inherit.AbstractPerson;
+import org.apache.cayenne.testdo.inherit.CustomerRepresentative;
 import org.apache.cayenne.unit.PeopleCase;
 
 import com.mockrunner.mock.jdbc.MockResultSet;
 
 public class EntityTreeSegmentBuilderTest extends PeopleCase {
 
-    public void testGetDescriptorColumns() {
+    public void testBuildSegmentColumnsLeaf() {
+
+        SelectQuery query = new SelectQuery(CustomerRepresentative.class);
+
+        EntityResolver resolver = getDomain().getEntityResolver();
+        QueryMetadata md = query.getMetaData(resolver);
+        ClassDescriptor descriptor = md.getClassDescriptor();
+        ExtendedTypeMap converters = getDomain()
+                .getDataNodes()
+                .iterator()
+                .next()
+                .getAdapter()
+                .getExtendedTypes();
+
+        SelectDescriptor<Object> select = new EntityTreeSegmentBuilder(
+                md,
+                converters,
+                descriptor).buildSegment();
+
+        List<? extends SelectColumn> columns = select.getColumns();
+
+        Collection<String> columnNames = new ArrayList<String>(Arrays.asList(
+                "CLIENT_COMPANY_ID",
+                "CLIENT_CONTACT_TYPE",
+                "NAME",
+                "PERSON_ID",
+                "PERSON_TYPE"));
+
+        for (SelectColumn column : columns) {
+            columnNames.remove(column.getDataRowKey());
+        }
+
+        assertTrue("Missing columns: " + columnNames, columnNames.isEmpty());
+        assertEquals("Unexpected columns present", 5, columns.size());
+    }
+
+    public void testBuildSegmentRowReaderInheritanceLeaf() throws Exception {
+
+        SelectQuery query = new SelectQuery(CustomerRepresentative.class);
+
+        EntityResolver resolver = getDomain().getEntityResolver();
+        QueryMetadata md = query.getMetaData(resolver);
+        ClassDescriptor descriptor = md.getClassDescriptor();
+        ExtendedTypeMap converters = getDomain()
+                .getDataNodes()
+                .iterator()
+                .next()
+                .getAdapter()
+                .getExtendedTypes();
+
+        SelectDescriptor<Object> select = new EntityTreeSegmentBuilder(
+                md,
+                converters,
+                descriptor).buildSegment();
+
+        List<? extends SelectColumn> columns = select.getColumns();
+
+        Map<String, Object> crRowMap = new HashMap<String, Object>();
+        crRowMap.put("PERSON_ID", 3);
+        crRowMap.put("PERSON_TYPE", "C");
+        crRowMap.put("NAME", "E2");
+        crRowMap.put("CLIENT_CONTACT_TYPE", "XX");
+        crRowMap.put("CLIENT_COMPANY_ID", 3);
+
+        List<Object> crRow = new ArrayList<Object>();
+
+        MockResultSet rs = new MockResultSet("test");
+        for (SelectColumn column : columns) {
+            rs.addColumn(column.getColumnName(0, null));
+            crRow.add(crRowMap.get(column.getDataRowKey()));
+        }
+
+        rs.addRow(crRow);
+
+        RowReader<Object> reader = select.getRowReader(rs);
+
+        rs.next();
+        DataRow crRowRead = (DataRow) reader.readRow(rs);
+        assertEquals("CustomerRepresentative", crRowRead.getEntityName());
+        assertEquals("Invalid row read: " + crRowRead, crRowMap, crRowRead);
+    }
+
+    public void testBuildSegmentColumns() {
 
         SelectQuery query = new SelectQuery(AbstractPerson.class);
 
@@ -55,7 +138,7 @@ public class EntityTreeSegmentBuilderTest extends PeopleCase {
         SelectDescriptor<Object> select = new EntityTreeSegmentBuilder(
                 md,
                 converters,
-                descriptor).getDescriptor();
+                descriptor).buildSegment();
 
         List<? extends SelectColumn> columns = select.getColumns();
 
@@ -76,7 +159,7 @@ public class EntityTreeSegmentBuilderTest extends PeopleCase {
         assertEquals("Unexpected columns present", 7, columns.size());
     }
 
-    public void testGetDescriptorRowReader() throws Exception {
+    public void testBuildSegmentRowReader() throws Exception {
         SelectQuery query = new SelectQuery(AbstractPerson.class);
 
         EntityResolver resolver = getDomain().getEntityResolver();
@@ -92,7 +175,7 @@ public class EntityTreeSegmentBuilderTest extends PeopleCase {
         SelectDescriptor<Object> select = new EntityTreeSegmentBuilder(
                 md,
                 converters,
-                descriptor).getDescriptor();
+                descriptor).buildSegment();
 
         List<? extends SelectColumn> columns = select.getColumns();
 
@@ -143,5 +226,15 @@ public class EntityTreeSegmentBuilderTest extends PeopleCase {
                 "Invalid row read: " + employeeRowRead,
                 employeeRowMap,
                 employeeRowRead);
+
+        rs.next();
+        DataRow managerRowRead = (DataRow) reader.readRow(rs);
+        assertEquals("Manager", managerRowRead.getEntityName());
+        assertEquals("Invalid row read: " + managerRowRead, managerRowMap, managerRowRead);
+
+        rs.next();
+        DataRow crRowRead = (DataRow) reader.readRow(rs);
+        assertEquals("CustomerRepresentative", crRowRead.getEntityName());
+        assertEquals("Invalid row read: " + crRowRead, crRowMap, crRowRead);
     }
 }

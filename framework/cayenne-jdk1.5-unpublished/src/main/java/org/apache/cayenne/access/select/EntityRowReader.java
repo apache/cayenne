@@ -95,17 +95,18 @@ class EntityRowReader implements RowReader<Object> {
     public Object readRow(ResultSet resultSet) throws CayenneException {
         DataRow row = new DataRow(mapCapacity);
         row.setEntityName(entityName);
+        
+        fillRow(resultSet, row);
+        
+        return row;
+    }
+
+    private final void fillRow(ResultSet resultSet, DataRow row) throws CayenneException {
 
         if (superReader != null) {
             superReader.fillRow(resultSet, row);
         }
 
-        fillRow(resultSet, row);
-
-        return row;
-    }
-
-    private final void fillRow(ResultSet resultSet, DataRow row) throws CayenneException {
         int len = converters.length;
 
         try {

@@ -27,10 +27,14 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTTrue;
 import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
+ * Builder of the non-leaf entity segment that has at least one subclass or superclass or
+ * any combination of them.
+ * 
  * @since 3.0
  */
 class EntityTreeSegmentBuilder {
@@ -58,17 +62,35 @@ class EntityTreeSegmentBuilder {
         this.columnMap = new HashMap<String, Integer>();
     }
 
-    SelectDescriptor<Object> getDescriptor() {
+    SelectDescriptor<Object> buildSegment() {
 
         EntityInheritanceTree inheritanceTree = classDescriptor
                 .getEntityInheritanceTree();
 
-        if (inheritanceTree == null) {
-            throw new IllegalStateException(
-                    "EntityNonUnionTreeSegmentBuilder should only be used when inheritance is involved.");
+        // non-leaf entity
+        if (inheritanceTree != null) {
+            return buildNonLeafSegment(inheritanceTree);
+        }
+        // leaf entity
+        else {
+            return buildLeafSegment();
+        }
+    }
+
+    SelectDescriptor<Object> buildLeafSegment() {
+        EntityRowReader rowReader = processSuperclasses(classDescriptor.getEntity());
+        return new EntitySegment(rowReader, columns);
+    }
+
+    SelectDescriptor<Object> buildNonLeafSegment(EntityInheritanceTree inheritanceTree) {
+        EntityRowReader superRowReader = null;
+
+        ObjEntity superEntity = classDescriptor.getEntity().getSuperEntity();
+        if (superEntity != null) {
+            superRowReader = processSuperclasses(superEntity);
         }
 
-        appendColumns(inheritanceTree, null);
+        processSubclasses(inheritanceTree, superRowReader);
 
         RowReader<Object> discriminatorReader = mergeColumns(
                 null,
@@ -79,6 +101,8 @@ class EntityTreeSegmentBuilder {
                 .toArray(new Expression[size]);
         RowReader<Object>[] entityReaders = this.entityReaders
                 .toArray(new RowReader[size]);
+
+        // if subclasses are involved, change RowReader to a compound RowReader...
         RowReader<Object> rowReader = new EntityTreeRowReader(
                 discriminatorReader,
                 entityQualifiers,
@@ -113,17 +137,34 @@ class EntityTreeSegmentBuilder {
         return new EntityRowReader(entityName, columnsToMerge, indexes);
     }
 
-    private void appendColumns(EntityInheritanceTree node, EntityRowReader superReader) {
+    private EntityRowReader processSuperclasses(ObjEntity entity) {
 
-        EntityRowReader reader = processNode(node);
+        List<EntitySelectColumn> entityColumns = new EntitySegmentBuilder(
+                metadata,
+                extendedTypes,
+                entity).buildColumns();
+
+        EntityRowReader rowReader = mergeColumns(entity.getName(), entityColumns);
+
+        ObjEntity superEntity = entity.getSuperEntity();
+        if (superEntity != null) {
+            rowReader.setSuperReader(processSuperclasses(superEntity));
+        }
+
+        return rowReader;
+    }
+
+    private void processSubclasses(EntityInheritanceTree node, EntityRowReader superReader) {
+
+        EntityRowReader reader = processSubclass(node);
         reader.setSuperReader(superReader);
-        
+
         for (EntityInheritanceTree childNode : node.getChildren()) {
-            appendColumns(childNode, reader);
+            processSubclasses(childNode, reader);
         }
     }
 
-    private EntityRowReader processNode(EntityInheritanceTree node) {
+    private EntityRowReader processSubclass(EntityInheritanceTree node) {
 
         List<EntitySelectColumn> entityColumns = new EntitySegmentBuilder(
                 metadata,
@@ -138,7 +179,6 @@ class EntityTreeSegmentBuilder {
         // record entity qualifier and row reader...
         if (!node.getEntity().isAbstract()) {
 
-            // register DB qualifier
             Expression qualifier = node.getDbQualifier();
 
             if (qualifier == null) {
@@ -146,12 +186,9 @@ class EntityTreeSegmentBuilder {
             }
 
             entityQualifiers.add(qualifier);
-
-            // TODO: this row reader has incorrect offset and doesn't take into account
-            // superclass columns
             entityReaders.add(rowReader);
         }
-        
+
         return rowReader;
     }
 }

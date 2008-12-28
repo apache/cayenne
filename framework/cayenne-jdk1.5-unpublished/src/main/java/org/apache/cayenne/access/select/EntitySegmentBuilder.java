@@ -30,6 +30,8 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.QueryMetadata;
 
 /**
+ * Builder of the leaf entity segment that has no persistent subclasses or superclasses.
+ * 
  * @since 3.0
  */
 class EntitySegmentBuilder extends MappedColumnBuilder {
