@@ -55,7 +55,7 @@ public class BrowserControl {
             else if (OperatingSystem.getOS() == OperatingSystem.MAC_OS_X) {
                 Class<?> fileManager = Class.forName("com.apple.eio.FileManager");
                 Method openURL = fileManager.getDeclaredMethod("openURL", String.class);
-                openURL.invoke(null, new Object[] {url});
+                openURL.invoke(null, url);
             }
             else { // assume Unix or Linux
                 String[] browsers = {

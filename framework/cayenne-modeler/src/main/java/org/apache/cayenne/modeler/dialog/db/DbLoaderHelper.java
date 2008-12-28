@@ -61,9 +61,7 @@ public class DbLoaderHelper {
 
     // TODO: this is a temp hack... need to delegate to DbAdapter, or configurable in
     // preferences...
-    private static final Collection EXCLUDED_TABLES = Arrays.asList(new Object[] {
-            "AUTO_PK_SUPPORT", "auto_pk_support"
-    });
+    private static final Collection EXCLUDED_TABLES = Arrays.asList("AUTO_PK_SUPPORT", "auto_pk_support");
 
     static DbLoaderMergeDialog mergeDialog;
 

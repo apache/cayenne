@@ -132,7 +132,7 @@ public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
          */
         try {
             Method method = classTo.getMethod("valueOf", new Class[]{String.class});
-            return method.invoke(null, new Object[] { value});
+            return method.invoke(null, value);
         }
         catch (Exception ignored) {}
         

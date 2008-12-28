@@ -52,14 +52,11 @@ public class BeanActionBinding extends BindingBase {
                     if (ActionListener.class
                             .isAssignableFrom(event.getListenerType())) {
 
-                        event.getAddListenerMethod().invoke(component, new Object[]{
-                                new ActionListener() {
-
+                        event.getAddListenerMethod().invoke(component, new ActionListener() {
                                     public void actionPerformed(ActionEvent e) {
                                         fireAction();
                                     }
-                                }
-                        });
+                                });
 
                         foundActionEvents = true;
                         break;
