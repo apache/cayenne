@@ -52,8 +52,8 @@ public class PanelFactory {
         panel.setBorder(BorderFactory.createEmptyBorder(3, 20, 3, 7));
         panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-        for (int i = 0; i < buttons.length; i++) {
-            panel.add(buttons[i]);
+        for (JButton button : buttons) {
+            panel.add(button);
         }
 
         return panel;
@@ -154,10 +154,10 @@ public class PanelFactory {
         JScrollPane scroll_pane = new JScrollPane(table);
         temp_panel.add(scroll_pane, BorderLayout.CENTER);
 
-        for (int i = 0; i < components.length; i++) {
+        for (JComponent component : components) {
             JPanel temp = new JPanel(new BorderLayout());
             temp.add(temp_panel, BorderLayout.CENTER);
-            temp.add(components[i], BorderLayout.SOUTH);
+            temp.add(component, BorderLayout.SOUTH);
             temp_panel = temp;
         }
 

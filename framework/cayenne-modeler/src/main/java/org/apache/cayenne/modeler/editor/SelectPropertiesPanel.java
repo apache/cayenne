@@ -202,8 +202,8 @@ public abstract class SelectPropertiesPanel extends JPanel {
 
         Container mainPanel = (Container) getComponent(0);
         Component[] children = mainPanel.getComponents();
-        for (int i = 0; i < children.length; i++) {
-            children[i].setEnabled(flag);
+        for (Component child : children) {
+            child.setEnabled(flag);
         }
     }
 

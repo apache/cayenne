@@ -52,8 +52,8 @@ public abstract class DataSourceEditor extends CayenneController {
         if (!Util.nullSafeEquals(this.node, node)) {
             this.node = node;
 
-            for (int i = 0; i < fieldAdapters.length; i++) {
-                fieldAdapters[i].updateView();
+            for (ObjectBinding fieldAdapter : fieldAdapters) {
+                fieldAdapter.updateView();
             }
         }
     }
@@ -69,8 +69,8 @@ public abstract class DataSourceEditor extends CayenneController {
     protected abstract void prepareBindings(BindingBuilder builder);
 
     protected void refreshView() {
-        for (int i = 0; i < fieldAdapters.length; i++) {
-            fieldAdapters[i].updateView();
+        for (ObjectBinding fieldAdapter : fieldAdapters) {
+            fieldAdapter.updateView();
         }
     }
 }

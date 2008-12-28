@@ -267,8 +267,7 @@ public class MergerOptions extends CayenneController {
                     dataSource,
                     adapter);
             boolean modelChanged = false;
-            for (Iterator<MergerToken> it = tokensToMigrate.iterator(); it.hasNext();) {
-                MergerToken tok = it.next();
+            for (MergerToken tok : tokensToMigrate) {
                 int numOfFailuresBefore = mergerContext
                         .getValidationResult()
                         .getFailures()
@@ -277,7 +276,7 @@ public class MergerOptions extends CayenneController {
                 if (!modelChanged && tok.getDirection().equals(MergeDirection.TO_MODEL)) {
                     modelChanged = true;
                 }
-                
+
                 if (numOfFailuresBefore == mergerContext
                         .getValidationResult()
                         .getFailures()

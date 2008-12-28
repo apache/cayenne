@@ -99,13 +99,13 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
         ProjectController mediator = getProjectController();
         DbEntity entity = mediator.getCurrentDbEntity();
         DbAttribute[] attribs = mediator.getCurrentDbAttributes();
-        
-        for (int i = 0; i < attribs.length; i++) {
-            entity.removeAttribute(attribs[i].getName());
+
+        for (DbAttribute attrib : attribs) {
+            entity.removeAttribute(attrib.getName());
 
             AttributeEvent e = new AttributeEvent(
                     Application.getFrame(),
-                    attribs[i],
+                    attrib,
                     entity,
                     MapEvent.REMOVE);
             mediator.fireDbAttributeEvent(e);
@@ -119,12 +119,12 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
         ObjEntity entity = mediator.getCurrentObjEntity();
         
         ObjAttribute[] attribs = mediator.getCurrentObjAttributes();
-        
-        for (int i = 0; i < attribs.length; i++) {
-            entity.removeAttribute(attribs[i].getName());
+
+        for (ObjAttribute attrib : attribs) {
+            entity.removeAttribute(attrib.getName());
             AttributeEvent e = new AttributeEvent(
                     Application.getFrame(),
-                    attribs[i],
+                    attrib,
                     entity,
                     MapEvent.REMOVE);
             mediator.fireObjAttributeEvent(e);

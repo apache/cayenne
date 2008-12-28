@@ -99,14 +99,14 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
         ProjectController mediator = getProjectController();
         ObjEntity entity = mediator.getCurrentObjEntity();
         ObjRelationship[] rels = mediator.getCurrentObjRelationships();
-        
-        for (int i = 0; i < rels.length; i++) {
-            entity.removeRelationship(rels[i].getName());
+
+        for (ObjRelationship rel : rels) {
+            entity.removeRelationship(rel.getName());
             RelationshipEvent e = new RelationshipEvent(
-                Application.getFrame(),
-                rels[i],
-                entity,
-                MapEvent.REMOVE);
+                    Application.getFrame(),
+                    rel,
+                    entity,
+                    MapEvent.REMOVE);
             mediator.fireObjRelationshipEvent(e);
         }
     }
@@ -115,15 +115,15 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
         ProjectController mediator = getProjectController();
         DbEntity entity = mediator.getCurrentDbEntity();
         DbRelationship[] rels = mediator.getCurrentDbRelationships();
-        
-        for (int i = 0; i < rels.length; i++) {
-            entity.removeRelationship(rels[i].getName());
+
+        for (DbRelationship rel : rels) {
+            entity.removeRelationship(rel.getName());
 
             RelationshipEvent e = new RelationshipEvent(
-                Application.getFrame(),
-                rels[i],
-                entity,
-                MapEvent.REMOVE);
+                    Application.getFrame(),
+                    rel,
+                    entity,
+                    MapEvent.REMOVE);
             mediator.fireDbRelationshipEvent(e);
         }
         

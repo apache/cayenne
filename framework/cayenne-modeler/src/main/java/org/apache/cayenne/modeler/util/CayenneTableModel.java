@@ -216,9 +216,9 @@ public abstract class CayenneTableModel extends AbstractTableModel {
             BeanInfo info = Introspector.getBeanInfo(beanClass);
             PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
 
-            for (int i = 0; i < descriptors.length; i++) {
-                if (propertyName.equals(descriptors[i].getName())) {
-                    return descriptors[i].getReadMethod();
+            for (PropertyDescriptor descriptor : descriptors) {
+                if (propertyName.equals(descriptor.getName())) {
+                    return descriptor.getReadMethod();
                 }
             }
 

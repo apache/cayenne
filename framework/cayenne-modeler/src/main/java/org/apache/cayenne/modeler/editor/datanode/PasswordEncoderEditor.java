@@ -113,13 +113,10 @@ public class PasswordEncoderEditor extends CayenneController  {
             getView().setVisible(false);
             return;
         }
-        
-        for (int i = 0; i < bindings.length; i++) {
-            bindings[i].updateView();
-        }
 
-        
-        
+        for (ObjectBinding binding : bindings) {
+            binding.updateView();
+        }
     }
     
     public void validatePasswordEncoderAction()

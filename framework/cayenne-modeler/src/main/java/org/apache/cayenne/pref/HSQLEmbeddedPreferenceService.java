@@ -192,15 +192,15 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
         Version currentVersion = new Version(versionName);
         Version previousVersion = new Version("0");
         File lastDir = null;
-        for (int i = 0; i < prefs.length; i++) {
-            File dir = new File(prefsDir, prefs[i]);
+        for (String pref : prefs) {
+            File dir = new File(prefsDir, pref);
             if (dir.isDirectory() && new File(dir, baseName + ".properties").isFile()) {
 
                 // check that there are DB files
 
                 Version v;
                 try {
-                    v = new Version(prefs[i]);
+                    v = new Version(pref);
                 }
                 catch (NumberFormatException nfex) {
                     // ignore... not a version dir...
@@ -230,14 +230,13 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
 
         File[] filesToMove = dbDirectory.listFiles(new HSQLDBFileFilter(masterBaseName));
         if (filesToMove != null) {
-            for (int i = 0; i < filesToMove.length; i++) {
-                String ext = Util.extractFileExtension(filesToMove[i].getName());
+            for (File fileToMove : filesToMove) {
+                String ext = Util.extractFileExtension(fileToMove.getName());
 
                 File target = new File(dbDirectory, targetBaseName + "." + ext);
-                if (filesToMove[i].exists()) {
-                    filesToMove[i].renameTo(target);
-                }
-                else {
+                if (fileToMove.exists()) {
+                    fileToMove.renameTo(target);
+                } else {
                     target.delete();
                 }
             }
@@ -257,14 +256,13 @@ public class HSQLEmbeddedPreferenceService extends CayennePreferenceService {
         File[] filesToCopy = sourceDirectory.listFiles(new HSQLDBFileFilter(
                 masterBaseName));
         if (filesToCopy != null) {
-            for (int i = 0; i < filesToCopy.length; i++) {
-                String ext = Util.extractFileExtension(filesToCopy[i].getName());
+            for (File fileToCopy : filesToCopy) {
+                String ext = Util.extractFileExtension(fileToCopy.getName());
 
                 File target = new File(dbDirectory, targetBaseName + "." + ext);
-                if (filesToCopy[i].exists()) {
-                    Util.copy(filesToCopy[i], target);
-                }
-                else {
+                if (fileToCopy.exists()) {
+                    Util.copy(fileToCopy, target);
+                } else {
                     target.delete();
                 }
             }

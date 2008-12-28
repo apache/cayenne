@@ -65,7 +65,7 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
     /**
      * @return returns entity listeners list
      */
-    protected abstract List getEntityListeners();
+    protected abstract List<EntityListener> getEntityListeners();
 
     /**
      * @return action for removing entity listeners
@@ -178,8 +178,7 @@ public abstract class AbstractCallbackListenersTab extends AbstractCallbackMetho
         List entityListeners = getEntityListeners();
         List listenerClasses = new ArrayList();
         if (entityListeners !=  null) {
-            for (Iterator i = getEntityListeners().iterator(); i.hasNext();) {
-                EntityListener entityListener = (EntityListener)i.next();
+            for (EntityListener entityListener : getEntityListeners()) {
                 listenerClasses.add(entityListener.getClassName());
             }
         }

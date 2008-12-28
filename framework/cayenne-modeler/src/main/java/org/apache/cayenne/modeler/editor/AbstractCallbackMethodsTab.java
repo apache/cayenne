@@ -304,10 +304,11 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         List methods = new ArrayList();
         CallbackDescriptor descriptor = null;
         CallbackMap callbackMap = getCallbackMap();
+
         if (callbackMap != null && callbackType != null) {
             descriptor = callbackMap.getCallbackDescriptor(callbackType.getType());
-            for (Iterator j = descriptor.getCallbackMethods().iterator(); j.hasNext();) {
-                methods.add(j.next());
+            for (String callbackMethod : descriptor.getCallbackMethods()) {
+                methods.add(callbackMethod);
             }
         }
 
@@ -321,8 +322,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         table.setRowHeight(25);
         table.setRowMargin(3);
 
-        TableColumn methodNameColumn = table.getColumnModel().getColumn(
-                CallbackDescriptorTableModel.METHOD_NAME);
+        TableColumn methodNameColumn = table.getColumnModel().getColumn(CallbackDescriptorTableModel.METHOD_NAME);
         methodNameColumn.setMinWidth(424);
 
         mediator.setCurrentCallbackMethods(new String[0]);

@@ -83,16 +83,16 @@ public abstract class AbstractRemoveCallbackMethodAction extends RemoveAction {
     private void removeCallbackMethods(ActionEvent actionEvent) {
         ProjectController mediator = getProjectController();
         CallbackType callbackType = mediator.getCurrentCallbackType();
-        
+
         String[] callbackMethods = mediator.getCurrentCallbackMethods();
-        
-        for (int i = 0; i < callbackMethods.length; i++) {
-            getCallbackMap().getCallbackDescriptor(callbackType.getType()).removeCallbackMethod(callbackMethods[i]);
+
+        for (String callbackMethod : callbackMethods) {
+            getCallbackMap().getCallbackDescriptor(callbackType.getType()).removeCallbackMethod(callbackMethod);
             CallbackMethodEvent e = new CallbackMethodEvent(
-                actionEvent.getSource(),
-                null,
-                callbackMethods[i],
-                MapEvent.REMOVE);
+                    actionEvent.getSource(),
+                    null,
+                    callbackMethod,
+                    MapEvent.REMOVE);
             mediator.fireCallbackMethodEvent(e);
         }
     }

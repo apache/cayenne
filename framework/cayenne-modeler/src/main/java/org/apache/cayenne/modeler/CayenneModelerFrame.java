@@ -491,8 +491,8 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
      * Notifies all listeners that recent file list has changed
      */
     public void fireRecentFileListChanged() {
-        for (int i = 0; i < recentFileListeners.size(); i++) {
-            recentFileListeners.get(i).recentFileListChanged();
+        for (RecentFileListListener recentFileListener : recentFileListeners) {
+            recentFileListener.recentFileListChanged();
         }
     }
 }

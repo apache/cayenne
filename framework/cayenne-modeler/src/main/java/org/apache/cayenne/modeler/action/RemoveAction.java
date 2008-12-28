@@ -151,8 +151,8 @@ public class RemoveAction extends CayenneAction {
         else if (mediator.getCurrentPaths() != null) { //multiple deletion
             if (dialog.shouldDelete("selected objects")) {
                 ProjectPath[] paths = mediator.getCurrentPaths();
-                for (int i = 0; i < paths.length; i++) {
-                    removeLastPathComponent(paths[i]);
+                for (ProjectPath path : paths) {
+                    removeLastPathComponent(path);
                 }
             }
         }

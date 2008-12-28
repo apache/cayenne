@@ -166,9 +166,9 @@ public final class ModelerUtil {
      * (attributes, rel etc.)
      */
     public static void updateActions(int numSelected, String... actionNames) {
-        for (int i = 0; i < actionNames.length; i++) {
-            CayenneAction action = Application.getInstance().getAction(actionNames[i]);
-            
+        for (String actionName : actionNames) {
+            CayenneAction action = Application.getInstance().getAction(actionName);
+
             if (action instanceof MultipleObjectsAction) {
                 action.setEnabled(numSelected > 0);
                 action.setName(((MultipleObjectsAction) action).getActionName(numSelected > 1));

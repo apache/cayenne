@@ -141,8 +141,8 @@ public class CayenneTable extends JTable {
              * First check if we must do anything at all
              */
             boolean selectionChanged = false;
-            for (int i = 0; i < rows.length; i++) {
-                if (!isRowSelected(rows[i])) {
+            for (int row : rows) {
+                if (!isRowSelected(row)) {
                     selectionChanged = true;
                     break;
                 }
@@ -152,8 +152,8 @@ public class CayenneTable extends JTable {
                 for (int i = getMinSelectionIndex(); i < getMaxSelectionIndex(); i++) {
                     if (isSelectedIndex(i)) {
                         boolean inNewSelection = false;
-                        for (int j = 0; j < rows.length; j++) {
-                            if (rows[j] == i) {
+                        for (int row : rows) {
+                            if (row == i) {
                                 inNewSelection = true;
                                 break;
                             }
@@ -174,8 +174,8 @@ public class CayenneTable extends JTable {
             fireForbidden = true;
             
             clearSelection();
-            for (int i = 0; i < rows.length; i++) {
-                addRowSelectionInterval(rows[i], rows[i]);
+            for (int row : rows) {
+                addRowSelectionInterval(row, row);
             }
             
             fireForbidden = false;

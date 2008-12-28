@@ -174,8 +174,8 @@ public class DBGeneratorOptions extends CayenneController {
 
     protected void refreshView() {
 
-        for (int i = 0; i < optionBindings.length; i++) {
-            optionBindings[i].updateView();
+        for (ObjectBinding optionBinding : optionBindings) {
+            optionBinding.updateView();
         }
 
         sqlBinding.updateView();

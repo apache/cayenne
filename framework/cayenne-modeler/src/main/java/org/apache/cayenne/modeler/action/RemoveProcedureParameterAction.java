@@ -84,14 +84,14 @@ public class RemoveProcedureParameterAction extends RemoveAction {
     protected void removeProcedureParameters() {
         ProjectController mediator = getProjectController();
         ProcedureParameter[] parameters = mediator.getCurrentProcedureParameters();
-        
-        for (int i = 0; i < parameters.length; i++) {
-            mediator.getCurrentProcedure().removeCallParameter(parameters[i].getName());
+
+        for (ProcedureParameter parameter : parameters) {
+            mediator.getCurrentProcedure().removeCallParameter(parameter.getName());
 
             ProcedureParameterEvent e = new ProcedureParameterEvent(
-                Application.getFrame(),
-                parameters[i],
-                MapEvent.REMOVE);
+                    Application.getFrame(),
+                    parameter,
+                    MapEvent.REMOVE);
 
             mediator.fireProcedureParameterEvent(e);
         }

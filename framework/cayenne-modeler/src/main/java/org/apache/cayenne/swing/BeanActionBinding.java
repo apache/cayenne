@@ -48,17 +48,17 @@ public class BeanActionBinding extends BindingBase {
             EventSetDescriptor[] events = info.getEventSetDescriptors();
 
             if (events != null && events.length > 0) {
-                for (int i = 0; i < events.length; i++) {
+                for (EventSetDescriptor event : events) {
                     if (ActionListener.class
-                            .isAssignableFrom(events[i].getListenerType())) {
+                            .isAssignableFrom(event.getListenerType())) {
 
-                        events[i].getAddListenerMethod().invoke(component, new Object[] {
-                            new ActionListener() {
+                        event.getAddListenerMethod().invoke(component, new Object[]{
+                                new ActionListener() {
 
-                                public void actionPerformed(ActionEvent e) {
-                                    fireAction();
+                                    public void actionPerformed(ActionEvent e) {
+                                        fireAction();
+                                    }
                                 }
-                            }
                         });
 
                         foundActionEvents = true;

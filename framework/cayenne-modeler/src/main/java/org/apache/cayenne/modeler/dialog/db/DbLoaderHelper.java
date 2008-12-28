@@ -372,8 +372,8 @@ public class DbLoaderHelper {
                 /**
                  * Update default rules for relationships 
                  */
-                for (int i = 0; i < addedObjEntities.size(); i++) {
-                    DeleteRuleUpdater.updateObjEntity(addedObjEntities.get(i));
+                for (ObjEntity addedObjEntity : addedObjEntities) {
+                    DeleteRuleUpdater.updateObjEntity(addedObjEntity);
                 }
             }
             catch (Throwable th) {

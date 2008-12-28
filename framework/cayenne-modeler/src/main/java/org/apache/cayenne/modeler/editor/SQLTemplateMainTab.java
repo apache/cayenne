@@ -228,8 +228,8 @@ public class SQLTemplateMainTab extends JPanel {
             PanelBuilder builder = super.createPanelBuilder();
 
             RowSpec[] extraRows = RowSpec.decodeSpecs("3dlu, p");
-            for (int i = 0; i < extraRows.length; i++) {
-                builder.appendRow(extraRows[i]);
+            for (RowSpec extraRow : extraRows) {
+                builder.appendRow(extraRow);
             }
 
             CellConstraints cc = new CellConstraints();

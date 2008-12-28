@@ -189,13 +189,13 @@ public abstract class FileWatchdog extends Thread {
                 }
             }
 
-            for (int i = 0; i < deleted.size(); i++) {
-                doOnRemove(deleted.get(i));
+            for (FileInfo aDeleted : deleted) {
+                doOnRemove(aDeleted);
                 if (singleNotification)
                     return;
             }
-            for (int i = 0; i < changed.size(); i++) {
-                doOnChange(changed.get(i));
+            for (FileInfo aChanged : changed) {
+                doOnChange(aChanged);
                 if (singleNotification)
                     return;
             }

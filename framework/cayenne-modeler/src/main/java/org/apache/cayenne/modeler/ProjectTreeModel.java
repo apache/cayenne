@@ -218,8 +218,8 @@ public class ProjectTreeModel extends DefaultTreeModel {
         public ProjectPath registerNodes(TreeNode[] nodes) {
             ProjectPath path = new ProjectPath();
 
-            for (int i = 0; i < nodes.length; i++) {
-                DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) nodes[i];
+            for (TreeNode node : nodes) {
+                DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
 
                 path = path.appendToPath(treeNode.getUserObject());
 

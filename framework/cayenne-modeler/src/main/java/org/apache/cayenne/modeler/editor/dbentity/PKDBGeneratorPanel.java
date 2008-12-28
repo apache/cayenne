@@ -91,9 +91,8 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
     }
 
     void updateView(final DbEntity entity) {
-        ItemListener[] listeners = attributes.getItemListeners();
-        for (int i = 0; i < listeners.length; i++) {
-            attributes.removeItemListener(listeners[i]);
+        for (ItemListener listener : attributes.getItemListeners()) {
+            attributes.removeItemListener(listener);
         }
 
         Collection pkAttributes = entity.getPrimaryKeys();

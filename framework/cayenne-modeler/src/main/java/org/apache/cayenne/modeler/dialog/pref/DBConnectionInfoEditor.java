@@ -95,8 +95,8 @@ public class DBConnectionInfoEditor extends CayenneController {
     protected void refreshView() {
         getView().setEnabled(connectionInfo != null);
 
-        for (int i = 0; i < bindings.length; i++) {
-            bindings[i].updateView();
+        for (ObjectBinding binding : bindings) {
+            binding.updateView();
         }
     }
 }

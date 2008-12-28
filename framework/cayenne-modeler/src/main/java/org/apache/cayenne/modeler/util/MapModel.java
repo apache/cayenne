@@ -49,8 +49,8 @@ public abstract class MapModel extends BasicModel {
      */
     public void storeProperties(Map<String, String> map) {
         String[] properties = supportedProperties();
-        for (int i = 0; i < properties.length; i++) {
-            map.put(properties[i], this.map.get(properties[i]));
+        for (String property : properties) {
+            map.put(property, this.map.get(property));
         }
     }
 

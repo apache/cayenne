@@ -261,8 +261,8 @@ public class MainDataNodeEditor extends CayenneController {
 
         refreshLocalDataSources();
 
-        for (int i = 0; i < bindings.length; i++) {
-            bindings[i].updateView();
+        for (ObjectBinding binding : bindings) {
+            binding.updateView();
         }
 
         showDataSourceSubview(getFactoryName());
