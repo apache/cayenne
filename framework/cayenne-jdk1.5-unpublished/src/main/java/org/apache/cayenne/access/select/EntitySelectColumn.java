@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
 /**
@@ -40,7 +41,7 @@ class EntitySelectColumn implements SelectColumn {
         return jdbcType;
     }
 
-    public String getColumnName(int unionSegmentIndex, String tableAlias) {
+    public String getColumnName(DbEntity unionRoot, String tableAlias) {
         if (tableAlias == null || tableAlias.length() == 0) {
             return columnName;
         }
@@ -52,7 +53,7 @@ class EntitySelectColumn implements SelectColumn {
         return dataRowKey;
     }
 
-    public List<DbRelationship> getPath(int unionSegmentIndex) {
+    public List<DbRelationship> getPath(DbEntity unionRoot) {
         if (path == null) {
             return Collections.emptyList();
         }

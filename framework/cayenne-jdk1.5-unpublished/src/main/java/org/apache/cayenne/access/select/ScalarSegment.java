@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
 /**
@@ -49,7 +50,7 @@ class ScalarSegment implements SelectDescriptor<Object>, SelectColumn {
         return rowReader;
     }
 
-    public String getColumnName(int unionSegmentIndex, String tableAlias) {
+    public String getColumnName(DbEntity unionRoot, String tableAlias) {
         if (tableAlias == null || tableAlias.length() == 0) {
             return columnName;
         }
@@ -66,7 +67,7 @@ class ScalarSegment implements SelectDescriptor<Object>, SelectColumn {
                 "'dataRowKey' is meaningless for Scalar segments");
     }
 
-    public List<DbRelationship> getPath(int unionSegmentIndex) {
+    public List<DbRelationship> getPath(DbEntity unionRoot) {
         throw new UnsupportedOperationException(
                 "'getPath' is unsupported for Scalar segments");
     }

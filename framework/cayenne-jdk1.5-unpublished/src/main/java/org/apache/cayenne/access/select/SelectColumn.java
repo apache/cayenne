@@ -20,6 +20,7 @@ package org.apache.cayenne.access.select;
 
 import java.util.List;
 
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
 /**
@@ -33,7 +34,7 @@ public interface SelectColumn {
 
     String getDataRowKey();
 
-    String getColumnName(int unionSegmentIndex, String tableAlias);
+    String getColumnName(DbEntity unionRoot, String tableAlias);
 
-    List<DbRelationship> getPath(int unionSegmentIndex);
+    List<DbRelationship> getPath(DbEntity unionRoot);
 }

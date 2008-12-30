@@ -75,7 +75,7 @@ public class EntityTreeSegmentBuilderTest extends PeopleCase {
         assertEquals("Unexpected columns present", 5, columns.size());
     }
 
-    public void testBuildSegmentRowReaderInheritanceLeaf() throws Exception {
+    public void testBuildSegmentRowReaderLeaf() throws Exception {
 
         SelectQuery query = new SelectQuery(CustomerRepresentative.class);
 
@@ -107,7 +107,7 @@ public class EntityTreeSegmentBuilderTest extends PeopleCase {
 
         MockResultSet rs = new MockResultSet("test");
         for (SelectColumn column : columns) {
-            rs.addColumn(column.getColumnName(0, null));
+            rs.addColumn(column.getColumnName(md.getDbEntity(), null));
             crRow.add(crRowMap.get(column.getDataRowKey()));
         }
 
@@ -121,7 +121,7 @@ public class EntityTreeSegmentBuilderTest extends PeopleCase {
         assertEquals("Invalid row read: " + crRowRead, crRowMap, crRowRead);
     }
 
-    public void testBuildSegmentColumns() {
+    public void testBuildSegmentColumnsSuper() {
 
         SelectQuery query = new SelectQuery(AbstractPerson.class);
 
@@ -159,7 +159,7 @@ public class EntityTreeSegmentBuilderTest extends PeopleCase {
         assertEquals("Unexpected columns present", 7, columns.size());
     }
 
-    public void testBuildSegmentRowReader() throws Exception {
+    public void testBuildSegmentRowReaderSuper() throws Exception {
         SelectQuery query = new SelectQuery(AbstractPerson.class);
 
         EntityResolver resolver = getDomain().getEntityResolver();
@@ -206,7 +206,7 @@ public class EntityTreeSegmentBuilderTest extends PeopleCase {
 
         MockResultSet rs = new MockResultSet("test");
         for (SelectColumn column : columns) {
-            rs.addColumn(column.getColumnName(0, null));
+            rs.addColumn(column.getColumnName(md.getDbEntity(), null));
 
             employeeRow.add(employeeRowMap.get(column.getDataRowKey()));
             managerRow.add(managerRowMap.get(column.getDataRowKey()));
