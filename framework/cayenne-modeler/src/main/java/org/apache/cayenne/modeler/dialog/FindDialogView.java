@@ -19,25 +19,34 @@
 package org.apache.cayenne.modeler.dialog;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.util.ArrayList;
+import java.awt.event.KeyEvent;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultButtonModel;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
@@ -51,31 +60,69 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 public class FindDialogView extends JDialog {
 
     private JButton okButton;
-    private java.util.List<JButton> entityButtons;
     private static JScrollPane scrollPane;
+    private JTable table;
+    private static Map LabelAndObjectIndex;
+    
+    
+    public static Map getLabelAndObjectIndex() {
+        return LabelAndObjectIndex;
+    }
+
+    public JTable getTable() {
+        return table;
+    }
 
     public FindDialogView(Map objEntityNames, Map dbEntityNames, Map attrNames,
             Map relatNames) {
-        entityButtons = new ArrayList();
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
+        
         if (objEntityNames.isEmpty()
                 && dbEntityNames.isEmpty()
                 && attrNames.isEmpty()
                 && relatNames.isEmpty()) {
             panel.add(new JLabel("Nothing found!"));
         } else {
-            panel.add(createResultPanel(objEntityNames, CellRenderers
-                    .iconForObject(new ObjEntity())));
-            panel.add(createResultPanel(dbEntityNames, CellRenderers
-                    .iconForObject(new DbEntity())));
-            panel.add(createResultPanel(attrNames, CellRenderers
-                    .iconForObject(new ObjAttribute())));
-            panel.add(createResultPanel(relatNames, CellRenderers
-                    .iconForObject(new ObjRelationship())));
-        }
+            
+            int curentLineInTable = 0;
+            int sizeDataVector = objEntityNames.size() + dbEntityNames.size() + attrNames.size() + relatNames.size();
+            
+            Object[][] dataVector = new Object[sizeDataVector][];
+                      
+           TableModel tableModel = new TableModel();
+        
+           LabelAndObjectIndex = new HashMap<JLabel, Integer>();
+           
+           dataVector =  createResultTable(objEntityNames, CellRenderers
+                    .iconForObject(new ObjEntity()), dataVector, curentLineInTable);
+           curentLineInTable = objEntityNames.size();
+           dataVector =  createResultTable(dbEntityNames, CellRenderers
+                 .iconForObject(new DbEntity()), dataVector, curentLineInTable);
+          
+           curentLineInTable = curentLineInTable + dbEntityNames.size();
+           dataVector =  createResultTable(attrNames, CellRenderers
+                 .iconForObject(new ObjAttribute()), dataVector, curentLineInTable);
+           
+           curentLineInTable = curentLineInTable + attrNames.size();
+           dataVector =  createResultTable(relatNames, CellRenderers
+                 .iconForObject(new ObjRelationship()), dataVector, curentLineInTable);
+
+           tableModel.setDataVector(dataVector, new Object[]{""});
+            
+            table = new JTable(tableModel);
+             
+            table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
+            table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            
+            InputMap im       = table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+            InputMap imParent = im.getParent(); 
+            imParent.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
+            im.setParent(imParent);
+            im.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
+            table.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,im);
+       }
 
             JPanel okPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             okButton = new JButton("OK");
@@ -85,8 +132,8 @@ public class FindDialogView extends JDialog {
             
             contentPane.setLayout(new BorderLayout());
             
-            scrollPane = new JScrollPane(
-                    panel,
+            scrollPane = new JScrollPane( //panel
+                    table,
                     JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             
@@ -97,73 +144,83 @@ public class FindDialogView extends JDialog {
             setTitle("Search results"); 
     }
 
-    private JPanel createResultPanel(Map names, Icon icon) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    private Object[][] createResultTable(Map names, Icon icon, Object[][] dataVector, int curentLineInTable){
+        
+        Comparator<String> comparer = new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                    return o1.compareTo(o2);
+            }};
 
-        Iterator it = names.keySet().iterator();
-        while (it.hasNext()) {
-            Integer index = (Integer) it.next();
-            JButton b = new JButton((String) names.get(index), icon);
-            b.setBorder(new EmptyBorder(2, 10, 2, 10)); // top, left, bottom, right
-            b.setModel(new EntityButtonModel(index));
-            panel.add(b);
-
-            entityButtons.add(b);
+        Map sortedByNameMap = sortMapByValue(names, comparer);
+        
+        Iterator it = sortedByNameMap.keySet().iterator();
+        Object[] objectHelper = new Object[]{};
+         
+        while (it.hasNext()) {           
+            Integer index = (Integer) it.next(); 
+            JLabel labelIcon = new JLabel(); 
+            labelIcon.setIcon(icon);  
+            labelIcon.setVisible(true);
+            labelIcon.setText((String) sortedByNameMap.get(index));
+            objectHelper = new Object[]{labelIcon};  
+            dataVector[curentLineInTable] = objectHelper;            
+            LabelAndObjectIndex.put(labelIcon, index);
+            curentLineInTable++;            
         }
-
-        return panel;
+         
+        return dataVector;
     }
 
     public JButton getOkButton() {
         return okButton;
     }
-
-    public java.util.List<JButton> getEntityButtons() {
-        return entityButtons;
-    }
-
-    public class EntityButtonModel extends DefaultButtonModel {
-
-        private Integer index;
-
-        EntityButtonModel(Integer index) {
-            super();
-            this.index = index;
-        }
-
-        public Integer getIndex() {
-            return index;
-        }
-    }
-
     
-    public static void scrollPaneToBottom() {
-        
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                scrollPane.getVerticalScrollBar().setValue(
-                        scrollPane.getVerticalScrollBar().getMaximum());
-            }
-        });
+    public  <K, V> Map<K,V> sortMapByValue(Map<K, V> in, Comparator<? super V> compare) {
+        Map<V, K> swapped = new TreeMap<V, K>(compare);
+        for(Entry<K,V> entry: in.entrySet()) {
+                if (entry.getValue() != null) {
+                        swapped.put(entry.getValue(), entry.getKey());
+                }
+        }
+        LinkedHashMap<K, V> result = new LinkedHashMap<K, V>();
+        for(Entry<V,K> entry: swapped.entrySet()) {
+                if (entry.getValue() != null) {
+                        result.put(entry.getValue(), entry.getKey());
+                }
+        }
+        return result;
+    }
+
+}
+
+class ImageRenderer extends DefaultTableCellRenderer {
+    JLabel lbl = new JLabel();
+    ImageIcon icon = null;
+    
+    ImageRenderer() {
+        super();
     }
     
-    public static void scrollPaneToUp() {
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected, boolean hasFocus, 
+                                                   int row, int column) {   
+        lbl.setOpaque(true);
+        lbl.setText(((JLabel)value).getText().toString());
+        lbl.setIcon(((JLabel)value).getIcon());
+        int thickness;
+        lbl.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY,thickness =0));
         
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                scrollPane.getVerticalScrollBar().setValue(
-                        scrollPane.getVerticalScrollBar().getMinimum());
-            }
-        });
-    }
-  
-    public static void scrollPaneToPosition(final int position) {
-      
-      SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-              scrollPane.getVerticalScrollBar().setValue(position);
-          }
-      });
-   }
+        lbl.setHorizontalAlignment(JLabel.LEFT);
+        {             
+            lbl.setFont(isSelected ? FindDialog.getFontSelected() :  FindDialog.getFont());   
+        }
+         return lbl;
+    }        
+} 
+
+
+class TableModel extends javax.swing.table.DefaultTableModel {
+    public boolean isCellEditable(int row, int col) {
+        return false;
+    } 
 }

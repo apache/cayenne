@@ -25,14 +25,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.tree.TreePath;
 
 import org.apache.cayenne.access.DataDomain;
@@ -62,10 +64,18 @@ public class FindDialog extends CayenneController {
 
     private FindDialogView view;
     private List paths;
-    private Integer selectedButton;
-    private Map EntityButtonsIdListAndButtonId;
-    private Font font;
-    private Font fontSelected;
+    private static Font font;
+    private static Font fontSelected;
+
+
+    public static Font getFont() {
+        return font;
+    }
+
+    
+    public static Font getFontSelected() {
+        return fontSelected;
+    }
 
     public FindDialog(CayenneController parent, java.util.List paths) {
         super(parent);
@@ -89,8 +99,7 @@ public class FindDialog extends CayenneController {
             if (path[path.length - 1] instanceof Attribute) {
                 Object parentObject = ((Attribute) path[path.length - 1]).getParent(); 
                 attrNames.put(new Integer(index++), getParentName(path, parentObject) +"."+ ((Attribute) path[path.length - 1]).getName());
-           
-            }
+             }
 
             if (path[path.length - 1] instanceof Relationship) {
                 Object parentObject = ((Relationship) path[path.length - 1]).getParent(); 
@@ -126,21 +135,15 @@ public class FindDialog extends CayenneController {
         });
 
         font = view.getOkButton().getFont();
-        fontSelected = new Font(font.getFamily(), font.BOLD, font.getSize() + 2);
+        fontSelected = new Font(font.getFamily(), font.BOLD, font.getSize()+2 ); 
 
         Color color = view.getOkButton().getBackground();        
-        EntityButtonsIdListAndButtonId = new HashMap<Integer, Integer>();
-        Integer idEntityButtons = 0;
-        for (JButton b : view.getEntityButtons()) {
-            b.addActionListener(new JumpToResultActionListener());
-            b.addKeyListener(new JumpToResultsKeyListener());
-            EntityButtonsIdListAndButtonId.put(((FindDialogView.EntityButtonModel) b.getModel()).getIndex().intValue(), idEntityButtons);
-            idEntityButtons++;
-        }        
-        if (view.getEntityButtons().size() > 0) {
-            selectedButton = 0;
-            ((JButton) view.getEntityButtons().get(selectedButton)).setFont(fontSelected);            
-        }
+  
+        JTable table = view.getTable();
+        
+        table.addKeyListener(new JumpToResultsKeyListener());
+        table.addMouseListener(new JumpToResultActionListener());       
+        table.getSelectionModel().setSelectionInterval(0, 0);
     }
 
     public static void jumpToResult(Object[] path, EditorView editor) {
@@ -219,54 +222,49 @@ public class FindDialog extends CayenneController {
         }
     }
 
-    private class JumpToResultsKeyListener implements KeyListener {
+    
+private class JumpToResultActionListener implements MouseListener {
+       private EditorView editor = ((CayenneModelerFrame) application.getFrameController().getView()).getView();
+       
+                public void mouseClicked(MouseEvent e) {
+                    JTable table = (JTable) e.getSource();  
+                    Integer selectedLine = table.getSelectionModel().getLeadSelectionIndex();
+                    JLabel label = (JLabel) table.getModel().getValueAt(selectedLine, 0);                   
+                    Integer index = (Integer) FindDialogView.getLabelAndObjectIndex().get(label);
+                     
+                    Object[] path = (Object[]) paths.get(index);
+                    jumpToResult(path, editor);
+                }
+
+                public void mouseEntered(MouseEvent e) {
+                }
+
+                public void mouseExited(MouseEvent e) {
+                }
+
+                public void mousePressed(MouseEvent e) {
+                }
+
+                public void mouseReleased(MouseEvent e) {
+                }
+    }
+
+private class JumpToResultsKeyListener implements KeyListener {
 
         private EditorView editor = ((CayenneModelerFrame) application
                 .getFrameController().getView()).getView();
-        
+     
         public void keyPressed(KeyEvent e) { 
-            if (e.getKeyCode() == KeyEvent.VK_PAGE_UP) {
-                if (view.getEntityButtons().size() > 0 && selectedButton - 1 >= 0) {
-                    if(selectedButton - 13 >= 0){
-                        setSelectedButton(selectedButton-13);
-                    } else {
-                        setSelectedButton(0);
-                    }
-               }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN) {
-                    if (view.getEntityButtons().size() > 0 && selectedButton + 2 <= view.getEntityButtons().size()) {
-                    if(selectedButton + 14 <= view.getEntityButtons().size()) {   
-                        setSelectedButton(selectedButton+13);
-                    } else {
-                        setSelectedButton(view.getEntityButtons().size()-1); 
-                    }
-               }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_UP) {
-                if (view.getEntityButtons().size() > 0 && selectedButton - 1 >= 0) {
-                    setSelectedButton(selectedButton-1);
-               }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    if (view.getEntityButtons().size() > 0 && selectedButton + 2 <= view.getEntityButtons().size()) {
-                    setSelectedButton(selectedButton+1);
-               }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_HOME) {
-                setSelectedButton(0);               
-            }
-            if (e.getKeyCode() == KeyEvent.VK_END) {
-                setSelectedButton(view.getEntityButtons().size()-1);
-            }
-            
+           
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                JButton source = (JButton) view.getEntityButtons().get(selectedButton);
                 
-                setSelectedButton((Integer) EntityButtonsIdListAndButtonId.get(((FindDialogView.EntityButtonModel) source.getModel()).getIndex().intValue()));
-                Object[] path = (Object[]) paths.get(((FindDialogView.EntityButtonModel) source.getModel()).getIndex().intValue());
-
-                jumpToResult(path, editor);
+                JTable table = (JTable) e.getSource();  
+                Integer selectedLine = table.getSelectionModel().getLeadSelectionIndex();
+                JLabel label = (JLabel) table.getModel().getValueAt(selectedLine, 0);                   
+                Integer index = (Integer) FindDialogView.getLabelAndObjectIndex().get(label);
+                 
+                Object[] path = (Object[]) paths.get(index);
+                jumpToResult(path, editor);          
             }
         }
 
@@ -274,18 +272,6 @@ public class FindDialog extends CayenneController {
         }
 
         public void keyTyped(KeyEvent e) {
-        }
-    }
-
-    private class JumpToResultActionListener implements ActionListener {
-
-        private EditorView editor = ((CayenneModelerFrame) application.getFrameController().getView()).getView();
-
-        public void actionPerformed(ActionEvent e) {
-            JButton source = (JButton) e.getSource();
-            setSelectedButton((Integer) EntityButtonsIdListAndButtonId.get(((FindDialogView.EntityButtonModel) source.getModel()).getIndex().intValue()));
-            Object[] path = (Object[]) paths.get(((FindDialogView.EntityButtonModel) source.getModel()).getIndex().intValue());
-            jumpToResult(path, editor);   
         }
     }
     
@@ -312,14 +298,8 @@ public class FindDialog extends CayenneController {
                     .getModel()).getNodeForObjectPath(helper);
         }
         return new TreePath(mutableTreeNodes);
-    }
-    
-    private void setSelectedButton(Integer newSelectedButton) {
-        ((JButton) view.getEntityButtons().get(selectedButton)).setFont(font);        
-        selectedButton = newSelectedButton;
-        FindDialogView.scrollPaneToPosition((selectedButton)*((JButton) view.getEntityButtons().get(selectedButton)).getHeight());        
-        ((JButton) view.getEntityButtons().get(selectedButton)).setFont(fontSelected);       
-    }    
+    }   
+  
     
     private String getParentName(Object[] path, Object  parentObject) {
         String nameParent = null;
@@ -334,5 +314,5 @@ public class FindDialog extends CayenneController {
         }
         return nameParent;
     }  
-
+   
 }

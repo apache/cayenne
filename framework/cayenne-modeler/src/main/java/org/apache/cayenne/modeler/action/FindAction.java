@@ -25,11 +25,8 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JButton;
 import javax.swing.JTextField;
-import javax.swing.tree.TreePath;
 
-import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -45,7 +42,6 @@ import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.dialog.FindDialog;
 import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.project.ProjectPath;
 
 public class FindAction extends CayenneAction {
