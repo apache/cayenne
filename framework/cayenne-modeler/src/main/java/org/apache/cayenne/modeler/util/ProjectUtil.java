@@ -80,13 +80,6 @@ public class ProjectUtil {
         for (DataNode node : domain.getDataNodes())
             if (node.getDataMaps().contains(map))
                 nodes.add(node);
-//        Iterator allNodes = domain.getDataNodes().iterator();
-//        while (allNodes.hasNext()) {
-//            DataNode node = (DataNode) allNodes.next();
-//            if (node.getDataMaps().contains(map)) {
-//                nodes.add(node);
-//            }
-//        }
 
         domain.removeMap(oldName);
         map.setName(newName);
@@ -96,12 +89,6 @@ public class ProjectUtil {
             node.removeDataMap(oldName);
             node.addDataMap(map);
         }
-//        Iterator relinkNodes = nodes.iterator();
-//        while (relinkNodes.hasNext()) {
-//            DataNode node = (DataNode) relinkNodes.next();
-//            node.removeDataMap(oldName);
-//            node.addDataMap(map);
-//        }
     }
 
     public static void setDataDomainName(
@@ -219,7 +206,6 @@ public class ProjectUtil {
         String oldName = attribute.getName();
 
         attribute.setName(newName);
-
         Entity entity = attribute.getEntity();
 
         if (entity != null) {
@@ -255,10 +241,7 @@ public class ProjectUtil {
                 continue;
             }
 
-            // check individual attributes
-//            Iterator atts = entity.getAttributes().iterator();
-//            while (atts.hasNext()) {
-//                ObjAttribute att = (ObjAttribute) atts.next();
+            // check individual attributes           
             for (ObjAttribute att : entity.getAttributes()) {
                 DbAttribute dbAtt = att.getDbAttribute();
                 if (dbAtt != null) {
@@ -268,15 +251,12 @@ public class ProjectUtil {
                 }
             }
 
-            // check individual relationships
-//            Iterator rels = entity.getRelationships().iterator();
-//            while (rels.hasNext()) {
-//                ObjRelationship rel = (ObjRelationship) rels.next();
+            // check individual relationships           
             for (ObjRelationship rel : entity.getRelationships()) {
-//                Iterator dbRels = new ArrayList(rel.getDbRelationships()).iterator();
-//                while (dbRels.hasNext()) {
-//                    DbRelationship dbRel = (DbRelationship) dbRels.next();
-                for (DbRelationship dbRel : rel.getDbRelationships()) {
+                
+                List<DbRelationship> dbRelList = new ArrayList<DbRelationship>(rel
+                        .getDbRelationships());
+                for (DbRelationship dbRel : dbRelList) {
                     Entity srcEnt = dbRel.getSourceEntity();
                     if (srcEnt == null
                             || map.getDbEntity(srcEnt.getName()) != srcEnt
@@ -298,19 +278,13 @@ public class ProjectUtil {
             return;
         }
 
-//        Iterator it = entity.getAttributeMap().values().iterator();
-//        while (it.hasNext()) {
-//            ObjAttribute objAttr = (ObjAttribute) it.next();
-        for (ObjAttribute objAttr : entity.getAttributeMap().values()) {
+       for (ObjAttribute objAttr : entity.getAttributeMap().values()) {
             DbAttribute dbAttr = objAttr.getDbAttribute();
             if (null != dbAttr) {
                 objAttr.setDbAttributePath(null);
             }
         }
 
-//        Iterator rel_it = entity.getRelationships().iterator();
-//        while (rel_it.hasNext()) {
-//            ObjRelationship obj_rel = (ObjRelationship) rel_it.next();
         for (ObjRelationship obj_rel : entity.getRelationships()) {
             obj_rel.clearDbRelationships();
         }
@@ -327,10 +301,7 @@ public class ProjectUtil {
             return false;
         }
 
-//        Iterator it = relationship.getJoins().iterator();
-//        while (it.hasNext()) {
-//            DbJoin join = (DbJoin) it.next();
-        for (DbJoin join : relationship.getJoins()) {
+       for (DbJoin join : relationship.getJoins()) {
             if (join.getSource() == attribute) {
                 return true;
             }
@@ -349,9 +320,6 @@ public class ProjectUtil {
             return false;
         }
 
-//        Iterator it = relationship.getJoins().iterator();
-//        while (it.hasNext()) {
-//            DbJoin join = (DbJoin) it.next();
         for (DbJoin join : relationship.getJoins()) {
             if (join.getTarget() == attribute) {
                 return true;
@@ -364,18 +332,21 @@ public class ProjectUtil {
     /**
      * Returns a collection of DbRelationships that use this attribute as a source.
      */
-    public static Collection<DbRelationship> getRelationshipsUsingAttributeAsSource(DbAttribute attribute) {
+    public static Collection<DbRelationship> getRelationshipsUsingAttributeAsSource(
+            DbAttribute attribute) {
         Entity parent = attribute.getEntity();
 
         if (parent == null) {
             return Collections.EMPTY_LIST;
         }
 
-        Collection<DbRelationship> parentRelationships = (Collection<DbRelationship>) parent.getRelationships();
-        Collection<DbRelationship> relationships = new ArrayList<DbRelationship>(parentRelationships.size());
-//        Iterator it = parentRelationships.iterator();
-//        while (it.hasNext()) {
-//            DbRelationship relationship = (DbRelationship) it.next();
+        Collection<DbRelationship> parentRelationships = (Collection<DbRelationship>) parent
+                .getRelationships();
+        Collection<DbRelationship> relationships = new ArrayList<DbRelationship>(
+                parentRelationships.size());
+        // Iterator it = parentRelationships.iterator();
+        // while (it.hasNext()) {
+        // DbRelationship relationship = (DbRelationship) it.next();
         for (DbRelationship relationship : parentRelationships) {
             if (ProjectUtil.containsSourceAttribute(relationship, attribute)) {
                 relationships.add(relationship);
@@ -402,18 +373,14 @@ public class ProjectUtil {
 
         Collection<DbRelationship> relationships = new ArrayList<DbRelationship>();
 
-//        Iterator it = map.getDbEntities().iterator();
-//        while (it.hasNext()) {
-//            Entity entity = (Entity) it.next();
         for (Entity entity : map.getDbEntities()) {
             if (entity == parent) {
                 continue;
             }
 
-            Collection<DbRelationship> entityRelationships = (Collection<DbRelationship>) entity.getRelationships();
-//            Iterator relationshipsIt = entityRelationships.iterator();
-//            while (relationshipsIt.hasNext()) {
-//                DbRelationship relationship = (DbRelationship) relationshipsIt.next();
+            Collection<DbRelationship> entityRelationships = (Collection<DbRelationship>) entity
+                    .getRelationships();
+
             for (DbRelationship relationship : entityRelationships) {
                 if (ProjectUtil.containsTargetAttribute(relationship, attribute)) {
                     relationships.add(relationship);
