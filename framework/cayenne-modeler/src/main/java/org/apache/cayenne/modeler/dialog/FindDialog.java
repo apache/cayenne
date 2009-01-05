@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -67,12 +66,10 @@ public class FindDialog extends CayenneController {
     private static Font font;
     private static Font fontSelected;
 
-
     public static Font getFont() {
         return font;
     }
 
-    
     public static Font getFontSelected() {
         return fontSelected;
     }
@@ -89,21 +86,29 @@ public class FindDialog extends CayenneController {
             Object[] path = (Object[]) it.next();
 
             if (path[path.length - 1] instanceof ObjEntity) {
-                objEntityNames.put(new Integer(index++), ((ObjEntity) path[path.length - 1]).getName());
+                objEntityNames.put(
+                        new Integer(index++),
+                        ((ObjEntity) path[path.length - 1]).getName());
             }
 
             if (path[path.length - 1] instanceof DbEntity) {
-                dbEntityNames.put(new Integer(index++), ((DbEntity) path[path.length - 1]).getName());
+                dbEntityNames.put(
+                        new Integer(index++),
+                        ((DbEntity) path[path.length - 1]).getName());
             }
 
             if (path[path.length - 1] instanceof Attribute) {
-                Object parentObject = ((Attribute) path[path.length - 1]).getParent(); 
-                attrNames.put(new Integer(index++), getParentName(path, parentObject) +"."+ ((Attribute) path[path.length - 1]).getName());
-             }
+                Object parentObject = ((Attribute) path[path.length - 1]).getParent();
+                attrNames.put(new Integer(index++), getParentName(path, parentObject)
+                        + "."
+                        + ((Attribute) path[path.length - 1]).getName());
+            }
 
             if (path[path.length - 1] instanceof Relationship) {
-                Object parentObject = ((Relationship) path[path.length - 1]).getParent(); 
-                relatNames.put(new Integer(index++), getParentName(path, parentObject) +"."+ ((Relationship) path[path.length - 1]).getName());                
+                Object parentObject = ((Relationship) path[path.length - 1]).getParent();
+                relatNames.put(new Integer(index++), getParentName(path, parentObject)
+                        + "."
+                        + ((Relationship) path[path.length - 1]).getName());
             }
         }
 
@@ -135,19 +140,18 @@ public class FindDialog extends CayenneController {
         });
 
         font = view.getOkButton().getFont();
-        fontSelected = new Font(font.getFamily(), font.BOLD, font.getSize()+2 ); 
+        fontSelected = new Font(font.getFamily(), font.BOLD, font.getSize() + 2);
 
-        Color color = view.getOkButton().getBackground();        
-  
         JTable table = view.getTable();
-        
+        table.setRowHeight(fontSelected.getSize() + 6);
+        table.setRowMargin(0);
         table.addKeyListener(new JumpToResultsKeyListener());
-        table.addMouseListener(new JumpToResultActionListener());       
+        table.addMouseListener(new JumpToResultActionListener());
         table.getSelectionModel().setSelectionInterval(0, 0);
     }
 
     public static void jumpToResult(Object[] path, EditorView editor) {
-        
+
         if (path[path.length - 1] instanceof Entity) {
 
             /** Make selection in a project tree, open correspondent entity tab */
@@ -222,49 +226,53 @@ public class FindDialog extends CayenneController {
         }
     }
 
-    
-private class JumpToResultActionListener implements MouseListener {
-       private EditorView editor = ((CayenneModelerFrame) application.getFrameController().getView()).getView();
-       
-                public void mouseClicked(MouseEvent e) {
-                    JTable table = (JTable) e.getSource();  
-                    Integer selectedLine = table.getSelectionModel().getLeadSelectionIndex();
-                    JLabel label = (JLabel) table.getModel().getValueAt(selectedLine, 0);                   
-                    Integer index = (Integer) FindDialogView.getLabelAndObjectIndex().get(label);
-                     
-                    Object[] path = (Object[]) paths.get(index);
-                    jumpToResult(path, editor);
-                }
-
-                public void mouseEntered(MouseEvent e) {
-                }
-
-                public void mouseExited(MouseEvent e) {
-                }
-
-                public void mousePressed(MouseEvent e) {
-                }
-
-                public void mouseReleased(MouseEvent e) {
-                }
-    }
-
-private class JumpToResultsKeyListener implements KeyListener {
+    private class JumpToResultActionListener implements MouseListener {
 
         private EditorView editor = ((CayenneModelerFrame) application
-                .getFrameController().getView()).getView();
-     
-        public void keyPressed(KeyEvent e) { 
-           
+                .getFrameController()
+                .getView()).getView();
+
+        public void mouseClicked(MouseEvent e) {
+            JTable table = (JTable) e.getSource();
+            Integer selectedLine = table.getSelectionModel().getLeadSelectionIndex();
+            JLabel label = (JLabel) table.getModel().getValueAt(selectedLine, 0);
+            Integer index = (Integer) FindDialogView.getLabelAndObjectIndex().get(label);
+
+            Object[] path = (Object[]) paths.get(index);
+            jumpToResult(path, editor);
+        }
+
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        public void mouseExited(MouseEvent e) {
+        }
+
+        public void mousePressed(MouseEvent e) {
+        }
+
+        public void mouseReleased(MouseEvent e) {
+        }
+    }
+
+    private class JumpToResultsKeyListener implements KeyListener {
+
+        private EditorView editor = ((CayenneModelerFrame) application
+                .getFrameController()
+                .getView()).getView();
+
+        public void keyPressed(KeyEvent e) {
+
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                
-                JTable table = (JTable) e.getSource();  
+
+                JTable table = (JTable) e.getSource();
                 Integer selectedLine = table.getSelectionModel().getLeadSelectionIndex();
-                JLabel label = (JLabel) table.getModel().getValueAt(selectedLine, 0);                   
-                Integer index = (Integer) FindDialogView.getLabelAndObjectIndex().get(label);
-                 
+                JLabel label = (JLabel) table.getModel().getValueAt(selectedLine, 0);
+                Integer index = (Integer) FindDialogView.getLabelAndObjectIndex().get(
+                        label);
+
                 Object[] path = (Object[]) paths.get(index);
-                jumpToResult(path, editor);          
+                jumpToResult(path, editor);
             }
         }
 
@@ -274,7 +282,7 @@ private class JumpToResultsKeyListener implements KeyListener {
         public void keyTyped(KeyEvent e) {
         }
     }
-    
+
     /**
      * Builds a tree path for a given path. Urgent for later selection.
      * 
@@ -283,9 +291,8 @@ private class JumpToResultsKeyListener implements KeyListener {
      */
     private static TreePath buildTreePath(Object[] path, EditorView editor) {
         Object[] mutableTreeNodes = new Object[path.length];
-        mutableTreeNodes[0] = ((ProjectTreeModel) editor
-                .getProjectTreeView()
-                .getModel()).getRootNode();
+        mutableTreeNodes[0] = ((ProjectTreeModel) editor.getProjectTreeView().getModel())
+                .getRootNode();
 
         Object[] helper;
         for (int i = 1; i < path.length; i++) {
@@ -298,21 +305,20 @@ private class JumpToResultsKeyListener implements KeyListener {
                     .getModel()).getNodeForObjectPath(helper);
         }
         return new TreePath(mutableTreeNodes);
-    }   
-  
-    
-    private String getParentName(Object[] path, Object  parentObject) {
+    }
+
+    private String getParentName(Object[] path, Object parentObject) {
         String nameParent = null;
-        
-        if(parentObject  instanceof ObjEntity){
-            ObjEntity objEntity = (ObjEntity)parentObject;
+
+        if (parentObject instanceof ObjEntity) {
+            ObjEntity objEntity = (ObjEntity) parentObject;
             nameParent = objEntity.getName();
         }
-        if(parentObject  instanceof DbEntity){
-            DbEntity dbEntity = (DbEntity)parentObject;
-            nameParent = dbEntity.getName();                    
+        if (parentObject instanceof DbEntity) {
+            DbEntity dbEntity = (DbEntity) parentObject;
+            nameParent = dbEntity.getName();
         }
         return nameParent;
-    }  
-   
+    }
+
 }
