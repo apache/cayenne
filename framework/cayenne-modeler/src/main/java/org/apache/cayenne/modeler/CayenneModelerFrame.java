@@ -336,6 +336,8 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolBar.add(getAction(NewProjectAction.getActionName()).buildButton());
         toolBar.add(getAction(OpenProjectAction.getActionName()).buildButton());
         toolBar.add(getAction(SaveAction.getActionName()).buildButton());
+        
+        toolBar.addSeparator();
         toolBar.add(getAction(RemoveAction.getActionName()).buildButton());
         
         toolBar.addSeparator();
