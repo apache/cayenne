@@ -43,7 +43,8 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 public class EJBQLTranslationContext {
 
     private EJBQLCompiledExpression compiledExpression;
-    private Map<Object, Object> parameters;
+    protected Map<String, Object> namedParameters;
+    protected Map<Integer, Object> positionalParameters;
     private EJBQLTranslatorFactory translatorFactory;
     private EntityResolver entityResolver;
     private List<Object> resultSetMetadata;
@@ -71,7 +72,8 @@ public class EJBQLTranslationContext {
         this.compiledExpression = compiledExpression;
         this.resultSetMetadata = query.getMetaData(entityResolver).getResultSetMapping();
 
-        this.parameters = query.getParameters();
+        this.namedParameters = query.getNamedParameters();
+        this.positionalParameters = query.getPositionalParameters();
         this.translatorFactory = translatorFactory;
         this.usingAliases = true;
 
@@ -297,11 +299,11 @@ public class EJBQLTranslationContext {
     }
 
     String bindPositionalParameter(int position) {
-        return bindParameter(parameters.get(Integer.valueOf(position)));
+        return bindParameter(positionalParameters.get(position));
     }
 
     String bindNamedParameter(String name) {
-        return bindParameter(parameters.get(name));
+        return bindParameter(namedParameters.get(name));
     }
 
     /**

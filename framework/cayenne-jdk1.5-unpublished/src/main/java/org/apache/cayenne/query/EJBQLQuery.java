@@ -38,7 +38,8 @@ public class EJBQLQuery implements Query {
 
     protected String name;
     protected String ejbqlStatement;
-    protected Map<Object, Object> parameters;
+    protected Map<String, Object> namedParameters;
+    protected Map<Integer, Object> positionalParameters;
 
     protected transient EJBQLCompiledExpression expression;
     EJBQLQueryMetadata metadata = new EJBQLQueryMetadata();
@@ -51,14 +52,36 @@ public class EJBQLQuery implements Query {
         metadata.resolve(resolver, this);
         return metadata;
     }
-
+    
     public boolean isFetchingDataRows() {
         return metadata.isFetchingDataRows();
     }
-
+    
+    
     public void setFetchingDataRows(boolean flag) {
         metadata.setFetchingDataRows(flag);
     }
+    
+    public String[] getCacheGroups() {
+        return metadata.getCacheGroups();
+    }
+    
+    public QueryCacheStrategy getCacheStrategy() {
+        return metadata.getCacheStrategy();
+    }
+
+
+    public void setCacheGroups(String... cacheGroups) {
+        this.metadata.setCacheGroups(cacheGroups);
+    }
+    
+    public void setCacheStrategy(QueryCacheStrategy strategy) {
+        metadata.setCacheStrategy(strategy);
+    }
+    
+
+
+
 
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         DataMap map = getMetaData(resolver).getDataMap();
@@ -108,9 +131,16 @@ public class EJBQLQuery implements Query {
      * Returns unmodifiable map of combined named and positional parameters. Positional
      * parameter keys are Integers, while named parameter keys are strings.
      */
-    public Map<Object, Object> getParameters() {
-        return parameters != null
-                ? Collections.unmodifiableMap(parameters)
+    
+    public Map<String, Object> getNamedParameters() {
+        return namedParameters != null
+                ? Collections.unmodifiableMap(namedParameters)
+                : Collections.EMPTY_MAP;
+    }
+    
+    public Map<Integer, Object> getPositionalParameters() {
+        return positionalParameters != null
+                ? Collections.unmodifiableMap(positionalParameters)
                 : Collections.EMPTY_MAP;
     }
 
@@ -127,11 +157,11 @@ public class EJBQLQuery implements Query {
         // TODO: andrus, 6/12/2007 - validate against available query parameters - JPA
         // spec requires it.
 
-        if (parameters == null) {
-            parameters = new HashMap<Object, Object>();
+        if (namedParameters == null) {
+            namedParameters = new HashMap<String, Object>();
         }
 
-        parameters.put(name, object);
+        namedParameters.put(name, object);
     }
 
     /**
@@ -148,11 +178,11 @@ public class EJBQLQuery implements Query {
         // TODO: andrus, 6/12/2007 - validate against available query parameters - JPA
         // spec requires it.
 
-        if (parameters == null) {
-            parameters = new HashMap<Object, Object>();
+        if (positionalParameters == null) {
+            positionalParameters = new HashMap<Integer, Object>();
         }
 
-        parameters.put(Integer.valueOf(position), object);
+        positionalParameters.put(Integer.valueOf(position), object);
     }
 
     /**

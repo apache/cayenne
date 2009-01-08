@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -38,7 +43,54 @@ class EJBQLQueryMetadata extends BaseQueryMetadata {
 
         ObjEntity root = expression.getRootDescriptor().getEntity();
 
-        // TODO: andrus, 4/3/2007 - generate cache key based on EJBQL statement
-        return super.resolve(root, resolver, null);
+        if (super.resolve(root, resolver, null)) {
+
+            if (QueryCacheStrategy.NO_CACHE == getCacheStrategy()) {
+
+            }
+            else {
+
+                // create a unique key based on entity, EJBQL, and parameters
+                StringBuilder key = new StringBuilder();
+
+                if (query.getEjbqlStatement() != null) {
+                    key.append('/').append(query.getEjbqlStatement());
+                }
+
+                if (query.getFetchLimit() > 0) {
+                    key.append('/').append(query.getFetchLimit());
+                }
+
+                Map<String, Object> namedParameters = query.getNamedParameters();
+                if (!namedParameters.isEmpty()) {
+
+                    List<String> keys = new ArrayList<String>(namedParameters.keySet());
+                    Collections.sort(keys);
+                    for (String parameterKey : keys) {
+                        key.append('/').append(parameterKey).append('=').append(
+                                namedParameters.get(parameterKey));
+                    }
+                }
+
+                Map<Integer, Object> positionalParameters = query
+                        .getPositionalParameters();
+                if (!positionalParameters.isEmpty()) {
+
+                    List<Integer> keys = new ArrayList<Integer>(positionalParameters
+                            .keySet());
+                    Collections.sort(keys);
+                    for (Integer parameterKey : keys) {
+                        key.append('/').append(parameterKey).append('=').append(
+                                positionalParameters.get(parameterKey));
+                    }
+                }
+
+                this.cacheKey = key.toString();
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

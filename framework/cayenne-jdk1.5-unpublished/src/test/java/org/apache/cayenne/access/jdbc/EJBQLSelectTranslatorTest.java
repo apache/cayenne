@@ -35,16 +35,17 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         return translateSelect(ejbql, Collections.EMPTY_MAP);
     }
 
+   
     private SQLTemplate translateSelect(
             String ejbql,
-            final Map<Object, Object> queryParameters) {
+            final Map<Integer, Object> queryParameters) {
         EJBQLParser parser = EJBQLParserFactory.getParser();
         EJBQLCompiledExpression select = parser.compile(ejbql, getDomain()
                 .getEntityResolver());
         EJBQLQuery query = new EJBQLQuery(ejbql) {
 
             @Override
-            public Map<Object, Object> getParameters() {
+            public Map<Integer, Object>  getPositionalParameters(){
                 return queryParameters;
             }
         };
@@ -54,6 +55,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         return tr.getQuery();
     }
+
 
     public void testSelectFrom() {
         SQLTemplate query = translateSelect("select a from Artist a");
@@ -232,7 +234,7 @@ public class EJBQLSelectTranslatorTest extends CayenneCase {
     }
 
     public void testSelectPositionalParameters() {
-        Map<Object, Object> params = new HashMap<Object, Object>();
+        Map<Integer, Object> params = new HashMap<Integer, Object>();
         params.put(new Integer(1), "X");
         params.put(new Integer(2), "Y");
         SQLTemplate query = translateSelect(

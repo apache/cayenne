@@ -36,10 +36,53 @@ public class EJBQLQueryTest extends CayenneCase {
         query.setParameter(1, "X");
         query.setParameter("name", "Y");
 
-        Map parameters = query.getParameters();
-        assertEquals(2, parameters.size());
-        assertEquals("X", parameters.get(new Integer(1)));
+        Map parameters = query.getNamedParameters();
+        Map parameters1 = query.getPositionalParameters();
+        assertEquals(1, parameters.size());
+        assertEquals(1, parameters1.size());
+        assertEquals("X", parameters1.get(new Integer(1)));
         assertEquals("Y", parameters.get("name"));
+    }
+
+    public void testCacheParameters() {
+        String ejbql1 = "select a FROM Artist a WHERE a.artistName = ?1 OR a.artistName = :name";
+        EJBQLQuery q1 = new EJBQLQuery(ejbql1);
+        q1.setParameter(1, "X");
+        q1.setParameter("name", "Y");
+        q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+
+        String ejbql2 = "select a FROM Artist a WHERE a.artistName = ?1 OR a.artistName = :name";
+        EJBQLQuery q2 = new EJBQLQuery(ejbql2);
+        q2.setParameter(1, "X");
+        q2.setParameter("name", "Y");
+        q2.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+
+        EntityResolver resolver = getDomain().getEntityResolver();
+
+        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2
+                .getMetaData(resolver)
+                .getCacheKey());
+    }
+
+    public void testCacheStrategy() {
+        insertValue();
+        DataContext contex = createDataContext();
+        String ejbql = "select a FROM Artist a";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        List<Artist> artist1 = contex.performQuery(query);
+        blockQueries();
+        List<Artist> artist2;
+        try {
+            EJBQLQuery query1 = new EJBQLQuery(ejbql);
+            query1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+            artist2 = contex.performQuery(query1);
+        }
+        finally {
+            unblockQueries();
+        }
+
+        assertEquals(artist1.get(0).getArtistName(), artist2.get(0).getArtistName());
     }
 
     public void testDataRows() {
@@ -57,7 +100,6 @@ public class EJBQLQueryTest extends CayenneCase {
                 (DataRow) row,
                 true);
         assertEquals("a0", artist.getArtistName());
-
     }
 
     private void insertValue() {
@@ -86,6 +128,22 @@ public class EJBQLQueryTest extends CayenneCase {
         assertNull(query.getName());
         query.setName("XYZ");
         assertEquals("XYZ", query.getName());
+    }
+
+    public void testUniqueKeyEntity() {
+        // insertValue();
+        EntityResolver resolver = getDomain().getEntityResolver();
+        String ejbql = "select a FROM Artist a";
+
+        EJBQLQuery q1 = new EJBQLQuery(ejbql);
+        q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+
+        EJBQLQuery q2 = new EJBQLQuery(ejbql);
+        q2.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+
+        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2
+                .getMetaData(resolver)
+                .getCacheKey());
     }
 
     public void testGetMetadata() {
