@@ -27,8 +27,6 @@ import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.query.EJBQLQuery;
 
-
-
 public class EjbqlTabbedView extends JTabbedPane {
 
     protected ProjectController mediator;
@@ -44,7 +42,7 @@ public class EjbqlTabbedView extends JTabbedPane {
 
     private void initView() {
         setTabPlacement(JTabbedPane.TOP);
-        
+
         this.mainTab = new EjbqlQueryMainTab(mediator);
         addTab("General", new JScrollPane(mainTab));
 
@@ -96,4 +94,5 @@ public class EjbqlTabbedView extends JTabbedPane {
                 scriptsTab.initFromModel();
                 break;
         }
-    }}
+    }
+}

@@ -145,7 +145,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         detailPanel.add(new JScrollPane(procedureQueryView), PROCEDURE_QUERY_VIEW);
        
         Component ejbqlQueryView = new EjbqlTabbedView(eventController);
-        detailPanel.add(new JScrollPane(ejbqlQueryView), EJBQL_QUERY_VIEW);
+        detailPanel.add(ejbqlQueryView, EJBQL_QUERY_VIEW);
 
         objDetailView = new ObjEntityTabbedView(eventController);
         detailPanel.add(objDetailView, OBJ_VIEW);
