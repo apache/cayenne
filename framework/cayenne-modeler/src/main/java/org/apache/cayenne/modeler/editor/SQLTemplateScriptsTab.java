@@ -70,7 +70,7 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
     /**
      * JEdit marker for SQL Template
      */
-    private static final TokenMarker SQL_TEMPLATE_MARKER;
+    static final TokenMarker SQL_TEMPLATE_MARKER;
     static {
         KeywordMap map = PLSQLTokenMarker.getKeywordMap();
         
@@ -123,7 +123,7 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
 
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                    displayScript();
+                    displayScript();                    
                 }
             }
         };
@@ -154,6 +154,7 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
                 scripts,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1, 2));
+        
         builder.add(new JScrollPane(scriptArea), cc.xy(3, 2));
 
         setLayout(new BorderLayout());
@@ -173,7 +174,7 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
         scripts.setSelectedIndex(0);
         displayScript();
         scripts.addListSelectionListener(scriptRefreshHandler);
-
+        
         scriptArea.setEnabled(true);
         setVisible(true);
     }

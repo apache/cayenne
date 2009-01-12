@@ -59,7 +59,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
     private static final String LOCAL_CACHE_LABEL = "Local Cache (per ObjectContext)";
     private static final String SHARED_CACHE_LABEL = "Shared Cache";
 
-    private static final Object[] CACHE_POLICIES = new Object[] {
+    protected static final Object[] CACHE_POLICIES = new Object[] {
             QueryCacheStrategy.NO_CACHE, QueryCacheStrategy.LOCAL_CACHE,
             QueryCacheStrategy.SHARED_CACHE
     };
@@ -199,7 +199,6 @@ public abstract class SelectPropertiesPanel extends JPanel {
         super.setEnabled(flag);
 
         // propagate to children
-
         Container mainPanel = (Container) getComponent(0);
         Component[] children = mainPanel.getComponents();
         for (Component child : children) {

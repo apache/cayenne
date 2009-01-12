@@ -29,6 +29,7 @@ import junit.framework.TestCase;
 
 import org.apache.art.Artist;
 import org.apache.art.Gallery;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -159,7 +160,12 @@ public class MapLoaderLoadTest extends TestCase {
         SQLTemplate nonSelectingQuery = (SQLTemplate) map.getQuery("NonSelectingQuery");
         assertNotNull(nonSelectingQuery);
         assertEquals("NonSelectingQuery", nonSelectingQuery.getName());
-        
         assertEquals(SQLTemplate.UPPERCASE_COLUMN_NAMES, nonSelectingQuery.getColumnNamesCapitalization());
+        
+        EJBQLQuery ejbqlQueryTest = (EJBQLQuery) map.getQuery("EjbqlQueryTest");      
+        assertNotNull(ejbqlQueryTest);
+        assertEquals("EjbqlQueryTest", ejbqlQueryTest.getName());
+        assertNotNull(ejbqlQueryTest.getEjbqlStatement());        
+        assertEquals("SHARED_CACHE", ejbqlQueryTest.getCacheStrategy().toString());       
     }
 }

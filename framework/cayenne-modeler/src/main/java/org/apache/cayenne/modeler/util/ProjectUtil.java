@@ -43,6 +43,8 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.query.AbstractQuery;
+import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -134,7 +136,7 @@ public class ProjectUtil {
         }
     }
 
-    public static void setQueryName(DataMap map, AbstractQuery query, String newName) {
+    public static void setQueryName(DataMap map, Query query, String newName) {
 
         String oldName = query.getName();
 
@@ -143,7 +145,12 @@ public class ProjectUtil {
             return;
         }
 
-        query.setName(newName);
+        if(query instanceof AbstractQuery){
+            ((AbstractQuery)query).setName(newName);
+        }
+        if(query instanceof EJBQLQuery){
+            ((EJBQLQuery)query).setName(newName);
+        }
         map.removeQuery(oldName);
         map.addQuery(query);
 

@@ -22,7 +22,9 @@ package org.apache.cayenne.modeler.dialog.query;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.AbstractQuery;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.scopemvc.core.Selector;
@@ -37,13 +39,16 @@ public class QueryTypeModel {
             .fromString("rawSQLQuery");
     public static final Selector PROCEDURE_QUERY_SELECTOR = Selector
             .fromString("procedureQuery");
-
+    public static final Selector EJBQL_QUERY_SELECTOR = Selector
+    .fromString("ejbqlQuery");
+ 
     // query prototypes...
     protected AbstractQuery objectSelectQuery;
     protected AbstractQuery rawSQLQuery;
     protected AbstractQuery procedureQuery;
+    protected EJBQLQuery ejbqlQuery;
 
-    protected AbstractQuery selectedQuery;
+    protected Query selectedQuery;
 
     public QueryTypeModel(DataMap root) {
         // create query prototypes:
@@ -54,12 +59,13 @@ public class QueryTypeModel {
         rawSQLQuery.setRoot(root);
         rawSQLQuery.setFetchingDataRows(true);
         this.rawSQLQuery = rawSQLQuery;
-
+        
+        ejbqlQuery = new EJBQLQuery();
         // by default use object query...
         selectedQuery = objectSelectQuery;
     }
 
-    public AbstractQuery getSelectedQuery() {
+    public Query getSelectedQuery() {
         return selectedQuery;
     }
 
@@ -103,6 +109,19 @@ public class QueryTypeModel {
         }
         else if (flag && !isProcedureQuery()) {
             selectedQuery = procedureQuery;
+        }
+    }
+    
+    public boolean isEjbqlQuery() {
+        return selectedQuery == ejbqlQuery;
+    }
+
+    public void setEjbqlQuery(boolean flag) {
+        if (!flag && isEjbqlQuery()) {
+            selectedQuery = null;
+        }
+        else if (flag && !isEjbqlQuery()) {
+            selectedQuery = ejbqlQuery;
         }
     }
 }

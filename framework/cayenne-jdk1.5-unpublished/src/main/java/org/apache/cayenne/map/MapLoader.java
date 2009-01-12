@@ -100,7 +100,8 @@ public class MapLoader extends DefaultHandler {
     // Query-related
     public static final String QUERY_TAG = "query";
 
-    public static final String QUERY_SQL_TAG = "sql";
+    public static final String QUERY_SQL_TAG = "sql";    
+    public static final String QUERY_EJBQL_TAG = "ejbql";
     public static final String QUERY_QUALIFIER_TAG = "qualifier";
     public static final String QUERY_ORDERING_TAG = "ordering";
     public static final String QUERY_PREFETCH_TAG = "prefetch";
@@ -151,6 +152,7 @@ public class MapLoader extends DefaultHandler {
     private Procedure procedure;
     private QueryLoader queryBuilder;
     private String sqlKey;
+    private String ejbqlKey;    
     private String descending;
     private String ignoreCase;
 
@@ -282,6 +284,15 @@ public class MapLoader extends DefaultHandler {
             @Override
             void execute(Attributes attributes) throws SAXException {
                 processStartProcedure(attributes);
+            }
+        });        
+       
+        startTagOpMap.put(QUERY_EJBQL_TAG, new StartClosure() {
+
+            @Override
+            void execute(Attributes attributes) throws SAXException {
+                charactersBuffer = new StringBuilder();
+                processStartEjbqlQuery(attributes);
             }
         });
 
@@ -518,6 +529,16 @@ public class MapLoader extends DefaultHandler {
                 processEndQuerySQL();
             }
         });
+        
+       ////////////////////////////////////////// 
+        endTagOpMap.put(QUERY_EJBQL_TAG, new EndClosure() {
+
+            @Override
+            void execute() throws SAXException {
+                processEndEjbqlQuery();
+            }
+        });
+        
         endTagOpMap.put(QUERY_QUALIFIER_TAG, new EndClosure() {
 
             @Override
@@ -873,6 +894,12 @@ public class MapLoader extends DefaultHandler {
     private void processStartQuerySQL(Attributes atts) {
         this.sqlKey = convertClassNameFromV1_2(atts.getValue("", "adapter-class"));
     }
+    
+    ///////////////////////////////
+    private void processStartEjbqlQuery(Attributes atts) throws SAXException {
+        this.ejbqlKey = convertClassNameFromV1_2(atts.getValue("", "adapter-class"));
+    }
+    
 
     private void processStartObjEntity(Attributes atts) {
         objEntity = new ObjEntity(atts.getValue("", "name"));
@@ -1061,6 +1088,8 @@ public class MapLoader extends DefaultHandler {
         dataMap.addProcedure(procedure);
     }
 
+  
+    
     private void processStartProcedureParameter(Attributes attributes)
             throws SAXException {
 
@@ -1196,6 +1225,13 @@ public class MapLoader extends DefaultHandler {
         queryBuilder = null;
     }
 
+    ///////////////////////////////////////////////
+
+    private void processEndEjbqlQuery() throws SAXException {
+        queryBuilder.setEjbql(charactersBuffer.toString());
+        ejbqlKey = null;
+    }
+    
     private void processEndQuerySQL() {
         queryBuilder.addSql(charactersBuffer.toString(), sqlKey);
         sqlKey = null;

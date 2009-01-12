@@ -40,47 +40,55 @@ import com.jgoodies.forms.layout.FormLayout;
  * 
  */
 public class QueryTypeDialog extends SPanel {
-
-    public QueryTypeDialog() {
+    
+     public QueryTypeDialog() {
         initView();
     }
 
     private void initView() {
         // create widgets
-        ButtonGroup buttonGroup = new ButtonGroup();
-        SRadioButton objectSelect = new SRadioButton(
+     ButtonGroup buttonGroup = new ButtonGroup();
+       
+     SRadioButton objectSelect = new SRadioButton(
                 QueryTypeController.OBJECT_QUERY_CONTROL,
                 QueryTypeModel.OBJECT_SELECT_QUERY_SELECTOR);
+        
+      SRadioButton sqlSelect = new SRadioButton(
+      QueryTypeController.SQL_QUERY_CONTROL,
+      QueryTypeModel.RAW_SQL_QUERY_SELECTOR);
+        
+      SRadioButton procedureSelect = new SRadioButton(
+      QueryTypeController.PROCEDURE_QUERY_CONTROL,
+      QueryTypeModel.PROCEDURE_QUERY_SELECTOR);
+        
+      SRadioButton ejbqlSelect = new SRadioButton(
+              QueryTypeController.EJBQL_QUERY_CONTROL,
+              QueryTypeModel.EJBQL_QUERY_SELECTOR);
+      
         buttonGroup.add(objectSelect);
-
-        SRadioButton sqlSelect = new SRadioButton(
-                QueryTypeController.SQL_QUERY_CONTROL,
-                QueryTypeModel.RAW_SQL_QUERY_SELECTOR);
         buttonGroup.add(sqlSelect);
-
-        SRadioButton procedureSelect = new SRadioButton(
-                QueryTypeController.PROCEDURE_QUERY_CONTROL,
-                QueryTypeModel.PROCEDURE_QUERY_SELECTOR);
         buttonGroup.add(procedureSelect);
-
+        buttonGroup.add(ejbqlSelect);
+       
         SButton saveButton = new SButton(new SAction(QueryTypeController.CREATE_CONTROL));
         saveButton.setEnabled(true);
 
         SButton cancelButton = new SButton(
                 new SAction(QueryTypeController.CANCEL_CONTROL));
         cancelButton.setEnabled(true);
-
+ 
         // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
                 "left:max(180dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu");
+                "p, 4dlu, p, 4dlu, p, 4dlu, p, 4dlu");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
 
         builder.add(objectSelect, cc.xy(1, 1));
         builder.add(sqlSelect, cc.xy(1, 3));
         builder.add(procedureSelect, cc.xy(1, 5));
+        builder.add(ejbqlSelect, cc.xy(1, 7));
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
@@ -94,3 +102,5 @@ public class QueryTypeDialog extends SPanel {
         setTitle("Select New Query Type");
     }
 }
+
+

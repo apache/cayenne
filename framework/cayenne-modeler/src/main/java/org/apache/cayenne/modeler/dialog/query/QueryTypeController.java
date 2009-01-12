@@ -27,6 +27,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.project.NamedObjectFactory;
 import org.apache.cayenne.query.AbstractQuery;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
 import org.scopemvc.controller.basic.BasicController;
 import org.scopemvc.core.Control;
@@ -42,7 +43,8 @@ public class QueryTypeController extends BasicController {
     public static final String CREATE_CONTROL = "cayenne.modeler.queryType.create.button";
     public static final String OBJECT_QUERY_CONTROL = "cayenne.modeler.queryType.selectQuery.radio";
     public static final String SQL_QUERY_CONTROL = "cayenne.modeler.queryType.sqlQuery.radio";
-    public static final String PROCEDURE_QUERY_CONTROL = "cayenne.modeler.queryType.procedureQuery.radio";
+    public static final String PROCEDURE_QUERY_CONTROL = "cayenne.modeler.queryType.procedureQuery.radio";    
+    public static final String EJBQL_QUERY_CONTROL = "cayenne.modeler.queryType.ejbqlQuery.radio";
 
     protected ProjectController mediator;
     protected DataMap dataMap;
@@ -72,6 +74,9 @@ public class QueryTypeController extends BasicController {
         else if (control.matchesID(PROCEDURE_QUERY_CONTROL)) {
             // do nothing... need to match control
         }
+         else if (control.matchesID(EJBQL_QUERY_CONTROL)) {
+            // do nothing... need to match control            
+        }
     }
 
     /**
@@ -89,7 +94,8 @@ public class QueryTypeController extends BasicController {
      */
     public void createQuery() {
         QueryTypeModel model = (QueryTypeModel) getModel();
-        AbstractQuery query = model.getSelectedQuery();
+        
+        Query query = model.getSelectedQuery();
         if (query == null) {
             // wha?
             return;
@@ -97,7 +103,11 @@ public class QueryTypeController extends BasicController {
 
         // update query...
         String queryName = NamedObjectFactory.createName(Query.class, dataMap);
-        query.setName(queryName);
+        if(query instanceof EJBQLQuery) {
+            ((EJBQLQuery)query).setName(queryName);
+        } else {
+            ((AbstractQuery)query).setName(queryName);
+        }
         dataMap.addQuery(query);
 
         // notify listeners

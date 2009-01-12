@@ -41,6 +41,7 @@ abstract class QueryLoader {
     protected String name;
     protected Map<String, String> properties;
     protected String sql;
+    protected String ejbql;
     protected Map<String, String> adapterSql;
     protected Expression qualifier;
     protected List<Ordering> orderings;
@@ -105,6 +106,11 @@ abstract class QueryLoader {
         this.rootName = rootName;
     }
 
+    void setEjbql(String ejbql) {        
+            this.ejbql = ejbql;
+    }
+
+    
     /**
      * Adds raw sql. If adapterClass parameter is not null, sets the SQL string to be
      * adapter-specific. Otherwise it is used as a default SQL string.

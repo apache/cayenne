@@ -28,13 +28,15 @@ import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * An EJBQL query representation in Cayenne.
  * 
  * @since 3.0
  */
-public class EJBQLQuery implements Query {
+public class EJBQLQuery implements Query, XMLSerializable {
 
     protected String name;
     protected String ejbqlStatement;
@@ -46,6 +48,18 @@ public class EJBQLQuery implements Query {
 
     public EJBQLQuery(String ejbqlStatement) {
         this.ejbqlStatement = ejbqlStatement;
+    }
+
+    public EJBQLQuery() {
+    }
+    
+    public void initWithProperties(Map<String, ?> properties) {
+
+        // must init defaults even if properties are empty
+        if (properties == null) {
+            properties = Collections.EMPTY_MAP;
+        }
+        metadata.initWithProperties(properties);
     }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {
@@ -78,11 +92,7 @@ public class EJBQLQuery implements Query {
     public void setCacheStrategy(QueryCacheStrategy strategy) {
         metadata.setCacheStrategy(strategy);
     }
-    
-
-
-
-
+  
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         DataMap map = getMetaData(resolver).getDataMap();
 
@@ -208,4 +218,32 @@ public class EJBQLQuery implements Query {
     public void setFetchOffset(int fetchOffset) {
         metadata.setFetchOffset(fetchOffset);
     }
+
+    public void encodeAsXML(XMLEncoder encoder) {
+        encoder.print("<query name=\"");
+        encoder.print(getName());
+        encoder.print("\" factory=\"");
+        encoder.print("org.apache.cayenne.map.EjbqlBuilder");
+
+        encoder.println("\">");
+
+        encoder.indent(1);
+        
+        metadata.encodeAsXML(encoder);
+       
+        if (ejbqlStatement != null) {
+            encoder.print("<ejbql><![CDATA[");
+            encoder.print(ejbqlStatement);
+            encoder.println("]]></ejbql>");
+        }
+        
+        encoder.indent(-1);
+        encoder.println("</query>");        
+    }
+
+    public void setEjbqlStatement(String text) {
+        this.ejbqlStatement = text;
+    }
+    
+ 
 }

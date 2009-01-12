@@ -50,6 +50,7 @@ import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.pref.Domain;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
@@ -74,13 +75,13 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     private static final String SELECT_QUERY_VIEW = "SelectQueryView";
     private static final String SQL_TEMPLATE_VIEW = "SQLTemplateView";
     private static final String PROCEDURE_QUERY_VIEW = "ProcedureQueryView";
+    private static final String EJBQL_QUERY_VIEW = "EjbqlQueryView";
 
     protected ProjectController eventController;
     protected JSplitPane splitPane;
     protected Container detailPanel;
     protected CardLayout detailLayout;
-    private ProjectTreeView treePanel;
-    
+    private ProjectTreeView treePanel;    
     
     public ProjectTreeView getProjectTreeView() {
         return treePanel;
@@ -142,6 +143,9 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
         Component procedureQueryView = new ProcedureQueryView(eventController);
         detailPanel.add(new JScrollPane(procedureQueryView), PROCEDURE_QUERY_VIEW);
+       
+        Component ejbqlQueryView = new EjbqlTabbedView(eventController);
+        detailPanel.add(new JScrollPane(ejbqlQueryView), EJBQL_QUERY_VIEW);
 
         objDetailView = new ObjEntityTabbedView(eventController);
         detailPanel.add(objDetailView, OBJ_VIEW);
@@ -229,6 +233,9 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         }
         else if (query instanceof ProcedureQuery) {
             detailLayout.show(detailPanel, PROCEDURE_QUERY_VIEW);
+        }
+        else if (query instanceof EJBQLQuery) {
+            detailLayout.show(detailPanel, EJBQL_QUERY_VIEW);
         }
         else {
             detailLayout.show(detailPanel, EMPTY_VIEW);

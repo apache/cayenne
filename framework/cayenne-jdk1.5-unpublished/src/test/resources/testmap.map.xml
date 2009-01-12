@@ -632,6 +632,11 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="upper"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
 	</query>
+	<query name="EjbqlQueryTest" factory="org.apache.cayenne.map.EjbqlBuilder">	
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>		
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<ejbql><![CDATA[select * from ejbql]]></ejbql>
+	</query>
 	<entity-listener class="org.apache.art.EntityListenerDataMap">
 		<pre-persist method-name="prePersistDataMap1"/>
 		<pre-persist method-name="prePersistDataMap2"/>

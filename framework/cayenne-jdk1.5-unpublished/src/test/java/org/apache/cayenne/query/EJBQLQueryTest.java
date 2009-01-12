@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class EJBQLQueryTest extends CayenneCase {
 
@@ -165,5 +168,35 @@ public class EJBQLQueryTest extends CayenneCase {
         assertTrue(md.isRefreshingObjects());
         assertTrue(md.isResolvingInherited());
         assertEquals(QueryCacheStrategy.NO_CACHE, md.getCacheStrategy());
+    }
+    
+    public void testEncodeAsXML() {
+        
+        String ejbql = "select a FROM Artist a";
+        String name = "Test";
+        
+        StringWriter w = new StringWriter();
+        XMLEncoder e = new XMLEncoder(new PrintWriter(w));
+        
+        StringBuffer s = new StringBuffer("<query name=\"");
+        s.append(name);
+        s.append("\" factory=\"");
+        s.append("org.apache.cayenne.map.EjbqlBuilder");
+        s.append("\">");
+        s.append("\n");
+      
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        
+        if (query.getEjbqlStatement() != null) {
+            s.append("<ejbql><![CDATA[");
+            s.append(query.getEjbqlStatement());
+            s.append("]]></ejbql>");
+        }
+        s.append("\n");
+        s.append("</query>");     
+        s.append("\n");
+        query.setName(name);
+        query.encodeAsXML(e);       
+        assertTrue(w.getBuffer().toString().equals(s.toString()));
     }
 }
