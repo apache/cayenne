@@ -154,8 +154,7 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
                 scripts,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1, 2));
-        
-        builder.add(new JScrollPane(scriptArea), cc.xy(3, 2));
+        builder.add(scriptArea, cc.xy(3, 2));
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
