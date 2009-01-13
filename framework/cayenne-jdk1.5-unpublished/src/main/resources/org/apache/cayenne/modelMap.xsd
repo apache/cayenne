@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<!-- Cayenne entity map schema --> 
+<xs:schema targetNamespace="http://cayenne.apache.org/xml/ns/modelMap" xmlns:cay="http://cayenne.apache.org/xml/ns/modelMap" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="1.0">
+  <xs:element name="data-map">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:property"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:db-entity"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:obj-entity"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:db-relationship"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:obj-relationship"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:query"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:entity-listener"/>
+      </xs:sequence>
+      <xs:attribute name="project-version" use="required" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="db-entity">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="cay:db-attribute"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="schema" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="db-attribute">
+    <xs:complexType>
+      <xs:attribute name="isMandatory" type="xs:boolean">
+        <xs:annotation> 
+          <xs:documentation>If true, the value of this attribute cannot be null.</xs:documentation> 
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="isPrimaryKey" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>If true, the value of attribute is unique and used as a primary key identifier.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="length" type="xs:integer"/>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="scale" type="xs:integer"/>
+      <xs:attribute name="type" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="obj-entity">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="cay:qualifier"/>
+        <xs:element maxOccurs="unbounded" ref="cay:obj-attribute"/>
+        <xs:sequence minOccurs="0">
+          <xs:element ref="cay:entity-listener"/>
+          <xs:element ref="cay:pre-persist"/>
+          <xs:element ref="cay:post-update"/>
+        </xs:sequence>
+      </xs:sequence>
+      <xs:attribute name="className" use="required" type="xs:string"/>
+      <xs:attribute name="clientClassName" use="required" type="xs:string"/>
+      <xs:attribute name="clientSuperClassName" use="required" type="xs:string"/>
+      <xs:attribute name="dbEntityName" use="required" type="xs:string"/>
+      <xs:attribute name="lock-type" type="xs:string"/>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="superClassName" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="qualifier" type="xs:string"/>
+  <xs:element name="obj-attribute">
+    <xs:complexType>
+      <xs:attribute name="db-attribute-path" use="required" type="xs:string"/>
+      <xs:attribute name="lock" type="xs:boolean"/>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="type" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="db-relationship">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cay:db-attribute-pair"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="source" use="required" type="xs:string"/>
+      <xs:attribute name="target" use="required" type="xs:string"/>
+      <xs:attribute name="toDependentPK" type="xs:boolean"/>
+      <xs:attribute name="toMany" use="required" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="db-attribute-pair">
+    <xs:complexType>
+      <xs:attribute name="source" use="required" type="xs:string"/>
+      <xs:attribute name="target" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="obj-relationship">
+    <xs:complexType>
+      <xs:attribute name="db-relationship-path" use="required" type="xs:string"/>
+      <xs:attribute name="deleteRule" type="xs:string"/>
+      <xs:attribute name="lock" type="xs:boolean"/>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="source" use="required" type="xs:string"/>
+      <xs:attribute name="target" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="query">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:property"/>
+        <xs:element ref="cay:sql"/>
+      </xs:sequence>
+      <xs:attribute name="factory" use="required"/>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="root" use="required" type="xs:string"/>
+      <xs:attribute name="root-name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sql" type="xs:string"/>
+  <xs:element name="property">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="entity-listener">
+    <xs:complexType>
+      <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-persist"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-persist"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-update"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-update"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-remove"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-remove"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-load"/>
+      </xs:sequence>
+      <xs:attribute name="class" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pre-update">
+    <xs:complexType>
+      <xs:attribute name="method-name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="post-persist">
+    <xs:complexType>
+      <xs:attribute name="method-name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="post-update">
+    <xs:complexType>
+      <xs:attribute name="method-name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pre-persist">
+    <xs:complexType>
+      <xs:attribute name="method-name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="post-remove">
+    <xs:complexType>
+      <xs:attribute name="method-name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="post-load">
+    <xs:complexType>
+      <xs:attribute name="method-name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pre-remove">
+    <xs:complexType>
+      <xs:attribute name="method-name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
