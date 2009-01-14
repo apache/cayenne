@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -31,7 +30,12 @@ import org.apache.cayenne.util.Util;
  */
 public class CreateTableToModel extends AbstractToModelToken.Entity {
 
-    private String objEntityClassName = CayenneDataObject.class.getName();
+    /**
+     * className if {@link ObjEntity} should be generated with a
+     *  special class name.
+     * Setting this to <code>null</code>, because by default class name should be generated 
+     */
+    private String objEntityClassName = null; //CayenneDataObject.class.getName();
 
     public CreateTableToModel(DbEntity entity) {
         super(entity);
@@ -42,7 +46,7 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
      * special class name. Set to null if the {@link ObjEntity} should be created with a
      * name based on {@link DataMap#getDefaultPackage()} and {@link ObjEntity#getName()}
      * <p>
-     * The default value is the class name of {@link CayenneDataObject}
+     * The default value is <code>null</code>
      */
     public void setObjEntityClassName(String n) {
         objEntityClassName = n;
@@ -79,6 +83,22 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         }
 
         objEntity.setClassName(className);
+        
+        objEntity.setSuperClassName(map.getDefaultSuperclass());
+        
+        if (map.isClientSupported()) {
+            String clientPkg = map.getDefaultClientPackage();
+            if (clientPkg != null) {
+                if (!clientPkg.endsWith(".")) {
+                    clientPkg = clientPkg + ".";
+                }
+
+                objEntity.setClientClassName(clientPkg + objEntity.getName());
+            }
+
+            objEntity.setClientSuperClassName(map.getDefaultClientSuperclass());
+        }
+        
         map.addObjEntity(objEntity);
 
         synchronizeWithObjEntity(getEntity());

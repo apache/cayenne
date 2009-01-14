@@ -90,5 +90,10 @@ public class EntityMergeSupportTest extends MergeCase {
                  DeleteRule.DEFAULT_DELETE_RULE_TO_MANY);
          assertEquals(((ObjRelationship) objEntity2.getRelationship("rel2To1")).getDeleteRule(),
                  DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
+         
+         map.removeObjEntity(objEntity2.getName());
+         map.removeObjEntity(objEntity1.getName());
+         map.removeDbEntity(dbEntity2.getName());
+         map.removeDbEntity(dbEntity1.getName());
      }
 }

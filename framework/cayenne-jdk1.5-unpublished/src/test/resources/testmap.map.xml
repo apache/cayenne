@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map project-version="3.0">
 	<property name="defaultPackage" value="org.apache.art"/>
+	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="test.client"/>
+	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
+	
 	<procedure name="cayenne_tst_out_proc">
 		<procedure-parameter name="in_param" type="INTEGER" direction="in"/>
 		<procedure-parameter name="out_param" type="INTEGER" direction="out"/>
