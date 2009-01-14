@@ -196,7 +196,10 @@ public class MergerOptions extends CayenneController {
 
         while (it.hasNext()) {
             MergerToken token = it.next();
-            token.execute(context);
+            
+            if (token.getDirection() == MergeDirection.TO_DB) {
+                token.execute(context);
+            }
             // buf.append(token.createSql(adapter)).append(lineEnd);
         }
 

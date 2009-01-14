@@ -199,6 +199,11 @@ public class MergerTokenSelectorController extends CayenneController {
         if (excludedTokens.remove(token)) {
             excludedTokens.add(reverse);
         }
+        
+        /**
+         * Repaint, so that "Operation" column updates properly
+         */
+        view.getTokens().repaint();
     }
 
     public void checkAllAction() {
