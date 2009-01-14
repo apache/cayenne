@@ -74,6 +74,9 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
             buffer.append("</font>");
             
             buffer.append("<font size='-2' face='Arial,Helvetica'>");
+            buffer.append("<br>JVM: " + System.getProperty("java.vm.name") + " " + 
+                    System.getProperty("java.version"));
+            
             String version = LocalizedStringsHandler.getString("cayenne.version");
             if (version != null) {
                 buffer.append("<br>Version: ").append(version);
