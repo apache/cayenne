@@ -185,7 +185,10 @@ public final class CellRenderers {
                 }
             }
             
-            obj = label;
+            return label;
+        }
+        else if (obj instanceof DataMap) {
+            return ((DataMap) obj).getName();
         }
         
         return obj == null ? null : String.valueOf(obj);

@@ -244,7 +244,7 @@ public class SelectQueryMainTab extends JPanel {
                 /**
                  * Advanced checking. See CAY-888 #1
                  */
-                if(query.getRoot() != null) {
+                if (query.getRoot() instanceof Entity) {
                     checkExpression((Entity) query.getRoot(), exp);
                 }
                 
@@ -345,25 +345,27 @@ public class SelectQueryMainTab extends JPanel {
         public void actionPerformed(ActionEvent ae) {
             SelectQuery query = getQuery();
             if (query != null) {
-                query.setRoot(queryRoot.getModel().getSelectedItem());
-                
-                if (needChangeName) { //not changed by user
-                    /**
-                     * Doing auto name change, following CAY-888 #2
-                     */
-                    Entity e = (Entity)queryRoot.getModel().getSelectedItem();
+                Entity root = (Entity) queryRoot.getModel().getSelectedItem();
+
+                if (root != null) {
+                    query.setRoot(root);
                     
-                    String newPrefix = e.getName() + "Query";
-                    newName = newPrefix;
-                    
-                    DataMap map = mediator.getCurrentDataMap();
-                    long postfix = 1;
-                    
-                    while (map.getQuery(newName) != null) {
-                        newName = newPrefix + (postfix++);
+                    if (needChangeName) { //not changed by user
+                        /**
+                         * Doing auto name change, following CAY-888 #2
+                         */
+                        String newPrefix = root.getName() + "Query";
+                        newName = newPrefix;
+                        
+                        DataMap map = mediator.getCurrentDataMap();
+                        long postfix = 1;
+                        
+                        while (map.getQuery(newName) != null) {
+                            newName = newPrefix + (postfix++);
+                        }
+                        
+                        name.setText(newName);
                     }
-                    
-                    name.setText(newName);
                 }
             }
         }
@@ -398,7 +400,7 @@ public class SelectQueryMainTab extends JPanel {
          */
         boolean hasDefaultName(SelectQuery query) {
             String prefix = query.getRoot() == null ? "UntitledQuery" :
-                ((Entity)query.getRoot()).getName() + "Query";
+                CellRenderers.asString(query.getRoot()) + "Query";
             
             return name.getComponent().getText().startsWith(prefix);
         }
