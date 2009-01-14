@@ -24,7 +24,6 @@ import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -231,6 +230,11 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                 if (isVisible()) {
                     updateCallbackTypeCounters();
                     rebuildTable();
+                    
+                    if (table.editCellAt(table.getRowCount() - 1, 0)
+                            && table.getEditorComponent() != null) {
+                        table.getEditorComponent().requestFocus();
+                    }
                 }
             }
 
