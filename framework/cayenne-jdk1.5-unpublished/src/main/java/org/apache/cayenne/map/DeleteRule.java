@@ -45,6 +45,18 @@ public class DeleteRule {
      */
     public static final int DENY = 3;
     private static final String DENY_NAME = "Deny";
+    
+    /**
+     * Default delete rule for one-to-many relationships. It is used when new rels are
+     * created via modeler, or when synchrozining Obj- and DbEntities
+     */
+    public static final int DEFAULT_DELETE_RULE_TO_MANY = DeleteRule.DENY;
+    
+    /**
+     * Default delete rule for many-to-one relationships. It is used when new rels are
+     * created via modeler, or when synchrozining Obj- and DbEntities
+     */
+    public static final int DEFAULT_DELETE_RULE_TO_ONE = DeleteRule.NULLIFY;
 
     /** 
      * Returns String label for a delete rule state. Used for save/load (xml),

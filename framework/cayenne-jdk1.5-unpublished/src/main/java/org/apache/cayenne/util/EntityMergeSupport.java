@@ -67,6 +67,11 @@ public class EntityMergeSupport {
         this.listeners = new ArrayList<EntityMergeListener>(); 
         
         this.namingStrategy = namingStrategy;
+        
+        /**
+         * Adding a listener, so that all created ObjRelationships would have default delete rule
+         */
+        addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
     }
 
     /**
