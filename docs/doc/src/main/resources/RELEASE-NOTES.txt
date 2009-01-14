@@ -14,6 +14,7 @@ Date:
 
 Changes/New Features Since M5:
 
+CAY-1021 adding a callback method should result in focus on method name
 CAY-1140 Store ObjEntity name in the DataRow
 CAY-1142 (Single table) Inheritance and Paginated lists 
 CAY-1146 Move User properties API to ObjectContext & BaseContext
