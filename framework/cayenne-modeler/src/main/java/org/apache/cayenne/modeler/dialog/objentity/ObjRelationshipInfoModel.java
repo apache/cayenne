@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.dialog.objentity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -34,7 +33,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.DeleteRuleUpdater;
+import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 import org.scopemvc.core.ModelChangeTypes;
 import org.scopemvc.core.Selector;
@@ -395,7 +394,7 @@ public class ObjRelationshipInfoModel extends BasicModel {
                 break;
             }
 
-            relationship.addDbRelationship((DbRelationship) nextPathComponent);
+            relationship.addDbRelationship(nextPathComponent);
         }
     }
 

@@ -19,16 +19,15 @@
 
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.map.DeleteRule;
-import org.apache.cayenne.project.CayenneUserDir;
-import org.apache.commons.collections.ExtendedProperties;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import org.apache.cayenne.project.CayenneUserDir;
+import org.apache.commons.collections.ExtendedProperties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * ModelerPreferences class supports persistent user preferences. Preferences are saved in
@@ -66,18 +65,6 @@ public class ModelerPreferences extends ExtendedProperties {
      */
     public static final int COMBOBOX_MAX_VISIBLE_SIZE = 12;
     
-    /**
-     * Default delete rule for one-to-many relationships. It is used when new rels are
-     * created via 'New' button or reverse engineering
-     */
-    public static final int DEF_DELETE_RULE_TO_MANY = DeleteRule.DENY;
-    
-    /**
-     * Default delete rule for many-to-one relationships. It is used when new rels are
-     * created via 'New' button or reverse engineering
-     */
-    public static final int DEF_DELETE_RULE_TO_ONE = DeleteRule.NULLIFY;
-
     protected static ModelerPreferences sharedInstance;
 
     protected ModelerPreferences() {

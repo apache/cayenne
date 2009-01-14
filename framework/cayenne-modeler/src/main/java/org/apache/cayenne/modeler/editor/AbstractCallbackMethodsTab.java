@@ -197,7 +197,6 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 
             @Override
             protected void cleanup(JComponent c, boolean remove) {
-                // System.out.println("c");
             }
         });
 
