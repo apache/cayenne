@@ -67,7 +67,9 @@ public class EJBQLQueryTest extends CayenneCase {
                 .getCacheKey());
     }
 
-    public void testCacheStrategy() {
+    public void testCacheStrategy() throws Exception {
+        deleteTestData();
+        
         insertValue();
         DataContext contex = createDataContext();
         String ejbql = "select a FROM Artist a";
@@ -88,7 +90,9 @@ public class EJBQLQueryTest extends CayenneCase {
         assertEquals(artist1.get(0).getArtistName(), artist2.get(0).getArtistName());
     }
 
-    public void testDataRows() {
+    public void testDataRows() throws Exception {
+        deleteTestData();
+        
         insertValue();
         String ejbql = "select a FROM Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -178,12 +182,14 @@ public class EJBQLQueryTest extends CayenneCase {
         StringWriter w = new StringWriter();
         XMLEncoder e = new XMLEncoder(new PrintWriter(w));
         
+        String separator = System.getProperty("line.separator");
+        
         StringBuffer s = new StringBuffer("<query name=\"");
         s.append(name);
         s.append("\" factory=\"");
         s.append("org.apache.cayenne.map.EjbqlBuilder");
         s.append("\">");
-        s.append("\n");
+        s.append(separator);
       
         EJBQLQuery query = new EJBQLQuery(ejbql);
         
@@ -192,11 +198,12 @@ public class EJBQLQueryTest extends CayenneCase {
             s.append(query.getEjbqlStatement());
             s.append("]]></ejbql>");
         }
-        s.append("\n");
+        s.append(separator);
         s.append("</query>");     
-        s.append("\n");
+        s.append(separator);
         query.setName(name);
-        query.encodeAsXML(e);       
-        assertTrue(w.getBuffer().toString().equals(s.toString()));
+        query.encodeAsXML(e);
+        
+        assertEquals(w.getBuffer().toString(), s.toString());
     }
 }
