@@ -29,6 +29,7 @@ CAY-1143 CayenneModeler 'Import DataMap' function error
 CAY-1144 EJBQL mixed GROUP BY clause is generated incorrectly
 CAY-1155 Modeler template for SQLServer driver has a typo in the driver name
 CAY-1157 Modeler: Concurrent mod exception on removing DbRelationship
+CAY-1166 Type checking in the modeler
 
 ----------------------------------
 Release: 3.0M5
