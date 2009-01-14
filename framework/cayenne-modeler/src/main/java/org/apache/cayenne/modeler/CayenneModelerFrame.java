@@ -100,6 +100,7 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.OperatingSystem;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
 import org.apache.cayenne.pref.Domain;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Main frame of CayenneModeler. Responsibilities include coordination of
@@ -276,13 +277,22 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         
         splitPane.setResizeWeight(0.7);
         
-        Domain domain = Application.getInstance().getPreferenceDomain().getSubdomain(
+        /**
+         * Moving this to try-catch block per CAY-940.
+         * Exception will be stack-traced  
+         */
+        try {
+            Domain domain = Application.getInstance().getPreferenceDomain().getSubdomain(
                 this.getClass());
-        ComponentGeometry geometry = (ComponentGeometry) domain.getDetail(
+            ComponentGeometry geometry = (ComponentGeometry) domain.getDetail(
                 "splitPane.divider",
                 ComponentGeometry.class,
                 true);
-        geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 400);
+            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 400);
+        }
+        catch (Exception ex) {
+            LogFactory.getLog(getClass()).error("Cannot bind divider property", ex);
+        }
 
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
         // add placeholder

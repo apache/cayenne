@@ -55,6 +55,7 @@ import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Main display area split into the project navigation tree on the left and selected
@@ -170,14 +171,23 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         eventController.addQueryDisplayListener(this);
         eventController.addMultipleObjectsDisplayListener(this);
 
-        Domain domain = eventController.getApplicationPreferenceDomain().getSubdomain(
-                this.getClass());
-        ComponentGeometry geometry = (ComponentGeometry) domain.getDetail(
+        /**
+         * Moving this to try-catch block per CAY-940.
+         * Exception will be stack-traced  
+         */
+        try {
+            Domain domain = eventController.getApplicationPreferenceDomain().getSubdomain(
+                 this.getClass());
+            ComponentGeometry geometry = (ComponentGeometry) domain.getDetail(
                 "splitPane.divider",
                 ComponentGeometry.class,
                 true);
 
-        geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 150);
+            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 150);
+        }
+        catch (Exception ex) {
+            LogFactory.getLog(getClass()).error("Cannot bind divider property", ex);
+        }
     }
 
     public void currentProcedureChanged(ProcedureDisplayEvent e) {
