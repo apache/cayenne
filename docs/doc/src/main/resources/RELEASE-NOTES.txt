@@ -23,8 +23,9 @@ CAY-1154 Rename .access.reveng package to .map.naming
 CAY-1156 Modeler search improvement
 CAY-1161 Deprecate SelectQuery custom columns feature
 
-BugFixes Since M5:
+Bug Fixes Since M5:
 
+CAY-940 CayenneModeler fails on load of existing project file or upon creation of new project on IBM's Java 1.6.0 SDK on 32-bit ppc
 CAY-1143 CayenneModeler 'Import DataMap' function error
 CAY-1144 EJBQL mixed GROUP BY clause is generated incorrectly
 CAY-1155 Modeler template for SQLServer driver has a typo in the driver name
