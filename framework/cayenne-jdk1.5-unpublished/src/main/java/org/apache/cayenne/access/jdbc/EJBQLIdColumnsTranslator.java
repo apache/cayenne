@@ -18,64 +18,43 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
 
-
-public class EJBQLIdColumnsTranslator extends EJBQLIdentifierColumnsTranslator {
+/**
+ * @since 3.0
+ */
+class EJBQLIdColumnsTranslator extends EJBQLIdentifierColumnsTranslator {
 
     private EJBQLTranslationContext context;
-    private Set<String> columns;
-    
+
     EJBQLIdColumnsTranslator(EJBQLTranslationContext context) {
         super(context);
         this.context = context;
     }
-    
+
     @Override
     public boolean visitIdentifier(EJBQLExpression expression) {
 
-        Map<String, String> xfields = null;
+        Map<String, String> fields = null;
         if (context.isAppendingResultColumns()) {
-            xfields = context.nextEntityResult().getFields();
+            fields = context.nextEntityResult().getFields();
         }
 
-        // assign whatever we have to a final ivar so that it can be accessed within
-        // the inner class
-        final Map<String, String> fields = xfields;
-        final String idVar = expression.getText();
-        
+        String idVar = expression.getText();
+
         ClassDescriptor descriptor = context.getEntityDescriptor(idVar);
         ObjEntity oe = descriptor.getEntity();
 
-        
-        Iterator<ObjAttribute> ObjIterator = oe.getPrimaryKeys().iterator();
-        try{
-            while(ObjIterator.hasNext()){
-                
-                ObjAttribute temp = ObjIterator.next();
-                DbAttribute t = (DbAttribute) oe.getDbEntity().getAttribute(temp.getDbAttributeName());
-                appendColumn(idVar, temp,t, fields ,temp.getType());
-            }
-        }catch (Exception e) {
-            // TODO: handle exception
+        for (ObjAttribute oa : oe.getPrimaryKeys()) {
+            DbAttribute t = (DbAttribute) oe.getDbEntity().getAttribute(
+                    oa.getDbAttributeName());
+            appendColumn(idVar, oa, t, fields, oa.getType());
         }
 
         return false;
