@@ -52,7 +52,7 @@ public class EJBQLQuery implements Query, XMLSerializable {
 
     public EJBQLQuery() {
     }
-    
+
     public void initWithProperties(Map<String, ?> properties) {
 
         // must init defaults even if properties are empty
@@ -66,33 +66,31 @@ public class EJBQLQuery implements Query, XMLSerializable {
         metadata.resolve(resolver, this);
         return metadata;
     }
-    
+
     public boolean isFetchingDataRows() {
         return metadata.isFetchingDataRows();
     }
-    
-    
+
     public void setFetchingDataRows(boolean flag) {
         metadata.setFetchingDataRows(flag);
     }
-    
+
     public String[] getCacheGroups() {
         return metadata.getCacheGroups();
     }
-    
+
     public QueryCacheStrategy getCacheStrategy() {
         return metadata.getCacheStrategy();
     }
 
-
     public void setCacheGroups(String... cacheGroups) {
         this.metadata.setCacheGroups(cacheGroups);
     }
-    
+
     public void setCacheStrategy(QueryCacheStrategy strategy) {
         metadata.setCacheStrategy(strategy);
     }
-  
+
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         DataMap map = getMetaData(resolver).getDataMap();
 
@@ -141,17 +139,16 @@ public class EJBQLQuery implements Query, XMLSerializable {
      * Returns unmodifiable map of combined named and positional parameters. Positional
      * parameter keys are Integers, while named parameter keys are strings.
      */
-    
+
     public Map<String, Object> getNamedParameters() {
         return namedParameters != null
                 ? Collections.unmodifiableMap(namedParameters)
                 : Collections.EMPTY_MAP;
     }
-    
+
     public Map<Integer, Object> getPositionalParameters() {
-        return positionalParameters != null
-                ? Collections.unmodifiableMap(positionalParameters)
-                : Collections.EMPTY_MAP;
+        return positionalParameters != null ? Collections
+                .unmodifiableMap(positionalParameters) : Collections.EMPTY_MAP;
     }
 
     /**
@@ -228,22 +225,28 @@ public class EJBQLQuery implements Query, XMLSerializable {
         encoder.println("\">");
 
         encoder.indent(1);
-        
+
         metadata.encodeAsXML(encoder);
-       
+
         if (ejbqlStatement != null) {
             encoder.print("<ejbql><![CDATA[");
             encoder.print(ejbqlStatement);
             encoder.println("]]></ejbql>");
         }
-        
+
         encoder.indent(-1);
-        encoder.println("</query>");        
+        encoder.println("</query>");
     }
 
     public void setEjbqlStatement(String text) {
         this.ejbqlStatement = text;
     }
-    
- 
+
+    public int getPageSize() {
+        return metadata.getPageSize();
+    }
+
+    public void setPageSize(int pageSize) {
+        metadata.setPageSize(pageSize);
+    }
 }

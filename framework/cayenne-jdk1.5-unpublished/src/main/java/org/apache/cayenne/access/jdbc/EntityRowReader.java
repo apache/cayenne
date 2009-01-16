@@ -49,9 +49,8 @@ class EntityRowReader implements RowReader<DataRow> {
         if (classDescriptor != null) {
             this.entityName = classDescriptor.getEntity().getName();
         }
-
+        
         int segmentWidth = segmentMetadata.getFields().size();
-
         this.startIndex = segmentMetadata.getColumnOffset();
         this.converters = new ExtendedType[segmentWidth];
         this.types = new int[segmentWidth];
@@ -59,7 +58,6 @@ class EntityRowReader implements RowReader<DataRow> {
 
         ExtendedType[] converters = descriptor.getConverters();
         ColumnDescriptor[] columns = descriptor.getColumns();
-
         for (int i = 0; i < segmentWidth; i++) {
             this.converters[i] = converters[startIndex + i];
             types[i] = columns[startIndex + i].getJdbcType();

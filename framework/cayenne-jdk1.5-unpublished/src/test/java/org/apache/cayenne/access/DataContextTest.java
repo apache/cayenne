@@ -39,6 +39,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SQLTemplate;
@@ -313,7 +314,18 @@ public class DataContextTest extends DataContextCase {
         List objects = context.performQuery(query);
         assertNotNull(objects);
         assertTrue(objects instanceof IncrementalFaultList);
-
+        assertTrue(((IncrementalFaultList<?>) objects).elements.get(0) instanceof Long);
+        assertTrue(((IncrementalFaultList<?>) objects).elements.get(7) instanceof Long);
+        
+        assertTrue(objects.get(0) instanceof Artist);
+    }
+    
+    public void testPerformPaginatedQuery1() throws Exception {
+        EJBQLQuery query = new EJBQLQuery("select a FROM Artist a");
+        query.setPageSize(5);
+        List objects = context.performQuery(query);
+        assertNotNull(objects);
+        assertTrue(objects instanceof IncrementalFaultList);
         assertTrue(((IncrementalFaultList<?>) objects).elements.get(0) instanceof Long);
         assertTrue(((IncrementalFaultList<?>) objects).elements.get(7) instanceof Long);
         

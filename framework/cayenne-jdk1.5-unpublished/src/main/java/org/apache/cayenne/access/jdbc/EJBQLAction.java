@@ -97,6 +97,7 @@ public class EJBQLAction extends BaseSQLAction {
         sqlQuery.setFetchLimit(md.getFetchLimit());
         sqlQuery.setFetchOffset(md.getFetchOffset());
         sqlQuery.setResult(compiledExpression.getResult());
+        sqlQuery.setPageSize(md.getPageSize());
 
         actionFactory.sqlAction(sqlQuery).performAction(connection, observer);
     }

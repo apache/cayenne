@@ -31,6 +31,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -59,6 +60,7 @@ public class EJBQLTranslationContext {
     private List<StringBuilder> bufferChain;
     private StringBuilder stackTop;
     private int subselectCount;
+    private QueryMetadata queryMetadata;
 
     // a flag indicating whether column expressions should be treated as result columns or
     // not.
@@ -76,7 +78,7 @@ public class EJBQLTranslationContext {
         this.positionalParameters = query.getPositionalParameters();
         this.translatorFactory = translatorFactory;
         this.usingAliases = true;
-
+        this.queryMetadata = query.getMetaData(entityResolver);
         // buffer stack will hold named buffers during translation in the order they were
         // requested
         this.bufferStack = new ArrayList<StringBuilder>();
@@ -104,6 +106,10 @@ public class EJBQLTranslationContext {
                 .getObjectClass(), sql);
         query.setParameters(boundParameters);
         return query;
+    }
+    
+    public QueryMetadata getMetadata(){
+        return queryMetadata;
     }
 
     private String resolveId(String id) {

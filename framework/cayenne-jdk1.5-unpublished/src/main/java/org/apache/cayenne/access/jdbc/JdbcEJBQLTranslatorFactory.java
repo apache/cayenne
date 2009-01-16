@@ -74,7 +74,12 @@ public class JdbcEJBQLTranslatorFactory implements EJBQLTranslatorFactory {
 
     public EJBQLExpressionVisitor getIdentifierColumnsTranslator(
             EJBQLTranslationContext context) {
-        return new EJBQLIdentifierColumnsTranslator(context);
+        if(context.getMetadata().getPageSize() > 0){
+            return new EJBQLIdColumnsTranslator(context);
+        }
+        else{
+            return new EJBQLIdentifierColumnsTranslator(context);
+        }
     }
 
     public EJBQLExpressionVisitor getOrderByTranslator(EJBQLTranslationContext context) {

@@ -154,7 +154,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
-    private void appendColumn(
+    public void appendColumn(
             String identifier,
             ObjAttribute property,
             DbAttribute column,
@@ -162,7 +162,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
         appendColumn(identifier, property, column, fields, null);
     }
 
-    private void appendColumn(
+    public void appendColumn(
             String identifier,
             ObjAttribute property,
             DbAttribute column,

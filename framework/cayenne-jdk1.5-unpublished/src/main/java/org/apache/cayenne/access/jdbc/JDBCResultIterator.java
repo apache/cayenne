@@ -136,7 +136,10 @@ public class JDBCResultIterator implements ResultIterator {
             RowDescriptor descriptor,
             EntityResultSegment resultMetadata) {
 
-        if (resultMetadata.getClassDescriptor() != null
+        if (queryMetadata.getPageSize() > 0) {
+            return new IdRowReader(descriptor, queryMetadata);
+        }
+        else if (resultMetadata.getClassDescriptor() != null
                 && resultMetadata.getClassDescriptor().getEntityInheritanceTree() != null) {
             return new InheritanceAwareEntityRowReader(descriptor, resultMetadata);
         }
