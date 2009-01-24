@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -183,6 +184,11 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         if (objectDiff == null) {
 
             Persistent object = objectMap.get(nodeId);
+            
+            if (object == null) {
+                throw new CayenneRuntimeException("No object is registered in context with Id " + nodeId);
+            }
+            
             if (object.getPersistenceState() == PersistenceState.COMMITTED) {
                 object.setPersistenceState(PersistenceState.MODIFIED);
 
