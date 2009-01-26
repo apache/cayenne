@@ -37,7 +37,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.SQLTemplate;
 
 /**
  * A SQLAction that runs a stored procedure. Note that ProcedureAction has internal state
@@ -171,17 +170,16 @@ public class ProcedureAction extends BaseSQLAction {
             ColumnDescriptor[] columns = descriptors.get(setIndex);
             builder.setColumns(columns);
         }
-        if (query.getColumnNamesCapitalization() != null) {
-            if (SQLTemplate.LOWERCASE_COLUMN_NAMES.equals(query
-                    .getColumnNamesCapitalization())) {
+
+        switch (query.getColumnNamesCapitalization()) {
+            case LOWER:
                 builder.useLowercaseColumnNames();
-            }
-            else if (SQLTemplate.UPPERCASE_COLUMN_NAMES.equals(query
-                    .getColumnNamesCapitalization())) {
+                break;
+            case UPPER:
                 builder.useUppercaseColumnNames();
-            }
+                break;
         }
-        
+
         return builder.getDescriptor(getAdapter().getExtendedTypes());
     }
 

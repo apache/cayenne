@@ -36,9 +36,8 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * A query based on Procedure. Can be used as a select query, or as a query of an
  * arbitrary complexity, performing data modification, selecting data (possibly with
- * multiple result sets per call), returning values via OUT parameters.
- * <h3>Execution with DataContext</h3>
- * <h4>Reading OUT parameters</h4>
+ * multiple result sets per call), returning values via OUT parameters. <h3>Execution with
+ * DataContext</h3> <h4>Reading OUT parameters</h4>
  * <p>
  * If a ProcedureQuery has OUT parameters, they are wrapped in a separate List in the
  * query result. Such list will contain a single Map with OUT parameter values.
@@ -53,22 +52,12 @@ import org.apache.cayenne.util.XMLSerializable;
  * form should be used:
  * {@link org.apache.cayenne.access.DataContext#performGenericQuery(Query)}.
  * </p>
- * 
  */
 public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
         XMLSerializable {
 
     static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.ProcedureQuery.columnNameCapitalization";
 
-    /**
-     * @since 3.0
-     */
-    public static final String UPPERCASE_COLUMN_NAMES = "upper";
-
-    /**
-     * @since 3.0
-     */
-    public static final String LOWERCASE_COLUMN_NAMES = "lower";
     /**
      * @since 1.2
      */
@@ -78,7 +67,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      * @since 1.2
      */
     protected Class<?> resultClass;
-    protected String columnNamesCapitalization;
+    protected CapsStrategy columnNamesCapitalization;
 
     protected Map<String, Object> parameters = new HashMap<String, Object>();
 
@@ -230,9 +219,11 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
         Object columnNamesCapitalization = properties
                 .get(COLUMN_NAME_CAPITALIZATION_PROPERTY);
         this.columnNamesCapitalization = (columnNamesCapitalization != null)
-                ? columnNamesCapitalization.toString()
+                ? CapsStrategy.valueOf(columnNamesCapitalization
+                        .toString()
+                        .toUpperCase())
                 : null;
-                
+
         metaData.initWithProperties(properties);
     }
 
@@ -271,14 +262,14 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
 
         encoder.println("\">");
         encoder.indent(1);
-        
+
         metaData.encodeAsXML(encoder);
-        if (getColumnNamesCapitalization() != null) {
+        if (getColumnNamesCapitalization() != CapsStrategy.DEFAULT) {
             encoder.printProperty(
                     COLUMN_NAME_CAPITALIZATION_PROPERTY,
-                    getColumnNamesCapitalization());
+                    getColumnNamesCapitalization().name());
         }
-        
+
         encoder.indent(-1);
         encoder.println("</query>");
     }
@@ -357,7 +348,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     public void setFetchLimit(int fetchLimit) {
         this.metaData.setFetchLimit(fetchLimit);
     }
-    
+
     /**
      * @since 3.0
      */
@@ -390,8 +381,8 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
 
     /**
      * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *            redundant, although it is still being taken into account. It will be
-     *            removed in the later versions of Cayenne.
+     *             redundant, although it is still being taken into account. It will be
+     *             removed in the later versions of Cayenne.
      */
     public boolean isRefreshingObjects() {
         return metaData.isRefreshingObjects();
@@ -399,8 +390,8 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
 
     /**
      * @deprecated since 3.0. With introduction of the cache strategies this setting is
-     *            redundant, although it is still being taken into account. It will be
-     *            removed in the later versions of Cayenne.
+     *             redundant, although it is still being taken into account. It will be
+     *             removed in the later versions of Cayenne.
      */
     public void setRefreshingObjects(boolean flag) {
         // noop
@@ -524,12 +515,20 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     public void setResultEntityName(String resultEntityName) {
         this.resultEntityName = resultEntityName;
     }
-    
-    public String getColumnNamesCapitalization() {
-        return columnNamesCapitalization;
+
+    /**
+     * @since 3.0
+     */
+    public CapsStrategy getColumnNamesCapitalization() {
+        return columnNamesCapitalization != null
+                ? columnNamesCapitalization
+                : CapsStrategy.DEFAULT;
     }
-    
-    public void setColumnNamesCapitalization(String columnNameCapitalization) {
+
+    /**
+     * @since 3.0
+     */
+    public void setColumnNamesCapitalization(CapsStrategy columnNameCapitalization) {
         this.columnNamesCapitalization = columnNameCapitalization;
     }
 }

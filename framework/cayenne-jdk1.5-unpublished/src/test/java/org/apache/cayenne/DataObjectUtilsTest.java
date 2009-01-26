@@ -33,6 +33,7 @@ import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -58,7 +59,7 @@ public class DataObjectUtilsTest extends CayenneCase {
         SQLTemplate query = new SQLTemplate(map, sql);
         query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
         query.setTemplate(OpenBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         SQLResult rsMap = new SQLResult();
         rsMap.addColumnResult("X");

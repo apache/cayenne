@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
 import org.apache.cayenne.unit.MySQLStackAdapter;
@@ -93,7 +94,7 @@ public class CAY_1125Test extends CayenneCase {
             context.performGenericQuery(insert);
 
             SQLTemplate select = new SQLTemplate(Artist.class, "SELECT * FROM ARTIST");
-            select.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+            select.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
             List<Artist> results = context.performQuery(select);
             assertEquals(1, results.size());

@@ -40,11 +40,11 @@ public class ProcedureQueryTest extends TestCase {
 
     public void testColumnNameCapitalization() {
         ProcedureQuery q1 = new ProcedureQuery();
-        assertNull(q1.getColumnNamesCapitalization());
-        q1.setColumnNamesCapitalization(ProcedureQuery.UPPERCASE_COLUMN_NAMES);
-        assertEquals(ProcedureQuery.UPPERCASE_COLUMN_NAMES, q1.getColumnNamesCapitalization());
+        assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
+        q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
+        assertEquals(CapsStrategy.UPPER, q1.getColumnNamesCapitalization());
     }
-    
+
     public void testCreateQueryWithParameters() {
         Map params = new HashMap();
         params.put("a", "1");

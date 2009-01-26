@@ -32,6 +32,7 @@ import org.apache.art.Painting;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -267,13 +268,13 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         createArtist(1000.0);
         ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
         
-        q.setColumnNamesCapitalization(ProcedureQuery.LOWERCASE_COLUMN_NAMES);
+        q.setColumnNamesCapitalization(CapsStrategy.LOWER);
         q.addParameter("aName", "An Artist");
         List<DataRow> artists = runProcedureSelect(q);
         
         ProcedureQuery q1 = new ProcedureQuery(SELECT_STORED_PROCEDURE);
         
-        q1.setColumnNamesCapitalization(ProcedureQuery.UPPERCASE_COLUMN_NAMES);
+        q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
         q1.addParameter("aName", "An Artist");
         List<DataRow> artists1 = runProcedureSelect(q1);
         

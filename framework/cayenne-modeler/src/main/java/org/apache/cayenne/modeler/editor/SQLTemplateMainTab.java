@@ -40,6 +40,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
@@ -60,16 +61,17 @@ public class SQLTemplateMainTab extends JPanel {
     private static final String LOWER_CAPS_LABEL = "Force Lower Case";
     private static final String UPPER_CAPS_LABEL = "Force Upper Case";
 
-    private static final String[] LABEL_CAPITALIZATION = {
-            null, SQLTemplate.LOWERCASE_COLUMN_NAMES, SQLTemplate.UPPERCASE_COLUMN_NAMES
+    private static final CapsStrategy[] LABEL_CAPITALIZATION = {
+            CapsStrategy.DEFAULT, CapsStrategy.LOWER,
+            CapsStrategy.UPPER
     };
 
-    private static final Map labelCapsLabels = new HashMap();
+    private static final Map<CapsStrategy, String> labelCapsLabels = new HashMap<CapsStrategy, String>();
 
     static {
-        labelCapsLabels.put(null, DEFAULT_CAPS_LABEL);
-        labelCapsLabels.put(SQLTemplate.LOWERCASE_COLUMN_NAMES, LOWER_CAPS_LABEL);
-        labelCapsLabels.put(SQLTemplate.UPPERCASE_COLUMN_NAMES, UPPER_CAPS_LABEL);
+        labelCapsLabels.put(CapsStrategy.DEFAULT, DEFAULT_CAPS_LABEL);
+        labelCapsLabels.put(CapsStrategy.LOWER, LOWER_CAPS_LABEL);
+        labelCapsLabels.put(CapsStrategy.UPPER, UPPER_CAPS_LABEL);
     }
 
     protected ProjectController mediator;
@@ -216,7 +218,7 @@ public class SQLTemplateMainTab extends JPanel {
         protected PanelBuilder createPanelBuilder() {
             labelCase = CayenneWidgetFactory.createComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
-            
+
             labelCase.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent event) {
@@ -247,12 +249,7 @@ public class SQLTemplateMainTab extends JPanel {
                 DefaultComboBoxModel labelCaseModel = new DefaultComboBoxModel(
                         LABEL_CAPITALIZATION);
 
-                String capitalization = template.getColumnNamesCapitalization();
-                if (capitalization == null) {
-                    capitalization = LABEL_CAPITALIZATION[0];
-                }
-
-                labelCaseModel.setSelectedItem(capitalization);
+                labelCaseModel.setSelectedItem(template.getColumnNamesCapitalization());
                 labelCase.setModel(labelCaseModel);
             }
         }

@@ -74,16 +74,6 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 
     static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.SQLTemplate.columnNameCapitalization";
 
-    /**
-     * @since 3.0
-     */
-    public static final String UPPERCASE_COLUMN_NAMES = "upper";
-
-    /**
-     * @since 3.0
-     */
-    public static final String LOWERCASE_COLUMN_NAMES = "lower";
-
     private static final Transformer nullMapTransformer = new Transformer() {
 
         public Object transform(Object input) {
@@ -94,7 +84,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     protected String defaultTemplate;
     protected Map<String, String> templates;
     protected Map<String, ?>[] parameters;
-    protected String columnNamesCapitalization;
+    protected CapsStrategy columnNamesCapitalization;
     protected SQLResult result;
 
     SQLTemplateMetadata metaData = new SQLTemplateMetadata();
@@ -220,10 +210,10 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 
         metaData.encodeAsXML(encoder);
 
-        if (getColumnNamesCapitalization() != null) {
+        if (getColumnNamesCapitalization() != CapsStrategy.DEFAULT) {
             encoder.printProperty(
                     COLUMN_NAME_CAPITALIZATION_PROPERTY,
-                    getColumnNamesCapitalization());
+                    getColumnNamesCapitalization().name());
         }
 
         // encode default SQL
@@ -274,7 +264,9 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
         Object columnNamesCapitalization = properties
                 .get(COLUMN_NAME_CAPITALIZATION_PROPERTY);
         this.columnNamesCapitalization = (columnNamesCapitalization != null)
-                ? columnNamesCapitalization.toString()
+                ? CapsStrategy.valueOf(columnNamesCapitalization
+                        .toString()
+                        .toUpperCase())
                 : null;
     }
 
@@ -591,8 +583,10 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * 
      * @since 3.0
      */
-    public String getColumnNamesCapitalization() {
-        return columnNamesCapitalization;
+    public CapsStrategy getColumnNamesCapitalization() {
+        return columnNamesCapitalization != null
+                ? columnNamesCapitalization
+                : CapsStrategy.DEFAULT;
     }
 
     /**
@@ -605,11 +599,9 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * Note that while a non-default setting is useful for queries that do not rely on a
      * #result directive to describe columns, it works for all SQLTemplates the same way.
      * 
-     * @param columnNameCapitalization Can be null of one of
-     *            {@link #LOWERCASE_COLUMN_NAMES} or {@link #UPPERCASE_COLUMN_NAMES}.
      * @since 3.0
      */
-    public void setColumnNamesCapitalization(String columnNameCapitalization) {
+    public void setColumnNamesCapitalization(CapsStrategy columnNameCapitalization) {
         this.columnNamesCapitalization = columnNameCapitalization;
     }
 

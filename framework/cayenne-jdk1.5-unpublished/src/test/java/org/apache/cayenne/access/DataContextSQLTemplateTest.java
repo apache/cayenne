@@ -36,6 +36,7 @@ import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.SQLResult;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -62,7 +63,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         DataMap map = getDomain().getMap("testmap");
         SQLTemplate query = new SQLTemplate(map, sql);
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         EntityResult artistResult = new EntityResult(Artist.class);
         artistResult.addDbField(Artist.ARTIST_ID_PK_COLUMN, "X");
@@ -108,7 +109,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setTemplate(
                 OpenBaseAdapter.class.getName(),
                 "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         SQLResult rsMap = new SQLResult();
         rsMap.addColumnResult("X");
@@ -135,7 +136,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         query.setTemplate(
                 OpenBaseAdapter.class.getName(),
                 "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY 77");
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         SQLResult rsMap = new SQLResult();
         rsMap.addColumnResult("X");
@@ -160,7 +161,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
 
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
         SQLTemplate query = new SQLTemplate(Artist.class, template);
-        query.setColumnNamesCapitalization(SQLTemplate.LOWERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.LOWER);
         query.setFetchingDataRows(true);
 
         List rows = context.performQuery(query);
@@ -173,7 +174,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         assertFalse(row2.containsKey("ARTIST_ID"));
         assertTrue(row2.containsKey("artist_id"));
 
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         List rowsUpper = context.performQuery(query);
 
@@ -235,7 +236,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         String template = "SELECT * FROM PAINTING "
                 + "WHERE #bindObjectEqual($a) ORDER BY PAINTING_ID";
         SQLTemplate query = new SQLTemplate(Painting.class, template);
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
         List objects = context.performQuery(query);
@@ -255,7 +256,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         String template = "SELECT * FROM PAINTING "
                 + "WHERE #bindObjectNotEqual($a) ORDER BY PAINTING_ID";
         SQLTemplate query = new SQLTemplate(Painting.class, template);
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
         List objects = context.performQuery(query);
@@ -278,7 +279,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
         SQLTemplate query = new SQLTemplate(Painting.class, template);
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
         List objects = context.performQuery(query);
@@ -298,7 +299,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' ) ORDER BY PAINTING_ID";
         SQLTemplate query = new SQLTemplate(Painting.class, template);
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
         List objects = context.performQuery(query);
@@ -316,7 +317,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
         SQLTemplate query = new SQLTemplate(Painting.class, template);
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", null));
 
         List objects = context.performQuery(query);
@@ -336,7 +337,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
         SQLTemplate query = new SQLTemplate(Painting.class, template);
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
         List objects = context.performQuery(query);
@@ -365,7 +366,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         String template = "SELECT * FROM COMPOUND_FK_TEST t0"
                 + " WHERE #bindObjectEqual($a [ 't0.F_KEY1', 't0.F_KEY2' ] [ 'KEY1', 'KEY2' ] ) ORDER BY PKEY";
         SQLTemplate query = new SQLTemplate(CompoundFkTestEntity.class, template);
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
         List objects = context.performQuery(query);
@@ -392,7 +393,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         String template = "SELECT * FROM COMPOUND_FK_TEST t0"
                 + " WHERE #bindObjectNotEqual($a [ 't0.F_KEY1', 't0.F_KEY2' ] [ 'KEY1', 'KEY2' ] ) ORDER BY PKEY";
         SQLTemplate query = new SQLTemplate(CompoundFkTestEntity.class, template);
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", a));
 
         List objects = context.performQuery(query);
@@ -410,7 +411,7 @@ public class DataContextSQLTemplateTest extends CayenneCase {
         String template = "SELECT * FROM PAINTING t0"
                 + " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
         SQLTemplate query = new SQLTemplate(Painting.class, template);
-        query.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("a", null));
 
         List objects = context.performQuery(query);

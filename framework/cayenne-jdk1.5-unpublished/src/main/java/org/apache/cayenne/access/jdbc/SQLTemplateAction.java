@@ -290,15 +290,13 @@ public class SQLTemplateAction implements SQLAction {
             }
         }
 
-        if (query.getColumnNamesCapitalization() != null) {
-            if (SQLTemplate.LOWERCASE_COLUMN_NAMES.equals(query
-                    .getColumnNamesCapitalization())) {
+        switch (query.getColumnNamesCapitalization()) {
+            case LOWER:
                 builder.useLowercaseColumnNames();
-            }
-            else if (SQLTemplate.UPPERCASE_COLUMN_NAMES.equals(query
-                    .getColumnNamesCapitalization())) {
+                break;
+            case UPPER:
                 builder.useUppercaseColumnNames();
-            }
+                break;
         }
 
         return builder;

@@ -24,6 +24,7 @@ import org.apache.art.ExtendedTypeEntity;
 import org.apache.art.StringET1;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -45,7 +46,7 @@ public class DataContextExtendedTypeOperationsTest extends CayenneCase {
                 ExtendedTypeEntity.class,
                 "SELECT * FROM EXTENDED_TYPE_TEST WHERE NAME = 'X'");
         checkQ.setFetchingDataRows(true);
-        checkQ.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        checkQ.setColumnNamesCapitalization(CapsStrategy.UPPER);
         assertEquals(1, e1.getObjectContext().performQuery(checkQ).size());
     }
 

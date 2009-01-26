@@ -36,9 +36,9 @@ public class SQLTemplateTest extends TestCase {
     
     public void testColumnNameCapitalization() {
         SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
-        assertNull(q1.getColumnNamesCapitalization());
-        q1.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
-        assertEquals(SQLTemplate.UPPERCASE_COLUMN_NAMES, q1.getColumnNamesCapitalization());
+        assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
+        q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
+        assertEquals(CapsStrategy.UPPER, q1.getColumnNamesCapitalization());
     }
 
     public void testQueryWithParameters() {

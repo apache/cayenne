@@ -23,6 +23,7 @@ import org.apache.art.EnumEntity;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
@@ -73,7 +74,7 @@ public class EnumTest extends CayenneCase {
         SQLTemplate q = new SQLTemplate(
                 EnumEntity.class,
                 "SELECT * FROM ENUM_ENTITY WHERE ENUM_ATTRIBUTE = 'one'");
-        q.setColumnNamesCapitalization(SQLTemplate.UPPERCASE_COLUMN_NAMES);
+        q.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         EnumEntity e = (EnumEntity) DataObjectUtils.objectForQuery(context, q);
         assertNotNull(e);
