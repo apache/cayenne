@@ -38,6 +38,13 @@ public class ProcedureQueryTest extends TestCase {
         assertNotSame(template, clone);
     }
 
+    public void testColumnNameCapitalization() {
+        ProcedureQuery q1 = new ProcedureQuery();
+        assertNull(q1.getColumnNamesCapitalization());
+        q1.setColumnNamesCapitalization(ProcedureQuery.UPPERCASE_COLUMN_NAMES);
+        assertEquals(ProcedureQuery.UPPERCASE_COLUMN_NAMES, q1.getColumnNamesCapitalization());
+    }
+    
     public void testCreateQueryWithParameters() {
         Map params = new HashMap();
         params.put("a", "1");

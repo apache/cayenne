@@ -58,6 +58,17 @@ import org.apache.cayenne.util.XMLSerializable;
 public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
         XMLSerializable {
 
+    static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.ProcedureQuery.columnNameCapitalization";
+
+    /**
+     * @since 3.0
+     */
+    public static final String UPPERCASE_COLUMN_NAMES = "upper";
+
+    /**
+     * @since 3.0
+     */
+    public static final String LOWERCASE_COLUMN_NAMES = "lower";
     /**
      * @since 1.2
      */
@@ -67,6 +78,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      * @since 1.2
      */
     protected Class<?> resultClass;
+    protected String columnNamesCapitalization;
 
     protected Map<String, Object> parameters = new HashMap<String, Object>();
 
@@ -215,7 +227,12 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
         if (properties == null) {
             properties = Collections.EMPTY_MAP;
         }
-
+        Object columnNamesCapitalization = properties
+                .get(COLUMN_NAME_CAPITALIZATION_PROPERTY);
+        this.columnNamesCapitalization = (columnNamesCapitalization != null)
+                ? columnNamesCapitalization.toString()
+                : null;
+                
         metaData.initWithProperties(properties);
     }
 
@@ -254,9 +271,14 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
 
         encoder.println("\">");
         encoder.indent(1);
-
+        
         metaData.encodeAsXML(encoder);
-
+        if (getColumnNamesCapitalization() != null) {
+            encoder.printProperty(
+                    COLUMN_NAME_CAPITALIZATION_PROPERTY,
+                    getColumnNamesCapitalization());
+        }
+        
         encoder.indent(-1);
         encoder.println("</query>");
     }
@@ -501,5 +523,13 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      */
     public void setResultEntityName(String resultEntityName) {
         this.resultEntityName = resultEntityName;
+    }
+    
+    public String getColumnNamesCapitalization() {
+        return columnNamesCapitalization;
+    }
+    
+    public void setColumnNamesCapitalization(String columnNameCapitalization) {
+        this.columnNamesCapitalization = columnNameCapitalization;
     }
 }

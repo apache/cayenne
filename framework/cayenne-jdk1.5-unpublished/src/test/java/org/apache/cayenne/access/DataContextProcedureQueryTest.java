@@ -258,6 +258,32 @@ public class DataContextProcedureQueryTest extends CayenneCase {
         assertEquals(1, artists.size());
     }
 
+    public void testColumnNameCapitalization() throws Exception{
+        if (!getAccessStackAdapter().supportsStoredProcedures()) {
+            return;
+        }
+        
+        // create an artist with painting in the database
+        createArtist(1000.0);
+        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
+        
+        q.setColumnNamesCapitalization(ProcedureQuery.LOWERCASE_COLUMN_NAMES);
+        q.addParameter("aName", "An Artist");
+        List<DataRow> artists = runProcedureSelect(q);
+        
+        ProcedureQuery q1 = new ProcedureQuery(SELECT_STORED_PROCEDURE);
+        
+        q1.setColumnNamesCapitalization(ProcedureQuery.UPPERCASE_COLUMN_NAMES);
+        q1.addParameter("aName", "An Artist");
+        List<DataRow> artists1 = runProcedureSelect(q1);
+        
+        assertTrue(artists.get(0).containsKey("date_of_birth"));
+        assertFalse(artists.get(0).containsKey("DATE_OF_BIRTH"));
+        
+        assertFalse(artists1.get(0).containsKey("date_of_birth"));
+        assertTrue(artists1.get(0).containsKey("DATE_OF_BIRTH"));
+        
+    }
 
     public void testOutParams() throws Exception {
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
@@ -310,7 +336,7 @@ public class DataContextProcedureQueryTest extends CayenneCase {
     }
 
     public void testSelectWithRowDescriptor() throws Exception {
-        // Don't run this on MySQL
+
         if (!getAccessStackAdapter().supportsStoredProcedures()) {
             return;
         }
