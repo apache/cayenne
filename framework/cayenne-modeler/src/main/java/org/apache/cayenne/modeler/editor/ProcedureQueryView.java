@@ -20,12 +20,17 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -41,6 +46,7 @@ import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.AbstractQuery;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.Util;
@@ -49,10 +55,28 @@ import org.apache.cayenne.validation.ValidationException;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
 /**
  */
 public class ProcedureQueryView extends JPanel {
+    
+    private static final String DEFAULT_CAPS_LABEL = "Database Default";
+    private static final String LOWER_CAPS_LABEL = "Force Lower Case";
+    private static final String UPPER_CAPS_LABEL = "Force Upper Case";
+
+    private static final CapsStrategy[] LABEL_CAPITALIZATION = {
+            CapsStrategy.DEFAULT, CapsStrategy.LOWER,
+            CapsStrategy.UPPER
+    };
+
+    private static final Map<CapsStrategy, String> labelCapsLabels = new HashMap<CapsStrategy, String>();
+
+    static {
+        labelCapsLabels.put(CapsStrategy.DEFAULT, DEFAULT_CAPS_LABEL);
+        labelCapsLabels.put(CapsStrategy.LOWER, LOWER_CAPS_LABEL);
+        labelCapsLabels.put(CapsStrategy.UPPER, UPPER_CAPS_LABEL);
+    }
 
     protected ProjectController mediator;
     protected TextAdapter name;
@@ -78,22 +102,7 @@ public class ProcedureQueryView extends JPanel {
 
         queryRoot = CayenneWidgetFactory.createComboBox();
         queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
-        properties = new RawQueryPropertiesPanel(mediator) {
-
-            @Override
-            protected void setEntity(ObjEntity entity) {
-                ProcedureQueryView.this.setEntity(entity);
-            }
-
-            @Override
-            public ObjEntity getEntity(Query query) {
-                if (query instanceof ProcedureQuery) {
-                    return ProcedureQueryView.this.getEntity((ProcedureQuery) query);
-                }
-
-                return null;
-            }
-        };
+        properties = new ProcedureQueryPropertiesPanel(mediator);
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -239,4 +248,77 @@ public class ProcedureQueryView extends JPanel {
             mediator.fireQueryEvent(new QueryEvent(this, procedureQuery));
         }
     }
+    
+    final class LabelCapsRenderer extends DefaultListCellRenderer {
+
+        public Component getListCellRendererComponent(
+                JList list,
+                Object object,
+                int arg2,
+                boolean arg3,
+                boolean arg4) {
+            object = labelCapsLabels.get(object);
+            return super.getListCellRendererComponent(list, object, arg2, arg3, arg4);
+        }
+    }
+    
+    final class ProcedureQueryPropertiesPanel extends RawQueryPropertiesPanel {
+
+        private JComboBox labelCase;
+
+        ProcedureQueryPropertiesPanel(ProjectController mediator) {
+            super(mediator);
+        }
+
+        protected PanelBuilder createPanelBuilder() {
+            labelCase = CayenneWidgetFactory.createComboBox();
+            labelCase.setRenderer(new LabelCapsRenderer());
+
+            labelCase.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent event) {
+                    Object value = labelCase.getModel().getSelectedItem();
+                    setQueryProperty("columnNamesCapitalization", value);
+                }
+            });
+
+            PanelBuilder builder = super.createPanelBuilder();
+
+            RowSpec[] extraRows = RowSpec.decodeSpecs("3dlu, p");
+            for (RowSpec extraRow : extraRows) {
+                builder.appendRow(extraRow);
+            }
+
+            CellConstraints cc = new CellConstraints();
+            builder.addLabel("Row Label Case:", cc.xy(1, 15));
+            builder.add(labelCase, cc.xywh(3, 15, 5, 1));
+
+            return builder;
+        }
+
+        public void initFromModel(Query query) {
+            super.initFromModel(query);
+
+            if (query instanceof ProcedureQuery) {
+                ProcedureQuery template = (ProcedureQuery) query;
+                DefaultComboBoxModel labelCaseModel = new DefaultComboBoxModel(
+                        LABEL_CAPITALIZATION);
+
+                labelCaseModel.setSelectedItem(template.getColumnNamesCapitalization());
+                labelCase.setModel(labelCaseModel);
+            }
+        }
+
+        protected void setEntity(ObjEntity entity) {
+            ProcedureQueryView.this.setEntity(entity);
+        }
+
+        public ObjEntity getEntity(Query query) {
+            if (query instanceof ProcedureQuery) {
+                return ProcedureQueryView.this.getEntity((ProcedureQuery) query);
+            }
+
+            return null;
+        }
+    };
 }
