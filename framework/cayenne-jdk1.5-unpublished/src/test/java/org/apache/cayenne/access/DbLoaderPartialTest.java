@@ -112,7 +112,7 @@ public class DbLoaderPartialTest extends CayenneCase {
 
         }
         finally {
-            loader.getCon().close();
+            loader.getConnection().close();
         }
     }
 

@@ -40,36 +40,41 @@ import org.apache.cayenne.project.NamedObjectFactory;
 
 /**
  * Implements methods for entity merging.
- * 
  */
 public class EntityMergeSupport {
 
     protected DataMap map;
     protected boolean removeMeaningfulFKs;
-    
+    protected boolean removeMeaningfulPKs;
+
     /**
      * Strategy for choosing names for entities, attributes and relationships
      */
     protected NamingStrategy namingStrategy;
-    
+
     /**
-     * Listeners of merge process. 
+     * Listeners of merge process.
      */
     protected List<EntityMergeListener> listeners;
-    
+
     public EntityMergeSupport(DataMap map) {
-        this(map, new BasicNamingStrategy()); 
+        this(map, new BasicNamingStrategy(), true);
     }
-    
-    public EntityMergeSupport(DataMap map, NamingStrategy namingStrategy) {
+
+    /**
+     * @since 3.0
+     */
+    public EntityMergeSupport(DataMap map, NamingStrategy namingStrategy,
+            boolean removeMeaningfulPKs) {
         this.map = map;
         this.removeMeaningfulFKs = true;
-        this.listeners = new ArrayList<EntityMergeListener>(); 
-        
+        this.listeners = new ArrayList<EntityMergeListener>();
+        this.removeMeaningfulPKs = removeMeaningfulPKs;
         this.namingStrategy = namingStrategy;
-        
+
         /**
-         * Adding a listener, so that all created ObjRelationships would have default delete rule
+         * Adding a listener, so that all created ObjRelationships would have default
+         * delete rule
          */
         addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
     }
@@ -79,7 +84,6 @@ public class EntityMergeSupport {
      * relationships based on the current state of its DbEntity.
      * 
      * @return true if any ObjEntity has changed as a result of synchronization.
-     * 
      * @since 1.2 changed signature to use Collection instead of List.
      */
     public boolean synchronizeWithDbEntities(Collection<ObjEntity> objEntities) {
@@ -128,8 +132,8 @@ public class EntityMergeSupport {
 
             // add missing attributes
             for (DbAttribute da : getAttributesToAdd(entity)) {
-                String attrName = namingStrategy.createObjAttributeName(da);
 
+                String attrName = namingStrategy.createObjAttributeName(da);
                 // avoid duplicate names
                 attrName = NamedObjectFactory.createName(
                         ObjAttribute.class,
@@ -141,7 +145,6 @@ public class EntityMergeSupport {
                 ObjAttribute oa = new ObjAttribute(attrName, type, entity);
                 oa.setDbAttributePath(da.getName());
                 entity.addAttribute(oa);
-                
                 fireAttributeAdded(oa);
                 changed = true;
             }
@@ -153,7 +156,8 @@ public class EntityMergeSupport {
                 for (Entity mappedTarget : map.getMappedEntities(dbEntity)) {
 
                     // avoid duplicate names
-                    String relationshipName = namingStrategy.createObjRelationshipName(dr);
+                    String relationshipName = namingStrategy
+                            .createObjRelationshipName(dr);
                     relationshipName = NamedObjectFactory.createName(
                             ObjRelationship.class,
                             entity,
@@ -164,7 +168,7 @@ public class EntityMergeSupport {
                     or.setSourceEntity(entity);
                     or.setTargetEntity(mappedTarget);
                     entity.addRelationship(or);
-                    
+
                     fireRelationshipAdded(or);
                     changed = true;
                 }
@@ -201,7 +205,8 @@ public class EntityMergeSupport {
     protected List<DbAttribute> getAttributesToAdd(ObjEntity objEntity) {
         List<DbAttribute> missing = new ArrayList<DbAttribute>();
         Collection<DbRelationship> rels = objEntity.getDbEntity().getRelationships();
-        Collection<DbRelationship> incomingRels = getIncomingRelationships(objEntity.getDbEntity());
+        Collection<DbRelationship> incomingRels = getIncomingRelationships(objEntity
+                .getDbEntity());
 
         for (DbAttribute dba : objEntity.getDbEntity().getAttributes()) {
             // already there
@@ -210,8 +215,15 @@ public class EntityMergeSupport {
             }
 
             // check if adding it makes sense at all
-            if (dba.getName() == null || dba.isPrimaryKey()) {
-                continue;
+            if (!removeMeaningfulPKs) {
+                if (dba.getName() == null) {
+                    continue;
+                }
+            }
+            else {
+                if (dba.getName() == null || dba.isPrimaryKey()) {
+                    continue;
+                }
             }
 
             // check FK's
@@ -227,10 +239,17 @@ public class EntityMergeSupport {
                 }
             }
 
-            if (isFK) {
-                continue;
+            if (!removeMeaningfulPKs) {
+                if (!dba.isPrimaryKey() && isFK) {
+                    continue;
+                }
             }
-            
+            else {
+                if (isFK) {
+                    continue;
+                }
+            }
+
             // check incoming relationships
             rit = incomingRels.iterator();
             while (!isFK && rit.hasNext()) {
@@ -242,9 +261,16 @@ public class EntityMergeSupport {
                     }
                 }
             }
-            
-            if (isFK) {
-                continue;
+
+            if (!removeMeaningfulPKs) {
+                if (!dba.isPrimaryKey() && isFK) {
+                    continue;
+                }
+            }
+            else {
+                if (isFK) {
+                    continue;
+                }
             }
 
             missing.add(dba);
@@ -252,10 +278,10 @@ public class EntityMergeSupport {
 
         return missing;
     }
-    
+
     private Collection<DbRelationship> getIncomingRelationships(DbEntity entity) {
         Collection<DbRelationship> incoming = new ArrayList<DbRelationship>();
-        
+
         for (DbEntity nextEntity : entity.getDataMap().getDbEntities()) {
             for (DbRelationship relationship : nextEntity.getRelationships()) {
                 if (entity == relationship.getTargetEntity()) {
@@ -263,7 +289,7 @@ public class EntityMergeSupport {
                 }
             }
         }
-        
+
         return incoming;
     }
 
@@ -304,28 +330,28 @@ public class EntityMergeSupport {
     public void setRemoveMeaningfulFKs(boolean removeMeaningfulFKs) {
         this.removeMeaningfulFKs = removeMeaningfulFKs;
     }
-    
+
     /**
      * Registers new EntityMergeListener
      */
     public void addEntityMergeListener(EntityMergeListener listener) {
         listeners.add(listener);
     }
-    
+
     /**
      * Unregisters an EntityMergeListener
      */
     public void removeEntityMergeListener(EntityMergeListener listener) {
         listeners.remove(listener);
     }
-    
+
     /**
      * Returns registered listeners
      */
     public EntityMergeListener[] getEntityMergeListeners() {
         return listeners.toArray(new EntityMergeListener[0]);
     }
-    
+
     /**
      * Notifies all listeners that an ObjAttribute was added
      */
@@ -334,7 +360,7 @@ public class EntityMergeSupport {
             listeners.get(i).objAttributeAdded(attr);
         }
     }
-    
+
     /**
      * Notifies all listeners that an ObjRelationship was added
      */
@@ -343,14 +369,14 @@ public class EntityMergeSupport {
             listeners.get(i).objRelationshipAdded(rel);
         }
     }
-    
+
     /**
      * Sets new naming strategy for reverse engineering
      */
     public void setNamingStrategy(NamingStrategy strategy) {
         this.namingStrategy = strategy;
     }
-    
+
     /**
      * @return naming strategy for reverse engineering
      */

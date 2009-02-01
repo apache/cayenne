@@ -24,7 +24,6 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -78,6 +77,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     protected JComboBox schemaSelector;
     protected JTextField tableNamePatternField;
     protected JCheckBox loadProcedures;
+    protected JCheckBox meaningfulPk;
     protected JTextField procNamePatternField;
     protected JLabel procedureLabel;
     protected JButton selectButton;
@@ -119,7 +119,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         tableNamePatternField = new JTextField();
         procNamePatternField = new JTextField();
         loadProcedures = new JCheckBox();
-        
+        meaningfulPk = new JCheckBox(); 
         strategyCombo = new JComboBox();
         strategyCombo.setEditable(true);
 
@@ -135,7 +135,8 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         builder.append("Load Procedures:", loadProcedures);
         procedureLabel = builder.append("Procedure Name Pattern:", procNamePatternField);
         builder.append("Naming Strategy:", strategyCombo);
-
+        builder.append("Meaningful PK",meaningfulPk);
+        
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
         buttons.add(selectButton);
@@ -266,6 +267,10 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
 
     public boolean isLoadingProcedures() {
         return loadProcedures.isSelected();
+    }
+    
+    public boolean isMeaningfulPk() {
+        return meaningfulPk.isSelected();
     }
 
     /**

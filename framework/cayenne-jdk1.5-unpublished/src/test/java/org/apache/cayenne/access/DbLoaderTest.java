@@ -40,7 +40,6 @@ public class DbLoaderTest extends CayenneCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
         loader = new DbLoader(getConnection(), getNode().getAdapter(), null);
     }
 
@@ -65,7 +64,7 @@ public class DbLoaderTest extends CayenneCase {
             }
         }
         finally {
-            loader.getCon().close();
+            loader.getConnection().close();
         }
     }
 
@@ -92,7 +91,33 @@ public class DbLoaderTest extends CayenneCase {
             assertTrue("'ARTIST' is missing from the table list: " + tables, foundArtist);
         }
         finally {
-            loader.getCon().close();
+            loader.getConnection().close();
+        }
+    }
+
+    public void testLoadWithMeaningfulPK() throws Exception {
+        try {
+
+            DataMap map = new DataMap();
+            String tableLabel = getNode().getAdapter().tableTypeForTable();
+
+            loader.setCreatingMeaningfulPK(true);
+            loader.loadDbEntities(map, loader.getTables(
+                    null,
+                    null,
+                    "ARTIST",
+                    new String[] {
+                        tableLabel
+                    }));
+
+            loader.loadObjEntities(map);
+            ObjEntity artist = map.getObjEntity("Artist");
+            assertNotNull(artist);
+            ObjAttribute id = (ObjAttribute) artist.getAttribute("artistId");
+            assertNotNull(id);
+        }
+        finally {
+            loader.getConnection().close();
         }
     }
 
@@ -157,7 +182,9 @@ public class DbLoaderTest extends CayenneCase {
             }
 
             // *** TESTING THIS ***
+            loader.setCreatingMeaningfulPK(false);
             loader.loadObjEntities(map);
+
             ObjEntity ae = map.getObjEntity("Artist");
             assertNotNull(ae);
             assertEquals("Artist", ae.getName());
@@ -181,7 +208,7 @@ public class DbLoaderTest extends CayenneCase {
             }
         }
         finally {
-            loader.getCon().close();
+            loader.getConnection().close();
         }
     }
 

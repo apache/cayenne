@@ -29,25 +29,24 @@ import org.apache.cayenne.map.DbRelationship;
  * @since 3.0
  */
 public interface NamingStrategy {
+
     /**
-     * Creates new name for Obj Entity 
+     * Creates new name for Obj Entity
      */
-    public String createObjEntityName(DbEntity entity);
-    
+    String createObjEntityName(DbEntity entity);
+
     /**
-     * Creates new name for Obj Attribute 
+     * Creates new name for Obj Attribute
      */
-    public String createObjAttributeName(DbAttribute attr);
-    
+    String createObjAttributeName(DbAttribute attr);
+
     /**
-     * Creates new name for Db Relationship 
+     * Creates new name for Db Relationship
      */
-    public String createDbRelationshipName(
-            ExportedKey key,
-            boolean toMany);
-    
+    String createDbRelationshipName(ExportedKey key, boolean toMany);
+
     /**
-     * Creates new name for Obj Relationship 
+     * Creates new name for Obj Relationship
      */
-    public String createObjRelationshipName(DbRelationship dbRel);
+    String createObjRelationshipName(DbRelationship dbRel);
 }

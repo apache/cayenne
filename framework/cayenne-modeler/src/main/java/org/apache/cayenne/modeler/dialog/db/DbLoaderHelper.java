@@ -77,6 +77,7 @@ public class DbLoaderHelper {
     protected String schemaName;
     protected String tableNamePattern;
     protected boolean loadProcedures;
+    protected boolean meaningfulPk;
     protected String procedureNamePattern;
     protected List schemas;
 
@@ -171,6 +172,7 @@ public class DbLoaderHelper {
         this.schemaName = dialog.getSelectedSchema();
         this.tableNamePattern = dialog.getTableNamePattern();
         this.loadProcedures = dialog.isLoadingProcedures();
+        this.meaningfulPk = dialog.isMeaningfulPk();
         this.procedureNamePattern = dialog.getProcedureNamePattern();
         this.addedObjEntities = new ArrayList<ObjEntity>();
         
@@ -197,8 +199,8 @@ public class DbLoaderHelper {
     protected void cleanup() {
         loadStatusNote = "Closing connection...";
         try {
-            if (loader.getCon() != null) {
-                loader.getCon().close();
+            if (loader.getConnection() != null) {
+                loader.getConnection().close();
             }
         }
         catch (SQLException e) {
@@ -365,6 +367,7 @@ public class DbLoaderHelper {
             loadStatusNote = "Importing tables...";
 
             try {
+                loader.setCreatingMeaningfulPK(meaningfulPk);
                 loader.loadDataMapFromDB(schemaName, tableNamePattern, dataMap);
                 
                 /**

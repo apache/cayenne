@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.sql.Connection;
@@ -58,7 +57,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Utility class that does reverse engineering of the database. It can create DataMaps
  * using database meta data obtained via JDBC driver.
- * 
  */
 public class DbLoader {
 
@@ -67,20 +65,20 @@ public class DbLoader {
     // TODO: remove this hardcoded stuff once delegate starts to support procedure
     // loading...
     private static final Collection<String> EXCLUDED_PROCEDURES = Arrays.asList(
-            "auto_pk_for_table", "auto_pk_for_table;1" /*
-                                                         * the last name is some Mac OS X
-                                                         * Sybase artifact
-                                                         */
+            "auto_pk_for_table",
+            "auto_pk_for_table;1" /*
+                                   * the last name is some Mac OS X Sybase artifact
+                                   */
     );
 
     public static final String WILDCARD = "%";
 
     /** List of db entities to process. */
     private List<DbEntity> dbEntityList = new ArrayList<DbEntity>();
-    
+
     /**
-     * CAY-479 - need to track which entities are skipped in 
-     * the loader so that relationships to non-skipped entities can be loaded 
+     * CAY-479 - need to track which entities are skipped in the loader so that
+     * relationships to non-skipped entities can be loaded
      */
     private Set<DbEntity> skippedEntities = new HashSet<DbEntity>();
 
@@ -89,35 +87,44 @@ public class DbLoader {
         int currentSuffix = 1;
         String relName = preferredName;
 
-        while (entity.getRelationship(relName) != null || entity.getAttribute(relName) != null) {
+        while (entity.getRelationship(relName) != null
+                || entity.getAttribute(relName) != null) {
             relName = preferredName + currentSuffix;
             currentSuffix++;
         }
         return relName;
     }
 
-    protected Connection con;
+    protected Connection connection;
     protected DbAdapter adapter;
     protected DatabaseMetaData metaData;
     protected DbLoaderDelegate delegate;
     protected String genericClassName;
-    
+    protected boolean creatingMeaningfulPK;
+
     /**
      * Strategy for choosing names for entities, attributes and relationships
      */
     protected NamingStrategy namingStrategy;
 
-    /** Creates new DbLoader. */
-    public DbLoader(Connection con, DbAdapter adapter, DbLoaderDelegate delegate) {
-        this(con, adapter, delegate, new BasicNamingStrategy());
+    /**
+     * Creates new DbLoader.
+     */
+    public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate) {
+        this(connection, adapter, delegate, new BasicNamingStrategy());
     }
-    
-    /** Creates new DbLoader with specified naming strategy. */
-    public DbLoader(Connection con, DbAdapter adapter, DbLoaderDelegate delegate, NamingStrategy strategy) {
+
+    /**
+     * Creates new DbLoader with specified naming strategy.
+     * 
+     * @since 3.0
+     */
+    public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate,
+            NamingStrategy strategy) {
         this.adapter = adapter;
-        this.con = con;
+        this.connection = connection;
         this.delegate = delegate;
-        
+
         setNamingStrategy(strategy);
     }
 
@@ -126,22 +133,44 @@ public class DbLoader {
      */
     public DatabaseMetaData getMetaData() throws SQLException {
         if (null == metaData)
-            metaData = con.getMetaData();
+            metaData = connection.getMetaData();
         return metaData;
+    }
+
+    public void setCreatingMeaningfulPK(boolean check) {
+        this.creatingMeaningfulPK = check;
+    }
+
+    /**
+     * Returns true if the generator should map all primary key columns as ObjAttributes.
+     * 
+     * @since 3.0
+     */
+    public boolean isCreatingMeaningfulPK() {
+        return creatingMeaningfulPK;
     }
 
     /**
      * Returns database connection used by this DbLoader.
+     * 
+     * @since 3.0
+     */
+    public Connection getConnection() {
+        return connection;
+    }
+
+    /**
+     * @deprecated since 3.0 in favor of {@link #getConnection()}.
      */
     public Connection getCon() {
-        return con;
+        return getConnection();
     }
 
     /**
      * Returns a name of a generic class that should be used for all ObjEntities. The most
-     * common generic class is {@link org.apache.cayenne.CayenneDataObject}. If
-     * generic class name is null (which is the default), DbLoader will assign each entity
-     * a unique class name derived from the table name.
+     * common generic class is {@link org.apache.cayenne.CayenneDataObject}. If generic
+     * class name is null (which is the default), DbLoader will assign each entity a
+     * unique class name derived from the table name.
      * 
      * @since 1.2
      */
@@ -151,9 +180,9 @@ public class DbLoader {
 
     /**
      * Sets a name of a generic class that should be used for all ObjEntities. The most
-     * common generic class is {@link org.apache.cayenne.CayenneDataObject}. If
-     * generic class name is set to null (which is the default), DbLoader will assign each
-     * entity a unique class name derived from the table name.
+     * common generic class is {@link org.apache.cayenne.CayenneDataObject}. If generic
+     * class name is set to null (which is the default), DbLoader will assign each entity
+     * a unique class name derived from the table name.
      * 
      * @since 1.2
      */
@@ -169,10 +198,10 @@ public class DbLoader {
     public DbAdapter getAdapter() {
         return adapter;
     }
-    
+
     /**
      * A method that return true if the given table name should be included. The default
-     * implemntation include all tables.
+     * implementation include all tables.
      */
     public boolean includeTableName(String tableName) {
         return true;
@@ -297,7 +326,7 @@ public class DbLoader {
                 if (name == null || name.startsWith("BIN$")) {
                     continue;
                 }
-                
+
                 if (!includeTableName(name)) {
                     continue;
                 }
@@ -322,7 +351,8 @@ public class DbLoader {
      *            DbEntities must be created.
      * @return false if loading must be immediately aborted.
      */
-    public boolean loadDbEntities(DataMap map, List<? extends DbEntity> tables) throws SQLException {
+    public boolean loadDbEntities(DataMap map, List<? extends DbEntity> tables)
+            throws SQLException {
         this.dbEntityList = new ArrayList<DbEntity>();
 
         for (DbEntity dbEntity : tables) {
@@ -358,7 +388,6 @@ public class DbLoader {
                     return false;
                 }
             }
-
 
             // Create DbAttributes from column information --
             ResultSet rs = getMetaData().getColumns(
@@ -424,12 +453,12 @@ public class DbLoader {
             }
 
             // delegate might have thrown this entity out... so check if it is still
-            // around  before continuing processing
+            // around before continuing processing
             if (map.getDbEntity(dbEntity.getName()) == dbEntity) {
                 this.dbEntityList.add(dbEntity);
             }
         }
-        
+
         // get primary keys for each table and store it in dbEntity
         for (final DbEntity dbEntity : map.getDbEntities()) {
             String tableName = dbEntity.getName();
@@ -455,14 +484,14 @@ public class DbLoader {
                 rs.close();
             }
         }
-        
+
         // cay-479 - iterate skipped DbEntities to populate exported keys
         for (final DbEntity skippedEntity : skippedEntities) {
             loadDbRelationships(skippedEntity, map);
         }
-            
+
         return true;
-        
+
     }
 
     /**
@@ -513,7 +542,6 @@ public class DbLoader {
                     : packageName + objEntity.getName());
             map.addObjEntity(objEntity);
             loadedEntities.add(objEntity);
-
             // added entity without attributes or relationships...
             if (delegate != null) {
                 delegate.objEntityAdded(objEntity);
@@ -521,7 +549,8 @@ public class DbLoader {
         }
 
         // update ObjEntity attributes and relationships
-        new EntityMergeSupport(map, namingStrategy).synchronizeWithDbEntities(loadedEntities);
+        new EntityMergeSupport(map, namingStrategy, !creatingMeaningfulPK)
+                .synchronizeWithDbEntities(loadedEntities);
     }
 
     /** Loads database relationships into a DataMap. */
@@ -539,16 +568,12 @@ public class DbLoader {
         ResultSet rs = null;
 
         try {
-            rs = md.getExportedKeys(
-                    pkEntity.getCatalog(),
-                    pkEntity.getSchema(),
-                    pkEntity.getName());
+            rs = md.getExportedKeys(pkEntity.getCatalog(), pkEntity.getSchema(), pkEntity
+                    .getName());
         }
         catch (SQLException cay182Ex) {
             // Sybase-specific - the line above blows on VIEWS, see CAY-182.
-            logObj.info("Error getting relationships for '"
-                    + pkEntName
-                    + "', ignoring.");
+            logObj.info("Error getting relationships for '" + pkEntName + "', ignoring.");
             return;
         }
 
@@ -565,9 +590,9 @@ public class DbLoader {
             ExportedKey key = null;
 
             do {
-                //extract data from resultset
+                // extract data from resultset
                 key = ExportedKey.extractData(rs);
-                
+
                 short keySeq = rs.getShort("KEY_SEQ");
                 if (keySeq == 1) {
 
@@ -579,33 +604,38 @@ public class DbLoader {
                     // start new entity
                     String fkEntityName = key.getFKTableName();
                     String fkName = key.getFKName();
-                    
+
                     if (!includeTableName(fkEntityName)) {
                         continue;
                     }
-                    
+
                     fkEntity = map.getDbEntity(fkEntityName);
 
                     if (fkEntity == null) {
                         logObj.info("FK warning: no entity found for name '"
                                 + fkEntityName
                                 + "'");
-                    } else if (skippedEntities.contains(pkEntity) && skippedEntities.contains(fkEntity)) {
+                    }
+                    else if (skippedEntities.contains(pkEntity)
+                            && skippedEntities.contains(fkEntity)) {
                         // cay-479 - don't load relationships between two
                         // skipped entities.
                         continue;
                     }
                     else {
                         // init relationship
-                        String forwardPreferredName = namingStrategy.createDbRelationshipName(key, true);
-                        forwardRelationship = new DbRelationship(
-                                uniqueRelName(pkEntity, forwardPreferredName));
+                        String forwardPreferredName = namingStrategy
+                                .createDbRelationshipName(key, true);
+                        forwardRelationship = new DbRelationship(uniqueRelName(
+                                pkEntity,
+                                forwardPreferredName));
 
                         forwardRelationship.setSourceEntity(pkEntity);
                         forwardRelationship.setTargetEntity(fkEntity);
                         pkEntity.addRelationship(forwardRelationship);
 
-                        String reversePreferredName = namingStrategy.createDbRelationshipName(key, false);
+                        String reversePreferredName = namingStrategy
+                                .createDbRelationshipName(key, false);
                         reverseRelationship = new DbRelationshipDetected(uniqueRelName(
                                 fkEntity,
                                 reversePreferredName));
@@ -625,15 +655,13 @@ public class DbLoader {
                     // skip invalid joins...
                     DbAttribute pkAtt = (DbAttribute) pkEntity.getAttribute(pkName);
                     if (pkAtt == null) {
-                        logObj.info("no attribute for declared primary key: "
-                                + pkName);
+                        logObj.info("no attribute for declared primary key: " + pkName);
                         continue;
                     }
 
                     DbAttribute fkAtt = (DbAttribute) fkEntity.getAttribute(fkName);
                     if (fkAtt == null) {
-                        logObj.info("no attribute for declared foreign key: "
-                                + fkName);
+                        logObj.info("no attribute for declared foreign key: " + fkName);
                         continue;
                     }
 
@@ -658,11 +686,14 @@ public class DbLoader {
             rs.close();
         }
     }
+
     /**
      * Detects correct relationship multiplicity and "to dep pk" flag. Only called on
      * relationships from PK to FK, not the reverse ones.
      */
-    protected void postprocessMasterDbRelationship(DbRelationship relationship, ExportedKey key) {
+    protected void postprocessMasterDbRelationship(
+            DbRelationship relationship,
+            ExportedKey key) {
         boolean toPK = true;
         List<DbJoin> joins = relationship.getJoins();
 
@@ -689,8 +720,8 @@ public class DbLoader {
         if (!toMany) {
             Entity source = relationship.getSourceEntity();
             source.removeRelationship(relationship.getName());
-            relationship.setName(DbLoader.uniqueRelName(source, 
-                    namingStrategy.createDbRelationshipName(key, false)));
+            relationship.setName(DbLoader.uniqueRelName(source, namingStrategy
+                    .createDbRelationshipName(key, false)));
             source.addRelationship(relationship);
         }
 
@@ -919,21 +950,24 @@ public class DbLoader {
             dataMap.addProcedure(procedure);
         }
     }
-    
+
     /**
      * Sets new naming strategy for reverse engineering
+     * 
+     * @since 3.0
      */
     public void setNamingStrategy(NamingStrategy strategy) {
-        //null values are not allowed
+        // null values are not allowed
         if (strategy == null) {
             throw new NullPointerException("Null strategy not allowed");
         }
-        
+
         this.namingStrategy = strategy;
     }
-    
+
     /**
      * @return naming strategy for reverse engineering
+     * @since 3.0
      */
     public NamingStrategy getNamingStrategy() {
         return namingStrategy;
