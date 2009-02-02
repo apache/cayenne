@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.remote.ClientChannel;
@@ -53,6 +54,28 @@ public class CayenneContextInheritanceTest extends CayenneCase {
                 LocalConnection.HESSIAN_SERIALIZATION);
         ClientChannel clientChannel = new ClientChannel(connection);
         return new CayenneContext(clientChannel);
+    }
+
+    public void testInsertSubclass() {
+        CayenneContext context = createClientContext();
+
+        ClientMtTable1Subclass object = context.newObject(ClientMtTable1Subclass.class);
+        object.setGlobalAttribute1("sub1");
+        object.setServerAttribute1("sa1");
+        object.setSubclassAttribute1("suba1");
+
+        context.commitChanges();
+
+        ObjectContext checkContext = createDataContext();
+        SQLTemplate query = new SQLTemplate(MtTable1.class, "SELECT * FROM MT_TABLE1");
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
+        query.setFetchingDataRows(true);
+        
+        List<DataRow> rows = checkContext.performQuery(query);
+        assertEquals(1, rows.size());
+        assertEquals("sub1", rows.get(0).get("GLOBAL_ATTRIBUTE1"));
+        assertEquals("sa1", rows.get(0).get("SERVER_ATTRIBUTE1"));
+        assertEquals("suba1", rows.get(0).get("SUBCLASS_ATTRIBUTE1"));
     }
 
     public void testPerformQueryInheritanceLeaf() {
@@ -106,7 +129,7 @@ public class CayenneContextInheritanceTest extends CayenneCase {
         assertEquals("sa1", ((ClientMtTable1Subclass) objects.get(1))
                 .getSubclassAttribute1());
     }
-    
+
     public void testPerformQueryWithQualifierInheritanceSuper() {
 
         ObjectContext setupContext = createDataContext();
@@ -126,7 +149,9 @@ public class CayenneContextInheritanceTest extends CayenneCase {
         CayenneContext context = createClientContext();
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
-        query.andQualifier(ExpressionFactory.likeExp(ClientMtTable1.SERVER_ATTRIBUTE1_PROPERTY, "X%"));
+        query.andQualifier(ExpressionFactory.likeExp(
+                ClientMtTable1.SERVER_ATTRIBUTE1_PROPERTY,
+                "X%"));
         List<ClientMtTable1> objects = context.performQuery(query);
 
         assertEquals(2, objects.size());
