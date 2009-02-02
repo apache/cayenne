@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access;
+package org.apache.cayenne.graph;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,7 +29,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
@@ -65,7 +64,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
      * 
      * @since 3.0
      */
-    static boolean isProcessingChildDiff() {
+    public static boolean isProcessingChildDiff() {
         return childDiffProcessing.get();
     }
 
@@ -74,7 +73,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
      * 
      * @since 3.0
      */
-    static void setExternalChange(Boolean flag) {
+    public static void setExternalChange(Boolean flag) {
         childDiffProcessing.set(flag);
     }
 

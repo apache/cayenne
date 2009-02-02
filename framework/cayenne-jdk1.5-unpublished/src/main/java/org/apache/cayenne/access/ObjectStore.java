@@ -38,6 +38,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectDiff.ArcOperation;
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.access.event.SnapshotEventListener;
+import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
