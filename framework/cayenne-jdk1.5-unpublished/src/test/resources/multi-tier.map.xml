@@ -44,6 +44,7 @@
 	<db-entity name="MT_TABLE1">
 		<db-attribute name="GLOBAL_ATTRIBUTE1" type="VARCHAR" length="100"/>
 		<db-attribute name="SERVER_ATTRIBUTE1" type="VARCHAR" length="100"/>
+		<db-attribute name="SUBCLASS_ATTRIBUTE1" type="VARCHAR" length="100"/>
 		<db-attribute name="TABLE1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="MT_TABLE2">
@@ -96,6 +97,7 @@
 	</obj-entity>
 	<obj-entity name="MtTable1Subclass" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable1Subclass">
 		<qualifier><![CDATA[globalAttribute1 = "sub1"]]></qualifier>
+		<obj-attribute name="subclassAttribute1" type="java.lang.String" db-attribute-path="SUBCLASS_ATTRIBUTE1"/>
 	</obj-entity>
 	<obj-entity name="MtTable2" className="org.apache.cayenne.testdo.mt.MtTable2" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable2" dbEntityName="MT_TABLE2">
 		<obj-attribute name="globalAttribute" type="java.lang.String" db-attribute-path="GLOBAL_ATTRIBUTE"/>

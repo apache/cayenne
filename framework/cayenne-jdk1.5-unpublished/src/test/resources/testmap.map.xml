@@ -5,7 +5,6 @@
 	<property name="clientSupported" value="true"/>
 	<property name="defaultClientPackage" value="test.client"/>
 	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
-	
 	<procedure name="cayenne_tst_out_proc">
 		<procedure-parameter name="in_param" type="INTEGER" direction="in"/>
 		<procedure-parameter name="out_param" type="INTEGER" direction="out"/>
@@ -585,14 +584,18 @@
 	<obj-relationship name="painting" source="PaintingInfo" target="Painting" deleteRule="Nullify" db-relationship-path="painting"/>
 	<obj-relationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
 	<obj-relationship name="toArtist" source="ROPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
+	<query name="EjbqlQueryTest" factory="org.apache.cayenne.map.EjbqlBuilder">
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
+		<ejbql><![CDATA[select * from ejbql]]></ejbql>
+	</query>
 	<query name="NonSelectingQuery" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
-		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="upper"/>
+		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
 VALUES (512, 'No Painting Like This', 12.5)]]></sql>
 		<sql adapter-class="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (512, 'No Painting Like This', 12.5)]]></sql>
 	</query>
 	<query name="ObjectQuery" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Painting">
-		<property name="cayenne.GenericSelectQuery.refreshingObjects" value="false"/>
 		<qualifier><![CDATA[toArtist = $artist]]></qualifier>
 		<ordering><![CDATA[paintingTitle]]></ordering>
 	</query>
@@ -629,18 +632,13 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 	</query>
 	<query name="SelectTestLower" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
-		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="lower"/>
+		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="LOWER"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
 	</query>
 	<query name="SelectTestUpper" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
-		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="upper"/>
+		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
-	</query>
-	<query name="EjbqlQueryTest" factory="org.apache.cayenne.map.EjbqlBuilder">	
-		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>		
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
-		<ejbql><![CDATA[select * from ejbql]]></ejbql>
 	</query>
 	<entity-listener class="org.apache.art.EntityListenerDataMap">
 		<pre-persist method-name="prePersistDataMap1"/>

@@ -10,7 +10,15 @@ import org.apache.cayenne.testdo.mt.MtTable1;
  */
 public abstract class _MtTable1Subclass extends MtTable1 {
 
+    public static final String SUBCLASS_ATTRIBUTE1_PROPERTY = "subclassAttribute1";
 
     public static final String TABLE1_ID_PK_COLUMN = "TABLE1_ID";
+
+    public void setSubclassAttribute1(String subclassAttribute1) {
+        writeProperty("subclassAttribute1", subclassAttribute1);
+    }
+    public String getSubclassAttribute1() {
+        return (String)readProperty("subclassAttribute1");
+    }
 
 }
