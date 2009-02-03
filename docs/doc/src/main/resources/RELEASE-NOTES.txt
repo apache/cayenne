@@ -36,6 +36,7 @@ CAY-1155 Modeler template for SQLServer driver has a typo in the driver name
 CAY-1157 Modeler: Concurrent mod exception on removing DbRelationship
 CAY-1160 Default delete rule is not used when migrating schema (to model)
 CAY-1166 Type checking in the modeler
+CAY-1176 missing classes in ROP cayenne-client render nested contexts unusable
 
 ----------------------------------
 Release: 3.0M5
