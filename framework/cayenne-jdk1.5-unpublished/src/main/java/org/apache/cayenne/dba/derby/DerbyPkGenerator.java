@@ -27,6 +27,7 @@ import java.util.Collections;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryLogger;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
 
@@ -37,6 +38,16 @@ import org.apache.cayenne.map.DbEntity;
  * @since 1.2
  */
 public class DerbyPkGenerator extends JdbcPkGenerator {
+    
+    /**
+     * @deprecated since 3.0
+     */
+    DerbyPkGenerator(){        
+    }
+    
+    DerbyPkGenerator(JdbcAdapter adapter){
+        super(adapter);
+    }
 
     static final String SELECT_QUERY = "SELECT NEXT_ID FROM AUTO_PK_SUPPORT"
             + " WHERE TABLE_NAME = ? FOR UPDATE";

@@ -48,6 +48,8 @@ public abstract class QueryAssemblerHelper {
 
     protected QueryAssembler queryAssembler;
     protected Appendable out;
+    private String identifiersStartQuote;
+    private String identifiersEndQuote;
 
     /**
      * Creates QueryAssemblerHelper initializing with parent {@link QueryAssembler} and
@@ -55,6 +57,14 @@ public abstract class QueryAssemblerHelper {
      */
     public QueryAssemblerHelper(QueryAssembler queryAssembler) {
         this.queryAssembler = queryAssembler;
+        
+        if(queryAssembler.getQueryMetadata().getDataMap()!=null && queryAssembler.getQueryMetadata().getDataMap().isQuotingSQLIdentifiers()){
+            identifiersStartQuote = queryAssembler.getAdapter().getIdentifiersStartQuote();
+            identifiersEndQuote  = queryAssembler.getAdapter().getIdentifiersEndQuote();
+        } else {
+            identifiersStartQuote = "";
+            identifiersEndQuote = "";
+        }
     }
 
     public ObjEntity getObjEntity() {
@@ -160,7 +170,7 @@ public abstract class QueryAssemblerHelper {
                                 joinSplitAlias);
                     }
                     else if (pathPart instanceof DbAttribute) {
-                        processColumn((DbAttribute) pathPart);
+                        processColumnWithQuoteSqlIdentifiers((DbAttribute) pathPart);
                     }
                 }
 
@@ -223,7 +233,7 @@ public abstract class QueryAssemblerHelper {
                 }
             }
             else {
-                processColumn(component.getAttribute());
+                     processColumnWithQuoteSqlIdentifiers(component.getAttribute());
             }
         }
     }
@@ -231,8 +241,19 @@ public abstract class QueryAssemblerHelper {
     protected void processColumn(DbAttribute dbAttr) throws IOException {
         String alias = (queryAssembler.supportsTableAliases()) ? queryAssembler
                 .getCurrentAlias() : null;
-
         out.append(dbAttr.getAliasedName(alias));
+    }
+    
+    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr) throws IOException {
+       
+        String alias =  (queryAssembler.supportsTableAliases()) ? queryAssembler
+                .getCurrentAlias() : null;
+      
+            if(alias != null){        
+                out.append(identifiersStartQuote).append(alias).append(identifiersEndQuote);
+                out.append(".");
+            }
+            out.append(identifiersStartQuote).append(dbAttr.getName()).append(identifiersEndQuote);                     
     }
 
     /**

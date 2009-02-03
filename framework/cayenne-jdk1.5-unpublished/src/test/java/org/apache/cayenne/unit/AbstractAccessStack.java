@@ -46,11 +46,10 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Defines a set of algorithms useful for a generic AccessStack.
- * 
  */
 public abstract class AbstractAccessStack {
 
-    private static Log logObj = LogFactory.getLog(AbstractAccessStack.class);
+    private static Log logger = LogFactory.getLog(AbstractAccessStack.class);
 
     // hardcoded dependent entities that should be excluded
     // if LOBs are not supported
@@ -203,11 +202,11 @@ public abstract class AbstractAccessStack {
 
                 for (String dropSql : node.getAdapter().dropTableStatements(ent)) {
                     try {
-                        logObj.info(dropSql);
+                        logger.info(dropSql);
                         stmt.execute(dropSql);
                     }
                     catch (SQLException sqe) {
-                        logObj.warn(
+                        logger.warn(
                                 "Can't drop table " + ent.getName() + ", ignoring...",
                                 sqe);
                     }

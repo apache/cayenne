@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.Transaction;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
 
@@ -38,6 +39,17 @@ import org.apache.cayenne.map.DbEntity;
  * 
  */
 public class SybasePkGenerator extends JdbcPkGenerator {
+    
+    /**
+     * @deprecated since 3.0
+     */
+    protected SybasePkGenerator() {
+        super();
+    }
+    
+    protected SybasePkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
     
     @Override
     protected String pkTableCreateString() {

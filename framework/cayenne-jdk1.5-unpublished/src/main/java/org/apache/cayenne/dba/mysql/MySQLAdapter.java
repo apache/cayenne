@@ -35,6 +35,7 @@ import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -66,18 +67,28 @@ import org.apache.cayenne.query.SQLAction;
 public class MySQLAdapter extends JdbcAdapter {
     
     final static String DEFAULT_STORAGE_ENGINE = "InnoDB";
+    final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "`";
+    final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "`";
 
     protected String storageEngine;
-
+ 
     public MySQLAdapter() {
 
         // init defaults
         this.storageEngine = DEFAULT_STORAGE_ENGINE;
+        
         setSupportsFkConstraints(true);
         setSupportsUniqueConstraints(true);
-        setSupportsGeneratedKeys(true);
+        setSupportsGeneratedKeys(true); 
+        initIdentifiersQuotes(); 
     }
-
+ 
+    @Override
+    public void initIdentifiersQuotes(){
+        this.identifiersStartQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START;
+        this.identifiersEndQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END;
+    }
+    
     /**
      * Uses special action builder to create the right action.
      * 
@@ -94,7 +105,11 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     @Override
     public String dropTable(DbEntity table) {
-        return "DROP TABLE IF EXISTS " + table.getFullyQualifiedName() + " CASCADE";
+        QuotingStrategy context = getContextQuoteStrategy(table.getDataMap()); 
+        StringBuffer buf = new StringBuffer("DROP TABLE IF EXISTS ");
+        buf.append(context.quoteFullyQualifiedName(table));            
+        buf.append(" CASCADE");
+        return buf.toString();
     }
 
     /**
@@ -104,8 +119,12 @@ public class MySQLAdapter extends JdbcAdapter {
     public Collection<String> dropTableStatements(DbEntity table) {
         // note that CASCADE is a noop as of MySQL 5.0, so we have to use FK checks
         // statement
+        StringBuffer buf = new StringBuffer();
+        QuotingStrategy context = getContextQuoteStrategy(table.getDataMap());
+        buf.append(context.quoteFullyQualifiedName(table));            
+        
         return Arrays.asList("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS "
-                + table.getFullyQualifiedName()
+                + buf.toString()
                 + " CASCADE", "SET FOREIGN_KEY_CHECKS=1");
     }
 
@@ -224,7 +243,7 @@ public class MySQLAdapter extends JdbcAdapter {
     // See CAY-358 for details of the InnoDB problem
     @Override
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
-
+        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
         // must move generated to the front...
         List<DbAttribute> pkList = new ArrayList<DbAttribute>(entity.getPrimaryKeys());
         Collections.sort(pkList, new PKComparator());
@@ -241,7 +260,7 @@ public class MySQLAdapter extends JdbcAdapter {
                     sqlBuffer.append(", ");
 
                 DbAttribute at = pkit.next();
-                sqlBuffer.append(at.getName());
+                sqlBuffer.append(context.quoteString(at.getName()));
             }
             sqlBuffer.append(')');
         }
@@ -262,11 +281,11 @@ public class MySQLAdapter extends JdbcAdapter {
                             .getSourceAttributes()
                             .iterator();
                     DbAttribute column = columns.next();
-                    sqlBuffer.append(column.getName());
+                    sqlBuffer.append(context.quoteString(column.getName()));
 
                     while (columns.hasNext()) {
                         column = columns.next();
-                        sqlBuffer.append(", ").append(column.getName());
+                        sqlBuffer.append(", ").append( context.quoteString(column.getName()));
                     }
 
                     sqlBuffer.append(")");

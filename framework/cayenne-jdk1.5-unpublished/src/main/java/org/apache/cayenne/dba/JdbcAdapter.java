@@ -43,6 +43,7 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.UtilDateType;
 import org.apache.cayenne.conf.ClasspathResourceFinder;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -55,9 +56,11 @@ import org.apache.cayenne.util.Util;
 /**
  * A generic DbAdapter implementation. Can be used as a default adapter or as a superclass
  * of a concrete adapter implementation.
- * 
  */
 public class JdbcAdapter implements DbAdapter {
+
+    final static String DEFAULT_IDENTIFIERS_START_QUOTE = "\"";
+    final static String DEFAULT_IDENTIFIERS_END_QUOTE = "\"";
 
     protected PkGenerator pkGenerator;
     protected TypesHandler typesHandler;
@@ -67,6 +70,23 @@ public class JdbcAdapter implements DbAdapter {
     protected boolean supportsUniqueConstraints;
     protected boolean supportsGeneratedKeys;
     protected EJBQLTranslatorFactory ejbqlTranslatorFactory;
+
+    protected String identifiersStartQuote;
+    protected String identifiersEndQuote;
+
+    /**
+     * @since 3.0
+     */
+    public String getIdentifiersStartQuote() {
+        return identifiersStartQuote;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public String getIdentifiersEndQuote() {
+        return identifiersEndQuote;
+    }
 
     /**
      * Creates new JdbcAdapter with a set of default parameters.
@@ -82,6 +102,8 @@ public class JdbcAdapter implements DbAdapter {
         this.extendedTypes = new ExtendedTypeMap();
         this.configureExtendedTypes(extendedTypes);
         this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
+        initIdentifiersQuotes();
+
     }
 
     /**
@@ -172,7 +194,7 @@ public class JdbcAdapter implements DbAdapter {
      * PKGenerator.
      */
     protected PkGenerator createPkGenerator() {
-        return new JdbcPkGenerator();
+        return new JdbcPkGenerator(this);
     }
 
     /**
@@ -245,7 +267,12 @@ public class JdbcAdapter implements DbAdapter {
      * @since 3.0
      */
     public Collection<String> dropTableStatements(DbEntity table) {
-        return Collections.singleton("DROP TABLE " + table.getFullyQualifiedName());
+        QuotingStrategy context = getContextQuoteStrategy(table.getDataMap());
+
+        StringBuffer buf = new StringBuffer("DROP TABLE ");
+        buf.append(context.quoteFullyQualifiedName(table));
+
+        return Collections.singleton(buf.toString());
     }
 
     /**
@@ -253,11 +280,12 @@ public class JdbcAdapter implements DbAdapter {
      * <code>ent</code> parameter.
      */
     public String createTable(DbEntity entity) {
-
+        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
         StringBuffer sqlBuffer = new StringBuffer();
-        sqlBuffer.append("CREATE TABLE ").append(entity.getFullyQualifiedName()).append(
-                " (");
+        sqlBuffer.append("CREATE TABLE ");
+        sqlBuffer.append(context.quoteFullyQualifiedName(entity));
 
+        sqlBuffer.append(" (");
         // columns
         Iterator<?> it = entity.getAttributes().iterator();
         if (it.hasNext()) {
@@ -295,6 +323,7 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
+        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
         Iterator<DbAttribute> pkit = entity.getPrimaryKeys().iterator();
         if (pkit.hasNext()) {
             sqlBuffer.append(", PRIMARY KEY (");
@@ -306,7 +335,8 @@ public class JdbcAdapter implements DbAdapter {
                     sqlBuffer.append(", ");
 
                 DbAttribute at = pkit.next();
-                sqlBuffer.append(at.getName());
+
+                sqlBuffer.append(context.quoteString(at.getName()));
             }
             sqlBuffer.append(')');
         }
@@ -318,6 +348,8 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+        QuotingStrategy context = getContextQuoteStrategy(((DbEntity) column.getEntity())
+                .getDataMap());
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
             String entityName = column.getEntity() != null ? ((DbEntity) column
@@ -331,9 +363,10 @@ public class JdbcAdapter implements DbAdapter {
         }
 
         String type = types[0];
-        sqlBuffer.append(column.getName()).append(' ').append(type);
+        sqlBuffer.append(context.quoteString(column.getName()));
+        sqlBuffer.append(' ').append(type);
 
-        // append size and precision (if applicable)
+        // append size and precision (if applicable)s
         if (TypesMapping.supportsLength(column.getType())) {
             int len = column.getMaxLength();
             int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
@@ -363,6 +396,8 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.1
      */
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
+        QuotingStrategy context = getContextQuoteStrategy(source.getDataMap());
+
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException(
                     "Can't create UNIQUE constraint - no columns specified.");
@@ -370,17 +405,18 @@ public class JdbcAdapter implements DbAdapter {
 
         StringBuilder buf = new StringBuilder();
 
-        buf.append("ALTER TABLE ").append(source.getFullyQualifiedName()).append(
-                " ADD UNIQUE (");
+        buf.append("ALTER TABLE ");
+        buf.append(context.quoteFullyQualifiedName(source));
+        buf.append(" ADD UNIQUE (");
 
         Iterator<DbAttribute> it = columns.iterator();
         DbAttribute first = it.next();
-        buf.append(first.getName());
+        buf.append(context.quoteString(first.getName()));
 
         while (it.hasNext()) {
             DbAttribute next = it.next();
             buf.append(", ");
-            buf.append(next.getName());
+            buf.append(context.quoteString(next.getName()));
         }
 
         buf.append(")");
@@ -393,12 +429,16 @@ public class JdbcAdapter implements DbAdapter {
      * relationship.
      */
     public String createFkConstraint(DbRelationship rel) {
+
+        DbEntity source = (DbEntity) rel.getSourceEntity();
+        QuotingStrategy context = getContextQuoteStrategy(source.getDataMap());
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();
 
-        buf.append("ALTER TABLE ").append(
-                ((DbEntity) rel.getSourceEntity()).getFullyQualifiedName()).append(
-                " ADD FOREIGN KEY (");
+        buf.append("ALTER TABLE ");
+
+        buf.append(context.quoteFullyQualifiedName(source));
+        buf.append(" ADD FOREIGN KEY (");
 
         boolean first = true;
 
@@ -410,16 +450,15 @@ public class JdbcAdapter implements DbAdapter {
             else
                 first = false;
 
-            buf.append(join.getSourceName());
-            refBuf.append(join.getTargetName());
+            buf.append(context.quoteString(join.getSourceName()));
+            refBuf.append(context.quoteString(join.getTargetName()));
         }
 
-        buf
-                .append(") REFERENCES ")
-                .append(((DbEntity) rel.getTargetEntity()).getFullyQualifiedName())
-                .append(" (")
-                .append(refBuf.toString())
-                .append(')');
+        buf.append(") REFERENCES ");
+
+        buf.append(context.quoteFullyQualifiedName((DbEntity) rel.getTargetEntity()));
+
+        buf.append(" (").append(refBuf.toString()).append(')');
         return buf.toString();
     }
 
@@ -542,7 +581,32 @@ public class JdbcAdapter implements DbAdapter {
         this.ejbqlTranslatorFactory = ejbqlTranslatorFactory;
     }
 
+    /**
+     * @since 3.0
+     */
     public MergerFactory mergerFactory() {
         return new MergerFactory();
+    }
+
+    /**
+     * @since 3.0
+     */
+    protected void initIdentifiersQuotes() {
+        this.identifiersStartQuote = DEFAULT_IDENTIFIERS_START_QUOTE;
+        this.identifiersEndQuote = DEFAULT_IDENTIFIERS_END_QUOTE;
+    }
+
+    /**
+     * @since 3.0
+     */
+    protected QuotingStrategy getContextQuoteStrategy(DataMap dm) {
+        if (dm != null && dm.isQuotingSQLIdentifiers()) {
+            return new QuoteStrategy(
+                    getIdentifiersStartQuote(),
+                    getIdentifiersEndQuote());
+        }
+        else {
+            return new NoQuoteStrategy();
+        }
     }
 }

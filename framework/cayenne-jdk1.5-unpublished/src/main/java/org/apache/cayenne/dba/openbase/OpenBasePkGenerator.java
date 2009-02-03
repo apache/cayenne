@@ -32,7 +32,9 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryLogger;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.IDUtil;
@@ -41,6 +43,18 @@ import org.apache.cayenne.util.IDUtil;
  * @since 1.1
  */
 public class OpenBasePkGenerator extends JdbcPkGenerator {
+
+ 
+    /**
+     * @deprecated since 3.0
+     */
+    protected OpenBasePkGenerator() {
+        super();
+    }
+    
+    protected OpenBasePkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
 
     /**
      * Returns a non-repeating primary key for a given entity. Since OpenBase-specific
@@ -277,18 +291,23 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
                     + "' has no PK defined.");
         }
 
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("CREATE PRIMARY KEY ").append(entity.getName()).append(" (");
+        StringBuilder buffer = new StringBuilder();        
+        buffer.append("CREATE PRIMARY KEY ");
+        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+        buffer.append(context.quoteString(entity.getName()));
+
+        buffer.append(" (");
 
         Iterator<DbAttribute> it = pk.iterator();
 
         // at this point we know that there is at least on PK column
         DbAttribute firstColumn = it.next();
-        buffer.append(firstColumn.getName());
+        buffer.append(context.quoteString(firstColumn.getName()));
 
         while (it.hasNext()) {
             DbAttribute column = it.next();
-            buffer.append(", ").append(column.getName());
+            buffer.append(", ");
+            buffer.append(context.quoteString(column.getName()));
         }
 
         buffer.append(")");
@@ -301,7 +320,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      */
     protected String createUniquePKIndexString(DbEntity entity) {
         Collection<DbAttribute> pk = entity.getPrimaryKeys();
-
+        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
         if (pk == null || pk.size() == 0) {
             throw new CayenneRuntimeException("Entity '"
                     + entity.getName()
@@ -312,18 +331,21 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 
         // compound PK doesn't work well with UNIQUE index...
         // create a regular one in this case
-        buffer.append(pk.size() == 1 ? "CREATE UNIQUE INDEX " : "CREATE INDEX ").append(
-                entity.getName()).append(" (");
+        buffer.append(pk.size() == 1 ? "CREATE UNIQUE INDEX " : "CREATE INDEX ");
+ 
+        buffer.append(context.quoteString(entity.getName()));
+        buffer.append(" (");
 
         Iterator<DbAttribute> it = pk.iterator();
 
         // at this point we know that there is at least on PK column
         DbAttribute firstColumn = it.next();
-        buffer.append(firstColumn.getName());
+        buffer.append(context.quoteString(firstColumn.getName()));
 
         while (it.hasNext()) {
             DbAttribute column = it.next();
-            buffer.append(", ").append(column.getName());
+            buffer.append(", ");
+            buffer.append(context.quoteString(column.getName()));
         }
         buffer.append(")");
         return buffer.toString();
@@ -347,5 +369,5 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
     public void setPkCacheSize(int pkCacheSize) {
         // noop, no PK caching
     }
-
+ 
 }

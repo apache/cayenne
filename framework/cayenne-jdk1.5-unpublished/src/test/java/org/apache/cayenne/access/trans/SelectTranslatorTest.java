@@ -29,6 +29,7 @@ import org.apache.art.ArtistExhibit;
 import org.apache.art.CompoundPainting;
 import org.apache.art.Painting;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -333,7 +334,7 @@ public class SelectTranslatorTest extends CayenneCase {
 
                 int i2 = sql.indexOf("FROM");
                 assertTrue(sql, i2 > 0);
-                
+
                 assertTrue(sql, sql.indexOf("PAINTING_ID") > 0);
 
                 // assert we have one join
@@ -419,6 +420,472 @@ public class SelectTranslatorTest extends CayenneCase {
         };
 
         test.test(q);
+    }
+
+    public void testCreateSqlStringWithQuoteSqlIdentifiers() throws Exception {
+
+        try {
+            SelectQuery q = new SelectQuery(Artist.class);
+            DbEntity entity = getDbEntity("ARTIST");
+            entity.getDataMap().setQuotingSQLIdentifiers(true);
+            q.addOrdering("dateOfBirth", Ordering.ASC);
+
+            Template test = new Template() {
+
+                @Override
+                void test(SelectTranslator transl) throws Exception {
+                    JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter()
+                            .getAdapter();
+                    String charStart = adapter.getIdentifiersStartQuote();
+                    String charEnd = adapter.getIdentifiersEndQuote();
+
+                    String query = "SELECT "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_NAME"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd
+                            + " FROM "
+                            + charStart
+                            + "ARTIST"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + " ORDER BY "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd;
+
+                    String s = transl.createSqlString();
+                    assertEquals(query, s);
+                }
+            };
+
+            test.test(q);
+        }
+        finally {
+            DbEntity entity = getDbEntity("ARTIST");
+            entity.getDataMap().setQuotingSQLIdentifiers(false);
+        }
+
+    }
+
+    public void testCreateSqlStringWithQuoteSqlIdentifiers2() throws Exception {
+
+        try {
+            SelectQuery q = new SelectQuery(Artist.class);
+            DbEntity entity = getDbEntity("ARTIST");
+            entity.getDataMap().setQuotingSQLIdentifiers(true);
+            q.setQualifier(ExpressionFactory.greaterExp("dateOfBirth", new Date()));
+            q.andQualifier(ExpressionFactory.lessExp("dateOfBirth", new Date()));
+
+            Template test = new Template() {
+
+                @Override
+                void test(SelectTranslator transl) throws Exception {
+
+                    JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter()
+                            .getAdapter();
+                    String charStart = adapter.getIdentifiersStartQuote();
+                    String charEnd = adapter.getIdentifiersEndQuote();
+
+                    String query = "SELECT "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_NAME"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd
+                            + " FROM "
+                            + charStart
+                            + "ARTIST"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + " WHERE ("
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd
+                            + " > ?) AND ("
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd
+                            + " < ?)";
+                    String s = transl.createSqlString();
+                    assertEquals(query, s);
+                }
+            };
+
+            test.test(q);
+        }
+        finally {
+            DbEntity entity = getDbEntity("ARTIST");
+            entity.getDataMap().setQuotingSQLIdentifiers(false);
+        }
+    }
+
+    public void testCreateSqlStringWithQuoteSqlIdentifiers3() throws Exception {
+
+        // query with joint prefetches and other joins
+        // and with QuoteSqlIdentifiers = true
+        try {
+            SelectQuery q = new SelectQuery(Artist.class, Expression
+                    .fromString("paintingArray.paintingTitle = 'a'"));
+            q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
+                    PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+
+            DbEntity entity = getDbEntity("ARTIST");
+            entity.getDataMap().setQuotingSQLIdentifiers(true);
+
+            Template test = new Template() {
+
+                @Override
+                void test(SelectTranslator transl) throws Exception {
+                    JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter()
+                            .getAdapter();
+                    String charStart = adapter.getIdentifiersStartQuote();
+                    String charEnd = adapter.getIdentifiersEndQuote();
+
+                    String query = "SELECT DISTINCT "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_NAME"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ESTIMATED_PRICE"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_DESCRIPTION"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_TITLE"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "GALLERY_ID"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_ID"
+                            + charEnd
+                            + " FROM "
+                            + charStart
+                            + "ARTIST"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + " LEFT JOIN "
+                            + charStart
+                            + "PAINTING"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + " ON ("
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + " = "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + ") JOIN "
+                            + charStart
+                            + "PAINTING"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t2"
+                            + charEnd
+                            + " ON ("
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + " = "
+                            + charStart
+                            + "t2"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + ") WHERE "
+                            + charStart
+                            + "t2"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_TITLE"
+                            + charEnd
+                            + " = ?";
+                    String s = transl.createSqlString();
+
+                    assertEquals(query, s);
+                }
+            };
+
+            test.test(q);
+        }
+        finally {
+            DbEntity entity = getDbEntity("ARTIST");
+            entity.getDataMap().setQuotingSQLIdentifiers(false);
+        }
+    }
+
+    public void testCreateSqlStringWithQuoteSqlIdentifiers4() throws Exception {
+
+        // query with to-one joint prefetches
+        // and with QuoteSqlIdentifiers = true
+        try {
+            SelectQuery q = new SelectQuery(Painting.class);
+            q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
+                    PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+
+            DbEntity entity = getDbEntity("PAINTING");
+            entity.getDataMap().setQuotingSQLIdentifiers(true);
+
+            Template test = new Template() {
+
+                @Override
+                void test(SelectTranslator transl) throws Exception {
+                    JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter()
+                            .getAdapter();
+                    String charStart = adapter.getIdentifiersStartQuote();
+                    String charEnd = adapter.getIdentifiersEndQuote();
+
+                    String query = "SELECT "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_TITLE"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_DESCRIPTION"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ESTIMATED_PRICE"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "GALLERY_ID"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "PAINTING_ID"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_NAME"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "DATE_OF_BIRTH"
+                            + charEnd
+                            + ", "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + " FROM "
+                            + charStart
+                            + "PAINTING"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + " LEFT JOIN "
+                            + charStart
+                            + "ARTIST"
+                            + charEnd
+                            + " "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + " ON ("
+                            + charStart
+                            + "t0"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + " = "
+                            + charStart
+                            + "t1"
+                            + charEnd
+                            + "."
+                            + charStart
+                            + "ARTIST_ID"
+                            + charEnd
+                            + ")";
+                    String s = transl.createSqlString();
+
+                    assertEquals(s, query);
+                }
+            };
+
+            test.test(q);
+        }
+        finally {
+            DbEntity entity = getDbEntity("PAINTING");
+            entity.getDataMap().setQuotingSQLIdentifiers(false);
+        }
     }
 
     /**

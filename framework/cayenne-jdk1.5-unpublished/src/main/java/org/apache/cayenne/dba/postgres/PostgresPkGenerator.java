@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryLogger;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
@@ -39,6 +40,17 @@ import org.apache.cayenne.map.DbKeyGenerator;
  */
 public class PostgresPkGenerator extends OraclePkGenerator {
 
+    /**
+     * @deprecated since 3.0
+     */
+    protected PostgresPkGenerator() {
+        super();
+    }
+    
+    protected PostgresPkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
+    
     @Override
     protected String createSequenceString(DbEntity ent) {
         // note that PostgreSQL 7.4 and newer supports INCREMENT BY and START WITH

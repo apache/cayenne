@@ -31,9 +31,11 @@ import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+
 
 /**
  * DbAdapter implementation for the <a href="http://www.ibm.com/db2/"> DB2 RDBMS </a>.
@@ -52,12 +54,12 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class DB2Adapter extends JdbcAdapter {
 
+    
     /**
-     * Creates a DB2 specific PK Generator.
-     */
-    @Override
+     * Creates a DB2 specific PK Generator.    
+     */   
     protected PkGenerator createPkGenerator() {
-        return new DB2PkGenerator();
+        return new DB2PkGenerator(this);
     }
 
     @Override
@@ -79,9 +81,13 @@ public class DB2Adapter extends JdbcAdapter {
      */
     @Override
     public String createTable(DbEntity ent) {
-
+        QuotingStrategy context = getContextQuoteStrategy(ent.getDataMap());
+        
         StringBuilder buf = new StringBuilder();
-        buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");
+        buf.append("CREATE TABLE ");
+        buf.append(context.quoteFullyQualifiedName(ent)); 
+
+        buf.append(" (");
 
         // columns
         Iterator<DbAttribute> it = ent.getAttributes().iterator();
@@ -114,7 +120,7 @@ public class DB2Adapter extends JdbcAdapter {
             }
 
             String type = types[0];
-            buf.append(at.getName()).append(' ').append(type);
+            buf.append(context.quoteString(at.getName())).append(' ').append(type);
 
             // append size and precision (if applicable)
             if (TypesMapping.supportsLength(at.getType())) {
@@ -159,7 +165,7 @@ public class DB2Adapter extends JdbcAdapter {
                     buf.append(", ");
 
                 DbAttribute at = pkit.next();
-                buf.append(at.getName());
+                buf.append(context.quoteString(at.getName()));
             }
             buf.append(')');
         }

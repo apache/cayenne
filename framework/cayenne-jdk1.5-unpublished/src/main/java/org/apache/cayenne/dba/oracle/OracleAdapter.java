@@ -43,6 +43,7 @@ import org.apache.cayenne.access.types.DefaultType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.DbAttribute;
@@ -228,7 +229,7 @@ public class OracleAdapter extends JdbcAdapter {
      */
     @Override
     protected PkGenerator createPkGenerator() {
-        return new OraclePkGenerator();
+        return new OraclePkGenerator(this);
     }
 
     /**
@@ -239,9 +240,12 @@ public class OracleAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        return Collections.singleton("DROP TABLE "
-                + table.getFullyQualifiedName()
-                + " CASCADE CONSTRAINTS");
+        QuotingStrategy context = getContextQuoteStrategy(table.getDataMap());
+        StringBuffer buf = new StringBuffer("DROP TABLE ");
+        buf.append(context.quoteFullyQualifiedName(table));            
+
+        buf.append(" CASCADE CONSTRAINTS");
+        return Collections.singleton(buf.toString() );
     }
 
     @Override

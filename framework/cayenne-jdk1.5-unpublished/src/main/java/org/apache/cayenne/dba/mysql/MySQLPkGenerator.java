@@ -27,6 +27,7 @@ import java.util.Collections;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryLogger;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
 
@@ -34,6 +35,17 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class MySQLPkGenerator extends JdbcPkGenerator {
 
+    /**
+     * @deprecated since 3.0
+     */
+    MySQLPkGenerator(){     
+        super();
+    }
+    
+    MySQLPkGenerator(JdbcAdapter adapter){
+        super(adapter);
+    }
+    
     @Override
     protected String dropAutoPkString() {
         return "DROP TABLE IF EXISTS AUTO_PK_SUPPORT";

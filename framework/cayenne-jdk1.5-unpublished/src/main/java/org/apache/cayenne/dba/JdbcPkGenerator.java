@@ -38,6 +38,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
@@ -52,11 +53,28 @@ import org.apache.cayenne.util.IDUtil;
  */
 public class JdbcPkGenerator implements PkGenerator {
 
+    private JdbcAdapter adapter;
+    
+    public JdbcAdapter getAdapter() {
+        return adapter;
+    }
+
+    protected JdbcPkGenerator(JdbcAdapter adapter){
+        super();
+        this.adapter = adapter;
+    }
+   
+    /**
+     * @deprecated since 3.0
+     */
+    public JdbcPkGenerator() {
+    }
+
     public static final int DEFAULT_PK_CACHE_SIZE = 20;
 
     protected Map<String, LongPkRange> pkCache = new HashMap<String, LongPkRange>();
-    protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
-
+    protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;    
+   
     public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
         // check if a table exists
 
@@ -486,4 +504,12 @@ public class JdbcPkGenerator implements PkGenerator {
                     + entityName, ex);
         }
     }
+    
+    protected QuotingStrategy getContextQuoteStrategy(DataMap dm) {
+        if(dm!=null && dm.isQuotingSQLIdentifiers()){
+            return new QuoteStrategy(getAdapter().getIdentifiersStartQuote(), getAdapter().getIdentifiersEndQuote());
+        } else {
+            return new NoQuoteStrategy();           
+       }    
+   } 
 }

@@ -197,6 +197,12 @@ public class ColumnDescriptor implements Serializable {
     public String getQualifiedColumnName() {
         return (namePrefix != null) ? namePrefix + '.' + name : name;
     }
+    
+    public String getQualifiedColumnNameWithQuoteSqlIdentifiers(String charStart, String charEnd) {
+        String nameWithQuoteSqlIdentifiers = charStart + name + charEnd;
+        return (namePrefix != null) ? charStart + namePrefix + charEnd + '.' +
+                nameWithQuoteSqlIdentifiers: nameWithQuoteSqlIdentifiers;
+    }
 
     public int getJdbcType() {
         return jdbcType;

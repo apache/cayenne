@@ -31,6 +31,8 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryLogger;
+import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
@@ -53,6 +55,17 @@ import org.apache.cayenne.map.DbKeyGenerator;
  */
 public class OraclePkGenerator extends JdbcPkGenerator {
 
+    /**
+     * @deprecated since 3.0
+     */
+    protected OraclePkGenerator() {
+        super();
+    }
+    
+    protected OraclePkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
+    
     private static final String _SEQUENCE_PREFIX = "pk_";
 
     @Override
@@ -123,6 +136,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      * primary key generation process for a specific DbEntity.
      */
     protected String dropSequenceString(DbEntity ent) {
+       
         StringBuilder buf = new StringBuilder();
         buf.append("DROP SEQUENCE ").append(sequenceName(ent));
         return buf.toString();
@@ -247,7 +261,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
     /** Returns expected primary key sequence name for a DbEntity. */
     protected String sequenceName(DbEntity entity) {
-
+        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
         // use custom generator if possible
         DbKeyGenerator keyGenerator = entity.getPrimaryKeyGenerator();
         if (keyGenerator != null
@@ -261,8 +275,10 @@ public class OraclePkGenerator extends JdbcPkGenerator {
             String seqName = _SEQUENCE_PREFIX + entName.toLowerCase();
 
             if (entity.getSchema() != null && entity.getSchema().length() > 0) {
-                seqName = entity.getSchema() + "." + seqName;
-            }
+
+                seqName = context.quoteString(entity.getSchema()) + "." + 
+                context.quoteString(seqName);
+             }
             return seqName;
         }
     }

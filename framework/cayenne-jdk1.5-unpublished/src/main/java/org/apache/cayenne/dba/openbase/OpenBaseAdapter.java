@@ -33,6 +33,7 @@ import org.apache.cayenne.access.types.DefaultType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -136,7 +137,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
       */
     @Override
     protected PkGenerator createPkGenerator() {
-        return new OpenBasePkGenerator();
+        return new OpenBasePkGenerator(this);
     }
 
     /**
@@ -145,9 +146,12 @@ public class OpenBaseAdapter extends JdbcAdapter {
       */
     @Override
     public String createTable(DbEntity ent) {
-
+        QuotingStrategy context = getContextQuoteStrategy(ent.getDataMap());
         StringBuilder buf = new StringBuilder();
-        buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");
+
+        buf.append("CREATE TABLE ");
+        buf.append(context.quoteFullyQualifiedName(ent));
+        buf.append(" (");
 
         // columns
         Iterator<DbAttribute> it = ent.getAttributes().iterator();
@@ -184,7 +188,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
             }
 
             String type = types[0];
-            buf.append(at.getName()).append(' ').append(type);
+            buf.append(context.quoteString(at.getName())).append(' ').append(type);
 
             // append size and precision (if applicable)
             if (TypesMapping.supportsLength(at.getType())) {

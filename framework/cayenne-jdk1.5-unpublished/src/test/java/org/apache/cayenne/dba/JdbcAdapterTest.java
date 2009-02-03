@@ -21,7 +21,13 @@ package org.apache.cayenne.dba;
 
 import java.sql.Types;
 
+import org.apache.cayenne.dba.mysql.MySQLAdapter;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.unit.CayenneCase;
+import org.apache.cayenne.unit.MySQLStackAdapter;
 
 public class JdbcAdapterTest extends CayenneCase {
 
@@ -46,4 +52,27 @@ public class JdbcAdapterTest extends CayenneCase {
         assertEquals(1, types.length);
         assertEquals(TypesMapping.getSqlNameByType(type), types[0]);
     }
+    
+    public void testCreateTableQuoteSqlIdentifiers() {
+         
+        DbEntity entity = new DbEntity();
+        DbAttribute attr = new DbAttribute();
+        attr.setName("name column");
+        attr.setType(1);
+        entity.addAttribute(attr);
+        
+        DbKeyGenerator id = new DbKeyGenerator();
+        entity.setPrimaryKeyGenerator(id);
+        
+        DataMap dm = new DataMap();        
+        dm.setQuotingSQLIdentifiers(true);
+        entity.setDataMap(dm);
+        entity.setName("name table");
+ 
+        if(getAccessStackAdapter().getAdapter() instanceof MySQLAdapter){
+            MySQLAdapter adaptMySQL = (MySQLAdapter) getAccessStackAdapter().getAdapter();             
+            String str = "CREATE TABLE `name table` (`name column` CHAR NULL) ENGINE=InnoDB";            
+            assertEquals(str, adaptMySQL.createTable(entity));
+        }
+     }
 }

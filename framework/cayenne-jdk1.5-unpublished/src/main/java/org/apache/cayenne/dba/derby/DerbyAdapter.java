@@ -32,6 +32,7 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -96,7 +97,8 @@ public class DerbyAdapter extends JdbcAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-
+        QuotingStrategy context = getContextQuoteStrategy(((DbEntity) column
+                .getEntity()).getDataMap());
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
             String entityName = column.getEntity() != null ? ((DbEntity) column
@@ -138,7 +140,9 @@ public class DerbyAdapter extends JdbcAdapter {
         // note that max length for types like XYZ FOR BIT DATA must be entered in the
         // middle of type name, e.g. VARCHAR (100) FOR BIT DATA.
 
-        sqlBuffer.append(column.getName()).append(' ');
+        sqlBuffer.append(context.quoteString(column.getName()));
+       
+        sqlBuffer.append(' ');
         if (length.length() > 0 && type.endsWith(FOR_BIT_DATA_SUFFIX)) {
             sqlBuffer.append(type.substring(0, type.length()
                     - FOR_BIT_DATA_SUFFIX.length()));

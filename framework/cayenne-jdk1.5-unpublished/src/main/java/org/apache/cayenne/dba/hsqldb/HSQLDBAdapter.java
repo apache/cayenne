@@ -30,6 +30,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.types.DefaultType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -66,7 +67,8 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * @since 1.2
      */
     protected String getTableName(DbEntity entity) {
-        return entity.getFullyQualifiedName();
+        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+        return context.quoteFullyQualifiedName(entity);
     }
 
     /**
@@ -76,7 +78,8 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     protected String getSchemaName(DbEntity entity) {
         if (entity.getSchema() != null && entity.getSchema().length() > 0) {
-            return entity.getSchema() + ".";
+            QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+            return context.quoteString(entity.getSchema()) + ".";
         }
 
         return "";
@@ -100,6 +103,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     @Override
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
+        QuotingStrategy context = getContextQuoteStrategy(source.getDataMap());
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException(
                     "Can't create UNIQUE constraint - no columns specified.");
@@ -109,24 +113,23 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
         StringBuilder buf = new StringBuilder();
 
-        buf.append("ALTER TABLE ").append(srcName);
+        buf.append("ALTER TABLE ").append(context.quoteString(srcName));
         buf.append(" ADD CONSTRAINT ");
 
-        buf.append(getSchemaName(source));
-        buf.append("U_");
-        buf.append(source.getName());
-        buf.append("_");
-        buf.append((long) (System.currentTimeMillis() / (Math.random() * 100000)));
+        buf.append(context.quoteString(getSchemaName(source)));
+        String name = "U_" + source.getName() + "_" + (long) (System.currentTimeMillis() / (Math.random() * 100000));
+
+        buf.append(context.quoteString(name));
         buf.append(" UNIQUE (");
 
         Iterator<DbAttribute> it = columns.iterator();
         DbAttribute first = it.next();
-        buf.append(first.getName());
+        buf.append(context.quoteString(first.getName()));
 
         while (it.hasNext()) {
             DbAttribute next = it.next();
             buf.append(", ");
-            buf.append(next.getName());
+            buf.append(context.quoteString(next.getName()));
         }
 
         buf.append(")");
@@ -141,6 +144,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     @Override
     public String createFkConstraint(DbRelationship rel) {
+        QuotingStrategy context = getContextQuoteStrategy(((DbEntity)rel.getSourceEntity()).getDataMap());
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();
 
@@ -153,11 +157,9 @@ public class HSQLDBAdapter extends JdbcAdapter {
         // hsqldb requires the ADD CONSTRAINT statement
         buf.append(" ADD CONSTRAINT ");
         buf.append(getSchemaName((DbEntity) rel.getSourceEntity()));
-        buf.append("C_");
-        buf.append(rel.getSourceEntity().getName());
-        buf.append("_");
-        buf.append((long) (System.currentTimeMillis() / (Math.random() * 100000)));
-
+        String name = "U_" + rel.getSourceEntity().getName() + "_" + (long) (System.currentTimeMillis() / (Math.random() * 100000));
+        
+        buf.append(context.quoteString(name));
         buf.append(" FOREIGN KEY (");
 
         boolean first = true;
@@ -169,8 +171,8 @@ public class HSQLDBAdapter extends JdbcAdapter {
             else
                 first = false;
 
-            buf.append(join.getSourceName());
-            refBuf.append(join.getTargetName());
+            buf.append(context.quoteString(join.getSourceName()));
+            refBuf.append(context.quoteString(join.getTargetName()));
         }
 
         buf.append(") REFERENCES ");

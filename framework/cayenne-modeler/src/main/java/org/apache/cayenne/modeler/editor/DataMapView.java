@@ -23,7 +23,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
-import java.util.Iterator;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -71,10 +70,11 @@ public class DataMapView extends JPanel {
     protected TextAdapter name;
     protected JLabel location;
     protected JComboBox nodeSelector;
+    protected JCheckBox defaultLockType;
     protected TextAdapter defaultSchema;
     protected TextAdapter defaultPackage;
     protected TextAdapter defaultSuperclass;
-    protected JCheckBox defaultLockType;
+    protected JCheckBox quoteSQLIdentifiers;
 
     protected JButton updateDefaultSchema;
     protected JButton updateDefaultPackage;
@@ -117,6 +117,8 @@ public class DataMapView extends JPanel {
                 setDefaultSchema(text);
             }
         };
+        
+        quoteSQLIdentifiers = new JCheckBox();
 
         updateDefaultPackage = new JButton("Update...");
         defaultPackage = new TextAdapter(new JTextField()) {
@@ -165,6 +167,7 @@ public class DataMapView extends JPanel {
         builder.append("DataMap Name:", name.getComponent(), 3);
         builder.append("File:", location, 3);
         builder.append("DataNode:", nodeSelector, 3);
+        builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);
 
         builder.appendSeparator("Entity Defaults");
         builder.append("DB Schema:", defaultSchema.getComponent(), updateDefaultSchema);
@@ -208,6 +211,13 @@ public class DataMapView extends JPanel {
 
             public void actionPerformed(ActionEvent e) {
                 setDataNode();
+            }
+        });
+        
+        quoteSQLIdentifiers.addActionListener(new ActionListener(){
+
+            public void actionPerformed(ActionEvent e) {
+                setQuoteSQLIdentifiers(quoteSQLIdentifiers.isSelected());
             }
         });
 
@@ -279,6 +289,7 @@ public class DataMapView extends JPanel {
         String locationText = map.getLocation();
         location.setText((locationText != null) ? locationText : "(no file)");
 
+        quoteSQLIdentifiers.setSelected(map.isQuotingSQLIdentifiers());
         // rebuild data node list
         Object nodes[] = eventController.getCurrentDataDomain().getDataNodes().toArray();
 
@@ -354,6 +365,20 @@ public class DataMapView extends JPanel {
             dataMap.setClientSupported(flag);
 
             toggleClientProperties(flag);
+            eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
+        }
+    }
+    
+    void setQuoteSQLIdentifiers(boolean flag) {
+        DataMap dataMap = eventController.getCurrentDataMap();
+
+        if (dataMap == null) {
+            return;
+        }
+
+        if (dataMap.isQuotingSQLIdentifiers() != flag) {
+            dataMap.setQuotingSQLIdentifiers(flag);
+            
             eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
         }
     }

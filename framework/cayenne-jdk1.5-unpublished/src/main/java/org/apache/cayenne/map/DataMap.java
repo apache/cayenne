@@ -99,13 +99,18 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      * @since 1.1
      */
     public static final String DEFAULT_LOCK_TYPE_PROPERTY = "defaultLockType";
+    
+    public static final String DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY = "quoteSqlIdentifiers";
 
     protected String name;
     protected String location;
     protected MappingNamespace namespace;
 
+    protected Boolean quotingSQLIdentifiers;
+    
     protected String defaultSchema;
     protected String defaultPackage;
+ 
     protected String defaultSuperclass;
     protected int defaultLockType;
 
@@ -122,6 +127,20 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
 
     private List<EntityListener> defaultEntityListeners;
 
+    /**
+     * @since 3.0
+     */
+    public boolean isQuotingSQLIdentifiers() {
+        return quotingSQLIdentifiers;
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setQuotingSQLIdentifiers(boolean quotingSqlIdentifiers) {
+        this.quotingSQLIdentifiers = quotingSqlIdentifiers;        
+    }
+    
     /**
      * Creates a new unnamed DataMap.
      */
@@ -144,7 +163,6 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         queryMap = new TreeMap<String, Query>();
         defaultEntityListeners = new ArrayList<EntityListener>(3);
         results = new TreeMap<String, SQLResult>();
-
         setName(mapName);
         initWithProperties(properties);
     }
@@ -168,12 +186,15 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
         Object clientEntities = properties.get(CLIENT_SUPPORTED_PROPERTY);
         Object clientPackageName = properties.get(DEFAULT_CLIENT_PACKAGE_PROPERTY);
         Object clientSuperclass = properties.get(DEFAULT_CLIENT_SUPERCLASS_PROPERTY);
+        Object quoteSqlIdentifier = properties.get(DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY);
 
         this.defaultLockType = "optimistic".equals(lockType)
                 ? ObjEntity.LOCK_TYPE_OPTIMISTIC
                 : ObjEntity.LOCK_TYPE_NONE;
 
         this.defaultPackage = (packageName != null) ? packageName.toString() : null;
+        this.quotingSQLIdentifiers = (quoteSqlIdentifier!=null) ? "true"
+                .equalsIgnoreCase(quoteSqlIdentifier.toString()) : false;
         this.defaultSchema = (schema != null) ? schema.toString() : null;
         this.defaultSuperclass = (superclass != null) ? superclass.toString() : null;
         this.clientSupported = (clientEntities != null) ? "true"
@@ -239,7 +260,7 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
      */
     public void encodeAsXML(XMLEncoder encoder) {
         encoder.print("<data-map project-version=\"");
-        encoder.print(String.valueOf(Project.CURRENT_PROJECT_VERSION));
+        encoder.print(String.valueOf(Project.CURRENT_PROJECT_VERSION));        
         encoder.println("\">");
 
         encoder.indent(1);
@@ -259,6 +280,10 @@ public class DataMap implements Serializable, XMLSerializable, MappingNamespace,
 
         if (!Util.isEmptyString(defaultSuperclass)) {
             encoder.printProperty(DEFAULT_SUPERCLASS_PROPERTY, defaultSuperclass);
+        }
+        
+        if (quotingSQLIdentifiers) {
+            encoder.printProperty(DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY, quotingSQLIdentifiers);
         }
 
         if (clientSupported) {

@@ -20,7 +20,6 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -31,11 +30,20 @@ import org.apache.cayenne.unit.CayenneResources;
 public class CayenneContextSQLTemplateTest extends CayenneCase {
 
     @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        getDomain().getSharedSnapshotCache().clear();
+        getDomain().getQueryCache().clear();
+        deleteTestData();
+    }
+
+    @Override
     protected AccessStack buildAccessStack() {
         return CayenneResources.getResources().getAccessStack(MULTI_TIER_ACCESS_STACK);
     }
 
     private CayenneContext createClientContext() {
+
         ClientServerChannel serverChannel = new ClientServerChannel(getDomain());
         LocalConnection connection = new LocalConnection(
                 serverChannel,
@@ -45,8 +53,6 @@ public class CayenneContextSQLTemplateTest extends CayenneCase {
     }
 
     public void testObjectRoot() throws Exception {
-
-        deleteTestData();
 
         CayenneContext context = createClientContext();
 

@@ -28,6 +28,7 @@ import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -59,8 +60,11 @@ public class IngresAdapter extends JdbcAdapter {
      */
     @Override
     public String createTable(DbEntity ent) {
+        QuotingStrategy context = getContextQuoteStrategy(ent.getDataMap());
         StringBuilder buf = new StringBuilder();
-        buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");
+        buf.append("CREATE TABLE ");
+        buf.append(context.quoteFullyQualifiedName(ent));
+        buf.append(" (");
 
         // columns
         Iterator<DbAttribute> it = ent.getAttributes().iterator();
@@ -93,7 +97,7 @@ public class IngresAdapter extends JdbcAdapter {
             }
 
             String type = types[0];
-            buf.append(at.getName()).append(' ').append(type);
+            buf.append(context.quoteString(at.getName())).append(' ').append(type);
 
             // append size and precision (if applicable)
             if (TypesMapping.supportsLength(at.getType())) {
@@ -139,7 +143,7 @@ public class IngresAdapter extends JdbcAdapter {
                     buf.append(", ");
 
                 DbAttribute at = pkit.next();
-                buf.append(at.getName());
+                buf.append(context.quoteString(at.getName()));
             }
             buf.append(')');
         }
@@ -158,7 +162,7 @@ public class IngresAdapter extends JdbcAdapter {
      */
     @Override
     protected PkGenerator createPkGenerator() {
-        return new IngresPkGenerator();
+        return new IngresPkGenerator(this);
     }
 
 }

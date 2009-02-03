@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryResult;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
@@ -37,8 +38,15 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 public class FrontBasePkGenerator extends JdbcPkGenerator {
 
+    /**
+     * @deprecated since 3.0
+     */
     public FrontBasePkGenerator() {
         super();
+    }
+    
+    public FrontBasePkGenerator(JdbcAdapter adapter) {
+        super(adapter);
     }
 
     /**

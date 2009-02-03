@@ -30,7 +30,9 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryLogger;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbEntity;
 
 /**
@@ -38,6 +40,17 @@ import org.apache.cayenne.map.DbEntity;
  * 
  */
 public class DB2PkGenerator extends JdbcPkGenerator {
+
+    /**
+     * @deprecated since 3.0
+     */
+    protected DB2PkGenerator() {
+        super();
+    }
+    
+    DB2PkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
 
     private static final String _SEQUENCE_PREFIX = "S_";
 
@@ -212,12 +225,17 @@ public class DB2PkGenerator extends JdbcPkGenerator {
      * Returns default sequence name for DbEntity.
      */
     protected String sequenceName(DbEntity entity) {
-
+        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
         String entName = entity.getName();
         String seqName = _SEQUENCE_PREFIX + entName;
 
         if (entity.getSchema() != null && entity.getSchema().length() > 0) {
-            seqName = entity.getSchema() + "." + seqName;
+            if(getAdapter()!=null){
+                seqName = context.quoteString(entity.getSchema()) +
+                 "." + context.quoteString(seqName);
+           } else {
+                seqName = entity.getSchema() + "." + seqName;
+           }
         }
         return seqName;
     }
@@ -226,6 +244,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
      * Returns DROP SEQUENCE statement.
      */
     protected String dropSequenceString(DbEntity entity) {
+         
         return "DROP SEQUENCE " + sequenceName(entity) + " RESTRICT ";
     }
 

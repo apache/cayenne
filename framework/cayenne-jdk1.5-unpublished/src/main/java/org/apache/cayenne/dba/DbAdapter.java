@@ -41,7 +41,6 @@ import org.apache.cayenne.query.SQLAction;
  * <li>Make Cayenne code independent from SQL syntax differences between different RDBMS.
  * <li>Allow for vendor-specific tuning of JDBC access.
  * </ul>
- * 
  */
 public interface DbAdapter {
 
@@ -128,8 +127,8 @@ public interface DbAdapter {
     String createFkConstraint(DbRelationship rel);
 
     /**
-     * Returns an array of RDBMS types that can be used with JDBC <code>type</code>.
-     * Valid JDBC types are defined in java.sql.Types.
+     * Returns an array of RDBMS types that can be used with JDBC <code>type</code>. Valid
+     * JDBC types are defined in java.sql.Types.
      */
     String[] externalTypesForJdbcType(int type);
 
@@ -191,7 +190,7 @@ public interface DbAdapter {
      * @since 3.0
      */
     MergerFactory mergerFactory();
-    
+
     /**
      * Append the column type part of a "create table" to the given {@link StringBuffer}
      * 
@@ -199,6 +198,16 @@ public interface DbAdapter {
      * @param column the {@link DbAttribute} defining the column to append type for
      * @since 3.0
      */
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column);
-    
+    void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column);
+
+    /**
+     * @since 3.0
+     */
+    String getIdentifiersStartQuote();
+
+    /**
+     * @since 3.0
+     */
+    String getIdentifiersEndQuote();
+
 }

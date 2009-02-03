@@ -58,7 +58,10 @@ import org.apache.cayenne.util.CayenneMapEntry;
  * SelectTranslator is stateful and thread-unsafe.
  */
 public class SelectTranslator extends QueryAssembler {
-
+    
+    private String identifiersStartQuote;
+    private String identifiersEndQuote;
+    
     protected static final int[] UNSUPPORTED_DISTINCT_TYPES = new int[] {
             Types.BLOB, Types.CLOB, Types.LONGVARBINARY, Types.LONGVARCHAR
     };
@@ -72,8 +75,7 @@ public class SelectTranslator extends QueryAssembler {
 
         return false;
     }
-
-    JoinStack joinStack = createJoinStack();
+    JoinStack joinStack;
 
     List<ColumnDescriptor> resultColumns;
     Map<ObjAttribute, ColumnDescriptor> attributeOverrides;
@@ -88,8 +90,8 @@ public class SelectTranslator extends QueryAssembler {
      */
     boolean forcingDistinct;
 
-    protected JoinStack createJoinStack() {
-        return new JoinStack();
+    protected JoinStack createJoinStack() {        
+        return new JoinStack(getAdapter(), queryMetadata.getDataMap());
     }
 
     /**
@@ -98,19 +100,29 @@ public class SelectTranslator extends QueryAssembler {
      */
     @Override
     public String createSqlString() throws Exception {
+        
+        joinStack = createJoinStack();
+        
+        if(queryMetadata.getDataMap().isQuotingSQLIdentifiers()){
+            this.identifiersStartQuote = getAdapter().getIdentifiersStartQuote();
+            this.identifiersEndQuote = getAdapter().getIdentifiersEndQuote();
+        } else {
+            this.identifiersStartQuote = "";
+            this.identifiersEndQuote = "";
+        }
         forcingDistinct = false;
-
+       
         // build column list
         this.resultColumns = buildResultColumns();
-
+        
         // build qualifier
         StringBuilder qualifierBuffer = adapter.getQualifierTranslator(this).appendPart(
                 new StringBuilder());
 
-        // build ORDER BY
+         // build ORDER BY
         OrderingTranslator orderingTranslator = new OrderingTranslator(this);
         StringBuilder orderingBuffer = orderingTranslator.appendPart(new StringBuilder());
-
+        
         // assemble
         StringBuilder queryBuf = new StringBuilder();
         queryBuf.append("SELECT ");
@@ -118,7 +130,6 @@ public class SelectTranslator extends QueryAssembler {
         // check if DISTINCT is appropriate
         // side effect: "suppressingDistinct" flag may end up being flipped here
         if (forcingDistinct || getSelectQuery().isDistinct()) {
-
             suppressingDistinct = false;
 
             for (ColumnDescriptor column : resultColumns) {
@@ -136,7 +147,8 @@ public class SelectTranslator extends QueryAssembler {
         // convert ColumnDescriptors to column names
         List<String> selectColumnExpList = new ArrayList<String>();
         for (ColumnDescriptor column : resultColumns) {
-            selectColumnExpList.add(column.getQualifiedColumnName());
+            selectColumnExpList.add(
+                        column.getQualifiedColumnNameWithQuoteSqlIdentifiers(identifiersStartQuote, identifiersEndQuote));
         }
 
         // append any column expressions used in the order by if this query
@@ -145,32 +157,34 @@ public class SelectTranslator extends QueryAssembler {
             List<String> orderByColumnList = orderingTranslator.getOrderByColumnList();
             for (String orderByColumnExp : orderByColumnList) {
                 // Convert to ColumnDescriptors??
-                if (!selectColumnExpList.contains(orderByColumnExp)) {
+                if (!selectColumnExpList.contains(orderByColumnExp)) {                    
                     selectColumnExpList.add(orderByColumnExp);
                 }
             }
         }
-
+      
         // append columns (unroll the loop's first element)
         int columnCount = selectColumnExpList.size();
         queryBuf.append(selectColumnExpList.get(0));
+        
         // assume there is at least 1 element
         for (int i = 1; i < columnCount; i++) {
             queryBuf.append(", ");
-            queryBuf.append(selectColumnExpList.get(i));
+            queryBuf.append(selectColumnExpList.get(i));            
         }
 
         // append from clause
         queryBuf.append(" FROM ");
 
         // append tables and joins
-        joinStack.appendRoot(queryBuf, getRootDbEntity());
+        joinStack.appendRootWithQuoteSqlIdentifiers(queryBuf, getRootDbEntity());
+        
         joinStack.appendJoins(queryBuf);
         joinStack.appendQualifier(qualifierBuffer, qualifierBuffer.length() == 0);
 
         // append qualifier
         if (qualifierBuffer.length() > 0) {
-            queryBuf.append(" WHERE ");
+            queryBuf.append(" WHERE ");            
             queryBuf.append(qualifierBuffer);
         }
 
@@ -598,7 +612,10 @@ public class SelectTranslator extends QueryAssembler {
      */
     @Override
     public void resetJoinStack() {
-        joinStack.resetStack();
+        if(joinStack==null){
+            joinStack = createJoinStack();
+        }
+        joinStack.resetStack();           
     }
 
     /**
@@ -623,4 +640,4 @@ public class SelectTranslator extends QueryAssembler {
     public boolean supportsTableAliases() {
         return true;
     }
-}
+ }

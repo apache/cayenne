@@ -145,5 +145,11 @@ public class MockDbAdapter implements DbAdapter {
 
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
     }
-
+    
+    public String getIdentifiersStartQuote(){
+        return "\"";
+    }
+    public String getIdentifiersEndQuote(){
+        return "\"";
+    }
 }

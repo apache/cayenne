@@ -29,6 +29,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -89,9 +90,11 @@ public class FrontBaseAdapter extends JdbcAdapter {
      */
     @Override
     public String createTable(DbEntity ent) {
-
+        QuotingStrategy context = getContextQuoteStrategy(ent.getDataMap());
         StringBuilder buf = new StringBuilder();
-        buf.append("CREATE TABLE ").append(ent.getFullyQualifiedName()).append(" (");
+        buf.append("CREATE TABLE ");
+        buf.append(context.quoteFullyQualifiedName(ent));
+        buf.append(" (");
 
         // columns
         Iterator<DbAttribute> it = ent.getAttributes().iterator();
@@ -124,7 +127,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
             }
 
             String type = types[0];
-            buf.append(at.getName()).append(' ').append(type);
+            buf.append(context.quoteString(at.getName())).append(' ').append(type);
 
             // Mapping LONGVARCHAR without length creates a column with lenght "1" which
             // is defintely not what we want...so just use something very large (1Gb seems
@@ -184,7 +187,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
                     buf.append(", ");
 
                 DbAttribute at = pkit.next();
-                buf.append(at.getName());
+                buf.append(context.quoteString(at.getName()));
             }
             buf.append(')');
         }
@@ -197,9 +200,12 @@ public class FrontBaseAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        return Collections.singleton("DROP TABLE "
-                + table.getFullyQualifiedName()
-                + " CASCADE");
+        QuotingStrategy context = getContextQuoteStrategy(table.getDataMap());
+        StringBuffer buf = new StringBuffer("DROP TABLE ");
+        buf.append(context.quoteFullyQualifiedName(table));            
+
+        buf.append(" CASCADE");
+        return Collections.singleton(buf.toString());
     }
 
     @Override

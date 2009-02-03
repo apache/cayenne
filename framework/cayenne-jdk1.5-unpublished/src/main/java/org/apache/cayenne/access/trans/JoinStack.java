@@ -21,6 +21,8 @@ package org.apache.cayenne.access.trans;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -36,15 +38,36 @@ import org.apache.cayenne.map.JoinType;
 public class JoinStack {
 
     protected JoinTreeNode rootNode;
-    protected JoinTreeNode topNode;
+    protected JoinTreeNode topNode;    
+    private String identifiersStartQuote;
+    private String identifiersEndQuote;
 
     private int aliasCounter;
     
+    /**
+     * @deprecated since 3.0
+     */   
     protected JoinStack() {
         this.rootNode = new JoinTreeNode(this);
         this.rootNode.setTargetTableAlias(newAlias());
+        
         resetStack();
     }
+    
+    protected JoinStack(DbAdapter dbAdapter, DataMap dataMap) {
+        this.rootNode = new JoinTreeNode(this);
+        this.rootNode.setTargetTableAlias(newAlias());
+        
+        if(dataMap.isQuotingSQLIdentifiers()){
+            this.identifiersStartQuote = dbAdapter.getIdentifiersStartQuote();
+            this.identifiersEndQuote = dbAdapter.getIdentifiersEndQuote();
+        } else {
+            this.identifiersStartQuote = "";
+            this.identifiersEndQuote = "";
+        }
+        resetStack();
+    }
+    
     
     String getCurrentAlias() {
         return topNode.getTargetTableAlias();
@@ -61,6 +84,16 @@ public class JoinStack {
     void appendRoot(Appendable out, DbEntity rootEntity) throws IOException {
         out.append(rootEntity.getFullyQualifiedName());
         out.append(' ').append(rootNode.getTargetTableAlias());
+    }
+    
+    void appendRootWithQuoteSqlIdentifiers(Appendable out, DbEntity rootEntity) throws IOException {
+        if(rootEntity.getSchema() != null) { 
+            nameWithQuoteSqlIdentifiers(rootEntity.getSchema(),out);
+            out.append(".");
+        }
+        nameWithQuoteSqlIdentifiers(rootEntity.getName(),out);
+        out.append(' ');
+        nameWithQuoteSqlIdentifiers(rootNode.getTargetTableAlias(),out);       
     }
 
     /**
@@ -94,26 +127,34 @@ public class JoinStack {
                         + node.getJoinType());
         }
 
-        out.append(' ').append(targetEntity.getFullyQualifiedName()).append(' ').append(
-                targetAlias).append(" ON (");
+        out.append(' ');
+        
+        if(targetEntity.getSchema()!= null){
+            
+            nameWithQuoteSqlIdentifiers(targetEntity.getSchema(),out);
+            out.append(".");
+        }
+        nameWithQuoteSqlIdentifiers(targetEntity.getName(), out);
+ 
+        out.append(' ');
+        nameWithQuoteSqlIdentifiers(targetAlias, out);
+        out.append(" ON (");
 
         List<DbJoin> joins = relationship.getJoins();
         int len = joins.size();
         for (int i = 0; i < len; i++) {
             DbJoin join = joins.get(i);
-
             if (i > 0) {
                 out.append(" AND ");
-            }
-
-            out
-                    .append(srcAlias)
-                    .append('.')
-                    .append(join.getSourceName())
-                    .append(" = ")
-                    .append(targetAlias)
-                    .append('.')
-                    .append(join.getTargetName());
+            }            
+            
+            nameWithQuoteSqlIdentifiers(srcAlias, out);
+            out.append('.');
+            nameWithQuoteSqlIdentifiers(join.getSourceName(), out);
+            out.append(" = ");
+            nameWithQuoteSqlIdentifiers(targetAlias, out);
+            out.append('.');
+            nameWithQuoteSqlIdentifiers(join.getTargetName(), out);
         }
 
         out.append(')');
@@ -149,4 +190,8 @@ public class JoinStack {
     protected String newAlias() {
         return "t" + aliasCounter++;
     }
+    
+    protected void nameWithQuoteSqlIdentifiers(String name, Appendable out) throws IOException{
+        out.append(identifiersStartQuote).append(name).append(identifiersEndQuote);        
+    }  
 }

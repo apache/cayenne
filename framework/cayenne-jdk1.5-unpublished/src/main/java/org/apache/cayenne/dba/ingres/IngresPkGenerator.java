@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryLogger;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
@@ -40,6 +41,17 @@ import org.apache.cayenne.map.DbKeyGenerator;
  * @since 1.2
  */
 public class IngresPkGenerator extends OraclePkGenerator {
+    
+    /**
+     * @deprecated since 3.0
+     */
+    protected IngresPkGenerator() {
+        super();
+    }
+    
+    protected IngresPkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
     
     @Override
     protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {

@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import java.sql.Connection;
@@ -32,8 +31,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
-/**
- */
 public abstract class DataContextCase extends CayenneCase {
 
     public static final int artistCount = 25;
@@ -52,10 +49,9 @@ public abstract class DataContextCase extends CayenneCase {
     }
 
     protected Painting fetchPainting(String name, boolean prefetchArtist) {
-        SelectQuery select =
-            new SelectQuery(
-                Painting.class,
-                ExpressionFactory.matchExp("paintingTitle", name));
+        SelectQuery select = new SelectQuery(Painting.class, ExpressionFactory.matchExp(
+                "paintingTitle",
+                name));
         if (prefetchArtist) {
             select.addPrefetch("toArtist");
         }
@@ -65,8 +61,9 @@ public abstract class DataContextCase extends CayenneCase {
     }
 
     protected Artist fetchArtist(String name, boolean prefetchPaintings) {
-        SelectQuery q =
-            new SelectQuery(Artist.class, ExpressionFactory.matchExp("artistName", name));
+        SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
+                "artistName",
+                name));
         if (prefetchPaintings) {
             q.addPrefetch("paintingArray");
         }
@@ -75,21 +72,19 @@ public abstract class DataContextCase extends CayenneCase {
     }
 
     protected ROArtist fetchROArtist(String name) {
-        SelectQuery q =
-            new SelectQuery(
-                ROArtist.class,
-                ExpressionFactory.matchExp("artistName", name));
+        SelectQuery q = new SelectQuery(ROArtist.class, ExpressionFactory.matchExp(
+                "artistName",
+                name));
         List ats = context.performQuery(q);
         return (ats.size() > 0) ? (ROArtist) ats.get(0) : null;
     }
 
     /**
-     * Temporary workaround for current inability to store dates in test 
-     * fixture XML files.
+     * Temporary workaround for current inability to store dates in test fixture XML
+     * files.
      */
     public void populateExhibits() throws Exception {
-        String insertPaint =
-            "INSERT INTO EXHIBIT (EXHIBIT_ID, GALLERY_ID, OPENING_DATE, CLOSING_DATE) VALUES (?, ?, ?, ?)";
+        String insertPaint = "INSERT INTO EXHIBIT (EXHIBIT_ID, GALLERY_ID, OPENING_DATE, CLOSING_DATE) VALUES (?, ?, ?, ?)";
 
         Connection conn = getConnection();
 
@@ -116,10 +111,9 @@ public abstract class DataContextCase extends CayenneCase {
     }
 
     /**
-     * Helper method that takes one of the artists from the standard
-     * dataset (always the same one) and creates a new painting for this artist,
-     * committing it to the database. Both Painting and Artist will be cached in current
-     * DataContext.
+     * Helper method that takes one of the artists from the standard dataset (always the
+     * same one) and creates a new painting for this artist, committing it to the
+     * database. Both Painting and Artist will be cached in current DataContext.
      */
     protected Painting insertPaintingInContext(String paintingName) {
         Painting painting = (Painting) context.newObject("Painting");

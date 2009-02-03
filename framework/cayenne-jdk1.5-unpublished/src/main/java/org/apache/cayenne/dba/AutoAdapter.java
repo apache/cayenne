@@ -64,6 +64,9 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class AutoAdapter implements DbAdapter {
 
+    final static String DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_START = "\"";
+    final static String DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_END = "\"";
+    
     static final List<DbAdapterFactory> defaultFactories;
     static {
         defaultFactories = new ArrayList<DbAdapterFactory>();
@@ -315,6 +318,17 @@ public class AutoAdapter implements DbAdapter {
     
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         getAdapter().createTableAppendColumn(sqlBuffer, column);
+    }
+
+    public void setDefaultQuoteSqlIdentifiersChars(boolean isQuoteSqlIdentifiers) {
+    }
+
+    public String getIdentifiersStartQuote() {
+        return  DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_START;
+    }
+
+    public String getIdentifiersEndQuote() {
+        return  DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_END;
     }
 
 }
