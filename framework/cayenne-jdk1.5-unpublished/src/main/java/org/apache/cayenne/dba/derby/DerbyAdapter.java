@@ -97,8 +97,14 @@ public class DerbyAdapter extends JdbcAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        QuotingStrategy context = getContextQuoteStrategy(((DbEntity) column
-                .getEntity()).getDataMap());
+        
+        boolean status;
+        if(((DbEntity) column.getEntity()).getDataMap()!=null && ((DbEntity) column.getEntity()).getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context = getQuotingStrategy(status);
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
             String entityName = column.getEntity() != null ? ((DbEntity) column

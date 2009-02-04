@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.DbAttribute;
@@ -48,8 +49,7 @@ public abstract class QueryAssemblerHelper {
 
     protected QueryAssembler queryAssembler;
     protected Appendable out;
-    private String identifiersStartQuote;
-    private String identifiersEndQuote;
+    protected QuotingStrategy strategy;
 
     /**
      * Creates QueryAssemblerHelper initializing with parent {@link QueryAssembler} and
@@ -57,14 +57,13 @@ public abstract class QueryAssemblerHelper {
      */
     public QueryAssemblerHelper(QueryAssembler queryAssembler) {
         this.queryAssembler = queryAssembler;
-        
-        if(queryAssembler.getQueryMetadata().getDataMap()!=null && queryAssembler.getQueryMetadata().getDataMap().isQuotingSQLIdentifiers()){
-            identifiersStartQuote = queryAssembler.getAdapter().getIdentifiersStartQuote();
-            identifiersEndQuote  = queryAssembler.getAdapter().getIdentifiersEndQuote();
+        boolean status;
+        if(queryAssembler.getQueryMetadata().getDataMap()!=null && queryAssembler.getQueryMetadata().getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
         } else {
-            identifiersStartQuote = "";
-            identifiersEndQuote = "";
+            status = false;
         }
+        strategy =   queryAssembler.getAdapter().getQuotingStrategy(status);
     }
 
     public ObjEntity getObjEntity() {
@@ -249,11 +248,12 @@ public abstract class QueryAssemblerHelper {
         String alias =  (queryAssembler.supportsTableAliases()) ? queryAssembler
                 .getCurrentAlias() : null;
       
-            if(alias != null){        
-                out.append(identifiersStartQuote).append(alias).append(identifiersEndQuote);
+            if(alias != null){
+                
+                out.append(strategy.quoteString(alias));
                 out.append(".");
             }
-            out.append(identifiersStartQuote).append(dbAttr.getName()).append(identifiersEndQuote);                     
+            out.append(strategy.quoteString(dbAttr.getName()));                     
     }
 
     /**

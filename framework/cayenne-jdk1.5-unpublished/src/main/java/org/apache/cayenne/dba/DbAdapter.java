@@ -203,11 +203,5 @@ public interface DbAdapter {
     /**
      * @since 3.0
      */
-    String getIdentifiersStartQuote();
-
-    /**
-     * @since 3.0
-     */
-    String getIdentifiersEndQuote();
-
+    public QuotingStrategy getQuotingStrategy(boolean needQuotes);
 }

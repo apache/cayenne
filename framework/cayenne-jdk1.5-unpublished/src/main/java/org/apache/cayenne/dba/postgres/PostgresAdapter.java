@@ -122,7 +122,7 @@ public class PostgresAdapter extends JdbcAdapter {
     @Override
     public String createTable(DbEntity ent) {
        
-        QuotingStrategy context = getContextQuoteStrategy(ent.getDataMap());
+        QuotingStrategy context = getQuotingStrategy(ent.getDataMap().isQuotingSQLIdentifiers());
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
         
@@ -236,7 +236,7 @@ public class PostgresAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context = getContextQuoteStrategy(table.getDataMap());
+        QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
         StringBuffer buf = new StringBuffer("DROP TABLE ");
         buf.append(context.quoteFullyQualifiedName(table));            
         buf.append(" CASCADE");

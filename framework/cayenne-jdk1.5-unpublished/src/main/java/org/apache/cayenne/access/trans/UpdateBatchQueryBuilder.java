@@ -17,22 +17,22 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.trans;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
  * A translator for UpdateBatchQueries that produces parameterized SQL.
- * 
  */
 
 public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
@@ -42,14 +42,23 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
     }
 
     @Override
-    public String createSqlString(BatchQuery batch) {
+    public String createSqlString(BatchQuery batch) throws IOException {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) batch;
-        String table = batch.getDbEntity().getFullyQualifiedName();
+        boolean status;
+        if(batch.getDbEntity().getDataMap()!=null && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+
+        QuotingStrategy strategy =  getAdapter().getQuotingStrategy(status);
+        
         List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 
         StringBuffer query = new StringBuffer("UPDATE ");
-        query.append(table).append(" SET ");
+        query.append(strategy.quoteFullyQualifiedName(batch.getDbEntity()));
+        query.append(" SET ");
 
         int len = updatedDbAttributes.size();
         for (int i = 0; i < len; i++) {
@@ -58,7 +67,8 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
             }
 
             DbAttribute attribute = updatedDbAttributes.get(i);
-            query.append(attribute.getName()).append(" = ?");
+            query.append(strategy.quoteString(attribute.getName()));
+            query.append(" = ?");
         }
 
         query.append(" WHERE ");

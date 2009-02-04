@@ -146,7 +146,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
       */
     @Override
     public String createTable(DbEntity ent) {
-        QuotingStrategy context = getContextQuoteStrategy(ent.getDataMap());
+        QuotingStrategy context = getQuotingStrategy(ent.getDataMap().isQuotingSQLIdentifiers());
         StringBuilder buf = new StringBuilder();
 
         buf.append("CREATE TABLE ");

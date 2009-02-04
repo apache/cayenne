@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -26,12 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 
 /**
  * Superclass of batch query translators.
- * 
  */
 
 public abstract class BatchQueryBuilder {
@@ -48,8 +49,10 @@ public abstract class BatchQueryBuilder {
 
     /**
      * Translates BatchQuery into an SQL string formatted to use in a PreparedStatement.
+     * 
+     * @throws IOException
      */
-    public abstract String createSqlString(BatchQuery batch);
+    public abstract String createSqlString(BatchQuery batch) throws IOException;
 
     /**
      * Appends the name of the column to the query buffer. Subclasses use this method to
@@ -63,8 +66,17 @@ public abstract class BatchQueryBuilder {
         if (trim) {
             buf.append(trimFunction).append('(');
         }
+        boolean status;
+        if (dbAttribute.getEntity().getDataMap() != null
+                && dbAttribute.getEntity().getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
+            status = false;
+        }
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
 
-        buf.append(dbAttribute.getName());
+        buf.append(strategy.quoteString(dbAttribute.getName()));
 
         if (trim) {
             buf.append(')');
@@ -121,4 +133,5 @@ public abstract class BatchQueryBuilder {
         }
         return values;
     }
+
 }

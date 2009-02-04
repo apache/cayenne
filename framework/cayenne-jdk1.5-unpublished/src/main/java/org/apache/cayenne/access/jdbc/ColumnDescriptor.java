@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
@@ -198,9 +199,9 @@ public class ColumnDescriptor implements Serializable {
         return (namePrefix != null) ? namePrefix + '.' + name : name;
     }
     
-    public String getQualifiedColumnNameWithQuoteSqlIdentifiers(String charStart, String charEnd) {
-        String nameWithQuoteSqlIdentifiers = charStart + name + charEnd;
-        return (namePrefix != null) ? charStart + namePrefix + charEnd + '.' +
+    public String getQualifiedColumnNameWithQuoteSqlIdentifiers(QuotingStrategy strategy) {
+        String nameWithQuoteSqlIdentifiers = strategy.quoteString( name );
+        return (namePrefix != null) ? strategy.quoteString( namePrefix ) + '.' +
                 nameWithQuoteSqlIdentifiers: nameWithQuoteSqlIdentifiers;
     }
 

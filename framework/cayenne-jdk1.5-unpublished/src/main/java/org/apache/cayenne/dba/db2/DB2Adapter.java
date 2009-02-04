@@ -81,7 +81,13 @@ public class DB2Adapter extends JdbcAdapter {
      */
     @Override
     public String createTable(DbEntity ent) {
-        QuotingStrategy context = getContextQuoteStrategy(ent.getDataMap());
+        boolean status;
+        if(ent.getDataMap()!=null && ent.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context = getQuotingStrategy(status);
         
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");

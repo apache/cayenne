@@ -63,7 +63,8 @@ public class DeleteBatchQueryBuilderTest extends LockingCase {
         DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
                 SimpleLockingTestEntity.class).getDbEntity();
 
-        List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
+        List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity
+                .getAttribute("NAME"));
 
         Collection nullAttributes = Collections.singleton("NAME");
 
@@ -78,5 +79,90 @@ public class DeleteBatchQueryBuilderTest extends LockingCase {
         assertEquals("DELETE FROM "
                 + entity.getName()
                 + " WHERE LOCKING_TEST_ID = ? AND NAME IS NULL", generatedSql);
+    }
+
+    public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
+        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+                SimpleLockingTestEntity.class).getDbEntity();
+        try {
+
+            entity.getDataMap().setQuotingSQLIdentifiers(true);
+            List idAttributes = Collections.singletonList(entity
+                    .getAttribute("LOCKING_TEST_ID"));
+
+            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(
+                    entity,
+                    idAttributes,
+                    null,
+                    1);
+            DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(
+                    new JdbcAdapter());
+            String generatedSql = builder.createSqlString(deleteQuery);
+
+            JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
+            String charStart = adapter.getIdentifiersStartQuote();
+            String charEnd = adapter.getIdentifiersEndQuote();
+
+            assertNotNull(generatedSql);
+            assertEquals("DELETE FROM "
+                    + charStart
+                    + entity.getName()
+                    + charEnd
+                    + " WHERE "
+                    + charStart
+                    + "LOCKING_TEST_ID"
+                    + charEnd
+                    + " = ?", generatedSql);
+        }
+        finally {
+            entity.getDataMap().setQuotingSQLIdentifiers(false);
+        }
+
+    }
+
+    public void testCreateSqlStringWithNullsWithIdentifiersQuote() throws Exception {
+        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+                SimpleLockingTestEntity.class).getDbEntity();
+        try {
+
+            entity.getDataMap().setQuotingSQLIdentifiers(true);
+
+            List idAttributes = Arrays.asList(
+                    entity.getAttribute("LOCKING_TEST_ID"),
+                    entity.getAttribute("NAME"));
+
+            Collection nullAttributes = Collections.singleton("NAME");
+
+            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(
+                    entity,
+                    idAttributes,
+                    nullAttributes,
+                    1);
+            DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(
+                    new JdbcAdapter());
+            String generatedSql = builder.createSqlString(deleteQuery);
+
+            JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
+            String charStart = adapter.getIdentifiersStartQuote();
+            String charEnd = adapter.getIdentifiersEndQuote();
+            assertNotNull(generatedSql);
+
+            assertEquals("DELETE FROM "
+                    + charStart
+                    + entity.getName()
+                    + charEnd
+                    + " WHERE "
+                    + charStart
+                    + "LOCKING_TEST_ID"
+                    + charEnd
+                    + " = ? AND "
+                    + charStart
+                    + "NAME"
+                    + charEnd
+                    + " IS NULL", generatedSql);
+        }
+        finally {
+            entity.getDataMap().setQuotingSQLIdentifiers(false);
+        }
     }
 }

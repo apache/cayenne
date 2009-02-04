@@ -331,4 +331,8 @@ public class AutoAdapter implements DbAdapter {
         return  DEFAULT_QUOTE_SQL_IDENTIFIERS_CHAR_END;
     }
 
+    public QuotingStrategy  getQuotingStrategy(boolean isQuoteStrategy) {
+        return getAdapter().getQuotingStrategy(isQuoteStrategy);
+    }
+
 }

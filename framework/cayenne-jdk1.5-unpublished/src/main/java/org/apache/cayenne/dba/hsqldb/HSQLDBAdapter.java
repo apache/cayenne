@@ -67,7 +67,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * @since 1.2
      */
     protected String getTableName(DbEntity entity) {
-        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+        QuotingStrategy context = getQuotingStrategy(entity.getDataMap().isQuotingSQLIdentifiers());
         return context.quoteFullyQualifiedName(entity);
     }
 
@@ -78,7 +78,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     protected String getSchemaName(DbEntity entity) {
         if (entity.getSchema() != null && entity.getSchema().length() > 0) {
-            QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+            QuotingStrategy context = getQuotingStrategy(entity.getDataMap().isQuotingSQLIdentifiers());
             return context.quoteString(entity.getSchema()) + ".";
         }
 
@@ -103,7 +103,13 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     @Override
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
-        QuotingStrategy context = getContextQuoteStrategy(source.getDataMap());
+        boolean status;
+        if(source.getDataMap()!=null && source.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context = getQuotingStrategy(status);
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException(
                     "Can't create UNIQUE constraint - no columns specified.");
@@ -144,7 +150,13 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     @Override
     public String createFkConstraint(DbRelationship rel) {
-        QuotingStrategy context = getContextQuoteStrategy(((DbEntity)rel.getSourceEntity()).getDataMap());
+        boolean status;
+        if(((DbEntity)rel.getSourceEntity()).getDataMap()!=null && ((DbEntity)rel.getSourceEntity()).getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context = getQuotingStrategy(status);
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();
 

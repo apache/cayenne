@@ -105,7 +105,7 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     @Override
     public String dropTable(DbEntity table) {
-        QuotingStrategy context = getContextQuoteStrategy(table.getDataMap()); 
+        QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers()); 
         StringBuffer buf = new StringBuffer("DROP TABLE IF EXISTS ");
         buf.append(context.quoteFullyQualifiedName(table));            
         buf.append(" CASCADE");
@@ -120,7 +120,7 @@ public class MySQLAdapter extends JdbcAdapter {
         // note that CASCADE is a noop as of MySQL 5.0, so we have to use FK checks
         // statement
         StringBuffer buf = new StringBuffer();
-        QuotingStrategy context = getContextQuoteStrategy(table.getDataMap());
+        QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
         buf.append(context.quoteFullyQualifiedName(table));            
         
         return Arrays.asList("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS "
@@ -243,7 +243,13 @@ public class MySQLAdapter extends JdbcAdapter {
     // See CAY-358 for details of the InnoDB problem
     @Override
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
-        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+        boolean status;
+            if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
+                status= true;
+            } else {
+                status = false;
+            }
+        QuotingStrategy context = getQuotingStrategy(status);
         // must move generated to the front...
         List<DbAttribute> pkList = new ArrayList<DbAttribute>(entity.getPrimaryKeys());
         Collections.sort(pkList, new PKComparator());

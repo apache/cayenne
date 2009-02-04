@@ -90,7 +90,13 @@ public class FrontBaseAdapter extends JdbcAdapter {
      */
     @Override
     public String createTable(DbEntity ent) {
-        QuotingStrategy context = getContextQuoteStrategy(ent.getDataMap());
+        boolean status;
+        if(ent.getDataMap()!=null && ent.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context = getQuotingStrategy(status);
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
         buf.append(context.quoteFullyQualifiedName(ent));
@@ -200,7 +206,13 @@ public class FrontBaseAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context = getContextQuoteStrategy(table.getDataMap());
+        boolean status;
+        if(table.getDataMap()!=null && table.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context = getQuotingStrategy(status);
         StringBuffer buf = new StringBuffer("DROP TABLE ");
         buf.append(context.quoteFullyQualifiedName(table));            
 

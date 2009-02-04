@@ -43,7 +43,6 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.UtilDateType;
 import org.apache.cayenne.conf.ClasspathResourceFinder;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -267,7 +266,7 @@ public class JdbcAdapter implements DbAdapter {
      * @since 3.0
      */
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context = getContextQuoteStrategy(table.getDataMap());
+        QuotingStrategy context =  getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
 
         StringBuffer buf = new StringBuffer("DROP TABLE ");
         buf.append(context.quoteFullyQualifiedName(table));
@@ -280,7 +279,13 @@ public class JdbcAdapter implements DbAdapter {
      * <code>ent</code> parameter.
      */
     public String createTable(DbEntity entity) {
-        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+        boolean status;
+        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context =  getQuotingStrategy(status);
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append("CREATE TABLE ");
         sqlBuffer.append(context.quoteFullyQualifiedName(entity));
@@ -323,7 +328,13 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
-        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+        boolean status;
+        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context =  getQuotingStrategy(status);
         Iterator<DbAttribute> pkit = entity.getPrimaryKeys().iterator();
         if (pkit.hasNext()) {
             sqlBuffer.append(", PRIMARY KEY (");
@@ -348,8 +359,14 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        QuotingStrategy context = getContextQuoteStrategy(((DbEntity) column.getEntity())
-                .getDataMap());
+        boolean status;
+        if(((DbEntity) column.getEntity()).getDataMap()!=null && ((DbEntity) column.getEntity())
+                .getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context =  getQuotingStrategy(status);
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
             String entityName = column.getEntity() != null ? ((DbEntity) column
@@ -396,7 +413,13 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.1
      */
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
-        QuotingStrategy context = getContextQuoteStrategy(source.getDataMap());
+        boolean status;
+        if(source.getDataMap()!=null && source.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context =  getQuotingStrategy(status);
 
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException(
@@ -431,7 +454,13 @@ public class JdbcAdapter implements DbAdapter {
     public String createFkConstraint(DbRelationship rel) {
 
         DbEntity source = (DbEntity) rel.getSourceEntity();
-        QuotingStrategy context = getContextQuoteStrategy(source.getDataMap());
+        boolean status;
+        if(source.getDataMap()!=null && source.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context =  getQuotingStrategy(status);
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();
 
@@ -599,8 +628,8 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * @since 3.0
      */
-    protected QuotingStrategy getContextQuoteStrategy(DataMap dm) {
-        if (dm != null && dm.isQuotingSQLIdentifiers()) {
+    public QuotingStrategy  getQuotingStrategy(boolean needQuotes) {
+        if (needQuotes) {
             return new QuoteStrategy(
                     getIdentifiersStartQuote(),
                     getIdentifiersEndQuote());

@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.BatchQuery;
 
 /**
@@ -61,12 +62,15 @@ public class BatchQueryBuilderTest extends TestCase {
 		builder.setTrimFunction(trimFunction);
 
 		StringBuffer buf = new StringBuffer();
+		DbEntity entity = new DbEntity("Test");
 		DbAttribute attr = new DbAttribute("testAttr", Types.CHAR, null);
+		attr.setEntity(entity);
 		builder.appendDbAttribute(buf, attr);
 		assertEquals("testTrim(testAttr)", buf.toString());
 
 		buf = new StringBuffer();
 		attr = new DbAttribute("testAttr", Types.VARCHAR, null);
+		attr.setEntity(entity);
 		builder.appendDbAttribute(buf, attr);
 		assertEquals("testAttr", buf.toString());
 	}
@@ -82,12 +86,17 @@ public class BatchQueryBuilderTest extends TestCase {
 		};
 
 		StringBuffer buf = new StringBuffer();
+		DbEntity entity = new DbEntity("Test");
+		
 		DbAttribute attr = new DbAttribute("testAttr", Types.CHAR, null);
+		attr.setEntity(entity);
 		builder.appendDbAttribute(buf, attr);
 		assertEquals("testAttr", buf.toString());
 
 		buf = new StringBuffer();
 		attr = new DbAttribute("testAttr", Types.VARCHAR, null);
+		attr.setEntity(entity);
+		
 		builder.appendDbAttribute(buf, attr);
 		assertEquals("testAttr", buf.toString());
 	}

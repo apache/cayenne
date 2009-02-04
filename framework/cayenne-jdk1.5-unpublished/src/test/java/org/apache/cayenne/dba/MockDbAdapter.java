@@ -152,4 +152,8 @@ public class MockDbAdapter implements DbAdapter {
     public String getIdentifiersEndQuote(){
         return "\"";
     }
+    
+    public QuotingStrategy getQuotingStrategy(boolean isQuoteStrategy) {
+        return null;
+    }
 }

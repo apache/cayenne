@@ -19,18 +19,19 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Iterator;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
  * Translator for delete BatchQueries. Creates parametrized DELETE SQL statements.
- * 
  */
 
 public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
@@ -40,12 +41,21 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
     }
 
     @Override
-    public String createSqlString(BatchQuery batch) {
-        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) batch;
-        String table = batch.getDbEntity().getFullyQualifiedName();
+    public String createSqlString(BatchQuery batch) throws IOException {
 
+        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) batch;
+
+        boolean status;
+        if(batch.getDbEntity().getDataMap()!=null && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy strategy =  getAdapter().getQuotingStrategy(status);
+       
         StringBuffer query = new StringBuffer("DELETE FROM ");
-        query.append(table).append(" WHERE ");
+        query.append(strategy.quoteFullyQualifiedName(batch.getDbEntity()));
+        query.append(" WHERE ");
 
         Iterator<DbAttribute> i = deleteBatch.getQualifierAttributes().iterator();
         while (i.hasNext()) {
@@ -89,4 +99,5 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
                     attribute.getScale());
         }
     }
+
 }

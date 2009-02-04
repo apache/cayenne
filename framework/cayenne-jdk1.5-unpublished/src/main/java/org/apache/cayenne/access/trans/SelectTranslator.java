@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -58,9 +59,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
  * SelectTranslator is stateful and thread-unsafe.
  */
 public class SelectTranslator extends QueryAssembler {
-    
-    private String identifiersStartQuote;
-    private String identifiersEndQuote;
     
     protected static final int[] UNSUPPORTED_DISTINCT_TYPES = new int[] {
             Types.BLOB, Types.CLOB, Types.LONGVARBINARY, Types.LONGVARCHAR
@@ -102,14 +100,14 @@ public class SelectTranslator extends QueryAssembler {
     public String createSqlString() throws Exception {
         
         joinStack = createJoinStack();
-        
-        if(queryMetadata.getDataMap().isQuotingSQLIdentifiers()){
-            this.identifiersStartQuote = getAdapter().getIdentifiersStartQuote();
-            this.identifiersEndQuote = getAdapter().getIdentifiersEndQuote();
+        boolean status;
+        if(queryMetadata.getDataMap()!=null && queryMetadata.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
         } else {
-            this.identifiersStartQuote = "";
-            this.identifiersEndQuote = "";
+            status = false;
         }
+
+        QuotingStrategy strategy =  getAdapter().getQuotingStrategy(status);
         forcingDistinct = false;
        
         // build column list
@@ -148,7 +146,7 @@ public class SelectTranslator extends QueryAssembler {
         List<String> selectColumnExpList = new ArrayList<String>();
         for (ColumnDescriptor column : resultColumns) {
             selectColumnExpList.add(
-                        column.getQualifiedColumnNameWithQuoteSqlIdentifiers(identifiersStartQuote, identifiersEndQuote));
+                        column.getQualifiedColumnNameWithQuoteSqlIdentifiers(strategy));
         }
 
         // append any column expressions used in the order by if this query

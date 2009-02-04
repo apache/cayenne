@@ -68,7 +68,8 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
         DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
                 SimpleLockingTestEntity.class).getDbEntity();
 
-        List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
+        List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity
+                .getAttribute("NAME"));
 
         List updatedAttributes = Collections.singletonList(entity
                 .getAttribute("DESCRIPTION"));
@@ -84,11 +85,110 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
         UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(new JdbcAdapter());
         String generatedSql = builder.createSqlString(updateQuery);
         assertNotNull(generatedSql);
+
         assertEquals(
                 "UPDATE "
                         + entity.getName()
                         + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ? AND NAME IS NULL",
                 generatedSql);
+    }
+
+    public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
+        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+                SimpleLockingTestEntity.class).getDbEntity();
+        try {
+
+            entity.getDataMap().setQuotingSQLIdentifiers(true);
+            List idAttributes = Collections.singletonList(entity
+                    .getAttribute("LOCKING_TEST_ID"));
+            List updatedAttributes = Collections.singletonList(entity
+                    .getAttribute("DESCRIPTION"));
+
+            UpdateBatchQuery updateQuery = new UpdateBatchQuery(
+                    entity,
+                    idAttributes,
+                    updatedAttributes,
+                    null,
+                    1);
+            UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(
+                    new JdbcAdapter());
+            String generatedSql = builder.createSqlString(updateQuery);
+            
+            JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
+            String charStart = adapter.getIdentifiersStartQuote();
+            String charEnd = adapter.getIdentifiersEndQuote();
+            
+            assertNotNull(generatedSql);
+             assertEquals("UPDATE "
+             + charStart
+             + entity.getName()
+             + charEnd
+             + " SET "
+             + charStart
+             + "DESCRIPTION"
+             + charEnd
+             + " = ? WHERE "
+             + charStart
+             + "LOCKING_TEST_ID"
+             + charEnd
+             + " = ?", generatedSql);
+
+        }
+        finally {
+            entity.getDataMap().setQuotingSQLIdentifiers(false);
+        }
+    }
+
+    public void testCreateSqlStringWithNullsWithIdentifiersQuote() throws Exception {
+        DbEntity entity = getDomain().getEntityResolver().lookupObjEntity(
+                SimpleLockingTestEntity.class).getDbEntity();
+        try {
+
+            entity.getDataMap().setQuotingSQLIdentifiers(true);
+            List idAttributes = Arrays.asList(
+                    entity.getAttribute("LOCKING_TEST_ID"),
+                    entity.getAttribute("NAME"));
+
+            List updatedAttributes = Collections.singletonList(entity
+                    .getAttribute("DESCRIPTION"));
+
+            Collection nullAttributes = Collections.singleton("NAME");
+
+            UpdateBatchQuery updateQuery = new UpdateBatchQuery(
+                    entity,
+                    idAttributes,
+                    updatedAttributes,
+                    nullAttributes,
+                    1);
+            UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(
+                    new JdbcAdapter());
+            String generatedSql = builder.createSqlString(updateQuery);
+            assertNotNull(generatedSql);
+            JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
+            String charStart = adapter.getIdentifiersStartQuote();
+            String charEnd = adapter.getIdentifiersEndQuote();
+            assertEquals("UPDATE "
+                    + charStart
+                    + entity.getName()
+                    + charEnd
+                    + " SET "
+                    + charStart
+                    + "DESCRIPTION"
+                    + charEnd
+                    + " = ? WHERE "
+                    + charStart
+                    + "LOCKING_TEST_ID"
+                    + charEnd
+                    + " = ? AND "
+                    + charStart
+                    + "NAME"
+                    + charEnd
+                    + " IS NULL", generatedSql);
+
+        }
+        finally {
+            entity.getDataMap().setQuotingSQLIdentifiers(false);
+        }
     }
 
 }

@@ -17,21 +17,21 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.trans;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 
 /**
  * Translator of InsertBatchQueries.
- * 
  */
 public class InsertBatchQueryBuilder extends BatchQueryBuilder {
 
@@ -85,12 +85,20 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
     }
 
     @Override
-    public String createSqlString(BatchQuery batch) {
-        String table = batch.getDbEntity().getFullyQualifiedName();
+    public String createSqlString(BatchQuery batch) throws IOException {
+
         List<DbAttribute> dbAttributes = batch.getDbAttributes();
+        boolean status;
+        if(batch.getDbEntity().getDataMap()!=null && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy strategy =  getAdapter().getQuotingStrategy(status);
 
         StringBuilder query = new StringBuilder("INSERT INTO ");
-        query.append(table).append(" (");
+        query.append(strategy.quoteFullyQualifiedName(batch.getDbEntity()));
+        query.append(" (");
 
         int columnCount = 0;
         for (DbAttribute attribute : dbAttributes) {
@@ -105,7 +113,7 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
                 if (columnCount > 0) {
                     query.append(", ");
                 }
-                query.append(attribute.getName());
+                query.append(strategy.quoteString(attribute.getName()));
                 columnCount++;
             }
         }

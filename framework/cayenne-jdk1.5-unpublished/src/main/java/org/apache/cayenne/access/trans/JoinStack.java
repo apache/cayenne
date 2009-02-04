@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -38,9 +39,8 @@ import org.apache.cayenne.map.JoinType;
 public class JoinStack {
 
     protected JoinTreeNode rootNode;
-    protected JoinTreeNode topNode;    
-    private String identifiersStartQuote;
-    private String identifiersEndQuote;
+    protected JoinTreeNode topNode; 
+    private QuotingStrategy strategy;
 
     private int aliasCounter;
     
@@ -57,14 +57,14 @@ public class JoinStack {
     protected JoinStack(DbAdapter dbAdapter, DataMap dataMap) {
         this.rootNode = new JoinTreeNode(this);
         this.rootNode.setTargetTableAlias(newAlias());
-        
-        if(dataMap.isQuotingSQLIdentifiers()){
-            this.identifiersStartQuote = dbAdapter.getIdentifiersStartQuote();
-            this.identifiersEndQuote = dbAdapter.getIdentifiersEndQuote();
+        boolean status;
+        if(dataMap!=null && dataMap.isQuotingSQLIdentifiers()){ 
+            status= true;
         } else {
-            this.identifiersStartQuote = "";
-            this.identifiersEndQuote = "";
+            status = false;
         }
+        strategy =  dbAdapter.getQuotingStrategy(status);
+  
         resetStack();
     }
     
@@ -87,13 +87,14 @@ public class JoinStack {
     }
     
     void appendRootWithQuoteSqlIdentifiers(Appendable out, DbEntity rootEntity) throws IOException {
+        
         if(rootEntity.getSchema() != null) { 
-            nameWithQuoteSqlIdentifiers(rootEntity.getSchema(),out);
+            out.append(strategy.quoteString(rootEntity.getSchema()));
             out.append(".");
         }
-        nameWithQuoteSqlIdentifiers(rootEntity.getName(),out);
+        out.append(strategy.quoteString(rootEntity.getName()));
         out.append(' ');
-        nameWithQuoteSqlIdentifiers(rootNode.getTargetTableAlias(),out);       
+        out.append(strategy.quoteString(rootNode.getTargetTableAlias()));       
     }
 
     /**
@@ -131,13 +132,13 @@ public class JoinStack {
         
         if(targetEntity.getSchema()!= null){
             
-            nameWithQuoteSqlIdentifiers(targetEntity.getSchema(),out);
+            out.append(strategy.quoteString(targetEntity.getSchema()));
             out.append(".");
         }
-        nameWithQuoteSqlIdentifiers(targetEntity.getName(), out);
+        out.append(strategy.quoteString(targetEntity.getName()));
  
         out.append(' ');
-        nameWithQuoteSqlIdentifiers(targetAlias, out);
+        out.append(strategy.quoteString(targetAlias));
         out.append(" ON (");
 
         List<DbJoin> joins = relationship.getJoins();
@@ -148,13 +149,13 @@ public class JoinStack {
                 out.append(" AND ");
             }            
             
-            nameWithQuoteSqlIdentifiers(srcAlias, out);
+            out.append(strategy.quoteString(srcAlias));
             out.append('.');
-            nameWithQuoteSqlIdentifiers(join.getSourceName(), out);
+            out.append(strategy.quoteString(join.getSourceName()));
             out.append(" = ");
-            nameWithQuoteSqlIdentifiers(targetAlias, out);
+            out.append(strategy.quoteString(targetAlias));
             out.append('.');
-            nameWithQuoteSqlIdentifiers(join.getTargetName(), out);
+            out.append(strategy.quoteString(join.getTargetName()));
         }
 
         out.append(')');
@@ -191,7 +192,4 @@ public class JoinStack {
         return "t" + aliasCounter++;
     }
     
-    protected void nameWithQuoteSqlIdentifiers(String name, Appendable out) throws IOException{
-        out.append(identifiersStartQuote).append(name).append(identifiersEndQuote);        
-    }  
 }
