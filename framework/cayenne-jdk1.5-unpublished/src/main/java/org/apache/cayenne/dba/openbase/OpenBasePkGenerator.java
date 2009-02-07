@@ -293,7 +293,14 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 
         StringBuilder buffer = new StringBuilder();        
         buffer.append("CREATE PRIMARY KEY ");
-        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+        boolean status;
+        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context =  getAdapter().getQuotingStrategy(status);
+
         buffer.append(context.quoteString(entity.getName()));
 
         buffer.append(" (");
@@ -320,7 +327,13 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      */
     protected String createUniquePKIndexString(DbEntity entity) {
         Collection<DbAttribute> pk = entity.getPrimaryKeys();
-        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+        boolean status;
+        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context =  getAdapter().getQuotingStrategy(status);
         if (pk == null || pk.size() == 0) {
             throw new CayenneRuntimeException("Entity '"
                     + entity.getName()

@@ -38,7 +38,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.access.ResultIterator;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
@@ -504,12 +503,4 @@ public class JdbcPkGenerator implements PkGenerator {
                     + entityName, ex);
         }
     }
-    
-    protected QuotingStrategy getContextQuoteStrategy(DataMap dm) {
-        if(dm!=null && dm.isQuotingSQLIdentifiers()){
-            return new QuoteStrategy(getAdapter().getIdentifiersStartQuote(), getAdapter().getIdentifiersEndQuote());
-        } else {
-            return new NoQuoteStrategy();           
-       }    
-   } 
 }

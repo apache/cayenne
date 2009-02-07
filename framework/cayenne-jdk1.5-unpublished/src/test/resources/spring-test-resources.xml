@@ -66,6 +66,7 @@
 		<constructor-arg><ref bean="SQLiteAdapter"/></constructor-arg>
 	</bean>
 	
+	
 	<!-- ======================================= -->
 	<!-- DataMaps -->
 	<!-- ======================================= -->
@@ -105,6 +106,10 @@
     <bean id="InheritanceMap" class="org.apache.cayenne.unit.DataMapFactory">
         <constructor-arg><value>inheritance.map.xml</value></constructor-arg>
     </bean>
+    <bean id="QuoteMap" class="org.apache.cayenne.unit.DataMapFactory">
+        <constructor-arg><value>quotemap.map.xml</value></constructor-arg>
+    </bean>
+    
 	
 	<!-- ======================================= -->
 	<!-- DataSetFactory -->
@@ -173,6 +178,11 @@
         <constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
         <constructor-arg><list><ref bean="InheritanceMap"/></list></constructor-arg>
     </bean>
+    <bean id="QuoteMapStack" class="org.apache.cayenne.unit.SimpleAccessStack">
+        <constructor-arg><ref bean="TestResources"/></constructor-arg>
+        <constructor-arg><ref bean="DataSetFactory"/></constructor-arg>
+        <constructor-arg><list><ref bean="QuoteMap"/></list></constructor-arg>
+    </bean>
 	<!-- Used to create DB schema to avoid conflicts when schema for individual stacks is generated. -->
 	<bean id="SchemaSetupStack" class="org.apache.cayenne.unit.SimpleAccessStack">
 		<constructor-arg><ref bean="TestResources"/></constructor-arg>
@@ -190,6 +200,7 @@
 				<ref bean="EmbeddingMap"/>
 				<ref bean="QualifiedMap"/>
                 <ref bean="InheritanceMap"/>
+                <ref bean="QuoteMap"/>
 			</list>
 		</constructor-arg>
 	</bean>

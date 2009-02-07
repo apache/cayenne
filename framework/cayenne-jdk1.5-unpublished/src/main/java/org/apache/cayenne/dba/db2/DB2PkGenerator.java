@@ -225,7 +225,13 @@ public class DB2PkGenerator extends JdbcPkGenerator {
      * Returns default sequence name for DbEntity.
      */
     protected String sequenceName(DbEntity entity) {
-        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+        boolean status;
+        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context =  getAdapter().getQuotingStrategy(status);
         String entName = entity.getName();
         String seqName = _SEQUENCE_PREFIX + entName;
 

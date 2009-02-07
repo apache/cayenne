@@ -121,8 +121,13 @@ public class PostgresAdapter extends JdbcAdapter {
      */
     @Override
     public String createTable(DbEntity ent) {
-       
-        QuotingStrategy context = getQuotingStrategy(ent.getDataMap().isQuotingSQLIdentifiers());
+        boolean status;
+        if(ent.getDataMap()!=null && ent.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context =  getQuotingStrategy(status);
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
         

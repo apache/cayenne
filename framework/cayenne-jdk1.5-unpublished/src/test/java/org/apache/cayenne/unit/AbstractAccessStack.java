@@ -38,6 +38,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.access.QueryLogger;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -147,8 +148,17 @@ public abstract class AbstractAccessStack {
             ListIterator it = list.listIterator(list.size());
             while (it.hasPrevious()) {
                 DbEntity ent = (DbEntity) it.previous();
+                
+                boolean status;
+                if(ent.getDataMap()!=null && ent.getDataMap().isQuotingSQLIdentifiers()){ 
+                    status= true;
+                } else {
+                    status = false;
+                }
 
-                String deleteSql = "DELETE FROM " + ent.getName();
+                QuotingStrategy strategy =  getAdapter(node).getQuotingStrategy(status);
+
+                String deleteSql = "DELETE FROM " + strategy.quoteString(ent.getName());
 
                 try {
                     stmt.executeUpdate(deleteSql);

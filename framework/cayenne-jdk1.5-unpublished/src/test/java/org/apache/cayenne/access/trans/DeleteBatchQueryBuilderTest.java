@@ -95,11 +95,10 @@ public class DeleteBatchQueryBuilderTest extends LockingCase {
                     idAttributes,
                     null,
                     1);
-            DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(
-                    new JdbcAdapter());
-            String generatedSql = builder.createSqlString(deleteQuery);
-
             JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
+            DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(adapter);
+            String generatedSql = builder.createSqlString(deleteQuery);
+            
             String charStart = adapter.getIdentifiersStartQuote();
             String charEnd = adapter.getIdentifiersEndQuote();
 
@@ -138,11 +137,12 @@ public class DeleteBatchQueryBuilderTest extends LockingCase {
                     idAttributes,
                     nullAttributes,
                     1);
-            DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(
-                    new JdbcAdapter());
+            
+            JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
+            
+            DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(adapter);
             String generatedSql = builder.createSqlString(deleteQuery);
 
-            JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
             String charStart = adapter.getIdentifiersStartQuote();
             String charEnd = adapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);

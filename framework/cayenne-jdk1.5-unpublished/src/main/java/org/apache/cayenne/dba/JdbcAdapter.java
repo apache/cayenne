@@ -631,8 +631,8 @@ public class JdbcAdapter implements DbAdapter {
     public QuotingStrategy  getQuotingStrategy(boolean needQuotes) {
         if (needQuotes) {
             return new QuoteStrategy(
-                    getIdentifiersStartQuote(),
-                    getIdentifiersEndQuote());
+                    this.getIdentifiersStartQuote(),
+                    this.getIdentifiersEndQuote());
         }
         else {
             return new NoQuoteStrategy();

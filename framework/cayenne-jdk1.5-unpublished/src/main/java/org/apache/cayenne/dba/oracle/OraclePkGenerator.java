@@ -261,7 +261,14 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
     /** Returns expected primary key sequence name for a DbEntity. */
     protected String sequenceName(DbEntity entity) {
-        QuotingStrategy context = getContextQuoteStrategy(entity.getDataMap());
+        boolean status;
+        if(entity.getDataMap()!=null && entity.getDataMap().isQuotingSQLIdentifiers()){ 
+            status= true;
+        } else {
+            status = false;
+        }
+        QuotingStrategy context =  getAdapter().getQuotingStrategy(status);
+
         // use custom generator if possible
         DbKeyGenerator keyGenerator = entity.getPrimaryKeyGenerator();
         if (keyGenerator != null
@@ -278,6 +285,8 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
                 seqName = context.quoteString(entity.getSchema()) + "." + 
                 context.quoteString(seqName);
+             } else {
+                seqName = context.quoteString(seqName);
              }
             return seqName;
         }

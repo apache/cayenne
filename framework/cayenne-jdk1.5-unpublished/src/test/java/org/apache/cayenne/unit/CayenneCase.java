@@ -44,6 +44,7 @@ public abstract class CayenneCase extends BasicCase {
     public static final String TEST_ACCESS_STACK = "TestStack";
     public static final String MULTI_TIER_ACCESS_STACK = "MultiTierStack";
     public static final String QUALIFIED_ACCESS_STACK = "QualifiedStack";
+    public static final String QUOTEMAP_ACCESS_STACK = "QuoteMapStack";
 
     static {
         // create dummy shared config

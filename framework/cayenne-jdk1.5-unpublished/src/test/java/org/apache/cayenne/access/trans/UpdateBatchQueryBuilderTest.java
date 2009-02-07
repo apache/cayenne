@@ -110,11 +110,11 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
                     updatedAttributes,
                     null,
                     1);
-            UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(
-                    new JdbcAdapter());
-            String generatedSql = builder.createSqlString(updateQuery);
-            
             JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
+            
+            UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
+            String generatedSql = builder.createSqlString(updateQuery);
+  
             String charStart = adapter.getIdentifiersStartQuote();
             String charEnd = adapter.getIdentifiersEndQuote();
             
@@ -160,11 +160,12 @@ public class UpdateBatchQueryBuilderTest extends LockingCase {
                     updatedAttributes,
                     nullAttributes,
                     1);
-            UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(
-                    new JdbcAdapter());
+            JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
+            
+            UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
             String generatedSql = builder.createSqlString(updateQuery);
             assertNotNull(generatedSql);
-            JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
+  
             String charStart = adapter.getIdentifiersStartQuote();
             String charEnd = adapter.getIdentifiersEndQuote();
             assertEquals("UPDATE "

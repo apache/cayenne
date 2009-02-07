@@ -62,12 +62,12 @@ public class InsertBatchQueryBuilderTest extends LockingCase {
             entity.getDataMap().setQuotingSQLIdentifiers(true);
             List idAttributes = Collections.singletonList(entity
                     .getAttribute("LOCKING_TEST_ID"));
-
-            InsertBatchQuery deleteQuery = new InsertBatchQuery(entity, 1);
-            InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(
-                    new JdbcAdapter());
-            String generatedSql = builder.createSqlString(deleteQuery);
+           
             JdbcAdapter adapter = (JdbcAdapter) getAccessStackAdapter().getAdapter();
+            
+            InsertBatchQuery deleteQuery = new InsertBatchQuery(entity, 1);
+            InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(adapter);
+            String generatedSql = builder.createSqlString(deleteQuery);
             String charStart = adapter.getIdentifiersStartQuote();
             String charEnd = adapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);
