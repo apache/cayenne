@@ -75,6 +75,14 @@ public class SelectTranslator extends QueryAssembler {
     }
     JoinStack joinStack;
 
+    
+    public JoinStack getJoinStack() {
+        if(joinStack==null){
+            joinStack = createJoinStack();
+        }
+        return joinStack;
+    }
+    
     List<ColumnDescriptor> resultColumns;
     Map<ObjAttribute, ColumnDescriptor> attributeOverrides;
     Map<ColumnDescriptor, ObjAttribute> defaultAttributesByColumn;
@@ -99,7 +107,7 @@ public class SelectTranslator extends QueryAssembler {
     @Override
     public String createSqlString() throws Exception {
         
-        joinStack = createJoinStack();
+        JoinStack jStack = getJoinStack();
         boolean status;
         if(queryMetadata.getDataMap()!=null && queryMetadata.getDataMap().isQuotingSQLIdentifiers()){ 
             status= true;
@@ -175,10 +183,10 @@ public class SelectTranslator extends QueryAssembler {
         queryBuf.append(" FROM ");
 
         // append tables and joins
-        joinStack.appendRootWithQuoteSqlIdentifiers(queryBuf, getRootDbEntity());
+        jStack.appendRootWithQuoteSqlIdentifiers(queryBuf, getRootDbEntity());
         
-        joinStack.appendJoins(queryBuf);
-        joinStack.appendQualifier(qualifierBuffer, qualifierBuffer.length() == 0);
+        jStack.appendJoins(queryBuf);
+        jStack.appendQualifier(qualifierBuffer, qualifierBuffer.length() == 0);
 
         // append qualifier
         if (qualifierBuffer.length() > 0) {
@@ -210,7 +218,7 @@ public class SelectTranslator extends QueryAssembler {
 
     @Override
     public String getCurrentAlias() {
-        return joinStack.getCurrentAlias();
+        return getJoinStack().getCurrentAlias();
     }
 
     /**
@@ -610,10 +618,7 @@ public class SelectTranslator extends QueryAssembler {
      */
     @Override
     public void resetJoinStack() {
-        if(joinStack==null){
-            joinStack = createJoinStack();
-        }
-        joinStack.resetStack();           
+        getJoinStack().resetStack();           
     }
 
     /**
@@ -628,7 +633,7 @@ public class SelectTranslator extends QueryAssembler {
             forcingDistinct = true;
         }
 
-        joinStack.pushJoin(relationship, joinType, joinSplitAlias);
+        getJoinStack().pushJoin(relationship, joinType, joinSplitAlias);
     }
 
     /**

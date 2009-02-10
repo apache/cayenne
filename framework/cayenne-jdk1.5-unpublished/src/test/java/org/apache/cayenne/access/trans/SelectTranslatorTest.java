@@ -439,50 +439,29 @@ public class SelectTranslatorTest extends CayenneCase {
                     String charStart = adapter.getIdentifiersStartQuote();
                     String charEnd = adapter.getIdentifiersEndQuote();
 
-                    String query = "SELECT "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_NAME"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "DATE_OF_BIRTH"
-                            + charEnd
-                            + " FROM "
-                            + charStart
-                            + "ARTIST"
-                            + charEnd
-                            + " "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + " ORDER BY "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "DATE_OF_BIRTH"
-                            + charEnd;
-
                     String s = transl.createSqlString();
-                    assertEquals(query, s);
-                }
+                    assertTrue(s.startsWith("SELECT "));
+                    int iFrom = s.indexOf(" FROM ");
+                    assertTrue(iFrom > 0);
+                    int artistName = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "ARTIST_NAME" + charEnd);
+                    assertTrue(artistName > 0 && artistName < iFrom);
+                    int artistId = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    assertTrue(artistId > 0 && artistId < iFrom);
+                    int dateOfBirth = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "DATE_OF_BIRTH" + charEnd); 
+                    assertTrue(dateOfBirth > 0 &&
+                            dateOfBirth < iFrom);                   
+                    int iArtist = s.indexOf(charStart + "ARTIST" + charEnd
+                            + " " + charStart + "t0" + charEnd);
+                    assertTrue(iArtist > iFrom);
+                    int iOrderBy = s.indexOf(" ORDER BY " );
+                    int dateOfBirth2 = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "DATE_OF_BIRTH" + charEnd, iOrderBy); 
+                    assertTrue(iOrderBy > iArtist);
+                    assertTrue(dateOfBirth2 > iOrderBy);
+                 }
             };
 
             test.test(q);
@@ -513,58 +492,37 @@ public class SelectTranslatorTest extends CayenneCase {
                     String charStart = adapter.getIdentifiersStartQuote();
                     String charEnd = adapter.getIdentifiersEndQuote();
 
-                    String query = "SELECT "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_NAME"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "DATE_OF_BIRTH"
-                            + charEnd
-                            + " FROM "
-                            + charStart
-                            + "ARTIST"
-                            + charEnd
-                            + " "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + " WHERE ("
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "DATE_OF_BIRTH"
-                            + charEnd
-                            + " > ?) AND ("
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "DATE_OF_BIRTH"
-                            + charEnd
-                            + " < ?)";
                     String s = transl.createSqlString();
-                    assertEquals(query, s);
-                }
+                    
+                    assertTrue(s.startsWith("SELECT "));
+                    int iFrom = s.indexOf(" FROM ");
+                    assertTrue(iFrom > 0);
+                    int artistName = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "ARTIST_NAME" + charEnd);
+                    assertTrue(artistName > 0 && artistName < iFrom);
+                    int artistId = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    assertTrue(artistId > 0 && artistId < iFrom);
+                    int dateOfBirth = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "DATE_OF_BIRTH" + charEnd); 
+                    assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);                   
+                    int iArtist = s.indexOf(charStart + "ARTIST" + charEnd
+                            + " " + charStart + "t0" + charEnd);
+                    assertTrue(iArtist > iFrom);
+                    int iWhere = s.indexOf(" WHERE ");
+                    assertTrue(iWhere > iArtist);
+                    
+                    int dateOfBirth2 = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "DATE_OF_BIRTH" + charEnd + " > ?"); 
+                    assertTrue(dateOfBirth2 > iWhere);
+                    
+                    int iAnd = s.indexOf(" AND ");
+                    assertTrue(iAnd > iWhere);
+                    int dateOfBirth3 = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "DATE_OF_BIRTH" + charEnd + " < ?"); 
+                    assertTrue(dateOfBirth3 > iAnd);
+                    
+                 }
             };
 
             test.test(q);
@@ -597,146 +555,78 @@ public class SelectTranslatorTest extends CayenneCase {
                     String charStart = adapter.getIdentifiersStartQuote();
                     String charEnd = adapter.getIdentifiersEndQuote();
 
-                    String query = "SELECT DISTINCT "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_NAME"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "DATE_OF_BIRTH"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ESTIMATED_PRICE"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "PAINTING_DESCRIPTION"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "PAINTING_TITLE"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "GALLERY_ID"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "PAINTING_ID"
-                            + charEnd
-                            + " FROM "
-                            + charStart
-                            + "ARTIST"
-                            + charEnd
-                            + " "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + " LEFT JOIN "
-                            + charStart
-                            + "PAINTING"
-                            + charEnd
-                            + " "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + " ON ("
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + " = "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + ") JOIN "
-                            + charStart
-                            + "PAINTING"
-                            + charEnd
-                            + " "
-                            + charStart
-                            + "t2"
-                            + charEnd
-                            + " ON ("
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + " = "
-                            + charStart
-                            + "t2"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + ") WHERE "
-                            + charStart
-                            + "t2"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "PAINTING_TITLE"
-                            + charEnd
-                            + " = ?";
+                    
                     String s = transl.createSqlString();
-
-                    assertEquals(query, s);
+                    
+                    assertTrue(s.startsWith("SELECT DISTINCT "));
+                    int iFrom = s.indexOf(" FROM ");
+                    assertTrue(iFrom > 0);
+                    int artistName = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "ARTIST_NAME" + charEnd);
+                    assertTrue(artistName > 0 && artistName < iFrom);
+                    int artistId = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    assertTrue(artistId > 0 && artistId < iFrom);
+                    int dateOfBirth = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "DATE_OF_BIRTH" + charEnd); 
+                    assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom); 
+                    int estimatedPrice = s.indexOf(charStart + "t1" + charEnd
+                            + "." + charStart + "ESTIMATED_PRICE" + charEnd);
+                    assertTrue(estimatedPrice > 0 && estimatedPrice < iFrom);
+                    int paintingDescription = s.indexOf(charStart + "t1" + charEnd
+                            + "." + charStart + "PAINTING_DESCRIPTION" + charEnd);
+                    assertTrue(paintingDescription > 0 && paintingDescription < iFrom);
+                    int paintingTitle = s.indexOf(charStart + "t1" + charEnd
+                            + "." + charStart + "PAINTING_TITLE" + charEnd);
+                    assertTrue(paintingTitle > 0 && paintingTitle < iFrom);
+                    int artistIdT1 = s.indexOf(charStart + "t1" + charEnd
+                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    assertTrue(artistIdT1 > 0 && artistIdT1 < iFrom);
+                    int galleryId = s.indexOf(charStart + "t1" + charEnd
+                            + "." + charStart + "GALLERY_ID" + charEnd);
+                    assertTrue(galleryId > 0 && galleryId < iFrom);
+                    int paintingId = s.indexOf(charStart + "t1" + charEnd
+                            + "." + charStart + "PAINTING_ID" + charEnd);
+                    assertTrue(paintingId > 0 && paintingId < iFrom);
+                    int iArtist = s.indexOf(charStart + "ARTIST" + charEnd
+                            + " " + charStart + "t0" + charEnd);
+                    assertTrue(iArtist > iFrom);
+                    int iLeftJoin = s.indexOf("LEFT JOIN");
+                    assertTrue(iLeftJoin > iFrom);
+                    int iPainting = s.indexOf(charStart + "PAINTING" + charEnd
+                            + " " + charStart + "t1" + charEnd);
+                    assertTrue(iPainting > iLeftJoin);
+                    int iOn = s.indexOf(" ON ");
+                    assertTrue(iOn > iLeftJoin);
+                    int iArtistId = s.indexOf(charStart + "t0"
+                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd,  iLeftJoin);
+                    assertTrue(iArtistId > iOn);
+                    int iArtistIdT1 = s.indexOf(charStart + "t1"
+                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+                    assertTrue(iArtistIdT1 > iOn);
+                    int i = s.indexOf("=", iLeftJoin);
+                    assertTrue(iArtistIdT1 > i || iArtistId > i);
+                    int iJoin = s.indexOf("JOIN");
+                    assertTrue(iJoin > iLeftJoin);
+                    int iPainting2 = s.indexOf(charStart + "PAINTING" + charEnd
+                            + " " + charStart + "t2" + charEnd);
+                    assertTrue(iPainting2 > iJoin);
+                    int iOn2 = s.indexOf(" ON ");
+                    assertTrue(iOn2 > iJoin);
+                    int iArtistId2 = s.indexOf(charStart + "t0"
+                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
+                    assertTrue(iArtistId2 > iOn2);
+                    int iArtistId2T2 = s.indexOf(charStart + "t2"
+                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
+                    assertTrue(iArtistId2T2 > iOn2);
+                    int i2 = s.indexOf("=", iJoin);
+                    assertTrue(iArtistId2T2 > i2 || iArtistId2 > i2);
+                    int iWhere = s.indexOf(" WHERE ");
+                    assertTrue(iWhere > iJoin);
+                    
+                    int paintingTitle2 = s.indexOf(charStart
+                            + "t2" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd + " = ?"); 
+                    assertTrue(paintingTitle2 > iWhere);
                 }
             };
 
@@ -768,116 +658,60 @@ public class SelectTranslatorTest extends CayenneCase {
                             .getAdapter();
                     String charStart = adapter.getIdentifiersStartQuote();
                     String charEnd = adapter.getIdentifiersEndQuote();
-
-                    String query = "SELECT "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "PAINTING_TITLE"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "PAINTING_DESCRIPTION"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ESTIMATED_PRICE"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "GALLERY_ID"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "PAINTING_ID"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_NAME"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "DATE_OF_BIRTH"
-                            + charEnd
-                            + ", "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + " FROM "
-                            + charStart
-                            + "PAINTING"
-                            + charEnd
-                            + " "
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + " LEFT JOIN "
-                            + charStart
-                            + "ARTIST"
-                            + charEnd
-                            + " "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + " ON ("
-                            + charStart
-                            + "t0"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + " = "
-                            + charStart
-                            + "t1"
-                            + charEnd
-                            + "."
-                            + charStart
-                            + "ARTIST_ID"
-                            + charEnd
-                            + ")";
+ 
                     String s = transl.createSqlString();
-
-                    assertEquals(s, query);
-                }
+                    
+                    assertTrue(s.startsWith("SELECT "));
+                    int iFrom = s.indexOf(" FROM ");
+                    assertTrue(iFrom > 0);
+                    
+                    int paintingDescription = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "PAINTING_DESCRIPTION" + charEnd);
+                    assertTrue(paintingDescription > 0 && paintingDescription < iFrom);
+                    int paintingTitle = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "PAINTING_TITLE" + charEnd);
+                    assertTrue(paintingTitle > 0 && paintingTitle < iFrom);
+                    int artistIdT1 = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    assertTrue(artistIdT1 > 0 && artistIdT1 < iFrom);
+                    int estimatedPrice = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "ESTIMATED_PRICE" + charEnd);
+                    assertTrue(estimatedPrice > 0 && estimatedPrice < iFrom);
+                   int galleryId = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "GALLERY_ID" + charEnd);
+                    assertTrue(galleryId > 0 && galleryId < iFrom);
+                    int paintingId = s.indexOf(charStart + "t0" + charEnd
+                            + "." + charStart + "PAINTING_ID" + charEnd);
+                    assertTrue(paintingId > 0 && paintingId < iFrom);
+                    int artistName = s.indexOf(charStart + "t1" + charEnd
+                            + "." + charStart + "ARTIST_NAME" + charEnd);
+                    assertTrue(artistName > 0 && artistName < iFrom);
+                    int artistId = s.indexOf(charStart + "t1" + charEnd
+                            + "." + charStart + "ARTIST_ID" + charEnd);
+                    assertTrue(artistId > 0 && artistId < iFrom);
+                    int dateOfBirth = s.indexOf(charStart + "t1" + charEnd
+                            + "." + charStart + "DATE_OF_BIRTH" + charEnd); 
+                    assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);                  
+                    int iPainting = s.indexOf(charStart + "PAINTING" + charEnd
+                            + " " + charStart + "t0" + charEnd);
+                    assertTrue(iPainting > iFrom);
+                  
+                    int iLeftJoin = s.indexOf("LEFT JOIN");
+                    assertTrue(iLeftJoin > iFrom);
+                    int iArtist = s.indexOf(charStart + "ARTIST" + charEnd
+                            + " " + charStart + "t1" + charEnd);
+                    assertTrue(iArtist > iLeftJoin);
+                    int iOn = s.indexOf(" ON ");
+                    assertTrue(iOn > iLeftJoin);
+                    int iArtistId = s.indexOf(charStart + "t0"
+                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd,  iLeftJoin);
+                    assertTrue(iArtistId > iOn);
+                    int iArtistIdT1 = s.indexOf(charStart + "t1"
+                            + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+                    assertTrue(iArtistIdT1 > iOn);
+                    int i = s.indexOf("=", iLeftJoin);
+                    assertTrue(iArtistIdT1 > i || iArtistId > i);
+                 }
             };
 
             test.test(q);
