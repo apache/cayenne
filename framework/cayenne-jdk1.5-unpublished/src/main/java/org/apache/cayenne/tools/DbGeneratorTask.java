@@ -30,6 +30,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.xml.sax.InputSource;
 
+
 import java.io.File;
 import java.sql.Driver;
 
@@ -41,7 +42,7 @@ import java.sql.Driver;
  */
 // TODO: support classpath attribute for loading the driver
 public class DbGeneratorTask extends CayenneTask {
-
+    
     protected DbAdapter adapter;
     protected File map;
     protected String driver;
@@ -64,14 +65,14 @@ public class DbGeneratorTask extends CayenneTask {
         if (adapter == null) {
             adapter = new JdbcAdapter();
         }
-
+        
         log(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, userName), Project.MSG_VERBOSE);
 
         log(String.format("generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
                 dropTables, dropPK, createTables, createPK, createFK), Project.MSG_VERBOSE);
 
         validateAttributes();
-
+        
         try {
 
             // Load the data map and run the db generator.
@@ -168,15 +169,21 @@ public class DbGeneratorTask extends CayenneTask {
      * @param adapter The db adapter to set.
      */
     public void setAdapter(String adapter) {
-
+        ClassLoader loader = null;
         if (adapter != null) {
             // Try to create an instance of the DB adapter.
             try {
-                Class<?> c = Class.forName(adapter);
+                loader = Thread.currentThread().getContextClassLoader();
+                Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());
+
+                Class<?> c = Util.getJavaClass(adapter);
                 this.adapter = (DbAdapter) c.newInstance();
             }
             catch (Exception e) {
-                throw new BuildException("Can't load DbAdapter: " + adapter);
+                throw new BuildException("Can't load DbAdapter: " + adapter,e);
+            }
+            finally{
+                Thread.currentThread().setContextClassLoader(loader);
             }
         }
     }
