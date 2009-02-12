@@ -30,6 +30,7 @@ CAY-1175 Replace String column name capitalization property with an enum
 Bug Fixes Since M5:
 
 CAY-940 CayenneModeler fails on load of existing project file or upon creation of new project on IBM's Java 1.6.0 SDK on 32-bit ppc
+CAY-1139 EJBQL condition translation - must track the type of condition
 CAY-1143 CayenneModeler 'Import DataMap' function error
 CAY-1144 EJBQL mixed GROUP BY clause is generated incorrectly
 CAY-1155 Modeler template for SQLServer driver has a typo in the driver name
