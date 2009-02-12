@@ -48,7 +48,38 @@ public class DataContextEJBQLIsNullTest extends CayenneCase {
         // assertions about the result. Just making sure the query doesn't blow up
         createDataContext().performQuery(query1);
     }
+    
+    public void testCompareToNull2() throws Exception {
+        if (!getAccessStackAdapter().supportsEqualNullSyntax()) {
+            return;
+        }
 
+        deleteTestData();
+        createTestData("prepare");
+
+        String ejbql1 = "SELECT p FROM Painting p WHERE p.toArtist.artistName = :x";
+        EJBQLQuery query1 = new EJBQLQuery(ejbql1);
+        query1.setParameter("x", null);
+
+         createDataContext().performQuery(query1);
+    }
+    
+    public void testCompareToNull3() throws Exception {
+        if (!getAccessStackAdapter().supportsEqualNullSyntax()) {
+            return;
+        }
+
+        deleteTestData();
+        createTestData("prepare");
+
+        String ejbql1 = "SELECT p FROM Painting p WHERE :x = p.toArtist.artistName";
+        EJBQLQuery query1 = new EJBQLQuery(ejbql1);
+        query1.setParameter("x", null);
+
+         createDataContext().performQuery(query1);
+    }
+
+    
     public void testIsNull() throws Exception {
         deleteTestData();
         createTestData("prepare");

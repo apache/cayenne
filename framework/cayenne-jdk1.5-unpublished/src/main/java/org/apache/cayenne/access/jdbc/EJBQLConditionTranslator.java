@@ -21,12 +21,14 @@ package org.apache.cayenne.access.jdbc;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
@@ -34,6 +36,7 @@ import org.apache.cayenne.ejbql.parser.EJBQLDecimalLiteral;
 import org.apache.cayenne.ejbql.parser.EJBQLEquals;
 import org.apache.cayenne.ejbql.parser.EJBQLIdentificationVariable;
 import org.apache.cayenne.ejbql.parser.EJBQLIntegerLiteral;
+import org.apache.cayenne.ejbql.parser.EJBQLNamedInputParameter;
 import org.apache.cayenne.ejbql.parser.EJBQLPath;
 import org.apache.cayenne.ejbql.parser.EJBQLPositionalInputParameter;
 import org.apache.cayenne.ejbql.parser.EJBQLSubselect;
@@ -44,6 +47,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -339,7 +343,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitNamedInputParameter(EJBQLExpression expression) {
         String parameter = context.bindNamedParameter(expression.getText());
-        processParameter(parameter);
+        processParameter(parameter, expression);
         return true;
     }
 
@@ -614,7 +618,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitPositionalInputParameter(EJBQLPositionalInputParameter expression) {
 
         String parameter = context.bindPositionalParameter(expression.getPosition());
-        processParameter(parameter);
+        processParameter(parameter, expression);
         return true;
     }
 
@@ -654,7 +658,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
-    private void processParameter(String boundName) {
+    private void processParameter(String boundName, EJBQLExpression expression) {
         Object object = context.getBoundParameter(boundName);
 
         Map<?, ?> map = null;
@@ -684,6 +688,36 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             context.append(" #bind($").append(boundName).append(")");
         }
         else {
+
+            String type = null;
+            EJBQLEquals parent = ((EJBQLNamedInputParameter) expression).getParent();
+
+            context.pushMarker("@processParameter", true);
+            EJBQLPathAnaliserTranslator translator = new EJBQLPathAnaliserTranslator(
+                    context);
+            parent.visit(translator);
+            translator.visitPath(parent, parent.getChildrenCount());
+
+            String id = translator.idPath;
+            if (id != null) {
+
+                ClassDescriptor descriptor = context.getEntityDescriptor(id);
+                if (descriptor == null) {
+                    throw new EJBQLException("Unmapped id variable: " + id);
+                }
+                String pathChunk = translator.lastPathComponent;
+                AttributeProperty property = (AttributeProperty) descriptor
+                        .getProperty(pathChunk);
+                String atrType = property.getAttribute().getType();
+                
+                type = TypesMapping.getSqlNameByType(TypesMapping.getSqlTypeByJava(atrType));
+
+            }
+            context.popMarker();
+
+            if (type == null) {
+                type = "VARCHAR";
+            }
             // this is a hack to prevent execptions on DB's like Derby for expressions
             // "X = NULL". The 'VARCHAR' parameter is totally bogus, but seems to work on
             // all tested DB's... Also note what JPA spec, chapter 4.11 says: "Comparison
@@ -691,7 +725,8 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
             // TODO: andrus 6/28/2007 Ideally we should track the type of the current
             // expression to provide a meaningful type.
-            context.append(" #bind($").append(boundName).append(" 'VARCHAR')");
+
+            context.append(" #bind($").append(boundName).append(" '" + type + "')");
         }
     }
 
@@ -956,5 +991,44 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitTrimBoth(EJBQLExpression expression) {
         context.append(" {fn LTRIM({fn RTRIM(");
         return false;
+    }
+
+}
+
+class EJBQLPathAnaliserTranslator extends EJBQLPathTranslator {
+
+    private boolean isPath;
+
+    public EJBQLPathAnaliserTranslator(EJBQLTranslationContext context) {
+        super(context);
+        isPath = false;
+    }
+
+    @Override
+    protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
+    }
+
+    @Override
+    public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
+        if (isPath) {
+            return false;
+        }
+        else {
+
+            if (finishedChildIndex > 0) {
+
+                if (finishedChildIndex + 1 < expression.getChildrenCount()) {
+                    processIntermediatePathComponent();
+                }
+                else {
+                    processLastPathComponent();
+                    if(idPath!=null && lastPathComponent!=null){
+                        isPath = true;
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

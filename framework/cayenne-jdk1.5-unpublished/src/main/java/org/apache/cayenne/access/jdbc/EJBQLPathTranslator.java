@@ -46,7 +46,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     protected ObjEntity currentEntity;
-    private String lastPathComponent;
+    protected String lastPathComponent;
     protected String lastAlias;
     protected String idPath;
     protected String joinMarker;
@@ -152,7 +152,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         }
     }
 
-    private void processIntermediatePathComponent() {
+    protected void processIntermediatePathComponent() {
         ObjRelationship relationship = (ObjRelationship) currentEntity
                 .getRelationship(lastPathComponent);
         if (relationship == null) {
@@ -166,7 +166,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         this.currentEntity = (ObjEntity) relationship.getTargetEntity();
     }
 
-    private void processLastPathComponent() {
+    protected void processLastPathComponent() {
 
         ObjAttribute attribute = (ObjAttribute) currentEntity
                 .getAttribute(lastPathComponent);

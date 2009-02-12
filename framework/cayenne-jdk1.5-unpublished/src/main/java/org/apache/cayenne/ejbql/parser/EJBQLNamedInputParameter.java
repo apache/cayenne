@@ -33,4 +33,8 @@ public class EJBQLNamedInputParameter extends SimpleNode {
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
         return visitor.visitNamedInputParameter(this);
     }
+   
+    public EJBQLEquals getParent() {
+        return (EJBQLEquals) parent;
+    }
 }
