@@ -530,7 +530,10 @@ public class DataMapView extends JPanel {
                     + newName
                     + "'. Use a different name.");
         }
-
+        String oldName = map.getName();
+        if (Util.nullSafeEquals(newName, oldName)) {
+            return;
+        }
         // completely new name, set new name for domain
         DataMapDefaults pref = eventController.getDataMapPreferences("");
         DataMapEvent e = new DataMapEvent(this, map, map.getName());
