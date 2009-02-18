@@ -102,13 +102,25 @@ public class DbLoaderTest extends CayenneCase {
             String tableLabel = getNode().getAdapter().tableTypeForTable();
 
             loader.setCreatingMeaningfulPK(true);
-            loader.loadDbEntities(map, loader.getTables(
+            
+            List<DbEntity> testLoader = loader.getTables(
                     null,
                     null,
-                    "ARTIST",
+                    "artist",
                     new String[] {
                         tableLabel
-                    }));
+                    });
+            if(testLoader.size()==0){
+                testLoader = loader.getTables(
+                        null,
+                        null,
+                        "ARTIST",
+                        new String[] {
+                            tableLabel
+                        });
+            }
+            
+            loader.loadDbEntities(map, testLoader);
 
             loader.loadObjEntities(map);
             ObjEntity artist = map.getObjEntity("Artist");

@@ -55,6 +55,22 @@ public class TrimmingQualifierTranslator extends QualifierTranslator {
             super.processColumn(dbAttr);
         }
     }
+    
+    /**
+     * Adds special handling of CHAR columns.
+     */
+    @Override
+    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr) throws IOException {
+        
+        if (dbAttr.getType() == Types.CHAR) {
+            out.append(trimFunction).append("(");
+            super.processColumnWithQuoteSqlIdentifiers(dbAttr);
+            out.append(')');
+        }
+        else {
+            super.processColumnWithQuoteSqlIdentifiers(dbAttr);
+        }                 
+    }
 
     /**
      * Returns the trimFunction.
