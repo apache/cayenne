@@ -19,23 +19,29 @@
 
 package org.apache.cayenne.dba.h2;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
+import org.apache.cayenne.merge.SetAllowNullToDb;
 import org.apache.cayenne.merge.SetColumnTypeToDb;
 
 /**
  * @since 3.0
  */
 public class H2MergerFactory extends MergerFactory {
-	
+
     @Override
     public MergerToken createSetColumnTypeToDb(
             final DbEntity entity,
             DbAttribute columnOriginal,
             final DbAttribute columnNew) {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
+
             @Override
             protected void appendPrefix(StringBuffer sqlBuffer) {
                 sqlBuffer.append("ALTER TABLE ");
@@ -47,4 +53,23 @@ public class H2MergerFactory extends MergerFactory {
         };
     }
 
+    @Override
+    public MergerToken createSetAllowNullToDb(DbEntity entity, DbAttribute column) {
+        return new SetAllowNullToDb(entity, column) {
+
+            @Override
+            public List<String> createSql(DbAdapter adapter) {
+                StringBuilder sqlBuffer = new StringBuilder();
+
+                sqlBuffer.append("ALTER TABLE ");
+                sqlBuffer.append(getEntity().getFullyQualifiedName());
+                sqlBuffer.append(" ALTER COLUMN ");
+                sqlBuffer.append(getColumn().getName());
+                sqlBuffer.append(" SET NULL");
+
+                return Collections.singletonList(sqlBuffer.toString());
+            }
+
+        };
+    }
 }
