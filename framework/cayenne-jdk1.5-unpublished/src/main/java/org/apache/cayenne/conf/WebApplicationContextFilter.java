@@ -30,6 +30,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.access.DataContext;
 
 /**
@@ -83,7 +84,7 @@ public class WebApplicationContextFilter implements Filter {
 
             HttpSession session = ((HttpServletRequest) request).getSession(true);
             DataContext context = ServletUtil.getSessionContext(session);
-            DataContext.bindThreadDataContext(context);
+            BaseContext.bindThreadObjectContext(context);
         }
 
         try {
@@ -91,7 +92,7 @@ public class WebApplicationContextFilter implements Filter {
         }
         finally {
             if (reset) {
-                DataContext.bindThreadDataContext(null);
+                BaseContext.bindThreadObjectContext(null);
             }
         }
     }
