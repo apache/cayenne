@@ -14,6 +14,7 @@ Date:
 
 Changes/New Features Since M5:
 
+CAY-289 Implement Quoting of identifiers
 CAY-1021 adding a callback method should result in focus on method name
 CAY-1047 Aligning query capabilities
 CAY-1140 Store ObjEntity name in the DataRow
