@@ -821,7 +821,7 @@
 				<dependency>
 					<groupId>org.sqlite</groupId>
 					<artifactId>sqlite-driver</artifactId>
-					<version>0.37</version>
+					<version>0.54</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>

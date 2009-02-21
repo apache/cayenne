@@ -100,13 +100,15 @@ public class EJBQLQueryTest extends CayenneCase {
         List artists = createDataContext().performQuery(query);
 
         Map row = (Map) artists.get(0);
+        String artistName = (String) row.get("ARTIST_NAME");
+       
         assertTrue(row instanceof DataRow);
 
         Artist artist = (Artist) createDataContext().objectFromDataRow(
                 "Artist",
                 (DataRow) row,
                 true);
-        assertEquals("a0", artist.getArtistName());
+        assertEquals(artistName, artist.getArtistName());
     }
 
     private void insertValue() {
