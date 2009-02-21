@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.AddColumnToDb;
@@ -42,12 +43,12 @@ public class SQLServerMergerFactory extends MergerFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 // http://msdn2.microsoft.com/en-us/library/ms190273.aspx
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(entity.getFullyQualifiedName());
+                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(columnNew.getName());
+                sqlBuffer.append(context.quoteString(columnNew.getName()));
                 sqlBuffer.append(" ");
             }
         };
@@ -58,17 +59,17 @@ public class SQLServerMergerFactory extends MergerFactory {
         return new AddColumnToDb(entity, column) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 // http://msdn2.microsoft.com/en-us/library/ms190273.aspx
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(entity.getFullyQualifiedName());
+                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
                 sqlBuffer.append(" ADD ");
-                sqlBuffer.append(column.getName());
+                sqlBuffer.append(context.quoteString(column.getName()));
                 sqlBuffer.append(" ");
             }
         };
     }
-    
+
     @Override
     public MergerToken createSetAllowNullToDb(DbEntity entity, final DbAttribute column) {
         return new SetAllowNullToDb(entity, column) {
@@ -77,9 +78,12 @@ public class SQLServerMergerFactory extends MergerFactory {
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
 
+                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
+                        .getDataMap()
+                        .isQuotingSQLIdentifiers());
 
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(getEntity().getFullyQualifiedName());
+                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
 
                 adapter.createTableAppendColumn(sqlBuffer, column);
@@ -89,19 +93,20 @@ public class SQLServerMergerFactory extends MergerFactory {
 
         };
     }
-    
+
     @Override
     public MergerToken createSetNotNullToDb(DbEntity entity, final DbAttribute column) {
-        
+
         return new SetNotNullToDb(entity, column) {
-            
+
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
-
-
+                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
+                        .getDataMap()
+                        .isQuotingSQLIdentifiers());
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(getEntity().getFullyQualifiedName());
+                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
 
                 SQLServerAdapter sqladapter = (SQLServerAdapter) adapter;

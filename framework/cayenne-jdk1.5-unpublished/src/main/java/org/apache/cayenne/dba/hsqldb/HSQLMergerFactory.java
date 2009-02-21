@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
@@ -40,11 +41,11 @@ public class HSQLMergerFactory extends MergerFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(entity.getFullyQualifiedName());
+                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER ");
-                sqlBuffer.append(columnNew.getName());
+                sqlBuffer.append(context.quoteString(columnNew.getName()));
                 sqlBuffer.append(" ");
             }
         };
@@ -57,11 +58,13 @@ public class HSQLMergerFactory extends MergerFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder sqlBuffer = new StringBuilder();
-
+                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
+                        .getDataMap()
+                        .isQuotingSQLIdentifiers());
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(getEntity().getFullyQualifiedName());
+                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(getColumn().getName());
+                sqlBuffer.append(context.quoteString(getColumn().getName()));
                 sqlBuffer.append(" NULL");
 
                 return Collections.singletonList(sqlBuffer.toString());

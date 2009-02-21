@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -32,23 +33,26 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
     public AddColumnToDb(DbEntity entity, DbAttribute column) {
         super(entity, column);
     }
-    
+
     /**
      * append the part of the token before the actual column data type
      */
-    protected void appendPrefix(StringBuffer sqlBuffer) {
+    protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
+
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(getEntity().getFullyQualifiedName());
+        sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
         sqlBuffer.append(" ADD COLUMN ");
-        sqlBuffer.append(getColumn().getName());
+        sqlBuffer.append(context.quoteString(getColumn().getName()));
         sqlBuffer.append(" ");
     }
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
         StringBuffer sqlBuffer = new StringBuffer();
-
-        appendPrefix(sqlBuffer);
+        QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
+        appendPrefix(sqlBuffer, context);
 
         // copied from JdbcAdapter.createTableAppendColumn
         String[] types = adapter.externalTypesForJdbcType(getColumn().getType());
@@ -69,7 +73,8 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
         // append size and precision (if applicable)
         if (TypesMapping.supportsLength(getColumn().getType())) {
             int len = getColumn().getMaxLength();
-            int scale = TypesMapping.isDecimal(getColumn().getType()) ? getColumn().getScale() : -1;
+            int scale = TypesMapping.isDecimal(getColumn().getType()) ? getColumn()
+                    .getScale() : -1;
 
             // sanity check
             if (scale > len) {

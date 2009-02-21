@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dba.postgres;
 
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
@@ -35,12 +36,12 @@ public class PostgresMergerFactory extends MergerFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 // http://www.postgresql.org/docs/8.2/static/sql-altertable.html
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(entity.getFullyQualifiedName());
+                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER ");
-                sqlBuffer.append(columnNew.getName());
+                sqlBuffer.append(context.quoteString(columnNew.getName()));
                 sqlBuffer.append(" TYPE ");
             }
         };

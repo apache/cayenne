@@ -98,7 +98,9 @@ public class DbMerger {
                     null,
                     null,
                     new DataMap());
-
+            
+            detectedDataMap.setQuotingSQLIdentifiers(dataMap.isQuotingSQLIdentifiers());
+            
             Map<String, DbEntity> dbEntityToDropByName = new HashMap<String, DbEntity>(
                     detectedDataMap.getDbEntityMap());
 
@@ -108,7 +110,7 @@ public class DbMerger {
                 if (!includeTableName(tableName)) {
                     continue;
                 }
-
+                
                 // look for table
                 DbEntity detectedEntity = findDbEntity(detectedDataMap, tableName);
                 if (detectedEntity == null) {
@@ -119,6 +121,7 @@ public class DbMerger {
                     }
                     continue;
                 }
+                
                 dbEntityToDropByName.remove(detectedEntity.getName());
 
                 checkRelationshipsToDrop(adapter, tokens, dbEntity, detectedEntity);

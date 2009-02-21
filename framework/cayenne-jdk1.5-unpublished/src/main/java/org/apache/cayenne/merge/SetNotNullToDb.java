@@ -22,12 +22,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
 /**
  * A {@link MergerToken} to add a "not null" clause to a column.
- * 
  */
 public class SetNotNullToDb extends AbstractToDbToken.EntityAndColumn {
 
@@ -38,11 +38,13 @@ public class SetNotNullToDb extends AbstractToDbToken.EntityAndColumn {
     @Override
     public List<String> createSql(DbAdapter adapter) {
         StringBuilder sqlBuffer = new StringBuilder();
-
+        QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(getEntity().getFullyQualifiedName());
+        sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
         sqlBuffer.append(" ALTER COLUMN ");
-        sqlBuffer.append(getColumn().getName());
+        sqlBuffer.append(context.quoteString(getColumn().getName()));
         sqlBuffer.append(" SET NOT NULL");
 
         return Collections.singletonList(sqlBuffer.toString());

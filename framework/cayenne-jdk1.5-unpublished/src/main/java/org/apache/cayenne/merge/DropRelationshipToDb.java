@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DbRelationshipDetected;
@@ -49,10 +50,12 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
         if (fkName == null) {
             return Collections.emptyList();
         }
-
+        QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
         StringBuilder buf = new StringBuilder();
         buf.append("ALTER TABLE ");
-        buf.append(getEntity().getFullyQualifiedName());
+        buf.append(context.quoteFullyQualifiedName(getEntity()));
         buf.append(" DROP CONSTRAINT ");
         buf.append(fkName);
 

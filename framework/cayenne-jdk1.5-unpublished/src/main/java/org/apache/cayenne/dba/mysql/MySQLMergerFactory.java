@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -43,14 +44,15 @@ public class MySQLMergerFactory extends MergerFactory {
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
 
+                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
+                        .getDataMap()
+                        .isQuotingSQLIdentifiers());
+                
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(getEntity().getFullyQualifiedName());
+                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" CHANGE ");
-                sqlBuffer.append(getColumn().getName());
+                sqlBuffer.append(context.quoteString(getColumn().getName()));
                 sqlBuffer.append(" ");
-                sqlBuffer.append(getColumn().getName());
-                sqlBuffer.append(" ");
-
                 adapter.createTableAppendColumn(sqlBuffer, column);
 
                 return Collections.singletonList(sqlBuffer.toString());
@@ -68,12 +70,12 @@ public class MySQLMergerFactory extends MergerFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(entity.getFullyQualifiedName());
+                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
                 sqlBuffer.append(" MODIFY ");
-                sqlBuffer.append(columnNew.getName());
+                sqlBuffer.append(context.quoteString(columnNew.getName()));
                 sqlBuffer.append(" ");
             }
 
@@ -94,11 +96,13 @@ public class MySQLMergerFactory extends MergerFactory {
                 if (fkName == null) {
                     return Collections.emptyList();
                 }
-
+                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
+                        .getDataMap()
+                        .isQuotingSQLIdentifiers());
                 StringBuilder buf = new StringBuilder();
                 // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
                 buf.append("ALTER TABLE ");
-                buf.append(entity.getFullyQualifiedName());
+                buf.append(context.quoteFullyQualifiedName(entity));
                 buf.append(" DROP FOREIGN KEY ");
                 buf.append(fkName);
 

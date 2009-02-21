@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -43,21 +44,24 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
     
     /**
      * append the part of the token before the actual column data type
+     * @param context 
      */
-    protected void appendPrefix(StringBuffer sqlBuffer) {
+    protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(getEntity().getFullyQualifiedName());
+        sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
         sqlBuffer.append(" ALTER ");
-        sqlBuffer.append(columnNew.getName());
+        sqlBuffer.append(context.quoteString(columnNew.getName()));
         sqlBuffer.append(" TYPE ");
     }
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
         StringBuffer sqlBuffer = new StringBuffer();
-
-        appendPrefix(sqlBuffer);
-
+        QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
+                .getDataMap()
+                .isQuotingSQLIdentifiers());
+        appendPrefix(sqlBuffer, context);
+  
         // copied from JdbcAdapter.createTableAppendColumn
         String[] types = adapter.externalTypesForJdbcType(columnNew.getType());
         if (types == null || types.length == 0) {
