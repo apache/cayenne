@@ -17,6 +17,7 @@ Changes/New Features Since M5:
 CAY-289 Implement Quoting of identifiers
 CAY-1021 adding a callback method should result in focus on method name
 CAY-1047 Aligning query capabilities
+CAY-1119 Nested contexts on ROP
 CAY-1140 Store ObjEntity name in the DataRow
 CAY-1142 (Single table) Inheritance and Paginated lists 
 CAY-1146 Move User properties API to ObjectContext & BaseContext
@@ -41,6 +42,7 @@ CAY-1160 Default delete rule is not used when migrating schema (to model)
 CAY-1166 Type checking in the modeler
 CAY-1176 missing classes in ROP cayenne-client render nested contexts unusable
 CAY-1180 Model marked as dirty when leaving DataMap name field
+CAY-1183 commitToParent() makes object persistence state committed, produces exception when using object in parent context (ROP)
 
 ----------------------------------
 Release: 3.0M5
