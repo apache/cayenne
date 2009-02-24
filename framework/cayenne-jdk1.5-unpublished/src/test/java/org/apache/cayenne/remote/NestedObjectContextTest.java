@@ -158,7 +158,6 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
         blockQueries();
 
         try {
-
             ClientMtTable2 child2 = (ClientMtTable2) child.localObject(_new2.getObjectId(), _new2);
             assertEquals(PersistenceState.COMMITTED, child2.getPersistenceState());
             assertNotNull(child2.getTable1());
@@ -596,5 +595,24 @@ public class NestedObjectContextTest extends RemoteCayenneCase {
         assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
         assertEquals(PersistenceState.MODIFIED, parentA.getPersistenceState());
         assertEquals(0, parentA.getTable2Array().size());
+    }
+
+    public void testCAY1183() throws Exception {
+        deleteTestData();
+
+        ClientMtTable1 parentMt = context.newObject(ClientMtTable1.class);
+        context.commitChanges();
+
+        ObjectContext child = context.createChildContext();
+        ClientMtTable1 childMt = (ClientMtTable1) DataObjectUtils.objectForPK(child, parentMt.getObjectId());
+        childMt.setGlobalAttribute1("1183");
+        ClientMtTable2 childMt2 = child.newObject(ClientMtTable2.class);
+        childMt2.setGlobalAttribute("1183");
+        childMt2.setTable1(childMt);
+
+        child.commitChangesToParent();
+
+        //fetching other relationship... this fails per CAY-1183
+        childMt2.getTable3();
     }
 }

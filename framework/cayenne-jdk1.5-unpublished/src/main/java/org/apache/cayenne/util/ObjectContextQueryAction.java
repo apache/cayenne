@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -45,7 +46,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * <p>
  * <i>Intended for internal use only.</i>
  * </p>
- * 
+ *
  * @since 1.2
  */
 public abstract class ObjectContextQueryAction {
@@ -225,6 +226,22 @@ public abstract class ObjectContextQueryAction {
                             this.response = new ListResponse(result);
                             return DONE;
 
+                        }
+
+                        /**
+                         * Workaround for CAY-1183. If a Relationship query is being sent from
+                         * child context, we assure that local object is not NEW and relationship - unresolved
+                         * (this way exception will occur). This helps when faulting objects that
+                         * were committed to parent context (this), but not to database.
+                         *
+                         * Checking type of context's channel is the only way to ensure that we are
+                         * on the top level of context hierarchy (there might be more than one-level-deep
+                         * nested contexts).
+                         */
+                        if (((Persistent) object).getPersistenceState() == PersistenceState.NEW
+                            && !(actingContext.getChannel() instanceof BaseContext)) {
+                            this.response = new ListResponse();
+                            return DONE;
                         }
                     }
                 }

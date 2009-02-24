@@ -51,6 +51,7 @@
 		<db-attribute name="GLOBAL_ATTRIBUTE" type="VARCHAR" length="100"/>
 		<db-attribute name="TABLE1_ID" type="INTEGER"/>
 		<db-attribute name="TABLE2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TABLE3_ID" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="MT_TABLE3">
 		<db-attribute name="BINARY_COLUMN" type="VARBINARY" length="100"/>
@@ -157,6 +158,12 @@
 	<db-relationship name="table1" source="MT_TABLE2" target="MT_TABLE1" toMany="false">
 		<db-attribute-pair source="TABLE1_ID" target="TABLE1_ID"/>
 	</db-relationship>
+	<db-relationship name="table3" source="MT_TABLE2" target="MT_TABLE3" toMany="false">
+		<db-attribute-pair source="TABLE3_ID" target="TABLE3_ID"/>
+	</db-relationship>
+	<db-relationship name="table2Array" source="MT_TABLE3" target="MT_TABLE2" toMany="true">
+		<db-attribute-pair source="TABLE3_ID" target="TABLE3_ID"/>
+	</db-relationship>
 	<db-relationship name="joins" source="MT_TABLE4" target="MT_JOIN45" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="TABLE4_ID"/>
 	</db-relationship>
@@ -175,6 +182,8 @@
 	<obj-relationship name="toParent" source="MtReflexive" target="MtReflexive" db-relationship-path="toParent"/>
 	<obj-relationship name="table2Array" source="MtTable1" target="MtTable2" db-relationship-path="table2Array"/>
 	<obj-relationship name="table1" source="MtTable2" target="MtTable1" db-relationship-path="table1"/>
+	<obj-relationship name="table3" source="MtTable2" target="MtTable3" deleteRule="Nullify" db-relationship-path="table3"/>
+	<obj-relationship name="table2Array" source="MtTable3" target="MtTable2" deleteRule="Deny" db-relationship-path="table2Array"/>
 	<obj-relationship name="table5s" source="MtTable4" target="MtTable5" db-relationship-path="joins.toTable5"/>
 	<obj-relationship name="table4s" source="MtTable5" target="MtTable4" db-relationship-path="joins.toTable4"/>
 	<query name="AllMtTable1" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">

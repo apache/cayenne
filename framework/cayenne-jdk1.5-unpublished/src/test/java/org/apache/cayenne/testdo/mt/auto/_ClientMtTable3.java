@@ -1,6 +1,9 @@
 package org.apache.cayenne.testdo.mt.auto;
 
+import java.util.List;
+
 import org.apache.cayenne.PersistentObject;
+import org.apache.cayenne.testdo.mt.ClientMtTable2;
 
 /**
  * A generated persistent class mapped as "MtTable3" Cayenne entity. It is a good idea to
@@ -12,10 +15,12 @@ public abstract class _ClientMtTable3 extends PersistentObject {
     public static final String BINARY_COLUMN_PROPERTY = "binaryColumn";
     public static final String CHAR_COLUMN_PROPERTY = "charColumn";
     public static final String INT_COLUMN_PROPERTY = "intColumn";
+    public static final String TABLE2ARRAY_PROPERTY = "table2Array";
 
     protected byte[] binaryColumn;
     protected String charColumn;
     protected Integer intColumn;
+    protected List<ClientMtTable2> table2Array;
 
     public byte[] getBinaryColumn() {
         if(objectContext != null) {
@@ -78,6 +83,28 @@ public abstract class _ClientMtTable3 extends PersistentObject {
         if(objectContext != null) {
             objectContext.propertyChanged(this, "intColumn", oldValue, intColumn);
         }
+    }
+
+    public List<ClientMtTable2> getTable2Array() {
+        if(objectContext != null) {
+            objectContext.prepareForAccess(this, "table2Array", true);
+        }
+
+        return table2Array;
+    }
+    public void addToTable2Array(ClientMtTable2 object) {
+        if(objectContext != null) {
+            objectContext.prepareForAccess(this, "table2Array", true);
+        }
+
+        this.table2Array.add(object);
+    }
+    public void removeFromTable2Array(ClientMtTable2 object) {
+        if(objectContext != null) {
+            objectContext.prepareForAccess(this, "table2Array", true);
+        }
+
+        this.table2Array.remove(object);
     }
 
 }
