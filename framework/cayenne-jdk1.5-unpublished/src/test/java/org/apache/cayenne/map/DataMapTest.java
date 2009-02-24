@@ -402,33 +402,35 @@ public class DataMapTest extends TestCase {
             assertEquals(expectedNames[i], proc.getName());
         }
     }
-    
+
 
     public void testQuoteSqlIdentifiersEcodeAsXML(){
         DataMap map = new DataMap("aaa");
-        map.setQuotingSQLIdentifiers(true);  
+        map.setQuotingSQLIdentifiers(true);
         StringWriter w = new StringWriter();
         XMLEncoder e = new XMLEncoder(new PrintWriter(w));
-        
+
+        String separator = System.getProperty("line.separator");
+
         StringBuffer s = new StringBuffer("<data-map project-version=\"");
-        s.append(String.valueOf(Project.CURRENT_PROJECT_VERSION));  
-        s.append("\">\n");     
-        s.append("<property name=\"quoteSqlIdentifiers\" value=\"true\"/>\n");      
-        s.append("</data-map>\n");
-        
+        s.append(String.valueOf(Project.CURRENT_PROJECT_VERSION));
+        s.append("\">").append(separator);
+        s.append("<property name=\"quoteSqlIdentifiers\" value=\"true\"/>").append(separator);
+        s.append("</data-map>").append(separator);
+
         map.encodeAsXML(e);
-        assertEquals(w.getBuffer().toString(), s.toString());  
-        
-        map.setQuotingSQLIdentifiers(false); 
+        assertEquals(w.getBuffer().toString(), s.toString());
+
+        map.setQuotingSQLIdentifiers(false);
         StringWriter w2 = new StringWriter();
         XMLEncoder e2 = new XMLEncoder(new PrintWriter(w2));
-        
+
         StringBuffer s2 = new StringBuffer("<data-map project-version=\"");
-        s2.append(String.valueOf(Project.CURRENT_PROJECT_VERSION)); 
-        s2.append("\">\n");          
-        s2.append("</data-map>\n");        
+        s2.append(String.valueOf(Project.CURRENT_PROJECT_VERSION));
+        s2.append("\">").append(separator);
+        s2.append("</data-map>").append(separator);
         map.encodeAsXML(e2);
-        assertEquals(w2.getBuffer().toString(), s2.toString());  
-        
+        assertEquals(w2.getBuffer().toString(), s2.toString());
+
     }
 }
