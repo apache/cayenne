@@ -103,8 +103,11 @@ public class CayenneModelerMojo extends AbstractMojo {
     }
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
-        File f = lookupModelFile();
+        //setup the system property to tell the modeler where to generate the java source files.
+        System.setProperty("cayenne.cgen.destdir",project.getBuild().getSourceDirectory());
+
         //start the modeler with the provided model file, if it exists.
+        File f = lookupModelFile();
         if (f != null && f.exists() && !f.isDirectory()) {
             Main.main(new String[] {f.getAbsolutePath()});
         } else {
