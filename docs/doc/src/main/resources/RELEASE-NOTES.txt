@@ -29,6 +29,7 @@ CAY-1158 cayenne-modeler:run plugin should open a (configured) project file, wit
 CAY-1161 Deprecate SelectQuery custom columns feature
 CAY-1174 Modeler: support optional meaningful PK mapping during reverse engineering
 CAY-1175 Replace String column name capitalization property with an enum
+CAY-1184 Callback methods should default to usable names
 
 Bug Fixes Since M5:
 

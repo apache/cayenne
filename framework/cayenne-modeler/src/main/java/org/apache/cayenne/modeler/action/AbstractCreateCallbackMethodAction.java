@@ -21,11 +21,13 @@ package org.apache.cayenne.modeler.action;
 import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.map.CallbackMap;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.util.NameConverter;
 
 /**
  * Base class for creating callback methods
@@ -33,10 +35,6 @@ import org.apache.cayenne.modeler.util.CayenneAction;
  * @version 1.0 Oct 28, 2007
  */
 public abstract class AbstractCreateCallbackMethodAction extends CayenneAction {
-    /**
-     * default name for new callback method
-     */
-    private static final String NEW_CALLBACK_METHOD = "untitled";
 
     /**
      * Constructor.
@@ -68,12 +66,19 @@ public abstract class AbstractCreateCallbackMethodAction extends CayenneAction {
         CallbackType callbackType = getProjectController().getCurrentCallbackType();
 
         //generate methodName
-        int counter = 1;
+        String methodNamePrefix = toMethodName(callbackType.getType());
         String methodName;
-        do {
-            methodName = NEW_CALLBACK_METHOD + counter;
-            counter++;
-        } while(getCallbackMap().getCallbackDescriptor(callbackType.getType()).getCallbackMethods().contains(methodName));
+        //now that we're generating the method names based on the callback type, check to see if the
+        //raw prefix, no numbers, is taken.
+        if (!getCallbackMap().getCallbackDescriptor(callbackType.getType()).getCallbackMethods().contains(methodNamePrefix)) {
+            methodName = methodNamePrefix;
+        } else {
+            int counter = 1;
+            do {
+                methodName = methodNamePrefix + counter;
+                counter++;
+            } while(getCallbackMap().getCallbackDescriptor(callbackType.getType()).getCallbackMethods().contains(methodName));
+        }
 
         getCallbackMap().getCallbackDescriptor(callbackType.getType()).addCallbackMethod(methodName);
 
@@ -85,6 +90,10 @@ public abstract class AbstractCreateCallbackMethodAction extends CayenneAction {
         );
 
         getProjectController().fireCallbackMethodEvent(ce);
+    }
+
+    private String toMethodName(LifecycleEvent event) {
+        return "on" + NameConverter.underscoredToJava(event.name(),true);
     }
 }
 
