@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -31,86 +30,42 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
 import org.apache.cayenne.util.Util;
-import org.syntax.jedit.JEditTextArea;
-import org.syntax.jedit.KeywordMap;
-import org.syntax.jedit.tokenmarker.PLSQLTokenMarker;
-import org.syntax.jedit.tokenmarker.SQLTokenMarker;
-import org.syntax.jedit.tokenmarker.Token;
-import org.syntax.jedit.tokenmarker.TokenMarker;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
-
-public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener{
+public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
     protected ProjectController mediator;
-    
-    static final TokenMarker SQL_TEMPLATE_MARKER;
-    static {
-        KeywordMap map = PLSQLTokenMarker.getKeywordMap();
-        
-        //adding more keywords
-        map.add("FIRST", Token.KEYWORD1);
-        map.add("LIMIT", Token.KEYWORD1);
-        map.add("OFFSET", Token.KEYWORD1);
-        map.add("TOP", Token.KEYWORD1);
-        
-        //adding velocity template highlighing
-        map.add("#bind", Token.KEYWORD2);
-        map.add("#bindEqual", Token.KEYWORD2);
-        map.add("#bindNotEqual", Token.KEYWORD2);
-        map.add("#bindObjectEqual", Token.KEYWORD2);
-        map.add("#bindObjectNotEqual", Token.KEYWORD2);
-        map.add("#chain", Token.KEYWORD2);
-        map.add("#chunk", Token.KEYWORD2);
-        map.add("#end", Token.KEYWORD2);
-        map.add("#result", Token.KEYWORD2);
-        
-        SQL_TEMPLATE_MARKER = new SQLTokenMarker(map);
-    }
-    
+
     /**
      * JEdit text component for highlighing SQL syntax (see CAY-892)
      */
-    protected JEditTextArea scriptArea;
- 
+    protected JCayenneTextPane scriptArea;
+    protected JPanel panelArea;
     private boolean updateDisabled;
-    
+
     public EjbqlQueryScriptsTab(ProjectController mediator) {
         this.mediator = mediator;
         initView();
     }
-    
+
     void displayScript() {
         EJBQLQuery query = getQuery();
         updateDisabled = true;
         scriptArea.setText(query.getEjbqlStatement());
         updateDisabled = false;
-     }
-
-    private void initView() {
- 
-        scriptArea = CayenneWidgetFactory.createJEditTextArea();     
-        scriptArea.setTokenMarker(SQL_TEMPLATE_MARKER);  
-        scriptArea.getDocument().addDocumentListener(this);
-        CellConstraints cc = new CellConstraints();
-        
-        FormLayout formLayout = new FormLayout(
-                "fill:0dlu:grow", 
-                "fill:0dlu:grow");
-
-        formLayout.maximumLayoutSize(scriptArea);
-        PanelBuilder builder = new PanelBuilder(formLayout);
-      
-        builder.add(new JScrollPane(scriptArea), cc.xy(1,1));
-        
-        setLayout(new BorderLayout());
-        add(builder.getPanel(), BorderLayout.CENTER); 
     }
 
+    private void initView() {
+
+        scriptArea = CayenneWidgetFactory.createJEJBQLTextPane();
+        scriptArea.getDocument().addDocumentListener(this);
+
+        setLayout(new BorderLayout());
+        add(scriptArea, BorderLayout.WEST);
+        add(scriptArea.scrollPane, BorderLayout.CENTER);
+        setVisible(true);
+    }
 
     public void initFromModel() {
         Query query = mediator.getCurrentQuery();
@@ -119,21 +74,20 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener{
             setVisible(false);
             return;
         }
-        
-        scriptArea.setEnabled(true);      
+        scriptArea.setEnabled(true);
         displayScript();
-        setVisible(true);    
-   
+        setVisible(true);
+
     }
-    
+
     EJBQLQuery getQuery() {
         Query query = mediator.getCurrentQuery();
         return (query instanceof EJBQLQuery) ? (EJBQLQuery) query : null;
     }
-    
+
     void setEJBQL(DocumentEvent e) {
         Document doc = e.getDocument();
-     
+
         try {
             setEJBQL(doc.getText(0, doc.getLength()));
         }
@@ -141,7 +95,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener{
             e1.printStackTrace();
         }
     }
-    
+
     void setEJBQL(String text) {
         EJBQLQuery query = getQuery();
         if (query == null) {
@@ -158,12 +112,12 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener{
         // Compare the value before modifying the query - text area
         // will call "verify" even if no changes have occured....
         if (!Util.nullSafeEquals(text, query.getEjbqlStatement())) {
-             query.setEjbqlStatement(text);
-             mediator.fireQueryEvent(new QueryEvent(this, query));
+            query.setEjbqlStatement(text);
+            mediator.fireQueryEvent(new QueryEvent(this, query));
         }
-        
+
     }
- 
+
     public void insertUpdate(DocumentEvent e) {
         changedUpdate(e);
     }
@@ -171,7 +125,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener{
     public void removeUpdate(DocumentEvent e) {
         changedUpdate(e);
     }
-    
+
     public void changedUpdate(DocumentEvent e) {
         if (!updateDisabled) {
             setEJBQL(e);

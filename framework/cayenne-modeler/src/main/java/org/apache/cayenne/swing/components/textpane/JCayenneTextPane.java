@@ -1,0 +1,263 @@
+package org.apache.cayenne.swing.components.textpane;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.JViewport;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Highlighter;
+
+import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
+import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
+
+public class JCayenneTextPane extends JPanel {
+
+    protected Highlighter.HighlightPainter painter;
+    private JTextPaneScrollable pane;
+    public JScrollPane scrollPane;
+    public boolean repaint;
+
+    public void setText(String text) {
+        pane.setText(text);
+    }
+
+    public String getText() {
+        return pane.getText();
+    }
+
+    public int getStartPositionInDocument() {
+        return pane.viewToModel(scrollPane.getViewport().getViewPosition());
+        // starting pos
+        // in document
+    }
+
+    public int getEndPositionInDocument() {
+        return pane.viewToModel(new Point(scrollPane.getViewport().getViewPosition().x
+                + pane.getWidth(), scrollPane.getViewport().getViewPosition().y
+                + pane.getHeight()));
+    }
+
+    /**
+     * Return an int containing the wrapped line index at the given position
+     * 
+     * @param int pos
+     * @return int
+     */
+    public int getLineNumber(int pos) {
+        int posLine;
+        int y = 0;
+
+        try {
+            Rectangle caretCoords = pane.modelToView(pos);
+            y = (int) caretCoords.getY();
+        }
+        catch (BadLocationException ex) {
+        }
+
+        int lineHeight = pane.getFontMetrics(pane.getFont()).getHeight();
+        posLine = (y / lineHeight) + 1;
+        return posLine;
+    }
+
+    /**
+     * Return an int position at the given line number and symbol position in this line
+     * 
+     * @param int posInLine
+     * @param int line
+     * @return int
+     * @throws BadLocationException
+     */
+    public int getPosition(int line, int posInLine) throws BadLocationException {
+        // translate lines to offsets
+        int position = -1;
+        int numrows = 1;
+        char[] chararr = pane.getText().toCharArray();
+        for (int i = 0; i < chararr.length; i++) {
+            if (chararr[i] == '\n') {
+                numrows++;
+                if (numrows == line) {
+                    position = i;
+                    break;
+                }
+            }
+        }
+        return position + posInLine;
+    }
+
+    public JCayenneTextPane(SyntaxConstant syntaxConstant) {
+        super();
+
+        setMinimumSize(new Dimension(30, 30));
+        setPreferredSize(new Dimension(30, 30));
+        setMinimumSize(new Dimension(30, 30));
+        setBackground(new Color(245, 238, 238));
+        setBorder(null);
+        pane = new JTextPaneScrollable(new EditorKit(syntaxConstant)) {           
+            public void paint(Graphics g) {
+                super.paint(g);
+                JCayenneTextPane.this.repaint();
+            }
+        };
+
+        pane.setFont(SQLSyntaxConstants.DEFAULT_FONT);
+
+        scrollPane = new JScrollPane(pane);
+
+        this.painter = new UnderlineHighlighterForText.UnderlineHighlightPainter(
+                Color.red);
+
+        pane.getDocument().addDocumentListener(new DocumentListener() {
+
+            public void insertUpdate(DocumentEvent evt) {
+                try {
+                    removeHighlightText();
+                }
+                catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    if (pane.getText(evt.getOffset(), 1).toString().equals("/")
+                            || pane.getText(evt.getOffset(), 1).toString().equals("*")) {
+                        pane.repaint();
+                    }
+                }
+                catch (BadLocationException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+            public void removeUpdate(DocumentEvent evt) {
+                try {
+                    removeHighlightText();
+                }
+                catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            public void changedUpdate(DocumentEvent evt) {
+
+            }
+
+        });
+    }
+
+    public void setHighlightText(int lastIndex, int endIndex) throws BadLocationException {
+        Highlighter highlighter = pane.getHighlighter();
+        removeHighlightText(highlighter);
+        highlighter.addHighlight(lastIndex, endIndex, painter);
+    }
+
+    public void setHighlightText(int line, int lastIndex, int size)
+            throws BadLocationException {
+
+        int position = getPosition(line, lastIndex);
+        int positionEnd = position + size;
+        Highlighter highlighter = pane.getHighlighter();
+        removeHighlightText(highlighter);
+        highlighter.addHighlight(position, positionEnd, painter);
+    }
+
+    public void removeHighlightText(Highlighter highlighter) throws BadLocationException {
+
+        Highlighter.Highlight[] highlights = highlighter.getHighlights();
+        for (int i = 0; i < highlights.length; i++) {
+            Highlighter.Highlight h = highlights[i];
+            if (h.getPainter() instanceof UnderlineHighlighterForText.UnderlineHighlightPainter) {
+                highlighter.removeHighlight(h);
+            }
+        }
+    }
+
+    public void removeHighlightText() throws BadLocationException {
+        Highlighter highlighter = pane.getHighlighter();
+        removeHighlightText(highlighter);
+    }
+
+    public void paint(Graphics g) {
+
+        super.paint(g);
+
+        int start = getStartPositionInDocument();
+        int end = getEndPositionInDocument();
+        // end pos in doc
+
+        // translate offsets to lines
+        Document doc = pane.getDocument();
+        int startline = doc.getDefaultRootElement().getElementIndex(start) + 1;
+        int endline = doc.getDefaultRootElement().getElementIndex(end) + 1;
+
+        int fontHeight = g.getFontMetrics(pane.getFont()).getHeight();
+        int fontDesc = g.getFontMetrics(pane.getFont()).getDescent();
+        int starting_y = -1;
+
+        try {
+            starting_y = pane.modelToView(start).y
+                    - scrollPane.getViewport().getViewPosition().y
+                    + fontHeight
+                    - fontDesc;
+        }
+        catch (BadLocationException e1) {
+            e1.printStackTrace();
+        }
+
+        for (int line = startline, y = starting_y; line <= endline; y += fontHeight, line++) {
+            Color color = g.getColor();
+            g.setColor(Color.gray);
+            Font f2 = SQLSyntaxConstants.DEFAULT_FONT;
+            FontMetrics fm2 = getFontMetrics(f2);
+            g.setFont(f2);
+
+            g.drawString(Integer.toString(line), (30 - fm2.stringWidth(Integer
+                    .toString(line))) / 2, y);
+            g.setColor(color);
+        }
+
+    }
+
+    public Document getDocument() {
+        return pane.getDocument();
+    }
+
+    class JTextPaneScrollable extends JTextPane {
+
+        // private static final long serialVersionUID = 6270183148379328084L;
+
+        public JTextPaneScrollable(EditorKit editorKit) {
+            // Set editor kit
+            this.setEditorKitForContentType(editorKit.getContentType(), editorKit);
+            this.setContentType(editorKit.getContentType());
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportWidth() {
+            if (getParent() instanceof JViewport) {
+                JViewport port = (JViewport) getParent();
+                if (port.getWidth() > getUI().getPreferredSize(this).width) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+        }
+    }
+
+}

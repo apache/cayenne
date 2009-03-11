@@ -40,6 +40,8 @@ import javax.swing.table.TableCellEditor;
 import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.modeler.util.combo.ComboBoxCellEditor;
+import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
+import org.apache.cayenne.swing.components.textpane.syntax.EJBQLSyntaxConstant;
 import org.syntax.jedit.DefaultInputHandler;
 import org.syntax.jedit.JEditTextArea;
 
@@ -189,7 +191,18 @@ public class CayenneWidgetFactory {
         
         return area;
     }
+    
+//    public static JSQLTextPane createJSQLTextPane() {
+//        JSQLTextPane area = new JSQLTextPane();
+//        return area;
+//    }
  
+    public static JCayenneTextPane createJEJBQLTextPane() {
+        JCayenneTextPane area = new JCayenneTextPane(new EJBQLSyntaxConstant());
+        return area;
+    }
+ 
+    
     /**
      * Class for enabling Mac OS X keys
      */
