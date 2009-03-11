@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.Component;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,17 +70,8 @@ public abstract class GeneratorController extends CayenneController {
     }
 
     protected void initBindings(BindingBuilder bindingBuilder) {
-        if (preferences.getOutputPath() == null) {
-            // init default directory..
-            FSPath lastPath = Application
-                    .getInstance()
-                    .getFrameController()
-                    .getLastDirectory();
-            File lastDir = (lastPath != null)
-                    ? lastPath.getExistingDirectory(false)
-                    : null;
-            preferences.setOutputPath(lastDir != null ? lastDir.getAbsolutePath() : null);
-        }
+              
+        initOutputFolder();
 
         JTextField outputFolder = ((GeneratorControllerPanel) getView())
                 .getOutputFolder();
@@ -436,7 +426,64 @@ public abstract class GeneratorController extends CayenneController {
             // update model
             String path = selected.getAbsolutePath();
             outputFolder.setText(path);
+            //be sure to update the destdir property, if it's not null.
+            //this ensures that if the user selected a /different/ dir than the system-property default,
+            //they get back that directory throughought the session.
+            if (System.getProperty("cayenne.cgen.destdir") != null) {
+                System.setProperty("cayenne.cgen.destdir",path);
+            }
             preferences.setOutputPath(path);
         }
     }
+    
+    private void initOutputFolder(){
+        
+        String path = null;
+        if (System.getProperty("cayenne.cgen.destdir") != null) {
+            preferences.setOutputPath(System.getProperty("cayenne.cgen.destdir"));
+            return;
+        }
+        if (preferences.getOutputPath() == null) {
+            // init default directory..
+            FSPath lastPath = Application
+                    .getInstance()
+                    .getFrameController()
+                    .getLastDirectory();
+
+            path = checkDefaultMavenResourceDir(lastPath,"test");
+
+            if (path != null || (path=checkDefaultMavenResourceDir(lastPath,"main")) != null) {
+                preferences.setOutputPath(path);
+            } else {
+                File lastDir = (lastPath != null)
+                        ? lastPath.getExistingDirectory(false)
+                        : null;
+                preferences.setOutputPath(lastDir != null ? lastDir.getAbsolutePath() : null);
+            }
+        }
+    }
+    
+    private String checkDefaultMavenResourceDir(FSPath lastPath, String dirType) {
+        String path = lastPath.getPath();
+        String resourcePath = buildFilePath("src",dirType,"resources");
+        int idx = path.indexOf(resourcePath);
+        if (idx < 0) {
+            return null;
+        }
+        return path.substring(0,idx)
+                + buildFilePath("src",dirType,"java") +
+                path.substring(idx+resourcePath.length());
+    }
+
+    private static final String buildFilePath(String... pathElements) {
+        if (pathElements.length == 0) {
+            return "";
+        }
+        StringBuilder path = new StringBuilder(pathElements[0]);
+        for(int i=1;i<pathElements.length;i++) {
+            path.append(File.separator).append( pathElements[i]);
+        }
+        return path.toString();
+    }
+
 }
