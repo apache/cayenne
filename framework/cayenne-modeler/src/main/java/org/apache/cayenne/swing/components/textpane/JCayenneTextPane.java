@@ -18,8 +18,11 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 
+import org.apache.cayenne.modeler.Main;
 import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
 import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class JCayenneTextPane extends JPanel {
 
@@ -27,6 +30,7 @@ public class JCayenneTextPane extends JPanel {
     private JTextPaneScrollable pane;
     public JScrollPane scrollPane;
     public boolean repaint;
+    private static Log logObj = LogFactory.getLog(Main.class);
 
     public void setText(String text) {
         pane.setText(text);
@@ -63,6 +67,7 @@ public class JCayenneTextPane extends JPanel {
             y = (int) caretCoords.getY();
         }
         catch (BadLocationException ex) {
+            logObj.warn("Error: " , ex);
         }
 
         int lineHeight = pane.getFontMetrics(pane.getFont()).getHeight();
@@ -103,7 +108,8 @@ public class JCayenneTextPane extends JPanel {
         setMinimumSize(new Dimension(30, 30));
         setBackground(new Color(245, 238, 238));
         setBorder(null);
-        pane = new JTextPaneScrollable(new EditorKit(syntaxConstant)) {           
+        pane = new JTextPaneScrollable(new EditorKit(syntaxConstant)) {
+
             public void paint(Graphics g) {
                 super.paint(g);
                 JCayenneTextPane.this.repaint();
@@ -122,35 +128,21 @@ public class JCayenneTextPane extends JPanel {
             public void insertUpdate(DocumentEvent evt) {
                 try {
                     removeHighlightText();
-                }
-                catch (BadLocationException e) {
-                    e.printStackTrace();
-                }
-
-                try {
                     if (pane.getText(evt.getOffset(), 1).toString().equals("/")
                             || pane.getText(evt.getOffset(), 1).toString().equals("*")) {
                         pane.repaint();
-                    }
+                    } 
                 }
-                catch (BadLocationException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                catch (Exception e) {
+                    logObj.warn("Error: " , e);
                 }
             }
 
             public void removeUpdate(DocumentEvent evt) {
-                try {
-                    removeHighlightText();
-                }
-                catch (BadLocationException e) {
-                    e.printStackTrace();
-                }
-
+                removeHighlightText();
             }
 
             public void changedUpdate(DocumentEvent evt) {
-
             }
 
         });
@@ -162,17 +154,22 @@ public class JCayenneTextPane extends JPanel {
         highlighter.addHighlight(lastIndex, endIndex, painter);
     }
 
-    public void setHighlightText(int line, int lastIndex, int size)
-            throws BadLocationException {
+    public void setHighlightText(int line, int lastIndex, int size) {
 
-        int position = getPosition(line, lastIndex);
-        int positionEnd = position + size;
-        Highlighter highlighter = pane.getHighlighter();
-        removeHighlightText(highlighter);
-        highlighter.addHighlight(position, positionEnd, painter);
+        int position;
+        try {
+            position = getPosition(line, lastIndex);
+            int positionEnd = position + size;
+            Highlighter highlighter = pane.getHighlighter();
+            removeHighlightText(highlighter);
+            highlighter.addHighlight(position, positionEnd, painter);
+        }
+        catch (BadLocationException e) {
+            logObj.warn("Error: " , e);
+        }
     }
 
-    public void removeHighlightText(Highlighter highlighter) throws BadLocationException {
+    public void removeHighlightText(Highlighter highlighter) {
 
         Highlighter.Highlight[] highlights = highlighter.getHighlights();
         for (int i = 0; i < highlights.length; i++) {
@@ -183,7 +180,7 @@ public class JCayenneTextPane extends JPanel {
         }
     }
 
-    public void removeHighlightText() throws BadLocationException {
+    public void removeHighlightText() {
         Highlighter highlighter = pane.getHighlighter();
         removeHighlightText(highlighter);
     }
@@ -206,13 +203,18 @@ public class JCayenneTextPane extends JPanel {
         int starting_y = -1;
 
         try {
-            starting_y = pane.modelToView(start).y
-                    - scrollPane.getViewport().getViewPosition().y
-                    + fontHeight
-                    - fontDesc;
+            if (pane.modelToView(start) == null) {
+                starting_y = -1;
+            }
+            else {
+                starting_y = pane.modelToView(start).y
+                        - scrollPane.getViewport().getViewPosition().y
+                        + fontHeight
+                        - fontDesc;
+            }
         }
-        catch (BadLocationException e1) {
-            e1.printStackTrace();
+        catch (Exception e1) {
+            logObj.warn("Error: " , e1);
         }
 
         for (int line = startline, y = starting_y; line <= endline; y += fontHeight, line++) {
@@ -235,7 +237,7 @@ public class JCayenneTextPane extends JPanel {
 
     class JTextPaneScrollable extends JTextPane {
 
-        // private static final long serialVersionUID = 6270183148379328084L;
+        private static final long serialVersionUID = 1L;
 
         public JTextPaneScrollable(EditorKit editorKit) {
             // Set editor kit

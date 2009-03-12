@@ -32,6 +32,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.project.ProjectPath;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -60,6 +61,7 @@ public abstract class TreeNodeValidator {
     protected static final SelectQueryValidator selectQueryValidator = new SelectQueryValidator();
 
     protected static final ProcedureQueryValidator procedureQueryValidator = new ProcedureQueryValidator();
+    protected static final EJBQLQueryValidator ejbqlQueryValidator = new EJBQLQueryValidator();
 
     protected static final SQLTemplateValidator sqlTemplateValidator = new SQLTemplateValidator();
 
@@ -114,6 +116,9 @@ public abstract class TreeNodeValidator {
         }
         else if (validatedObj instanceof ProcedureQuery) {
             validatorObj = procedureQueryValidator;
+        }
+        else if (validatedObj instanceof EJBQLQuery) {
+            validatorObj = ejbqlQueryValidator;
         }
         else {
             // ignore unknown nodes

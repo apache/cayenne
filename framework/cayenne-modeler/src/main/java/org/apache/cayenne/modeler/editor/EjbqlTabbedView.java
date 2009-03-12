@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;

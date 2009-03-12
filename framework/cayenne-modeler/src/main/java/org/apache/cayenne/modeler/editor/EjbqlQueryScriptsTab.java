@@ -19,6 +19,9 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -28,6 +31,8 @@ import javax.swing.text.Document;
 import org.apache.cayenne.map.event.QueryEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneWidgetFactory;
+import org.apache.cayenne.project.validator.EJBQLQueryValidator;
+import org.apache.cayenne.project.validator.EJBQLQueryValidator.PositionException;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
@@ -36,13 +41,9 @@ import org.apache.cayenne.util.Util;
 public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
     protected ProjectController mediator;
-
-    /**
-     * JEdit text component for highlighing SQL syntax (see CAY-892)
-     */
     protected JCayenneTextPane scriptArea;
-    protected JPanel panelArea;
     private boolean updateDisabled;
+    protected EJBQLQueryValidator ejbqlQueryValidator = new EJBQLQueryValidator();
 
     public EjbqlQueryScriptsTab(ProjectController mediator) {
         this.mediator = mediator;
@@ -51,7 +52,6 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
     void displayScript() {
         EJBQLQuery query = getQuery();
-        updateDisabled = true;
         scriptArea.setText(query.getEjbqlStatement());
         updateDisabled = false;
     }
@@ -60,7 +60,17 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
         scriptArea = CayenneWidgetFactory.createJEJBQLTextPane();
         scriptArea.getDocument().addDocumentListener(this);
+        scriptArea.addFocusListener(new FocusListener() {
 
+            public void focusGained(FocusEvent e) {
+                validateEJBQL();
+            }
+
+            public void focusLost(FocusEvent e) {
+                validateEJBQL();
+            }
+
+        });
         setLayout(new BorderLayout());
         add(scriptArea, BorderLayout.WEST);
         add(scriptArea.scrollPane, BorderLayout.CENTER);
@@ -76,6 +86,8 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
         }
         scriptArea.setEnabled(true);
         displayScript();
+
+        validateEJBQL();
         setVisible(true);
 
     }
@@ -87,7 +99,6 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
     void setEJBQL(DocumentEvent e) {
         Document doc = e.getDocument();
-
         try {
             setEJBQL(doc.getText(0, doc.getLength()));
         }
@@ -129,6 +140,20 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     public void changedUpdate(DocumentEvent e) {
         if (!updateDisabled) {
             setEJBQL(e);
+        }
+    }
+
+    void validateEJBQL() {
+        PositionException positionException = ejbqlQueryValidator.validateEJBQL(
+                getQuery(),
+                mediator.getCurrentDataDomain());
+        if (positionException != null) {
+
+            scriptArea.setHighlightText(
+                    positionException.getBeginLine(),
+                    positionException.getBeginColumn(),
+                    positionException.getLength());
+
         }
     }
 }
