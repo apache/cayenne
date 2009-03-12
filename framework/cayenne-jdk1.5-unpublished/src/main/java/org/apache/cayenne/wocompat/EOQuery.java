@@ -47,16 +47,16 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class EOQuery extends SelectQuery {
 
-    protected Map plistMap;
+    protected Map<String,?> plistMap;
     protected Map bindings;
 
-    public EOQuery(ObjEntity root, Map plistMap) {
+    public EOQuery(ObjEntity root, Map<String,?> plistMap) {
         super(root);
         this.plistMap = plistMap;
         initFromPlist(plistMap);
     }
 
-    protected void initFromPlist(Map plistMap) {
+    protected void initFromPlist(Map<String,?> plistMap) {
 
         setDistinct("YES".equalsIgnoreCase((String) plistMap.get("usesDistinct")));
 
@@ -76,13 +76,11 @@ public class EOQuery extends SelectQuery {
         }
 
         // sort orderings
-        List orderings = (List) plistMap.get("sortOrderings");
+        List<Map<String,String>> orderings = (List<Map<String,String>>) plistMap.get("sortOrderings");
         if (orderings != null && !orderings.isEmpty()) {
-            Iterator it = orderings.iterator();
-            while (it.hasNext()) {
-                Map ordering = (Map) it.next();
+            for (Map<String,String> ordering : orderings) {
                 boolean asc = !"compareDescending:".equals(ordering.get("selectorName"));
-                String key = (String) ordering.get("key");
+                String key = ordering.get("key");
                 if (key != null) {
                     addOrdering(key, asc);
                 }
@@ -90,7 +88,7 @@ public class EOQuery extends SelectQuery {
         }
 
         // qualifiers
-        Map qualifierMap = (Map) plistMap.get("qualifier");
+        Map<String,?> qualifierMap = (Map<String,?>) plistMap.get("qualifier");
         if (qualifierMap != null && !qualifierMap.isEmpty()) {
             this.setQualifier(makeQualifier(qualifierMap));
         }
@@ -223,7 +221,7 @@ public class EOQuery extends SelectQuery {
      * @param qualifierMap - FetchSpecification to translate
      * @return Expression equivalent to FetchSpecification
      */
-    public synchronized Expression makeQualifier(Map qualifierMap) {
+    public synchronized Expression makeQualifier(Map<String,?> qualifierMap) {
         if (qualifierMap == null) {
             return null;
         }
@@ -240,18 +238,23 @@ public class EOQuery extends SelectQuery {
      * 
      */
     static class EOFetchSpecificationParser {
+        // Xcode/EOModeler expressions have a colon at the end of the selector name
+        // (just like standard Objective-C syntax).  WOLips does not.  Add both
+        // sets to the hash map to handle both types of models.
 
-        // selector strings
-        static final String IS_EQUAL_TO = "isEqualTo:";
-        static final String IS_NOT_EQUAL_TO = "isNotEqualTo:";
-        static final String IS_LIKE = "isLike:";
-        static final String CASE_INSENSITIVE_LIKE = "isCaseInsensitiveLike:";
-        static final String IS_LESS_THAN = "isLessThan:";
-        static final String IS_LESS_THAN_OR_EQUAL_TO = "isLessThanOrEqualTo:";
-        static final String IS_GREATER_THAN = "isGreaterThan:";
-        static final String IS_GREATER_THAN_OR_EQUAL_TO = "isGreaterThanOrEqualTo:";
+        // Selector strings (Java-base).
+        static final String IS_EQUAL_TO                 = "isEqualTo";
+        static final String IS_NOT_EQUAL_TO             = "isNotEqualTo";
+        static final String IS_LIKE                     = "isLike";
+        static final String CASE_INSENSITIVE_LIKE       = "isCaseInsensitiveLike";
+        static final String IS_LESS_THAN                = "isLessThan";
+        static final String IS_LESS_THAN_OR_EQUAL_TO    = "isLessThanOrEqualTo";
+        static final String IS_GREATER_THAN             = "isGreaterThan";
+        static final String IS_GREATER_THAN_OR_EQUAL_TO = "isGreaterThanOrEqualTo";
 
-        private static HashMap selectorToExpressionBridge;
+        private static final String OBJ_C = ":"; // Objective-C syntax addition.
+
+        private static HashMap<String, Integer> selectorToExpressionBridge;
 
         /**
          * selectorToExpressionBridge is just a mapping of EOModeler's selector types to
@@ -259,26 +262,36 @@ public class EOQuery extends SelectQuery {
          * 
          * @return HashMap of Expression types, keyed by the corresponding selector name
          */
-        static HashMap selectorToExpressionBridge() {
+        static synchronized HashMap<String, Integer> selectorToExpressionBridge() {
+            // Initialize selectorToExpressionBridge if needed.
             if (null == selectorToExpressionBridge) {
-                // initialize selectorToExpressionBridge
-                selectorToExpressionBridge = new HashMap(8);
-                selectorToExpressionBridge.put(IS_EQUAL_TO, Integer.valueOf(
-                        Expression.EQUAL_TO));
-                selectorToExpressionBridge.put(IS_NOT_EQUAL_TO, Integer.valueOf(
-                        Expression.NOT_EQUAL_TO));
-                selectorToExpressionBridge.put(IS_LIKE, Integer.valueOf(Expression.LIKE));
-                selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE, Integer.valueOf(
-                        Expression.LIKE_IGNORE_CASE));
-                selectorToExpressionBridge.put(IS_LESS_THAN, Integer.valueOf(
-                        Expression.LESS_THAN));
-                selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO, Integer.valueOf(
-                        Expression.LESS_THAN_EQUAL_TO));
-                selectorToExpressionBridge.put(IS_GREATER_THAN, Integer.valueOf(
-                        Expression.GREATER_THAN));
-                selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO, Integer.valueOf(
-                        Expression.GREATER_THAN_EQUAL_TO));
+                selectorToExpressionBridge = new HashMap<String, Integer>();
+
+                selectorToExpressionBridge.put(IS_EQUAL_TO, Expression.EQUAL_TO);
+                selectorToExpressionBridge.put(IS_EQUAL_TO + OBJ_C, Expression.EQUAL_TO);
+
+                selectorToExpressionBridge.put(IS_NOT_EQUAL_TO, Expression.NOT_EQUAL_TO);
+                selectorToExpressionBridge.put(IS_NOT_EQUAL_TO + OBJ_C, Expression.NOT_EQUAL_TO);
+
+                selectorToExpressionBridge.put(IS_LIKE, Expression.LIKE);
+                selectorToExpressionBridge.put(IS_LIKE + OBJ_C, Expression.LIKE);
+
+                selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE, Expression.LIKE_IGNORE_CASE);
+                selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE + OBJ_C, Expression.LIKE_IGNORE_CASE);
+
+                selectorToExpressionBridge.put(IS_LESS_THAN, Expression.LESS_THAN);
+                selectorToExpressionBridge.put(IS_LESS_THAN + OBJ_C, Expression.LESS_THAN);
+
+                selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO, Expression.LESS_THAN_EQUAL_TO);
+                selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO + OBJ_C, Expression.LESS_THAN_EQUAL_TO);
+
+                selectorToExpressionBridge.put(IS_GREATER_THAN, Expression.GREATER_THAN);
+                selectorToExpressionBridge.put(IS_GREATER_THAN + OBJ_C, Expression.GREATER_THAN);
+
+                selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO, Expression.GREATER_THAN_EQUAL_TO);
+                selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO + OBJ_C, Expression.GREATER_THAN_EQUAL_TO);
             }
+
             return selectorToExpressionBridge;
         }
 
@@ -384,11 +397,11 @@ public class EOQuery extends SelectQuery {
                     // get the list of children
                     List children = (List) qualifierMap.get("qualifiers");
                     if (children != null) {
-                        ArrayList childExpressions = new ArrayList();
+                        ArrayList<Expression> childExpressions = new ArrayList<Expression>();
                         // build an Expression for each child
-                        Iterator it = children.iterator();
+                        Iterator<Map> it = children.iterator();
                         while (it.hasNext()) {
-                            Expression childExp = makeQualifier(entity, (Map) it.next());
+                            Expression childExp = makeQualifier(entity, it.next());
                             childExpressions.add(childExp);
                         }
                         // join the child expressions and return the result
@@ -424,15 +437,15 @@ public class EOQuery extends SelectQuery {
                 Object value = qualifierMap.get("value");
 
                 if (value instanceof Map) {
-                    Map valueMap = (Map) value;
-                    String objClass = (String) valueMap.get("class"); // can be a
+                    Map<String,String> valueMap = (Map<String,String>) value;
+                    String objClass = valueMap.get("class"); // can be a
                     // qualifier class
                     // or java type
 
                     if ("EOQualifierVariable".equals(objClass)
                             && valueMap.containsKey("_key")) {
                         // make a parameterized expression
-                        String paramName = (String) valueMap.get("_key");
+                        String paramName = valueMap.get("_key");
                         comparisonValue = new ExpressionParameter(paramName);
                     }
                     else {
