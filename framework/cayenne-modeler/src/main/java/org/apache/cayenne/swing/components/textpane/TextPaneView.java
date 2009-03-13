@@ -48,7 +48,7 @@ public class TextPaneView extends PlainView {
             String[] keywords2 = syntaxConstants.getKEYWORDS2();
             String[] operators = syntaxConstants.getOPERATORS();
             String[] types = syntaxConstants.getTYPES();
-            
+
             for (int i = 0; i < keywords.length; i++) {
                 String patern = "(" + keywords[i] + ")";
                 patternSyntaxStyle.put(Pattern.compile(patern, Pattern.UNICODE_CASE
@@ -66,7 +66,7 @@ public class TextPaneView extends PlainView {
                 patternSyntaxStyle.put(Pattern.compile(patern, Pattern.UNICODE_CASE
                         | Pattern.CASE_INSENSITIVE), style.syntaxStyleMap
                         .get(TextPaneStyleTypes.KEYWORDS));
-            }           
+            }
             for (int i = 0; i < types.length; i++) {
                 String patern = "(" + types[i] + ")";
                 patternSyntaxStyle.put(Pattern.compile(patern, Pattern.UNICODE_CASE
@@ -162,10 +162,14 @@ public class TextPaneView extends PlainView {
 
                 Matcher matcher = entry.getKey().matcher(text);
                 while (matcher.find()) {
-                    if ((text.length() == matcher.end()
+                     if ((text.length() == matcher.end()
+                            || text.charAt(matcher.end()) == '\t'
                             || text.charAt(matcher.end()) == ' ' || text.charAt(matcher
                             .end()) == '\n')
-                            && (matcher.start() == 0 || text.charAt(matcher.start() - 1) == ' ')) {
+                            && (matcher.start() == 0
+                                    || text.charAt(matcher.start() - 1) == '\t'
+                                    || text.charAt(matcher.start() - 1) == '\n'
+                                    || text.charAt(matcher.start() - 1) == ' ')) {
                         boolean inComment = false;
                         for (Map.Entry<Integer, Integer> entryCommentInLine : commentInLine
                                 .entrySet()) {
@@ -175,7 +179,8 @@ public class TextPaneView extends PlainView {
                             }
                         }
                         if (!inComment) {
-                            startMap.put(matcher.start(), matcher.end());
+
+                            startMap.put(matcher.start(1), matcher.end());
                             syntaxStyleMap.put(matcher.start(1), entry.getValue());
                         }
                     }
@@ -189,9 +194,11 @@ public class TextPaneView extends PlainView {
                 while (matcher.find()) {
                     if ((text.length() == matcher.end()
                             || text.charAt(matcher.end()) == ' '
-                            || text.charAt(matcher.end()) == ')' || text.charAt(matcher
+                            || text.charAt(matcher.end()) == ')'
+                            || text.charAt(matcher.end()) == '\t' || text.charAt(matcher
                             .end()) == '\n')
                             && (matcher.start() == 0
+                                    || text.charAt(matcher.start() - 1) == '\t'
                                     || text.charAt(matcher.start() - 1) == ' '
                                     || text.charAt(matcher.start() - 1) == '=' || text
                                     .charAt(matcher.start() - 1) == '(')) {
@@ -210,7 +217,6 @@ public class TextPaneView extends PlainView {
                     }
                 }
             }
-
         }
         // TODO: check the map for overlapping parts
 

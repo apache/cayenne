@@ -82,19 +82,15 @@ public class UnderlineHighlighterForText extends DefaultHighlighter {
 
             FontMetrics fm = c.getFontMetrics(c.getFont());
             int baseline = alloc.y + alloc.height - fm.getDescent() + 1;
-            int[] masY = {
-                    0, 1, 1, 0, -1, -1
-            };
 
-            int[] x = new int[alloc.width];
-            int[] y = new int[alloc.width];
-
-            for (int i = 0; i < alloc.width; i++) {
-                x[i] = alloc.x + i;
-                y[i] = baseline + masY[i % 6];
+            int i = alloc.x;
+            int end = alloc.x + alloc.width - 1;
+            while (i < end) {
+                g.drawLine(i, baseline, i + 2, baseline);
+                g.drawLine(i, baseline + 1, i + 2, baseline + 1);
+                i += 4;
             }
 
-            g.drawPolyline(x, y, alloc.width);
             return alloc;
         }
 

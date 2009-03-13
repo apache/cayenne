@@ -7,6 +7,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -67,7 +69,7 @@ public class JCayenneTextPane extends JPanel {
             y = (int) caretCoords.getY();
         }
         catch (BadLocationException ex) {
-            logObj.warn("Error: " , ex);
+            logObj.warn("Error: ", ex);
         }
 
         int lineHeight = pane.getFontMetrics(pane.getFont()).getHeight();
@@ -131,10 +133,10 @@ public class JCayenneTextPane extends JPanel {
                     if (pane.getText(evt.getOffset(), 1).toString().equals("/")
                             || pane.getText(evt.getOffset(), 1).toString().equals("*")) {
                         pane.repaint();
-                    } 
+                    }
                 }
                 catch (Exception e) {
-                    logObj.warn("Error: " , e);
+                    logObj.warn("Error: ", e);
                 }
             }
 
@@ -155,17 +157,26 @@ public class JCayenneTextPane extends JPanel {
     }
 
     public void setHighlightText(int line, int lastIndex, int size) {
-
-        int position;
+        int k = 0;
         try {
-            position = getPosition(line, lastIndex);
+            Matcher matcherTab = Pattern.compile("\t").matcher(
+                    pane.getText(getPosition(line, 0), getPosition(line, lastIndex)));
+            while (matcherTab.find()) {
+                k += 7;
+            }
+        }
+        catch (BadLocationException e1) {
+            logObj.warn("Error: ", e1);
+        }
+        try {
+            int position = getPosition(line, lastIndex-k);
             int positionEnd = position + size;
             Highlighter highlighter = pane.getHighlighter();
             removeHighlightText(highlighter);
             highlighter.addHighlight(position, positionEnd, painter);
         }
         catch (BadLocationException e) {
-            logObj.warn("Error: " , e);
+            logObj.warn("Error: ", e);
         }
     }
 
@@ -214,16 +225,22 @@ public class JCayenneTextPane extends JPanel {
             }
         }
         catch (Exception e1) {
-            logObj.warn("Error: " , e1);
+            logObj.warn("Error: ", e1);
         }
 
         for (int line = startline, y = starting_y; line <= endline; y += fontHeight, line++) {
             Color color = g.getColor();
-            g.setColor(Color.gray);
+
             Font f2 = SQLSyntaxConstants.DEFAULT_FONT;
             FontMetrics fm2 = getFontMetrics(f2);
             g.setFont(f2);
+            if (line - 1 == doc.getDefaultRootElement().getElementIndex(
+                    pane.getCaretPosition())) {
+                g.setColor(new Color(224, 224, 255));
+                g.fillRect(0, y - fontHeight + 3, 30, fontHeight + 1);
+            }
 
+            g.setColor(Color.gray);
             g.drawString(Integer.toString(line), (30 - fm2.stringWidth(Integer
                     .toString(line))) / 2, y);
             g.setColor(color);
