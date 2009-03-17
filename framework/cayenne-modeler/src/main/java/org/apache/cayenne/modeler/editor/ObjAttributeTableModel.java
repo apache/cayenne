@@ -35,6 +35,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.CayenneRuntimeException;
 
 /**
  * Model for the Object Entity attributes and for Obj to DB Attribute Mapping tables.
@@ -171,7 +172,13 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                 int type;
                 if (dbAttribute == null) {
                     if (!(attribute instanceof EmbeddedAttribute)) {
-                        type = TypesMapping.getSqlTypeByJava(getAttribute(row).getJavaClass());
+                        try {
+                            type = TypesMapping.getSqlTypeByJava(getAttribute(row).getJavaClass());
+                            //have to catch the exception here to make sure that exceptional situations
+                            //(class doesn't exist, for example) don't prevent the gui from properly updating.
+                        } catch (CayenneRuntimeException cre) {
+                            return null;
+                        }
                     } else {
                         return null;
                     }
@@ -234,10 +241,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     public boolean isCellEditable(int row, int col) {
 
         if (getAttribute(row).isInherited()) {
-            if (col == DB_ATTRIBUTE) {
-                return true;
-            }
-            return false;
+            return col == DB_ATTRIBUTE;
         }
 
         return col != DB_ATTRIBUTE_TYPE && col != INHERITED;
