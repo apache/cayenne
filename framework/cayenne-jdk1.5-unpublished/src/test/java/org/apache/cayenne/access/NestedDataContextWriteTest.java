@@ -30,6 +30,7 @@ import org.apache.art.PaintingInfo;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.CayenneCase;
 
@@ -568,5 +569,33 @@ public class NestedDataContextWriteTest extends CayenneCase {
 
         child.commitChangesToParent();
 
+    }
+    
+    public void testCAY1194() throws Exception {
+        deleteTestData();
+        
+        DataContext context = createDataContext();
+        
+        Artist artist = context.newObject(Artist.class);
+        artist.setArtistName("111");
+        ObjectContext child = context.createChildContext();
+        
+        Painting painting = child.newObject(Painting.class);
+        painting.setPaintingTitle("222");
+        
+        Artist localParentMt = (Artist) child.localObject(artist.getObjectId(), null);
+        assertEquals(0, artist.getPaintingArray().size());
+        assertEquals(0, localParentMt.getPaintingArray().size());
+        
+        painting.setToArtist(localParentMt);
+        
+        assertEquals(0, artist.getPaintingArray().size());
+        assertEquals(1, localParentMt.getPaintingArray().size());
+        assertEquals(((Persistent) localParentMt.getPaintingArray().get(0)).getObjectContext(), child);
+        
+        child.commitChangesToParent();
+        assertEquals(1, artist.getPaintingArray().size());
+        assertEquals(((Persistent) artist.getPaintingArray().get(0)).getObjectContext(), context);
+        
     }
 }

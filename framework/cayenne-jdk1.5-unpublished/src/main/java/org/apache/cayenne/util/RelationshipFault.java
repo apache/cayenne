@@ -91,13 +91,25 @@ public abstract class RelationshipFault {
                         relationshipOwner.getObjectId(),
                         relationshipName,
                         false));
+        
+        /**
+         * Duplicating the list (see CAY-1194). Doing that only for RelationshipFault
+         * query results, so only for nested DataContexts
+         */
+        if (resolved instanceof RelationshipFault) {
+            resolved = new ArrayList(resolved);
+        }
 
         if (resolved.isEmpty()) {
             return resolved;
         }
 
-        // see if reverse relationship is to-one and we can connect source to results....
-
+        updateReverse(resolved);
+        return resolved;
+    }
+    
+    // see if reverse relationship is to-one and we can connect source to results....
+    protected void updateReverse(List resolved) {
         EntityResolver resolver = relationshipOwner
                 .getObjectContext()
                 .getEntityResolver();
@@ -118,7 +130,5 @@ public abstract class RelationshipFault {
                 property.writePropertyDirectly(it.next(), null, relationshipOwner);
             }
         }
-
-        return resolved;
     }
 }

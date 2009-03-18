@@ -17,15 +17,21 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access;
+package org.apache.cayenne.util;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.art.Artist;
 import org.apache.art.Painting;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.ToManyList;
 import org.apache.cayenne.unit.CayenneCase;
 
+/**
+ * Moved to org.apache.cayenne.util package for accessing protected properties we don't need getters for
+ */
 public class ToManyListTest extends CayenneCase {
 
     protected DataContext context;
@@ -94,7 +100,7 @@ public class ToManyListTest extends CayenneCase {
         int size = list.size();
         assertFalse("List must be resolved after checking a size...", list.isFault());
         assertEquals(1, size);
-        assertTrue(list.objectList.contains(p2));
+        assertTrue(getValue(list).contains(p2));
     }
 
     public void testSavedUnresolvedMerge() throws Exception {
@@ -127,8 +133,8 @@ public class ToManyListTest extends CayenneCase {
         int size = list.size();
         assertFalse("List must be resolved after checking a size...", list.isFault());
         assertEquals(2, size);
-        assertTrue(list.objectList.contains(p2));
-        assertTrue(list.objectList.contains(p1));
+        assertTrue(getValue(list).contains(p2));
+        assertTrue(getValue(list).contains(p1));
     }
 
     public void testThrowOutDeleted() throws Exception {
@@ -173,8 +179,8 @@ public class ToManyListTest extends CayenneCase {
         int size = list.size();
         assertFalse("List must be resolved after checking a size...", list.isFault());
         assertEquals("Deleted object must have been purged...", 1, size);
-        assertTrue(list.objectList.contains(p1));
-        assertFalse("Deleted object must have been purged...", list.objectList
+        assertTrue(getValue(list).contains(p1));
+        assertFalse("Deleted object must have been purged...", getValue(list)
                 .contains(p2));
     }
 
@@ -236,5 +242,9 @@ public class ToManyListTest extends CayenneCase {
         assertTrue(list.contains(p1));
         assertFalse(list.contains(p2));
         assertFalse("List must be resolved...", list.isFault());
+    }
+    
+    private List getValue(ToManyList list) {
+        return (List) list.getValueDirectly();
     }
 }

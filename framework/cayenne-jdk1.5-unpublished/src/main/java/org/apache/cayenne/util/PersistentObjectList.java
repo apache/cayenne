@@ -308,12 +308,12 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return objectList;
     }
 
-    void clearLocalChanges() {
+    protected void clearLocalChanges() {
         addedToUnresolved = null;
         removedFromUnresolved = null;
     }
 
-    void mergeLocalChanges(List fetchedList) {
+    protected void mergeLocalChanges(List fetchedList) {
 
         // only merge if an object is in an uncommitted state
         // any other state means that our local tracking
@@ -349,7 +349,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         clearLocalChanges();
     }
 
-    boolean addLocal(Object object) {
+    protected boolean addLocal(Object object) {
 
         if (removedFromUnresolved != null) {
             removedFromUnresolved.remove(object);
@@ -366,7 +366,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return true;
     }
 
-    boolean removeLocal(Object object) {
+    protected boolean removeLocal(Object object) {
         if (addedToUnresolved != null) {
             addedToUnresolved.remove(object);
         }
@@ -382,21 +382,21 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return true;
     }
 
-    void postprocessAdd(Collection collection) {
+    protected void postprocessAdd(Collection collection) {
         Iterator it = collection.iterator();
         while (it.hasNext()) {
             postprocessAdd(it.next());
         }
     }
 
-    void postprocessRemove(Collection collection) {
+    protected void postprocessRemove(Collection collection) {
         Iterator it = collection.iterator();
         while (it.hasNext()) {
             postprocessRemove(it.next());
         }
     }
 
-    void postprocessAdd(Object addedObject) {
+    protected void postprocessAdd(Object addedObject) {
 
         // notify ObjectContext
         if (relationshipOwner.getObjectContext() != null) {
@@ -408,7 +408,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         }
     }
 
-    void postprocessRemove(Object removedObject) {
+    protected void postprocessRemove(Object removedObject) {
 
         // notify ObjectContext
         if (relationshipOwner.getObjectContext() != null) {

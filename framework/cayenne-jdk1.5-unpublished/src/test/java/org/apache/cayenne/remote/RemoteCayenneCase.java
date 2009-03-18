@@ -38,12 +38,16 @@ public abstract class RemoteCayenneCase extends CayenneCase {
     @Override
     public void setUp() throws Exception {
         parentDataContext = createDataContext();
+        context = createROPContext();
+    }
+    
+    protected CayenneContext createROPContext() {
         ClientServerChannel clientServerChannel = new ClientServerChannel(parentDataContext);
         UnitLocalConnection connection = new UnitLocalConnection(
                 clientServerChannel,
                 LocalConnection.HESSIAN_SERIALIZATION);
         ClientChannel channel = new ClientChannel(connection);
-        context = new CayenneContext(channel, true, true);
+        return new CayenneContext(channel, true, true);
     }
     
     @Override
