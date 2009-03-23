@@ -348,14 +348,6 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         }
     }
 
-    /**
-     * "Invalidates" a Collection of persistent objects. This operation would remove each
-     * object's snapshot from cache and change object's state to HOLLOW. On the next
-     * access to this object, it will be refetched.
-     *
-     * @see #unregisterObjects(Collection)
-     * @see RefreshQuery
-     */
     public void invalidateObjects(Collection objects) {
         performGenericQuery(new RefreshQuery(objects));
     }
