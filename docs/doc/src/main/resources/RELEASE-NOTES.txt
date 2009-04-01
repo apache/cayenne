@@ -31,6 +31,7 @@ CAY-1174 Modeler: support optional meaningful PK mapping during reverse engineer
 CAY-1175 Replace String column name capitalization property with an enum
 CAY-1181 Default class generation folder is wrong
 CAY-1184 Callback methods should default to usable names
+CAY-1185 Expression API: boolean support in string representation
 
 Bug Fixes Since M5:
 
