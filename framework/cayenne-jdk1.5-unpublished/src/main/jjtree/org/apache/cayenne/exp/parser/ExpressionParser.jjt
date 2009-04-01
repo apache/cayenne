@@ -93,7 +93,7 @@ void simpleCondition() : {}
 	| 
 	<FALSE> #False
 	| 
-	  scalarExpression()
+	  scalarConditionExpression()
 	(
 	   simpleNotCondition()
 	| 
@@ -146,7 +146,7 @@ void scalarCommaList() : {}
 	) #List
 }
 
-void scalarExpression() : {} 
+void scalarConditionExpression() : {} 
 {
    // TODO: once we switch expression package to use AST* from parser package,
    // we might need implement special subclasses for numeric and character constant
@@ -162,6 +162,15 @@ void scalarExpression() : {}
 		<NULL> #Scalar(0) 
 }
 
+void scalarExpression() : {} 
+{
+  	   scalarConditionExpression() 
+	|
+	  <TRUE> { jjtThis.setValue(true); }  #Scalar(0)
+	| 
+	  <FALSE> { jjtThis.setValue(false); }  #Scalar(0)
+}
+
 void scalarConstExpression() : {}
 {
 	  <SINGLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
@@ -173,6 +182,10 @@ void scalarConstExpression() : {}
 	  <INT_LITERAL> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
 	| 
 	   <FLOAT_LITERAL>{ jjtThis.setValue(token_source.literalValue); }  #Scalar(0)
+	|
+	  <TRUE> { jjtThis.setValue(true); }  #Scalar(0)
+	| 
+	  <FALSE> { jjtThis.setValue(false); }  #Scalar(0)
 }
 
 void scalarNumericExpression() : {}

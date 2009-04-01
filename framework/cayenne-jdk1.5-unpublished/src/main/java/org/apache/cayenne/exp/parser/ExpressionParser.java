@@ -234,7 +234,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case DOUBLE_QUOTED_STRING:
     case INT_LITERAL:
     case FLOAT_LITERAL:
-      scalarExpression();
+      scalarConditionExpression();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case 3:
       case 4:
@@ -766,7 +766,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     }
   }
 
-  final public void scalarExpression() throws ParseException {
+  final public void scalarConditionExpression() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 16:
     case 20:
@@ -823,6 +823,59 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       break;
     default:
       jj_la1[14] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void scalarExpression() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 16:
+    case 20:
+    case 21:
+    case 24:
+    case 25:
+    case 26:
+    case NULL:
+    case PROPERTY_PATH:
+    case SINGLE_QUOTED_STRING:
+    case DOUBLE_QUOTED_STRING:
+    case INT_LITERAL:
+    case FLOAT_LITERAL:
+      scalarConditionExpression();
+      break;
+    case TRUE:
+      jj_consume_token(TRUE);
+                   ASTScalar jjtn001 = new ASTScalar(JJTSCALAR);
+                   boolean jjtc001 = true;
+                   jjtree.openNodeScope(jjtn001);
+      try {
+                   jjtree.closeNodeScope(jjtn001,  0);
+                   jjtc001 = false;
+                   jjtn001.setValue(true);
+      } finally {
+                   if (jjtc001) {
+                     jjtree.closeNodeScope(jjtn001,  0);
+                   }
+      }
+      break;
+    case FALSE:
+      jj_consume_token(FALSE);
+                    ASTScalar jjtn002 = new ASTScalar(JJTSCALAR);
+                    boolean jjtc002 = true;
+                    jjtree.openNodeScope(jjtn002);
+      try {
+                    jjtree.closeNodeScope(jjtn002,  0);
+                    jjtc002 = false;
+                    jjtn002.setValue(false);
+      } finally {
+                    if (jjtc002) {
+                      jjtree.closeNodeScope(jjtn002,  0);
+                    }
+      }
+      break;
+    default:
+      jj_la1[15] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -893,8 +946,38 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
                             }
       }
       break;
+    case TRUE:
+      jj_consume_token(TRUE);
+                   ASTScalar jjtn005 = new ASTScalar(JJTSCALAR);
+                   boolean jjtc005 = true;
+                   jjtree.openNodeScope(jjtn005);
+      try {
+                   jjtree.closeNodeScope(jjtn005,  0);
+                   jjtc005 = false;
+                   jjtn005.setValue(true);
+      } finally {
+                   if (jjtc005) {
+                     jjtree.closeNodeScope(jjtn005,  0);
+                   }
+      }
+      break;
+    case FALSE:
+      jj_consume_token(FALSE);
+                    ASTScalar jjtn006 = new ASTScalar(JJTSCALAR);
+                    boolean jjtc006 = true;
+                    jjtree.openNodeScope(jjtn006);
+      try {
+                    jjtree.closeNodeScope(jjtn006,  0);
+                    jjtc006 = false;
+                    jjtn006.setValue(false);
+      } finally {
+                    if (jjtc006) {
+                      jjtree.closeNodeScope(jjtn006,  0);
+                    }
+      }
+      break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[16] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -910,7 +993,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         ;
         break;
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[17] = jj_gen;
         break label_4;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -969,7 +1052,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         }
         break;
       default:
-        jj_la1[17] = jj_gen;
+        jj_la1[18] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -986,7 +1069,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         ;
         break;
       default:
-        jj_la1[18] = jj_gen;
+        jj_la1[19] = jj_gen;
         break label_5;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1045,7 +1128,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         }
         break;
       default:
-        jj_la1[19] = jj_gen;
+        jj_la1[20] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1067,7 +1150,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         jj_consume_token(20);
         break;
       default:
-        jj_la1[20] = jj_gen;
+        jj_la1[21] = jj_gen;
         ;
       }
       numericPrimary();
@@ -1100,7 +1183,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       }
       break;
     default:
-      jj_la1[21] = jj_gen;
+      jj_la1[22] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1152,7 +1235,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       }
       break;
     default:
-      jj_la1[22] = jj_gen;
+      jj_la1[23] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1227,46 +1310,54 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       }
       break;
     default:
-      jj_la1[23] = jj_gen;
+      jj_la1[24] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
   }
 
+  /** Generated Token Manager. */
   public ExpressionParserTokenManager token_source;
   JavaCharStream jj_input_stream;
-  public Token token, jj_nt;
+  /** Current token. */
+  public Token token;
+  /** Next token. */
+  public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[24];
+  final private int[] jj_la1 = new int[25];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
-      jj_la1_0();
-      jj_la1_1();
+      jj_la1_init_0();
+      jj_la1_init_1();
    }
-   private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x2,0x4,0x18,0x87310018,0x60,0x180,0x1010000,0x4fff8,0x4fff8,0x87310000,0x18,0x1010000,0x4e000,0x80000,0x87310000,0x1000000,0x300000,0x300000,0xc00000,0xc00000,0x100000,0x7310000,0x7010000,0x6000000,};
+   private static void jj_la1_init_0() {
+      jj_la1_0 = new int[] {0x2,0x4,0x18,0x87310018,0x60,0x180,0x1010000,0x4fff8,0x4fff8,0x87310000,0x18,0x1010000,0x4e000,0x80000,0x87310000,0x87310000,0x1000000,0x300000,0x300000,0xc00000,0xc00000,0x100000,0x7310000,0x7010000,0x6000000,};
    }
-   private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0xe407,0x0,0x0,0x0,0x0,0x0,0xe407,0x0,0x0,0x0,0x0,0xe404,0xe400,0x0,0x0,0x0,0x0,0x0,0xc004,0xc004,0x4,};
+   private static void jj_la1_init_1() {
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0xe407,0x0,0x0,0x0,0x0,0x0,0xe407,0x0,0x0,0x0,0x0,0xe404,0xe407,0xe403,0x0,0x0,0x0,0x0,0x0,0xc004,0xc004,0x4,};
    }
 
+  /** Constructor with InputStream. */
   public ExpressionParser(java.io.InputStream stream) {
      this(stream, null);
   }
+  /** Constructor with InputStream and supplied encoding */
   public ExpressionParser(java.io.InputStream stream, String encoding) {
     try { jj_input_stream = new JavaCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new ExpressionParserTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
   }
 
+  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream) {
      ReInit(stream, null);
   }
+  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream, String encoding) {
     try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
@@ -1274,18 +1365,20 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
   }
 
+  /** Constructor. */
   public ExpressionParser(java.io.Reader stream) {
     jj_input_stream = new JavaCharStream(stream, 1, 1);
     token_source = new ExpressionParserTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
   }
 
+  /** Reinitialise. */
   public void ReInit(java.io.Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
@@ -1293,27 +1386,29 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
   }
 
+  /** Constructor with generated Token Manager. */
   public ExpressionParser(ExpressionParserTokenManager tm) {
     token_source = tm;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
   }
 
+  /** Reinitialise. */
   public void ReInit(ExpressionParserTokenManager tm) {
     token_source = tm;
     token = new Token();
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
   }
 
-  final private Token jj_consume_token(int kind) throws ParseException {
+  private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -1327,6 +1422,8 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     throw generateParseException();
   }
 
+
+/** Get the next Token. */
   final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -1335,6 +1432,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return token;
   }
 
+/** Get the specific Token. */
   final public Token getToken(int index) {
     Token t = token;
     for (int i = 0; i < index; i++) {
@@ -1344,28 +1442,26 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return t;
   }
 
-  final private int jj_ntk() {
+  private int jj_ntk() {
     if ((jj_nt=token.next) == null)
       return (jj_ntk = (token.next=token_source.getNextToken()).kind);
     else
       return (jj_ntk = jj_nt.kind);
   }
 
-  private java.util.Vector jj_expentries = new java.util.Vector();
+  private java.util.List jj_expentries = new java.util.ArrayList();
   private int[] jj_expentry;
   private int jj_kind = -1;
 
+  /** Generate ParseException. */
   public ParseException generateParseException() {
-    jj_expentries.removeAllElements();
+    jj_expentries.clear();
     boolean[] la1tokens = new boolean[52];
-    for (int i = 0; i < 52; i++) {
-      la1tokens[i] = false;
-    }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 24; i++) {
+    for (int i = 0; i < 25; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1381,19 +1477,21 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
-        jj_expentries.addElement(jj_expentry);
+        jj_expentries.add(jj_expentry);
       }
     }
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
-      exptokseq[i] = (int[])jj_expentries.elementAt(i);
+      exptokseq[i] = (int[])jj_expentries.get(i);
     }
     return new ParseException(token, exptokseq, tokenImage);
   }
 
+  /** Enable tracing. */
   final public void enable_tracing() {
   }
 
+  /** Disable tracing. */
   final public void disable_tracing() {
   }
 
