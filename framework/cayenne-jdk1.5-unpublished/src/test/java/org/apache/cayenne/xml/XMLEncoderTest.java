@@ -199,7 +199,7 @@ public class XMLEncoderTest extends TestCase {
     }
 
     public void testEncodeDataObjectsList() throws Exception {
-        List dataObjects = new ArrayList();
+        List<TestObject> dataObjects = new ArrayList<TestObject>();
 
         dataObjects.add(new TestObject("George", 5, true));
         dataObjects.add(new TestObject("Mary", 28, false));
@@ -213,7 +213,7 @@ public class XMLEncoderTest extends TestCase {
     }
 
     public void testDataObjectsListMapping() throws Exception {
-        List dataObjects = new ArrayList();
+        List<TestObject> dataObjects = new ArrayList<TestObject>();
 
         dataObjects.add(new TestObject("George", 5, true));
         dataObjects.add(new TestObject("Mary", 28, false));

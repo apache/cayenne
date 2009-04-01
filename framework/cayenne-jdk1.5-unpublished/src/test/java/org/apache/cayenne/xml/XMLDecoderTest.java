@@ -127,7 +127,7 @@ public class XMLDecoderTest extends TestCase {
         george.setName("George");
         assertEquals(decoded, george);
 
-        List children = decoded.getChildren();
+        List<TestObject> children = decoded.getChildren();
         assertEquals(children.size(), 2);
 
         TestObject bill = new TestObject();
@@ -140,7 +140,7 @@ public class XMLDecoderTest extends TestCase {
         sue.setName("Sue");
         assertEquals(children.get(1), sue);
 
-        List grandchildren = ((TestObject) children.get(1)).getChildren();
+        List<TestObject> grandchildren = children.get(1).getChildren();
         assertEquals(grandchildren.size(), 1);
 
         TestObject mike = new TestObject();
@@ -162,7 +162,7 @@ public class XMLDecoderTest extends TestCase {
         george.setName("George");
         assertEquals(decoded, george);
 
-        List children = decoded.getChildren();
+        List<TestObject> children = decoded.getChildren();
         assertNotNull(children);
         assertEquals(children.size(), 2);
 
@@ -183,7 +183,7 @@ public class XMLDecoderTest extends TestCase {
         george.setName("George");
         assertEquals(decoded, george);
 
-        List children = decoded.getChildren();
+        List<TestObject> children = decoded.getChildren();
         assertNotNull(children);
         assertEquals(children.size(), 2);
 
@@ -204,7 +204,7 @@ public class XMLDecoderTest extends TestCase {
         george.setName("George");
         assertEquals(decoded, george);
 
-        List children = decoded.getChildren();
+        List<TestObject> children = decoded.getChildren();
         assertNotNull(children);
         assertEquals(1, children.size());
 
@@ -220,7 +220,7 @@ public class XMLDecoderTest extends TestCase {
         assertTrue(object instanceof TestObject);
         TestObject decoded = (TestObject) object;
 
-        List children = decoded.getChildren();
+        List<TestObject> children = decoded.getChildren();
         assertEquals(children.size(), 2);
 
         TestObject bill = new TestObject("Bill", 98, true);
@@ -243,7 +243,7 @@ public class XMLDecoderTest extends TestCase {
 
         assertEquals(decoded, george);
 
-        List children = decoded.getChildren();
+        List<TestObject> children = decoded.getChildren();
         assertEquals(children.size(), 3);
 
         TestObject bill = new TestObject("Bill", 62, true);
@@ -255,7 +255,7 @@ public class XMLDecoderTest extends TestCase {
         TestObject joe = new TestObject("Joe", 31, false);
         assertEquals(children.get(2), joe);
 
-        List grandchildren = ((TestObject) children.get(2)).getChildren();
+        List<TestObject> grandchildren = children.get(2).getChildren();
         assertEquals(grandchildren.size(), 1);
 
         TestObject harry = new TestObject("Harry", 23, false);
@@ -304,7 +304,7 @@ public class XMLDecoderTest extends TestCase {
     }
 
     public void testDecodeDataObjectsList() throws Exception {
-        final List dataObjects = new ArrayList();
+        final List<TestObject> dataObjects = new ArrayList<TestObject>();
 
         dataObjects.add(new TestObject("George", 5, true));
         dataObjects.add(new TestObject("Mary", 28, false));
@@ -312,13 +312,13 @@ public class XMLDecoderTest extends TestCase {
 
         Reader xml = new InputStreamReader(CayenneResources.getResource(XML_DATA_DIR
                 + "data-objects-encoded.xml"));
-        final List decoded = XMLDecoder.decodeList(xml);
+        final List<?> decoded = XMLDecoder.decodeList(xml);
 
         assertEquals(dataObjects, decoded);
     }
 
     public void testDataObjectsListMapping() throws Exception {
-        final List dataObjects = new ArrayList();
+        final List<TestObject> dataObjects = new ArrayList<TestObject>();
 
         dataObjects.add(new TestObject("George", 5, true));
         dataObjects.add(new TestObject("Mary", 28, false));
@@ -326,7 +326,7 @@ public class XMLDecoderTest extends TestCase {
 
         Reader xml = new InputStreamReader(CayenneResources.getResource(XML_DATA_DIR
                 + "data-objects-mapped.xml"));
-        final List decoded = XMLDecoder.decodeList(xml, CayenneResources
+        final List<?> decoded = XMLDecoder.decodeList(xml, CayenneResources
                 .getResourceURL(XML_DATA_DIR + "simple-mapping.xml")
                 .toExternalForm());
 
