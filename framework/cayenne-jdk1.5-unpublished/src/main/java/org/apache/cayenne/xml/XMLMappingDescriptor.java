@@ -21,15 +21,13 @@ package org.apache.cayenne.xml;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -75,10 +73,7 @@ final class XMLMappingDescriptor {
         }
 
         Map<String, SerializableEntity> entities = new HashMap<String, SerializableEntity>();
-        Iterator it = XMLUtil.getChildren(root).iterator();
-        while (it.hasNext()) {
-            Element e = (Element) it.next();
-
+        for (Element e : XMLUtil.getChildren(root)) {
             SerializableEntity entity = new SerializableEntity(this, e);
             String tag = e.getAttribute("xmlTag");
             entities.put(tag, entity);
@@ -115,9 +110,8 @@ final class XMLMappingDescriptor {
 
         // We want to read each value from the XML file and then set the corresponding
         // property value in the object to be returned.
-        for (Iterator it = XMLUtil.getChildren(xml).iterator(); it.hasNext();) {
-            Element value = (Element) it.next();
-            decodeProperty(ret, rootEntity.getDescriptor(), value);
+        for (Element e : XMLUtil.getChildren(xml)) {
+            decodeProperty(ret, rootEntity.getDescriptor(), e);
         }
 
         return ret;
@@ -141,9 +135,7 @@ final class XMLMappingDescriptor {
      * @return A name of the Java property mapped for the XML tag.
      */
     private String getPropertyMappingName(Element entityMapping, String propertyXmlTag) {
-        for (Iterator it = XMLUtil.getChildren(entityMapping).iterator(); it.hasNext();) {
-            Element propertyMapping = (Element) it.next();
-
+        for (Element propertyMapping : XMLUtil.getChildren(entityMapping)) {
             if (propertyXmlTag.equals(propertyMapping.getAttribute("xmlTag"))) {
                 return propertyMapping.getAttribute("name");
             }
@@ -185,9 +177,7 @@ final class XMLMappingDescriptor {
 
             // Decode each of the property's children, setting values in the newly
             // created object.
-            Iterator it = XMLUtil.getChildren(propertyData).iterator();
-            while (it.hasNext()) {
-                Element child = (Element) it.next();
+            for (Element child : XMLUtil.getChildren(propertyData)) {
                 decodeProperty(o, targetEntityMapping.getDescriptor(), child);
             }
 
@@ -251,8 +241,7 @@ final class XMLMappingDescriptor {
         NamedNodeMap attributes = objectData.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
             Attr attribute = (Attr) attributes.item(i);
-            String propertyName = getPropertyMappingName(entityMapping, attribute
-                    .getName());
+            String propertyName = getPropertyMappingName(entityMapping, attribute.getName());
 
             if (propertyName != null) {
                 PropertyUtils.setProperty(object, propertyName, attribute.getValue());

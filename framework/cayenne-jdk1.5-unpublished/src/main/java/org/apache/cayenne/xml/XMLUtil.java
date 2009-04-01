@@ -20,15 +20,15 @@
 package org.apache.cayenne.xml;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.collections.Predicate;
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.CollectionUtils;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -65,13 +65,10 @@ class XMLUtil {
     /**
      * Moves all children of the oldParent to the newParent
      */
-    static List replaceParent(Node oldParent, Node newParent) {
+    static List<Element> replaceParent(Node oldParent, Node newParent) {
 
-        List children = XMLUtil.getChildren(oldParent);
-
-        Iterator it = children.iterator();
-        while (it.hasNext()) {
-            Element child = (Element) it.next();
+        List<Element> children = XMLUtil.getChildren(oldParent);
+        for (Node child : children) {
             oldParent.removeChild(child);
             newParent.appendChild(child);
         }
@@ -125,34 +122,37 @@ class XMLUtil {
     /**
      * Returns all elements among the direct children that have a matching name.
      */
-    static List getChildren(Node node, final String name) {
+    static List<Element> getChildren(Node node, final String name) {
+        
         Predicate p = new Predicate() {
-
             public boolean evaluate(Object object) {
                 if (object instanceof Element) {
                     Element e = (Element) object;
                     return name.equals(e.getNodeName());
                 }
-
                 return false;
             }
         };
 
-        return allMatches(node.getChildNodes(), p);
+        return (List<Element>) CollectionUtils.select(getChildren(node), p);
     }
 
     /**
      * Returns all children of a given Node that are Elements.
      */
-    static List getChildren(Node node) {
-        Predicate p = new Predicate() {
-
-            public boolean evaluate(Object object) {
-                return object instanceof Element;
+    static List<Element> getChildren(Node node) {
+        NodeList list = node.getChildNodes();
+        int len = list.getLength();
+        
+        List<Element> children = new ArrayList<Element>(len);
+        for (int i = 0; i < len; i++) {
+            Node child = list.item(i);
+            if (child instanceof Element) {
+                children.add((Element) child);
             }
-        };
+        }
 
-        return allMatches(node.getChildNodes(), p);
+        return children;
     }
 
     private static Node firstMatch(NodeList list, Predicate predicate) {
@@ -168,17 +168,4 @@ class XMLUtil {
         return null;
     }
 
-    private static List allMatches(NodeList list, Predicate predicate) {
-        int len = list.getLength();
-        List children = new ArrayList(len);
-
-        for (int i = 0; i < len; i++) {
-            Node node = list.item(i);
-            if (predicate.evaluate(node)) {
-                children.add(node);
-            }
-        }
-
-        return children;
-    }
 }

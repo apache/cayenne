@@ -58,11 +58,11 @@ class SerializableEntity implements XMLSerializable {
 
     public void encodeAsXML(XMLEncoder encoder) {
         if (object instanceof Collection) {
-            Collection c = (Collection) object;
+            Collection<?> c = (Collection<?>) object;
             if (!c.isEmpty()) {
 
                 // push the first node, and create the rest as peers.
-                Iterator it = c.iterator();
+                Iterator<?> it = c.iterator();
                 encodeObject(encoder, it.next(), true);
                 while (it.hasNext()) {
                     encodeObject(encoder, it.next(), false);
@@ -87,10 +87,7 @@ class SerializableEntity implements XMLSerializable {
     void encodeObject(XMLEncoder encoder, Object object, boolean push) {
         encoder.setRoot(descriptor.getAttribute("xmlTag"), null, push);
 
-        Iterator it = XMLUtil.getChildren(descriptor).iterator();
-        while (it.hasNext()) {
-
-            Element property = (Element) it.next();
+        for (Element property : XMLUtil.getChildren(descriptor)) {
             String xmlTag = property.getAttribute("xmlTag");
             String name = property.getAttribute("name");
             Object value = PropertyUtils.getProperty(object, name);

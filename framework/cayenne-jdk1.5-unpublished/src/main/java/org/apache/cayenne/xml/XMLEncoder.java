@@ -23,7 +23,6 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -123,7 +122,7 @@ public class XMLEncoder {
     /**
      * Resets the encoder to process a new object tree.
      */
-    void initDocument(String rootTag, String type) {
+    protected void initDocument(String rootTag, String type) {
         this.document = XMLUtil.newBuilder().newDocument();
         this.parent = document;
 
@@ -139,7 +138,7 @@ public class XMLEncoder {
     /**
      * Returns a root DOM node of the encoder.
      */
-    Node getRootNode(boolean forceSyntheticRoot) {
+    protected Node getRootNode(boolean forceSyntheticRoot) {
         if (document == null) {
             return null;
         }
@@ -154,7 +153,7 @@ public class XMLEncoder {
         return root;
     }
 
-    String nodeToString(Node rootNode) {
+    protected String nodeToString(Node rootNode) {
 
         StringWriter out = new StringWriter();
         Result result = new StreamResult(out);
@@ -175,7 +174,7 @@ public class XMLEncoder {
         return out.toString().trim() + System.getProperty("line.separator");
     }
 
-    void setRoot(String xmlTag, String type, boolean push) {
+    protected void setRoot(String xmlTag, String type, boolean push) {
 
         // all public methods must implicitly init the document
         if (!inProgress) {
@@ -198,7 +197,7 @@ public class XMLEncoder {
         }
     }
 
-    void encodeProperty(String xmlTag, Object value, boolean useType) {
+    protected void encodeProperty(String xmlTag, Object value, boolean useType) {
         // all public methods must be able to implicitly init the document
         if (!inProgress) {
             String type = (useType && value != null) ? value.getClass().getName() : null;
@@ -212,14 +211,14 @@ public class XMLEncoder {
             encodeSerializable(xmlTag, (XMLSerializable) value);
         }
         else if (value instanceof Collection) {
-            encodeCollection(xmlTag, (Collection) value, useType);
+            encodeCollection(xmlTag, (Collection<Object>) value, useType);
         }
         else {
             encodeSimple(xmlTag, value, useType);
         }
     }
 
-    void encodeSimple(String xmlTag, Object object, boolean useType) {
+    protected void encodeSimple(String xmlTag, Object object, boolean useType) {
 
         // simple properties will not call setRoot, so push manually
         Element node = push(xmlTag);
@@ -240,7 +239,7 @@ public class XMLEncoder {
         pop();
     }
 
-    void encodeSerializable(String xmlTag, XMLSerializable object) {
+    protected void encodeSerializable(String xmlTag, XMLSerializable object) {
         // don't allow children to reset XML tag name ... unless they are at the root
         // level
         if (document.getDocumentElement() != parent) {
@@ -259,13 +258,11 @@ public class XMLEncoder {
      * @param xmlTag The name of the root XML element for the encoded collection.
      * @param c The collection to encode.
      */
-    void encodeCollection(String xmlTag, Collection c, boolean useType) {
-
-        Iterator it = c.iterator();
-        while (it.hasNext()) {
-            // encode collection without doing push/pop so that its elements are encoded
-            // without an intermediate grouping node.
-            encodeProperty(xmlTag, it.next(), useType);
+    protected void encodeCollection(String xmlTag, Collection<Object> c, boolean useType) {
+        // encode collection without doing push/pop so that its elements are encoded
+        // without an intermediate grouping node.
+        for (Object o : c) {
+            encodeProperty(xmlTag, o, useType);
         }
 
         if (c.size() == 1) {

@@ -28,16 +28,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.util.Util;
 import org.w3c.dom.Document;
@@ -51,7 +49,7 @@ import org.xml.sax.InputSource;
  */
 public class XMLDecoder {
 
-    static final Map classMapping = new HashMap();
+    static final Map<String, Class<?>> classMapping = new HashMap<String, Class<?>>();
 
     static {
         classMapping.put("boolean", Boolean.class);
@@ -176,7 +174,7 @@ public class XMLDecoder {
      * @param child The XML element.
      * @return The tag's value.
      */
-    private Object decodeObject(Element child) {
+    protected Object decodeObject(Element child) {
 
         if (null == child) {
             return null;
@@ -191,7 +189,7 @@ public class XMLDecoder {
         }
 
         // temp hack to support primitives...
-        Class objectClass = (Class) classMapping.get(type);
+        Class<?> objectClass = classMapping.get(type);
         if (null == objectClass) {
             try {
                 objectClass = Class.forName(type);
@@ -264,7 +262,7 @@ public class XMLDecoder {
             }
 
             // handle all other primitive types...
-            Constructor c = objectClass.getConstructor(String.class);
+            Constructor<?> c = objectClass.getConstructor(String.class);
             return c.newInstance(text);
         }
         catch (Exception e) {
@@ -333,7 +331,7 @@ public class XMLDecoder {
      * @return The decoded object.
      * @throws CayenneRuntimeException
      */
-    private Object decodeElement(Element element) throws CayenneRuntimeException {
+    protected Object decodeElement(Element element) throws CayenneRuntimeException {
 
         // Update root to be the supplied xml element. This is necessary as
         // root is used for decoding properties.
@@ -369,13 +367,13 @@ public class XMLDecoder {
      * @return A List of all the decoded objects.
      * @throws CayenneRuntimeException
      */
-    private Collection decodeCollection(Element xml) throws CayenneRuntimeException {
+    protected Collection<Object> decodeCollection(Element xml) throws CayenneRuntimeException {
 
-        Collection ret;
+        Collection<Object> ret;
         try {
             String parentClass = ((Element) xml.getParentNode()).getAttribute("type");
             Object property = Class.forName(parentClass).newInstance();
-            Collection c = (Collection) PropertyUtils.getProperty(property, xml
+            Collection<Object> c = (Collection<Object>) PropertyUtils.getProperty(property, xml
                     .getNodeName());
 
             ret = c.getClass().newInstance();
@@ -389,12 +387,8 @@ public class XMLDecoder {
         // Each child of the root corresponds to an XML representation of
         // the object. The idea is decode each of those into an object and add them to the
         // list to be returned.
-        Iterator it = XMLUtil
-                .getChildren(xml.getParentNode(), xml.getNodeName())
-                .iterator();
-        while (it.hasNext()) {
+        for (Element e : XMLUtil.getChildren(xml.getParentNode(), xml.getNodeName())) {
             // Decode the object.
-            Element e = (Element) it.next();
             decodedCollections.add(e);
             Object o = decodeElement(e);
 
@@ -412,7 +406,7 @@ public class XMLDecoder {
      * @return The list of decoded DataObjects.
      * @throws CayenneRuntimeException
      */
-    public static List decodeList(Reader xml) throws CayenneRuntimeException {
+    public static List<Object> decodeList(Reader xml) throws CayenneRuntimeException {
         return decodeList(xml, null, null);
     }
 
@@ -424,7 +418,7 @@ public class XMLDecoder {
      * @return The list of decoded DataObjects.
      * @throws CayenneRuntimeException
      */
-    public static List decodeList(Reader xml, ObjectContext objectContext)
+    public static List<Object> decodeList(Reader xml, ObjectContext objectContext)
             throws CayenneRuntimeException {
         return decodeList(xml, null, objectContext);
     }
@@ -439,7 +433,7 @@ public class XMLDecoder {
      * @return The list of decoded DataObjects.
      * @throws CayenneRuntimeException
      */
-    public static List decodeList(Reader xml, String mappingUrl)
+    public static List<Object> decodeList(Reader xml, String mappingUrl)
             throws CayenneRuntimeException {
         return decodeList(xml, mappingUrl, null);
     }
@@ -455,16 +449,16 @@ public class XMLDecoder {
      * @return The list of decoded DataObjects.
      * @throws CayenneRuntimeException
      */
-    public static List decodeList(Reader xml, String mappingUrl, ObjectContext objectContext)
+    public static List<Object> decodeList(Reader xml, String mappingUrl, ObjectContext objectContext)
             throws CayenneRuntimeException {
 
         XMLDecoder decoder = new XMLDecoder(objectContext);
         Element listRoot = parse(xml).getDocumentElement();
 
-        List ret;
+        List<Object> ret;
         try {
             String parentClass = listRoot.getAttribute("type");
-            ret = (List) Class.forName(parentClass).newInstance();
+            ret = (List<Object>) Class.forName(parentClass).newInstance();
         }
         catch (Exception ex) {
             throw new CayenneRuntimeException(
@@ -480,10 +474,8 @@ public class XMLDecoder {
         // Each child of the root corresponds to an XML representation of
         // the object. The idea is decode each of those into an object and add them to the
         // list to be returned.
-        Iterator it = XMLUtil.getChildren(listRoot).iterator();
-        while (it.hasNext()) {
+        for (Element e : XMLUtil.getChildren(listRoot)) {
             // Decode the object.
-            Element e = (Element) it.next();
             decoder.decodedCollections.add(e);
 
             // Decode the item using the appropriate decoding method.
